@@ -40,6 +40,8 @@ class ReservationPhc(models.Model):
             tmp = 'PCR PRIORITY TEST\n'
         elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_express').id:
             tmp = 'PCR EXPRESS TEST\n'
+        elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_srbd').id:
+            tmp = 'S-RBD TEST\n'
         else:
             tmp = 'ANTIGEN TEST\n'
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini

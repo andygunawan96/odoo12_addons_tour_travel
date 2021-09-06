@@ -217,7 +217,7 @@ class Reservationphc(models.Model):
             single_suplement = True
 
         if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
-                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id]:
+                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id]:
             for rec in timeslot_objs:
                 if rec.base_price_antigen > base_price:
                     base_price = rec.base_price_antigen
@@ -227,7 +227,7 @@ class Reservationphc(models.Model):
                     if carrier_obj.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id:
                         admin_fee = rec.admin_fee_antigen_drivethru
         elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id,
-                          self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+                                self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             for rec in timeslot_objs:
                 if rec.base_price_pcr > base_price:
                     base_price = rec.base_price_pcr
@@ -235,6 +235,13 @@ class Reservationphc(models.Model):
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
         elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_priority').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_pcr_priority > base_price:
+                    base_price = rec.base_price_pcr_priority
+                    commission_price = rec.commission_pcr_priority
+                    overtime_price = rec.overtime_surcharge
+                    single_suplement_price = rec.single_supplement
+        elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_srbd').id]:
             for rec in timeslot_objs:
                 if rec.base_price_pcr_priority > base_price:
                     base_price = rec.base_price_pcr_priority
@@ -641,7 +648,7 @@ class Reservationphc(models.Model):
                     'message': "%s\n\n%s" % (passenger_obj.name, self.env['tt.reservation.phc'].get_verified_summary())
                 }
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
-                                                           'notification_code')
+                                                               'notification_code')
                 return ERR.get_no_error({
                     "transaction_code": req['ticket_number'],
                     "message": "success"
@@ -918,23 +925,23 @@ class Reservationphc(models.Model):
             'sale_service_charge_ids': this_service_charges
         })
         #END
-    
+
     def get_verified_summary(self):
         datetime_now_wib = datetime.now(pytz.timezone('Asia/Jakarta'))
         passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
                                                                           ('booking_id.carrier_name','ilike','KPCR'),
-                                                              ('verified_date', '>=',
-                                                               datetime_now_wib.replace(hour=0, minute=0, second=0,
-                                                                                        microsecond=0)),
-                                                              ('verified_date', '<=', datetime_now_wib)])
+                                                                          ('verified_date', '>=',
+                                                                           datetime_now_wib.replace(hour=0, minute=0, second=0,
+                                                                                                    microsecond=0)),
+                                                                          ('verified_date', '<=', datetime_now_wib)])
         verified_pcr_date = len(passenger_data.ids)
 
         passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
                                                                           ('booking_id.carrier_name','ilike','OPCR'),
-                                                              ('verified_date', '>=',
-                                                               datetime_now_wib.replace(hour=0, minute=0, second=0,
-                                                                                        microsecond=0)),
-                                                              ('verified_date', '<=', datetime_now_wib)])
+                                                                          ('verified_date', '>=',
+                                                                           datetime_now_wib.replace(hour=0, minute=0, second=0,
+                                                                                                    microsecond=0)),
+                                                                          ('verified_date', '<=', datetime_now_wib)])
         verified_pcr_priority_date = len(passenger_data.ids)
 
         passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
@@ -949,14 +956,14 @@ class Reservationphc(models.Model):
 
         passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
                                                                           ('booking_id.carrier_name','ilike','EPCR'),
-                                                              ('verified_date', '>=',
-                                                               datetime_now_wib.replace(hour=0, minute=0, second=0,
-                                                                                        microsecond=0)),
-                                                              ('verified_date', '<=', datetime_now_wib)])
+                                                                          ('verified_date', '>=',
+                                                                           datetime_now_wib.replace(hour=0, minute=0, second=0,
+                                                                                                    microsecond=0)),
+                                                                          ('verified_date', '<=', datetime_now_wib)])
         verified_pcr_express_date = len(passenger_data.ids)
 
         return 'PHC Verified By Date:\nAntigen : %s\nPCR : %s\nPCR Priority : %s\nPCR Express: %s' % (verified_antigen_date,
-                                                                  verified_pcr_date, verified_pcr_priority_date, verified_pcr_express_date)
+                                                                                                      verified_pcr_date, verified_pcr_priority_date, verified_pcr_express_date)
 
     def multi_sync_verified_with_phc(self):
         for rec in self:
@@ -1287,6 +1294,8 @@ class Reservationphc(models.Model):
             template_obj = self.env.ref('tt_report_common.phc_pcr_priority_information')
         elif self.carrier_name == 'PHCDTEPCR':
             template_obj = self.env.ref('tt_report_common.phc_pcr_express_information')
+        elif self.carrier_name == 'PHCDTKSRBD':
+            template_obj = self.env.ref('tt_report_common.phc_srbd_drive_thru_information')
         elif self.carrier_name == 'PHCHCKATG':
             template_obj = self.env.ref('tt_report_common.phc_antigen_homecare_information')
         else:

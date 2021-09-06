@@ -78,22 +78,29 @@
                             <field name="commission_antigen"/>
                             <field name="admin_fee_antigen_drivethru"/>
                         </group>
+
+                        <group string="S-RBD">
+                            <field name="base_price_srbd"/>
+                            <field name="commission_srbd"/>
+                        </group>
+                    </group>
+                    <group>
                         <group string="PCR">
                             <field name="base_price_pcr"/>
                             <field name="commission_pcr"/>
                         </group>
-                    </group>
-                    <group>
+
                         <group string="PCR Priority">
                             <field name="base_price_pcr_priority"/>
                             <field name="commission_pcr_priority"/>
                         </group>
+                    </group>
+                    <group>
                         <group string="PCR Express">
                             <field name="base_price_pcr_express"/>
                             <field name="commission_pcr_express"/>
                         </group>
-                    </group>
-                    <group>
+
                         <group string="Additional Price">
                             <field name="single_supplement"/>
                             <field name="overtime_surcharge"/>
@@ -144,9 +151,10 @@
                             <field name="commission_antigen"/>
                             <field name="admin_fee_antigen_drivethru"/>
                         </group>
-                        <group string="Additional Price">
-                            <field name="single_supplement"/>
-                            <field name="overtime_surcharge"/>
+
+                        <group string="S-RBD">
+                            <field name="base_price_srbd"/>
+                            <field name="commission_srbd"/>
                         </group>
                     </group>
                     <group>
@@ -167,6 +175,12 @@
                         <group string="PCR Express">
                             <field name="base_price_pcr_express"/>
                             <field name="commission_pcr_express"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Additional Price">
+                            <field name="single_supplement"/>
+                            <field name="overtime_surcharge"/>
                         </group>
                     </group>
                 </sheet>
