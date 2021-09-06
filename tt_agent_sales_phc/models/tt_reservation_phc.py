@@ -107,14 +107,15 @@ class ReservationPhc(models.Model):
                     })]
                 })
             ##add admin fee medical @10k
-            inv_line_obj.write({
-                'invoice_line_detail_ids': [(0, 0, {
-                    'desc': "Admin Fee Drive Thru",
-                    'price_unit': admin_fee_medical / len(provider.ticket_ids.ids),
-                    'quantity': len(provider.ticket_ids.ids),
-                    'invoice_line_id': invoice_line_id,
-                })]
-            })
+            if admin_fee_medical > 0 :
+                inv_line_obj.write({
+                    'invoice_line_detail_ids': [(0, 0, {
+                        'desc': "Admin Fee Drive Thru",
+                        'price_unit': admin_fee_medical / len(provider.ticket_ids.ids),
+                        'quantity': len(provider.ticket_ids.ids),
+                        'invoice_line_id': invoice_line_id,
+                    })]
+                })
 
         inv_line_obj.discount = abs(discount)
 
