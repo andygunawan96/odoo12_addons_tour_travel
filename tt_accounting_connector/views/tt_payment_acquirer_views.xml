@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_payment_acquirer_form_views_jasaweb" model="ir.ui.view">
+        <field name="name">tt.payment.acquirer.form.view.jasaweb</field>
+        <field name="model">payment.acquirer</field>
+        <field name="inherit_id" ref="tt_base.payment_acquirer_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_name']" position="after">
+                <field name="jasaweb_name"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tt_payment_acquirer_form_views_readonly_jasaweb" model="ir.ui.view">
+        <field name="name">tt.payment.acquirer.form.view.readonly.jasaweb</field>
+        <field name="model">payment.acquirer</field>
+        <field name="inherit_id" ref="tt_base.payment_acquirer_form_view_readonly"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_name']" position="after">
+                <field name="jasaweb_name"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

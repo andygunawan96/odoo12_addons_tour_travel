@@ -17,6 +17,7 @@ Key Features
     'depends' : ['tt_base', 'tt_accounting'],
     'data': [
         'data/ir_cron_data.xml',
+        'views/tt_payment_acquirer_views.xml',
         'views/accounting_queue_views.xml',
         'security/ir.model.access.csv'
     ],
