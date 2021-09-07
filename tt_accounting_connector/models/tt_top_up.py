@@ -27,7 +27,7 @@ class TtTopUp(models.Model):
                     "currency_id": ledger_obj.currency_id and ledger_obj.currency_id.name or '',
                     "create_uid": ledger_obj.create_uid and ledger_obj.create_uid.name or '',
                     "company_sender": ledger_obj.agent_id and ledger_obj.agent_id.name or '',
-                    "payment_acquirer": self.acquirer_id and self.acquirer_id.name or '',
+                    "payment_acquirer": self.acquirer_id and self.acquirer_id.jasaweb_name or '',
                     "commission": 0,
                     "state": "Done",
                     "debit": ledger_obj.debit and ledger_obj.debit or 0,

@@ -51,7 +51,7 @@ class TtReservationVisa(models.Model):
                         'transport_type': self.provider_type_id and self.provider_type_id.name or '',
                         'payment_method': '',
                         'NTA_amount_real': self.total_nta and self.total_nta or 0,
-                        'payment_acquirer': pay_acq and pay_acq.name or ''
+                        'payment_acquirer': pay_acq and pay_acq.jasaweb_name or ''
                     })
                     rec.sudo().write({
                         'is_sent_to_acc': True
