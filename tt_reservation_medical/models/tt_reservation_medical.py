@@ -526,6 +526,7 @@ class Reservationmedical(models.Model):
                     picked_timeslot = book_obj.picked_timeslot_id.to_dict()
 
                 res.update({
+                    'state_vendor': book_obj.state_vendor,
                     'origin': book_obj.origin_id.code,
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
@@ -538,6 +539,32 @@ class Reservationmedical(models.Model):
             else:
                 raise RequestException(1035)
 
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+    def confirm_order_api(self, req, context):
+        try:
+            book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+            if book_obj and self.env.ref('tt_base.able_to_confirm_order_medical').id in user_obj.frontend_security_ids.ids:
+                if book_obj.state_vendor == 'new_order':
+                    book_obj.write({
+                        'state_vendor': 'confirmed_order'
+                    })
+                else:
+                    _logger.error('pnr has been confirm / refund')
+                    return ERR.get_error(500, additional_message='order number already confirm')
+            else:
+                _logger.error('order number not found')
+                return ERR.get_error(500, additional_message='order number not found')
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

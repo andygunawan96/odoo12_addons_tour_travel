@@ -22,6 +22,8 @@ class TtTrainApiCon(models.Model):
             res = table_obj.update_pnr_provider_medical_api(data,context)
         elif action == 'get_booking':
             res = table_obj.get_booking_medical_api(data,context)
+        elif action == 'confirm_order':
+            res = table_obj.confirm_order_api(data,context)
         elif action == 'payment':
             res = table_obj.payment_medical_api(data,context)
         elif action == 'get_transaction_by_analyst':
