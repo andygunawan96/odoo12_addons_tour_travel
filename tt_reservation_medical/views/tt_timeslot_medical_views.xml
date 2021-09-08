@@ -1,0 +1,276 @@
+<odoo>
+    <record id="tt_timeslot_medical_filter_views" model="ir.ui.view">
+        <field name="name">tt.timeslot.medical.filter.view</field>
+        <field name="model">tt.timeslot.medical</field>
+        <field name="arch" type="xml">
+            <search string="Search medical Timeslot">
+                <field name="destination_id"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('datetimeslot','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('datetimeslot', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('datetimeslot', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('datetimeslot', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('datetimeslot', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('datetimeslot','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('datetimeslot','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                <separator/>
+                <filter name="Drive Thru" string="Drive Thru" domain="[('timeslot_type','=','drive_thru')]"/>
+                <filter name="Home Care" string="Home Care" domain="[('timeslot_type','=','home_care')]"/>
+                <filter name="Group Booking" string="Group Booking" domain="[('timeslot_type','=','group_booking')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_destination_id" string="Area" domain="[]" context="{'group_by':'destination_id'}"/>
+                    <filter name="group_by_dateslot_day" string="Date" domain="[]" context="{'group_by':'dateslot:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_medical_form_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.medical.form.view</field>
+        <field name="model">tt.timeslot.medical</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="tt_base.group_tt_tour_travel"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <h1>
+                        <field name="seq_id"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="timeslot_type"/>
+                            <field name="dateslot"/>
+                            <field name="datetimeslot"/>
+                            <field name="datetimeslot_end"/>
+                            <field name="max_book_datetime"/>
+                            <field name="destination_id"/>
+                            <field name="destination_area"/>
+                            <field name="agent_id"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="selected_count"/>
+                            <field name="total_timeslot"/>
+                            <field name="used_count"/>
+                            <field name="total_adult_timeslot"/>
+                            <field name="used_adult_count"/>
+                            <field name="total_pcr_timeslot"/>
+                            <field name="used_pcr_count"/>
+                            <field name="used_pcr_issued_count"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Antigen">
+                            <field name="base_price_antigen"/>
+                            <field name="commission_antigen"/>
+                            <field name="admin_fee_antigen_drivethru"/>
+                        </group>
+
+                        <group string="S-RBD">
+                            <field name="base_price_srbd"/>
+                            <field name="commission_srbd"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="PCR">
+                            <field name="base_price_pcr"/>
+                            <field name="commission_pcr"/>
+                        </group>
+
+                        <group string="PCR Priority">
+                            <field name="base_price_pcr_priority"/>
+                            <field name="commission_pcr_priority"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="PCR Express">
+                            <field name="base_price_pcr_express"/>
+                            <field name="commission_pcr_express"/>
+                        </group>
+
+                        <group string="Additional Price">
+                            <field name="single_supplement"/>
+                            <field name="overtime_surcharge"/>
+                        </group>
+                    </group>
+                    <separator string="Confirmed to Customer Booking(s)"/>
+                    <field name="booking_used_ids"/>
+
+                    <!--                    <separator string="Selected by Customer Booking(s)"/>-->
+                    <!--                    <field name="booking_ids"/>-->
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_medical_tree_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.medical.tree.view</field>
+        <field name="model">tt.timeslot.medical</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="seq_id"/>
+                <field name="timeslot_type"/>
+                <field name="dateslot"/>
+                <field name="datetimeslot"/>
+                <field name="destination_id"/>
+                <field name="total_timeslot"/>
+                <field name="used_count"/>
+                <field name="total_adult_timeslot"/>
+                <field name="used_adult_count"/>
+                <field name="total_pcr_timeslot"/>
+                <field name="used_pcr_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_medical_default_form_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.medical.default.form.view</field>
+        <field name="model">tt.timeslot.medical.default</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1>
+                        <field name="name" placeholder="Template Name"/>
+                    </h1>
+                    <group>
+                        <group string="Antigen">
+                            <field name="base_price_antigen"/>
+                            <field name="commission_antigen"/>
+                            <field name="admin_fee_antigen_drivethru"/>
+                        </group>
+
+                        <group string="S-RBD">
+                            <field name="base_price_srbd"/>
+                            <field name="commission_srbd"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="PCR Home Care">
+                            <field name="base_price_pcr"/>
+                            <field name="commission_pcr"/>
+                        </group>
+                        <group string="PCR Regular">
+                            <field name="base_price_pcr_dt"/>
+                            <field name="commission_pcr_dt"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="PCR Priority">
+                            <field name="base_price_pcr_priority"/>
+                            <field name="commission_pcr_priority"/>
+                        </group>
+                        <group string="PCR Express">
+                            <field name="base_price_pcr_express"/>
+                            <field name="commission_pcr_express"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Additional Price">
+                            <field name="single_supplement"/>
+                            <field name="overtime_surcharge"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_medical_default_tree_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.medical.default.tree.view</field>
+        <field name="model">tt.timeslot.medical.default</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="base_price_antigen"/>
+                <field name="base_price_pcr"/>
+                <field name="base_price_pcr_dt"/>
+                <field name="base_price_pcr_priority"/>
+                <field name="base_price_pcr_express"/>
+                <field name="commission_antigen"/>
+                <field name="commission_pcr"/>
+                <field name="commission_pcr_dt"/>
+                <field name="commission_pcr_priority"/>
+                <field name="commission_pcr_express"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_medical_action_views" model="ir.actions.act_window" >
+        <field name="name">Timeslot medical</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.timeslot.medical</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_medical.tt_timeslot_medical_form_view',
+            'tree_view_ref': 'tt_reservation_medical.tt_timeslot_medical_tree_view',
+            'search_default_group_by_dateslot_day': 1
+            }
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_multi_mass_close_timeslot_medical">
+        <field name="name">Close Timeslot</field>
+        <field name="model_id" ref="tt_reservation_medical.model_tt_timeslot_medical"/>
+        <field name="binding_model_id" ref="tt_reservation_medical.model_tt_timeslot_medical"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.mass_close_timeslot()
+        </field>
+    </record>
+
+    <record id="tt_timeslot_medical_default_action_views" model="ir.actions.act_window" >
+        <field name="name">Timeslot Medical Default</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.timeslot.medical.default</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_medical.tt_timeslot_medical_default_form_view',
+            'tree_view_ref': 'tt_reservation_medical.tt_timeslot_medical_default_tree_view',
+            'search_default_group_by_dateslot_day': 1
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_reservations_medical_timeslot"
+              parent="tt_reservation_medical.menu_master_data_medical"
+              name="Timeslot"
+              sequence="15"
+              groups="tt_base.group_master_data_medical_level_1"
+              action="tt_reservation_medical.tt_timeslot_medical_action_views"/>
+
+    <menuitem id="submenu_reservations_medical_timeslot_default"
+              parent="tt_reservation_medical.menu_master_data_medical"
+              name="Timeslot Default"
+              sequence="16"
+              groups="tt_base.group_master_data_medical_level_1"
+              action="tt_reservation_medical.tt_timeslot_medical_default_action_views"/>
+
+    <menuitem id="menu_vendor_master_data_medical_timeslot"
+              parent="tt_base.top_external_vendor_master_product"
+              name="medical Timeslot"
+              sequence="45"
+              groups="tt_base.group_master_data_medical_level_1"
+              action="tt_reservation_medical.tt_timeslot_medical_action_views"
+    />
+</odoo>
