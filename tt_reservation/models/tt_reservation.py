@@ -339,6 +339,16 @@ class TtReservation(models.Model):
                     res = ERR.get_no_error(res)
                 else:
                     res = self.env['tt.reservation.%s' % req['product']].get_booking_phc_api(req, context)
+            elif req['product'] == 'medical':
+                book_obj = self.env['tt.reservation.medical'].get_booking_medical_api({"order_number": req['order_number']}, context)
+                if book_obj:
+                    if book_obj['response']['contact_id']['name'].lower() == req['booker_name'].lower():
+                        res = book_obj['response']
+                    else:
+                        return ERR.get_error(1013)
+                    res = ERR.get_no_error(res)
+                else:
+                    return ERR.get_error(1013)
             return res
         except Exception as e:
             _logger.error(traceback.format_exc())
