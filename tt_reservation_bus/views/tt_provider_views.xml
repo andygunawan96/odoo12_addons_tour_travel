@@ -74,6 +74,8 @@
                             <field name="ticket_number"/>
                         </tree>
                     </field>
+                    <separator string="Journeys"/>
+                    <field name="journey_ids"/>
                     <separator string="Service Charges"/>
                     <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_bus.tt_service_charge_bus_inherit_form_view'}">
                         <tree>

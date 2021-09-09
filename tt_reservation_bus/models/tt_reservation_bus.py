@@ -25,7 +25,8 @@ class TtReservationBus(models.Model):
                                     readonly=True, states={'draft': [('readonly', False)]})
 
     provider_booking_ids = fields.One2many('tt.provider.bus', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
-
+    journey_ids = fields.One2many('tt.journey.bus', 'booking_id', 'Journeys', readonly=True,
+                                  states={'draft': [('readonly', False)]})
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default= lambda self: self.env.ref('tt_reservation_bus.tt_provider_type_bus'))
 

@@ -25,7 +25,7 @@ class TtProviderBus(models.Model):
     arrival_date = fields.Char('Arrival Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
-
+    journey_ids = fields.One2many('tt.journey.bus', 'provider_booking_id', string='Journeys')
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_bus_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
@@ -326,8 +326,8 @@ class TtProviderBus(models.Model):
 
     def to_dict(self):
         journey_list = []
-        # for rec in self.journey_ids:
-        #     journey_list.append(rec.to_dict())
+        for rec in self.journey_ids:
+            journey_list.append(rec.to_dict())
         ticket_list = []
         for rec in self.ticket_ids:
             ticket_list.append(rec.to_dict())
@@ -345,7 +345,7 @@ class TtProviderBus(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
-            # 'journeys': journey_list,
+            'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,

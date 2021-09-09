@@ -1,0 +1,74 @@
+<odoo>
+    <record id="tt_reservation_bus_journey_form_view" model="ir.ui.view">
+        <field name="name">tt.transport.bus.journey.form.view</field>
+        <field name="model">tt.journey.bus</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="booking_id"/>
+                            <field name="pnr"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                        </group>
+                        <group>
+                            <field name="origin_id"/>
+                            <field name="destination_id"/>
+                            <field name="departure_date"/>
+                            <field name="arrival_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="carrier_id"/>
+                            <field name="carrier_code"/>
+                            <field name="carrier_number"/>
+                            <field name="carrier_name"/>
+
+                        </group>
+                        <group>
+                            <field name="cabin_class"/>
+                            <field name="class_of_service"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="journey_code"/>
+                        <field name="fare_code"/>
+                    </group>
+                    <separator string="Seat"/>
+                    <field name="seat_ids">
+                        <tree>
+                            <field name="passenger_id"/>
+                            <field name="seat"/>
+                            <field name="seat_code"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="transport_journey_tree_view" model="ir.ui.view">
+        <field name="name">transport.journey.tree.view</field>
+        <field name="model">tt.journey.bus</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="pnr"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
+                <field name="departure_date"/>
+                <field name="arrival_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="transport_journey_action" model="ir.actions.act_window">
+        <field name="name">Transport Ticket</field>
+        <field name="res_model">tt.journey.bus</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
