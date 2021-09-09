@@ -41,11 +41,13 @@
                     <group>
                         <field name="banner_color"/>
                         <field name="minimum_days"/>
-                    </group>
-                    <group>
                         <field name="provider_type_id"/>
                         <field name="provider_id"/>
+                    </group>
+                    <group>
                         <field name="carrier_id"/>
+                        <field name="origin_id"/>
+                        <field name="destination_id"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -67,6 +69,8 @@
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
                 <field name="carrier_id"/>
+                <field name="origin_id"/>
+                <field name="destination_id"/>
             </tree>
         </field>
     </record>
