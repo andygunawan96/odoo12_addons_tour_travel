@@ -145,6 +145,10 @@
                     <!--                    </field>-->
                 </page>
             </xpath>
+            <xpath expr="//group[@name='paxgroup']" position="after">
+                <separator string="Journey"/>
+                <field name="journey_ids"/>
+            </xpath>
         </field>
     </record>
 

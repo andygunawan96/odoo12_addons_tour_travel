@@ -46,7 +46,7 @@ class TtReschedule(models.Model):
                         'transport_type': 'Reschedule',
                         'payment_method': '',
                         'NTA_amount_real': self.total_amount and self.total_amount or 0,
-                        'payment_acquirer': self.payment_acquirer_id and self.payment_acquirer_id.name or '',
+                        'payment_acquirer': self.payment_acquirer_id and self.payment_acquirer_id.jasaweb_name or '',
                     })
                     rec.sudo().write({
                         'is_sent_to_acc': True

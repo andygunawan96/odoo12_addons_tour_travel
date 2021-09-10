@@ -30,6 +30,7 @@ Key Features
         'views/menu_item_base.xml',
         'views/tt_reservation_bus.xml',
         'views/tt_provider_views.xml',
+        'views/tt_journey_views.xml',
         'views/tt_master_bus_views.xml',
         'views/tt_bus_sync_data_wizard.xml',
         'views/tt_service_charge_views.xml',

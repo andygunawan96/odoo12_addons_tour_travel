@@ -18,6 +18,8 @@ class SearchResultBanner(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True, domain="[('provider_type_id', '=', provider_type_id)]")
     carrier_id = fields.Many2one('tt.transport.carrier', 'Product', required=True, domain="[('provider_type_id', '=', provider_type_id)]")
+    origin_id = fields.Many2one('tt.destinations', 'Origin')
+    destination_id = fields.Many2one('tt.destinations', 'Destination')
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('provider_type_id')
@@ -51,6 +53,8 @@ class SearchResultBanner(models.Model):
             'provider_type_id': self.provider_type_id and self.provider_type_id.code or '',
             'provider_id': self.provider_id and self.provider_id.code or '',
             'carrier_id': self.carrier_id and self.carrier_id.code or '',
+            'origin_id': self.origin_id and self.origin_id.code or '',
+            'destination_id': self.destination_id and self.destination_id.code or '',
             'active': self.active,
         }
         return res
