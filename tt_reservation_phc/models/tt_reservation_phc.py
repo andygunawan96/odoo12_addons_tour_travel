@@ -962,7 +962,15 @@ class Reservationphc(models.Model):
                                                                           ('verified_date', '<=', datetime_now_wib)])
         verified_pcr_express_date = len(passenger_data.ids)
 
-        return 'PHC Verified By Date:\nAntigen : %s\nPCR : %s\nPCR Priority : %s\nPCR Express: %s' % (verified_antigen_date,
+        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
+                                                                          ('booking_id.carrier_name','ilike','SRBD'),
+                                                                          ('verified_date', '>=',
+                                                                           datetime_now_wib.replace(hour=0, minute=0, second=0,
+                                                                                                    microsecond=0)),
+                                                                          ('verified_date', '<=', datetime_now_wib)])
+        verified_srbd_date = len(passenger_data.ids)
+
+        return 'PHC Verified By Date:\nAntigen : %s\nS-RBD : %s\nPCR : %s\nPCR Priority : %s\nPCR Express: %s' % (verified_antigen_date, verified_srbd_date,
                                                                                                       verified_pcr_date, verified_pcr_priority_date, verified_pcr_express_date)
 
     def multi_sync_verified_with_phc(self):
