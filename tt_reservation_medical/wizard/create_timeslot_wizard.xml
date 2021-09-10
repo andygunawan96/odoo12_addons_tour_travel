@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="create_timeslot_medical_wizard_form_view" model="ir.ui.view">
+        <field name="name">Create Timeslot Wizard</field>
+        <field name="model">create.timeslot.medical.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Timeslot Wizard">
+                <group>
+                    <group>
+                        <field name="area_id"/>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="timeslot_type"/>
+                        <field name="total_timeslot"/>
+                        <field name="total_adult_timeslot"/>
+                        <field name="total_pcr_timeslot"/>
+                    </group>
+                    <group>
+                        <field name="agent_id"/>
+                        <field name="time_string"/>
+                    </group>
+                </group>
+                <p>07:00-10:00-surabaya_all,10:00-13:00-surabaya_timur</p>
+                <p>surabaya_all,surabaya_pusat,surabaya_timur,surabaya_barat,surabaya_selatan,surabaya_utara</p>
+                <group>
+                    <field name="default_data_id"/>
+                </group>
+                <group>
+                    <group string="Antigen">
+                        <field name="base_price_antigen"/>
+                        <field name="commission_antigen"/>
+                        <field name="admin_fee_antigen_drivethru"/>
+                    </group>
+
+                    <group string="S-RBD">
+                        <field name="base_price_srbd"/>
+                        <field name="commission_srbd"/>
+                    </group>
+                </group>
+                <group>
+                    <group string="PCR Regular">
+                        <field name="base_price_pcr"/>
+                        <field name="commission_pcr"/>
+                    </group>
+
+                    <group string="PCR Priority">
+                        <field name="base_price_pcr_priority"/>
+                        <field name="commission_pcr_priority"/>
+                    </group>
+
+                </group>
+                <group>
+                    <group string="PCR Express">
+                        <field name="base_price_pcr_express"/>
+                        <field name="commission_pcr_express"/>
+                    </group>
+
+                    <group string="Additional Price">
+                        <field name="single_supplement"/>
+                        <field name="overtime_surcharge"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="generate_timeslot" string="Generate Timeslot" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="create_timeslot_wizard_medical_action_view" model="ir.actions.act_window">
+        <field name="name">Create Timeslot medical Wizard</field>
+        <field name="res_model">create.timeslot.medical.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="submenu_reservations_medical_create_timeslot"
+              parent="tt_reservation_medical.menu_master_data_medical"
+              name="Create Timeslot"
+              action="tt_reservation_medical.create_timeslot_wizard_medical_action_view"
+              groups="tt_base.group_master_data_medical_level_3"
+              sequence="20"/>
+
+</odoo>

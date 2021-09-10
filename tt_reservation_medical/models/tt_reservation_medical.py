@@ -14,19 +14,19 @@ import copy
 
 _logger = logging.getLogger(__name__)
 
-class Reservationphc(models.Model):
-    _name = "tt.reservation.phc"
+class Reservationmedical(models.Model):
+    _name = "tt.reservation.medical"
     _inherit = "tt.reservation"
     _order = "id desc"
-    _description = "Reservation phc"
+    _description = "Reservation medical"
 
     timeslot_type = fields.Selection([('fixed','Fixed'),
                                       ('flexible','Flexible')],'Time Slot Type',readonly=True, states={'draft': [('readonly', False)]})
 
-    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_phc_id', 'Service Charge',
+    sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_medical_id', 'Service Charge',
                                               readonly=True, states={'draft': [('readonly', False)]})
 
-    passenger_ids = fields.One2many('tt.reservation.passenger.phc', 'booking_id',
+    passenger_ids = fields.One2many('tt.reservation.passenger.medical', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
     state_vendor = fields.Selection(variables.STATE_VENDOR, 'State Vendor', default='draft')
@@ -37,22 +37,22 @@ class Reservationphc(models.Model):
 
     test_address_map_link = fields.Char('Test Address Map Link', readonly=True, states={'draft': [('readonly', False)]})
 
-    provider_booking_ids = fields.One2many('tt.provider.phc', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
+    provider_booking_ids = fields.One2many('tt.provider.medical', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
 
-    timeslot_ids = fields.Many2many('tt.timeslot.phc','tt_reservation_phc_timeslot_rel', 'booking_id', 'timeslot_id', 'Timeslot(s)')
+    timeslot_ids = fields.Many2many('tt.timeslot.medical','tt_reservation_medical_timeslot_rel', 'booking_id', 'timeslot_id', 'Timeslot(s)')
 
-    picked_timeslot_id = fields.Many2one('tt.timeslot.phc', 'Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
+    picked_timeslot_id = fields.Many2one('tt.timeslot.medical', 'Picked Timeslot', readonly=True, states={'draft': [('readonly', False)]})
 
     test_datetime = fields.Datetime('Test Datetime',related='picked_timeslot_id.datetimeslot', store=True)
 
-    analyst_ids = fields.Many2many('tt.analyst.phc', 'tt_reservation_phc_analyst_rel', 'booking_id',
+    analyst_ids = fields.Many2many('tt.analyst.medical', 'tt_reservation_medical_analyst_rel', 'booking_id',
                                    'analyst_id', 'Analyst(s)', readonly=True, states={'draft': [('readonly', False)]})
 
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
-                                       default=lambda self: self.env.ref('tt_reservation_phc.tt_provider_type_phc'))
+                                       default=lambda self: self.env.ref('tt_reservation_medical.tt_provider_type_medical'))
 
-    split_from_resv_id = fields.Many2one('tt.reservation.phc', 'Splitted From', readonly=1)
-    split_to_resv_ids = fields.One2many('tt.reservation.phc', 'split_from_resv_id', 'Splitted To', readonly=1)
+    split_from_resv_id = fields.Many2one('tt.reservation.medical', 'Splitted From', readonly=1)
+    split_to_resv_ids = fields.One2many('tt.reservation.medical', 'split_from_resv_id', 'Splitted To', readonly=1)
     split_uid = fields.Many2one('res.users', 'Splitted by', readonly=True)
     split_date = fields.Datetime('Splitted Date', readonly=True)
 
@@ -60,7 +60,7 @@ class Reservationphc(models.Model):
     verified_date = fields.Datetime('Verified Date', readonly=True)
 
     def get_form_id(self):
-        return self.env.ref("tt_reservation_phc.tt_reservation_phc_form_views")
+        return self.env.ref("tt_reservation_medical.tt_reservation_medical_form_views")
 
     @api.multi
     def action_set_as_draft(self):
@@ -82,7 +82,7 @@ class Reservationphc(models.Model):
         for rec in self:
             rec.state_vendor = 'suspect'
 
-    def action_booked_api_phc(self,context):
+    def action_booked_api_medical(self,context):
         write_values = {
             'state': 'booked',
             'booked_uid': context['co_uid'],
@@ -93,10 +93,10 @@ class Reservationphc(models.Model):
 
         try:
             if self.agent_type_id.is_send_email_booked:
-                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_phc')], limit=1)
+                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_medical')], limit=1)
                 if not mail_created:
                     temp_data = {
-                        'provider_type': 'phc',
+                        'provider_type': 'medical',
                         'order_number': self.name,
                         'type': 'booked',
                     }
@@ -110,7 +110,7 @@ class Reservationphc(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_phc(self,co_uid, customer_parent_id, acquirer_id = False):
+    def action_issued_medical(self,co_uid, customer_parent_id, acquirer_id = False):
         write_values = {
             'state': 'issued',
             'issued_date': datetime.now(),
@@ -123,10 +123,10 @@ class Reservationphc(models.Model):
 
         try:
             if self.agent_type_id.is_send_email_issued:
-                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_phc')], limit=1)
+                mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_medical')], limit=1)
                 if not mail_created:
                     temp_data = {
-                        'provider_type': 'phc',
+                        'provider_type': 'medical',
                         'order_number': self.name,
                         'type': 'issued',
                     }
@@ -140,20 +140,20 @@ class Reservationphc(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_reverse_phc(self,context):
+    def action_reverse_medical(self,context):
         self.write({
             'state':  'fail_refunded',
             'refund_uid': context['co_uid'],
             'refund_date': datetime.now()
         })
 
-    def action_refund_failed_phc(self,context):
+    def action_refund_failed_medical(self,context):
         self.write({
             'state':  'refund_failed',
         })
 
-    def action_issued_api_phc(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_phc(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_medical(self,acquirer_id,customer_parent_id,context):
+        self.action_issued_medical(context['co_uid'],customer_parent_id,acquirer_id)
 
     @api.multi
     def action_set_as_cancel(self):
@@ -171,7 +171,7 @@ class Reservationphc(models.Model):
             rec.state = 'cancel_pending'
 
     def action_cancel(self, backend_context=False, gateway_context=False):
-        super(Reservationphc, self).action_cancel(gateway_context=gateway_context)
+        super(Reservationmedical, self).action_cancel(gateway_context=gateway_context)
         for rec in self.provider_booking_ids:
             rec.action_cancel(gateway_context)
         if self.payment_acquirer_number_id:
@@ -182,7 +182,7 @@ class Reservationphc(models.Model):
     def create_refund(self):
         self.state = 'refund'
 
-    def get_price_phc_api(self, req, context):
+    def get_price_medical_api(self, req, context):
         #parameter
         #timeslot_list
         #jumlah pax
@@ -190,7 +190,7 @@ class Reservationphc(models.Model):
 
         carrier_obj = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])])
         overtime_surcharge = False
-        timeslot_objs = self.env['tt.timeslot.phc'].search([('seq_id', 'in', req['timeslot_list'])])
+        timeslot_objs = self.env['tt.timeslot.medical'].search([('seq_id', 'in', req['timeslot_list'])])
 
         if not timeslot_objs:
             raise RequestException(1022,"<br/>\nJadwal Habis. Bisa dicoba tanggal/jam yang lain<br/>\nNo Timeslot. Please Try Other Date/Time")
@@ -212,50 +212,27 @@ class Reservationphc(models.Model):
         overtime_price = 0
         single_suplement_price = 0
         admin_fee = 0
-        if req['pax_count'] <= 1 and \
-                carrier_obj.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id:
-            single_suplement = True
+        # if req['pax_count'] <= 1 and \
+        #         carrier_obj.id == self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_home_care_antigen').id:
+        #     single_suplement = True
 
-        if carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
-                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id]:
-            for rec in timeslot_objs:
-                if rec.base_price_antigen > base_price:
-                    base_price = rec.base_price_antigen
-                    commission_price = rec.commission_antigen
-                    overtime_price = rec.overtime_surcharge
-                    single_suplement_price = rec.single_supplement
-                    if carrier_obj.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id:
-                        admin_fee = rec.admin_fee_antigen_drivethru
-        elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id,
-                                self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+        # if carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_home_care_antigen').id]:
+        #     for rec in timeslot_objs:
+        #         if rec.base_price_antigen > base_price:
+        #             base_price = rec.base_price_antigen
+        #             commission_price = rec.commission_antigen
+        #             overtime_price = rec.overtime_surcharge
+        #             single_suplement_price = rec.single_supplement
+        #             if carrier_obj.id == self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_drive_thru_nathos_antigen').id:
+        #                 admin_fee = rec.admin_fee_antigen_drivethru
+        # el
+        if carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_drive_thru_nathos_antigen').id]:
             for rec in timeslot_objs:
                 if rec.base_price_pcr > base_price:
                     base_price = rec.base_price_pcr
                     commission_price = rec.commission_pcr
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
-        elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_priority').id]:
-            for rec in timeslot_objs:
-                if rec.base_price_pcr_priority > base_price:
-                    base_price = rec.base_price_pcr_priority
-                    commission_price = rec.commission_pcr_priority
-                    overtime_price = rec.overtime_surcharge
-                    single_suplement_price = rec.single_supplement
-        elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_srbd').id]:
-            for rec in timeslot_objs:
-                if rec.base_price_srbd > base_price:
-                    base_price = rec.base_price_srbd
-                    commission_price = rec.commission_srbd
-                    overtime_price = rec.overtime_surcharge
-                    single_suplement_price = rec.single_supplement
-        else:
-            for rec in timeslot_objs:
-                if rec.base_price_pcr_express > base_price:
-                    base_price = rec.base_price_pcr_express
-                    commission_price = rec.commission_pcr_express
-                    overtime_price = rec.overtime_surcharge
-                    single_suplement_price = rec.single_supplement
-
 
         extra_charge_per_pax = (overtime_surcharge and overtime_price or 0) + (single_suplement and single_suplement_price or 0)
         return ERR.get_no_error({
@@ -266,7 +243,7 @@ class Reservationphc(models.Model):
             "admin_fee": admin_fee
         })
 
-    def create_booking_phc_api(self, req, context):
+    def create_booking_medical_api(self, req, context):
         _logger.info("Create\n" + json.dumps(req))
         booker = req['booker']
         contacts = req['contacts']
@@ -275,8 +252,8 @@ class Reservationphc(models.Model):
         booking_data = req['provider_bookings']
 
         try:
-            ##validator pax kembar dan belum verified di PHC
-            duplicate_pax_list = self.env['tt.reservation.passenger.phc'].find_duplicate_passenger_new_order(passengers,booking_data['carrier_code'])
+            ##validator pax kembar dan belum verified di medical
+            duplicate_pax_list = self.env['tt.reservation.passenger.medical'].find_duplicate_passenger_new_order(passengers,booking_data['carrier_code'])
             if duplicate_pax_list:
                 raise RequestException(1026,additional_message=duplicate_pax_list)
 
@@ -293,22 +270,6 @@ class Reservationphc(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers_data[idx]['email'],
                     'phone_number': passengers_data[idx]['phone_number'],
-                    'tempat_lahir': passengers_data[idx]['tempat_lahir'],
-                    'profession': passengers_data[idx]['profession'],
-                    'work_place': passengers_data[idx]['work_place'],
-                    'address': passengers_data[idx]['address'],
-                    'rt': passengers_data[idx]['rt'],
-                    'rw': passengers_data[idx]['rw'],
-                    'kabupaten': passengers_data[idx]['kabupaten'],
-                    'kecamatan': passengers_data[idx]['kecamatan'],
-                    'kelurahan': passengers_data[idx]['kelurahan'],
-                    'address_ktp': passengers_data[idx]['address_ktp'],
-                    'rt_ktp': passengers_data[idx]['rt_ktp'],
-                    'rw_ktp': passengers_data[idx]['rw_ktp'],
-                    'kabupaten_ktp': passengers_data[idx]['kabupaten_ktp'],
-                    'kecamatan_ktp': passengers_data[idx]['kecamatan_ktp'],
-                    'kelurahan_ktp': passengers_data[idx]['kelurahan_ktp'],
-                    'pcr_data': passengers_data[idx].get('pcr_data') and json.dumps(passengers_data[idx].get('pcr_data')) or passengers_data[idx].get('pcr_data','')
                 })
 
             for psg in list_passenger_value:
@@ -458,13 +419,13 @@ class Reservationphc(models.Model):
             })
         return ERR.get_no_error()
 
-    def update_pnr_provider_phc_api(self, req, context):
+    def update_pnr_provider_medical_api(self, req, context):
         _logger.info("Update\n" + json.dumps(req))
         try:
             if req.get('book_id'):
-                book_obj = self.env['tt.reservation.phc'].browse(req['book_id'])
+                book_obj = self.env['tt.reservation.medical'].browse(req['book_id'])
             elif req.get('order_number'):
-                book_obj = self.env['tt.reservation.phc'].search([('name', '=', req['order_number'])])
+                book_obj = self.env['tt.reservation.medical'].search([('name', '=', req['order_number'])])
             else:
                 raise Exception('Booking ID or Number not Found')
             try:
@@ -477,7 +438,7 @@ class Reservationphc(models.Model):
             ## Else menjadi update result url customer
 
             for provider in req['provider_bookings']:
-                provider_obj = self.env['tt.provider.phc'].browse(provider['provider_id'])
+                provider_obj = self.env['tt.provider.medical'].browse(provider['provider_id'])
                 try:
                     provider_obj.create_date
                 except:
@@ -487,9 +448,9 @@ class Reservationphc(models.Model):
                         provider_obj.update_result_url_per_pax_api(idx, ticket_obj['result_url'])
                     continue
                 if provider.get('messages') and provider['status'] == 'FAIL_ISSUED':
-                    provider_obj.action_failed_issued_api_phc(provider.get('error_code', -1),provider.get('error_msg', ''))
+                    provider_obj.action_failed_issued_api_medical(provider.get('error_code', -1),provider.get('error_msg', ''))
                 if provider['status'] == 'ISSUED':
-                    provider_obj.action_issued_api_phc(context)
+                    provider_obj.action_issued_api_medical(context)
                 if provider['status'] == 'CANCEL':
                     provider_obj.action_cancel(context)
                     any_provider_changed = True
@@ -522,7 +483,7 @@ class Reservationphc(models.Model):
                 _logger.error('Creating Notes Error')
             return ERR.get_error(1005)
 
-    def get_booking_phc_api(self,req, context):
+    def get_booking_medical_api(self,req, context):
         try:
             # _logger.info("Get req\n" + json.dumps(context))
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
@@ -565,6 +526,7 @@ class Reservationphc(models.Model):
                     picked_timeslot = book_obj.picked_timeslot_id.to_dict()
 
                 res.update({
+                    'state_vendor': book_obj.state_vendor,
                     'origin': book_obj.origin_id.code,
                     'passengers': psg_list,
                     'provider_bookings': prov_list,
@@ -577,6 +539,32 @@ class Reservationphc(models.Model):
             else:
                 raise RequestException(1035)
 
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1013)
+
+    def confirm_order_api(self, req, context):
+        try:
+            book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+            if book_obj and self.env.ref('tt_base.able_to_confirm_order_medical').id in user_obj.frontend_security_ids.ids:
+                if book_obj.state_vendor == 'new_order':
+                    book_obj.write({
+                        'state_vendor': 'confirmed_order'
+                    })
+                else:
+                    _logger.error('pnr has been confirm / refund')
+                    return ERR.get_error(500, additional_message='order number already confirm')
+            else:
+                _logger.error('order number not found')
+                return ERR.get_error(500, additional_message='order number not found')
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -618,7 +606,7 @@ class Reservationphc(models.Model):
 
     def update_data_verif(self, req, context):
         try:
-            passenger_obj = self.env['tt.reservation.passenger.phc'].search([('ticket_number','=',req['ticket_number']),('booking_id.carrier_name','ilike',req['test_type'])],limit=1)
+            passenger_obj = self.env['tt.reservation.passenger.medical'].search([('ticket_number','=',req['ticket_number']),('booking_id.carrier_name','ilike',req['test_type'])],limit=1)
             if passenger_obj:
                 passenger_obj.update({
                     'name': "%s %s" % (req['first_name'], req['last_name']),
@@ -645,7 +633,7 @@ class Reservationphc(models.Model):
 
                 data = {
                     'code': 9920,
-                    'message': "%s\n\n%s" % (passenger_obj.name, self.env['tt.reservation.phc'].get_verified_summary())
+                    'message': "%s\n\n%s" % (passenger_obj.name, self.env['tt.reservation.medical'].get_verified_summary())
                 }
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
                                                                'notification_code')
@@ -683,8 +671,8 @@ class Reservationphc(models.Model):
             dom = [('test_datetime', '>=',req['date_from']),
                    ('test_datetime', '<=',req['date_to']),
                    ('provider_booking_ids.carrier_id','in',[
-                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_antigen').id,
-                       self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id,
+                       self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_home_care_antigen').id,
+                       self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_home_care_pcr').id,
                    ]),
                    ('state','in',['issued','done']),
                    ('analyst_ids.user_id','=',context['co_uid']),
@@ -715,13 +703,13 @@ class Reservationphc(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1012)
 
-    def payment_phc_api(self,req,context):
-        payment_res = self.payment_reservation_api('phc',req,context)
+    def payment_medical_api(self,req,context):
+        payment_res = self.payment_reservation_api('medical',req,context)
         return payment_res
 
     def _prepare_booking_api(self, booking_data, context_gateway):
         dest_obj = self.env['tt.destinations']
-        provider_type_id = self.env.ref('tt_reservation_phc.tt_provider_type_phc')
+        provider_type_id = self.env.ref('tt_reservation_medical.tt_provider_type_medical')
         provider_obj = self.env['tt.provider'].sudo().search([('code', '=', booking_data['provider']), ('provider_type_id', '=', provider_type_id.id)])
         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', booking_data['carrier_code']), ('provider_type_id', '=', provider_type_id.id)])
 
@@ -736,7 +724,7 @@ class Reservationphc(models.Model):
         # "charge_type": "FARE"
 
         #check apakah timeslot tersedia
-        timeslot_write_data = self.env['tt.timeslot.phc'].search([('seq_id', 'in', booking_data['timeslot_list'])])
+        timeslot_write_data = self.env['tt.timeslot.medical'].search([('seq_id', 'in', booking_data['timeslot_list'])])
         for rec in timeslot_write_data:
             if not rec.get_availability(carrier_obj.code, booking_data['adult']):
                 if rec.timeslot_type == 'drive_thru':
@@ -746,8 +734,7 @@ class Reservationphc(models.Model):
 
         #check drive thru atau tidak, menentukan hold date
         drive_thru = False
-        if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+        if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_drive_thru_nathos_antigen').id]:
             # hold_date = fields.Datetime.now().replace(hour=16,minute=30) + timedelta(days=8)
             hold_date = timeslot_write_data[0].datetimeslot.replace(hour=10, minute=0, second=0, microsecond=0)
             drive_thru = True
@@ -756,9 +743,9 @@ class Reservationphc(models.Model):
 
         #kalau tidak ada timeslot dan dia drive thru maka di pilihkan jadwal drive thru hari itu, jika tidak ada maka di buatkan jadwal baru
         if not timeslot_write_data and drive_thru:
-            timeslot_write_data = self.env['tt.timeslot.phc'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 02:09:09' % datetime.now().strftime('%Y-%m-%d'))])
+            timeslot_write_data = self.env['tt.timeslot.medical'].search([('timeslot_type', '=', 'drive_thru'), ('datetimeslot', '=', '%s 02:09:09' % datetime.now().strftime('%Y-%m-%d'))])
             if not timeslot_write_data:
-                timeslot_write_data = self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
+                timeslot_write_data = self.env['create.timeslot.medical.wizard'].generate_drivethru_timeslot(datetime.now().strftime('%Y-%m-%d'))
 
         provider_vals = {
             'pnr': 1,
@@ -804,12 +791,12 @@ class Reservationphc(models.Model):
     # April 24, 2020 - SAM
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         # if all(rec.state == 'issued' for rec in self.provider_booking_ids):
-        #     self.action_issued_phc(context)
+        #     self.action_issued_medical(context)
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_phc(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            self.action_issued_api_medical(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
-            self.action_booked_api_phc(context)
+            self.action_booked_api_medical(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',
@@ -820,7 +807,7 @@ class Reservationphc(models.Model):
             # failed issue
             self.action_failed_issue()
         elif any(rec.state == 'fail_refunded' for rec in self.provider_booking_ids):
-            self.action_reverse_phc(context)
+            self.action_reverse_medical(context)
         elif any(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
@@ -905,7 +892,7 @@ class Reservationphc(models.Model):
                     # April 27, 2020 - SAM
                     curr_dict = {
                         'pax_type': p_type,
-                        'booking_phc_id': self.id,
+                        'booking_medical_id': self.id,
                         'description': provider.pnr,
                     }
                     # curr_dict['pax_type'] = p_type
@@ -928,7 +915,7 @@ class Reservationphc(models.Model):
 
     def get_verified_summary(self):
         datetime_now_wib = datetime.now(pytz.timezone('Asia/Jakarta'))
-        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
+        passenger_data = self.env['tt.reservation.passenger.medical'].search([('verify', '=', True),
                                                                           ('booking_id.carrier_name','ilike','KPCR'),
                                                                           ('verified_date', '>=',
                                                                            datetime_now_wib.replace(hour=0, minute=0, second=0,
@@ -936,7 +923,7 @@ class Reservationphc(models.Model):
                                                                           ('verified_date', '<=', datetime_now_wib)])
         verified_pcr_date = len(passenger_data.ids)
 
-        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
+        passenger_data = self.env['tt.reservation.passenger.medical'].search([('verify', '=', True),
                                                                           ('booking_id.carrier_name','ilike','OPCR'),
                                                                           ('verified_date', '>=',
                                                                            datetime_now_wib.replace(hour=0, minute=0, second=0,
@@ -944,7 +931,7 @@ class Reservationphc(models.Model):
                                                                           ('verified_date', '<=', datetime_now_wib)])
         verified_pcr_priority_date = len(passenger_data.ids)
 
-        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
+        passenger_data = self.env['tt.reservation.passenger.medical'].search([('verify', '=', True),
                                                                           ('booking_id.carrier_name', 'ilike', 'KATG'),
                                                                           ('verified_date', '>=',
                                                                            datetime_now_wib.replace(hour=0, minute=0,
@@ -954,7 +941,7 @@ class Reservationphc(models.Model):
 
         verified_antigen_date = len(passenger_data.ids)
 
-        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
+        passenger_data = self.env['tt.reservation.passenger.medical'].search([('verify', '=', True),
                                                                           ('booking_id.carrier_name','ilike','EPCR'),
                                                                           ('verified_date', '>=',
                                                                            datetime_now_wib.replace(hour=0, minute=0, second=0,
@@ -962,33 +949,25 @@ class Reservationphc(models.Model):
                                                                           ('verified_date', '<=', datetime_now_wib)])
         verified_pcr_express_date = len(passenger_data.ids)
 
-        passenger_data = self.env['tt.reservation.passenger.phc'].search([('verify', '=', True),
-                                                                          ('booking_id.carrier_name','ilike','SRBD'),
-                                                                          ('verified_date', '>=',
-                                                                           datetime_now_wib.replace(hour=0, minute=0, second=0,
-                                                                                                    microsecond=0)),
-                                                                          ('verified_date', '<=', datetime_now_wib)])
-        verified_srbd_date = len(passenger_data.ids)
-
-        return 'PHC Verified By Date:\nAntigen : %s\nS-RBD : %s\nPCR : %s\nPCR Priority : %s\nPCR Express: %s' % (verified_antigen_date, verified_srbd_date,
+        return 'MEDICAL Verified By Date:\nAntigen : %s\nPCR : %s\nPCR Priority : %s\nPCR Express: %s' % (verified_antigen_date,
                                                                                                       verified_pcr_date, verified_pcr_priority_date, verified_pcr_express_date)
 
-    def multi_sync_verified_with_phc(self):
+    def multi_sync_verified_with_medical(self):
         for rec in self:
-            rec.sync_verified_with_phc()
+            rec.sync_verified_with_medical()
 
-    def sync_verified_with_phc(self):
+    def sync_verified_with_medical(self):
         if self.state_vendor != 'verified':
             for rec in self.passenger_ids:
                 if rec.ticket_number:
-                    phc_status_res = self.env['tt.phc.api.con'].sync_status_with_phc({
+                    medical_status_res = self.env['tt.medical.api.con'].sync_status_with_medical({
                         'carrier_code': self.carrier_name,
                         'ticket_number': rec.ticket_number,
                         'provider': self.provider_booking_ids[0].provider_id.code
                     })
-                    if phc_status_res['error_code'] == 0:
-                        if phc_status_res['response']['verified']:
-                            rec.verify = phc_status_res['response']['verified']
+                    if medical_status_res['error_code'] == 0:
+                        if medical_status_res['response']['verified']:
+                            rec.verify = medical_status_res['response']['verified']
                             rec.verified_date = datetime.now()
                             rec.verified_uid = self.env.user.id
                             self.check_reservation_verif(self.env.user.id)
@@ -1034,7 +1013,7 @@ class Reservationphc(models.Model):
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_phc') # Vin 2021-06-15 Report sementara sama
+        medical_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_medical') # Vin 2021-06-15 Report sementara sama
 
         if not book_obj.printout_ticket_id:
             if book_obj.agent_id:
@@ -1047,16 +1026,16 @@ class Reservationphc(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = phc_ticket_id.report_action(book_obj, data=datas)
+            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = phc_ticket_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'phc Ticket %s.pdf' % book_obj.name,
-                    'file_reference': 'phc Ticket',
+                    'filename': 'medical Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'medical Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -1091,7 +1070,7 @@ class Reservationphc(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_phc') # Vin 2021-06-15 Report sementara sama
+        medical_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_medical') # Vin 2021-06-15 Report sementara sama
 
         if not book_obj.printout_ticket_price_id:
             if book_obj.agent_id:
@@ -1104,16 +1083,16 @@ class Reservationphc(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = phc_ticket_id.report_action(book_obj, data=datas)
+            pdf_report = medical_ticket_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = phc_ticket_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'phc Ticket %s.pdf' % book_obj.name,
-                    'file_reference': 'phc Ticket',
+                    'filename': 'medical Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'medical Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -1187,7 +1166,7 @@ class Reservationphc(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        phc_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_airline')
+        medical_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_airline')
         if not self.printout_ho_invoice_id:
             if self.agent_id:
                 co_agent_id = self.agent_id.id
@@ -1199,12 +1178,12 @@ class Reservationphc(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = phc_ho_invoice_id.report_action(self, data=datas)
+            pdf_report = medical_ho_invoice_id.report_action(self, data=datas)
             pdf_report['context'].update({
                 'active_model': self._name,
                 'active_id': self.id
             })
-            pdf_report_bytes = phc_ho_invoice_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = medical_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
                     'filename': 'Airline HO Invoice %s.pdf' % self.name,
@@ -1244,7 +1223,7 @@ class Reservationphc(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        phc_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_periksain') # Vin 2021-06-15 Report sementara sama
+        medical_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_periksain') # Vin 2021-06-15 Report sementara sama
 
         if not book_obj.printout_itinerary_id:
             if book_obj.agent_id:
@@ -1257,12 +1236,12 @@ class Reservationphc(models.Model):
             else:
                 co_uid = self.env.user.id
 
-            pdf_report = phc_itinerary_id.report_action(book_obj, data=datas)
+            pdf_report = medical_itinerary_id.report_action(book_obj, data=datas)
             pdf_report['context'].update({
                 'active_model': book_obj._name,
                 'active_id': book_obj.id
             })
-            pdf_report_bytes = phc_itinerary_id.render_qweb_pdf(data=pdf_report)
+            pdf_report_bytes = medical_itinerary_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
                     'filename': 'Ittinerary %s.pdf' % book_obj.name,

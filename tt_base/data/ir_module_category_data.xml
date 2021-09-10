@@ -91,382 +91,395 @@
             <field name="sequence">115</field>
         </record>
 
+        <record model="ir.module.category" id="module_category_master_data_medical">
+            <field name="name">Master Data Medical</field>
+            <field name="description">To manage Medical Master Data</field>
+            <field name="sequence">116</field>
+        </record>
+
+
         <record model="ir.module.category" id="module_category_external_vendor_event">
             <field name="name">External Vendor Event</field>
             <field name="description">To manage Event as External Vendor</field>
-            <field name="sequence">116</field>
+            <field name="sequence">117</field>
         </record>
 
         <record model="ir.module.category" id="module_category_external_vendor_periksain">
             <field name="name">External Vendor Periksain</field>
             <field name="description">To manage Periksain as External Vendor</field>
-            <field name="sequence">117</field>
+            <field name="sequence">118</field>
         </record>
 
         <record model="ir.module.category" id="module_category_external_vendor_phc">
             <field name="name">External Vendor PHC</field>
             <field name="description">To manage PHC as External Vendor</field>
-            <field name="sequence">118</field>
+            <field name="sequence">119</field>
+        </record>
+
+        <record model="ir.module.category" id="module_category_external_vendor_medical">
+            <field name="name">External Vendor Medical</field>
+            <field name="description">To manage Medical as External Vendor</field>
+            <field name="sequence">120</field>
         </record>
 
         <record model="ir.module.category" id="module_category_tour_request">
             <field name="name">Tour Request</field>
             <field name="description">To manage Tour Request</field>
-            <field name="sequence">120</field>
+            <field name="sequence">121</field>
         </record>
 
         <record model="ir.module.category" id="module_category_reservation">
             <field name="name">Reservation</field>
             <field name="description">To manage Reservation</field>
-            <field name="sequence">121</field>
+            <field name="sequence">122</field>
         </record>
 
         <record model="ir.module.category" id="module_category_reservation_provider">
             <field name="name">Reservation Provider</field>
             <field name="description">To manage Reservation Provider</field>
-            <field name="sequence">122</field>
+            <field name="sequence">123</field>
         </record>
 
         <record model="ir.module.category" id="module_category_service_charge">
             <field name="name">Service Charge</field>
             <field name="description">To manage Service Charge</field>
-            <field name="sequence">123</field>
+            <field name="sequence">124</field>
         </record>
 
         <record model="ir.module.category" id="module_category_agent_invoice">
             <field name="name">Agent Invoice</field>
             <field name="description">To manage Agent Invoice</field>
-            <field name="sequence">124</field>
+            <field name="sequence">125</field>
         </record>
 
         <record model="ir.module.category" id="module_category_billing_statement">
             <field name="name">Billing Statement</field>
             <field name="description">To manage Billing Statement</field>
-            <field name="sequence">125</field>
+            <field name="sequence">126</field>
         </record>
 
         <record model="ir.module.category" id="module_category_top_up">
             <field name="name">Top Up</field>
             <field name="description">To manage Top Up</field>
-            <field name="sequence">126</field>
+            <field name="sequence">127</field>
         </record>
 
         <record model="ir.module.category" id="module_category_after_sales_master">
             <field name="name">After Sales Master Data</field>
             <field name="description">To manage After Sales Master Data</field>
-            <field name="sequence">127</field>
+            <field name="sequence">128</field>
         </record>
 
         <record model="ir.module.category" id="module_category_refund">
             <field name="name">Refund</field>
             <field name="description">To manage Refund</field>
-            <field name="sequence">128</field>
+            <field name="sequence">129</field>
         </record>
 
         <record model="ir.module.category" id="module_category_after_sales">
             <field name="name">After Sales</field>
             <field name="description">To manage After Sales</field>
-            <field name="sequence">129</field>
+            <field name="sequence">130</field>
         </record>
 
         <record model="ir.module.category" id="module_category_payment">
             <field name="name">Payment</field>
             <field name="description">To manage Payment</field>
-            <field name="sequence">130</field>
+            <field name="sequence">131</field>
         </record>
 
         <record model="ir.module.category" id="module_category_payment_acquirer">
             <field name="name">Payment Acquirer</field>
             <field name="description">To manage Payment Acquirer</field>
-            <field name="sequence">131</field>
+            <field name="sequence">132</field>
         </record>
 
         <record model="ir.module.category" id="module_category_adjustment">
             <field name="name">Adjustment</field>
             <field name="description">To manage Adjustment</field>
-            <field name="sequence">132</field>
+            <field name="sequence">133</field>
         </record>
 
         <record model="ir.module.category" id="module_category_lg_po">
             <field name="name">LG and PO</field>
             <field name="description">To manage LG and PO</field>
-            <field name="sequence">133</field>
+            <field name="sequence">134</field>
         </record>
 
         <record model="ir.module.category" id="module_category_reconcile">
             <field name="name">Reconcile</field>
             <field name="description">To manage Reconcile</field>
-            <field name="sequence">134</field>
+            <field name="sequence">135</field>
         </record>
 
         <record model="ir.module.category" id="module_category_ledger">
             <field name="name">Ledger</field>
             <field name="description">To manage Ledger</field>
-            <field name="sequence">135</field>
+            <field name="sequence">136</field>
         </record>
 
         <record model="ir.module.category" id="module_category_agent_registration_master">
             <field name="name">Agent Registration Master Data</field>
             <field name="description">To manage Agent Registration Master Data</field>
-            <field name="sequence">136</field>
+            <field name="sequence">137</field>
         </record>
 
         <record model="ir.module.category" id="module_category_agent_registration">
             <field name="name">Agent Registration</field>
             <field name="description">To manage Agent Registration</field>
-            <field name="sequence">137</field>
+            <field name="sequence">138</field>
         </record>
 
         <record model="ir.module.category" id="module_category_agent">
             <field name="name">Agent</field>
             <field name="description">To manage Agent</field>
-            <field name="sequence">138</field>
+            <field name="sequence">139</field>
         </record>
 
         <record model="ir.module.category" id="module_category_agent_type">
             <field name="name">Agent Type</field>
             <field name="description">To manage Agent Type</field>
-            <field name="sequence">139</field>
+            <field name="sequence">140</field>
         </record>
 
         <record model="ir.module.category" id="module_category_pnr_quota">
             <field name="name">PNR Quota</field>
             <field name="description">To manage PNR Quota</field>
-            <field name="sequence">140</field>
+            <field name="sequence">141</field>
         </record>
 
         <record model="ir.module.category" id="module_category_customer">
             <field name="name">Customer</field>
             <field name="description">To manage Customer</field>
-            <field name="sequence">141</field>
+            <field name="sequence">142</field>
         </record>
 
         <record model="ir.module.category" id="module_category_customer_parent">
             <field name="name">Customer Parent</field>
             <field name="description">To manage Customer Parent</field>
-            <field name="sequence">142</field>
+            <field name="sequence">143</field>
         </record>
 
         <record model="ir.module.category" id="module_category_customer_parent_type">
             <field name="name">Customer Parent Type</field>
             <field name="description">To manage Customer Parent Type</field>
-            <field name="sequence">143</field>
+            <field name="sequence">144</field>
         </record>
 
         <record model="ir.module.category" id="module_category_vendor">
             <field name="name">Vendor</field>
             <field name="description">To manage Vendor</field>
-            <field name="sequence">144</field>
+            <field name="sequence">145</field>
         </record>
 
         <record model="ir.module.category" id="module_category_upload_center">
             <field name="name">Upload Center</field>
             <field name="description">To manage Upload Center</field>
-            <field name="sequence">145</field>
+            <field name="sequence">146</field>
         </record>
 
         <record model="ir.module.category" id="module_category_frontend_banner">
             <field name="name">Frontend Banner</field>
             <field name="description">To manage Frontend Banner</field>
-            <field name="sequence">146</field>
+            <field name="sequence">147</field>
         </record>
 
         <record model="ir.module.category" id="module_category_location">
             <field name="name">Location</field>
             <field name="description">To manage Location</field>
-            <field name="sequence">147</field>
+            <field name="sequence">148</field>
         </record>
 
         <record model="ir.module.category" id="module_category_currency_rate">
             <field name="name">Currency and Rate</field>
             <field name="description">To manage Currency and Rate</field>
-            <field name="sequence">148</field>
+            <field name="sequence">149</field>
         </record>
 
         <record model="ir.module.category" id="module_category_unique_amount">
             <field name="name">Unique Amount</field>
             <field name="description">To manage Unique Amount</field>
-            <field name="sequence">149</field>
+            <field name="sequence">150</field>
         </record>
 
         <record model="ir.module.category" id="module_category_provider">
             <field name="name">Provider</field>
             <field name="description">To manage Provider</field>
-            <field name="sequence">150</field>
+            <field name="sequence">151</field>
         </record>
 
         <record model="ir.module.category" id="module_category_provider_type">
             <field name="name">Provider Type</field>
             <field name="description">To manage Provider Type</field>
-            <field name="sequence">151</field>
+            <field name="sequence">152</field>
         </record>
 
         <record model="ir.module.category" id="module_category_ssr">
             <field name="name">SSR</field>
             <field name="description">To manage SSR</field>
-            <field name="sequence">152</field>
+            <field name="sequence">153</field>
         </record>
 
         <record model="ir.module.category" id="module_category_bank">
             <field name="name">Bank</field>
             <field name="description">To manage Bank</field>
-            <field name="sequence">153</field>
+            <field name="sequence">154</field>
         </record>
 
         <record model="ir.module.category" id="module_category_bank_transactions">
             <field name="name">Bank Transactions</field>
             <field name="description">To manage Bank Transactions</field>
-            <field name="sequence">154</field>
+            <field name="sequence">155</field>
         </record>
 
         <record model="ir.module.category" id="module_category_agent_bank_detail">
             <field name="name">Agent Bank Detail</field>
             <field name="description">To manage Agent Bank Detail</field>
-            <field name="sequence">155</field>
+            <field name="sequence">156</field>
         </record>
 
         <record model="ir.module.category" id="module_category_customer_bank_detail">
             <field name="name">Customer Bank Detail</field>
             <field name="description">To manage Customer Bank Detail</field>
-            <field name="sequence">156</field>
+            <field name="sequence">157</field>
         </record>
 
         <record model="ir.module.category" id="module_category_monthly_fee">
             <field name="name">Monthly Fee</field>
             <field name="description">To manage Monthly Fee</field>
-            <field name="sequence">157</field>
+            <field name="sequence">158</field>
         </record>
 
         <record model="ir.module.category" id="module_category_destination">
             <field name="name">Destination</field>
             <field name="description">To manage Destination</field>
-            <field name="sequence">158</field>
+            <field name="sequence">159</field>
         </record>
 
         <record model="ir.module.category" id="module_category_route">
             <field name="name">Route</field>
             <field name="description">To manage Route</field>
-            <field name="sequence">159</field>
+            <field name="sequence">160</field>
         </record>
 
         <record model="ir.module.category" id="module_category_transport_carrier">
             <field name="name">Transport Carrier</field>
             <field name="description">To manage Transport Carrier</field>
-            <field name="sequence">160</field>
+            <field name="sequence">161</field>
         </record>
 
         <record model="ir.module.category" id="module_category_loyalty_program">
             <field name="name">Loyalty Program</field>
             <field name="description">To manage Loyalty Program</field>
-            <field name="sequence">161</field>
+            <field name="sequence">162</field>
         </record>
 
         <record model="ir.module.category" id="module_category_frequent_flyer">
             <field name="name">Frequent Flyer</field>
             <field name="description">To manage Frequent Flyer</field>
-            <field name="sequence">162</field>
+            <field name="sequence">163</field>
         </record>
 
         <record model="ir.module.category" id="module_category_social_info">
             <field name="name">Social Info</field>
             <field name="description">To manage Social Info (Address Details, Social Media, etc)</field>
-            <field name="sequence">163</field>
+            <field name="sequence">164</field>
         </record>
 
         <record model="ir.module.category" id="module_category_rule_whitelist">
             <field name="name">Rule and Whitelist</field>
             <field name="description">To manage Rule and Whitelist</field>
-            <field name="sequence">164</field>
+            <field name="sequence">165</field>
         </record>
 
         <record model="ir.module.category" id="module_category_public_holiday">
             <field name="name">Public Holiday</field>
             <field name="description">To manage Public Holiday</field>
-            <field name="sequence">165</field>
+            <field name="sequence">166</field>
         </record>
 
         <record model="ir.module.category" id="module_category_report">
             <field name="name">Report</field>
             <field name="description">To manage Report</field>
-            <field name="sequence">166</field>
+            <field name="sequence">167</field>
         </record>
 
         <record model="ir.module.category" id="module_category_pricing_provider">
             <field name="name">Pricing Provider</field>
             <field name="description">To manage Pricing Provider</field>
-            <field name="sequence">167</field>
+            <field name="sequence">168</field>
         </record>
 
         <record model="ir.module.category" id="module_category_pricing_agent">
             <field name="name">Pricing Agent</field>
             <field name="description">To manage Pricing Agent</field>
-            <field name="sequence">168</field>
+            <field name="sequence">169</field>
         </record>
 
         <record model="ir.module.category" id="module_category_search_configuration">
             <field name="name">Search Configuration</field>
             <field name="description">To manage Search Configuration</field>
-            <field name="sequence">169</field>
+            <field name="sequence">170</field>
         </record>
 
         <record model="ir.module.category" id="module_category_voucher">
             <field name="name">Voucher</field>
             <field name="description">To manage Voucher</field>
-            <field name="sequence">170</field>
+            <field name="sequence">171</field>
         </record>
 
         <record model="ir.module.category" id="module_category_new_city_records">
             <field name="name">New City Records</field>
             <field name="description">To manage New City Records</field>
-            <field name="sequence">171</field>
+            <field name="sequence">172</field>
         </record>
 
         <record model="ir.module.category" id="module_category_history_skip">
             <field name="name">History Skip</field>
             <field name="description">To manage History Skip</field>
-            <field name="sequence">172</field>
+            <field name="sequence">173</field>
         </record>
 
         <record model="ir.module.category" id="module_category_banned_users">
             <field name="name">Banned Users</field>
             <field name="description">To manage Banned Users</field>
-            <field name="sequence">173</field>
+            <field name="sequence">174</field>
         </record>
 
         <record model="ir.module.category" id="module_category_frontend_security">
             <field name="name">Frontend Security</field>
             <field name="description">To manage Frontend Security</field>
-            <field name="sequence">174</field>
+            <field name="sequence">175</field>
         </record>
 
         <record model="ir.module.category" id="module_category_email_queue">
             <field name="name">Email Queue</field>
             <field name="description">To manage Email Queue</field>
-            <field name="sequence">175</field>
+            <field name="sequence">176</field>
         </record>
 
         <record model="ir.module.category" id="module_category_error_api_list">
             <field name="name">Error API List</field>
             <field name="description">To manage Error API List</field>
-            <field name="sequence">176</field>
+            <field name="sequence">177</field>
         </record>
 
         <record model="ir.module.category" id="module_category_user_data">
             <field name="name">User Data</field>
             <field name="description">To manage User Data</field>
-            <field name="sequence">177</field>
+            <field name="sequence">178</field>
         </record>
 
         <record model="ir.module.category" id="module_category_api_management">
             <field name="name">API Management</field>
             <field name="description">To manage API Management</field>
-            <field name="sequence">178</field>
+            <field name="sequence">179</field>
         </record>
 
         <record model="ir.module.category" id="module_category_proceess_channel_booking">
             <field name="name">Process Channel Booking</field>
             <field name="description">To manage channel bookings</field>
-            <field name="sequence">179</field>
+            <field name="sequence">180</field>
         </record>
 
     <!--    old categories start from here-->

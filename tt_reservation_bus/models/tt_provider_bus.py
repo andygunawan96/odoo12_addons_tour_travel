@@ -25,7 +25,7 @@ class TtProviderBus(models.Model):
     arrival_date = fields.Char('Arrival Date')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
-
+    journey_ids = fields.One2many('tt.journey.bus', 'provider_booking_id', string='Journeys')
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_bus_booking_id', 'Cost Service Charges')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
