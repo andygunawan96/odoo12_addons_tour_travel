@@ -876,7 +876,7 @@ class TtReservationBus(models.Model):
         res = book_obj.read()
         res = res and res[0] or {}
         datas['form'] = res
-        bus_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_airline')
+        bus_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_bus')
         if not book_obj.printout_itinerary_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
