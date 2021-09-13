@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="tt_reservation_phc_sales_form_view" model="ir.ui.view">
-        <field name="name">tt.reservation.phc.sales.form.view</field>
-        <field name="model">tt.reservation.phc</field>
-        <field name="inherit_id" ref="tt_reservation_phc.tt_reservation_phc_form_views"/>
+    <record id="tt_reservation_medical_sales_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.medical.sales.form.view</field>
+        <field name="model">tt.reservation.medical</field>
+        <field name="inherit_id" ref="tt_reservation_medical.tt_reservation_medical_form_views"/>
         <field name="arch" type="xml">
 
 <!--            <field name="display_mobile" position="after">-->
