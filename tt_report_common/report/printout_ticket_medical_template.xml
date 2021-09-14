@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="medical_footer">
+        <div class="footer" style="position: absolute; left: 0; right: 0;">
+            <div class="text-center" style="border-top: 1px solid black; font-size: 10px; font-weight: 300">
+                <ul class="list-inline">
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/></li>
+
+<!--                    <li t-if="agent.fax and agent.phone">&amp;bull;</li>-->
+<!--                    <li t-if="agent.fax">Fax: <span t-field="agent.fax"/></li>-->
+
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email or doc.agent_id.email and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/></li>
+
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website and doc.agent_id.email or doc.agent_id.website or doc.agent_id.website and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/></li>
+
+                    <li class="pull-right">Page:
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </template>
+
+    <template id="printout_ticket_medical_template">
+        <!-- No. Booking -->
+        <table style="margin: 15px; 1px;">
+            <tr>
+                <td style="width:170px;">Booker </td>
+                <td style="width:10px;">:</td>
+                <td style="width:330px; text-align: right;">
+                    <span t-field="doc.booked_uid"/>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:170px;">Order Number</td>
+                <td style="width:10px;">:</td>
+                <td style="width:330px; text-align: right;">
+                    <span t-field="doc.name"/>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:170px;">No Net WA</td>
+                <td style="width:10px;">:</td>
+                <td style="width:330px;text-align: right;">
+                    <i t-field="doc.sudo().booker_id.name"/>
+                </td>
+                <td style="width:100px;"/>
+                <td style="width:170px;">TORS Issued</td>
+                <td style="width:10px;">:</td>
+                <td style="width:330px;text-align: right;">
+                    <i t-field="doc.issued_date"/>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Flight Detail (Title) -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">Schedule(s) and Test Type</span><br/>
+        </div>
+
+        <!-- Passenger Detail (Content) -->
+        <div class="box" style="margin-top: 20px; margin-bottom: 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+            <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                <div class="col-1" style="text-align: center; font-size:17px;">
+                    No.
+                </div>
+                <div class="col-6" style="text-align: left; font-size:17px;">
+                    Name
+                </div>
+                <div class="col-5" style="text-align: right; font-size:17px;">
+                    Price
+                </div>
+            </div>
+            <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+
+            <t t-set="psg_index" t-value="0"/>
+            <t t-foreach="doc.passenger_ids" t-as="pax">
+                <t t-set="psg_index" t-value="psg_index+1"/>
+                <div class="row" style="margin: 5px 0px;">
+                    <div class="col-1" style="text-align: center; font-size:15px;">
+                        <span t-esc="psg_index"/>
+                    </div>
+                    <div class="col-6" style="text-align: left; font-size:15px;">
+                        <span t-field="pax.title"/> <span t-field="pax.first_name"/> <span t-field="pax.last_name"/>
+                    </div>
+                    <div class="col-4">-</div>
+                </div>
+            </t>
+            <div style="margin-bottom: 5px"/>
+        </div>
+
+        <!-- Price & Addons Detail (if with price) -->
+        <t t-if="with_price">
+            <t t-foreach="doc.provider_booking_ids" t-as="length">
+                <!--<t t-call="tt_report_common.price_ticket"/>-->
+                <t t-call="tt_report_common.price_detail"/>
+            </t>
+        </t>
+
+        <!-- Important Notes -->
+        <t t-if="airline_ticket_footer">
+            <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s):</h4>
+            <span t-raw="airline_ticket_footer"/>
+        </t>
+
+        <span t-raw="medical_footer"/>
+    </template>
+</odoo>
