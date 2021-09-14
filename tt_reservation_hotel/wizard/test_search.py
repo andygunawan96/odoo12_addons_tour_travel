@@ -1083,6 +1083,7 @@ class TestSearch(models.Model):
     def action_done_hotel_api(self, book_id, issued_res, acq_id, co_uid, context):
         resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         resv_obj.sid_issued = context['signature']
+        resv_obj.issued_uid = context['co_uid']
         for pax in resv_obj.passenger_ids:
             for csc in pax.channel_service_charge_ids:
                 csc.resv_hotel_id = resv_obj.id
