@@ -387,3 +387,6 @@ class TtProviderTrain(models.Model):
     #             'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
     #         })
     #     return sc_value
+
+    def update_temporary_field_per_pax_api(self, idx, temporary_field):
+        self.ticket_ids[idx].passenger_id.temporary_field = json.dumps(temporary_field)
