@@ -14,6 +14,7 @@ class PricingAgent(models.Model):
     _description = 'Rodex Pricing Agent Model'
 
     name = fields.Char('Name', compute='_compute_name_pricing', store=True)
+    name_desc = fields.Char('Name Description')
     sequence = fields.Integer('Sequence', default=50, required=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
