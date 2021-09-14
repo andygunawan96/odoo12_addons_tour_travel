@@ -393,6 +393,12 @@ class TtReservationTrain(models.Model):
                     provider_obj.action_failed_issued_api_train(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
 
+                # jaga jaga kalau gagal issued
+                for idx, ticket_obj in enumerate(provider['tickets']):
+                    if ticket_obj['covid']:
+                        provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['covid'])
+                    any_provider_changed = True
+
             for rec in book_obj.provider_booking_ids:
                 if rec.pnr:
                     pnr_list.append(rec.pnr)
