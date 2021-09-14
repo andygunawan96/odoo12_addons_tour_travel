@@ -35,16 +35,18 @@ class TtReservationCustomer(models.Model):
         for ssr in ssr_param:
             amount = 0
             currency_id = False
-            if is_create_service_charge:
-                for sc in ssr['service_charges']:
-                    currency_id = currency_obj.search([('name', '=', sc.pop('currency'))], limit=1).id
-                    sc['currency_id'] = currency_id
-                    sc['foreign_currency_id'] = currency_obj.search([('name','=',sc.pop('foreign_currency'))],limit=1).id
-                    sc['description'] = pnr
-                    sc['passenger_airline_ids'] = [(4,self.id)]
-                    sc['provider_airline_booking_id'] = provider_id
-                    sc['is_extra_fees'] = True
-                    amount += sc['amount']
+            # September 10, 2021 - SAM
+            # Fix amount 0 apabila booking telah terissued.
+            for sc in ssr['service_charges']:
+                currency_id = currency_obj.search([('name', '=', sc.pop('currency'))], limit=1).id
+                sc['currency_id'] = currency_id
+                sc['foreign_currency_id'] = currency_obj.search([('name','=',sc.pop('foreign_currency'))],limit=1).id
+                sc['description'] = pnr
+                sc['passenger_airline_ids'] = [(4,self.id)]
+                sc['provider_airline_booking_id'] = provider_id
+                sc['is_extra_fees'] = True
+                amount += sc['amount']
+                if is_create_service_charge:
                     service_chg_obj.create(sc)
 
             ssr_values = {

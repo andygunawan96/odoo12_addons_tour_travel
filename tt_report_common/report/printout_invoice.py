@@ -179,7 +179,8 @@ class PrintoutTicketForm(models.AbstractModel):
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'printout_tz': pytz.timezone('Asia/Jakarta')
+            'printout_tz': pytz.timezone('Asia/Jakarta'),
+            'qr_code_data': False
         }
         if 'is_with_price' in data:
             vals.update({
@@ -193,6 +194,9 @@ class PrintoutTicketForm(models.AbstractModel):
             vals.update({
                 'with_price': False,
             })
+
+        if data['context']['active_model'] == 'tt.reservation.medical':
+            vals.update({'qr_code_data': self.env[data['context']['active_model']].browse(data['context']['active_ids']).to_dict(),})
         return vals
 
 
@@ -1536,6 +1540,10 @@ class PrintoutInvoice(models.AbstractModel):
         if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain']:
             val.update({
                 'terms_conditions': resv_obj.get_terms_conditions_email()
+            })
+        elif resv_obj._name in ['tt.reservation.medical',]:
+            val.update({
+                'qr_code_data': resv_obj.to_dict(),
             })
         return val
 

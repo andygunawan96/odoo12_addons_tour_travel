@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
-        <record id="tt_pnr_quota_price_standard_train"  model="tt.pnr.quota.price.list">
-            <field name="name">Train</field>
+        <record id="tt_pnr_quota_price_standard_bus"  model="tt.pnr.quota.price.list">
+            <field name="name">Bus</field>
             <field name="price_type">pnr</field>
             <field name="provider_access_type">all</field>
             <field name="carrier_access_type">all</field>

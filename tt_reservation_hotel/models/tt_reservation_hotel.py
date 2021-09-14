@@ -566,12 +566,12 @@ class HotelReservation(models.Model):
                 prov.action_issued_api_hotel({
                     'pnr': self.get_pnr_list(),
                     'pnr2': prov.provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id and issued_response[room_detail.provider_id.code]['booking_code'] or '', #isi PNR 2 untuk BTBO2
-                    'co_uid': self.issued_uid.id or self.env.user.id,
+                    'co_uid': self.issued_uid.id,
                     'signature': self.sid_issued or self.sid_booked
                 })
             elif issued_response[prov.provider_id.code]['status'] == 'in_process':
                 prov.action_in_progress_api_hotel()
-        self.check_provider_state({'co_uid': self.env.uid})
+        self.check_provider_state({'co_uid': self.issued_uid.id})
         return True
 
     def action_calc_passenger_data(self):

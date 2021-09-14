@@ -97,6 +97,12 @@
         </address>
     </template>
 
+    <template id="print_qr_code">
+        <div style="float: right">
+            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', qr_code_data, 180, 180)" style="width:100px; height:100px; margin: 5px;"/>
+        </div>
+    </template>
+
     <!-- Versi before 12 sept 2019 -->
     <template id="external_layout_header_1">
         <table width="100%">
@@ -279,75 +285,173 @@
 
             </div>
             <div class="col-5 text-center">
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
-                <t t-if="doc_model == 'tt.agent.invoice'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">
-                    <t t-if="is_invoice == True">Invoice</t><t t-else="">Kwitansi</t>
-                    </span><br/>
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-                </t><t t-elif="doc_model == 'tt.billing.statement'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Billing</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-            </t><t t-elif="doc_model == 'tt.top.up'">
-                <t t-if="doc.state in ['draft','request','confirm']">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
-                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                <t t-if="qr_code_data">
+                    <t t-call="tt_report_common.print_qr_code"/>
                 </t>
-                <t t-if="doc.state in ['validated','approved','expired','cancel']">  <!--['valid','done']-->
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
+                <t t-else="">
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
+                    <t t-if="doc_model == 'tt.agent.invoice'">
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">
+                            <t t-if="is_invoice == True">Invoice</t><t t-else="">Kwitansi</t>
+                        </span><br/>
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                    </t><t t-elif="doc_model == 'tt.billing.statement'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Billing</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.top.up'">
+                    <t t-if="doc.state in ['draft','request','confirm']">
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Proforma Top Up</span><br/>  <!--Proforma HO Invoice-->
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                    </t>
+                    <t t-if="doc.state in ['validated','approved','expired','cancel']">  <!--['valid','done']-->
+                        <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Top Up</span><br/>  <!--HO Invoice-->
+                        <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                    </t>
+                </t><t t-elif="doc_model == 'tt.refund'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Refund</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
+                </t><t t-elif="doc_model in ['tt.reschedule','tt.reschedule.periksain','tt.reschedule.phc']">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">After Sales</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
+                    <!--</t><t t-elif="doc_model == 'tt.reservation.activity'">-->
+                    <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>-->
+                    <!--<t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>-->
+                </t><t t-elif="doc_type == 'expenses'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Expenses</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_type == 'itin'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Itinerary Form</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_type == 'ho_invoice'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">HO Invoice</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_type == 'vendor_invoice'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Vendor Invoice</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.airline'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">eTicket Itinerary</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.event'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Event eTicket</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/ticket-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.hotel'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher / Ittinerary ID</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.ppob'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Bills</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.periksain'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Periksain</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.phc'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">PHC</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
+                </t><t t-else="">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
                 </t>
-            </t><t t-elif="doc_model == 'tt.refund'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Refund</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
-            </t><t t-elif="doc_model in ['tt.reschedule','tt.reschedule.periksain','tt.reschedule.phc']">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">After Sales</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/refund-white.png'"/>
-                <!--</t><t t-elif="doc_model == 'tt.reservation.activity'">-->
-                <!--<span style="margin-top: 10px; margin-left: 10px; color: #DC5413; font-size: 20px;">Itinerary</span><br/>-->
-                <!--<t t-set="printout_icon" t-value="'/tt_report_common/static/images/activity-white.png'"/>-->
-            </t><t t-elif="doc_type == 'expenses'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Expenses</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-            </t><t t-elif="doc_type == 'itin'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Itinerary Form</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-            </t><t t-elif="doc_type == 'ho_invoice'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">HO Invoice</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-            </t><t t-elif="doc_type == 'vendor_invoice'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Vendor Invoice</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-            </t><t t-elif="doc_model == 'tt.reservation.airline'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">eTicket Itinerary</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
-            </t><t t-elif="doc_model == 'tt.reservation.event'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Event eTicket</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/ticket-white.png'"/>
-            </t><t t-elif="doc_model == 'tt.reservation.hotel'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher / Ittinerary ID</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
-            </t><t t-elif="doc_model == 'tt.reservation.ppob'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Bills</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
-            </t><t t-elif="doc_model == 'tt.reservation.periksain'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Periksain</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
-            </t><t t-elif="doc_model == 'tt.reservation.phc'">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">PHC</span><br/>
-                <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
-            </t><t t-else="">
-                <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
-            </t>
-                <div t-att-style="'height: 105px; width:'+ header_width+'%; float: right'">
-                    <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
-                        <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
-                    </div>
-                    <div id="rectangle" t-att-style="'width: '+header_width+'%; height: 50px; bottom: 15px; border-radius: 25px; position: absolute; z-index: 0; background-image: ' + img_url">
-                        <div style="padding-left: 75px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
-                            <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px; margin-right: 10px;">
-                                <t t-if="doc_type == 'itin'">
-                                    <t t-if="doc.pnr">
+                    <div t-att-style="'height: 105px; width:'+ header_width+'%; float: right'">
+                        <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
+                            <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
+                        </div>
+                        <div id="rectangle" t-att-style="'width: '+header_width+'%; height: 50px; bottom: 15px; border-radius: 25px; position: absolute; z-index: 0; background-image: ' + img_url">
+                            <div style="padding-left: 75px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
+                                <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px; margin-right: 10px;">
+                                    <t t-if="doc_type == 'itin'">
+                                        <t t-if="doc.pnr">
+                                            <t t-if="pnr_length &lt;= 20">
+                                                <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-if="doc_model == 'tt.reservation.ppob'">
+                                                <t t-if="pnr_length &lt;= 20">
+                                                    <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px;"/>
+                                                </t>
+                                                <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                                    <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 20px"/>
+                                                </t>
+                                                <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                                    <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 16px"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 15px"/>
+                                                </t>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    <t t-elif="doc_type == 'ho_invoice'">
+                                        <t t-if="doc.pnr">
+                                            <t t-if="pnr_length &lt;= 20">
+                                                <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-if="pnr_length &lt;= 20">
+                                                <span t-field="doc.name" style="margin-top: 5px;"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                                <span t-field="doc.name" style="margin-top: 5px; font-size: 20px"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                                <span t-field="doc.name" style="margin-top: 5px; font-size: 16px"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.name" style="margin-top: 5px; font-size: 15px"/>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    <t t-elif="doc_type == 'vendor_invoice'">
+                                        <t t-if="doc.pnr">
+                                            <t t-if="pnr_length &lt;= 20">
+                                                <span t-field="doc.pnr" style="margin-top: 5px;"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
+                                            </t>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-if="pnr_length &lt;= 20">
+                                                <span t-field="doc.name" style="margin-top: 5px;"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
+                                                <span t-field="doc.name" style="margin-top: 5px; font-size: 20px"/>
+                                            </t>
+                                            <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
+                                                <span t-field="doc.name" style="margin-top: 5px; font-size: 16px"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-field="doc.name" style="margin-top: 5px; font-size: 15px"/>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    <t t-elif="doc_model in ['tt.reservation.airline', 'tt.reservation.hotel', 'tt.reservation.event']">
                                         <t t-if="pnr_length &lt;= 20">
                                             <span t-field="doc.pnr" style="margin-top: 5px;"/>
                                         </t>
@@ -361,8 +465,8 @@
                                             <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
                                         </t>
                                     </t>
-                                    <t t-else="">
-                                        <t t-if="doc_model == 'tt.reservation.ppob'">
+                                    <t t-elif="doc_model == 'tt.reservation.ppob'">
+                                        <t t-if="doc.provider_booking_ids">
                                             <t t-if="pnr_length &lt;= 20">
                                                 <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px;"/>
                                             </t>
@@ -377,113 +481,21 @@
                                             </t>
                                         </t>
                                         <t t-else="">
-                                            <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                            <span style="margin-top: 5px;">-</span>
                                         </t>
                                     </t>
-                                </t>
-                                <t t-elif="doc_type == 'ho_invoice'">
-                                    <t t-if="doc.pnr">
-                                        <t t-if="pnr_length &lt;= 20">
-                                            <span t-field="doc.pnr" style="margin-top: 5px;"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
-                                        </t>
-                                        <t t-else="">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
-                                        </t>
+                                    <t t-elif="doc_type == 'expenses'">
+                                        <span style="margin-top: 5px;">Expenses Form</span>
                                     </t>
                                     <t t-else="">
-                                        <t t-if="pnr_length &lt;= 20">
-                                            <span t-field="doc.name" style="margin-top: 5px;"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 20px"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 16px"/>
-                                        </t>
-                                        <t t-else="">
-                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 15px"/>
-                                        </t>
+                                        <span t-field="doc.name" style="margin-top: 5px;"/>
                                     </t>
-                                </t>
-                                <t t-elif="doc_type == 'vendor_invoice'">
-                                    <t t-if="doc.pnr">
-                                        <t t-if="pnr_length &lt;= 20">
-                                            <span t-field="doc.pnr" style="margin-top: 5px;"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
-                                        </t>
-                                        <t t-else="">
-                                            <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
-                                        </t>
-                                    </t>
-                                    <t t-else="">
-                                        <t t-if="pnr_length &lt;= 20">
-                                            <span t-field="doc.name" style="margin-top: 5px;"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 20px"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 16px"/>
-                                        </t>
-                                        <t t-else="">
-                                            <span t-field="doc.name" style="margin-top: 5px; font-size: 15px"/>
-                                        </t>
-                                    </t>
-                                </t>
-                                <t t-elif="doc_model in ['tt.reservation.airline', 'tt.reservation.hotel', 'tt.reservation.event']">
-                                    <t t-if="pnr_length &lt;= 20">
-                                        <span t-field="doc.pnr" style="margin-top: 5px;"/>
-                                    </t>
-                                    <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                        <span t-field="doc.pnr" style="margin-top: 5px; font-size: 20px"/>
-                                    </t>
-                                    <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                        <span t-field="doc.pnr" style="margin-top: 5px; font-size: 16px"/>
-                                    </t>
-                                    <t t-else="">
-                                        <span t-field="doc.pnr" style="margin-top: 5px; font-size: 15px"/>
-                                    </t>
-                                </t>
-                                <t t-elif="doc_model == 'tt.reservation.ppob'">
-                                    <t t-if="doc.provider_booking_ids">
-                                        <t t-if="pnr_length &lt;= 20">
-                                            <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px;"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 20 and pnr_length &lt;= 25">
-                                            <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 20px"/>
-                                        </t>
-                                        <t t-elif="pnr_length &gt; 25 and pnr_length &lt;= 30">
-                                            <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 16px"/>
-                                        </t>
-                                        <t t-else="">
-                                            <span t-field="doc.provider_booking_ids[0].customer_number" style="margin-top: 5px; font-size: 15px"/>
-                                        </t>
-                                    </t>
-                                    <t t-else="">
-                                        <span style="margin-top: 5px;">-</span>
-                                    </t>
-                                </t>
-                                <t t-elif="doc_type == 'expenses'">
-                                    <span style="margin-top: 5px;">Expenses Form</span>
-                                </t>
-                                <t t-else="">
-                                    <span t-field="doc.name" style="margin-top: 5px;"/>
-                                </t>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </t>
+
             </div>
         </div>
         <div style="border: 1px solid #BBB; margin-bottom: 10px; margin-top: 10px; position: absolute; left: 0; right: 0; width: 100%"/>  <!---15px -15px-->
