@@ -409,6 +409,18 @@
             <field name="active" eval="True"/>
         </record>
 
+        <record id="nathos_antigen_drive_thru_information" model="tt.report.common.setting">
+            <field name="name">Drive Thru Antigen National Hospital Surabaya Information</field>
+            <field name="code">nathos_antigen_drive_thru_information</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information Antigen
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
         <record id="phc_antigen_information" model="tt.report.common.setting">
             <field name="name">PHC Antigen Drive Thru Information</field>
             <field name="code">phc_antigen_information</field>
