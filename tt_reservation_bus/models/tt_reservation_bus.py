@@ -522,12 +522,11 @@ class TtReservationBus(models.Model):
 
         # create service charge, update seatf
         for idx, journey in enumerate(provider_obj.journey_ids):
-            found = False
+            param_journey = {}
             for journey_dict in journey_list:
                 if journey_dict['journey_code'] == journey.journey_code:
                     param_journey = journey_dict
-                    found = True
-            if not found:
+            if not param_journey:
                 raise RequestException(1005,additional_message="Journey Code not found")
             for fare in param_journey['fares']:
                 provider_obj.create_service_charge(fare['service_charges'])
