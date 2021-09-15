@@ -15,7 +15,9 @@ class TtBusApiCon(models.Model):
         elif action == 'get_booking':
             res = self.env['tt.reservation.bus'].get_booking_bus_api(data,context)
         elif action == 'update_pnr_provider':
-            res = self.env['tt.reservation.bus'].update_pnr_provider_bus_api(data,context)
+            res = self.env['tt.reservation.bus'].update_pnr_provider_bus_api(data, context)
+        elif action == 'payment':
+            res = table_obj.payment_bus_api(data,context)
         else:
             raise RequestException(999)
         return res
