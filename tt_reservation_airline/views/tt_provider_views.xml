@@ -37,6 +37,7 @@
                             <field name="reconcile_time"/>
                         </group>
                         <group>
+                            <field name="is_advance_purchase"/>
                             <field name="hold_date"/>
                             <field name="expired_date"/>
                             <field name="booked_uid"/>
@@ -140,6 +141,7 @@
                 <!--<field name="total"/>-->
                 <field name="state"/>
                 <field name="is_hold_date_sync"/>
+                <field name="is_advance_purchase"/>
             </tree>
         </field>
     </record>
