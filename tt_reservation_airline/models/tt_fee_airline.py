@@ -33,9 +33,11 @@ class TtSsrAirline(models.Model):
         try:
             final_str = ''
             if json_data:
-                temp_dict = json.loads(json_data)
-                for key, val in temp_dict.items():
-                    final_str += '%s: %s\n' % (key, val)
+                # temp_dict = json.loads(json_data)
+                # for key, val in temp_dict.items():
+                #     final_str += '%s: %s\n' % (key, val)
+                data_list = json.loads(json_data)
+                final_str = ', '.join(data_list)
         except:
             final_str = json_data
         return final_str
