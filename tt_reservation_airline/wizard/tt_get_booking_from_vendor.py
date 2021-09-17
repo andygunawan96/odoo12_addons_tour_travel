@@ -13,6 +13,7 @@ provider_selection = [
         ('altea', 'Garuda Altea'),
         ('amadeus', 'Amadeus'),
         ('lionair', 'Lion Air'),
+        ('lionairapi', 'Lion Air API'),
         # ('sabre', 'Sabre'),
     ]
 

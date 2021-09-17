@@ -131,6 +131,7 @@
         <tree>
             <field name="sequence" widget="handle"/>
             <field name="name"/>
+            <field name="name_desc"/>
             <field name="origin_type"/>
             <field name="display_origins"/>
             <field name="display_origin_cities"/>

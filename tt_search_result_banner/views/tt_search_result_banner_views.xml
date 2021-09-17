@@ -11,6 +11,7 @@
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_provider_type_id" string="Provider Type" domain="[]" context="{'group_by':'provider_type_id'}"/>
+                    <filter name="group_by_sector_type" string="Sector" domain="[]" context="{'group_by':'sector_type'}"/>
                     <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
                     <filter name="group_by_carrier_id" string="Carrier" domain="[]" context="{'group_by':'carrier_id'}"/>
                 </group>
@@ -42,9 +43,10 @@
                         <field name="banner_color"/>
                         <field name="minimum_days"/>
                         <field name="provider_type_id"/>
-                        <field name="provider_id"/>
+                        <field name="sector_type"/>
                     </group>
                     <group>
+                        <field name="provider_id"/>
                         <field name="carrier_id"/>
                         <field name="origin_id"/>
                         <field name="destination_id"/>
@@ -67,6 +69,7 @@
                 <field name="banner_color"/>
                 <field name="minimum_days"/>
                 <field name="provider_type_id"/>
+                <field name="sector_type"/>
                 <field name="provider_id"/>
                 <field name="carrier_id"/>
                 <field name="origin_id"/>

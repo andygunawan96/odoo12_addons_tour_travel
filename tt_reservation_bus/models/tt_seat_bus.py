@@ -7,6 +7,8 @@ class TtSeatBus(models.Model):
 
     seat = fields.Char('Seat')
     seat_code = fields.Char('Seat Code')##auto findketika req parser assign seat KAI..
+    column = fields.Char('Column')
+    wagon = fields.Char('Wagon')
     journey_id = fields.Many2one('tt.journey.bus', 'Journey')
     passenger_id = fields.Many2one('tt.reservation.passenger.bus', 'Passenger')
 
@@ -14,6 +16,8 @@ class TtSeatBus(models.Model):
         return {
             'seat': self.seat,
             'seat_code': self.seat_code,
+            'column': self.column,
+            'wagon': self.wagon,
             'passenger': self.passenger_id.name,
             'passenger_sequence': self.passenger_id.sequence
         }

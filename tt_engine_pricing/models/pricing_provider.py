@@ -15,6 +15,7 @@ class PricingProvider(models.Model):
     _description = 'Pricing Provider'
 
     name = fields.Char('Name', readonly=1, compute="_compute_name", store=True)
+    name_desc = fields.Char('Name Description')
     sequence = fields.Integer('Sequence', default=50, required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     provider_access_type = fields.Selection(variables.ACCESS_TYPE, 'Provider Access Type', required=True, default='allow')
