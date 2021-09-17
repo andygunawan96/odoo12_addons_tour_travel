@@ -27,6 +27,8 @@
                             <field name="child_length_name"/>
                             <field name="infant_length_name"/>
                             <field name="is_adult_birth_date_required"/>
+                            <field name="required_identity_required_domestic"/>
+                            <field name="required_identity_required_international"/>
                         </group>
                     </group>
                 </sheet>
