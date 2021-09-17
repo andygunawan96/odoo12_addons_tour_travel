@@ -235,7 +235,7 @@
         <report
                 string="Medical Ticket"
                 id="action_report_printout_reservation_medical"
-                model="tt.reservation.phc"
+                model="tt.reservation.medical"
                 report_type="qweb-html"
                 name="tt_report_common.printout_ticket"
                 file="tt_report_common.printout_ticket"
