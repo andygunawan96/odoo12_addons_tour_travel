@@ -17,6 +17,7 @@
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1><field name="name"/></h1>
+                        <h1><field name="name_desc" placeholder="Description"/></h1>
                     </div>
                     <group>
                         <group>
@@ -96,6 +97,7 @@
             <field name="sequence" widget="handle"/>
             <field name="provider_pricing_type"/>
             <field name="name"/>
+            <field name="name_desc"/>
             <field name="provider_type_id"/>
             <field name="provider_access_type"/>
             <field name="carrier_access_type"/>
