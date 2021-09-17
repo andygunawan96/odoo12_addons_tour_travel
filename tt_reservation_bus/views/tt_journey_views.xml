@@ -40,7 +40,9 @@
                     <field name="seat_ids">
                         <tree>
                             <field name="passenger_id"/>
+                            <field name="wagon"/>
                             <field name="seat"/>
+                            <field name="column"/>
                             <field name="seat_code"/>
                         </tree>
                     </field>

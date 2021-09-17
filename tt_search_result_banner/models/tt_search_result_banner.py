@@ -16,8 +16,9 @@ class SearchResultBanner(models.Model):
     banner_color = fields.Char('Banner Color (Hex Code)', default='#FFFFFF')
     minimum_days = fields.Integer('Minimum Days', default=0)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
-    provider_id = fields.Many2one('tt.provider', 'Provider', required=True, domain="[('provider_type_id', '=', provider_type_id)]")
-    carrier_id = fields.Many2one('tt.transport.carrier', 'Product', required=True, domain="[('provider_type_id', '=', provider_type_id)]")
+    sector_type = fields.Selection([('all', 'All'), ('domestic', 'Domestic'), ('international', 'International')], 'Sector', default='all', required=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id)]")
+    carrier_id = fields.Many2one('tt.transport.carrier', 'Product', domain="[('provider_type_id', '=', provider_type_id)]")
     origin_id = fields.Many2one('tt.destinations', 'Origin')
     destination_id = fields.Many2one('tt.destinations', 'Destination')
     active = fields.Boolean('Active', default=True)
@@ -51,6 +52,7 @@ class SearchResultBanner(models.Model):
             'banner_color': self.banner_color,
             'minimum_days': self.minimum_days and self.minimum_days or '',
             'provider_type_id': self.provider_type_id and self.provider_type_id.code or '',
+            'sector_type': self.sector_type,
             'provider_id': self.provider_id and self.provider_id.code or '',
             'carrier_id': self.carrier_id and self.carrier_id.code or '',
             'origin_id': self.origin_id and self.origin_id.code or '',
