@@ -139,6 +139,7 @@
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jt"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="sequence">156</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_lionairapi'))

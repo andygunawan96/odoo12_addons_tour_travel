@@ -84,6 +84,10 @@ class TtProviderAirline(models.Model):
     pricing_agent_ids = fields.One2many('tt.provider.airline.pricing.agent', 'provider_id', 'Pricing Agents')
     # END
 
+    # September 16, 2021 - SAM
+    is_advance_purchase = fields.Boolean('Advance Purchase', readonly=True, default=False)
+    # END
+
     ##button function
     def action_change_is_hold_date_sync(self):
         self.write({
@@ -213,7 +217,7 @@ class TtProviderAirline(models.Model):
         values = {}
         # todo ini buat ngambil semua key data dari response yang dikirim
         provider_data_keys = [key for key in provider_data.keys()]
-        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync']:
+        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync', 'is_advance_purchase']:
             # if not provider_data.get(key):
             # todo ini buat ngecek klo key nya ada baru di update value nya
             if key not in provider_data_keys:
@@ -750,6 +754,7 @@ class TtProviderAirline(models.Model):
             'total_price': self.total_price,
             'penalty_amount': self.penalty_amount,
             'penalty_currency': self.penalty_currency and self.penalty_currency or '',
+            'is_advance_purchase': self.is_advance_purchase,
             'is_force_issued': self.booking_id.is_force_issued,
             'is_halt_process': self.booking_id.is_halt_process,
             # END

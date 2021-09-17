@@ -1453,6 +1453,7 @@ class ReservationAirline(models.Model):
                 'rule_ids': rule_ids,
                 'pricing_provider_line_ids': pricing_provider_line_ids,
                 'pricing_agent_ids': pricing_agent_ids,
+                'is_advance_purchase': schedule.get('is_advance_purchase', False),
                 # April 20, 2020 - SAM
                 # 'cost_service_charge_ids': this_service_charges,
                 # END

@@ -410,20 +410,22 @@ class ReservationPeriksain(models.Model):
                     continue
                 if provider.get('messages') and provider['status'] == 'FAIL_ISSUED':
                     provider_obj.action_failed_issued_api_phc(provider.get('error_code', -1),provider.get('error_msg', ''))
+                    any_provider_changed = True
                 if provider['status'] == 'ISSUED':
                     provider_obj.pnr = provider['pnr']
                     for css in provider_obj.cost_service_charge_ids:
                         css.description = provider['pnr']
                     book_obj.calculate_service_charge()
                     provider_obj.action_issued_api_periksain(context)
+                    any_provider_changed = True
                 if provider['status'] == 'CANCEL':
                     provider_obj.action_cancel(context)
                     any_provider_changed = True
+
                 #jaga jaga kalau gagal issued
                 for idx, ticket_obj in enumerate(provider['tickets']):
                     if ticket_obj['ticket_number']:
                         provider_obj.update_ticket_per_pax_api(idx, ticket_obj['ticket_number'])
-                    any_provider_changed = True
 
             if any_provider_changed:
                 book_obj.check_provider_state(context, req=req)
