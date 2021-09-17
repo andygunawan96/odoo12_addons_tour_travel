@@ -63,6 +63,8 @@ class TtJourneyBus(models.Model):
                 seat_list.append((0,0,{
                     'seat': seat['seat'],
                     'seat_code': seat['seat_code'],
+                    'column': seat['column'],
+                    'wagon': seat['wagon'],
                     'journey_id': self.id,
                     'passenger_id': self.booking_id.passenger_ids.filtered(lambda x: x.sequence == seat.get('sequence')).id
                 }))
