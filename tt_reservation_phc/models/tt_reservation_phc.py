@@ -621,7 +621,12 @@ class Reservationphc(models.Model):
 
     def update_data_verif(self, req, context):
         try:
-            passenger_obj = self.env['tt.reservation.passenger.phc'].search([('ticket_number','=',req['ticket_number']),('booking_id.carrier_name','ilike',req['test_type'])],limit=1)
+            dom = [('ticket_number', '=', req['ticket_number']), ('booking_id.carrier_name', 'ilike', req['test_type'])]
+
+            if req['test_type'] == 'ATG':
+                dom.append(('booking_id.carrier_name', 'ilike', 'SRBD'))
+
+            passenger_obj = self.env['tt.reservation.passenger.phc'].search(dom,limit=1)
             if passenger_obj:
                 passenger_obj.update({
                     'name': "%s %s" % (req['first_name'], req['last_name']),
