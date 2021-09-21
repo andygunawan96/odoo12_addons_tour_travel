@@ -120,7 +120,7 @@ class AgentInvoice(models.Model):
     @api.depends("invoice_line_ids.pnr")
     def _compute_invoice_pnr(self):
         for rec in self:
-            rec.pnr = ", ".join([rec1.pnr for rec1 in rec.invoice_line_ids if rec1.pnr])
+            rec.pnr = ", ".join(list(set([rec1.pnr for rec1 in rec.invoice_line_ids if rec1.pnr])))
 
     @api.depends("payment_ids.payment_acquirer")
     def _compute_acquirers(self):
