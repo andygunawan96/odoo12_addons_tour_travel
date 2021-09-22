@@ -13,6 +13,7 @@ class SearchResultBanner(models.Model):
     _description = 'Search Result Banner'
 
     name = fields.Char('Banner Text', required=True)
+    description = fields.Text('Description', default='')
     banner_color = fields.Char('Banner Color (Hex Code)', default='#FFFFFF')
     minimum_days = fields.Integer('Minimum Days', default=0)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
@@ -49,6 +50,7 @@ class SearchResultBanner(models.Model):
     def get_search_banner_data(self):
         res = {
             'name': self.name,
+            'description': self.description,
             'banner_color': self.banner_color,
             'minimum_days': self.minimum_days and self.minimum_days or '',
             'provider_type_id': self.provider_type_id and self.provider_type_id.code or '',
