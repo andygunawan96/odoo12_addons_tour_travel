@@ -204,6 +204,9 @@ class TtProviderBus(models.Model):
     def action_expired(self):
         self.state = 'cancel2'
 
+    def action_void(self):
+        self.state = 'void'
+
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'
         if check_provider_state:
