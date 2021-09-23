@@ -160,29 +160,27 @@ class TtTimeslotmedical(models.Model):
 
         dom = ['|', ('agent_id', '=', False), ('agent_id', '=', context['co_agent_id'])]
 
-        if carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_drive_thru_nathos_antigen').id]:
+        if carrier_obj.id in []: #kalau ada carrier homecare, ref masuk di list ini
+            dom.append(('timeslot_type', 'in', ['home_care', 'group_booking']))
+            # if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
+            #     dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
+            # else:
+            #     min_datetime = current_datetime.replace(hour=1, minute=0, second=0, microsecond=0)
+            #     if current_datetime > min_datetime:
+            #         min_datetime = min_datetime + timedelta(days=1)
+            #     dom.append(('datetimeslot', '>=', min_datetime))
+
+            # home care di ganti H+1
+            if current_wib_datetime <= current_wib_datetime.replace(hour=17, minute=0, second=0, microsecond=0):#kalau sblm jam 5 sore utk H+1
+                dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=1)))
+            else:#stlh jam 5 sore utk H+2
+                dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=2)))
+        else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
             # dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=14,minute=30,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
             dom.append(('max_book_datetime', '>=', datetime.now(pytz.utc)))
-            dom.append(('total_timeslot', '>', 0))
-
-        #CONTOH HOME CARE
-        # else:
-        #     dom.append(('timeslot_type', 'in', ['home_care', 'group_booking']))
-        #     # if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
-        #     #     dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
-        #     # else:
-        #     #     min_datetime = current_datetime.replace(hour=1, minute=0, second=0, microsecond=0)
-        #     #     if current_datetime > min_datetime:
-        #     #         min_datetime = min_datetime + timedelta(days=1)
-        #     #     dom.append(('datetimeslot', '>=', min_datetime))
-        #
-        #     # home care di ganti H+1
-        #     if current_wib_datetime <= current_wib_datetime.replace(hour=17, minute=0, second=0, microsecond=0):#kalau sblm jam 5 sore utk H+1
-        #         dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=1)))
-        #     else:#stlh jam 5 sore utk H+2
-        #         dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=2)))
+            dom.append(('total_timeslot','>',0))
 
         timeslots = self.search(dom)
         # max_date = date.today()
