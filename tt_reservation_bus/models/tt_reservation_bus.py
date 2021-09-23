@@ -326,6 +326,12 @@ class TtReservationBus(models.Model):
                 elif provider['state'] == 'fail_issued':
                     provider_obj.action_failed_issued_api_bus(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
+                elif provider['state'] == 'void':
+                    provider_obj.action_void()
+                    any_provider_changed = True
+                elif provider['state'] == 'refund':
+                    provider_obj.action_refund()
+                    any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
                 if rec.pnr:

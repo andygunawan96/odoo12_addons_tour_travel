@@ -40,6 +40,7 @@
                         </h1>
                     </div>
                     <group>
+                        <field name="description"/>
                         <field name="banner_color"/>
                         <field name="minimum_days"/>
                         <field name="provider_type_id"/>

@@ -196,7 +196,20 @@ class PrintoutTicketForm(models.AbstractModel):
             })
 
         if data['context']['active_model'] == 'tt.reservation.medical':
-            vals.update({'qr_code_data': self.env[data['context']['active_model']].browse(data['context']['active_ids']).to_dict(),})
+            to_dict = self.env[data['context']['active_model']].browse(data['context']['active_ids']).to_dict()
+            qr_dict = {
+                'order_number': to_dict['order_number'],
+                'pnr': to_dict['pnr'],
+                'state': to_dict['state_description'],
+                'hold_date': to_dict['hold_date'],
+                'pax': {
+                    'YCD': to_dict['YCD'],
+                    'ADT': to_dict['ADT'],
+                    'CHD': to_dict['CHD'],
+                    'INF': to_dict['INF'],
+                },
+            }
+            vals.update({'qr_code_data': json.dumps(qr_dict),})
         return vals
 
 
