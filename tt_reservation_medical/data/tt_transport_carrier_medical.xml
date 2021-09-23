@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="tt_transport_carrier_medical_drive_thru_nathos_antigen" model="tt.transport.carrier">
+        <record id="tt_transport_carrier_medical_nathos_antigen" model="tt.transport.carrier">
             <field name="name">Antigen National Hospital Surabaya</field>
             <field name="code">NHDTKATG</field>
             <field name="icao">NHDTKATG</field>
@@ -14,77 +14,41 @@
             <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
         </record>
 
-        <!--<record id="tt_transport_carrier_phc_drive_thru_antigen" model="tt.transport.carrier">-->
-            <!--<field name="name">Drive Thru Antigen SS Radio</field>-->
-            <!--<field name="code">PHCDTKATG</field>-->
-            <!--<field name="icao">PHCDTKATG</field>-->
-            <!--<field name="call_sign">PHC Drive Thru ANTIGEN</field>-->
-            <!--<field name="adult_length_name">80</field>-->
-            <!--<field name="child_length_name">80</field>-->
-            <!--<field name="infant_length_name">80</field>-->
-            <!--<field name="active">1</field>-->
-            <!--<field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>-->
-        <!--</record>-->
+        <record id="tt_transport_carrier_medical_nathos_pcr" model="tt.transport.carrier">
+            <field name="name">PCR National Hospital Surabaya</field>
+            <field name="code">NHDTKPCR</field>
+            <field name="icao">NHDTKPCR</field>
+            <field name="call_sign">PCR National Hospital Surabaya</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
 
-        <!--<record id="tt_transport_carrier_phc_home_care_pcr" model="tt.transport.carrier">-->
-            <!--<field name="name">Home Care PCR Surabaya</field>-->
-            <!--<field name="code">PHCHCKPCR</field>-->
-            <!--<field name="icao">PHCHCKPCR</field>-->
-            <!--<field name="call_sign">PHC Home Care PCR</field>-->
-            <!--<field name="adult_length_name">80</field>-->
-            <!--<field name="child_length_name">80</field>-->
-            <!--<field name="infant_length_name">80</field>-->
-            <!--<field name="active">1</field>-->
-            <!--<field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>-->
-        <!--</record>-->
+        <record id="tt_transport_carrier_medical_nathos_antigen_24_hours" model="tt.transport.carrier">
+            <field name="name">Antigen 24 Hours National Hospital Surabaya</field>
+            <field name="code">NHDTKATG24</field>
+            <field name="icao">NHDTKATG24</field>
+            <field name="call_sign">Antigen 24 Hours National Hospital Surabaya</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
 
-        <!--<record id="tt_transport_carrier_phc_drive_thru_pcr" model="tt.transport.carrier">-->
-            <!--<field name="name">Drive Thru PCR SS Radio 24 Hours</field>-->
-            <!--<field name="code">PHCDTKPCR</field>-->
-            <!--<field name="icao">PHCDTKPCR</field>-->
-            <!--<field name="call_sign">PHC Drive Thru PCR</field>-->
-            <!--<field name="adult_length_name">80</field>-->
-            <!--<field name="child_length_name">80</field>-->
-            <!--<field name="infant_length_name">80</field>-->
-            <!--<field name="active">1</field>-->
-            <!--<field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>-->
-        <!--</record>-->
-
-        <!--<record id="tt_transport_carrier_phc_drive_thru_pcr_priority" model="tt.transport.carrier">-->
-            <!--<field name="name">Drive Thru PCR Priority SS Radio 12 Hours</field>-->
-            <!--<field name="code">PHCDTOPCR</field>-->
-            <!--<field name="icao">PHCDTOPCR</field>-->
-            <!--<field name="call_sign">PHC Drive Thru PCR Priority</field>-->
-            <!--<field name="adult_length_name">80</field>-->
-            <!--<field name="child_length_name">80</field>-->
-            <!--<field name="infant_length_name">80</field>-->
-            <!--<field name="active">1</field>-->
-            <!--<field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>-->
-        <!--</record>-->
-
-        <!--<record id="tt_transport_carrier_phc_drive_thru_pcr_express" model="tt.transport.carrier">-->
-            <!--<field name="name">Drive Thru PCR Express SS Radio 6 Hours</field>-->
-            <!--<field name="code">PHCDTEPCR</field>-->
-            <!--<field name="icao">PHCDTEPCR</field>-->
-            <!--<field name="call_sign">PHC Drive Thru PCR Express</field>-->
-            <!--<field name="adult_length_name">80</field>-->
-            <!--<field name="child_length_name">80</field>-->
-            <!--<field name="infant_length_name">80</field>-->
-            <!--<field name="active">1</field>-->
-            <!--<field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>-->
-        <!--</record>-->
-
-        <!--<record id="tt_transport_carrier_phc_drive_thru_srbd" model="tt.transport.carrier">-->
-            <!--<field name="name">Drive Thru S-RBD SS Radio</field>-->
-            <!--<field name="code">PHCDTKSRBD</field>-->
-            <!--<field name="icao">PHCDTKSRBD</field>-->
-            <!--<field name="call_sign">PHC Drive Thru S-RBD Express</field>-->
-            <!--<field name="adult_length_name">80</field>-->
-            <!--<field name="child_length_name">80</field>-->
-            <!--<field name="infant_length_name">80</field>-->
-            <!--<field name="active">1</field>-->
-            <!--<field name="provider_type_id" ref="tt_reservation_phc.tt_provider_type_phc"/>-->
-        <!--</record>-->
+        <record id="tt_transport_carrier_medical_nathos_pcr_24_hours" model="tt.transport.carrier">
+            <field name="name">PCR 24 Hours National Hospital Surabaya</field>
+            <field name="code">NHDTKPCR24</field>
+            <field name="icao">NHDTKPCR24</field>
+            <field name="call_sign">PCR 24 Hours National Hospital Surabaya</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
 
     </data>
 </odoo>
