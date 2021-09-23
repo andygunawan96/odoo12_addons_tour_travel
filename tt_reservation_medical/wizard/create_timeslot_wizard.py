@@ -173,7 +173,7 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
                 'commission_pcr': default_data_obj.commission_pcr_dt,
                 'commission_pcr_priority': default_data_obj.commission_pcr_priority,
                 'commission_pcr_express': default_data_obj.commission_pcr_express,
-                'commission_srbdcr_express': default_data_obj.commission_srbd,
+                'commission_srbd': default_data_obj.commission_srbd,
                 'base_price_antigen': default_data_obj.base_price_antigen,
                 'base_price_pcr': default_data_obj.base_price_pcr_dt,
                 'base_price_pcr_priority': default_data_obj.base_price_pcr_priority,

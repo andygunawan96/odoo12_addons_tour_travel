@@ -11,16 +11,18 @@ class TtCronLogInhphc(models.Model):
 
     def cron_auto_done_state_vendor_phc(self):
         try:
-            issued_bookings = self.env['tt.reservation.phc'].search(
-                [('state','=','issued'),
-                 ('state_vendor','=','confirmed_order'),
-                 ('create_date','<',datetime.now())])
-            for booking in issued_bookings:
-                try:
-                    booking.state_vendor = 'done'
-                except Exception as e:
-                    _logger.error(
-                        '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
+            pass
+            # PHC tidak punya done, berhenti di verified
+            # issued_bookings = self.env['tt.reservation.phc'].search(
+            #     [('state','=','issued'),
+            #      ('state_vendor','=','confirmed_order'),
+            #      ('create_date','<',datetime.now())])
+            # for booking in issued_bookings:
+            #     try:
+            #         booking.state_vendor = 'done'
+            #     except Exception as e:
+            #         _logger.error(
+            #             '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto done state vendor phc')
