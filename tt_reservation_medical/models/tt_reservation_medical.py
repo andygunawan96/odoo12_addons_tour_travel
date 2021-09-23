@@ -212,6 +212,8 @@ class Reservationmedical(models.Model):
         overtime_price = 0
         single_suplement_price = 0
         admin_fee = 0
+
+        # KALAU ADA HOMECARE 1 ORANG BARU DI CHECK
         # if req['pax_count'] <= 1 and \
         #         carrier_obj.id == self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_home_care_antigen').id:
         #     single_suplement = True
@@ -226,13 +228,17 @@ class Reservationmedical(models.Model):
         #             if carrier_obj.id == self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_drive_thru_nathos_antigen').id:
         #                 admin_fee = rec.admin_fee_antigen_drivethru
         # el
-        if carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_drive_thru_nathos_antigen').id]:
+        if carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_antigen').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_pcr > base_price:
+                    base_price = rec.base_price_antigen
+                    commission_price = rec.commission_antigen
+
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_pcr').id]:
             for rec in timeslot_objs:
                 if rec.base_price_pcr > base_price:
                     base_price = rec.base_price_pcr
                     commission_price = rec.commission_pcr
-                    overtime_price = rec.overtime_surcharge
-                    single_suplement_price = rec.single_supplement
 
         extra_charge_per_pax = (overtime_surcharge and overtime_price or 0) + (single_suplement and single_suplement_price or 0)
         return ERR.get_no_error({
@@ -1273,26 +1279,16 @@ class Reservationmedical(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
-        if self.carrier_name == 'PHCHCKPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_homecare_information')
-        elif self.carrier_name == 'PHCDTKPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_information')
-        elif self.carrier_name == 'PHCDTOPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_priority_information')
-        elif self.carrier_name == 'PHCDTEPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_express_information')
-        elif self.carrier_name == 'PHCDTKSRBD':
-            template_obj = self.env.ref('tt_report_common.phc_srbd_drive_thru_information')
-        elif self.carrier_name == 'PHCHCKATG':
-            template_obj = self.env.ref('tt_report_common.phc_antigen_homecare_information')
-        else:
-            template_obj = self.env.ref('tt_report_common.phc_antigen_information')
+        if self.carrier_name == 'NHDTKATG':
+            template_obj = self.env.ref('tt_report_common.nathos_antigen_information')
+        elif self.carrier_name == 'NHDTKPCR':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_information')
         return template_obj.html
 
     def get_terms_conditions_email_old(self):
         terms_txt = "<u><b>Terms and Conditions</b></u><br/>"
         terms_txt += "1. Payment must be made in advance.<br/>"
-        if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
+        if self.carrier_name in ['NHDTKPCR']:
             terms_txt += "<ul>"
             terms_txt += "<li>For PCR Test participants, it is recommended to immediately complete online payment via BCA VA or MANDIRI BANK VA so your quota can be secured.</li>"
             terms_txt += "<li>If a participant's payment has not been complete and we ran out of quota, the participant can issue a Re-Order for the next day or any other available test schedules.</li>"
@@ -1316,21 +1312,21 @@ class Reservationmedical(models.Model):
         terms_txt += "<li>You can add any participants as long as the test fee for that participant is paid in advance</li>"
         terms_txt += "</ul>"
         terms_txt += "6. Reduction of participants refers to the Cancellation Policy.<br/>"
-        if self.carrier_name in ['PHCHCKPCR', 'PHCDTKPCR']:
-            terms_txt += "7. Under normal circumstances, test results will be released by PHC Hospital around 12-24 hours after the test. Test result could be delayed up to 48 hours during high volume condition.<br/>"
+        if self.carrier_name in ['NHDTKPCR', 'NHDTKPCR']:
+            terms_txt += "7. Under normal circumstances, test results will be released by National Hospital around 12-24 hours after the test. Test result could be delayed up to 48 hours during high volume condition.<br/>"
         else:
-            terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by PHC Hospital around 30-120 minutes after the test.<br/>"
+            terms_txt += "7. Under normal circumstances, test results will be sent via Whatsapp by National Hospital around 30-120 minutes after the test.<br/>"
         terms_txt += "8. In case our nurses/officers do not come for the scheduled test, you can file a complaint at most 24 hours after the supposedly test schedule.<br/>"
-        if self.carrier_name in ['PHCDTKATG', 'PHCDTKPCR']:
+        if self.carrier_name in ['NHDTKATG']:
             terms_txt += "9. If you have registered online for Drive Thru Test, you must arrive at the test location at most 15:30/16:00 WIB during the scheduled test date (depends on the queue length), otherwise the test will have to be done the next day.<br/>"
             terms_txt += "10. Our operational hours: Monday - Saturday (08:00 - 16:00 WIB). The gate will be closed at 15:00 WIB. However, any participants that have arrived at the test location will still be served according to our terms and conditions."
         return terms_txt
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
-        if self.provider_booking_ids[0].carrier_id.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id, self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+        if self.provider_booking_ids[0].carrier_id.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_pcr').id]:
             desc_txt += 'Test Type: PCR TEST\n'
-        elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_express').id:
+        elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_antigen').id:
             desc_txt += 'Test Type: PCR EXPRESS TEST\n'
         else:
             desc_txt += 'Test Type: ANTIGEN TEST\n'

@@ -27,16 +27,16 @@ class TtCronLogInhmedical(models.Model):
 
     def cron_auto_create_timeslot_medical(self,days_range=1,max_timeslot=3,adult_timeslot=425,dt_max_timeslot=1,dt_days_range=8,dt_adult_timeslot=425,pcr_timeslot=200):
         try:
-            #home care
-            wiz_obj = self.env['create.timeslot.medical.wizard'].create({
-                'end_date': datetime.today() + timedelta(days=days_range),
-                'area_id': self.env.ref('tt_reservation_medical.tt_destination_medical_sub').id,
-                'default_data_id': self.env['tt.timeslot.medical.default'].search([],limit=1).id,
-                'total_timeslot': max_timeslot,
-                'total_adult_timeslot': adult_timeslot,
-                'total_pcr_timeslot': pcr_timeslot
-            })
-            wiz_obj.generate_timeslot()
+            #home care belum ada kalau ada bisa di uncomment
+            # wiz_obj = self.env['create.timeslot.medical.wizard'].create({
+            #     'end_date': datetime.today() + timedelta(days=days_range),
+            #     'area_id': self.env.ref('tt_reservation_medical.tt_destination_medical_sub').id,
+            #     'default_data_id': self.env['tt.timeslot.medical.default'].search([],limit=1).id,
+            #     'total_timeslot': max_timeslot,
+            #     'total_adult_timeslot': adult_timeslot,
+            #     'total_pcr_timeslot': pcr_timeslot
+            # })
+            # wiz_obj.generate_timeslot()
             public_holiday_res = self.env['tt.public.holiday'].get_public_holiday_api({
                 'start_date': datetime.now(),
                 'end_date': datetime.now() + timedelta(days=8),
