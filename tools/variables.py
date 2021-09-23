@@ -136,8 +136,9 @@ STATE_VENDOR = [
     ('test_completed', 'Test Completed'),  ## test completed (periksain only)
     ('no_show', 'No Show'),  ## customer cancel H-1 after 16:00 or H
     ('refund', 'Refund'),  ## customer cancel before H-1 16:00
-    ('verified', 'Verified'),
-    ('suspect', 'Suspect')
+    ('verified', 'Verified'), ## verif di PHC
+    ('done', 'Done'), ## Periksain yg sudah done
+    ('suspect', 'Suspect') ## supaya status PHC tdk new_order dan bisa book lagi
 ]
 
 JOURNEY_DIRECTION = [

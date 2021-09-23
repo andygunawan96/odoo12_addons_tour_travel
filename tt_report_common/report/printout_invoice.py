@@ -165,6 +165,8 @@ class PrintoutTicketForm(models.AbstractModel):
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('periksain_ticket', agent_id)
         elif data['context']['active_model'] == 'tt.reservation.phc':
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('phc_ticket', agent_id)
+        elif data['context']['active_model'] == 'tt.reservation.medical':
+            airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('medical_ticket', agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -196,7 +198,24 @@ class PrintoutTicketForm(models.AbstractModel):
             })
 
         if data['context']['active_model'] == 'tt.reservation.medical':
-            vals.update({'qr_code_data': self.env[data['context']['active_model']].browse(data['context']['active_ids']).to_dict(),})
+            booking_obj = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+            # qr_dict = {
+            #     'order_number': to_dict['order_number'],
+            #     'pnr': to_dict['pnr'],
+            #     'state': to_dict['state_description'],
+            #     'hold_date': to_dict['hold_date'],
+            #     'pax': {
+            #         'YCD': to_dict['YCD'],
+            #         'ADT': to_dict['ADT'],
+            #         'CHD': to_dict['CHD'],
+            #         'INF': to_dict['INF'],
+            #     },
+            # }
+            pax_values = []
+            for pax_obj in booking_obj.passenger_ids:
+                pax_values.append(pax_obj.name)
+            qr_values = "%s\n%s\n%s\n%s\n%s\n%s" % (booking_obj.name,booking_obj.test_datetime,booking_obj.contact_name,booking_obj.contact_phone,booking_obj.provider_booking_ids[0].carrier_id.name,'\n'.join(pax_values))
+            vals.update({'qr_code_data': qr_values,})
         return vals
 
 

@@ -8,17 +8,14 @@ from datetime import datetime,date, timedelta
 _logger = logging.getLogger(__name__)
 #HC Homecare, DT Drive Thru
 COMMISSION_PER_PAX_ANTIGEN = 11600 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_HC = 75000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT = 43000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT_PRIORITY = 105000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT_EXPRESS = 500000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_DT_SRBD = 18000 ## komisi agent /pax
+COMMISSION_PER_PAX_ANTIGEN_24_HOURS = 11600 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR = 75000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_24_HOURS = 43000 ## komisi agent /pax
 BASE_PRICE_PER_PAX_ANTIGEN = 99000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_HC = 750000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT = 495000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT_PRIORITY = 750000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT_EXPRESS = 3500000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_DT_SRBD = 195000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_ANTIGEN_24_HOURS = 99000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_24_HOURS = 495000 ## harga 1 /pax
+
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 ADMIN_FEE_ANTIGEN_DRIVETHRU = 10000
@@ -64,16 +61,14 @@ class TtTimeslotmedical(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
 
     commission_antigen = fields.Monetary('Commission per PAX Antigen')
+    commission_antigen_24_hours = fields.Monetary('Commission per PAX Antigen 24 Hours')
     commission_pcr = fields.Monetary('Commission per PAX PCR')
-    commission_pcr_priority = fields.Monetary('Commission per PAX PCR Priority')
-    commission_pcr_express = fields.Monetary('Commission per PAX PCR Express')
-    commission_srbd = fields.Monetary('Commission per PAX S-RBD')
+    commission_pcr_24_hours = fields.Monetary('Commission per PAX PCR 24 Hours')
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen')
-    base_price_pcr = fields.Monetary('Base Price per PAX PCR')
-    base_price_pcr_priority = fields.Monetary('Base Price per PAX PCR Priority')
-    base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express')
-    base_price_srbd = fields.Monetary('Base Price per PAX S-RBD')
+    base_price_antigen_24_hours = fields.Monetary('Base Price per PAX Antigen')
+    base_price_pcr = fields.Monetary('Base Price per PAX PCR 24 Hours')
+    base_price_pcr_24_hours = fields.Monetary('Base Price per PAX PCR 24 Hours')
 
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
@@ -160,7 +155,7 @@ class TtTimeslotmedical(models.Model):
 
         dom = ['|', ('agent_id', '=', False), ('agent_id', '=', context['co_agent_id'])]
 
-        if carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_drive_thru_nathos_antigen').id]:
+        if carrier_obj.id in []: #kalau ada carrier homecare, ref masuk di list ini
             dom.append(('timeslot_type', 'in', ['home_care', 'group_booking']))
             # if '06:00' < str(current_wib_datetime.time())[:5] < '14:00':
             #     dom.append(('datetimeslot', '>=', datetime.now(pytz.utc) + timedelta(hours=2)))
@@ -258,25 +253,17 @@ class TtTimeslotmedicaldefault(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
     commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX_ANTIGEN,
                                          required=True)
-    commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR_HC, required=True)
-    commission_pcr_dt = fields.Monetary('Commission per PAX PCR DT', default=COMMISSION_PER_PAX_PCR_DT, required=True)
-    commission_pcr_priority = fields.Monetary('Commission per PAX PCR Priority',
-                                             default=COMMISSION_PER_PAX_PCR_DT_PRIORITY, required=True)
-    commission_pcr_express = fields.Monetary('Commission per PAX PCR Express',
-                                             default=COMMISSION_PER_PAX_PCR_DT_EXPRESS, required=True)
-    commission_srbd = fields.Monetary('Commission per PAX S-RBD',
-                                             default=COMMISSION_PER_PAX_PCR_DT_SRBD, required=True)
+    commission_antigen_24_hours = fields.Monetary('Commission per PAX Antigen 24 Hours', default=COMMISSION_PER_PAX_ANTIGEN_24_HOURS,
+                                         required=True)
+    commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR, required=True)
+    commission_pcr_24_hours = fields.Monetary('Commission per PAX PCR 24 Hours', default=COMMISSION_PER_PAX_PCR_24_HOURS, required=True)
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen', default=BASE_PRICE_PER_PAX_ANTIGEN,
                                          required=True)
-    base_price_pcr = fields.Monetary('Base Price per PAX PCR', default=BASE_PRICE_PER_PAX_PCR_HC, required=True)
-    base_price_pcr_dt = fields.Monetary('Base Price per PAX PCR DT', default=BASE_PRICE_PER_PAX_PCR_DT, required=True)
-    base_price_pcr_priority = fields.Monetary('Base Price per PAX PCR Priority',
-                                              default=BASE_PRICE_PER_PAX_PCR_DT_PRIORITY, required=True)
-    base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express',
-                                             default=BASE_PRICE_PER_PAX_PCR_DT_EXPRESS, required=True)
-    base_price_srbd = fields.Monetary('Base Price per PAX S-RBD',
-                                             default=BASE_PRICE_PER_PAX_PCR_DT_SRBD, required=True)
+    base_price_antigen_24_hours = fields.Monetary('Base Price per PAX Antigen 24 Hours', default=BASE_PRICE_PER_PAX_ANTIGEN_24_HOURS,
+                                         required=True)
+    base_price_pcr = fields.Monetary('Base Price per PAX PCR', default=BASE_PRICE_PER_PAX_PCR, required=True)
+    base_price_pcr_24_hours = fields.Monetary('Base Price per PAX PCR 24 Hours', default=BASE_PRICE_PER_PAX_PCR_24_HOURS, required=True)
 
     single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)

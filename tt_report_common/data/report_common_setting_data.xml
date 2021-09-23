@@ -331,6 +331,14 @@
             <field name="active" eval="True"/>
         </record>
 
+        <record id="medical_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Medical Ticket</field>
+            <field name="code">F</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
         <record id="agent_invoice_footer" model="tt.report.common.setting">
             <field name="name">Agent Invoice</field>
             <field name="code">agent_invoice</field>
@@ -409,13 +417,49 @@
             <field name="active" eval="True"/>
         </record>
 
-        <record id="nathos_antigen_drive_thru_information" model="tt.report.common.setting">
-            <field name="name">Drive Thru Antigen National Hospital Surabaya Information</field>
-            <field name="code">nathos_antigen_drive_thru_information</field>
+        <record id="nathos_antigen_information" model="tt.report.common.setting">
+            <field name="name">Antigen National Hospital Surabaya Information</field>
+            <field name="code">nathos_antigen_information</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Antigen
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="nathos_pcr_information" model="tt.report.common.setting">
+            <field name="name">PCR National Hospital Surabaya Information</field>
+            <field name="code">nathos_pcr_information</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information PCR
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="nathos_antigen_24_hours_information" model="tt.report.common.setting">
+            <field name="name">Antigen 24 Hours National Hospital Surabaya Information</field>
+            <field name="code">nathos_antigen_24_hours_information</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information Antigen 24 Hours
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="nathos_pcr_24_hours_information" model="tt.report.common.setting">
+            <field name="name">PCR 24 Hours National Hospital Surabaya Information</field>
+            <field name="code">nathos_pcr_24_hours_information</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information PCR 24 Hours
                 </div>
             </field>
             <field name="active" eval="True"/>

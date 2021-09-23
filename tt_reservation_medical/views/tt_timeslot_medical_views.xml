@@ -78,10 +78,9 @@
                             <field name="commission_antigen"/>
                             <field name="admin_fee_antigen_drivethru"/>
                         </group>
-
-                        <group string="S-RBD">
-                            <field name="base_price_srbd"/>
-                            <field name="commission_srbd"/>
+                        <group string="Antigen 24 Hours">
+                            <field name="base_price_pcr_24_hours"/>
+                            <field name="commission_pcr_24_hours"/>
                         </group>
                     </group>
                     <group>
@@ -89,18 +88,12 @@
                             <field name="base_price_pcr"/>
                             <field name="commission_pcr"/>
                         </group>
-
-                        <group string="PCR Priority">
-                            <field name="base_price_pcr_priority"/>
-                            <field name="commission_pcr_priority"/>
+                        <group string="PCR 24 Hours">
+                            <field name="base_price_pcr_24_hours"/>
+                            <field name="commission_pcr_24_hours"/>
                         </group>
                     </group>
                     <group>
-                        <group string="PCR Express">
-                            <field name="base_price_pcr_express"/>
-                            <field name="commission_pcr_express"/>
-                        </group>
-
                         <group string="Additional Price">
                             <field name="single_supplement"/>
                             <field name="overtime_surcharge"/>
@@ -151,30 +144,19 @@
                             <field name="commission_antigen"/>
                             <field name="admin_fee_antigen_drivethru"/>
                         </group>
-
-                        <group string="S-RBD">
-                            <field name="base_price_srbd"/>
-                            <field name="commission_srbd"/>
+                        <group string="Antigen 24 Hours">
+                            <field name="base_price_antigen_24_hours"/>
+                            <field name="commission_antigen_24_hours"/>
                         </group>
                     </group>
                     <group>
-                        <group string="PCR Home Care">
+                        <group string="PCR">
                             <field name="base_price_pcr"/>
                             <field name="commission_pcr"/>
                         </group>
-                        <group string="PCR Regular">
-                            <field name="base_price_pcr_dt"/>
-                            <field name="commission_pcr_dt"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group string="PCR Priority">
-                            <field name="base_price_pcr_priority"/>
-                            <field name="commission_pcr_priority"/>
-                        </group>
-                        <group string="PCR Express">
-                            <field name="base_price_pcr_express"/>
-                            <field name="commission_pcr_express"/>
+                        <group string="PCR 24 Hours">
+                            <field name="base_price_pcr_24_hours"/>
+                            <field name="commission_pcr_24_hours"/>
                         </group>
                     </group>
                     <group>
@@ -196,15 +178,13 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="base_price_antigen"/>
+                <field name="base_price_antigen_24_hours"/>
                 <field name="base_price_pcr"/>
-                <field name="base_price_pcr_dt"/>
-                <field name="base_price_pcr_priority"/>
-                <field name="base_price_pcr_express"/>
+                <field name="base_price_pcr_24_hours"/>
                 <field name="commission_antigen"/>
+                <field name="commission_antigen_24_hours"/>
                 <field name="commission_pcr"/>
-                <field name="commission_pcr_dt"/>
-                <field name="commission_pcr_priority"/>
-                <field name="commission_pcr_express"/>
+                <field name="commission_pcr_24_hours"/>
             </tree>
         </field>
     </record>
