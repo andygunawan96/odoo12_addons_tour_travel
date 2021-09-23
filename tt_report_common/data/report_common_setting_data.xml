@@ -331,6 +331,14 @@
             <field name="active" eval="True"/>
         </record>
 
+        <record id="medical_ticket_footer" model="tt.report.common.setting">
+            <field name="name">Medical Ticket</field>
+            <field name="code">F</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html"></field>
+            <field name="active" eval="True"/>
+        </record>
+
         <record id="agent_invoice_footer" model="tt.report.common.setting">
             <field name="name">Agent Invoice</field>
             <field name="code">agent_invoice</field>

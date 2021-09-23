@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="tt_provider_medical" model="tt.provider">
             <field name="name">National Hospital</field>
-            <field name="code">nathos</field>
+            <field name="code">national_hospital</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_medical"/>
         </record>
