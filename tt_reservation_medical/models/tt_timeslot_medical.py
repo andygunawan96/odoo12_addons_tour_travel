@@ -8,13 +8,24 @@ from datetime import datetime,date, timedelta
 _logger = logging.getLogger(__name__)
 #HC Homecare, DT Drive Thru
 COMMISSION_PER_PAX_ANTIGEN = 11600 ## komisi agent /pax
-COMMISSION_PER_PAX_ANTIGEN_24_HOURS = 11600 ## komisi agent /pax
 COMMISSION_PER_PAX_PCR = 75000 ## komisi agent /pax
-COMMISSION_PER_PAX_PCR_24_HOURS = 43000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_MUTASI = 75000 ## komisi agent /pax
+COMMISSION_PER_PAX_PCR_SALIVA = 75000 ## komisi agent /pax
+COMMISSION_PER_PAX_TES_ANTIBODI_RBD = 75000 ## komisi agent /pax
+COMMISSION_PER_PAX_ANTIGEN_NASSAL = 75000 ## komisi agent /pax
+COMMISSION_PER_PAX_PAKET_SCREENING_CVD19 = 75000 ## komisi agent /pax
+COMMISSION_PER_PAX_PAKET_SCREENING_CVD19_WITH_PCR = 75000 ## komisi agent /pax
+COMMISSION_PER_PAX_PAKET_SCREENING_CVD19_URBAN_LIFESTYLE = 75000 ## komisi agent /pax
+
 BASE_PRICE_PER_PAX_ANTIGEN = 99000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_ANTIGEN_24_HOURS = 99000 ## harga 1 /pax
 BASE_PRICE_PER_PAX_PCR = 495000 ## harga 1 /pax
-BASE_PRICE_PER_PAX_PCR_24_HOURS = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_MUTASI = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PCR_SALIVA = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_TES_ANTIBODI_RBD = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_ANTIGEN_NASSAL = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PAKET_SCREENING_CVD19 = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PAKET_SCREENING_CVD19_WITH_PCR = 495000 ## harga 1 /pax
+BASE_PRICE_PER_PAX_PAKET_SCREENING_CVD19_URBAN_LIFESTYLE = 495000 ## harga 1 /pax
 
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
@@ -61,14 +72,24 @@ class TtTimeslotmedical(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
 
     commission_antigen = fields.Monetary('Commission per PAX Antigen')
-    commission_antigen_24_hours = fields.Monetary('Commission per PAX Antigen 24 Hours')
     commission_pcr = fields.Monetary('Commission per PAX PCR')
-    commission_pcr_24_hours = fields.Monetary('Commission per PAX PCR 24 Hours')
+    commission_pcr_mutasi = fields.Monetary('Commission per PAX PCR Mutasi')
+    commission_pcr_saliva = fields.Monetary('Commission per PAX PCR Salivan')
+    commission_tes_antibodi_rbd = fields.Monetary('Commission per PAX Tes Antibodi RBD')
+    commission_antigen_nassal = fields.Monetary('Commission per PAX Nassal Antigen')
+    commission_paket_screening_cvd19 = fields.Monetary('Commission per PAX Paket Screening COVID-19')
+    commission_paket_screening_cvd19_with_pcr = fields.Monetary('Commission per PAX Paket Screening COVID-19 + PCR')
+    commission_paket_screening_cvd19_urban_lifestyle = fields.Monetary('Commission per PAX Paket Screening COVID-19 Urban Lifestyle')
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen')
-    base_price_antigen_24_hours = fields.Monetary('Base Price per PAX Antigen')
-    base_price_pcr = fields.Monetary('Base Price per PAX PCR 24 Hours')
-    base_price_pcr_24_hours = fields.Monetary('Base Price per PAX PCR 24 Hours')
+    base_price_pcr = fields.Monetary('Base Price per PAX PCR')
+    base_price_pcr_mutasi = fields.Monetary('Base Price per PAX PCR Mutasi')
+    base_price_pcr_saliva = fields.Monetary('Base Price per PAX PCR Salivan')
+    base_price_tes_antibodi_rbd = fields.Monetary('Base Price per PAX Tes Antibodi RBD')
+    base_price_antigen_nassal = fields.Monetary('Base Price per PAX Nassal Antigen')
+    base_price_paket_screening_cvd19 = fields.Monetary('Base Price per PAX Paket Screening COVID-19')
+    base_price_paket_screening_cvd19_with_pcr = fields.Monetary('Base Price per PAX Paket Screening COVID-19 + PCR')
+    base_price_paket_screening_cvd19_urban_lifestyle = fields.Monetary('Base Price per PAX Paket Screening COVID-19 Urban Lifestyle')
 
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
@@ -253,17 +274,26 @@ class TtTimeslotmedicaldefault(models.Model):
                                   default=lambda self: self.env.user.company_id.currency_id)
     commission_antigen = fields.Monetary('Commission per PAX Antigen', default=COMMISSION_PER_PAX_ANTIGEN,
                                          required=True)
-    commission_antigen_24_hours = fields.Monetary('Commission per PAX Antigen 24 Hours', default=COMMISSION_PER_PAX_ANTIGEN_24_HOURS,
-                                         required=True)
     commission_pcr = fields.Monetary('Commission per PAX PCR', default=COMMISSION_PER_PAX_PCR, required=True)
-    commission_pcr_24_hours = fields.Monetary('Commission per PAX PCR 24 Hours', default=COMMISSION_PER_PAX_PCR_24_HOURS, required=True)
+    commission_pcr_mutasi = fields.Monetary('Commission per PAX PCR Mutasi', default=COMMISSION_PER_PAX_PCR_MUTASI, required=True)
+    commission_pcr_saliva = fields.Monetary('Commission per PAX PCR Saliva', default=COMMISSION_PER_PAX_PCR_SALIVA, required=True)
+    commission_tes_antibodi_rbd = fields.Monetary('Commission per PAX Tes Antibodi RBD', default=COMMISSION_PER_PAX_TES_ANTIBODI_RBD, required=True)
+    commission_antigen_nassal = fields.Monetary('Commission per PAX Nassal Antigen', default=COMMISSION_PER_PAX_ANTIGEN_NASSAL, required=True)
+    commission_paket_screening_cvd19 = fields.Monetary('Commission per PAX Paket Screening Covid-19', default=COMMISSION_PER_PAX_PAKET_SCREENING_CVD19, required=True)
+    commission_paket_screening_cvd19_with_pcr = fields.Monetary('Commission per PAX Paket Screening Covid-19 + PCR', default=COMMISSION_PER_PAX_PAKET_SCREENING_CVD19_WITH_PCR, required=True)
+    commission_paket_screening_cvd19_urban_lifestyle = fields.Monetary('Commission per PAX Paket Screening Covid-19 Urban Lifestyle', default=COMMISSION_PER_PAX_PAKET_SCREENING_CVD19_URBAN_LIFESTYLE, required=True)
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen', default=BASE_PRICE_PER_PAX_ANTIGEN,
                                          required=True)
-    base_price_antigen_24_hours = fields.Monetary('Base Price per PAX Antigen 24 Hours', default=BASE_PRICE_PER_PAX_ANTIGEN_24_HOURS,
-                                         required=True)
     base_price_pcr = fields.Monetary('Base Price per PAX PCR', default=BASE_PRICE_PER_PAX_PCR, required=True)
-    base_price_pcr_24_hours = fields.Monetary('Base Price per PAX PCR 24 Hours', default=BASE_PRICE_PER_PAX_PCR_24_HOURS, required=True)
+    base_price_pcr_mutasi = fields.Monetary('Base Price per PAX PCR Mutasi', default=BASE_PRICE_PER_PAX_PCR_MUTASI, required=True)
+    base_price_pcr_saliva = fields.Monetary('Base Price per PAX PCR Saliva', default=BASE_PRICE_PER_PAX_PCR_SALIVA, required=True)
+    base_price_tes_antibodi_rbd = fields.Monetary('Base Price per PAX Tes Antibodi RBD', default=BASE_PRICE_PER_PAX_TES_ANTIBODI_RBD, required=True)
+    base_price_antigen_nassal = fields.Monetary('Base Price per PAX Nassal Antigen', default=BASE_PRICE_PER_PAX_ANTIGEN_NASSAL, required=True)
+    base_price_paket_screening_cvd19 = fields.Monetary('Base Price per PAX Paket Screening Covid-19', default=BASE_PRICE_PER_PAX_PAKET_SCREENING_CVD19, required=True)
+    base_price_paket_screening_cvd19_with_pcr = fields.Monetary('Base Price per PAX Paket Screening Covid-19 + PCR', default=BASE_PRICE_PER_PAX_PAKET_SCREENING_CVD19_WITH_PCR, required=True)
+    base_price_paket_screening_cvd19_urban_lifestyle = fields.Monetary('Base Price per PAX Paket Screening Covid-19 Urban Lifestyle', default=BASE_PRICE_PER_PAX_PAKET_SCREENING_CVD19_URBAN_LIFESTYLE, required=True)
+
 
     single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
