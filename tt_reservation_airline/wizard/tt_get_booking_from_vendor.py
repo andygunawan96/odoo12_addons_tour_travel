@@ -14,6 +14,7 @@ provider_selection = [
         ('amadeus', 'Amadeus'),
         ('lionair', 'Lion Air'),
         ('lionairapi', 'Lion Air API'),
+        ('sia', 'Singapore Airlines'),
         # ('sabre', 'Sabre'),
     ]
 
@@ -181,10 +182,18 @@ class TtGetBookingFromVendor(models.TransientModel):
         passenger_values = ""
         pax_count = {}
         for rec in get_booking_res['passengers']:
-            passenger_values += "%s %s %s %s\n\n" % (rec['title'],rec['first_name'],rec['last_name'],rec['pax_type'])
+            passenger_values += "%s %s %s %s" % (rec['title'],rec['first_name'],rec['last_name'],rec['pax_type'])
             if rec['pax_type'] not in pax_count:
                 pax_count[rec['pax_type']] = 0
             pax_count[rec['pax_type']] += 1
+            passenger_values += '\n'
+            if rec.get('fees'):
+                passenger_values += 'SSR\n'
+                for fee in rec['fees']:
+                    fee_name = fee['fee_name'] if fee.get('fee_name') else '%s %s %s' % (fee.get('fee_type', ''), fee.get('fee_code', ''), fee.get('fee_value', ''))
+                    passenger_values += "%s = %s\n" % (fee_name, fee.get('base_price', '?'))
+                    grand_total += fee.get('base_price', 0.0)
+            passenger_values += '\n'
 
         if self.booker_id:
             title = "MR"
