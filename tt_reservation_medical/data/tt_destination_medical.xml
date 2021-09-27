@@ -13,21 +13,10 @@
             <field name="active">1</field>
         </record>
 
-        <record id="tt_destination_medical_sda" model="tt.destinations">
-            <field name="name">Sidoarjo</field>
-            <field name="code">SDA</field>
-            <field name="city">Sidoarjo</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-        <record id="tt_destination_medical_mlg" model="tt.destinations">
-            <field name="name">Malang</field>
-            <field name="code">MLG</field>
-            <field name="city">Malang</field>
+        <record id="tt_destination_medical_bali" model="tt.destinations">
+            <field name="name">Bali</field>
+            <field name="code">DPS</field>
+            <field name="city">Bali</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
             <field name="timezone_hour">7</field>

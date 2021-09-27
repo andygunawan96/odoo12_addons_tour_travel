@@ -39,5 +39,18 @@
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_sync_reservation()</field>
         </record>
+
+        <record model="ir.cron" id="cron_auto_retry_issued">
+            <field name='name'>Auto Retry Issued Reservation</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name='interval_number'>10</field>
+            <field name='interval_type'>minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(datetime.now().replace(hour=0,minute=10,second=0).isoformat())"/>
+            <field name="active">False</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_auto_retry_issued()</field>
+        </record>
     </data>
 </odoo>

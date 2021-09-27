@@ -22,15 +22,25 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
     commission_antigen = fields.Monetary('Commission per PAX Antigen')
-    commission_antigen_24_hours = fields.Monetary('Commission per PAX Antigen 24 Hours')
     commission_pcr = fields.Monetary('Commission per PAX PCR')
-    commission_pcr_24_hours = fields.Monetary('Commission per PAX PCR 24 Hours')
-
+    commission_pcr_mutasi = fields.Monetary('Commission per PAX PCR Mutasi')
+    commission_pcr_saliva = fields.Monetary('Commission per PAX PCR Saliva')
+    commission_tes_antibodi_rbd = fields.Monetary('Commission per PAX Tes Antibodi RBD')
+    commission_antigen_nassal = fields.Monetary('Commission per PAX Nassal Antigen')
+    commission_paket_screening_cvd19 = fields.Monetary('Commission per PAX Paket Screening Covid-19')
+    commission_paket_screening_cvd19_with_pcr = fields.Monetary('Commission per PAX Paket Screening Covid-19 + PCR')
+    commission_paket_screening_cvd19_urban_lifestyle = fields.Monetary('Commission per PAX Paket Screening Covid-19 Urban Lifestyle')
 
     base_price_antigen = fields.Monetary('Base Price per PAX Antigen')
-    base_price_antigen_24_hours = fields.Monetary('Base Price per PAX Antigen 24 Hours')
     base_price_pcr = fields.Monetary('Base Price per PAX PCR')
-    base_price_pcr_24_hours = fields.Monetary('Base Price per PAX PCR 24 Hours')
+    base_price_pcr_mutasi = fields.Monetary('Base Price per PAX PCR Mutasi')
+    base_price_pcr_saliva = fields.Monetary('Base Price per PAX PCR Saliva')
+    base_price_tes_antibodi_rbd = fields.Monetary('Base Price per PAX Tes Antibodi RBD')
+    base_price_antigen_nassal = fields.Monetary('Base Price per PAX Nassal Antigen')
+    base_price_paket_screening_cvd19 = fields.Monetary('Base Price per PAX Paket Screening Covid-19')
+    base_price_paket_screening_cvd19_with_pcr = fields.Monetary('Base Price per PAX Paket Screening Covid-19 + PCR')
+    base_price_paket_screening_cvd19_urban_lifestyle = fields.Monetary('Base Price per PAX Paket Screening Covid-19 Urban Lifestyle')
+
     admin_fee_antigen_drivethru = fields.Monetary('Admin Fee Antigen DriveThru')
 
     single_supplement = fields.Monetary('Single Supplement')
@@ -44,14 +54,25 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
         new_rec = super(CreateTimeslotmedicalWizard, self).create(vals_list)
         if new_rec.default_data_id:
             new_rec.commission_antigen = new_rec.default_data_id.commission_antigen
-            new_rec.commission_antigen_24_hours = new_rec.default_data_id.commission_antigen_24_hours
+            new_rec.commission_antigen_nassal = new_rec.default_data_id.commission_antigen_nassal
             new_rec.commission_pcr = new_rec.default_data_id.commission_pcr
-            new_rec.commission_pcr_24_hours = new_rec.default_data_id.commission_pcr_24_hours
+            new_rec.commission_pcr_mutasi = new_rec.default_data_id.commission_pcr_mutasi
+            new_rec.commission_pcr_saliva = new_rec.default_data_id.commission_pcr_saliva
+            new_rec.commission_tes_antibodi_rbd = new_rec.default_data_id.commission_tes_antibodi_rbd
+            new_rec.commission_paket_screening_cvd19 = new_rec.default_data_id.commission_paket_screening_cvd19
+            new_rec.commission_paket_screening_cvd19_with_pcr = new_rec.default_data_id.commission_paket_screening_cvd19_with_pcr
+            new_rec.commission_paket_screening_cvd19_urban_lifestyle = new_rec.default_data_id.commission_paket_screening_cvd19_urban_lifestyle
 
             new_rec.base_price_antigen = new_rec.default_data_id.base_price_antigen
-            new_rec.base_price_antigen_24_hours = new_rec.default_data_id.base_price_antigen_24_hours
+            new_rec.base_price_antigen_nassal = new_rec.default_data_id.base_price_antigen_nassal
             new_rec.base_price_pcr = new_rec.default_data_id.base_price_pcr
-            new_rec.base_price_pcr_24_hours = new_rec.default_data_id.base_price_pcr_24_hours
+            new_rec.base_price_pcr_mutasi = new_rec.default_data_id.base_price_pcr_mutasi
+            new_rec.base_price_pcr_saliva = new_rec.default_data_id.base_price_pcr_saliva
+            new_rec.base_price_tes_antibodi_rbd = new_rec.default_data_id.base_price_tes_antibodi_rbd
+            new_rec.base_price_paket_screening_cvd19 = new_rec.default_data_id.base_price_paket_screening_cvd19
+            new_rec.base_price_paket_screening_cvd19_with_pcr = new_rec.default_data_id.base_price_paket_screening_cvd19_with_pcr
+            new_rec.base_price_paket_screening_cvd19_urban_lifestyle = new_rec.default_data_id.base_price_paket_screening_cvd19_urban_lifestyle
+
             new_rec.single_supplement = new_rec.default_data_id.single_supplement
             new_rec.overtime_surcharge = new_rec.default_data_id.overtime_surcharge
             new_rec.admin_fee_antigen_drivethru = new_rec.default_data_id.admin_fee_antigen_drivethru
@@ -61,13 +82,23 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
     @api.depends('default_data_id')
     def _onchange_default_data_timeslot(self):
         self.commission_antigen = self.default_data_id.commission_antigen
-        self.commission_antigen_24_hours = self.default_data_id.commission_antigen_24_hours
+        self.commission_antigen_nassal = self.default_data_id.commission_antigen_nassal
         self.commission_pcr = self.default_data_id.commission_pcr
-        self.commission_pcr_24_hours = self.default_data_id.commission_pcr_24_hours
+        self.commission_pcr_mutasi = self.default_data_id.commission_pcr_mutasi
+        self.commission_pcr_saliva = self.default_data_id.commission_pcr_saliva
+        self.commission_tes_antibodi_rbd = self.default_data_id.commission_tes_antibodi_rbd
+        self.commission_paket_screening_cvd19 = self.default_data_id.commission_paket_screening_cvd19
+        self.commission_paket_screening_cvd19_with_pcr = self.default_data_id.commission_paket_screening_cvd19_with_pcr
+        self.commission_paket_screening_cvd19_urban_lifestyle = self.default_data_id.commission_paket_screening_cvd19_urban_lifestyle
         self.base_price_antigen = self.default_data_id.base_price_antigen
-        self.base_price_antigen_24_hours = self.default_data_id.base_price_antigen_24_hours
+        self.base_price_antigen_nassal = self.default_data_id.base_price_antigen_nassal
         self.base_price_pcr = self.default_data_id.base_price_pcr
-        self.base_price_pcr_24_hours = self.default_data_id.base_price_pcr_24_hours
+        self.base_price_pcr_mutasi = self.default_data_id.base_price_pcr_mutasi
+        self.base_price_pcr_saliva = self.default_data_id.base_price_pcr_saliva
+        self.base_price_tes_antibodi_rbd = self.default_data_id.base_price_tes_antibodi_rbd
+        self.base_price_paket_screening_cvd19 = self.default_data_id.base_price_paket_screening_cvd19
+        self.base_price_paket_screening_cvd19_with_pcr = self.default_data_id.base_price_paket_screening_cvd19_with_pcr
+        self.base_price_paket_screening_cvd19_urban_lifestyle = self.default_data_id.base_price_paket_screening_cvd19_urban_lifestyle
         self.single_supplement = self.default_data_id.single_supplement
         self.overtime_surcharge = self.default_data_id.overtime_surcharge
         self.admin_fee_antigen_drivethru = self.default_data_id.admin_fee_antigen_drivethru
@@ -125,14 +156,26 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
                         'currency_id': self.currency_id.id,
                         'timeslot_type': self.timeslot_type,
                         'commission_antigen': self.commission_antigen,
-                        'commission_antigen_24_hours': self.commission_antigen_24_hours,
-                        'commission_pcr': self.commission_pcr,
-                        'commission_pcr_24_hours': self.commission_pcr_24_hours,
+                        'commission_antigen_nassal': self.default_data_id.commission_antigen_nassal,
+                        'commission_pcr': self.default_data_id.commission_pcr,
+                        'commission_pcr_mutasi': self.default_data_id.commission_pcr_mutasi,
+                        'commission_pcr_saliva': self.default_data_id.commission_pcr_saliva,
+                        'commission_tes_antibodi_rbd': self.default_data_id.commission_tes_antibodi_rbd,
+                        'commission_paket_screening_cvd19': self.default_data_id.commission_paket_screening_cvd19,
+                        'commission_paket_screening_cvd19_with_pcr': self.default_data_id.commission_paket_screening_cvd19_with_pcr,
+                        'commission_paket_screening_cvd19_urban_lifestyle': self.default_data_id.commission_paket_screening_cvd19_urban_lifestyle,
+
+
                         'admin_fee_antigen_drivethru': self.admin_fee_antigen_drivethru,
-                        'base_price_antigen': self.base_price_antigen,
-                        'base_price_antigen_24_hours': self.base_price_antigen_24_hours,
-                        'base_price_pcr': self.base_price_pcr,
-                        'base_price_pcr_24_hours': self.base_price_pcr_24_hours,
+                        'base_price_antigen': self.default_data_id.base_price_antigen,
+                        'base_price_antigen_nassal': self.default_data_id.base_price_antigen_nassal,
+                        'base_price_pcr': self.default_data_id.base_price_pcr,
+                        'base_price_pcr_mutasi': self.default_data_id.base_price_pcr_mutasi,
+                        'base_price_pcr_saliva': self.default_data_id.base_price_pcr_saliva,
+                        'base_price_tes_antibodi_rbd': self.default_data_id.base_price_tes_antibodi_rbd,
+                        'base_price_paket_screening_cvd19': self.default_data_id.base_price_paket_screening_cvd19,
+                        'base_price_paket_screening_cvd19_with_pcr': self.default_data_id.base_price_paket_screening_cvd19_with_pcr,
+                        'base_price_paket_screening_cvd19_urban_lifestyle': self.default_data_id.base_price_paket_screening_cvd19_urban_lifestyle,
                         'single_supplement': self.single_supplement,
                         'overtime_surcharge': self.overtime_surcharge,
                         'agent_id': self.agent_id.id if self.agent_id else False
@@ -162,13 +205,23 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
                 'timeslot_type': 'drive_thru',
                 'admin_fee_antigen_drivethru': default_data_obj.admin_fee_antigen_drivethru,
                 'commission_antigen': default_data_obj.commission_antigen,
-                'commission_antigen_24_hours': default_data_obj.commission_antigen_24_hours,
+                'commission_antigen_nassal': default_data_obj.commission_antigen_nassal,
                 'commission_pcr': default_data_obj.commission_pcr,
-                'commission_pcr_24_hours': default_data_obj.commission_pcr_24_hours,
+                'commission_pcr_mutasi': default_data_obj.commission_pcr_mutasi,
+                'commission_pcr_saliva': default_data_obj.commission_pcr_saliva,
+                'commission_tes_antibodi_rbd': default_data_obj.commission_tes_antibodi_rbd,
+                'commission_paket_screening_cvd19': default_data_obj.commission_paket_screening_cvd19,
+                'commission_paket_screening_cvd19_with_pcr': default_data_obj.commission_paket_screening_cvd19_with_pcr,
+                'commission_paket_screening_cvd19_urban_lifestyle': default_data_obj.commission_paket_screening_cvd19_urban_lifestyle,
                 'base_price_antigen': default_data_obj.base_price_antigen,
-                'base_price_antigen_24_hours': default_data_obj.base_price_antigen_24_hours,
+                'base_price_antigen_nassal': default_data_obj.base_price_antigen_nassal,
                 'base_price_pcr': default_data_obj.base_price_pcr,
-                'base_price_pcr_24_hours': default_data_obj.base_price_pcr_24_hours,
+                'base_price_pcr_mutasi': default_data_obj.base_price_pcr_mutasi,
+                'base_price_pcr_saliva': default_data_obj.base_price_pcr_saliva,
+                'base_price_tes_antibodi_rbd': default_data_obj.base_price_tes_antibodi_rbd,
+                'base_price_paket_screening_cvd19': default_data_obj.base_price_paket_screening_cvd19,
+                'base_price_paket_screening_cvd19_with_pcr': default_data_obj.base_price_paket_screening_cvd19_with_pcr,
+                'base_price_paket_screening_cvd19_urban_lifestyle': default_data_obj.base_price_paket_screening_cvd19_urban_lifestyle,
                 'single_supplement': default_data_obj.single_supplement,
                 'overtime_surcharge': default_data_obj.overtime_surcharge,
                 'agent_id': False
