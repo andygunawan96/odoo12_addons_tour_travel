@@ -58,7 +58,7 @@
 
         <!-- Flight Detail (Title) -->
         <div style="margin-bottom: 10px; margin-top: 20px;">
-            <span style="font-size: 28px; font-weight: 730">Test Date: <t t-field="doc.test_datetime"/><br/><t t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+            <span style="font-size: 28px; font-weight: 730">Test Date: <i t-field="doc.test_datetime"/><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
         </div>
 
         <!-- Passenger Detail (Content) -->

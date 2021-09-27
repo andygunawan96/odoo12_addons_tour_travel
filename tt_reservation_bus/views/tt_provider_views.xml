@@ -18,7 +18,7 @@
                 <!--<field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>-->
                 <!--</header>-->
                 <header>
-                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued" type="object"/>
+                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued,fail_refunded" type="object"/>
                     <button string="Issued Locally" name="%(tt_reservation_bus.force_issued_wizard_bus_action_view)d" states="booked" type="action"
                             groups="tt_base.group_reservation_provider_level_4"
                             context="{
