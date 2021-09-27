@@ -361,6 +361,9 @@ class TtReservationTrain(models.Model):
                         continue
                     self.update_pnr_booked(provider_obj,provider,context)
                     any_provider_changed = True
+                    for idx, ticket_obj in enumerate(provider['tickets']):
+                        if ticket_obj.get('covid'):
+                            provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['covid'])
                 elif provider['state'] == 'issued' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
@@ -394,9 +397,7 @@ class TtReservationTrain(models.Model):
                     any_provider_changed = True
 
 
-                for idx, ticket_obj in enumerate(provider['tickets']):
-                    if ticket_obj.get('covid'):
-                        provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['covid'])
+
 
             for rec in book_obj.provider_booking_ids:
                 if rec.pnr:

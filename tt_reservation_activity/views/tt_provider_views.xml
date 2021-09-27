@@ -5,7 +5,7 @@
         <field name="arch" type="xml">
             <form edit="false" create="false">
                 <header>
-                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued" type="object"/>
+                    <button string="Set To Booked" name="action_set_to_book_from_button" groups="tt_base.group_reservation_provider_level_4" states="cancel2,issued,fail_issued,fail_refunded" type="object"/>
                     <button string="Issued Locally" name="%(tt_reservation_activity.force_issued_wizard_activity_action_view)d" states="booked" type="action"
                             groups="tt_base.group_reservation_provider_level_4"
                             context="{
