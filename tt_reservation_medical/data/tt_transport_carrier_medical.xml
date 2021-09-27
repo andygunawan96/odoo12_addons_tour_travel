@@ -3,10 +3,10 @@
     <data noupdate="1">
 
         <record id="tt_transport_carrier_medical_nathos_antigen" model="tt.transport.carrier">
-            <field name="name">Antigen National Hospital Surabaya</field>
+            <field name="name">Antigen</field>
             <field name="code">NHDTKATG</field>
             <field name="icao">NHDTKATG</field>
-            <field name="call_sign">Antigen National Hospital Surabaya</field>
+            <field name="call_sign">Antigen</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
@@ -15,10 +15,10 @@
         </record>
 
         <record id="tt_transport_carrier_medical_nathos_pcr" model="tt.transport.carrier">
-            <field name="name">PCR National Hospital Surabaya</field>
+            <field name="name">PCR</field>
             <field name="code">NHDTKPCR</field>
             <field name="icao">NHDTKPCR</field>
-            <field name="call_sign">PCR National Hospital Surabaya</field>
+            <field name="call_sign">PCR</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
@@ -26,11 +26,11 @@
             <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
         </record>
 
-        <record id="tt_transport_carrier_medical_nathos_antigen_24_hours" model="tt.transport.carrier">
-            <field name="name">Antigen 24 Hours National Hospital Surabaya</field>
-            <field name="code">NHDTKATG24</field>
-            <field name="icao">NHDTKATG24</field>
-            <field name="call_sign">Antigen 24 Hours National Hospital Surabaya</field>
+        <record id="tt_transport_carrier_medical_nathos_pcr_mutasi" model="tt.transport.carrier">
+            <field name="name">PCR Mutasi National Hospital Surabaya</field>
+            <field name="code">NHDTMPCR</field>
+            <field name="icao">NHDTMPCR</field>
+            <field name="call_sign">PCR Mutasi</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
@@ -38,11 +38,71 @@
             <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
         </record>
 
-        <record id="tt_transport_carrier_medical_nathos_pcr_24_hours" model="tt.transport.carrier">
-            <field name="name">PCR 24 Hours National Hospital Surabaya</field>
-            <field name="code">NHDTKPCR24</field>
-            <field name="icao">NHDTKPCR24</field>
-            <field name="call_sign">PCR 24 Hours National Hospital Surabaya</field>
+        <record id="tt_transport_carrier_medical_nathos_pcr_saliva" model="tt.transport.carrier">
+            <field name="name">PCR Saliva</field>
+            <field name="code">NHDTSPCR</field>
+            <field name="icao">NHDTSPCR</field>
+            <field name="call_sign">PCR Saliva National Hospital Surabaya</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_tes_antibodi_rbd" model="tt.transport.carrier">
+            <field name="name">Tes Antibodi RBD</field>
+            <field name="code">NHDTKKARBD</field>
+            <field name="icao">NHDTKKARBD</field>
+            <field name="call_sign">Tes Antibodi RBD</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_antigen_nassal" model="tt.transport.carrier">
+            <field name="name">Nassal Antigen</field>
+            <field name="code">NHDTNATG</field>
+            <field name="icao">NHDTNATG</field>
+            <field name="call_sign">Nassal Antigen</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_screening_cvd19" model="tt.transport.carrier">
+            <field name="name">Paket Screening Covid-19</field>
+            <field name="code">NHDTKPSC</field>
+            <field name="icao">NHDTNPSC</field>
+            <field name="call_sign">Paket Screening Covid-19</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_screening_cvd19_with_pcr" model="tt.transport.carrier">
+            <field name="name">Paket Screening Covid-19 + PCR</field>
+            <field name="code">NHDTKPSCWPCR</field>
+            <field name="icao">NHDTNPSCWPCR</field>
+            <field name="call_sign">Paket Screening Covid-19 + PCR</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_screening_cvd19_urban_lifestyle" model="tt.transport.carrier">
+            <field name="name">Paket Screening Covid-19 Urban Lifestyle</field>
+            <field name="code">NHDTKPSCUL</field>
+            <field name="icao">NHDTKPSCUL</field>
+            <field name="call_sign">Paket Screening Covid-19 Urban Lifestyle</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>

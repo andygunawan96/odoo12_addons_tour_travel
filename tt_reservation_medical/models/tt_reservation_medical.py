@@ -230,7 +230,7 @@ class Reservationmedical(models.Model):
         # el
         if carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_antigen').id]:
             for rec in timeslot_objs:
-                if rec.base_price_pcr > base_price:
+                if rec.base_price_antigen > base_price:
                     base_price = rec.base_price_antigen
                     commission_price = rec.commission_antigen
 
@@ -239,16 +239,43 @@ class Reservationmedical(models.Model):
                 if rec.base_price_pcr > base_price:
                     base_price = rec.base_price_pcr
                     commission_price = rec.commission_pcr
-        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_pcr_24_hours').id]:
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_pcr_mutasi').id]:
             for rec in timeslot_objs:
-                if rec.base_price_pcr > base_price:
-                    base_price = rec.base_price_pcr_24_hours
-                    commission_price = rec.commission_pcr_24_hours
-        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_antigen_24_hours').id]:
+                if rec.base_price_pcr_mutasi > base_price:
+                    base_price = rec.base_price_pcr_mutasi
+                    commission_price = rec.commission_pcr_mutasi
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_pcr_saliva').id]:
             for rec in timeslot_objs:
-                if rec.base_price_pcr > base_price:
-                    base_price = rec.base_price_pcr_24_hours
-                    commission_price = rec.commission_pcr_24_hours
+                if rec.base_price_pcr_saliva > base_price:
+                    base_price = rec.base_price_pcr_saliva
+                    commission_price = rec.commission_pcr_saliva
+
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_tes_antibodi_rbd').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_tes_antibodi_rbd > base_price:
+                    base_price = rec.base_price_tes_antibodi_rbd
+                    commission_price = rec.commission_tes_antibodi_rbd
+
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_antigen_nassal').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_antigen_nassal > base_price:
+                    base_price = rec.base_price_antigen_nassal
+                    commission_price = rec.commission_antigen_nassal
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_paket_screening_cvd19').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_paket_screening_cvd19 > base_price:
+                    base_price = rec.base_price_paket_screening_cvd19
+                    commission_price = rec.commission_paket_screening_cvd19
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_paket_screening_cvd19_with_pcr').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_paket_screening_cvd19_with_pcr > base_price:
+                    base_price = rec.base_price_paket_screening_cvd19_with_pcr
+                    commission_price = rec.commission_paket_screening_cvd19_with_pcr
+        elif carrier_obj.id in [self.env.ref('tt_reservation_medical.tt_transport_carrier_medical_nathos_paket_screening_cvd19_urban_lifestyle').id]:
+            for rec in timeslot_objs:
+                if rec.base_price_paket_screening_cvd19_urban_lifestyle > base_price:
+                    base_price = rec.base_price_paket_screening_cvd19_urban_lifestyle
+                    commission_price = rec.commission_paket_screening_cvd19_urban_lifestyle
 
         extra_charge_per_pax = (overtime_surcharge and overtime_price or 0) + (single_suplement and single_suplement_price or 0)
         return ERR.get_no_error({
@@ -1293,10 +1320,21 @@ class Reservationmedical(models.Model):
             template_obj = self.env.ref('tt_report_common.nathos_antigen_information')
         elif self.carrier_name == 'NHDTKPCR':
             template_obj = self.env.ref('tt_report_common.nathos_pcr_information')
-        elif self.carrier_name == 'NHDTKATG24':
-            template_obj = self.env.ref('tt_report_common.nathos_antigen_24_hours_information')
-        elif self.carrier_name == 'NHDTKPCR24':
-            template_obj = self.env.ref('tt_report_common.nathos_pcr_24_hours_information')
+        elif self.carrier_name == 'NHDTMPCR':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_mutasi_information')
+        elif self.carrier_name == 'NHDTSPCR':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_saliva_information')
+        elif self.carrier_name == 'NHDTKKARBD':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_tes_antibodi_rbd_information')
+        elif self.carrier_name == 'NHDTNATG':
+            template_obj = self.env.ref('tt_report_common.nathos_antigen_nassal_information')
+        elif self.carrier_name == 'NHDTKPSC':
+            template_obj = self.env.ref('tt_report_common.nathos_paket_screening_cvd19_information')
+        elif self.carrier_name == 'NHDTKPSCWPCR':
+            template_obj = self.env.ref('tt_report_common.nathos_paket_screening_cvd19_with_pcr_information')
+        elif self.carrier_name == 'NHDTKPSCUL':
+            template_obj = self.env.ref('tt_report_common.nathos_paket_screening_cvd19_urban_lifestyle_information')
+
         return template_obj.html
 
     def get_terms_conditions_email_old(self):
