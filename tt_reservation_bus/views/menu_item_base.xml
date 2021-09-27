@@ -3,7 +3,7 @@
     <data>
 
         <!-- Top Menu -->
-        <!-- Train -->
+        <!-- Bus -->
         <menuitem id="top_reservations_bus"
                   parent="tt_reservation.main_reservations"
                   name="Bus"
