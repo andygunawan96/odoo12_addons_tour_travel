@@ -14,7 +14,6 @@ provider_selection = [
         ('amadeus', 'Amadeus'),
         ('lionair', 'Lion Air'),
         ('lionairapi', 'Lion Air API'),
-        ('sia', 'Singapore Airlines'),
         # ('sabre', 'Sabre'),
     ]
 
