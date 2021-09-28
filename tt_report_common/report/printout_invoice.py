@@ -213,8 +213,8 @@ class PrintoutTicketForm(models.AbstractModel):
             # }
             pax_values = []
             for pax_obj in booking_obj.passenger_ids:
-                pax_values.append(pax_obj.name)
-            qr_values = "%s\n%s\n%s\n%s\n%s\n%s" % (booking_obj.name,booking_obj.test_datetime,booking_obj.contact_name,booking_obj.contact_phone,booking_obj.provider_booking_ids[0].carrier_id.name,'\n'.join(pax_values))
+                pax_values.append('%s %s %s %s %s' % (pax_obj.name,pax_obj.identity_number,pax_obj.birth_date,pax_obj.email,pax_obj.phone_number))
+            qr_values = "%s\n%s\n%s\n%s\n%s\n\n%s" % (booking_obj.name,booking_obj.test_datetime,booking_obj.contact_name,booking_obj.contact_phone,booking_obj.provider_booking_ids[0].carrier_id.name,'\n'.join(pax_values))
             vals.update({'qr_code_data': qr_values,})
         return vals
 
