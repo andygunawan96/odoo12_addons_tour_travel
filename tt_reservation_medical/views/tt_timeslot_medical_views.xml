@@ -73,29 +73,53 @@
                         </group>
                     </group>
                     <group>
-                        <group string="Antigen">
-                            <field name="base_price_antigen"/>
-                            <field name="commission_antigen"/>
-                            <field name="admin_fee_antigen_drivethru"/>
+                        <group string="PCR National Hospital">
+                            <field name="base_price_pcr_nathos"/>
+                            <field name="commission_pcr_nathos"/>
                         </group>
-                        <group string="Nassal Antigen">
-                            <field name="base_price_antigen_nassal"/>
-                            <field name="commission_antigen_nassal"/>
+                        <group string="PCR POC Biliton, Kalijudan">
+                            <field name="base_price_pcr_poc"/>
+                            <field name="commission_pcr_poc"/>
                         </group>
-
+                        <group string="PCR Bali">
+                            <field name="base_price_pcr_bali"/>
+                            <field name="commission_pcr_bali"/>
+                        </group>
                     </group>
+
                     <group>
-                        <group string="PCR">
-                            <field name="base_price_pcr"/>
-                            <field name="commission_pcr"/>
-                        </group>
                         <group string="PCR Mutasi">
                             <field name="base_price_pcr_mutasi"/>
                             <field name="commission_pcr_mutasi"/>
                         </group>
-                        <group string="PCR Saliva">
-                            <field name="base_price_pcr_saliva"/>
-                            <field name="commission_pcr_saliva"/>
+                    </group>
+
+                    <group>
+                        <group string="PCR Saliva National Hospital">
+                            <field name="base_price_pcr_saliva_nathos"/>
+                            <field name="commission_pcr_saliva_nathos"/>
+                        </group>
+                        <group string="PCR Saliva POC Biliton, Kalijudan">
+                            <field name="base_price_pcr_saliva_poc"/>
+                            <field name="commission_pcr_saliva_poc"/>
+                        </group>
+                        <group string="PCR Saliva Bali">
+                            <field name="base_price_pcr_saliva_bali"/>
+                            <field name="commission_pcr_saliva_bali"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Antigen National Hospital">
+                            <field name="base_price_antigen_nathos"/>
+                            <field name="commission_antigen_nathos"/>
+                        </group>
+                        <group string="Antigen POC">
+                            <field name="base_price_antigen_poc"/>
+                            <field name="commission_antigen_poc"/>
+                        </group>
+                        <group string="Nassal Antigen">
+                            <field name="base_price_antigen_nassal"/>
+                            <field name="commission_antigen_nassal"/>
                         </group>
                     </group>
 
@@ -103,6 +127,37 @@
                         <group string="Tes Antibodi RBD">
                             <field name="base_price_tes_antibodi_rbd"/>
                             <field name="commission_tes_antibodi_rbd"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Paket Medical Checkup 1">
+                            <field name="base_price_paket_medical_checkup1"/>
+                            <field name="commission_paket_medical_checkup1"/>
+                        </group>
+                        <group string="Paket Medical Checkup 2">
+                            <field name="base_price_paket_medical_checkup2"/>
+                            <field name="commission_paket_medical_checkup2"/>
+                        </group>
+                        <group string="Paket Medical Checkup 3">
+                            <field name="base_price_paket_medical_checkup3"/>
+                            <field name="commission_paket_medical_checkup3"/>
+                        </group>
+                        <group string="Paket Medical Checkup 4 Male">
+                            <field name="base_price_paket_medical_checkup4_male"/>
+                            <field name="commission_paket_medical_checkup4_male"/>
+                        </group>
+                        <group string="Paket Medical Checkup 4 Female">
+                            <field name="base_price_paket_medical_checkup4_female"/>
+                            <field name="commission_paket_medical_checkup4_female"/>
+                        </group>
+                        <group string="Paket Medical Checkup 5 Male">
+                            <field name="base_price_paket_medical_checkup5_male"/>
+                            <field name="commission_paket_medical_checkup5_male"/>
+                        </group>
+                        <group string="Paket Medical Checkup 5 Female">
+                            <field name="base_price_paket_medical_checkup5_female"/>
+                            <field name="commission_paket_medical_checkup5_female"/>
                         </group>
                     </group>
 
@@ -166,40 +221,91 @@
                         <field name="name" placeholder="Template Name"/>
                     </h1>
                     <group>
-                        <group string="Antigen">
-                            <field name="base_price_antigen"/>
-                            <field name="commission_antigen"/>
-                            <field name="admin_fee_antigen_drivethru"/>
+                        <group string="PCR National Hospital">
+                            <field name="base_price_pcr_nathos"/>
+                            <field name="commission_pcr_nathos"/>
+                        </group>
+                        <group string="PCR POC Biliton, Kalijudan">
+                            <field name="base_price_pcr_poc"/>
+                            <field name="commission_pcr_poc"/>
+                        </group>
+                        <group string="PCR Bali">
+                            <field name="base_price_pcr_bali"/>
+                            <field name="commission_pcr_bali"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="PCR Mutasi">
+                            <field name="base_price_pcr_mutasi"/>
+                            <field name="commission_pcr_mutasi"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="PCR Saliva National Hospital">
+                            <field name="base_price_pcr_saliva_nathos"/>
+                            <field name="commission_pcr_saliva_nathos"/>
+                        </group>
+                        <group string="PCR Saliva POC Biliton, Kalijudan">
+                            <field name="base_price_pcr_saliva_poc"/>
+                            <field name="commission_pcr_saliva_poc"/>
+                        </group>
+                        <group string="PCR Saliva Bali">
+                            <field name="base_price_pcr_saliva_bali"/>
+                            <field name="commission_pcr_saliva_bali"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Antigen National Hospital">
+                            <field name="base_price_antigen_nathos"/>
+                            <field name="commission_antigen_nathos"/>
+                        </group>
+                        <group string="Antigen POC">
+                            <field name="base_price_antigen_poc"/>
+                            <field name="commission_antigen_poc"/>
                         </group>
                         <group string="Nassal Antigen">
                             <field name="base_price_antigen_nassal"/>
                             <field name="commission_antigen_nassal"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="PCR">
-                            <field name="base_price_pcr"/>
-                            <field name="commission_pcr"/>
-                        </group>
-                        <group string="PCR Mutasi">
-                            <field name="base_price_pcr_mutasi"/>
-                            <field name="commission_pcr_mutasi"/>
-                        </group>
-                        <group string="PCR Saliva">
-                            <field name="base_price_pcr_saliva"/>
-                            <field name="commission_pcr_saliva"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group string="Additional Price">
-                            <field name="single_supplement"/>
-                            <field name="overtime_surcharge"/>
-                        </group>
-                    </group>
+
                     <group>
                         <group string="Tes Antibodi RBD">
                             <field name="base_price_tes_antibodi_rbd"/>
                             <field name="commission_tes_antibodi_rbd"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="Paket Medical Checkup 1">
+                            <field name="base_price_paket_medical_checkup1"/>
+                            <field name="commission_paket_medical_checkup1"/>
+                        </group>
+                        <group string="Paket Medical Checkup 2">
+                            <field name="base_price_paket_medical_checkup2"/>
+                            <field name="commission_paket_medical_checkup2"/>
+                        </group>
+                        <group string="Paket Medical Checkup 3">
+                            <field name="base_price_paket_medical_checkup3"/>
+                            <field name="commission_paket_medical_checkup3"/>
+                        </group>
+                        <group string="Paket Medical Checkup 4 Male">
+                            <field name="base_price_paket_medical_checkup4_male"/>
+                            <field name="commission_paket_medical_checkup4_male"/>
+                        </group>
+                        <group string="Paket Medical Checkup 4 Female">
+                            <field name="base_price_paket_medical_checkup4_female"/>
+                            <field name="commission_paket_medical_checkup4_female"/>
+                        </group>
+                        <group string="Paket Medical Checkup 5 Male">
+                            <field name="base_price_paket_medical_checkup5_male"/>
+                            <field name="commission_paket_medical_checkup5_male"/>
+                        </group>
+                        <group string="Paket Medical Checkup 5 Female">
+                            <field name="base_price_paket_medical_checkup5_female"/>
+                            <field name="commission_paket_medical_checkup5_female"/>
                         </group>
                     </group>
 
@@ -217,6 +323,17 @@
                             <field name="commission_paket_screening_cvd19_urban_lifestyle"/>
                         </group>
                     </group>
+
+                    <group>
+                        <group string="Additional Price">
+                            <field name="single_supplement"/>
+                            <field name="overtime_surcharge"/>
+                            <field name="admin_fee_antigen_drivethru"/>
+                        </group>
+                    </group>
+
+
+
                 </sheet>
             </form>
         </field>
@@ -229,21 +346,46 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="base_price_antigen"/>
-                <field name="base_price_antigen_nassal"/>
-                <field name="base_price_pcr"/>
+                <field name="base_price_pcr_nathos"/>
+                <field name="base_price_pcr_poc"/>
+                <field name="base_price_pcr_bali"/>
                 <field name="base_price_pcr_mutasi"/>
-                <field name="base_price_pcr_saliva"/>
+                <field name="base_price_pcr_saliva_nathos"/>
+                <field name="base_price_pcr_saliva_poc"/>
+                <field name="base_price_pcr_saliva_bali"/>
+                <field name="base_price_antigen_nathos"/>
+                <field name="base_price_antigen_poc"/>
                 <field name="base_price_tes_antibodi_rbd"/>
+                <field name="base_price_antigen_nassal"/>
+                <field name="base_price_paket_medical_checkup1"/>
+                <field name="base_price_paket_medical_checkup2"/>
+                <field name="base_price_paket_medical_checkup3"/>
+                <field name="base_price_paket_medical_checkup4_male"/>
+                <field name="base_price_paket_medical_checkup4_female"/>
+                <field name="base_price_paket_medical_checkup5_male"/>
+                <field name="base_price_paket_medical_checkup5_female"/>
                 <field name="base_price_paket_screening_cvd19"/>
                 <field name="base_price_paket_screening_cvd19_with_pcr"/>
                 <field name="base_price_paket_screening_cvd19_urban_lifestyle"/>
-                <field name="commission_antigen"/>
-                <field name="commission_antigen_nassal"/>
-                <field name="commission_pcr"/>
+
+                <field name="commission_pcr_nathos"/>
+                <field name="commission_pcr_poc"/>
+                <field name="commission_pcr_bali"/>
                 <field name="commission_pcr_mutasi"/>
-                <field name="commission_pcr_saliva"/>
+                <field name="commission_pcr_saliva_nathos"/>
+                <field name="commission_pcr_saliva_poc"/>
+                <field name="commission_pcr_saliva_bali"/>
+                <field name="commission_antigen_nathos"/>
+                <field name="commission_antigen_poc"/>
                 <field name="commission_tes_antibodi_rbd"/>
+                <field name="commission_antigen_nassal"/>
+                <field name="commission_paket_medical_checkup1"/>
+                <field name="commission_paket_medical_checkup2"/>
+                <field name="commission_paket_medical_checkup3"/>
+                <field name="commission_paket_medical_checkup4_male"/>
+                <field name="commission_paket_medical_checkup4_female"/>
+                <field name="commission_paket_medical_checkup5_male"/>
+                <field name="commission_paket_medical_checkup5_female"/>
                 <field name="commission_paket_screening_cvd19"/>
                 <field name="commission_paket_screening_cvd19_with_pcr"/>
                 <field name="commission_paket_screening_cvd19_urban_lifestyle"/>
