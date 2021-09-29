@@ -532,9 +532,9 @@ class Reservationmedical(models.Model):
                 user_obj.create_date
             except:
                 raise RequestException(1008)
-            vendor_obj = None
-            if self.env['res.users'].browse(context['co_uid']).vendor_id:
-                vendor_obj = self.env['res.users'].browse(context['co_uid']).vendor_id.id
+            co_user_vendor_obj = None
+            if user_obj.vendor_id:
+                co_user_vendor_obj = user_obj.vendor_id.id
 
             # if book_obj.agent_id.id == context.get('co_agent_id',-1) or \
             #     vendor_obj in [self.env.ref('tt_base.vendor_national_hospital').id] or \
@@ -551,10 +551,9 @@ class Reservationmedical(models.Model):
                 psg_list.append(rec_data)
             prov_list = []
             for rec in book_obj.provider_booking_ids:
-                if vendor_obj: #check user vendor atau tidak
-                    if rec.provider_id.id == self.env.ref('tt_reservation_medical.tt_provider_medical').id and vendor_obj == self.env.ref('tt_base.vendor_national_hospital').id: #check vendor sama provider booking sama / tidak
-                        pass
-                    else:
+                if co_user_vendor_obj: #check user vendor atau tidak
+                    # if rec.provider_id.id == self.env.ref('tt_reservation_medical.tt_provider_medical').id and vendor_obj == self.env.ref('tt_base.vendor_national_hospital').id: #check vendor sama provider booking sama / tidak
+                    if rec.provider_id.id == co_user_vendor_obj:
                         _logger.error(traceback.format_exc())
                         return ERR.get_error(1013)
                 prov_list.append(rec.to_dict())
