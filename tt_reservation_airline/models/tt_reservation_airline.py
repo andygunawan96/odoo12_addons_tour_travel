@@ -856,45 +856,46 @@ class ReservationAirline(models.Model):
             except:
                 raise RequestException(1008)
 
-            if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:## mestinya AND jika b2c maka userny harus sma
-                res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
-                psg_list = []
-                for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
-                    rec_data = rec.to_dict()
-                    rec_data.update({
-                        'passenger_number': rec.sequence
-                    })
-                    psg_list.append(rec_data)
-                prov_list = []
-                for rec in book_obj.provider_booking_ids:
-                    prov_list.append(rec.to_dict())
-
-                # July 23, 2020 - SAM
-                refund_list = []
-                for ref in book_obj.refund_ids:
-                    ref_values = ref.get_refund_data()
-                    refund_list.append(ref_values)
-
-                ##bisa kelolosan kalau tidak install tt_reschedule
-                reschedule_list = book_obj.to_dict_reschedule()
-                # END
-
-                res.update({
-                    'is_hold_date_sync': book_obj.is_hold_date_sync,
-                    'direction': book_obj.direction,
-                    'origin': book_obj.origin_id.code,
-                    'destination': book_obj.destination_id.code,
-                    'sector_type': book_obj.sector_type,
-                    'passengers': psg_list,
-                    'provider_bookings': prov_list,
-                    'refund_list': refund_list,
-                    'reschedule_list': reschedule_list,
-                    # 'provider_type': book_obj.provider_type_id.code
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            # if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:## mestinya AND jika b2c maka userny harus sma
+            res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            psg_list = []
+            for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
+                rec_data = rec.to_dict()
+                rec_data.update({
+                    'passenger_number': rec.sequence
                 })
-                # _logger.info("Get resp\n" + json.dumps(res))
-                return Response().get_no_error(res)
-            else:
-                raise RequestException(1035)
+                psg_list.append(rec_data)
+            prov_list = []
+            for rec in book_obj.provider_booking_ids:
+                prov_list.append(rec.to_dict())
+
+            # July 23, 2020 - SAM
+            refund_list = []
+            for ref in book_obj.refund_ids:
+                ref_values = ref.get_refund_data()
+                refund_list.append(ref_values)
+
+            ##bisa kelolosan kalau tidak install tt_reschedule
+            reschedule_list = book_obj.to_dict_reschedule()
+            # END
+
+            res.update({
+                'is_hold_date_sync': book_obj.is_hold_date_sync,
+                'direction': book_obj.direction,
+                'origin': book_obj.origin_id.code,
+                'destination': book_obj.destination_id.code,
+                'sector_type': book_obj.sector_type,
+                'passengers': psg_list,
+                'provider_bookings': prov_list,
+                'refund_list': refund_list,
+                'reschedule_list': reschedule_list,
+                # 'provider_type': book_obj.provider_type_id.code
+            })
+            # _logger.info("Get resp\n" + json.dumps(res))
+            return Response().get_no_error(res)
+            # else:
+            #     raise RequestException(1035)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())

@@ -540,45 +540,46 @@ class Reservationphc(models.Model):
             except:
                 raise RequestException(1008)
 
-            if book_obj.agent_id.id == context.get('co_agent_id',-1) or \
-                    self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or \
-                    book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
-                    book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
-                res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
-                psg_list = []
-                for rec_idx, rec in enumerate(book_obj.passenger_ids):
-                    rec_data = rec.to_dict()
-                    rec_data.update({
-                        'passenger_number': rec.sequence
-                    })
-                    psg_list.append(rec_data)
-                prov_list = []
-                for rec in book_obj.provider_booking_ids:
-                    prov_list.append(rec.to_dict())
-
-                timeslot_list = []
-                for timeslot_obj in book_obj.timeslot_ids:
-                    timeslot_list.append({
-                        "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
-                        "area": timeslot_obj.destination_id.city
-                    })
-
-                picked_timeslot = {}
-                if book_obj.picked_timeslot_id:
-                    picked_timeslot = book_obj.picked_timeslot_id.to_dict()
-
-                res.update({
-                    'origin': book_obj.origin_id.code,
-                    'passengers': psg_list,
-                    'provider_bookings': prov_list,
-                    'test_address': book_obj.test_address,
-                    'test_address_map_link': book_obj.test_address_map_link,
-                    'picked_timeslot': picked_timeslot,
-                    'timeslot_list': timeslot_list
+            # if book_obj.agent_id.id == context.get('co_agent_id',-1) or \
+            #         self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or \
+            #         book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
+            #         book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            psg_list = []
+            for rec_idx, rec in enumerate(book_obj.passenger_ids):
+                rec_data = rec.to_dict()
+                rec_data.update({
+                    'passenger_number': rec.sequence
                 })
-                return Response().get_no_error(res)
-            else:
-                raise RequestException(1035)
+                psg_list.append(rec_data)
+            prov_list = []
+            for rec in book_obj.provider_booking_ids:
+                prov_list.append(rec.to_dict())
+
+            timeslot_list = []
+            for timeslot_obj in book_obj.timeslot_ids:
+                timeslot_list.append({
+                    "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+                    "area": timeslot_obj.destination_id.city
+                })
+
+            picked_timeslot = {}
+            if book_obj.picked_timeslot_id:
+                picked_timeslot = book_obj.picked_timeslot_id.to_dict()
+
+            res.update({
+                'origin': book_obj.origin_id.code,
+                'passengers': psg_list,
+                'provider_bookings': prov_list,
+                'test_address': book_obj.test_address,
+                'test_address_map_link': book_obj.test_address_map_link,
+                'picked_timeslot': picked_timeslot,
+                'timeslot_list': timeslot_list
+            })
+            return Response().get_no_error(res)
+            # else:
+            #     raise RequestException(1035)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())
