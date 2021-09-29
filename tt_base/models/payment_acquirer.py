@@ -229,6 +229,7 @@ class PaymentAcquirer(models.Model):
             _logger.info("payment acq req\n" + json.dumps(req))
             res = {}
             res['member'] = {}
+            book_obj = None
             user_obj = self.env['res.users'].browse(context['co_uid']) # untuk process channel booking 
             agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
             if not agent_obj:
@@ -250,6 +251,9 @@ class PaymentAcquirer(models.Model):
                     ('type', '!=', 'va'),  ## search yg bukan espay
                     ('type', '!=', 'payment_gateway')  ## search yg bukan mutasi bca
                 ]
+                if book_obj:
+                    if context['co_agent_id'] != book_obj.agent_id.id:
+                        dom.append(('type','!=','cash'))
                 unique = 0
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO

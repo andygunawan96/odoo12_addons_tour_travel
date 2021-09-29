@@ -15,8 +15,8 @@ class TtJourneyBus(models.Model):
     booking_id = fields.Many2one('tt.reservation.bus', related='provider_booking_id.booking_id', string='Order Number',
                                  store=True)
     sequence = fields.Integer('Sequence')
-    origin_id = fields.Many2one('tt.destinations', 'Origin')
-    destination_id = fields.Many2one('tt.destinations', 'Destination')
+    origin_id = fields.Many2one('tt.master.bus.station', 'Origin')
+    destination_id = fields.Many2one('tt.master.bus.station', 'Destination')
     departure_date = fields.Char('Departure Date')
     arrival_date = fields.Char('Arrival Date')
 

@@ -532,47 +532,57 @@ class Reservationmedical(models.Model):
                 user_obj.create_date
             except:
                 raise RequestException(1008)
+            vendor_obj = None
+            if self.env['res.users'].browse(context['co_uid']).vendor_id:
+                vendor_obj = self.env['res.users'].browse(context['co_uid']).vendor_id.id
 
-            if book_obj.agent_id.id == context.get('co_agent_id',-1) or \
-                    self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or \
-                    book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
-                    book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
-                res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
-                psg_list = []
-                for rec_idx, rec in enumerate(book_obj.passenger_ids):
-                    rec_data = rec.to_dict()
-                    rec_data.update({
-                        'passenger_number': rec.sequence
-                    })
-                    psg_list.append(rec_data)
-                prov_list = []
-                for rec in book_obj.provider_booking_ids:
-                    prov_list.append(rec.to_dict())
-
-                timeslot_list = []
-                for timeslot_obj in book_obj.timeslot_ids:
-                    timeslot_list.append({
-                        "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
-                        "area": timeslot_obj.destination_id.city
-                    })
-
-                picked_timeslot = {}
-                if book_obj.picked_timeslot_id:
-                    picked_timeslot = book_obj.picked_timeslot_id.to_dict()
-
-                res.update({
-                    'state_vendor': book_obj.state_vendor,
-                    'origin': book_obj.origin_id.code,
-                    'passengers': psg_list,
-                    'provider_bookings': prov_list,
-                    'test_address': book_obj.test_address,
-                    'test_address_map_link': book_obj.test_address_map_link,
-                    'picked_timeslot': picked_timeslot,
-                    'timeslot_list': timeslot_list
+            # if book_obj.agent_id.id == context.get('co_agent_id',-1) or \
+            #     vendor_obj in [self.env.ref('tt_base.vendor_national_hospital').id] or \
+            #         book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
+            #         book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            psg_list = []
+            for rec_idx, rec in enumerate(book_obj.passenger_ids):
+                rec_data = rec.to_dict()
+                rec_data.update({
+                    'passenger_number': rec.sequence
                 })
-                return Response().get_no_error(res)
-            else:
-                raise RequestException(1035)
+                psg_list.append(rec_data)
+            prov_list = []
+            for rec in book_obj.provider_booking_ids:
+                if vendor_obj: #check user vendor atau tidak
+                    if rec.provider_id.id == self.env.ref('tt_reservation_medical.tt_provider_medical').id and vendor_obj == self.env.ref('tt_base.vendor_national_hospital').id: #check vendor sama provider booking sama / tidak
+                        pass
+                    else:
+                        _logger.error(traceback.format_exc())
+                        return ERR.get_error(1013)
+                prov_list.append(rec.to_dict())
+
+            timeslot_list = []
+            for timeslot_obj in book_obj.timeslot_ids:
+                timeslot_list.append({
+                    "datetimeslot": timeslot_obj.datetimeslot.strftime('%Y-%m-%d %H:%M'),
+                    "area": timeslot_obj.destination_id.city
+                })
+
+            picked_timeslot = {}
+            if book_obj.picked_timeslot_id:
+                picked_timeslot = book_obj.picked_timeslot_id.to_dict()
+
+            res.update({
+                'state_vendor': book_obj.state_vendor,
+                'origin': book_obj.origin_id.code,
+                'passengers': psg_list,
+                'provider_bookings': prov_list,
+                'test_address': book_obj.test_address,
+                'test_address_map_link': book_obj.test_address_map_link,
+                'picked_timeslot': picked_timeslot,
+                'timeslot_list': timeslot_list
+            })
+            return Response().get_no_error(res)
+            # else:
+            #     raise RequestException(1035)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -1349,18 +1359,42 @@ class Reservationmedical(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
-        if self.carrier_name == 'NHDTKATG':
-            template_obj = self.env.ref('tt_report_common.nathos_antigen_information')
-        elif self.carrier_name == 'NHDTKPCR':
-            template_obj = self.env.ref('tt_report_common.nathos_pcr_information')
+        if self.carrier_name == 'NHDTKPCRR':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_rs_nathos_information')
+        elif self.carrier_name == 'NHDTKPCRP':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_poc_information')
+        elif self.carrier_name == 'NHDTKPCRB':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_bali_information')
         elif self.carrier_name == 'NHDTMPCR':
             template_obj = self.env.ref('tt_report_common.nathos_pcr_mutasi_information')
-        elif self.carrier_name == 'NHDTSPCR':
-            template_obj = self.env.ref('tt_report_common.nathos_pcr_saliva_information')
+        elif self.carrier_name == 'NHDTSPCRR':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_saliva_rs_nathos_information')
+        elif self.carrier_name == 'NHDTSPCRP':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_saliva_poc_information')
+        elif self.carrier_name == 'NHDTSPCRB':
+            template_obj = self.env.ref('tt_report_common.nathos_pcr_saliva_bali_information')
+        elif self.carrier_name == 'NHDTKATGR':
+            template_obj = self.env.ref('tt_report_common.nathos_antigen_rs_nathos_information')
+        elif self.carrier_name == 'NHDTKATGP':
+            template_obj = self.env.ref('tt_report_common.nathos_antigen_poc_information')
         elif self.carrier_name == 'NHDTKKARBD':
-            template_obj = self.env.ref('tt_report_common.nathos_pcr_tes_antibodi_rbd_information')
+            template_obj = self.env.ref('tt_report_common.nathos_tes_antibodi_rbd_information')
         elif self.carrier_name == 'NHDTNATG':
             template_obj = self.env.ref('tt_report_common.nathos_antigen_nassal_information')
+        elif self.carrier_name == 'NHDTKMCU1':
+            template_obj = self.env.ref('tt_report_common.nathos_checkup1_information')
+        elif self.carrier_name == 'NHDTKMCU2':
+            template_obj = self.env.ref('tt_report_common.nathos_checkup2_information')
+        elif self.carrier_name == 'NHDTKMCU3':
+            template_obj = self.env.ref('tt_report_common.nathos_checkup3_information')
+        elif self.carrier_name == 'NHDTKMCU4M':
+            template_obj = self.env.ref('tt_report_common.nathos_checkup4_male_information')
+        elif self.carrier_name == 'NHDTKMCU4F':
+            template_obj = self.env.ref('tt_report_common.nathos_checkup4_female_information')
+        elif self.carrier_name == 'NHDTKMCU5M':
+            template_obj = self.env.ref('tt_report_common.nathos_checkup5_male_information')
+        elif self.carrier_name == 'NHDTKMCU5F':
+            template_obj = self.env.ref('tt_report_common.nathos_checkup5_female_information')
         elif self.carrier_name == 'NHDTKPSC':
             template_obj = self.env.ref('tt_report_common.nathos_paket_screening_cvd19_information')
         elif self.carrier_name == 'NHDTKPSCWPCR':

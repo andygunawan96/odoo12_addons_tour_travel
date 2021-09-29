@@ -34,6 +34,7 @@ Key Features
         'data/tt_agent_ho_data.xml',
         'data/payment_acquirer_ho_data.xml',
         'data/user_template.xml',
+        'data/tt_vendor_data.xml',
 
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
