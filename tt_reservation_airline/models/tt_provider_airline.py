@@ -509,6 +509,18 @@ class TtProviderAirline(models.Model):
                                                                                       psg.get('last_name',
                                                                                               ''))).lower().replace(' ',''))
 
+            # September 29, 2021 - SAM
+            # Menambahkan mekanisme match data tiket
+            # Ada vendor yang memotong pada first_name
+            if not psg_obj:
+                psg_name = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.last_name.lower().replace(' ', ''), x.first_name.lower().replace(' ', '')))
+
+            if not psg_obj:
+                psg_name = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.first_name.lower().replace(' ', ''), x.first_name.lower().replace(' ', '')))
+            # END
+
             if psg_obj:
                 _logger.info(json.dumps(psg_obj.ids))
                 if len(psg_obj.ids) > 1:
@@ -554,26 +566,56 @@ class TtProviderAirline(models.Model):
 
     def update_ticket_api(self,passengers):##isi ticket number
         ticket_not_found = []
+        # September 29, 2021 - SAM
+        # Update mekanisme kriteria match tiket.
+        # Mekanisme match digunakan ilike, karena pada vendor nama bisa terpotong
+        match_ticket_list = []
         for psg in passengers:
+            psg_name_1 = '%s%s' % (psg.get('first_name', '').lower().replace(' ', ''), psg.get('last_name', '').lower().replace(' ', ''))
+            psg_name_2 = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
+            psg_ticket_number = psg.get('ticket_number', '')
+            has_ticket_number = True if psg_ticket_number else False
+
             ticket_found = False
             for ticket in self.ticket_ids:
-                ticket_passenger_name = ticket.passenger_id and ticket.passenger_id.name or ''
-                psg_name = ticket_passenger_name.replace(' ','').lower()
-                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or (psg.get('ticket_number') and ticket.ticket_number == psg.get('ticket_number')):
-                    ticket_values = {
-                        'ticket_number': psg.get('ticket_number', ''),
-                        'ff_number': psg.get('ff_number', ''),
-                    }
-                    # if ticket_values['ff_code']:
-                    #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
-                    #     if loyalty_id:
-                    #         ticket_values['loyalty_program_id'] = loyalty_id
-                    ticket.write(ticket_values)
-                    ticket_found = True
-                    ticket.passenger_id.is_ticketed = True
-                    break
+                if ticket.id in match_ticket_list:
+                    continue
+
+                # ticket_passenger_name = ticket.passenger_id and ticket.passenger_id.name or ''
+                # psg_name = ticket_passenger_name.replace(' ','').lower()
+                # if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or (psg.get('ticket_number') and ticket.ticket_number == psg.get('ticket_number')):
+                if ticket.passenger_id:
+                    ticket_first_name = ticket.passenger_id.first_name.lower().replace(' ', '') if ticket.passenger_id.first_name else ''
+                    ticket_last_name = ticket.passenger_id.last_name.lower().replace(' ', '') if ticket.passenger_id.last_name else ''
+                    ticket_name_1 = '%s%s' % (ticket_first_name, ticket_last_name)
+                    ticket_name_2 = '%s%s' % (ticket_last_name, ticket_first_name)
+                    ticket_name_3 = '%s%s' % (ticket_first_name, ticket_first_name)
+                    ticket_number = ticket.ticket_number if ticket.ticket_number else ''
+
+                    is_match = False
+                    if ticket_number:
+                        if has_ticket_number and psg_ticket_number == ticket_number:
+                            is_match = True
+                    else:
+                        if (psg_name_1 in ticket_name_1) or (psg_name_1 in ticket_name_3) or (psg_name_2 in ticket_name_2) or (psg_name_2 in ticket_name_3):
+                            is_match = True
+                    if is_match:
+                        match_ticket_list.append(ticket.id)
+                        ticket_values = {
+                            'ticket_number': psg.get('ticket_number', ''),
+                            'ff_number': psg.get('ff_number', ''),
+                        }
+                        # if ticket_values['ff_code']:
+                        #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
+                        #     if loyalty_id:
+                        #         ticket_values['loyalty_program_id'] = loyalty_id
+                        ticket.write(ticket_values)
+                        ticket_found = True
+                        ticket.passenger_id.is_ticketed = True
+                        break
             if not ticket_found:
                 ticket_not_found.append(psg)
+        # END
 
         for psg in ticket_not_found:
             # April 21, 2020 - SAM
