@@ -163,9 +163,11 @@
         </t>
         <t t-foreach="length.journey_ids" t-as="line">
             <t t-foreach="line.segment_ids" t-as="segment_obj">
-                <t t-if="segment_obj.segment_addons_ids">
-                    <t t-set="any_ssr" t-value="1"/>
-                    <t t-foreach="segment_obj.segment_addons_ids" t-as="addons_obj">
+                <t t-foreach="segment_obj.segment_addons_ids" t-as="addons_obj">
+                    <t t-if="psg.pax_type in addons_obj.get_pax_type()">
+                        <t t-if="any_ssr == 0 ">
+                            <t t-set="any_ssr" t-value="1"/>
+                        </t>
                         <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/></i><br/>
                     </t>
                 </t>
@@ -223,7 +225,7 @@
                                     </div>
                                     <div class="col-2" style="text-align: center;">
                                         <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
-<!--                                                <img src="/tt_report_common/static/images/airfreight-white.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:'+ base_color +';'"/>-->
+                                        <!--                                                <img src="/tt_report_common/static/images/airfreight-white.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:'+ base_color +';'"/>-->
                                         <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                     </div>
                                     <div class="col-5">
