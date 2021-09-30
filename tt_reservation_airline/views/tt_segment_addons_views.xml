@@ -10,6 +10,7 @@
                             <field name="detail_code"/>
                             <field name="detail_type"/>
                             <field name="detail_name"/>
+                            <field name="pax_type_json"/>
                         </group>
                         <group>
                             <label for="amount" string="Amount"/>
@@ -37,6 +38,7 @@
                 <field name="detail_code"/>
                 <field name="detail_type"/>
                 <field name="detail_name"/>
+                <field name="pax_type_json"/>
                 <field name="amount"/>
                 <field name="unit"/>
             </tree>

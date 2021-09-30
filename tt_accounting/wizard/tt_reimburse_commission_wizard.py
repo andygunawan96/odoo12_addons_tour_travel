@@ -90,7 +90,7 @@ class ReimburseCommissionWizard(models.TransientModel):
 
     def reimburse_commission(self):
         try:
-            if (self.rac_amount / self.denominator) >= 100.0 or (self.rac_amount / self.denominator) <= 0.0:
+            if (self.rac_amount / self.denominator) >= 100.0 or (self.rac_amount / self.denominator) < 0.0:
                 raise UserError(_('Commission Multiplier divided by Denominator must be between 1-99%'))
             has_zero = False
             has_minus = False

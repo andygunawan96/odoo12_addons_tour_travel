@@ -11,12 +11,16 @@
 
                         <t t-set="is_phc" t-value="0"/>
                         <t t-set="is_periksain" t-value="0"/>
+                        <t t-set="is_medical" t-value="0"/>
                         <t t-foreach="docs.invoice_line_ids" t-as="inv_line">
                             <t t-if="inv_line.res_model_resv == 'tt.reservation.phc'">
                                 <t t-set="is_phc" t-value="1"/>
                             </t>
                             <t t-elif="inv_line.res_model_resv == 'tt.reservation.periksain'">
                                 <t t-set="is_periksain" t-value="1"/>
+                            </t>
+                            <t t-elif="inv_line.res_model_resv == 'tt.reservation.medical'">
+                                <t t-set="is_medical" t-value="1"/>
                             </t>
                         </t>
 
@@ -25,6 +29,9 @@
                         </t>
                         <t t-if="is_periksain">
                             <t t-call="tt_report_common.periksain_additional_msg"/>
+                        </t>
+                        <t t-if="is_medical">
+                            <t t-call="tt_report_common.medical_additional_msg"/>
                         </t>
                     </div>
                 </t>
@@ -686,6 +693,17 @@
             <div class="col-1"/>
         </div>
     </template>
+
+    <template id="medical_additional_msg">
+        <div style="width: 100%; border-bottom: 1px solid black; margin:20px 0px 0px 0px;"/>  <!---15px -15px-->
+        <div class="row" style="page-break-inside:auto; font-family: 'DeJavu Sans'; line-height:0.8;">
+            <div class="col-11">
+                <span t-raw="terms_conditions"/>
+            </div>
+            <div class="col-1"/>
+        </div>
+    </template>
+
 
     <!-- Type 1: Diganti tgl 2021-01-05 karena klo isi kpanjangan kurang enak bacane-->
     <template id="agent_invoice_content_type_1_view">

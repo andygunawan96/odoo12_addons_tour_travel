@@ -1563,6 +1563,7 @@ class PrintoutInvoice(models.AbstractModel):
         elif resv_obj._name in ['tt.reservation.medical',]:
             val.update({
                 'qr_code_data': resv_obj.to_dict(),
+                'terms_conditions': resv_obj.get_terms_conditions_email()
             })
         return val
 

@@ -36,6 +36,7 @@ class TtVendor(models.Model):
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'vendor_id', 'Users')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
+    provider_id = fields.Many2one('tt.provider', string='Provider')
     active = fields.Boolean('Active', default='True')
 
     description = fields.Char('Description', default='')
