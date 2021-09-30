@@ -43,6 +43,7 @@
                             <field name="currency_id" />
                             <field name="est_date" />
                             <field name="join_date" />
+                            <field name="provider_id" />
                         </group>
 
                         <group string="Contact">

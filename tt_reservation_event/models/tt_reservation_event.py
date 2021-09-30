@@ -456,43 +456,44 @@ class ReservationEvent(models.Model):
                 user_obj.create_date
             except:
                 raise RequestException(1008)
-            if resv_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or resv_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
-                res = resv_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
-                # res = resv_obj.to_dict()
-                res.pop('departure_date')
-                res.pop('arrival_date')
-                res.pop('book_id')
-                res.pop('agent_id')
-                psg_list = []
-                for i in resv_obj.passenger_ids:
-                    if list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list)):
-                        list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list))[0]['qty'] += 1
-                    else:
-                        new_i = i.to_dict()
-                        new_i.update({
-                            'name': i.option_id.event_option_name,
-                            'qty': 1
-                        })
-                        psg_list.append(new_i)
-                res.update({
-                    'providers': [{'provider': rec.provider_id.code, 'pnr': rec.pnr} for rec in resv_obj.provider_booking_ids],
-                    'event_name': resv_obj.event_name,
-                    'event_location': resv_obj.event_id and [{
-                        'name': rec.name,
-                        'address': rec.address,
-                        'city': rec.city_name,
-                        'country': rec.country_name,
-                        'lat': '',
-                        'long': '',
-                    } for rec in resv_obj.event_id.location_ids] or [],
-                    'description': resv_obj.event_id and resv_obj.event_id.description or '',
-                    'options': [rec.to_dict() for rec in resv_obj.passenger_ids],
-                    'notes': '',
-                    'passengers': psg_list
-                })
-                return ERR.get_no_error(res)
-            else:
-                raise RequestException(1003)
+            # if resv_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or resv_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            res = resv_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            # res = resv_obj.to_dict()
+            res.pop('departure_date')
+            res.pop('arrival_date')
+            res.pop('book_id')
+            res.pop('agent_id')
+            psg_list = []
+            for i in resv_obj.passenger_ids:
+                if list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list)):
+                    list(filter(lambda x: x['name'] == i.option_id.event_option_name, psg_list))[0]['qty'] += 1
+                else:
+                    new_i = i.to_dict()
+                    new_i.update({
+                        'name': i.option_id.event_option_name,
+                        'qty': 1
+                    })
+                    psg_list.append(new_i)
+            res.update({
+                'providers': [{'provider': rec.provider_id.code, 'pnr': rec.pnr} for rec in resv_obj.provider_booking_ids],
+                'event_name': resv_obj.event_name,
+                'event_location': resv_obj.event_id and [{
+                    'name': rec.name,
+                    'address': rec.address,
+                    'city': rec.city_name,
+                    'country': rec.country_name,
+                    'lat': '',
+                    'long': '',
+                } for rec in resv_obj.event_id.location_ids] or [],
+                'description': resv_obj.event_id and resv_obj.event_id.description or '',
+                'options': [rec.to_dict() for rec in resv_obj.passenger_ids],
+                'notes': '',
+                'passengers': psg_list
+            })
+            return ERR.get_no_error(res)
+            # else:
+            #     raise RequestException(1003)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())

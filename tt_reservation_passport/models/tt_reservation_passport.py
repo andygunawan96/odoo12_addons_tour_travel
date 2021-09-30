@@ -977,114 +977,115 @@ class TtPassport(models.Model):
                 user_obj.create_date
             except:
                 raise RequestException(1008)
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-                res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
-                passenger = []
-                # Loop per pax
-                for idx, pax in enumerate(book_obj.passenger_ids, 1):
-                    requirement = []
-                    interview = {
-                        'needs': pax.interview
-                    }
-                    sale = {}
-                    for ssc in pax.cost_service_charge_ids:
-                        if ssc.charge_code == 'rac':
-                            sale['RAC'] = {
-                                'charge_code': ssc.charge_code,
-                                'amount': ssc.amount
-                            }
-                            if ssc.currency_id:
-                                sale['RAC'].update({
-                                    'currency': ssc.currency_id.name
-                                })
-                        elif ssc.charge_code == 'fare':
-                            sale['TOTAL'] = {
-                                'charge_code': 'total',
-                                'amount': ssc.amount
-                            }
-                            if ssc['currency_id']:
-                                sale['TOTAL'].update({
-                                    'currency': ssc.currency_id.name
-                                })
-                    for ssc in pax.channel_service_charge_ids:
-                        csc = {
-                            'amount': 0,
-                            'charge_code': ''
+            # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            passenger = []
+            # Loop per pax
+            for idx, pax in enumerate(book_obj.passenger_ids, 1):
+                requirement = []
+                interview = {
+                    'needs': pax.interview
+                }
+                sale = {}
+                for ssc in pax.cost_service_charge_ids:
+                    if ssc.charge_code == 'rac':
+                        sale['RAC'] = {
+                            'charge_code': ssc.charge_code,
+                            'amount': ssc.amount
                         }
-                        if ssc.charge_code == 'csc':
-                            csc = {
-                                'charge_code': ssc.charge_code,
-                                'amount': csc['amount'] + abs(ssc.amount)
-                            }
-                        sale['CSC'] = csc
-                    """ Requirements """
-                    for require in pax.to_requirement_ids:
-                        requirement.append({
-                            'name': require.requirement_id.name,
-                            'is_copy': require.is_copy,
-                            'is_original': require.is_ori
-                        })
-                    """ Interview """
-                    interview_list = []
-                    if pax.interview is True:
-                        for intvw in pax.interview_ids:
-                            interview_list.append({
-                                'datetime': str(intvw.datetime),
-                                'ho_employee': intvw.ho_employee,
-                                'meeting_point': intvw.meeting_point,
-                                'location': intvw.location_interview_id
+                        if ssc.currency_id:
+                            sale['RAC'].update({
+                                'currency': ssc.currency_id.name
                             })
-                    interview['interview_list'] = interview_list
-                    passenger.append({
-                        'title': pax.title,
-                        'first_name': pax.first_name,
-                        'last_name': pax.last_name,
-                        'birth_date': str(pax.birth_date),
-                        'gender': pax.gender,
-                        # 'age': pax.passenger_id.age or '',
-                        'passport_number': pax.passport_number or '',
-                        'passport_expdate': str(pax.passport_expdate) or '',
-                        'passport': {
-                            'price': sale,
-                            'passport_type': dict(pax.pricelist_id._fields['passport_type'].selection).get(
-                                pax.pricelist_id.passport_type) if pax.pricelist_id else '',
-                            'apply_type': dict(pax.pricelist_id._fields['apply_type'].selection).get(
-                                pax.pricelist_id.apply_type) if pax.pricelist_id else '',
-                            'process_type': dict(pax.pricelist_id._fields['process_type'].selection).get(
-                                pax.pricelist_id.process_type) if pax.pricelist_id else '',
-                            'duration': pax.pricelist_id.duration if pax.pricelist_id else '',
-                            'immigration_consulate': pax.pricelist_id.immigration_consulate if pax.pricelist_id else '',
-                            'requirement': requirement,
-                            'interview': interview,
-                        },
-                        'sequence': idx
+                    elif ssc.charge_code == 'fare':
+                        sale['TOTAL'] = {
+                            'charge_code': 'total',
+                            'amount': ssc.amount
+                        }
+                        if ssc['currency_id']:
+                            sale['TOTAL'].update({
+                                'currency': ssc.currency_id.name
+                            })
+                for ssc in pax.channel_service_charge_ids:
+                    csc = {
+                        'amount': 0,
+                        'charge_code': ''
+                    }
+                    if ssc.charge_code == 'csc':
+                        csc = {
+                            'charge_code': ssc.charge_code,
+                            'amount': csc['amount'] + abs(ssc.amount)
+                        }
+                    sale['CSC'] = csc
+                """ Requirements """
+                for require in pax.to_requirement_ids:
+                    requirement.append({
+                        'name': require.requirement_id.name,
+                        'is_copy': require.is_copy,
+                        'is_original': require.is_ori
                     })
-                res_dict.pop('book_id')
-                res_dict.pop('agent_id')
-                res_dict.update({
-                    'contact': {
-                        'title': res_dict['contact']['title'],
-                        'name': res_dict['contact']['name'],
-                        'email': res_dict['contact']['email'],
-                        'phone': res_dict['contact']['phone']
+                """ Interview """
+                interview_list = []
+                if pax.interview is True:
+                    for intvw in pax.interview_ids:
+                        interview_list.append({
+                            'datetime': str(intvw.datetime),
+                            'ho_employee': intvw.ho_employee,
+                            'meeting_point': intvw.meeting_point,
+                            'location': intvw.location_interview_id
+                        })
+                interview['interview_list'] = interview_list
+                passenger.append({
+                    'title': pax.title,
+                    'first_name': pax.first_name,
+                    'last_name': pax.last_name,
+                    'birth_date': str(pax.birth_date),
+                    'gender': pax.gender,
+                    # 'age': pax.passenger_id.age or '',
+                    'passport_number': pax.passport_number or '',
+                    'passport_expdate': str(pax.passport_expdate) or '',
+                    'passport': {
+                        'price': sale,
+                        'passport_type': dict(pax.pricelist_id._fields['passport_type'].selection).get(
+                            pax.pricelist_id.passport_type) if pax.pricelist_id else '',
+                        'apply_type': dict(pax.pricelist_id._fields['apply_type'].selection).get(
+                            pax.pricelist_id.apply_type) if pax.pricelist_id else '',
+                        'process_type': dict(pax.pricelist_id._fields['process_type'].selection).get(
+                            pax.pricelist_id.process_type) if pax.pricelist_id else '',
+                        'duration': pax.pricelist_id.duration if pax.pricelist_id else '',
+                        'immigration_consulate': pax.pricelist_id.immigration_consulate if pax.pricelist_id else '',
+                        'requirement': requirement,
+                        'interview': interview,
                     },
-                    'journey': {
-                        'in_process_date': str(book_obj['in_process_date'].strftime("%Y-%m-%d")) if book_obj[
-                            'in_process_date'] else '',
-                        'name': res_dict['order_number'],
-                        'payment_status': book_obj.commercial_state,
-                        'state': book_obj.state,
-                        'state_passport': dict(book_obj._fields['state_passport'].selection).get(
-                            book_obj.state_passport)
-                    },
-                    'passengers': passenger
+                    'sequence': idx
                 })
+            res_dict.pop('book_id')
+            res_dict.pop('agent_id')
+            res_dict.update({
+                'contact': {
+                    'title': res_dict['contact']['title'],
+                    'name': res_dict['contact']['name'],
+                    'email': res_dict['contact']['email'],
+                    'phone': res_dict['contact']['phone']
+                },
+                'journey': {
+                    'in_process_date': str(book_obj['in_process_date'].strftime("%Y-%m-%d")) if book_obj[
+                        'in_process_date'] else '',
+                    'name': res_dict['order_number'],
+                    'payment_status': book_obj.commercial_state,
+                    'state': book_obj.state,
+                    'state_passport': dict(book_obj._fields['state_passport'].selection).get(
+                        book_obj.state_passport)
+                },
+                'passengers': passenger
+            })
 
-                _logger.info("Get resp\n" + json.dumps(res_dict))
-                print(Response().get_no_error(res_dict))
-                return Response().get_no_error(res_dict)
-            else:
-                raise RequestException(1035)
+            _logger.info("Get resp\n" + json.dumps(res_dict))
+            print(Response().get_no_error(res_dict))
+            return Response().get_no_error(res_dict)
+            # else:
+            #     raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

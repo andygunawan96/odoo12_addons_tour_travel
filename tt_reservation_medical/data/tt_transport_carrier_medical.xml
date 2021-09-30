@@ -2,11 +2,11 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="tt_transport_carrier_medical_nathos_antigen" model="tt.transport.carrier">
-            <field name="name">Antigen</field>
-            <field name="code">NHDTKATG</field>
-            <field name="icao">NHDTKATG</field>
-            <field name="call_sign">Antigen</field>
+        <record id="tt_transport_carrier_medical_nathos_pcr_rs_nathos" model="tt.transport.carrier">
+            <field name="name">PCR Test (RS National Hospital)</field>
+            <field name="code">NHDTKPCRR</field> <!--R Rumah sakit-->
+            <field name="icao">NHDTKPCRR</field>
+            <field name="call_sign">PCR Test (RS National Hospital)</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
@@ -14,11 +14,23 @@
             <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
         </record>
 
-        <record id="tt_transport_carrier_medical_nathos_pcr" model="tt.transport.carrier">
-            <field name="name">PCR</field>
-            <field name="code">NHDTKPCR</field>
-            <field name="icao">NHDTKPCR</field>
-            <field name="call_sign">PCR</field>
+        <record id="tt_transport_carrier_medical_nathos_pcr_poc" model="tt.transport.carrier">
+            <field name="name">PCR Test (POC Biliton dan Kalijudan)</field>
+            <field name="code">NHDTKPCRP</field> <!--P POC-->
+            <field name="icao">NHDTKPCRP</field>
+            <field name="call_sign">PCR Test (POC Biliton dan Kalijudan)</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_pcr_bali" model="tt.transport.carrier">
+            <field name="name">PCR Test (Bali)</field>
+            <field name="code">NHDTKPCRB</field><!--B Bali-->
+            <field name="icao">NHDTKPCRB</field>
+            <field name="call_sign">PCR Test (Bali)</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
@@ -27,7 +39,7 @@
         </record>
 
         <record id="tt_transport_carrier_medical_nathos_pcr_mutasi" model="tt.transport.carrier">
-            <field name="name">PCR Mutasi National Hospital Surabaya</field>
+            <field name="name">PCR Mutasi</field>
             <field name="code">NHDTMPCR</field>
             <field name="icao">NHDTMPCR</field>
             <field name="call_sign">PCR Mutasi</field>
@@ -38,11 +50,59 @@
             <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
         </record>
 
-        <record id="tt_transport_carrier_medical_nathos_pcr_saliva" model="tt.transport.carrier">
-            <field name="name">PCR Saliva</field>
-            <field name="code">NHDTSPCR</field>
-            <field name="icao">NHDTSPCR</field>
-            <field name="call_sign">PCR Saliva National Hospital Surabaya</field>
+        <record id="tt_transport_carrier_medical_nathos_pcr_saliva_rs_nathos" model="tt.transport.carrier">
+            <field name="name">PCR Saliva (RS National Hospital)</field>
+            <field name="code">NHDTSPCRR</field> <!--R Rumah sakit-->
+            <field name="icao">NHDTSPCRR</field>
+            <field name="call_sign">PCR Saliva (RS National Hospital)</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_pcr_saliva_poc" model="tt.transport.carrier">
+            <field name="name">PCR Saliva (POC Biliton dan Kalijudan)</field>
+            <field name="code">NHDTSPCRP</field> <!--P POC-->
+            <field name="icao">NHDTSPCRP</field>
+            <field name="call_sign">PCR Saliva ( POC Biliton dan Kalijudan)</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_pcr_saliva_bali" model="tt.transport.carrier">
+            <field name="name">PCR Saliva (Bali)</field>
+            <field name="code">NHDTSPCRB</field> <!--S Saliva, B Bali-->
+            <field name="icao">NHDTSPCRP</field>
+            <field name="call_sign">PCR Saliva (Bali)</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_antigen_rs_nathos" model="tt.transport.carrier">
+            <field name="name">Swab Antigen (RS National Hospital)</field>
+            <field name="code">NHDTKATGR</field> <!--R Rumah sakit-->
+            <field name="icao">NHDTKATGR</field>
+            <field name="call_sign">Swab Antigen (RS National Hospital)</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_antigen_poc" model="tt.transport.carrier">
+            <field name="name">Swab Antigen (POC Biliton dan Kalijudan)</field>
+            <field name="code">NHDTKATGP</field> <!--P POC-->
+            <field name="icao">NHDTKATGP</field>
+            <field name="call_sign">Swab Antigen (POC Biliton dan Kalijudan)</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
@@ -67,6 +127,90 @@
             <field name="code">NHDTNATG</field>
             <field name="icao">NHDTNATG</field>
             <field name="call_sign">Nassal Antigen</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_medical_checkup1" model="tt.transport.carrier">
+            <field name="name">Paket Medical Check-Up Paket 1</field>
+            <field name="code">NHDTKMCU1</field> <!-- MCU Medical Checkup 1-->
+            <field name="icao">NHDTNMCU1</field>
+            <field name="call_sign">Paket Medical Check-Up Paket 1</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_medical_checkup2" model="tt.transport.carrier">
+            <field name="name">Paket Medical Check-Up Paket 2</field>
+            <field name="code">NHDTKMCU2</field> <!-- MCU Medical Checkup 1-->
+            <field name="icao">NHDTNMCU2</field>
+            <field name="call_sign">Paket Medical Check-Up Paket 2</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_medical_checkup3" model="tt.transport.carrier">
+            <field name="name">Paket Medical Check-Up Paket 3</field>
+            <field name="code">NHDTKMCU3</field> <!-- MCU Medical Checkup 1-->
+            <field name="icao">NHDTNMCU3</field>
+            <field name="call_sign">Paket Medical Check-Up Paket 3</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_medical_checkup4_male" model="tt.transport.carrier">
+            <field name="name">Paket Medical Check-Up Paket 4 Male</field>
+            <field name="code">NHDTKMCU4M</field> <!-- MCU Medical Checkup 1-->
+            <field name="icao">NHDTNMCU4M</field>
+            <field name="call_sign">Paket Medical Check-Up Paket 4 Male</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_medical_checkup4_female" model="tt.transport.carrier">
+            <field name="name">Paket Medical Check-Up Paket 4 Female</field>
+            <field name="code">NHDTKMCU4F</field> <!-- MCU Medical Checkup 1-->
+            <field name="icao">NHDTNMCU4F</field>
+            <field name="call_sign">Paket Medical Check-Up Paket 4 Female</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_medical_checkup5_male" model="tt.transport.carrier">
+            <field name="name">Paket Medical Check-Up Paket 5 Male</field>
+            <field name="code">NHDTKMCU5M</field> <!-- MCU Medical Checkup 5-->
+            <field name="icao">NHDTNMCU5M</field>
+            <field name="call_sign">Paket Medical Check-Up Paket 5 Male</field>
+            <field name="adult_length_name">80</field>
+            <field name="child_length_name">80</field>
+            <field name="infant_length_name">80</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_medical.tt_provider_type_medical"/>
+        </record>
+
+        <record id="tt_transport_carrier_medical_nathos_paket_medical_checkup5_female" model="tt.transport.carrier">
+            <field name="name">Paket Medical Check-Up Paket 5 Female</field>
+            <field name="code">NHDTKMCU5F</field> <!-- MCU Medical Checkup 5-->
+            <field name="icao">NHDTNMCU5F</field>
+            <field name="call_sign">Paket Medical Check-Up Paket 5 Female</field>
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>

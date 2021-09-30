@@ -1849,59 +1849,60 @@ class IssuedOffline(models.Model):
                 user_obj.create_date
             except:
                 raise RequestException(1008)
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
-                res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
-                lines = []
-                passengers = []
-                attachments = []
-                res_dict.pop('departure_date')
-                res_dict.pop('arrival_date')
-                res_dict.pop('book_id')
-                res_dict.pop('agent_id')
-                # lines
-                for line in book_obj.line_ids:
-                    lines.append(line.to_dict())
+            # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            res_dict = book_obj.sudo().to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            lines = []
+            passengers = []
+            attachments = []
+            res_dict.pop('departure_date')
+            res_dict.pop('arrival_date')
+            res_dict.pop('book_id')
+            res_dict.pop('agent_id')
+            # lines
+            for line in book_obj.line_ids:
+                lines.append(line.to_dict())
 
-                # passengers
-                for idx, psg in enumerate(book_obj.passenger_ids):
-                    passengers.append(psg.to_dict())
-                    passengers[len(passengers)-1].update({
-                        'sequence': int(idx)
-                    })
-
-                # attachments
-                for attachment in book_obj.attachment_ids:
-                    attachments.append({
-                        'name': attachment.name,
-                        'filename': attachment.filename,
-                        'url': attachment.url,
-                        'owner': attachment.agent_id.name,
-                    })
-
-                res_dict.update({
-                    'order_number': book_obj.name,
-                    'pnr': book_obj.pnr,
-                    'state': book_obj.state,
-                    'state_offline': book_obj.state_offline,
-                    'offline_provider_type': book_obj.offline_provider_type,
-                    'lines': lines,
-                    'passengers': passengers,
-                    'total': book_obj.total,
-                    'commission': book_obj.agent_commission,
-                    'currency': book_obj.currency_id.name,
-                    'attachment': attachments,
-
-                    'offline_provider_type_name': book_obj.offline_provider_type_name,
-                    'input_total': book_obj.input_total,
-                    # 'total_with_fees': self.total_with_fees,
-                    'description': book_obj.description,
-                    'social_media_type': book_obj.social_media_type.id
+            # passengers
+            for idx, psg in enumerate(book_obj.passenger_ids):
+                passengers.append(psg.to_dict())
+                passengers[len(passengers)-1].update({
+                    'sequence': int(idx)
                 })
-                # print(res)
-                _logger.info("Get resp\n" + json.dumps(res_dict))
-                return Response().get_no_error(res_dict)
-            else:
-                raise RequestException(1035)
+
+            # attachments
+            for attachment in book_obj.attachment_ids:
+                attachments.append({
+                    'name': attachment.name,
+                    'filename': attachment.filename,
+                    'url': attachment.url,
+                    'owner': attachment.agent_id.name,
+                })
+
+            res_dict.update({
+                'order_number': book_obj.name,
+                'pnr': book_obj.pnr,
+                'state': book_obj.state,
+                'state_offline': book_obj.state_offline,
+                'offline_provider_type': book_obj.offline_provider_type,
+                'lines': lines,
+                'passengers': passengers,
+                'total': book_obj.total,
+                'commission': book_obj.agent_commission,
+                'currency': book_obj.currency_id.name,
+                'attachment': attachments,
+
+                'offline_provider_type_name': book_obj.offline_provider_type_name,
+                'input_total': book_obj.input_total,
+                # 'total_with_fees': self.total_with_fees,
+                'description': book_obj.description,
+                'social_media_type': book_obj.social_media_type.id
+            })
+            # print(res)
+            _logger.info("Get resp\n" + json.dumps(res_dict))
+            return Response().get_no_error(res_dict)
+            # else:
+            #     raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

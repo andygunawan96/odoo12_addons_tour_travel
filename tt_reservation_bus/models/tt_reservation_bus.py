@@ -14,8 +14,8 @@ class TtReservationBus(models.Model):
     _order = "id desc"
     _description = "Reservation Bus"
 
-    origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
-    destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
+    origin_id = fields.Many2one('tt.master.bus.station', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
+    destination_id = fields.Many2one('tt.master.bus.station', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
     sector_type = fields.Char('Sector', readonly=True, compute='_compute_sector_type', store=True)
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_bus_id', 'Service Charge',
@@ -75,7 +75,7 @@ class TtReservationBus(models.Model):
     def _compute_sector_type(self):
         for rec in self:
             if rec.origin_id and rec.destination_id:
-                if rec.origin_id.country_id == rec.destination_id.country_id:
+                if rec.origin_id.city_id.country_id == rec.destination_id.city_id.country_id:
                     rec.sector_type = "Domestic"
                 else:
                     rec.sector_type = "International"
@@ -379,8 +379,8 @@ class TtReservationBus(models.Model):
         booking_tmp = {
             'departure_date': searchRQ['journey_list'][0]['departure_date'],
             'arrival_date': searchRQ['journey_list'][-1]['departure_date'],
-            'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
-            'destination_id': dest_obj.get_id(searchRQ['journey_list'][dest_idx]['destination'], provider_type_id),
+            'origin_id': self.sudo().env['tt.master.bus.station'].search([('code','=',searchRQ['journey_list'][0]['origin'])]).id,
+            'destination_id': self.sudo().env['tt.master.bus.station'].search([('code','=',searchRQ['journey_list'][0]['destination'])]).id,
             'provider_type_id': provider_type_id.id,
             'adult': searchRQ['adult'],
             # 'infant': searchRQ['infant'],
@@ -463,8 +463,8 @@ class TtReservationBus(models.Model):
             for journey in schedule['journeys']:
                 ##create journey
                 carrier_id = carrier_obj.get_id(journey['carrier_code'],_destination_type)
-                org_id = dest_obj.get_id(journey['origin'],_destination_type)
-                dest_id = dest_obj.get_id(journey['destination'],_destination_type)
+                org_id = self.sudo().env['tt.master.bus.station'].search([('code','=', journey['origin'])]).id
+                dest_id = self.sudo().env['tt.master.bus.station'].search([('code','=', journey['destination'])]).id
 
                 name['carrier'].append(carrier_id.name)
 
@@ -568,26 +568,27 @@ class TtReservationBus(models.Model):
                 user_obj.create_date
             except:
                 raise RequestException(1008)
-            if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
-                res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
-                psg_list = []
-                for rec in book_obj.sudo().passenger_ids:
-                    psg_list.append(rec.to_dict())
-                prov_list = []
-                for rec in book_obj.provider_booking_ids:
-                    prov_list.append(rec.to_dict())
-                res.update({
-                    'origin': book_obj.origin_id.code,
-                    'destination': book_obj.destination_id.code,
-                    'sector_type': book_obj.sector_type,
-                    'passengers': psg_list,
-                    'provider_bookings': prov_list,
-                    # 'provider_type': book_obj.provider_type_id.code
-                })
-                # _logger.info("Get resp\n" + json.dumps(res))
-                return ERR.get_no_error(res)
-            else:
-                raise RequestException(1035)
+            # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+            # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
+            res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            psg_list = []
+            for rec in book_obj.sudo().passenger_ids:
+                psg_list.append(rec.to_dict())
+            prov_list = []
+            for rec in book_obj.provider_booking_ids:
+                prov_list.append(rec.to_dict())
+            res.update({
+                'origin': book_obj.origin_id.code,
+                'destination': book_obj.destination_id.code,
+                'sector_type': book_obj.sector_type,
+                'passengers': psg_list,
+                'provider_bookings': prov_list,
+                # 'provider_type': book_obj.provider_type_id.code
+            })
+            # _logger.info("Get resp\n" + json.dumps(res))
+            return ERR.get_no_error(res)
+            # else:
+            #     raise RequestException(1035)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())
