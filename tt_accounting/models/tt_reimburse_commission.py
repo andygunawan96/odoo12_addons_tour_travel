@@ -27,6 +27,7 @@ class TtReimburseCommission(models.Model):
     _order = 'id DESC'
     _description = 'Reimburse Commission Data'
 
+    name = fields.Char('Name', compute='_compute_name_reimburse')
     res_model = fields.Char('Reservation Provider Name', index=True)
     res_id = fields.Integer('Reservation Provider ID', index=True, help='ID of the followed resource')
     agent_id = fields.Many2one('tt.agent', 'Agent', compute='compute_agent_id', store=True)
@@ -51,6 +52,19 @@ class TtReimburseCommission(models.Model):
     approved_uid = fields.Many2one('res.users', 'Approved By', readonly=1)
     cancel_date = fields.Datetime('Cancelled Date', readonly=1)
     cancel_uid = fields.Many2one('res.users', 'Cancelled By', readonly=1)
+
+    @api.onchange('provider_type_id', 'provider_id', 'provider_pnr')
+    @api.depends('provider_type_id', 'provider_id', 'provider_pnr')
+    def _compute_name_reimburse(self):
+        for rec in self:
+            final_name = ''
+            if rec.provider_type_id:
+                final_name += rec.provider_type_id.name + ' - '
+            if rec.provider_id:
+                final_name += rec.provider_id.name + ' - '
+            if rec.provider_pnr:
+                final_name += rec.provider_pnr
+            rec.name = final_name
 
     @api.onchange('res_model', 'res_id')
     @api.depends('res_model', 'res_id')
