@@ -3,7 +3,7 @@ from ...tools import variables
 import logging,traceback
 from datetime import datetime,timedelta
 import pytz
-
+import json
 _logger = logging.getLogger(__name__)
 
 class TtCronLogInhResv(models.Model):
@@ -11,6 +11,7 @@ class TtCronLogInhResv(models.Model):
 
     def cron_expired_booking(self):
         try:
+            error_list = []
             for rec in variables.PROVIDER_TYPE:
                 new_bookings = self.env['tt.reservation.%s' % rec].search(
                     [('state', 'in', ['draft','booked','partial_booked']),
@@ -18,6 +19,11 @@ class TtCronLogInhResv(models.Model):
                 for booking in new_bookings:
                     try:
                         if datetime.now() >= (booking.hold_date or datetime.min):
+                            if rec in ['airline']:
+                                #send gateway cancel airline
+                                res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name})
+                                if res['error_code']:
+                                    error_list.append('%s\nRESPONSE\n%s\n' % (booking.name, json.dumps(res)))
                             booking.action_expired()
                     except Exception as e:
                         _logger.error(
@@ -123,7 +129,7 @@ class TtCronLogInhResv(models.Model):
         try:
             error_list = []
             for rec in variables.PROVIDER_TYPE:
-                if rec in ['airline', 'train']:
+                if rec in ['airline', 'train','medical']:
                     retry_bookings = self.env['tt.reservation.%s' % rec].search([('state', 'in', ['booked']), ('payment_method','!=', False), ('ledger_ids','!=',False)])
                     for book_obj in retry_bookings:
                         try:
@@ -143,6 +149,7 @@ class TtCronLogInhResv(models.Model):
                                 _logger.info('##ISSUED SUCCESS##%s' % book_obj.name)
                             else:
                                 _logger.info('##ISSUED FAIL##%s##LAST HOLDDATE: %s' % (book_obj.name, book_obj.hold_date))
+                                error_list.append('%s\nRESPONSE\n%s\n' % (book_obj.name, json.dumps(res)))
                         except Exception as e:
                             error_list.append('%s\n%s\n\n' % (book_obj.name, traceback.format_exc()))
         except:
