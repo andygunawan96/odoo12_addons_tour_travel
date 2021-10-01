@@ -60,8 +60,8 @@ access_tt_customer_for_ticketing_operator,tt_customer.for.ticketing.operator,mod
 
 access_tt_customer_for_customer_level_1,tt.customer.for.customer.level.1,model_tt_customer,tt_base.group_customer_level_1,1,0,0,0
 access_tt_customer_for_customer_level_2,tt.customer.for.customer.level.2,model_tt_customer,tt_base.group_customer_level_2,1,0,1,0
-access_tt_customer_for_customer_level_3,tt.customer.for.customer.level.3,model_tt_customer,tt_base.group_customer_level_3,1,1,1,0
-access_tt_customer_for_customer_level_4,tt.customer.for.customer.level.4,model_tt_customer,tt_base.group_customer_level_4,1,1,1,0
+access_tt_customer_for_customer_level_3,tt.customer.for.customer.level.3,model_tt_customer,tt_base.group_customer_level_3,1,1,1,1
+access_tt_customer_for_customer_level_4,tt.customer.for.customer.level.4,model_tt_customer,tt_base.group_customer_level_4,1,1,1,1
 access_tt_customer_for_customer_level_5,tt.customer.for.customer.level.5,model_tt_customer,tt_base.group_customer_level_5,1,1,1,1
 
 access_tt_customer_identity_for_public,tt.customer.identity.for.public,model_tt_customer_identity,,1,1,1,1

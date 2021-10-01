@@ -154,7 +154,7 @@ class PaymentTransaction(models.Model):
             raise exceptions.UserError('%s Can only validate [Confirmed] state Payment.' % (self.name))
         if self.reference:
             if self.top_up_id:
-                if {self.env.ref('tt_base.group_payment_level_4').id}.intersection(set(self.env.user.groups_id.ids)):
+                if self.env.user.has_group('tt_base.group_payment_level_4'):
                     self.top_up_id.action_validate_top_up(self.total_amount)
                     self.action_validate_payment()
                 else:
@@ -168,7 +168,7 @@ class PaymentTransaction(models.Model):
         if self.state != 'validated':
             raise exceptions.UserError('%s Can only approve [Validated] state Payment.' % (self.name))
         if self.top_up_id:
-            if {self.env.ref('tt_base.group_payment_level_4').id}.intersection(set(self.env.user.groups_id.ids)):
+            if self.env.user.has_group('tt_base.group_payment_level_4'):
                 ## 3 Januari 2020 di minta hapuskan by desy
                 # if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
                 #     raise exceptions.UserError('Cannot change, have to wait 1 day.')
