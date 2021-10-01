@@ -32,7 +32,8 @@ class TtUploadFile(models.Model):
     @api.multi
     def unlink(self):
         for rec in self:
-            has_admin = ({self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids)))
+            # has_admin = ({self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids)))
+            has_admin = self.env.user.has_group('base.group_system')
             if self.env.user.id != rec.upload_uid.id and not has_admin:
                 raise UserError('You can only delete files uploaded by you!')
             ##remove the real file

@@ -99,6 +99,12 @@ class TtCustomer(models.Model):
             vals['last_name'] = vals['last_name'].strip()
         return super(TtCustomer, self).write(vals)
 
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('tt_base.group_customer_level_5'):
+            raise UserError('Action failed due to security restriction. Required Customer Level 5 permission.')
+        return super(TtCustomer, self).unlink()
+
     def toggle_search_allowed(self):
         self.is_search_allowed = not self.is_search_allowed
 
