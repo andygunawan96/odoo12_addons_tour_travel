@@ -52,12 +52,13 @@
                     <div class="oe_title">
                         <label for="provider_pnr" class="oe_edit_only" string="PNR Ref"/>
                         <h1>
-                            <field name="provider_pnr"/>
+                            <field name="name"/>
                         </h1>
                     </div>
                     <group>
                         <group>
                             <field name="reservation_ref"/>
+                            <field name="provider_pnr"/>
                             <field name="provider_issued_date"/>
                             <field name="provider_type_id"/>
                             <field name="provider_id"/>
