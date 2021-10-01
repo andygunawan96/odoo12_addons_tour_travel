@@ -275,7 +275,8 @@ PROVIDER_TYPE_PREFIX = {
     'BT': 'ppob',
     'VT': 'event',
     'PK': 'periksain',
-    'PH': 'phc'
+    'PH': 'phc',
+    'MD': 'medical'
 }
 
 PRODUCT_STATE = [
