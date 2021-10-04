@@ -122,3 +122,12 @@ class TtAirlineApiCon(models.Model):
                                             request,
                                             'get_original_ticket',
                                             timeout=180)
+
+    def cancel_booking(self, req):
+        request = {
+            'order_number': req.get('order_number'),
+        }
+        return self.send_request_to_gateway('%s/booking/airline' % (self.url),
+                                            request,
+                                            'cancel',
+                                            timeout=180)

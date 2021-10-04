@@ -51,10 +51,16 @@ class AccountingConnector(models.Model):
         else:
             _logger.info('Insert Failed')
 
-        res = {
-            'status_code': response.status_code,
-            'content': response.content
-        }
+        if response.status_code:
+            res = {
+                'status_code': response.status_code,
+                'content': response.content or ''
+            }
+        else:
+            res = {
+                'status_code': 500,
+                'content': response,
+            }
         _logger.info(res)
 
         return res
