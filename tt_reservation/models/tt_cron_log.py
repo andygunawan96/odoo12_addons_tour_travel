@@ -129,7 +129,7 @@ class TtCronLogInhResv(models.Model):
         try:
             error_list = []
             for rec in variables.PROVIDER_TYPE:
-                if rec in ['airline', 'train','medical']:
+                if rec in ['airline', 'train']:
                     retry_bookings = self.env['tt.reservation.%s' % rec].search([('state', 'in', ['booked']), ('payment_method','!=', False), ('ledger_ids','!=',False)])
                     for book_obj in retry_bookings:
                         try:
@@ -154,4 +154,4 @@ class TtCronLogInhResv(models.Model):
                             error_list.append('%s\n%s\n\n' % (book_obj.name, traceback.format_exc()))
         except:
             self.create_cron_log_folder()
-            self.write_cron_log('cron_auto_reconcile', ''.join(error_list))
+            self.write_cron_log('cron_auto_retry_issued', ''.join(error_list))
