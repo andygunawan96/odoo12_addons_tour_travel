@@ -18,7 +18,7 @@ class ReimburseCommissionTier(models.Model):
     @api.onchange('rac_amount', 'denominator')
     @api.depends('rac_amount', 'denominator')
     def _onchange_rac_denominator(self):
-        self.rac_preview = str(self.rac_amount / (self.denominator / 100)) + '%'
+        self.rac_preview = str(self.rac_amount / self.denominator) + '%'
 
 
 class TtReimburseCommission(models.Model):
