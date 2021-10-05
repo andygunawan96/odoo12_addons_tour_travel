@@ -71,6 +71,11 @@ class TtReservationBus(models.Model):
         if self.payment_acquirer_number_id:
             self.payment_acquirer_number_id.state = 'cancel'
 
+    def action_void(self):
+        self.write({
+            'state': 'void'
+        })
+
     @api.depends('origin_id','destination_id')
     def _compute_sector_type(self):
         for rec in self:
@@ -437,6 +442,9 @@ class TtReservationBus(models.Model):
         elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
+        elif all(rec.state == 'void' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_void()
         else:
             # entah status apa
             _logger.error('Entah status apa')
