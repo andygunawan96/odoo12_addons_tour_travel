@@ -129,7 +129,7 @@ class TtCronLogInhResv(models.Model):
         try:
             error_list = []
             for rec in variables.PROVIDER_TYPE:
-                if rec in ['airline', 'train']:
+                if rec in ['airline', 'train','medical']:
                     retry_bookings = self.env['tt.reservation.%s' % rec].search([('state', 'in', ['booked']), ('payment_method','!=', False), ('ledger_ids','!=',False)])
                     for book_obj in retry_bookings:
                         try:
