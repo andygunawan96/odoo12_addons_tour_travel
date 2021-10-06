@@ -62,6 +62,9 @@
                             <field name="arrival_date"/>
                         </group>
                         <group>
+                            <field name="carrier_id"/>
+                            <field name="carrier_name"/>
+                            <field name="carrier_code"/>
                             <field name="currency_id"/>
                             <field name="sid_issued"/>
                             <field name="promotion_code"/>
