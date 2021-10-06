@@ -469,7 +469,7 @@ class ReservationPeriksain(models.Model):
             #         book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
             #         book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id, context)
             psg_list = []
             for rec_idx, rec in enumerate(book_obj.passenger_ids):
                 rec_data = rec.to_dict()
