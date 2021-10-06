@@ -310,7 +310,11 @@ class PaymentAcquirer(models.Model):
                             values[acq.type].append(acq.acquirer_format(amount, 0))
 
                 res['non_member'] = values
-                if req.get('booker_seq_id') and context['co_agent_id'] != book_obj.agent_id.id:
+                can_use_cor_account = True
+                if book_obj:
+                    if req.get('booker_seq_id') and context['co_agent_id'] != book_obj.agent_id.id:
+                        can_use_cor_account = False
+                if can_use_cor_account:
                     res['member']['credit_limit'] = self.generate_credit_limit(amount,booker_seq_id=req['booker_seq_id']) if util.get_without_empty(req, 'booker_seq_id') else []
             else:#user corporate login sendiri
                 if context.get('co_customer_parent_id') and context['co_agent_id'] != book_obj.agent_id.id:

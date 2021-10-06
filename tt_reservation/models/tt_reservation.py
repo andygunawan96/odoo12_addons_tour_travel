@@ -676,7 +676,7 @@ class TtReservation(models.Model):
         else:
             return ERR.get_error(1001)
 
-    def to_dict(self,include_total_nta=False, context=False):
+    def to_dict(self, context=False):
         # invoice_list = []
         # if hasattr(self, 'invoice_line_ids'):
         #     for rec in self.invoice_line_ids:
@@ -684,7 +684,9 @@ class TtReservation(models.Model):
         #             'name': rec.name,
         #             'state': rec.state
         #         })
-
+        include_total_nta = False
+        if context:
+            include_total_nta = context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
             if self.payment_acquirer_number_id.state == 'close':
