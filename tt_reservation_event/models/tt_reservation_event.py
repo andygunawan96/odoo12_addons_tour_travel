@@ -458,7 +458,7 @@ class ReservationEvent(models.Model):
                 raise RequestException(1008)
             # if resv_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or resv_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            res = resv_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            res = resv_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id, context)
             # res = resv_obj.to_dict()
             res.pop('departure_date')
             res.pop('arrival_date')

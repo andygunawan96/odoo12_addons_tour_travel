@@ -133,23 +133,24 @@ class TtCronLogInhResv(models.Model):
                     retry_bookings = self.env['tt.reservation.%s' % rec].search([('state', 'in', ['booked']), ('payment_method','!=', False), ('ledger_ids','!=',False)])
                     for book_obj in retry_bookings:
                         try:
-                            seq_id = ''
-                            if book_obj.payment_acquirer_number_id:
-                                seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
-                            req = {
-                                'order_number': book_obj.name,
-                                'user_id': book_obj.user_id.id,
-                                'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]],
-                                'member': book_obj.is_member,  # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
-                                'acquirer_seq_id': seq_id,
-                                'force_issued': True,
-                            }
-                            res = self.env['tt.payment.api.con'].send_payment(req)
-                            if res['error_code'] == 0:
-                                _logger.info('##ISSUED SUCCESS##%s' % book_obj.name)
-                            else:
-                                _logger.info('##ISSUED FAIL##%s##LAST HOLDDATE: %s' % (book_obj.name, book_obj.hold_date))
-                                error_list.append('%s\nRESPONSE\n%s\n' % (book_obj.name, json.dumps(res)))
+                            if book_obj.payment_date + timedelta(minutes=5) < datetime.now():
+                                seq_id = ''
+                                if book_obj.payment_acquirer_number_id:
+                                    seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
+                                req = {
+                                    'order_number': book_obj.name,
+                                    'user_id': book_obj.user_id.id,
+                                    'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]],
+                                    'member': book_obj.is_member,  # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
+                                    'acquirer_seq_id': seq_id,
+                                    'force_issued': True,
+                                }
+                                res = self.env['tt.payment.api.con'].send_payment(req)
+                                if res['error_code'] == 0:
+                                    _logger.info('##ISSUED SUCCESS##%s' % book_obj.name)
+                                else:
+                                    _logger.info('##ISSUED FAIL##%s##LAST HOLDDATE: %s' % (book_obj.name, book_obj.hold_date))
+                                    error_list.append('%s\nRESPONSE\n%s\n' % (book_obj.name, json.dumps(res)))
                         except Exception as e:
                             error_list.append('%s\n%s\n\n' % (book_obj.name, traceback.format_exc()))
         except:
