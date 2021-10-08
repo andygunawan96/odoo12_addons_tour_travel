@@ -1,29 +1,29 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtMedicalApiCon(models.Model):
-    _name = 'tt.medical.api.con'
+class TtLabPintarApiCon(models.Model):
+    _name = 'tt.lab.pintar.api.con'
     _inherit = 'tt.api.con'
 
-    table_name = 'tt.reservation.medical'
+    table_name = 'tt.reservation.lab.pintar'
 
     def action_call(self,table_obj,action,data,context):
         if action == 'get_config':
-            res = self.env['tt.provider.medical'].get_carriers_api()
+            res = self.env['tt.provider.lab.pintar'].get_carriers_api()
         elif action == 'get_availability':
-            res = self.env['tt.timeslot.medical'].get_available_timeslot_api(data, context)
+            res = self.env['tt.timeslot.lab.pintar'].get_available_timeslot_api(context)
         elif action == 'get_price':
-            res = table_obj.get_price_medical_api(data,context)
+            res = table_obj.get_price_lab_pintar_api(data,context)
         elif action == 'create_booking':
-            res = table_obj.create_booking_medical_api(data,context)
+            res = table_obj.create_booking_lab_pintar_api(data,context)
         elif action == 'update_pnr_provider':
-            res = table_obj.update_pnr_provider_medical_api(data,context)
+            res = table_obj.update_pnr_provider_lab_pintar_api(data,context)
         elif action == 'get_booking':
-            res = table_obj.get_booking_medical_api(data,context)
+            res = table_obj.get_booking_lab_pintar_api(data,context)
         elif action == 'confirm_order':
             res = table_obj.confirm_order_api(data,context)
         elif action == 'payment':
-            res = table_obj.payment_medical_api(data,context)
+            res = table_obj.payment_lab_pintar_api(data,context)
         elif action == 'get_transaction_by_analyst':
             res = table_obj.get_transaction_by_analyst_api(data,context)
         elif action == 'update_data_verif':

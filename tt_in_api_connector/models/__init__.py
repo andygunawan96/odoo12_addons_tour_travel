@@ -31,4 +31,5 @@ from . import tt_periksain_api
 from . import tt_phc_api
 from . import tt_medical_api
 from . import tt_swab_express_api
+from . import tt_lab_pintar_api
 from . import tt_bus_api
