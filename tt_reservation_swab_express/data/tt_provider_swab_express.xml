@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_swab_express_swab_express" model="tt.provider">
+            <field name="name">Swab Express</field>
+            <field name="code">swab_express</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_swab_express"/>
+        </record>
+    </data>
+</odoo>
