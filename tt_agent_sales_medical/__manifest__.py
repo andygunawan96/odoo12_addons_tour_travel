@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Tour & Travel - Agent Sales PHC',
+    'name': 'Tour & Travel - Agent Sales Medical',
     'version': '2.0',
     'category': 'Billing',
-    'summary': 'Agent Sales PHC Module',
+    'summary': 'Agent Sales Medical Module',
     'sequence': 30,
     'description': """
 Tour & Travel - Agent Sales PHC

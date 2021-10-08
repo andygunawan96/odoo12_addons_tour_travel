@@ -106,7 +106,7 @@
 
     <template id="print_qr_code">
         <div style="float: right">
-            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', qr_code_data, 180, 180)" style="width:100px; height:100px; margin: 5px;"/>
+            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', qr_code_data, 240, 240)" style="margin: 5px;"/>
         </div>
     </template>
 
@@ -293,7 +293,7 @@
             </div>
             <div class="col-5 text-center">
                 <t t-if="qr_code_data">
-                    <t t-call="tt_report_common.print_qr_code"/>
+                    <!--<t t-call="tt_report_common.print_qr_code"/>-->
                 </t>
                 <t t-else="">
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>

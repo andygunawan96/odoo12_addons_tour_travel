@@ -99,6 +99,13 @@
                 <t t-call="tt_report_common.price_detail"/>
             </t>
         </t>
+        <div class="row">
+            <div class="col-3"/>
+            <div class="col-9">
+                <!--<img src="https://www.citypng.com/public/uploads/preview/-11597357952iuog7ymewt.png" style="width: 160px; height : 160px;"/>-->
+                <t t-call="tt_report_common.print_qr_code"/>
+            </div>
+        </div>
 
         <!-- Important Notes -->
         <!-- nama variableny airline ticket footer, karena dari PY numpang punya class airline. tetapi isinya punya  medical-->

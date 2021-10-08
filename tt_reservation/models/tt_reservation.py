@@ -54,6 +54,8 @@ class TtReservation(models.Model):
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
     refund_uid = fields.Many2one('res.users', 'Refund by', readonly=False)
     refund_date = fields.Datetime('Refund Date', readonly=True)
+    payment_date = fields.Datetime('Payment Date', readonly=True)
+
     user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
     sync_reservation = fields.Boolean('Sync Reservation', default=False)
     #utk adjustment
@@ -674,7 +676,7 @@ class TtReservation(models.Model):
         else:
             return ERR.get_error(1001)
 
-    def to_dict(self,include_total_nta=False):
+    def to_dict(self, context=False):
         # invoice_list = []
         # if hasattr(self, 'invoice_line_ids'):
         #     for rec in self.invoice_line_ids:
@@ -682,7 +684,9 @@ class TtReservation(models.Model):
         #             'name': rec.name,
         #             'state': rec.state
         #         })
-
+        include_total_nta = False
+        if context:
+            include_total_nta = context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
             if self.payment_acquirer_number_id.state == 'close':
@@ -701,6 +705,10 @@ class TtReservation(models.Model):
                 else:
                     self.payment_acquirer_number_id.state = 'cancel'
                     self.payment_acquirer_number_id = False
+        is_agent = False
+        if context:
+            if context['co_agent_id'] == self.agent_id.id:
+                is_agent = True
 
         res = {
             'order_number': self.name,
@@ -714,6 +722,7 @@ class TtReservation(models.Model):
             'ADT': self.adult,
             'CHD': self.child,
             'INF': self.infant,
+            'is_agent': is_agent,
             'contact': {
                 'title': self.contact_title,
                 'name': self.contact_name,
@@ -917,7 +926,8 @@ class TtReservation(models.Model):
             if agent_obj.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:
                 book_obj.write({
                     'is_member': req.get('member', False),
-                    'payment_method': req.get('acquirer_seq_id', False)
+                    'payment_method': req.get('acquirer_seq_id', False),
+                    'payment_date': datetime.now().strftime('%Y-%m-%d %H:%M')
                 })
 
                 #cek balance due book di sini, mungkin suatu saat yang akan datang

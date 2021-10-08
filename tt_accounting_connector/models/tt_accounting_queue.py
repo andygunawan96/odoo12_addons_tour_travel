@@ -38,6 +38,13 @@ class TtAccountingQueue(models.Model):
                 self.state = 'success'
             else:
                 self.state = 'failed'
+            if res.get('content'):
+                try:
+                    res.update({
+                        'content': res['content'].decode("UTF-8")
+                    })
+                except (UnicodeDecodeError, AttributeError):
+                    pass
             self.response = json.dumps(res)
         except Exception as e:
             _logger.error(traceback.format_exc())

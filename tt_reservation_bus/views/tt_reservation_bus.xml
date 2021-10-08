@@ -88,6 +88,7 @@
                         <field name="destination_id" string="Destination" options="{'no_create': True}"/>
                     </group>
                     <group>
+                        <field name="direction"/>
                         <field name="sector_type"/>
                         <field name="departure_date" string="Departure Date"/>
                         <field name="arrival_date"/>
