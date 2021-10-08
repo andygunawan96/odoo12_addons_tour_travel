@@ -101,6 +101,12 @@
                         'default_currency_id': currency_id,
                         'default_adj_type': provider_type_id
                     }"/>
+<!--                        <button string="Split Reservation" name="%(tt_reservation_offline.tt_split_reservation_offline_wizard_action_view)d" type="action" groups="tt_base.group_reservation_level_4"-->
+<!--                                context="{-->
+<!--                                        'default_res_id': id,-->
+<!--                                        'default_referenced_document': name,-->
+<!--                                        'default_currency_id': currency_id,-->
+<!--                                   }"/>-->
                         <button string="Refund Request" name="%(tt_accounting.tt_refund_wizard_action_view)d" type="action" groups="base.group_system,tt_base.group_tt_agent_user"
                                 context="{
                         'default_res_model': res_model,
