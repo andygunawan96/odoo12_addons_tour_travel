@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="tt_destination_swab_express_sub" model="tt.destinations">
+            <field name="name">Surabaya</field>
+            <field name="code">SUB</field>
+            <field name="city">Surabaya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_swab_express.tt_provider_type_swab_express"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+    </data>
+</odoo>

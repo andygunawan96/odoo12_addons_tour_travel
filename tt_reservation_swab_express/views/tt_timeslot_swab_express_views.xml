@@ -1,0 +1,197 @@
+<odoo>
+    <record id="tt_timeslot_swab_express_filter_views" model="ir.ui.view">
+        <field name="name">tt.timeslot.swab.express.filter.view</field>
+        <field name="model">tt.timeslot.swab.express</field>
+        <field name="arch" type="xml">
+            <search string="Search Swab Express Timeslot">
+                <field name="destination_id"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('datetimeslot','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('datetimeslot', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('datetimeslot', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('datetimeslot', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('datetimeslot', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('datetimeslot','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('datetimeslot','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_destination_id" string="Area" domain="[]" context="{'group_by':'destination_id'}"/>
+                    <filter name="group_by_dateslot_day" string="Date" domain="[]" context="{'group_by':'dateslot:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_swab_express_form_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.swab.express.form.view</field>
+        <field name="model">tt.timeslot.swab.express</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <sheet>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" groups="tt_base.group_tt_tour_travel"
+                                class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <h1>
+                        <field name="seq_id"/>
+                    </h1>
+                    <group>
+                        <field name="dateslot"/>
+                        <field name="datetimeslot"/>
+                        <field name="destination_id"/>
+                        <field name="selected_count"/>
+                        <field name="used_count"/>
+                        <field name="agent_id"/>
+                        <field name="timeslot_type"/>
+                        <field name="total_timeslot"/>
+                        <field name="total_timeslot"/>
+                    </group>
+                    <group string="Antigen">
+                        <field name="antigen_price_ids"/>
+                        <field name="additional_price"/>
+                    </group>
+
+                    <group string="PCR">
+                        <field name="pcr_price_ids"/>
+                        <field name="pcr_priority_price_ids"/>
+                    </group>
+
+                    <group string="Additional Price">
+                        <field name="single_supplement"/>
+                        <field name="overtime_surcharge"/>
+                        <field name="cito_surcharge"/>
+                    </group>
+                    <separator string="Confirmed to Customer Booking(s)"/>
+                    <field name="booking_used_ids"/>
+
+<!--                    <separator string="Selected by Customer Booking(s)"/>-->
+<!--                    <field name="booking_ids"/>-->
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_swab_express_tree_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.swab.express.tree.view</field>
+        <field name="model">tt.timeslot.swab.express</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="seq_id"/>
+                <field name="dateslot"/>
+                <field name="datetimeslot"/>
+                <field name="timeslot_type"/>
+                <field name="destination_id"/>
+                <field name="selected_count"/>
+                <field name="used_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_swab_express_default_form_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.swab.express.default.form.view</field>
+        <field name="model">tt.timeslot.swab.express.default</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1>
+                        <field name="name" placeholder="Template Name"/>
+                    </h1>
+                    <group string="Antigen">
+                        <field name="antigen_price_ids"/>
+                    </group>
+
+                    <group string="PCR">
+                        <field name="pcr_price_ids"/>
+                    </group>
+                    <group string="PCR Priority">
+                        <field name="pcr_priority_price_ids"/>
+                    </group>
+                    <group string="Additional Price">
+                        <field name="single_supplement"/>
+                        <field name="overtime_surcharge"/>
+                        <field name="cito_surcharge"/>
+                        <field name="additional_price"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_swab_express_default_tree_view" model="ir.ui.view">
+        <field name="name">tt.timeslot.swab.express.default.tree.view</field>
+        <field name="model">tt.timeslot.swab.express.default</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_timeslot_swab_express_default_action_views" model="ir.actions.act_window" >
+        <field name="name">Timeslot Swab Express Default</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.timeslot.swab.express.default</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_swab_express.tt_timeslot_swab_express_default_form_view',
+            'tree_view_ref': 'tt_reservation_swab_express.tt_timeslot_swab_express_default_tree_view',
+            'search_default_group_by_dateslot_day': 1
+            }
+        </field>
+    </record>
+
+
+    <record id="tt_timeslot_swab_express_action_views" model="ir.actions.act_window" >
+        <field name="name">Timeslot swab express</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.timeslot.swab.express</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_swab_express.tt_timeslot_swab_express_form_view',
+            'tree_view_ref': 'tt_reservation_swab_express.tt_timeslot_swab_express_tree_view',
+            'search_default_group_by_dateslot_day': 1
+            }
+        </field>
+    </record>
+
+    <menuitem id="submenu_reservations_swab_express_timeslot"
+              parent="tt_reservation_swab_express.menu_master_data_swab_express"
+              name="Timeslot"
+              sequence="15"
+              groups="tt_base.group_master_data_swab_express_level_1"
+              action="tt_reservation_swab_express.tt_timeslot_swab_express_action_views"/>
+
+    <menuitem id="menu_vendor_master_data_swab_express_timeslot"
+              parent="tt_base.top_external_vendor_master_product"
+              name="Swab Express Timeslot"
+              sequence="35"
+              groups="tt_base.group_master_data_swab_express_level_1"
+              action="tt_reservation_swab_express.tt_timeslot_swab_express_action_views"
+    />
+
+    <menuitem id="submenu_reservations_swab_express_timeslot_default"
+              parent="tt_reservation_swab_express.menu_master_data_swab_express"
+              name="Timeslot Default"
+              sequence="16"
+              groups="tt_base.group_master_data_swab_express_level_1"
+              action="tt_reservation_swab_express.tt_timeslot_swab_express_default_action_views"/>
+
+</odoo>
