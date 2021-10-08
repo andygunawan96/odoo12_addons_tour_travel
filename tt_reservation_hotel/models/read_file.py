@@ -2243,7 +2243,7 @@ class HotelInformation(models.Model):
                     'description': hotel.get('description'),
                     'location': {
                         'destination_id': destination_id,
-                        'city_id': isinstance(city_id, int) and city_id or city_id.id,
+                        'city_id': isinstance(city_id, int) and city_id or city_id.id if city_id else False,
                         'address': hotel.get('address') or hotel.get('street'),
                         'address2': hotel.get('address2') or hotel.get('street2'),
                         'address3': hotel.get('address3') or hotel.get('street3'),
@@ -2512,7 +2512,7 @@ class HotelInformation(models.Model):
             # self.file_log_write('Update for Hotel ' + str(old_objs[0].name) + ' with code ' + str(old_objs[0].code))
             # new_obj = self.update_hotel(self.env['tt.hotel'].browse(old_objs[0].res_id), hotel_obj)
         else:
-            self.file_log_write('Create new Hotel ' + str(hotel_obj['name']) + ' with code ' + str(hotel_obj['external_code'][ext_code]))
+            self.file_log_write('Create new Hotel ' + str(hotel_obj['name']) + ' with code ' + str(hotel_obj['external_code'][ext_code]) + ' From ' + ext_code)
             new_obj = self.create_hotel(hotel_obj, file_number)
         return new_obj
 
@@ -3457,10 +3457,10 @@ class HotelInformation(models.Model):
         return False
 
     # 1h. Get Hotel Image
-    def v2_get_hotel_image(self):
+    def get_hotel_image(self):
         provider = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.provider').split(',')  # 'knb',dida,webbeds
         for rec in provider:
-            def_name = 'v2_get_hotel_image_%s' % rec
+            def_name = 'get_hotel_image_%s' % rec
             if hasattr(self, def_name):
                 return getattr(self, def_name)()
             else:
