@@ -105,7 +105,8 @@
     </template>
 
     <template id="print_qr_code">
-        <div style="float: right">
+        <!-- jngn lupa gnti margin left wktu ganti QR Size-->
+        <div style="position: absolute; left: 50%; margin-left: -120px;">
             <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', qr_code_data, 240, 240)" style="margin: 5px;"/>
         </div>
     </template>

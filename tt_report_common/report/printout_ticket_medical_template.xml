@@ -70,7 +70,7 @@
                 <div class="col-6" style="text-align: left; font-size:17px;">
                     Name
                 </div>
-                <div class="col-5" style="text-align: right; font-size:17px;">
+                <div class="col-5" style="text-align: center; font-size:17px;">
                     Price
                 </div>
             </div>
@@ -90,7 +90,7 @@
                         <t t-foreach="pax.cost_service_charge_ids" t-as="sc">
                             <t t-set="pax_price" t-value="pax_price + sc.amount"/>
                         </t>
-                        <div class="col-4" style="text-align: center; font-size:15px;"><span t-esc="pax_price" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></div>
+                        <div class="col-4" style="text-align: center; font-size:15px;"><span t-esc="pax_price" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></div>
                     </div>
                 </t>
             </div>
@@ -105,11 +105,11 @@
             </t>
         </t>
         <div class="row">
-            <div class="col-3"/>
-            <div class="col-9">
+<!--            <div class="col-3"/>-->
+<!--            <div class="col-9">-->
                 <!--<img src="https://www.citypng.com/public/uploads/preview/-11597357952iuog7ymewt.png" style="width: 160px; height : 160px;"/>-->
-                <t t-call="tt_report_common.print_qr_code"/>
-            </div>
+            <t t-call="tt_report_common.print_qr_code"/>
+<!--            </div>-->
         </div>
 
         <!-- Important Notes -->
