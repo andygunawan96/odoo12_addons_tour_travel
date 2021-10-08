@@ -112,7 +112,8 @@ class TtCustomerParentInh(models.Model):
                 _logger.info(inv.name)
                 if inv.state == 'draft':
                     inv.action_confirm()
-                inv.action_bill2()
+                if inv.state == 'confirm': ## error billing billed inv. this happen during splitted invoice
+                    inv.action_bill2()
                 invoice_list.append([4,inv.id])
                 ##inv.bill
 
