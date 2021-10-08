@@ -814,5 +814,29 @@
             <field name="active" eval="True"/>
         </record>
 
+        <record id="lab_pintar_antigen_information" model="tt.report.common.setting">
+            <field name="name">Lab Pintar Antigen Information</field>
+            <field name="code">lab_pintar_antigen_information</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information Antigen
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="lab_pintar_pcr_information" model="tt.report.common.setting">
+            <field name="name">Lab Pintar PCR Information</field>
+            <field name="code">lab_pintar_pcr_information</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information PCR
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
     </data>
 </odoo>

@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtTrainApiCon(models.Model):
+class TtPeriksainApiCon(models.Model):
     _name = 'tt.periksain.api.con'
     _inherit = 'tt.api.con'
 
