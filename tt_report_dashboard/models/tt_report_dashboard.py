@@ -1145,13 +1145,17 @@ class TtReportDashboard(models.Model):
                                 temp_dict = {
                                     'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
                                     'counter': 1,
-                                    i['reservation_state']: 1
+                                    i['reservation_state']: 1,
+                                    'total_price': i['amount'],
+                                    'total_commission': i['commission_amount']
                                 }
                             else:
                                 temp_dict = {
                                     'provider': i['provider_type_name'],
                                     'counter': 1,
-                                    i['reservation_state']: 1
+                                    i['reservation_state']: 1,
+                                    'total_price': i['amount'],
+                                    'total_commission': i['commission_amount']
                                 }
                             summary_provider.append(temp_dict)
                         else:

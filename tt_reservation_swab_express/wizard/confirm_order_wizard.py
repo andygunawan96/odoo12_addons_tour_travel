@@ -33,7 +33,7 @@ class ConfirmOrderSwabExpressWizard(models.TransientModel):
         })
 
         try:
-            self.env['tt.swab_express.api.con'].send_confirm_order_notification(self.booking_id.name,
+            self.env['tt.swab.express.api.con'].send_confirm_order_notification(self.booking_id.name,
                                                                              self.env.user.name,
                                                                              self.booking_id.test_datetime.astimezone(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M"),
                                                                              self.booking_id.test_address)

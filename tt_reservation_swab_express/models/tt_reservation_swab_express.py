@@ -251,6 +251,7 @@ class ReservationSwabExpress(models.Model):
         overtime_price = 0
         single_suplement_price = 0
         cito_suplement_price = 0
+        additional = 0 # PEDULI LINDUNGI
         #ASUMSI HARGA URUT DARI MIN PAX TERKECIL
         if carrier_id == self.env.ref('tt_reservation_swab_express.tt_transport_carrier_swab_express_antigen').id:
             for rec in timeslot_objs:
@@ -261,6 +262,8 @@ class ReservationSwabExpress(models.Model):
                         overtime_price = timeslot_objs.overtime_surcharge
                         single_suplement_price = timeslot_objs.single_supplement
                         cito_suplement_price = timeslot_objs.cito_surcharge
+                        if req['peduli_lindungi']:
+                            additional = timeslot_objs.additional_price # PEDULI LINDUNGI
                     else:
                         break
         elif carrier_id == self.env.ref('tt_reservation_swab_express.tt_transport_carrier_swab_express_pcr').id:
@@ -286,7 +289,7 @@ class ReservationSwabExpress(models.Model):
                     else:
                         break
 
-        extra_charge_per_pax = (overtime_surcharge and overtime_price or 0) + (single_suplement and single_suplement_price or 0) + (cito_surcharge and cito_suplement_price or 0)
+        extra_charge_per_pax = (overtime_surcharge and overtime_price or 0) + (single_suplement and single_suplement_price or 0) + (cito_surcharge and cito_suplement_price or 0) + additional
         return ERR.get_no_error({
             "pax_count": req['pax_count'],
             "base_price_per_pax": base_price,

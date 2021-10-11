@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_lab_pintar_lab_pintar" model="tt.provider">
+            <field name="name">Lab Pintar</field>
+            <field name="code">lab_pintar</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_lab_pintar"/>
+        </record>
+    </data>
+</odoo>

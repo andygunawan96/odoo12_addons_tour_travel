@@ -6,7 +6,7 @@
     'summary': 'Agent Sales Medical Module',
     'sequence': 30,
     'description': """
-Tour & Travel - Agent Sales PHC
+Tour & Travel - Agent Sales Medical
 =================================
 Key Features
 ------------
