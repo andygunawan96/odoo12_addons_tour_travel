@@ -1,5 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <template id="itinerary_price_detail">
+        <br/>
+        <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
+        <table width="100%">
+            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                <td><b>Pax Type</b></td>
+                <td><b>Qty</b></td>
+                <td><b>Base Fare</b></td>
+                <td><b>Tax</b></td>
+                <td><b>Total per Pax</b></td>
+            </thead>
+            <t t-if="price_lines">
+                <!-- Itinerary yg dari Record Backend (Airline, train) -->
+                <t t-foreach="price_lines[doc.id]" t-as="price">
+                    <t t-if="price">
+                        <tr style="border-bottom: 1px solid lightgray">
+                            <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right;">@<t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                        </tr>
+                    </t>
+                </t>
+            </t>
+            <t t-else="">
+                <!-- Itinerary yg dari JSON (Hotel, Activity) -->
+                <t t-foreach="doc['price_detail']" t-as="price">
+                    <tr style="border-bottom: 1px solid lightgray">
+                        <td style="border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                        <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                        <td style="text-align:right;">@<t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                    </tr>
+                </t>
+            </t>
+        </table>
+        <t t-if="ssr_list">
+            <br/>
+            <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
+            <table width="100%">
+                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                    <td><b>Passenger(s)</b></td>
+                    <td><b>Description</b></td>
+                    <td><b>Price</b></td>
+                </thead>
+                <t t-foreach="ssr_list" t-as="ssr_obj">
+                    <tr>
+                        <td><t t-esc="ssr_obj['name']"/></td>
+                        <td>
+                            <ul>
+                                <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj1">
+                                    <li><t t-esc="ssr_obj1['description']"/></li>
+                                </t>
+                            </ul>
+                        </td>
+                        <td>
+                            <ul>
+                                <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
+                                    <li><t t-esc="ssr_obj2['currency']"/> <t t-esc="ssr_obj2['amount']"/></li>
+                                </t>
+                            </ul>
+                        </td>
+                        <td></td>
+                    </tr>
+                </t>
+            </table>
+        </t>
+    </template>
+
     <template id="reservation_airline_content_view">
         <!-- Main Params -->
         <div class="row">
@@ -90,10 +161,10 @@
                                             <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
                                         </t>
                                     </t>
-                                    <t t-foreach="doc.segment_ids" t-as="segment_obj">
-                                        <t t-if="segment_obj.segment_addons_ids">
+                                    <t t-foreach="doc.segment_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_segment_id">
+                                        <t t-if="provider_segment_id.segment_addons_ids">
                                             <t t-set="any_ssr" t-value="1"/>
-                                            <t t-foreach="segment_obj.segment_addons_ids" t-as="addons_obj">
+                                            <t t-foreach="provider_segment_id.segment_addons_ids" t-as="addons_obj">
                                                 <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/></i><br/>
                                             </t>
                                         </t>
@@ -125,9 +196,9 @@
                                 <th>Departure</th>
                                 <th>Arrival</th>
                                 <th>Carrier</th>
-<!--                                <th>Flight</th>-->
-<!--                                <th>Departure Date</th>-->
-<!--                                <th>Arrival Date</th>-->
+                                <!--                                <th>Flight</th>-->
+                                <!--                                <th>Departure Date</th>-->
+                                <!--                                <th>Arrival Date</th>-->
                             </tr>
                         </thead>
                         <tbody>
@@ -143,7 +214,7 @@
                                         <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/>
                                     </td>
                                     <td><span t-field="provider_journey_id.carrier_id.name"/></td>
-<!--                                    <td><span t-field="provider_journey_id.name"/></td>-->
+                                    <!--                                    <td><span t-field="provider_journey_id.name"/></td>-->
                                     <!--                                    <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>-->
                                     <!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->
                                     <!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->

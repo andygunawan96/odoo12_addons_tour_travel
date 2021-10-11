@@ -35,6 +35,16 @@
         <field name="code">ticketing_phc</field>
     </record>
 
+    <record id="able_to_ticketing_swab_express" model="tt.frontend.security">
+        <field name="name">Ticketing Swab Express</field>
+        <field name="code">ticketing_swab_express</field>
+    </record>
+
+    <record id="able_to_ticketing_lab_pintar" model="tt.frontend.security">
+        <field name="name">Ticketing Lab Pintar</field>
+        <field name="code">ticketing_lab_pintar</field>
+    </record>
+
     <record id="able_to_ticketing_medical" model="tt.frontend.security">
         <field name="name">Ticketing Medical</field>
         <field name="code">ticketing_medical</field>

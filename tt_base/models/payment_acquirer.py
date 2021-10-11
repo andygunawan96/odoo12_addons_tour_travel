@@ -251,9 +251,18 @@ class PaymentAcquirer(models.Model):
                     ('type', '!=', 'va'),  ## search yg bukan espay
                     ('type', '!=', 'payment_gateway')  ## search yg bukan mutasi bca
                 ]
-                if book_obj:
-                    if context['co_agent_id'] != book_obj.agent_id.id:
-                        dom.append(('type','!=','cash'))
+                cant_use_cash = False #TIDAK BOLEH BAYAR PAKAI CASH
+                if book_obj: #ASUMSI SELAMA BELUM BOOKING AGENT BOOK & YANG BAYAR SAMA
+                    #BEDA AGENT & TIDAK PUNYA PROCESS CHANNEL BOOKING
+                    if context['co_agent_id'] != book_obj.agent_id.id and self.env.ref('tt_base.group_tt_process_channel_bookings').id not in user_obj.groups_id.ids:
+                        # CHECK PRODUCT PHC/PERIKSAIN & PUNYA PROCESS CHANNEL BOOKING MEDICAL
+                        if req['provider_type'] in ['phc', 'periksain'] and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:
+                            cant_use_cash = False
+                        else:
+                            cant_use_cash = True
+
+                    if cant_use_cash:
+                        dom.append(('type', '!=', 'cash'))
                 unique = 0
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO
@@ -310,10 +319,14 @@ class PaymentAcquirer(models.Model):
                             values[acq.type].append(acq.acquirer_format(amount, 0))
 
                 res['non_member'] = values
-                if req.get('booker_seq_id'):
+                can_use_cor_account = True
+                if book_obj:
+                    if req.get('booker_seq_id') and context['co_agent_id'] != book_obj.agent_id.id:
+                        can_use_cor_account = False
+                if can_use_cor_account:
                     res['member']['credit_limit'] = self.generate_credit_limit(amount,booker_seq_id=req['booker_seq_id']) if util.get_without_empty(req, 'booker_seq_id') else []
             else:#user corporate login sendiri
-                if context.get('co_customer_parent_id'):
+                if context.get('co_customer_parent_id') and context['co_agent_id'] != book_obj.agent_id.id:
                     res['member']['credit_limit'] = self.generate_credit_limit(amount,customer_parent_id=context.get('co_customer_parent_id')) if util.get_without_empty(context, 'co_customer_parent_id') else []
             return ERR.get_no_error(res)
         except Exception as e:

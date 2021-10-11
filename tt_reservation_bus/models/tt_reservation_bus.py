@@ -14,6 +14,7 @@ class TtReservationBus(models.Model):
     _order = "id desc"
     _description = "Reservation Bus"
 
+    direction = fields.Selection(variables.JOURNEY_DIRECTION, string='Direction', default='OW', required=True, readonly=True, states={'draft': [('readonly', False)]})
     origin_id = fields.Many2one('tt.master.bus.station', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
     destination_id = fields.Many2one('tt.master.bus.station', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
     sector_type = fields.Char('Sector', readonly=True, compute='_compute_sector_type', store=True)
@@ -70,6 +71,11 @@ class TtReservationBus(models.Model):
             rec.action_cancel()
         if self.payment_acquirer_number_id:
             self.payment_acquirer_number_id.state = 'cancel'
+
+    def action_void(self):
+        self.write({
+            'state': 'void'
+        })
 
     @api.depends('origin_id','destination_id')
     def _compute_sector_type(self):
@@ -437,6 +443,9 @@ class TtReservationBus(models.Model):
         elif all(rec.state == 'fail_booked' for rec in self.provider_booking_ids):
             # failed book
             self.action_failed_book()
+        elif all(rec.state == 'void' for rec in self.provider_booking_ids):
+            # failed book
+            self.action_void()
         else:
             # entah status apa
             _logger.error('Entah status apa')
@@ -570,7 +579,7 @@ class TtReservationBus(models.Model):
                 raise RequestException(1008)
             # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            res = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            res = book_obj.to_dict(context)
             psg_list = []
             for rec in book_obj.sudo().passenger_ids:
                 psg_list.append(rec.to_dict())

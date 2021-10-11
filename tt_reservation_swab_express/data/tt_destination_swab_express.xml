@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="tt_destination_swab_express_sub" model="tt.destinations">
+            <field name="name">Surabaya</field>
+            <field name="code">SUB</field>
+            <field name="city">Surabaya</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_swab_express.tt_provider_type_swab_express"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+        <record id="tt_destination_swab_express_cgk" model="tt.destinations">
+            <field name="name">Jakarta</field>
+            <field name="code">CGK</field>
+            <field name="city">Jakarta</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_swab_express.tt_provider_type_swab_express"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+        <record id="tt_destination_swab_express_bdg" model="tt.destinations">
+            <field name="name">Bandung</field>
+            <field name="code">BDG</field>
+            <field name="city">Bandung</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_swab_express.tt_provider_type_swab_express"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+        <record id="tt_destination_swab_express_dps" model="tt.destinations">
+            <field name="name">Bali</field>
+            <field name="code">DPS</field>
+            <field name="city">Bali</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_swab_express.tt_provider_type_swab_express"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+        <record id="tt_destination_swab_express_upg" model="tt.destinations">
+            <field name="name">Makassar</field>
+            <field name="code">UPG</field>
+            <field name="city">Makassar</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_swab_express.tt_provider_type_swab_express"/>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
+
+    </data>
+</odoo>
