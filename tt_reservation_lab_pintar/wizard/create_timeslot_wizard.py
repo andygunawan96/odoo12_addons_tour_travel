@@ -35,6 +35,15 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
 
     pcr_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_wizard_pcr_rel','timeslot_pcr_wizard_id', 'price_list_id', 'PCR')
 
+    pcr_express_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_wizard_pcr_express_rel',
+                                     'timeslot_pcr_express_wizard_id', 'price_list_id', 'PCR')
+
+    pcr_priority_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_wizard_pcr_priority_rel',
+                                     'timeslot_pcr_priority_wizard_id', 'price_list_id', 'PCR Priority')
+
+    srbd_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_wizard_srbd_rel',
+                                     'timeslot_srbd_wizard_id', 'price_list_id', 'SRBD')
+
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
 
@@ -100,10 +109,20 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
         #price list
         antigen_list = False
         pcr_list = False
+        pcr_express_list = False
+        pcr_priority_list = False
+        srbd_list = False
+
         if self.antigen_price_ids:
             antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
         if self.pcr_price_ids:
             pcr_list = [(6, 0, [x.id for x in self.pcr_price_ids])]
+        if self.pcr_express_price_ids:
+            pcr_express_list = [(6, 0, [x.id for x in self.pcr_express_price_ids])]
+        if self.pcr_priority_price_ids:
+            pcr_priority_list = [(6, 0, [x.id for x in self.pcr_priority_price_ids])]
+        if self.srbd_price_ids:
+            srbd_list = [(6, 0, [x.id for x in self.srbd_price_ids])]
 
         ##convert to timezone 0
         time_objs = []
@@ -129,6 +148,9 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
                         'timeslot_type': self.timeslot_type,
                         'antigen_price_ids': antigen_list,
                         'pcr_price_ids': pcr_list,
+                        'pcr_express_price_ids': pcr_express_list,
+                        'pcr_priority_price_ids': pcr_priority_list,
+                        'srbd_price_ids': srbd_list,
                         'single_supplement': self.single_supplement,
                         'overtime_surcharge': self.overtime_surcharge,
                         'cito_surcharge': self.cito_surcharge,
