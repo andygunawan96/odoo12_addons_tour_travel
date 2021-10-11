@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 class TtCronLogInhResv(models.Model):
     _inherit = 'tt.cron.log'
 
-    def cron_expired_booking(self):
+    def cron_expired_booking(self,auto_cancel_on_vendor=False):
         try:
             error_list = []
             for rec in variables.PROVIDER_TYPE:
@@ -19,7 +19,7 @@ class TtCronLogInhResv(models.Model):
                 for booking in new_bookings:
                     try:
                         if datetime.now() >= (booking.hold_date or datetime.min):
-                            if rec in ['airline']:
+                            if rec in ['airline'] and auto_cancel_on_vendor:
                                 #send gateway cancel airline
                                 res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name})
                                 if res['error_code']:

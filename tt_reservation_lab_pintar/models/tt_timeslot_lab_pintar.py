@@ -45,6 +45,15 @@ class TtTimeslotLabPintar(models.Model):
 
     pcr_price_ids = fields.Many2many('tt.price.list.lab.pintar','tt_price_list_lab_pintar_price_pcr_rel','timeslot_pcr_id', 'price_list_id', 'PCR')
 
+    pcr_express_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_pcr_express_rel',
+                                     'timeslot_pcr_express_id', 'price_list_id', 'PCR Express')
+
+    pcr_priority_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_pcr_priority_rel',
+                                     'timeslot_pcr_priority_id', 'price_list_id', 'PCR Priority')
+
+    srbd_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_srbd_rel',
+                                     'timeslot_srbd_id', 'price_list_id', 'SRBD')
+
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
 
@@ -180,6 +189,15 @@ class TtTimeslotlabpintardefault(models.Model):
 
     pcr_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_pcr_default_rel',
                                      'timeslot_pcr_id', 'price_list_id', 'PCR')
+
+    pcr_express_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_pcr_express_default_rel',
+                                     'timeslot_pcr_express_id', 'price_list_id', 'PCR Express')
+
+    pcr_priority_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_pcr_priority_default_rel',
+                                     'timeslot_pcr_priority_id', 'price_list_id', 'PCR Priority')
+
+    srbd_price_ids = fields.Many2many('tt.price.list.lab.pintar', 'tt_price_list_lab_pintar_price_srbd_default_rel',
+                                     'timeslot_srbd_id', 'price_list_id', 'SRBD')
 
 
     single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
