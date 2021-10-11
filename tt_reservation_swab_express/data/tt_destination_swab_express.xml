@@ -47,9 +47,9 @@
         </record>
 
         <record id="tt_destination_swab_express_upg" model="tt.destinations">
-            <field name="name">Makasar</field>
+            <field name="name">Makassar</field>
             <field name="code">UPG</field>
-            <field name="city">Makasar</field>
+            <field name="city">Makassar</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_swab_express.tt_provider_type_swab_express"/>
             <field name="timezone_hour">7</field>
