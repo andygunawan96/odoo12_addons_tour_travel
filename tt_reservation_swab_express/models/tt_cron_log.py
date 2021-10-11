@@ -47,54 +47,30 @@ class TtCronLogInhSwabExpress(models.Model):
 
     def cron_auto_create_timeslot_swab_express(self):
         try:
-            res = self.env['tt.timeslot.swab.express'].get_config_cron()
-            kota_list = []
-            jenis_tindakan = {}
             time_string = ''
-            id_time_string = ''
-            list_jam_default = "08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00,21:00" ## DEFAULT JAM
+            list_jam_default = "08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00"  ## DEFAULT JAM
             time_string_list = []
-            for rec in res['response']['kota']:
-                kota_list.append(rec['kabupaten']['nama'])
-            for idx, rec in enumerate(res['response']['time']):
-                time_string_list.append({
-                    "code": str(rec['id']),
-                    "time": rec['jam_awal']
-                })
             for rec_default_time in list_jam_default.split(','):
                 if not any(rec_data['time'] == rec_default_time for rec_data in time_string_list):
                     time_string_list.append({
-                        "code": '',
                         "time": rec_default_time
                     })
             time_string_list = sorted(time_string_list, key=lambda k: k['time'])
             for idx, rec in enumerate(time_string_list):
                 if idx != 0:
                     time_string += ','
-                    id_time_string += ','
-                id_time_string += rec['code']
                 time_string += rec['time']
-            for rec in res['response']['tindakan_pemeriksaan']:
-                jenis_tindakan[rec['id']] = {
-                    "name": rec['tindakan']['nama'],
-                    "code": rec['tindakan']['kode']
-                }
 
             for rec in self.env['tt.destinations'].search(
                     [('provider_type_id','=',self.env.ref('tt_reservation_swab_express.tt_provider_type_swab_express').id)]):
-                for kota in res['response']['kota']:
-                    if rec.name in kota['kabupaten']['nama']:
-                        rec.icao = "%s~%s" % (kota['id'], json.dumps(jenis_tindakan))
-                        # CREATE
-                        wiz_obj = self.env['create.timeslot.swab.express.wizard'].create({
-                            'end_date': datetime.today() + timedelta(days=3),
-                            'area_id': rec.id,
-                            'time_string': time_string,
-                            'id_time_vendor': id_time_string,
-                            'id_jenis_tindakan_vendor': json.dumps(jenis_tindakan)
-                        })
-                        wiz_obj.generate_timeslot()
-                        break
+
+                # CREATE
+                wiz_obj = self.env['create.timeslot.swab.express.wizard'].create({
+                    'end_date': datetime.today() + timedelta(days=3),
+                    'area_id': rec.id,
+                    'time_string': time_string
+                })
+                wiz_obj.generate_timeslot()
             # time_string
         except Exception as e:
             self.create_cron_log_folder()
