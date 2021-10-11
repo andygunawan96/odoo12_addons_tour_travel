@@ -63,6 +63,12 @@
 
                     <group string="PCR">
                         <field name="pcr_price_ids"/>
+                        <field name="pcr_express_price_ids"/>
+                        <field name="pcr_priority_price_ids"/>
+                    </group>
+
+                    <group string="SRBD">
+                        <field name="srbd_price_ids"/>
                     </group>
 
                     <group string="Additional Price">
@@ -111,6 +117,11 @@
 
                     <group string="PCR">
                         <field name="pcr_price_ids"/>
+                        <field name="pcr_express_price_ids"/>
+                        <field name="pcr_priority_price_ids"/>
+                    </group>
+                    <group string="SRBD">
+                        <field name="srbd_price_ids"/>
                     </group>
                     <group string="Additional Price">
                         <field name="single_supplement"/>
