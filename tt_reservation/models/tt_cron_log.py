@@ -19,7 +19,7 @@ class TtCronLogInhResv(models.Model):
                 for booking in new_bookings:
                     try:
                         if datetime.now() >= (booking.hold_date or datetime.min):
-                            if rec in ['airline'] and auto_cancel_on_vendor:
+                            if rec in ['airline'] and auto_cancel_on_vendor and booking.agent_type_id.is_auto_cancel_booking:
                                 #send gateway cancel airline
                                 res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name})
                                 if res['error_code']:
