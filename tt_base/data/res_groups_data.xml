@@ -361,65 +361,65 @@
         </record>
 
         <!--    master data swab express-->
-        <record id="group_master_data_swab_express_level_1" model="res.groups">
+        <record id="group_master_data_swabexpress_level_1" model="res.groups">
             <field name="name">Level 1</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_swab_express"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_swabexpress"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <record id="group_master_data_swab_express_level_2" model="res.groups">
+        <record id="group_master_data_swabexpress_level_2" model="res.groups">
             <field name="name">Level 2</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_swab_express"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_swab_express_level_1'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_swabexpress"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_swabexpress_level_1'))]"/>
         </record>
 
-        <record id="group_master_data_swab_express_level_3" model="res.groups">
+        <record id="group_master_data_swabexpress_level_3" model="res.groups">
             <field name="name">Level 3</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_swab_express"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_swab_express_level_2'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_swabexpress"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_swabexpress_level_2'))]"/>
         </record>
 
-        <record id="group_master_data_swab_express_level_4" model="res.groups">
+        <record id="group_master_data_swabexpress_level_4" model="res.groups">
             <field name="name">Level 4</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_swab_express"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_swab_express_level_3'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_swabexpress"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_swabexpress_level_3'))]"/>
         </record>
 
-        <record id="group_master_data_swab_express_level_5" model="res.groups">
+        <record id="group_master_data_swabexpress_level_5" model="res.groups">
             <field name="name">Level 5</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_swab_express"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_swab_express_level_4'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_swabexpress"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_swabexpress_level_4'))]"/>
         </record>
 
         <!--    master data lab pintar-->
-        <record id="group_master_data_lab_pintar_level_1" model="res.groups">
+        <record id="group_master_data_labpintar_level_1" model="res.groups">
             <field name="name">Level 1</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_lab_pintar"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_labpintar"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <record id="group_master_data_lab_pintar_level_2" model="res.groups">
+        <record id="group_master_data_labpintar_level_2" model="res.groups">
             <field name="name">Level 2</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_lab_pintar"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_lab_pintar_level_1'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_labpintar"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_labpintar_level_1'))]"/>
         </record>
 
-        <record id="group_master_data_lab_pintar_level_3" model="res.groups">
+        <record id="group_master_data_labpintar_level_3" model="res.groups">
             <field name="name">Level 3</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_lab_pintar"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_lab_pintar_level_2'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_labpintar"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_labpintar_level_2'))]"/>
         </record>
 
-        <record id="group_master_data_lab_pintar_level_4" model="res.groups">
+        <record id="group_master_data_labpintar_level_4" model="res.groups">
             <field name="name">Level 4</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_lab_pintar"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_lab_pintar_level_3'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_labpintar"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_labpintar_level_3'))]"/>
         </record>
 
-        <record id="group_master_data_lab_pintar_level_5" model="res.groups">
+        <record id="group_master_data_labpintar_level_5" model="res.groups">
             <field name="name">Level 5</field>
-            <field name="category_id" ref="tt_base.module_category_master_data_lab_pintar"/>
-            <field name="implied_ids" eval="[(4, ref('group_master_data_lab_pintar_level_4'))]"/>
+            <field name="category_id" ref="tt_base.module_category_master_data_labpintar"/>
+            <field name="implied_ids" eval="[(4, ref('group_master_data_labpintar_level_4'))]"/>
         </record>
 
         <!--    external vendor event-->
@@ -475,29 +475,29 @@
         </record>
 
         <!--    external vendor swab express-->
-        <record id="group_external_vendor_swab_express_level_1" model="res.groups">
+        <record id="group_external_vendor_swabexpress_level_1" model="res.groups">
             <field name="name">Level 1</field>
-            <field name="category_id" ref="tt_base.module_category_external_vendor_swab_express"/>
+            <field name="category_id" ref="tt_base.module_category_external_vendor_swabexpress"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <record id="group_external_vendor_swab_express_level_2" model="res.groups">
+        <record id="group_external_vendor_swabexpress_level_2" model="res.groups">
             <field name="name">Level 2</field>
-            <field name="category_id" ref="tt_base.module_category_external_vendor_swab_express"/>
-            <field name="implied_ids" eval="[(4, ref('tt_base.group_external_vendor_swab_express_level_1'))]"/>
+            <field name="category_id" ref="tt_base.module_category_external_vendor_swabexpress"/>
+            <field name="implied_ids" eval="[(4, ref('tt_base.group_external_vendor_swabexpress_level_1'))]"/>
         </record>
 
         <!--    external vendor lab pintar-->
-        <record id="group_external_vendor_lab_pintar_level_1" model="res.groups">
+        <record id="group_external_vendor_labpintar_level_1" model="res.groups">
             <field name="name">Level 1</field>
-            <field name="category_id" ref="tt_base.module_category_external_vendor_lab_pintar"/>
+            <field name="category_id" ref="tt_base.module_category_external_vendor_labpintar"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <record id="group_external_vendor_lab_pintar_level_2" model="res.groups">
+        <record id="group_external_vendor_labpintar_level_2" model="res.groups">
             <field name="name">Level 2</field>
-            <field name="category_id" ref="tt_base.module_category_external_vendor_lab_pintar"/>
-            <field name="implied_ids" eval="[(4, ref('tt_base.group_external_vendor_lab_pintar_level_1'))]"/>
+            <field name="category_id" ref="tt_base.module_category_external_vendor_labpintar"/>
+            <field name="implied_ids" eval="[(4, ref('tt_base.group_external_vendor_labpintar_level_1'))]"/>
         </record>
 
         <!--    tour request-->
@@ -2583,8 +2583,8 @@
                                ref('tt_base.group_master_data_event_level_5'),
                                ref('tt_base.group_master_data_periksain_level_5'),
                                ref('tt_base.group_master_data_medical_level_5'),
-                               ref('tt_base.group_master_data_swab_express_level_5'),
-                               ref('tt_base.group_master_data_lab_pintar_level_5'),
+                               ref('tt_base.group_master_data_swabexpress_level_5'),
+                               ref('tt_base.group_master_data_labpintar_level_5'),
                                ref('tt_base.group_master_data_phc_level_5'),
                                ref('tt_base.group_tour_request_level_5'),
                                ref('tt_base.group_reservation_level_5'),
@@ -2662,8 +2662,8 @@
                                ref('tt_base.group_master_data_periksain_level_5'),
                                ref('tt_base.group_master_data_phc_level_5'),
                                ref('tt_base.group_master_data_medical_level_5'),
-                               ref('tt_base.group_master_data_swab_express_level_5'),
-                               ref('tt_base.group_master_data_lab_pintar_level_5'),
+                               ref('tt_base.group_master_data_swabexpress_level_5'),
+                               ref('tt_base.group_master_data_labpintar_level_5'),
                                ref('tt_base.group_tour_request_level_5'),
                                ref('tt_base.group_reservation_level_5'),
                                ref('tt_base.group_reservation_provider_level_5'),

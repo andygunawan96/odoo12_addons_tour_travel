@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- Airline -->
+        <menuitem id="top_reservations_swabexpress"
+                  parent="tt_reservation.main_reservations"
+                  name="Swab Express"
+                  sequence="45"
+                  groups="base.group_user"/>
+        
+        <menuitem id="menu_reservations_swabexpress"
+                  parent="tt_reservation_swabexpress.top_reservations_swabexpress"
+                  name="Booking"
+                  sequence="1"/>
+
+        <menuitem id="menu_master_data_swabexpress"
+                  parent="tt_reservation_swabexpress.top_reservations_swabexpress"
+                  name="Master Data"
+                  groups="tt_base.group_master_data_swabexpress_level_2"
+                  sequence="2"/>
+    </data>
+</odoo>
