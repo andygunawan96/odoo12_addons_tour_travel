@@ -218,6 +218,7 @@ class TtAgentTypeApiInherit(models.Model):
             '%sagent_type_id' % prefix: self.id,
             '%sagent_type_name' % prefix: self.name,
             '%sagent_type_code' % prefix: self.code,
+            '%sis_refund_notif' % prefix: self.is_refund_notif,
             # '%sagent_type_quota' % prefix: self.is_using_pnr_quota
         }
         return res
