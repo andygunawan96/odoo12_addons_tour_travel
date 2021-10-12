@@ -36,7 +36,7 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
     pcr_price_ids = fields.Many2many('tt.price.list.labpintar', 'tt_price_list_labpintar_price_wizard_pcr_rel','timeslot_pcr_wizard_id', 'price_list_id', 'PCR')
 
     pcr_express_price_ids = fields.Many2many('tt.price.list.labpintar', 'tt_price_list_labpintar_price_wizard_pcr_express_rel',
-                                     'timeslot_pcr_express_wizard_id', 'price_list_id', 'PCR')
+                                     'timeslot_pcr_express_wizard_id', 'price_list_id', 'PCR Express')
 
     pcr_priority_price_ids = fields.Many2many('tt.price.list.labpintar', 'tt_price_list_labpintar_price_wizard_pcr_priority_rel',
                                      'timeslot_pcr_priority_wizard_id', 'price_list_id', 'PCR Priority')
@@ -79,6 +79,9 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
     def _onchange_default_data_timeslot(self):
         self.antigen_price_ids = self.default_data_id.antigen_price_ids
         self.pcr_price_ids = self.default_data_id.pcr_price_ids
+        self.pcr_express_price_ids = self.default_data_id.pcr_express_price_ids
+        self.pcr_priority_price_ids = self.default_data_id.pcr_priority_price_ids
+        self.srbd_price_ids = self.default_data_id.srbd_price_ids
         self.single_supplement = self.default_data_id.single_supplement
         self.overtime_surcharge = self.default_data_id.overtime_surcharge
         self.cito_surcharge = self.default_data_id.cito_surcharge
