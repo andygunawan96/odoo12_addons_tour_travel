@@ -96,7 +96,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
 
     area_id = fields.Many2one('tt.destinations', 'Area', domain=_get_area_id_domain, required=True)
 
-    def generate_timeslot(self):
+    def generate_timeslot(self, from_cron=False):
         date_delta = self.end_date - self.start_date
         date_delta = date_delta.days+1
         create_values = []
@@ -107,12 +107,18 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
         antigen_list = False
         pcr_list = False
         pcr_priority_list = False
-        if self.antigen_price_ids:
-            antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
-        if self.pcr_price_ids:
-            pcr_list = [(6, 0, [x.id for x in self.pcr_price_ids])]
-        if self.pcr_priority_price_ids:
-            pcr_priority_list = [(6, 0, [x.id for x in self.pcr_priority_price_ids])]
+        if from_cron:
+            default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data')
+            antigen_list = [(6, 0, [x.id for x in default_data.antigen_price_ids])]
+            pcr_list = [(6, 0, [x.id for x in default_data.pcr_price_ids])]
+            pcr_priority_list = [(6, 0, [x.id for x in default_data.pcr_priority_price_ids])]
+        else:
+            if self.antigen_price_ids:
+                antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
+            if self.pcr_price_ids:
+                pcr_list = [(6, 0, [x.id for x in self.pcr_price_ids])]
+            if self.pcr_priority_price_ids:
+                pcr_priority_list = [(6, 0, [x.id for x in self.pcr_priority_price_ids])]
 
         ##convert to timezone 0
         time_objs = []
