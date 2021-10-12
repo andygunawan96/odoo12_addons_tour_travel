@@ -102,7 +102,7 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
 
     area_id = fields.Many2one('tt.destinations', 'Area', domain=_get_area_id_domain, required=True)
 
-    def generate_timeslot(self):
+    def generate_timeslot(self, from_cron=False):
         date_delta = self.end_date - self.start_date
         date_delta = date_delta.days+1
         create_values = []
@@ -116,16 +116,24 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
         pcr_priority_list = False
         srbd_list = False
 
-        if self.antigen_price_ids:
-            antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
-        if self.pcr_price_ids:
-            pcr_list = [(6, 0, [x.id for x in self.pcr_price_ids])]
-        if self.pcr_express_price_ids:
-            pcr_express_list = [(6, 0, [x.id for x in self.pcr_express_price_ids])]
-        if self.pcr_priority_price_ids:
-            pcr_priority_list = [(6, 0, [x.id for x in self.pcr_priority_price_ids])]
-        if self.srbd_price_ids:
-            srbd_list = [(6, 0, [x.id for x in self.srbd_price_ids])]
+        if from_cron:
+            data_default = self.env.ref('tt_reservation_labpintar.tt_timeslot_labpintar_default_data')
+            antigen_list = [(6, 0, [x.id for x in data_default.antigen_price_ids])]
+            pcr_list = [(6, 0, [x.id for x in data_default.pcr_price_ids])]
+            pcr_express_list = [(6, 0, [x.id for x in data_default.pcr_express_price_ids])]
+            pcr_priority_list = [(6, 0, [x.id for x in data_default.pcr_priority_price_ids])]
+            srbd_list = [(6, 0, [x.id for x in data_default.srbd_price_ids])]
+        else:
+            if self.antigen_price_ids:
+                antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
+            if self.pcr_price_ids:
+                pcr_list = [(6, 0, [x.id for x in self.pcr_price_ids])]
+            if self.pcr_express_price_ids:
+                pcr_express_list = [(6, 0, [x.id for x in self.pcr_express_price_ids])]
+            if self.pcr_priority_price_ids:
+                pcr_priority_list = [(6, 0, [x.id for x in self.pcr_priority_price_ids])]
+            if self.srbd_price_ids:
+                srbd_list = [(6, 0, [x.id for x in self.srbd_price_ids])]
 
         ##convert to timezone 0
         time_objs = []

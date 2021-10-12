@@ -68,7 +68,7 @@ class TtCronLogInhLabPintar(models.Model):
                     'area_id': rec.id,
                     'time_string': time_string,
                 })
-                wiz_obj.generate_timeslot()
+                wiz_obj.generate_timeslot(True)
             # time_string
         except Exception as e:
             self.create_cron_log_folder()
