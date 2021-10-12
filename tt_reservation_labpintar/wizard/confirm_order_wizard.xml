@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="confirm_order_labpintar_wizard_form_view" model="ir.ui.view">
+        <field name="name">Confirm Order Wizard</field>
+        <field name="model">confirm.order.labpintar.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Order Wizard">
+                <group>
+                    <field name="booking_id"/>
+                    <field name="analyst_ids"/>
+                </group>
+                <footer>
+                    <button name="confirm_order" string="Confirm Order" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="confirm_order_labpintar_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Confirm Order Lab Pintar Wizard</field>
+        <field name="res_model">confirm.order.labpintar.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
