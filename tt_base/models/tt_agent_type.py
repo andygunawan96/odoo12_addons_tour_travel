@@ -29,6 +29,7 @@ class TtAgentType(models.Model):
     sequence_prefix_id = fields.Many2one('ir.sequence','Sequence Prefix')
     rounding_amount_type = fields.Selection(selection=variables.ROUNDING_AMOUNT_TYPE, string='Rounding Amount Type', help='Set rounding type amount in pricing', default='round')
     rounding_places = fields.Integer('Rounding Places', default=0)
+    is_auto_cancel_booking = fields.Boolean('Auto Cancel Booking', help="""Auto cancel booking to vendor when booking expired""",default=False)
     user_template_ids = fields.One2many('res.users', 'agent_type_id', 'User Templates', readonly=True)
 
     @api.model
