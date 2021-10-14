@@ -489,6 +489,9 @@ class TtReservationBus(models.Model):
                     'carrier_id': carrier_id.id,
                     'carrier_code': journey['carrier_code'],
                     'carrier_number': journey['carrier_number'],
+                    'carrier_name': journey['carrier_name'],
+                    'cabin_class': journey['cabin_class'],
+                    'class_of_service': journey['class_of_service'],
                     'journey_code': journey['journey_code'],
                     'fare_code': journey['fare_code']
                 }))
@@ -500,6 +503,10 @@ class TtReservationBus(models.Model):
             provider_destination = this_pnr_journey[dest_idx][2]['destination_id']
             provider_departure_date = this_pnr_journey[0][2]['departure_date']
             provider_arrival_date = this_pnr_journey[-1][2]['arrival_date']
+            provider_carrier_id = this_pnr_journey[-1][2]['carrier_id']
+            provider_carrier_code = this_pnr_journey[-1][2]['carrier_code']
+            provider_carrier_number = this_pnr_journey[-1][2]['carrier_number']
+            provider_carrier_name = this_pnr_journey[-1][2]['carrier_name']
 
             sequence+=1
             values = {
@@ -510,7 +517,10 @@ class TtReservationBus(models.Model):
                 'destination_id': provider_destination,
                 'departure_date': provider_departure_date,
                 'arrival_date': provider_arrival_date,
-
+                'carrier_id': provider_carrier_id,
+                'carrier_code': provider_carrier_code,
+                'carrier_number': provider_carrier_number,
+                'carrier_name': provider_carrier_name,
                 'booked_uid': api_context['co_uid'],
                 'booked_date': datetime.now(),
                 'journey_ids': this_pnr_journey
