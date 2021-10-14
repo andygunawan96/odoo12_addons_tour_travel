@@ -5212,10 +5212,10 @@ class TtReportDashboard(models.Model):
                                     profit_agent += i['debit']
 
                         # populate ppob_summary
-                        ppob_index = self.check_index(ppob_summary, 'product', i['reservation_carrier_name'])
+                        ppob_index = self.check_index(ppob_summary, 'product', i['carrier_name'])
                         if ppob_index == -1:
                             temp_dict = {
-                                'product': i['reservation_carrier_name'],
+                                'product': i['carrier_name'],
                                 'counter': 1,
                                 'amount': i['amount']
                             }
@@ -5889,10 +5889,10 @@ class TtReportDashboard(models.Model):
                                     profit_agent += i['debit']
 
                         # populate phc_summary
-                        phc_index = self.check_index(phc_summary, 'product', i['reservation_carrier_name'])
+                        phc_index = self.check_index(phc_summary, 'product', i['carrier_name'])
                         if phc_index == -1:
                             temp_dict = {
-                                'product': i['reservation_carrier_name'],
+                                'product': i['carrier_name'],
                                 'counter': 1,
                                 'amount': i['amount']
                             }
@@ -6225,10 +6225,10 @@ class TtReportDashboard(models.Model):
                                     profit_agent += i['debit']
 
                         # populate periksain_summary
-                        periksain_index = self.check_index(periksain_summary, 'product', i['reservation_carrier_name'])
+                        periksain_index = self.check_index(periksain_summary, 'product', i['carrier_name'])
                         if periksain_index == -1:
                             temp_dict = {
-                                'product': i['reservation_carrier_name'],
+                                'product': i['carrier_name'],
                                 'counter': 1,
                                 'amount': i['amount']
                             }
@@ -6561,10 +6561,10 @@ class TtReportDashboard(models.Model):
                                     profit_agent += i['debit']
 
                         # populate medical_summary
-                        medical_index = self.check_index(medical_summary, 'product', i['reservation_carrier_name'])
+                        medical_index = self.check_index(medical_summary, 'product', i['carrier_name'])
                         if medical_index == -1:
                             temp_dict = {
-                                'product': i['reservation_carrier_name'],
+                                'product': i['carrier_name'],
                                 'counter': 1,
                                 'amount': i['amount']
                             }
@@ -7446,10 +7446,10 @@ class TtReportDashboard(models.Model):
                                     profit_agent += i['debit']
 
                         # populate swabexpress_summary
-                        swabexpress_index = self.check_index(swabexpress_summary, 'product', i['reservation_carrier_name'])
+                        swabexpress_index = self.check_index(swabexpress_summary, 'product', i['carrier_name'])
                         if swabexpress_index == -1:
                             temp_dict = {
-                                'product': i['reservation_carrier_name'],
+                                'product': i['carrier_name'],
                                 'counter': 1,
                                 'amount': i['amount']
                             }
@@ -7782,10 +7782,10 @@ class TtReportDashboard(models.Model):
                                     profit_agent += i['debit']
 
                         # populate labpintar_summary
-                        labpintar_index = self.check_index(labpintar_summary, 'product', i['reservation_carrier_name'])
+                        labpintar_index = self.check_index(labpintar_summary, 'product', i['carrier_name'])
                         if labpintar_index == -1:
                             temp_dict = {
-                                'product': i['reservation_carrier_name'],
+                                'product': i['carrier_name'],
                                 'counter': 1,
                                 'amount': i['amount']
                             }
