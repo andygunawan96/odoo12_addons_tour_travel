@@ -7027,7 +7027,7 @@ class TtReportDashboard(models.Model):
                     # lets count
                     if filter_data[0]['reservation_issued_date_og']:
                         # conver journey date (string) to datetime
-                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M')
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M:%S')
                         # check if reservation has issued dates
                         # this should be quite obselete since this function only calls for issued reservation
                         # but this function also written in more general function so.. there's that
@@ -7071,7 +7071,7 @@ class TtReportDashboard(models.Model):
                         # just to make is useful this report also sumarize passenger count, and reservation count
                         returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
                         # once again as always we check for index then create and add if not exist, update if data already exist
-                         i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+                        i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
                         if returning_index == -1:
                             new_dict = {
                                 'sector': i['reservation_sector'],

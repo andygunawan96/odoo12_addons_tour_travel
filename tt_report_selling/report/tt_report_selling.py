@@ -480,7 +480,7 @@ class ReportSelling(models.Model):
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
-        departure.display_name as departure, destination.display_name as destination,
+        departure.name as departure, destination.name as destination,
         COUNT(reservation_passenger.id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
@@ -775,8 +775,8 @@ class ReportSelling(models.Model):
             LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
             LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
             LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
-            LEFT JOIN tt_destinations departure ON reservation.origin_id = departure.id
-            LEFT JOIN tt_destinations destination ON reservation.destination_id = destination.id
+            LEFT JOIN tt_master_bus_station departure ON reservation.origin_id = departure.id
+            LEFT JOIN tt_master_bus_station destination ON reservation.destination_id = destination.id
             LEFT JOIN tt_journey_bus journey ON journey.booking_id = reservation.id
             LEFT JOIN tt_reservation_passenger_airline reservation_passenger ON reservation_passenger.booking_id = reservation.id
             LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
@@ -888,7 +888,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_bus():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, provider_type.name, departure.name, destination.name, journey.id, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_swabexpress():
