@@ -5217,12 +5217,14 @@ class TtReportDashboard(models.Model):
                             temp_dict = {
                                 'product': i['carrier_name'],
                                 'counter': 1,
+                                'passenger_count': i['reservation_passenger'],
                                 'amount': i['amount']
                             }
                             ppob_summary.append(temp_dict)
                         else:
                             ppob_summary[ppob_index]['counter'] += 1
                             ppob_summary[ppob_index]['amount'] += i['amount']
+                            ppob_summary[ppob_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
                     current_id = i['reservation_id']
@@ -5894,12 +5896,14 @@ class TtReportDashboard(models.Model):
                             temp_dict = {
                                 'product': i['carrier_name'],
                                 'counter': 1,
+                                'passenger_count': i['reservation_passenger'],
                                 'amount': i['amount']
                             }
                             phc_summary.append(temp_dict)
                         else:
                             phc_summary[phc_index]['counter'] += 1
                             phc_summary[phc_index]['amount'] += i['amount']
+                            phc_summary[phc_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
                     current_id = i['reservation_id']
@@ -6230,12 +6234,14 @@ class TtReportDashboard(models.Model):
                             temp_dict = {
                                 'product': i['carrier_name'],
                                 'counter': 1,
+                                'passenger_count': i['reservation_passenger'],
                                 'amount': i['amount']
                             }
                             periksain_summary.append(temp_dict)
                         else:
                             periksain_summary[periksain_index]['counter'] += 1
                             periksain_summary[periksain_index]['amount'] += i['amount']
+                            periksain_summary[periksain_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
                     current_id = i['reservation_id']
@@ -6566,12 +6572,14 @@ class TtReportDashboard(models.Model):
                             temp_dict = {
                                 'product': i['carrier_name'],
                                 'counter': 1,
+                                'passenger_count': i['reservation_passenger'],
                                 'amount': i['amount']
                             }
                             medical_summary.append(temp_dict)
                         else:
                             medical_summary[medical_index]['counter'] += 1
                             medical_summary[medical_index]['amount'] += i['amount']
+                            medical_summary[medical_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
                     current_id = i['reservation_id']
@@ -7451,12 +7459,14 @@ class TtReportDashboard(models.Model):
                             temp_dict = {
                                 'product': i['carrier_name'],
                                 'counter': 1,
+                                'passenger_count': i['reservation_passenger'],
                                 'amount': i['amount']
                             }
                             swabexpress_summary.append(temp_dict)
                         else:
                             swabexpress_summary[swabexpress_index]['counter'] += 1
                             swabexpress_summary[swabexpress_index]['amount'] += i['amount']
+                            swabexpress_summary[swabexpress_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
                     current_id = i['reservation_id']
@@ -7787,12 +7797,14 @@ class TtReportDashboard(models.Model):
                             temp_dict = {
                                 'product': i['carrier_name'],
                                 'counter': 1,
+                                'passenger_count': i['reservation_passenger'],
                                 'amount': i['amount']
                             }
                             labpintar_summary.append(temp_dict)
                         else:
                             labpintar_summary[labpintar_index]['counter'] += 1
                             labpintar_summary[labpintar_index]['amount'] += i['amount']
+                            labpintar_summary[labpintar_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
                     current_id = i['reservation_id']
