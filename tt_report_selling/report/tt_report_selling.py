@@ -193,6 +193,8 @@ class ReportSelling(models.Model):
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
+    # select tour is a spesific function to build query for tour search only
+    # it will not work for other provider type
     @staticmethod
     def _select_tour():
         return """
@@ -220,7 +222,8 @@ class ReportSelling(models.Model):
         tour.tour_route as tour_route, 
         tour.duration as tour_duration, 
         country.name as tour_country_name,
-        tour_location.country_name as tour_location_country,
+        tour_location.country_name as tour_location_country, 
+        COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         provider.name as provider_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
@@ -659,6 +662,7 @@ class ReportSelling(models.Model):
         LEFT JOIN tt_tour_master_locations tour_location ON tour_location.id = tour_location_rel.location_id
         LEFT JOIN res_country country ON tour_location.country_id = country.id
         LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+        LEFT JOIN tt_reservation_passenger_tour reservation_passenger ON reservation_passenger.booking_id = reservation.id
         LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
         LEFT JOIN tt_provider_tour pro_tour ON pro_tour.booking_id = reservation.id
@@ -860,11 +864,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_tour():
-        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, tour.name,
-        tour.tour_category, 
-        tour.tour_type, 
-        tour.tour_route, 
-        tour.duration, country.name,  tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id """
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, tour.name, tour.tour_category, tour.tour_type, tour.tour_route, tour.duration, country.name, tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_event():
@@ -1415,6 +1415,7 @@ class ReportSelling(models.Model):
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_train':
             query += 'FROM {} '.format(self._from_train())
@@ -1581,6 +1582,7 @@ class ReportSelling(models.Model):
         elif provider_checker == 'chanel_overall_tour':
             query += 'FROM {} '.format(self._from_tour())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_train':
             query += 'FROM {} '.format(self._from_train())

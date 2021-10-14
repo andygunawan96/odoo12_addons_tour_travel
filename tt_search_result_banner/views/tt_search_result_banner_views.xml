@@ -7,6 +7,7 @@
             <search string="Search Result Banner">
                 <field name="name"/>
                 <field name="banner_color"/>
+                <field name="text_color"/>
                 <field name="minimum_days"/>
 
                 <group expand="0" string="Group By">
@@ -42,6 +43,7 @@
                     <group>
                         <field name="description"/>
                         <field name="banner_color"/>
+                        <field name="text_color"/>
                         <field name="minimum_days"/>
                         <field name="provider_type_id"/>
                         <field name="sector_type"/>
@@ -68,6 +70,7 @@
             <tree>
                 <field name="name"/>
                 <field name="banner_color"/>
+                <field name="text_color"/>
                 <field name="minimum_days"/>
                 <field name="provider_type_id"/>
                 <field name="sector_type"/>
