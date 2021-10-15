@@ -9,12 +9,11 @@
                 <field name="banner_color"/>
                 <field name="text_color"/>
                 <field name="minimum_days"/>
+                <field name="sequence"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_provider_type_id" string="Provider Type" domain="[]" context="{'group_by':'provider_type_id'}"/>
                     <filter name="group_by_sector_type" string="Sector" domain="[]" context="{'group_by':'sector_type'}"/>
-                    <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
-                    <filter name="group_by_carrier_id" string="Carrier" domain="[]" context="{'group_by':'carrier_id'}"/>
                 </group>
             </search>
         </field>
@@ -44,16 +43,33 @@
                         <field name="description"/>
                         <field name="banner_color"/>
                         <field name="text_color"/>
+                    </group>
+                    <group>
                         <field name="minimum_days"/>
                         <field name="provider_type_id"/>
                         <field name="sector_type"/>
+                        <field name="sequence"/>
                     </group>
                     <group>
-                        <field name="provider_id"/>
-                        <field name="carrier_id"/>
-                        <field name="origin_id"/>
-                        <field name="destination_id"/>
+                        <field name = "provider_access_type"/>
                     </group>
+                    <separator string="Provider(s)"/>
+                    <field name="provider_ids"/>
+                    <group>
+                        <field name = "carrier_access_type"/>
+                    </group>
+                    <separator string="Product(s)"/>
+                    <field name="carrier_ids"/>
+                    <group>
+                        <field name = "origin_access_type"/>
+                    </group>
+                    <separator string="Origin(s)"/>
+                    <field name="origin_ids"/>
+                    <group>
+                        <field name = "destination_access_type"/>
+                    </group>
+                    <separator string="Destination(s)"/>
+                    <field name="destination_ids"/>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
@@ -74,10 +90,7 @@
                 <field name="minimum_days"/>
                 <field name="provider_type_id"/>
                 <field name="sector_type"/>
-                <field name="provider_id"/>
-                <field name="carrier_id"/>
-                <field name="origin_id"/>
-                <field name="destination_id"/>
+                <field name="sequence"/>
             </tree>
         </field>
     </record>
