@@ -14,7 +14,8 @@ class SearchResultBanner(models.Model):
 
     name = fields.Char('Banner Text', required=True)
     description = fields.Text('Description', default='')
-    banner_color = fields.Char('Banner Color (Hex Code)', default='#FFFFFF')
+    banner_color = fields.Char('Banner Color (Hex Code)', default='#FF0000')
+    text_color = fields.Char('Text Color (Hex Code)', default='#FFFFFF')
     minimum_days = fields.Integer('Minimum Days', default=0)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     sector_type = fields.Selection([('all', 'All'), ('domestic', 'Domestic'), ('international', 'International')], 'Sector', default='all', required=True)
@@ -52,6 +53,7 @@ class SearchResultBanner(models.Model):
             'name': self.name,
             'description': self.description,
             'banner_color': self.banner_color,
+            'text_color': self.text_color,
             'minimum_days': self.minimum_days and self.minimum_days or '',
             'provider_type_id': self.provider_type_id and self.provider_type_id.code or '',
             'sector_type': self.sector_type,
