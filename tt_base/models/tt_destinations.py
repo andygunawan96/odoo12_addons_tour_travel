@@ -1,4 +1,5 @@
 from odoo import api,models,fields
+from odoo.exceptions import UserError
 import pytz
 import traceback
 from ...tools.api import Response
@@ -38,6 +39,12 @@ class Destinations(models.Model):
     # source = fields.Char('Source')
     # is_international_flight = fields.Boolean('International Flight', default=True)
     active = fields.Boolean('Active', default=True)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('tt_base.group_destination_level_5'):
+            raise UserError('Action failed due to security restriction. Required Destination Level 5 permission.')
+        return super(Destinations, self).unlink()
 
     @api.multi
     @api.depends('city','name','code')
