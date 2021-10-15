@@ -55,22 +55,10 @@ class SearchResultBanner(models.Model):
         return res
 
     def get_search_banner_data(self):
-        provider_list = [{
-            'name': rec.name,
-            'code': rec.code
-        } for rec in self.provider_ids]
-        carrier_list = [{
-            'name': rec.name,
-            'code': rec.code
-        } for rec in self.carrier_ids]
-        origin_list = [{
-            'name': rec.name,
-            'code': rec.code
-        } for rec in self.origin_ids]
-        destination_list = [{
-            'name': rec.name,
-            'code': rec.code
-        } for rec in self.destination_ids]
+        provider_list = [rec.code for rec in self.provider_ids]
+        carrier_list = [rec.code for rec in self.carrier_ids]
+        origin_list = [rec.code for rec in self.origin_ids]
+        destination_list = [rec.code for rec in self.destination_ids]
         res = {
             'name': self.name,
             'description': self.description,
