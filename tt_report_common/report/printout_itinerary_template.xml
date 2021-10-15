@@ -7,9 +7,8 @@
             <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
                 <td><b>Pax Type</b></td>
                 <td><b>Qty</b></td>
-                <td><b>Base Fare</b></td>
-                <td><b>Tax</b></td>
                 <td><b>Total per Pax</b></td>
+                <td><b>Total</b></td>
             </thead>
             <t t-if="price_lines">
                 <!-- Itinerary yg dari Record Backend (Airline, train) -->
@@ -18,9 +17,8 @@
                         <tr style="border-bottom: 1px solid lightgray">
                             <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
                             <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
-                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                            <td style="text-align:right;">@<t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="((float(price['fare']) + float(price['tax']))*price['qty'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                         </tr>
                     </t>
                 </t>
@@ -33,7 +31,7 @@
                         <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
                         <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
                         <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
-                        <td style="text-align:right;">@<t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
                     </tr>
                 </t>
             </t>
@@ -43,17 +41,30 @@
             <span style="font-size: 28px; font-weight: 730">Other Service Charge</span><br/>
             <table width="100%">
                 <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
-                    <td><b>Name</b></td>
-                    <td><b>Price</b></td>
+                    <td style="text-align:left;"><b>Name</b></td>
+                    <td style="text-align:right;"><b>Price</b></td>
                 </thead>
                 <tr>
-                    <td>Other Service Charges</td>
-                    <td>
-                        <t t-esc="other_service_charges"/>
+                    <td style="text-align:center;">Other Service Charges</td>
+                    <td style="text-align:right;">
+                        <t t-esc="other_service_charges" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                     </td>
                 </tr>
             </table>
         </t>
+        <span style="font-size: 28px; font-weight: 730">Grand Total</span><br/>
+        <table width="100%">
+            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                <td style="text-align:left;"><b>Name</b></td>
+                <td style="text-align:right;"><b>Price</b></td>
+            </thead>
+            <tr>
+                <td style="text-align:center;">Grand Total</td>
+                <td style="text-align:right;">
+                    <t t-esc="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                </td>
+            </tr>
+        </table>
         <t t-if="ssr_list">
             <br/>
             <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
@@ -196,7 +207,7 @@
                     </div>
                 </t>
 
-                 <span style="font-size: 28px; font-weight: 730">SSR Request</span><br/>
+                 <span style="font-size: 28px; font-weight: 730">SSR</span><br/>
                     <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
                         <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
                             <div class="col-1" style="text-align: center; font-size:17px;">
