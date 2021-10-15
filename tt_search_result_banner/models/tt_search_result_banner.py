@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 class SearchResultBanner(models.Model):
     _name = 'tt.search.result.banner'
     _inherit = 'tt.history'
+    _order = 'sequence'
     _description = 'Search Result Banner'
 
     name = fields.Char('Banner Text', required=True)
