@@ -86,6 +86,7 @@ class SearchResultBanner(models.Model):
             'origin_ids': origin_list,
             'destination_access_type': self.destination_access_type or 'all',
             'destination_ids': destination_list,
+            'sequence': self.sequence,
             'active': self.active,
         }
         return res
