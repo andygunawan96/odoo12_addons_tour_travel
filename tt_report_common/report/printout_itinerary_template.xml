@@ -205,13 +205,13 @@
                             <div class="col-4" style="text-align: center; font-size:17px;">
                                 Name
                             </div>
-                            <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
+                            <div class="col-2" style="text-align: center; font-size:17px; padding-right: 30px;">
                                 SSR
                             </div>
                             <div class="col-2" style="text-align: center; font-size:17px;">
                                 Description
                             </div>
-                            <div class="col-3" style="text-align: center; font-size:17px;">
+                            <div class="col-3" style="text-align: right; font-size:17px;">
                                 Journey
                             </div>
                         </div>
@@ -230,16 +230,16 @@
                                     <div class="col-1" style="text-align: center">
                                         <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
                                     </div>
-                                    <div class="col-4" style="text-align: left">
+                                    <div class="col-4" style="text-align: center">
                                         <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                                     </div>
-                                    <div class="col-2" style="text-align: right">
+                                    <div class="col-2" style="text-align: center">
                                         <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.category"/></label>
                                     </div>
                                     <div class="col-2" style="text-align: center">
                                         <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.value"/></label>
                                     </div>
-                                    <div class="col-3" style="text-align: center">
+                                    <div class="col-3" style="text-align: right">
                                         <t t-foreach="provider_itin_id.journey_ids" t-as="data_journey">
                                             <t t-if="data_journey.journey_code == fee_id.journey_code">
                                                 <t t-set="journey_pick" t-value="data_journey"/>
