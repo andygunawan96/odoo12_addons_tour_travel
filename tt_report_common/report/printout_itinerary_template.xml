@@ -248,7 +248,7 @@
                                         <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.category"/></label>
                                     </div>
                                     <div class="col-2" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.value"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.name"/></label>
                                     </div>
                                     <div class="col-3" style="text-align: right">
                                         <t t-foreach="provider_itin_id.journey_ids" t-as="data_journey">
