@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import logging,traceback
@@ -45,6 +46,12 @@ class TtProvider(models.Model):
     #                 'provider_id': self.id
     #             })]
     #         })
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('tt_base.group_provider_level_5'):
+            raise UserError('Action failed due to security restriction. Required Provider Level 5 permission.')
+        return super(TtProvider, self).unlink()
 
     def sync_balance(self):
         ##send request to gateway
