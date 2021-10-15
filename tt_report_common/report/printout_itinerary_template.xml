@@ -45,7 +45,7 @@
                     <td style="text-align:right;"><b>Price</b></td>
                 </thead>
                 <tr>
-                    <td style="text-align:center;">Other Service Charges</td>
+                    <td style="text-align:left;">Other Service Charges</td>
                     <td style="text-align:right;">
                         <t t-esc="other_service_charges" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                     </td>
@@ -59,7 +59,7 @@
                 <td style="text-align:right;"><b>Price</b></td>
             </thead>
             <tr>
-                <td style="text-align:center;">Grand Total</td>
+                <td style="text-align:left;">Grand Total</td>
                 <td style="text-align:right;">
                     <t t-esc="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                 </td>
