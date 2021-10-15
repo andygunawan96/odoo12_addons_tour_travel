@@ -38,6 +38,22 @@
                 </t>
             </t>
         </table>
+        <t t-if="other_service_charges">
+            <br/>
+            <span style="font-size: 28px; font-weight: 730">Other Service Charge</span><br/>
+            <table width="100%">
+                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                    <td><b>Name</b></td>
+                    <td><b>Price</b></td>
+                </thead>
+                <tr>
+                    <td>Other Service Charges</td>
+                    <td>
+                        <t t-esc="other_service_charges"/>
+                    </td>
+                </tr>
+            </table>
+        </t>
         <t t-if="ssr_list">
             <br/>
             <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
@@ -152,15 +168,15 @@
                                     <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
                                     <t t-set="any_ssr" t-value="0"/>
                                     <t t-set="data_pax" t-value="psg.passenger_id"/>
-                                    <t t-if="data_pax.fee_ids">
-                                        <t t-set="any_ssr" t-value="1"/>
-                                        <t t-foreach="data_pax.fee_ids" t-as="fee_id">
-                                            <!--<i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
-                                            <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> <span t-field="fee_id.name"/></i><br/>
-                                            <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
-                                            <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
-                                        </t>
-                                    </t>
+                                    <!--<t t-if="data_pax.fee_ids">--> <!--SSR DI PINDAH KE BAWAH-->
+                                        <!--<t t-set="any_ssr" t-value="1"/>-->
+                                        <!--<t t-foreach="data_pax.fee_ids" t-as="fee_id">-->
+                                            <!--&lt;!&ndash;<i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>&ndash;&gt;-->
+                                            <!--<i style="margin-right:3px;" t-att-class="fee_id.category_icon"> <span t-field="fee_id.name"/></i><br/>-->
+                                            <!--&lt;!&ndash;<i style="margin-right:3px;" class="fa fa-cutlery"/>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<i style="margin-right:3px;" class="fa fa-wheelchair"/>&ndash;&gt;-->
+                                        <!--</t>-->
+                                    <!--</t>-->
                                     <t t-foreach="doc.segment_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_segment_id">
                                         <t t-if="provider_segment_id.segment_addons_ids">
                                             <t t-set="any_ssr" t-value="1"/>
@@ -179,6 +195,75 @@
                         <div style="margin-bottom: 5px"/>
                     </div>
                 </t>
+
+                 <span style="font-size: 28px; font-weight: 730">SSR Request</span><br/>
+                    <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                        <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                            <div class="col-1" style="text-align: center; font-size:17px;">
+                                No.
+                            </div>
+                            <div class="col-4" style="text-align: center; font-size:17px;">
+                                Name
+                            </div>
+                            <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
+                                SSR
+                            </div>
+                            <div class="col-2" style="text-align: center; font-size:17px;">
+                                Description
+                            </div>
+                            <div class="col-3" style="text-align: center; font-size:17px;">
+                                Journey
+                            </div>
+                        </div>
+                        <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
+
+                        <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
+                        <t t-set="any_ssr" t-value="0"/>
+                        <t t-set="journey_pick" t-value=""/>
+                        <t t-set="data_pax" t-value="psg.passenger_id"/>
+                        <t t-if="data_pax.fee_ids">
+                            <t t-set="any_ssr" t-value="1"/>
+                            <t t-foreach="data_pax.fee_ids" t-as="fee_id">
+                                <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                    <div class="col-1" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    </div>
+                                    <div class="col-4" style="text-align: left">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                    </div>
+                                    <div class="col-2" style="text-align: right">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.category"/></label>
+                                    </div>
+                                    <div class="col-2" style="text-align: center">
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.value"/></label>
+                                    </div>
+                                    <div class="col-3" style="text-align: center">
+                                        <t t-foreach="provider_itin_id.journey_ids" t-as="data_journey">
+                                            <t t-if="data_journey.journey_code == fee_id.journey_code">
+                                                <t t-set="journey_pick" t-value="data_journey"/>
+                                            </t>
+                                            <t t-foreach="data_journey.segment_ids" t-as="data_segment">
+                                                <t t-if="data_segment.segment_code == fee_id.journey_code">
+                                                    <t t-set="journey_pick" t-value="data_segment"/>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <t t-if="journey_pick">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="journey_pick.origin_id.code"/> - <span t-field="journey_pick.destination_id.code"/></label>
+                                        </t>
+                                        <t t-else="">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                    </t>
+                </t>
+                </div>
+
             </div>
         </div>
     </template>
