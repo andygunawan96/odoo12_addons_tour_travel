@@ -8,7 +8,7 @@
                 <td><b>Pax Type</b></td>
                 <td><b>Qty</b></td>
                 <td><b>Total per Pax</b></td>
-                <td><b>Grand Total</b></td>
+                <td><b>Total</b></td>
             </thead>
             <t t-if="price_lines">
                 <!-- Itinerary yg dari Record Backend (Airline, train) -->
@@ -31,7 +31,7 @@
                         <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
                         <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
                         <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
-                        <td style="text-align:right;">@<t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
                     </tr>
                 </t>
             </t>
@@ -47,11 +47,24 @@
                 <tr>
                     <td>Other Service Charges</td>
                     <td>
-                        <t t-esc="other_service_charges"/>
+                        <t t-esc="other_service_charges" t-options='{"widget": "monetary", "display_currency": currency_id}'/>
                     </td>
                 </tr>
             </table>
         </t>
+        <span style="font-size: 28px; font-weight: 730">Grand Total</span><br/>
+        <table width="100%">
+            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                <td><b>Name</b></td>
+                <td><b>Price</b></td>
+            </thead>
+            <tr>
+                <td>Grand Total</td>
+                <td>
+                    <t t-esc="doc.total" t-options='{"widget": "monetary", "display_currency": currency_id}'/>
+                </td>
+            </tr>
+        </table>
         <t t-if="ssr_list">
             <br/>
             <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
