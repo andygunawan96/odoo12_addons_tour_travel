@@ -2042,6 +2042,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
         values = {}
         pnr_length = 0
         header_width = 90
+        other_service_charges = 0
         agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2063,7 +2064,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
             for psg in rec.passenger_ids:
                 for csc in psg.channel_service_charge_ids:
-                    a['ADT']['tax'] += csc.amount
+                    other_service_charges += csc.amount
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
@@ -2081,6 +2082,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'other_service_charges': other_service_charges,
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
