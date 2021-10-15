@@ -20,34 +20,35 @@ class TtTopUp(models.Model):
                 pay_method = ''
             ledger_obj = self.ledger_id
             ledger_list = []
-            if not ledger_obj.is_sent_to_acc:
-                ledger_list.append({
-                    "create_date": ledger_obj.create_date and datetime.strftime(ledger_obj.create_date, '%Y-%m-%d %H:%M:%S') or '',
-                    "payment_method": pay_method,
-                    "currency_id": ledger_obj.currency_id and ledger_obj.currency_id.name or '',
-                    "create_uid": ledger_obj.create_uid and ledger_obj.create_uid.name or '',
-                    "company_sender": ledger_obj.agent_id and ledger_obj.agent_id.name or '',
-                    "payment_acquirer": self.acquirer_id and self.acquirer_id.jasaweb_name or '',
-                    "commission": 0,
-                    "state": "Done",
-                    "debit": ledger_obj.debit and ledger_obj.debit or 0,
-                    "description": ledger_obj.description and ledger_obj.description or '',
-                    "url_legacy": base_url + '/web#id=' + str(ledger_obj.id) + '&model=tt.ledger&view_type=form',
-                    "display_provider_name": "",
-                    "pnr": "",
-                    "agent_id": ledger_obj.agent_id and ledger_obj.agent_id.name or '',
-                    "company_receiver": self.env.ref('tt_base.rodex_ho').name,
-                    'date': ledger_obj.date and datetime.strftime(ledger_obj.date, '%Y-%m-%d') or '',
-                    "reference_number": ledger_obj.ref and ledger_obj.ref or '',
-                    "NTA_amount_real": ledger_obj.debit and ledger_obj.debit or 0,
-                    "name": ledger_obj.name and ledger_obj.name or '',
-                    "transaction_type": "Top Up / Agent Payment",
-                    "credit": ledger_obj.credit and ledger_obj.credit or 0,
-                    "transport_type": "Top Up"
-                })
-                ledger_obj.sudo().write({
-                    'is_sent_to_acc': True
-                })
+            if ledger_obj.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                if not ledger_obj.is_sent_to_acc:
+                    ledger_list.append({
+                        "create_date": ledger_obj.create_date and datetime.strftime(ledger_obj.create_date, '%Y-%m-%d %H:%M:%S') or '',
+                        "payment_method": pay_method,
+                        "currency_id": ledger_obj.currency_id and ledger_obj.currency_id.name or '',
+                        "create_uid": ledger_obj.create_uid and ledger_obj.create_uid.name or '',
+                        "company_sender": ledger_obj.agent_id and ledger_obj.agent_id.name or '',
+                        "payment_acquirer": self.acquirer_id and self.acquirer_id.jasaweb_name or '',
+                        "commission": 0,
+                        "state": "Done",
+                        "debit": ledger_obj.debit and ledger_obj.debit or 0,
+                        "description": ledger_obj.description and ledger_obj.description or '',
+                        "url_legacy": base_url + '/web#id=' + str(ledger_obj.id) + '&model=tt.ledger&view_type=form',
+                        "display_provider_name": "",
+                        "pnr": "",
+                        "agent_id": ledger_obj.agent_id and ledger_obj.agent_id.name or '',
+                        "company_receiver": self.env.ref('tt_base.rodex_ho').name,
+                        'date': ledger_obj.date and datetime.strftime(ledger_obj.date, '%Y-%m-%d') or '',
+                        "reference_number": ledger_obj.ref and ledger_obj.ref or '',
+                        "NTA_amount_real": ledger_obj.debit and ledger_obj.debit or 0,
+                        "name": ledger_obj.name and ledger_obj.name or '',
+                        "transaction_type": "Top Up / Agent Payment",
+                        "credit": ledger_obj.credit and ledger_obj.credit or 0,
+                        "transport_type": "Top Up"
+                    })
+                    ledger_obj.sudo().write({
+                        'is_sent_to_acc': True
+                    })
             new_obj = self.env['tt.accounting.queue'].create({
                 'request': json.dumps(ledger_list),
                 'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
