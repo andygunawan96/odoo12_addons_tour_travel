@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 import re
 import logging
 import traceback
@@ -33,6 +34,12 @@ class TransportCarrier(models.Model):
     required_identity_required_international = fields.Boolean('Is Identity Required International', default=False)
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('tt_base.group_transport_carrier_level_5'):
+            raise UserError('Action failed due to security restriction. Required Transport Carrier Level 5 permission.')
+        return super(TransportCarrier, self).unlink()
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):

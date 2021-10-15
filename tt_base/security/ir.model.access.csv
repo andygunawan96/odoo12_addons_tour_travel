@@ -187,7 +187,7 @@ tt_destinations_for_tour_travel_manager,tt.destinations.for.tour.travel.manager,
 tt_destinations_for_destination_level_1,tt.destinations.for.destination.level.1,model_tt_destinations,tt_base.group_destination_level_1,1,0,0,0
 tt_destinations_for_destination_level_2,tt.destinations.for.destination.level.2,model_tt_destinations,tt_base.group_destination_level_2,1,0,1,0
 tt_destinations_for_destination_level_3,tt.destinations.for.destination.level.3,model_tt_destinations,tt_base.group_destination_level_3,1,1,1,0
-tt_destinations_for_destination_level_4,tt.destinations.for.destination.level.4,model_tt_destinations,tt_base.group_destination_level_4,1,1,1,0
+tt_destinations_for_destination_level_4,tt.destinations.for.destination.level.4,model_tt_destinations,tt_base.group_destination_level_4,1,1,1,1
 tt_destinations_for_destination_level_5,tt.destinations.for.destination.level.5,model_tt_destinations,tt_base.group_destination_level_5,1,1,1,1
 
 tt_transport_carrier_for_public,tt.transport.carrier.for.public,model_tt_transport_carrier,,1,0,0,0
@@ -198,7 +198,7 @@ tt_transport_carrier_for_tour_travel_manager,tt.transport.carrier.for.tour.trave
 tt_transport_carrier_for_transport_carrier_level_1,tt.transport.carrier.for.transport.carrier.level.1,model_tt_transport_carrier,tt_base.group_transport_carrier_level_1,1,0,0,0
 tt_transport_carrier_for_transport_carrier_level_2,tt.transport.carrier.for.transport.carrier.level.2,model_tt_transport_carrier,tt_base.group_transport_carrier_level_2,1,0,1,0
 tt_transport_carrier_for_transport_carrier_level_3,tt.transport.carrier.for.transport.carrier.level.3,model_tt_transport_carrier,tt_base.group_transport_carrier_level_3,1,1,1,0
-tt_transport_carrier_for_transport_carrier_level_4,tt.transport.carrier.for.transport.carrier.level.4,model_tt_transport_carrier,tt_base.group_transport_carrier_level_4,1,1,1,0
+tt_transport_carrier_for_transport_carrier_level_4,tt.transport.carrier.for.transport.carrier.level.4,model_tt_transport_carrier,tt_base.group_transport_carrier_level_4,1,1,1,1
 tt_transport_carrier_for_transport_carrier_level_5,tt.transport.carrier.for.transport.carrier.level.5,model_tt_transport_carrier,tt_base.group_transport_carrier_level_5,1,1,1,1
 
 tt_transport_carrier_type_for_public,tt.transport.carrier.type.for.public,model_tt_transport_carrier_type,,1,0,0,0
@@ -493,7 +493,7 @@ access_tt_provider_for_accounting_manager,tt.provider.for.accounting.manager,mod
 access_tt_provider_for_provider_level_1,tt.provider.for.provider.level.1,model_tt_provider,tt_base.group_provider_level_1,1,0,0,0
 access_tt_provider_for_provider_level_2,tt.provider.for.provider.level.2,model_tt_provider,tt_base.group_provider_level_2,1,0,1,0
 access_tt_provider_for_provider_level_3,tt.provider.for.provider.level.3,model_tt_provider,tt_base.group_provider_level_3,1,1,1,0
-access_tt_provider_for_provider_level_4,tt.provider.for.provider.level.4,model_tt_provider,tt_base.group_provider_level_4,1,1,1,0
+access_tt_provider_for_provider_level_4,tt.provider.for.provider.level.4,model_tt_provider,tt_base.group_provider_level_4,1,1,1,1
 access_tt_provider_for_provider_level_5,tt.provider.for.provider.level.5,model_tt_provider,tt_base.group_provider_level_5,1,1,1,1
 
 access_tt_provider_code_for_public,tt.provider.code.for.public,model_tt_provider_code,,1,0,0,0
