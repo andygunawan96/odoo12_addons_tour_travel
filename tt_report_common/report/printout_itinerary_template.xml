@@ -47,7 +47,7 @@
                 <tr>
                     <td>Other Service Charges</td>
                     <td>
-                        <t t-esc="other_service_charges" t-options='{"widget": "monetary", "display_currency": currency_id}'/>
+                        <t t-esc="other_service_charges" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                     </td>
                 </tr>
             </table>
@@ -61,7 +61,7 @@
             <tr>
                 <td>Grand Total</td>
                 <td>
-                    <t t-esc="doc.total" t-options='{"widget": "monetary", "display_currency": currency_id}'/>
+                    <t t-esc="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                 </td>
             </tr>
         </table>
