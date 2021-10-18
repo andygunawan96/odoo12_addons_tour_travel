@@ -239,6 +239,10 @@ class TtTimeslotmedical(models.Model):
                 dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=2)))
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
+            if carrier_obj.code in ['NHDTKPCRB', 'NHDTSPCRB']: #BALI ONLY
+                dom.append(('destination_id','=',self.env.ref('tt_reservation_medical.tt_destination_medical_bali').id))
+            else: # SBY ONLY
+                dom.append(('destination_id', '=', self.env.ref('tt_reservation_medical.tt_destination_medical_sub').id))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
             # dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=14,minute=30,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
             dom.append(('max_book_datetime', '>=', datetime.now(pytz.utc)))
