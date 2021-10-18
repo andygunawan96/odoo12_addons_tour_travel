@@ -11,7 +11,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
                         </button>
                     </div>
                     <div class="oe_title">
@@ -56,7 +56,14 @@
                         </group>
                     </group>
                     <separator string="Customer Parents"/>
-                    <field name="customer_parent_ids"/>
+                    <field name="customer_parent_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="customer_parent_type_id"/>
+                            <field name="parent_agent_id"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
                     <separator string="Details"/>
                     <field name="line_ids"/>
                 </sheet>
@@ -72,18 +79,18 @@
         <field name="name">pricing.customer.view.tree</field>
         <field name="model">tt.pricing.customer</field>
         <field name="arch" type="xml">
-        <tree decoration-muted="active == False">
-            <field name="sequence" widget="handle"/>
-            <field name="name"/>
-            <field name="name_desc"/>
-            <field name="agent_id"/>
-            <field name="agent_type_id"/>
-            <field name="provider_type_id"/>
-            <field name="carrier_access_type"/>
-            <field name="customer_parent_type_access_type"/>
-            <field name="customer_parent_access_type"/>
-            <field name="active"/>
-        </tree>
+            <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="name_desc"/>
+                <field name="agent_id"/>
+                <field name="agent_type_id"/>
+                <field name="provider_type_id"/>
+                <field name="carrier_access_type"/>
+                <field name="customer_parent_type_access_type"/>
+                <field name="customer_parent_access_type"/>
+                <field name="active"/>
+            </tree>
         </field>
     </record>
 
@@ -91,12 +98,12 @@
         <field name="name">pricing.customer.view.search</field>
         <field name="model">tt.pricing.customer</field>
         <field name="arch" type="xml">
-        <search>
-            <!--<field name="name"/>-->
-            <field name="name"/>
-            <field name="provider_type_id"/>
-            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
-        </search>
+            <search>
+                <!--<field name="name"/>-->
+                <field name="name"/>
+                <field name="provider_type_id"/>
+                <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+            </search>
         </field>
     </record>
 
@@ -121,7 +128,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
                         </button>
                     </div>
                     <div class="oe_title">
@@ -198,27 +205,27 @@
         <field name="name">pricing.customer.line.view.tree</field>
         <field name="model">tt.pricing.customer.line</field>
         <field name="arch" type="xml">
-        <tree decoration-muted="active == False">
-            <field name="sequence" widget="handle"/>
-            <field name="name"/>
-            <field name="is_no_expiration"/>
-            <field name="date_from"/>
-            <field name="date_to"/>
-            <field name="origin_type"/>
-            <field name="display_origins"/>
-            <field name="display_origin_cities"/>
-            <field name="display_origin_countries"/>
-            <field name="destination_type"/>
-            <field name="display_destinations"/>
-            <field name="display_destination_cities"/>
-            <field name="display_destination_countries"/>
-            <field name="upsell_amount_type"/>
-            <field name="upsell_amount"/>
-            <field name="is_per_route"/>
-            <field name="is_per_segment"/>
-            <field name="is_per_pax"/>
-            <field name="active"/>
-        </tree>
+            <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="is_no_expiration"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="origin_type"/>
+                <field name="display_origins"/>
+                <field name="display_origin_cities"/>
+                <field name="display_origin_countries"/>
+                <field name="destination_type"/>
+                <field name="display_destinations"/>
+                <field name="display_destination_cities"/>
+                <field name="display_destination_countries"/>
+                <field name="upsell_amount_type"/>
+                <field name="upsell_amount"/>
+                <field name="is_per_route"/>
+                <field name="is_per_segment"/>
+                <field name="is_per_pax"/>
+                <field name="active"/>
+            </tree>
         </field>
     </record>
 
@@ -226,10 +233,10 @@
         <field name="name">pricing.customer.line.view.search</field>
         <field name="model">tt.pricing.customer.line</field>
         <field name="arch" type="xml">
-        <search>
-            <field name="name"/>
-            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
-        </search>
+            <search>
+                <field name="name"/>
+                <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+            </search>
         </field>
     </record>
 
