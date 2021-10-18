@@ -295,7 +295,7 @@ class TtTimeslotmedical(models.Model):
             if self.timeslot_type != 'drive_thru':
                 return self.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%d %B %Y %H:%M')
             else:
-                return '%s (08:00 - 15:00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
+                return '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
         else:
             return 'Date/Time is not specified.'
 
