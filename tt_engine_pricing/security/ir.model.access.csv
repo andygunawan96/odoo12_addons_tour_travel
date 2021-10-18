@@ -39,6 +39,18 @@ tt_pricing_agent_line_for_pricing_agent_level_3,tt.pricing.agent.line.for.pricin
 tt_pricing_agent_line_for_pricing_agent_level_4,tt.pricing.agent.line.for.pricing.agent.level.4,model_tt_pricing_agent_line,tt_base.group_pricing_agent_level_4,1,1,1,0
 tt_pricing_agent_line_for_pricing_agent_level_5,tt.pricing.agent.line.for.pricing.agent.level.5,model_tt_pricing_agent_line,tt_base.group_pricing_agent_level_5,1,1,1,1
 
+tt_pricing_customer_for_pricing_customer_level_1,tt.pricing.customer.for.pricing.customer.level.1,model_tt_pricing_customer,tt_base.group_pricing_customer_level_1,1,0,0,0
+tt_pricing_customer_for_pricing_customer_level_2,tt.pricing.customer.for.pricing.customer.level.2,model_tt_pricing_customer,tt_base.group_pricing_customer_level_2,1,0,1,0
+tt_pricing_customer_for_pricing_customer_level_3,tt.pricing.customer.for.pricing.customer.level.3,model_tt_pricing_customer,tt_base.group_pricing_customer_level_3,1,1,1,0
+tt_pricing_customer_for_pricing_customer_level_4,tt.pricing.customer.for.pricing.customer.level.4,model_tt_pricing_customer,tt_base.group_pricing_customer_level_4,1,1,1,0
+tt_pricing_customer_for_pricing_customer_level_5,tt.pricing.customer.for.pricing.customer.level.5,model_tt_pricing_customer,tt_base.group_pricing_customer_level_5,1,1,1,1
+
+tt_pricing_customer_line_for_pricing_customer_level_1,tt.pricing.customer.line.for.pricing.customer.level.1,model_tt_pricing_customer_line,tt_base.group_pricing_customer_level_1,1,0,0,0
+tt_pricing_customer_line_for_pricing_customer_level_2,tt.pricing.customer.line.for.pricing.customer.level.2,model_tt_pricing_customer_line,tt_base.group_pricing_customer_level_2,1,0,1,0
+tt_pricing_customer_line_for_pricing_customer_level_3,tt.pricing.customer.line.for.pricing.customer.level.3,model_tt_pricing_customer_line,tt_base.group_pricing_customer_level_3,1,1,1,0
+tt_pricing_customer_line_for_pricing_customer_level_4,tt.pricing.customer.line.for.pricing.customer.level.4,model_tt_pricing_customer_line,tt_base.group_pricing_customer_level_4,1,1,1,0
+tt_pricing_customer_line_for_pricing_customer_level_5,tt.pricing.customer.line.for.pricing.customer.level.5,model_tt_pricing_customer_line,tt_base.group_pricing_customer_level_5,1,1,1,1
+
 tt_pricing_charge_code_all,tt.pricing.charge.code.all,model_tt_pricing_charge_code,,1,0,0,0
 tt_pricing_charge_code_tour_travel_supervisor,tt.pricing.charge.code.tour.travel.supervisor,model_tt_pricing_charge_code,tt_base.group_tt_tour_travel_supervisor,1,1,1,0
 tt_pricing_charge_code_tour_travel_manager,tt.pricing.charge.code.tour.travel.manager,model_tt_pricing_charge_code,tt_base.group_tt_tour_travel_manager,1,1,1,1
