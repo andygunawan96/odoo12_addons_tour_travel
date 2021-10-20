@@ -187,6 +187,7 @@
                             <field name="upsell_amount"/>
                         </group>
                         <group>
+                            <field name="fee_amount"/>
                             <field name="is_per_route"/>
                             <field name="is_per_segment"/>
                             <field name="is_per_pax"/>

@@ -160,6 +160,7 @@ class PricingProviderLine(models.Model):
                                                string='Destination Countries')
     display_destination_countries = fields.Char('Display Destination Countries', compute='_compute_display_destination_countries', store=True, readonly=1)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
+    fee_amount = fields.Monetary('Fee Amount', default=0)
     is_per_route = fields.Boolean('Is Per Route', default=False)
     is_per_segment = fields.Boolean('Is Per Segment', default=False)
     is_per_pax = fields.Boolean('Is Per Pax', default=False)
