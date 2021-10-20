@@ -195,10 +195,10 @@ tt_transport_carrier_for_tour_travel_operator,tt.transport.carrier.for.tour.trav
 tt_transport_carrier_for_tour_travel_supervisor,tt.transport.carrier.for.tour.travel.supervisor,model_tt_transport_carrier,tt_base.group_tt_tour_travel_supervisor,1,0,1,0
 tt_transport_carrier_for_tour_travel_manager,tt.transport.carrier.for.tour.travel.manager,model_tt_transport_carrier,tt_base.group_tt_tour_travel_manager,1,1,1,1
 
-tt_transport_carrier_for_transport_carrier_level_1,tt.transport.carrier.for.transport.carrier.level.1,model_tt_transport_carrier,tt_base.group_transport_carrier_level_1,1,0,0,0
+tt_transport_carrier_for_transport_carrier_level_1,tt.transport.carrier.for.transport.carrier.level.1,model_tt_transport_carrier,tt_base.group_transport_carrier_level_1,1,0,1,1
 tt_transport_carrier_for_transport_carrier_level_2,tt.transport.carrier.for.transport.carrier.level.2,model_tt_transport_carrier,tt_base.group_transport_carrier_level_2,1,0,1,0
 tt_transport_carrier_for_transport_carrier_level_3,tt.transport.carrier.for.transport.carrier.level.3,model_tt_transport_carrier,tt_base.group_transport_carrier_level_3,1,1,1,0
-tt_transport_carrier_for_transport_carrier_level_4,tt.transport.carrier.for.transport.carrier.level.4,model_tt_transport_carrier,tt_base.group_transport_carrier_level_4,1,1,1,1
+tt_transport_carrier_for_transport_carrier_level_4,tt.transport.carrier.for.transport.carrier.level.4,model_tt_transport_carrier,tt_base.group_transport_carrier_level_4,1,1,1,0
 tt_transport_carrier_for_transport_carrier_level_5,tt.transport.carrier.for.transport.carrier.level.5,model_tt_transport_carrier,tt_base.group_transport_carrier_level_5,1,1,1,1
 
 tt_transport_carrier_type_for_public,tt.transport.carrier.type.for.public,model_tt_transport_carrier_type,,1,0,0,0
@@ -556,7 +556,7 @@ access_tt_customer_parent_for_customer_parent_level_5,tt.customer.parent.for.cus
 access_tt_customer_parent_type_for_public,tt.customer.for.public,model_tt_customer_parent_type,,1,0,0,0
 access_tt_customer_parent_type_for_agent_management_manager,tt.customer.parent.type.for.agent.management.manager,model_tt_customer_parent_type,group_tt_agent_management_manager,1,1,1,1
 
-access_tt_customer_parent_type_for_customer_parent_type_level_1,tt.customer.parent.type.for.customer.parent.type.level.1,model_tt_customer_parent_type,tt_base.group_customer_parent_type_level_1,1,0,0,0
+access_tt_customer_parent_type_for_customer_parent_type_level_1,tt.customer.parent.type.for.customer.parent.type.level.1,model_tt_customer_parent_type,tt_base.group_customer_parent_type_level_1,1,0,1,1
 access_tt_customer_parent_type_for_customer_parent_type_level_2,tt.customer.parent.type.for.customer.parent.type.level.2,model_tt_customer_parent_type,tt_base.group_customer_parent_type_level_2,1,0,1,0
 access_tt_customer_parent_type_for_customer_parent_type_level_3,tt.customer.parent.type.for.customer.parent.type.level.3,model_tt_customer_parent_type,tt_base.group_customer_parent_type_level_3,1,1,1,0
 access_tt_customer_parent_type_for_customer_parent_type_level_4,tt.customer.parent.type.for.customer.parent.type.level.4,model_tt_customer_parent_type,tt_base.group_customer_parent_type_level_4,1,1,1,0
