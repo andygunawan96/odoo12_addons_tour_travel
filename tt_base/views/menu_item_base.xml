@@ -39,9 +39,6 @@
                   web_icon="hr,static/description/icon.png"
                   sequence="5"/>
 
-
-
-
         <!--Transactions-->
         <menuitem id="main_transaction"
                   name="Transactions"
@@ -139,6 +136,13 @@
                   parent="tt_base.main_transaction"
                   name="Refund and After Sales"
                   sequence="25"
+                  groups="base.group_user"/>
+
+        <!--Transaction Configurations-->
+        <menuitem id="top_transaction_configuration"
+                  parent="tt_base.main_transaction"
+                  name="Configuration"
+                  sequence="35"
                   groups="base.group_user"/>
 
         <!--External Vendor Login-->
@@ -269,6 +273,13 @@
                   groups="tt_base.group_voucher_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence = "110"/>
+
+        <!--Transaction Pricing-->
+        <menuitem id="menu_transaction_pricing"
+                  name="Pricing"
+                  groups="tt_base.group_pricing_customer_level_1"
+                  parent="tt_base.top_transaction_configuration"
+                  sequence="10"/>
 
         <!--External Vendor Login-->
         <menuitem id="menu_external_vendor_user"
