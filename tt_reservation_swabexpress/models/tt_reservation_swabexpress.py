@@ -901,7 +901,7 @@ class ReservationSwabExpress(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        swabexpress_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_airline')
+        swabexpress_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_swabexpress')
         if not self.printout_ho_invoice_id:
             if self.agent_id:
                 co_agent_id = self.agent_id.id
@@ -921,8 +921,8 @@ class ReservationSwabExpress(models.Model):
             pdf_report_bytes = swabexpress_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'Airline HO Invoice',
+                    'filename': 'Swab Express HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'Swab Express HO Invoice',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },

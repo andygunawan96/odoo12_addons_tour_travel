@@ -1251,7 +1251,7 @@ class Reservationmedical(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        medical_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_airline')
+        medical_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_medical')
         if not self.printout_ho_invoice_id:
             if self.agent_id:
                 co_agent_id = self.agent_id.id
@@ -1271,8 +1271,8 @@ class Reservationmedical(models.Model):
             pdf_report_bytes = medical_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'Airline HO Invoice',
+                    'filename': 'Medical HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'Medical HO Invoice',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -1329,8 +1329,8 @@ class Reservationmedical(models.Model):
             pdf_report_bytes = medical_itinerary_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Ittinerary %s.pdf' % book_obj.name,
-                    'file_reference': 'Ittinerary',
+                    'filename': 'Itinerary %s.pdf' % book_obj.name,
+                    'file_reference': 'Itinerary',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },

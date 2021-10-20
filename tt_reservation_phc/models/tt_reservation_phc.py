@@ -1199,7 +1199,7 @@ class Reservationphc(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        phc_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_airline')
+        phc_ho_invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice_ho_phc')
         if not self.printout_ho_invoice_id:
             if self.agent_id:
                 co_agent_id = self.agent_id.id
@@ -1219,8 +1219,8 @@ class Reservationphc(models.Model):
             pdf_report_bytes = phc_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'Airline HO Invoice',
+                    'filename': 'PHC HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'PHC HO Invoice',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -1277,8 +1277,8 @@ class Reservationphc(models.Model):
             pdf_report_bytes = phc_itinerary_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Ittinerary %s.pdf' % book_obj.name,
-                    'file_reference': 'Ittinerary',
+                    'filename': 'Itinerary %s.pdf' % book_obj.name,
+                    'file_reference': 'Itinerary',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
