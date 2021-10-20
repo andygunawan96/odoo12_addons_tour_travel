@@ -77,7 +77,7 @@
         <field name="model">tt.agent</field>
         <field name="inherit_id" ref="tt_base.tt_agent_kanban_view"/>
         <field name="arch" type="xml">
-            <field name="est_date" position="after">
+            <field name="email" position="after">
                 <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </field>
             <xpath expr="//span[@name='email_for_inh']" position="after">
@@ -85,4 +85,19 @@
             </xpath>
         </field>
     </record>
+
+    <record id="tt_agent_kanban_view_customer_inherit" model="ir.ui.view">
+        <field name="name">tt.agent.kanban.view.inherit</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_kanban_view_customer"/>
+        <field name="arch" type="xml">
+            <field name="email" position="after">
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+            </field>
+            <xpath expr="//span[@name='email_for_inh']" position="after">
+                <span class="o_kanban_record_subtitle">Balance: <field name="balance" widget="float"/></span>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

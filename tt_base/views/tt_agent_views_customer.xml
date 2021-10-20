@@ -201,8 +201,9 @@
             <kanban class="o_hr_employee_kanban">
                 <field name="id"/>
                 <field name="name"/>
+                <field name="agent_type_id"/>
                 <field name="email"/>
-                <field name="est_date"/>
+                <field name="balance"/>
                 <!--                <field name="currency_id"/>-->
                 <templates>
                     <t t-name="kanban-box">
@@ -226,15 +227,9 @@
                                             </h4>
                                         </strong>
                                         <span class="o_kanban_record_subtitle" name="email_for_inh">Email: <field name="email"/></span>
+                                        <span class="o_kanban_record_subtitle" name="agent_type_id_for_inh"><field name="agent_type_id"/></span>
                                     </div>
                                 </div>
-                                <!--options="{'color_field': 'color'}"-->
-                                <!--<field name="phone_ids" widget="many2many_tags"/>-->
-                                <ul>
-                                    <li id="est_date"/>
-                                    <li>Established: <field name="est_date"/></li>
-                                    <!--t-if="record.est_date.raw_value"-->
-                                </ul>
                             </div>
                         </div>
                     </t>
