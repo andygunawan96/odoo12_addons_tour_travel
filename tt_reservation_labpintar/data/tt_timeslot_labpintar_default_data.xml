@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_price_list_labpintar_antigen_1_person" model="tt.price.list.labpintar">
+            <field name="name">Default Antigen</field>
+            <field name="min_pax">1</field>
+            <field name="commission">50000</field>
+            <field name="base_price">148000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_labpintar_pcr_1_person" model="tt.price.list.labpintar">
+            <field name="name">Default PCR</field>
+            <field name="min_pax">1</field>
+            <field name="commission">50000</field>
+            <field name="base_price">598000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_labpintar_pcr_express_1_person" model="tt.price.list.labpintar">
+            <field name="name">Default PCR Express</field>
+            <field name="min_pax">1</field>
+            <field name="commission">50000</field>
+            <field name="base_price">3500000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_labpintar_pcr_priority_1_person" model="tt.price.list.labpintar">
+            <field name="name">Default PCR Priority</field>
+            <field name="min_pax">1</field>
+            <field name="commission">50000</field>
+            <field name="base_price">1200000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_labpintar_srbd_1_person" model="tt.price.list.labpintar">
+            <field name="name">Default SRBD</field>
+            <field name="min_pax">1</field>
+            <field name="commission">50000</field>
+            <field name="base_price">295000</field>
+            <field name="active">True</field>
+        </record>
+
+
+
+        <record id="tt_timeslot_labpintar_default_data" model="tt.timeslot.labpintar.default">
+            <field name="name">Default Timeslot Data</field>
+            <field name="single_supplement">25000</field>
+            <field name="overtime_surcharge">50000</field>
+            <field name="admin_fee_antigen_drivethru">10000</field>
+            <field name="additional_price">20000</field>
+            <field name="antigen_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_labpintar.tt_price_list_labpintar_antigen_1_person'),
+                             ])]"/>
+            <field name="pcr_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_labpintar.tt_price_list_labpintar_pcr_1_person'),
+                             ])]"/>
+            <field name="pcr_express_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_labpintar.tt_price_list_labpintar_pcr_express_1_person'),
+                             ])]"/>
+            <field name="pcr_priority_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_labpintar.tt_price_list_labpintar_pcr_priority_1_person'),
+                             ])]"/>
+            <field name="srbd_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_labpintar.tt_price_list_labpintar_srbd_1_person'),
+                             ])]"/>
+        </record>
+    </data>
+</odoo>

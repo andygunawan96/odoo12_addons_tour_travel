@@ -19,7 +19,7 @@ class TtCronLogInhResv(models.Model):
                 for booking in new_bookings:
                     try:
                         if datetime.now() >= (booking.hold_date or datetime.min):
-                            if rec in ['airline'] and auto_cancel_on_vendor:
+                            if rec in ['airline'] and auto_cancel_on_vendor and booking.agent_type_id.is_auto_cancel_booking:
                                 #send gateway cancel airline
                                 res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name})
                                 if res['error_code']:
@@ -133,7 +133,7 @@ class TtCronLogInhResv(models.Model):
                     retry_bookings = self.env['tt.reservation.%s' % rec].search([('state', 'in', ['booked']), ('payment_method','!=', False), ('ledger_ids','!=',False)])
                     for book_obj in retry_bookings:
                         try:
-                            if book_obj.payment_date + timedelta(minutes=10) < datetime.now():
+                            if book_obj.payment_date + timedelta(minutes=6) < datetime.now():
                                 seq_id = ''
                                 if book_obj.payment_acquirer_number_id:
                                     seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id

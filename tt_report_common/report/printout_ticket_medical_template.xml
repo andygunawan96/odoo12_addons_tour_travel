@@ -58,7 +58,16 @@
 
         <!-- Flight Detail (Title) -->
         <div style="margin-bottom: 10px; margin-top: 20px;">
-            <span style="font-size: 28px; font-weight: 730">Test Date: <i t-field="doc.test_datetime"/><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+            <t t-if="doc.timeslot_ids">
+                <t t-foreach="doc.timeslot_ids" t-as="line">
+                    <t t-if="line.timeslot_type == 'drive_thru'">
+                        <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)</i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+                    </t>
+                    <t t-else="">
+                        <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+                    </t>
+                </t>
+            </t>
         </div>
 
         <!-- Passenger Detail (Content) -->

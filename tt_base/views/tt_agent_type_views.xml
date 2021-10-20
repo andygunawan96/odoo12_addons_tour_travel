@@ -58,6 +58,7 @@
                                     <field name="is_using_invoice"/>
                                     <field name="is_send_email_issued"/>
                                     <field name="is_send_email_booked"/>
+                                    <field name="is_auto_cancel_booking"/>
                                 </group>
                                 <group>
                                     <field name="create_uid"/>

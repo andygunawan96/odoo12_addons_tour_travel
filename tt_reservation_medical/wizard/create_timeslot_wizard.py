@@ -10,10 +10,10 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
 
     start_date = fields.Date('Start Date',required=True, default=fields.Date.context_today)
     end_date = fields.Date('End Date',required=True, default=fields.Date.context_today)
-    time_string = fields.Text('Time',default='08:00-15:00-poc_surabaya,08:00-19:00-wiyung_surabaya,07:30-15:30-wiyung_surabaya,07:00-18:00-bali')
+    time_string = fields.Text('Time',default='08:00-15:00,07:30-15:30,07:00-18:00')
 
-    timeslot_type = fields.Selection([('drive_thru','Drive Thrue'),
-                                    # ('home_care', 'Home Care'), ('group_booking', 'Group Booking')
+    timeslot_type = fields.Selection([('drive_thru','Drive Thru'),
+                                     ('home_care', 'Home Care'), ('group_booking', 'Group Booking')
                                      ], 'Timeslot Type',
                                      default='drive_thru', required=True)
 
@@ -127,6 +127,15 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
             new_rec.admin_fee_antigen_drivethru = new_rec.default_data_id.admin_fee_antigen_drivethru
         return new_rec
 
+    @api.onchange('timeslot_type')
+    @api.depends('timeslot_type')
+    def _onchange_timeslot_type(self):
+        if self.timeslot_type == 'drive_thru':
+            self.time_string = '09:09-15:09'
+        elif self.time_string == '09:09-15:09':
+            self.time_string = ''
+
+
     @api.onchange('default_data_id')
     @api.depends('default_data_id')
     def _onchange_default_data_timeslot(self):
@@ -207,8 +216,7 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
             time_str_list = time_str.split('-')
 
             time_objs.append([(datetime.strptime(time_str_list[0],'%H:%M') - timedelta(hours=7)).time(),
-                             (datetime.strptime(time_str_list[1],'%H:%M') - timedelta(hours=7)).time(),
-                             time_str_list[2]])
+                             (datetime.strptime(time_str_list[1],'%H:%M') - timedelta(hours=7)).time()])
 
         db = self.env['tt.timeslot.medical'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date), ('timeslot_type','=',self.timeslot_type), ('agent_id','=',self.agent_id.id if self.agent_id else False)])
         db_list = [str(data.datetimeslot) for data in db]
@@ -222,9 +230,8 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
                         'dateslot': this_date,
                         'datetimeslot': datetimeslot,
                         'datetimeslot_end': datetimeslot_end,
-                        'max_book_datetime': datetimeslot.replace(hour=10, minute=0, second=0, microsecond=0) - timedelta(days=1),
+                        'max_book_datetime': datetimeslot.replace(hour=9, minute=0, second=0, microsecond=0) - timedelta(days=1),
                         'destination_id': self.area_id.id,
-                        'destination_area': this_time[2],
                         'total_timeslot': self.total_timeslot,
                         'total_adult_timeslot': self.total_adult_timeslot,
                         'total_pcr_timeslot': self.total_pcr_timeslot,
@@ -299,7 +306,6 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
                     'datetimeslot_end': datetimeslot_end,
                     'max_book_datetime': datetimeslot.replace(hour=9,minute=0,second=0,microsecond=0),
                     'destination_id': rec.id,
-                    'destination_area': 'surabaya_all',
                     'total_timeslot': max_timeslot,
                     'total_adult_timeslot': adult_timeslot,
                     'total_pcr_timeslot': pcr_timeslot,

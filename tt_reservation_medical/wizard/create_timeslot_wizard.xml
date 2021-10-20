@@ -18,7 +18,7 @@
                     </group>
                     <group>
                         <field name="agent_id"/>
-                        <field name="time_string"/>
+                        <field name="time_string" attrs="{'readonly': [('timeslot_type','in',['drive_thru'])]}"/>
                     </group>
                 </group>
                 <p>07:00-17:00-surabaya,07:00-18:00-bali</p>

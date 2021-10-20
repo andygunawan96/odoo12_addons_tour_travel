@@ -15,9 +15,11 @@ Key Features
     'depends': ['tt_base'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
 
         'views/pricing_provider_views.xml',
         'views/pricing_agent_views.xml',
+        'views/pricing_customer_views.xml',
     ],
     'demo': [],
     'qweb': [],

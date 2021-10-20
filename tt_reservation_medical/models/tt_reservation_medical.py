@@ -1308,7 +1308,7 @@ class Reservationmedical(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        medical_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_periksain') # Vin 2021-06-15 Report sementara sama
+        medical_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_medical') # Vin 2021-06-15 Report sementara sama
 
         if not book_obj.printout_itinerary_id:
             if book_obj.agent_id:

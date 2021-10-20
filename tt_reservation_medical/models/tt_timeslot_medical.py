@@ -75,12 +75,6 @@ class TtTimeslotmedical(models.Model):
     timeslot_type = fields.Selection([('home_care', 'Home Care'), ('drive_thru', 'Drive Thru'), ('group_booking', 'Group Booking')], 'Timeslot Type')
 
     destination_id = fields.Many2one('tt.destinations','Area')
-    destination_area = fields.Selection([('surabaya_all','Surabaya All'),
-                                         ('surabaya_pusat','Surabaya Pusat'),
-                                         ('surabaya_timur','Surabaya Timur'),
-                                         ('surabaya_selatan','Surabaya Selatan'),
-                                         ('surabaya_barat','Surabaya Barat'),
-                                         ('surabaya_utara','Surabaya Utara')],default='surabaya_all')
 
     selected_count = fields.Integer('Selected Counter',compute="_compute_selected_counter",store=True)
 
@@ -245,6 +239,10 @@ class TtTimeslotmedical(models.Model):
                 dom.append(('datetimeslot', '>=', current_wib_datetime.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=2)))
         else:
             dom.append(('timeslot_type', '=', 'drive_thru'))
+            if carrier_obj.code in ['NHDTKPCRB', 'NHDTSPCRB']: #BALI ONLY
+                dom.append(('destination_id','=',self.env.ref('tt_reservation_medical.tt_destination_medical_bali').id))
+            else: # SBY ONLY
+                dom.append(('destination_id', '=', self.env.ref('tt_reservation_medical.tt_destination_medical_sub').id))
             ## kalau kurang dari jam 16.00 di tambah timedelta 0 else di tambah 1 hari
             # dom.append(('dateslot', '>=', datetime.today() if current_wib_datetime <= current_wib_datetime.replace(hour=14,minute=30,second=0,microsecond=0) else datetime.today() + timedelta(days=1)))
             dom.append(('max_book_datetime', '>=', datetime.now(pytz.utc)))
@@ -272,7 +270,6 @@ class TtTimeslotmedical(models.Model):
             timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
                 'time': str(rec.datetimeslot)[11:16],
                 'time_end': str(rec.datetimeslot_end)[11:16],
-                'subarea': rec.destination_area,
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability(carrier_obj.code),
                 'group_booking': True if rec.agent_id else False,
@@ -298,7 +295,7 @@ class TtTimeslotmedical(models.Model):
             if self.timeslot_type != 'drive_thru':
                 return self.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%d %B %Y %H:%M')
             else:
-                return '%s (08:00 - 15:00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
+                return '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
         else:
             return 'Date/Time is not specified.'
 
@@ -307,7 +304,6 @@ class TtTimeslotmedical(models.Model):
             "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
             "datetimeslot_end": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
             "area": self.destination_id.city,
-            "subarea": self.destination_area,
             "total_pcr_timeslot": self.total_pcr_timeslot,
             "used_pcr_count": self.used_pcr_count,
             "total_pcr_issued_timeslot": 200,
