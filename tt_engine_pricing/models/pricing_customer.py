@@ -97,14 +97,16 @@ class PricingCustomer(models.Model):
         customer_parent_ids = [rec.id for rec in self.customer_parent_ids]
         res = {
             'id': self.id,
+            'agent_id': self.agent_id and self.agent_id.id or 0,
+            'agent_type_code': self.agent_type_id and self.agent_type_id.code or '',
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             'carrier_access_type': self.carrier_access_type,
             'carrier_codes': carrier_codes,
-            'line_ids': line_ids,
             'customer_parent_type_access_type': self.customer_parent_type_access_type,
             'customer_parent_types': customer_parent_types,
             'customer_parent_access_type': self.customer_parent_access_type,
             'customer_parent_ids': customer_parent_ids,
+            'line_ids': line_ids
         }
         return res
 
@@ -160,6 +162,7 @@ class PricingProviderLine(models.Model):
                                                string='Destination Countries')
     display_destination_countries = fields.Char('Display Destination Countries', compute='_compute_display_destination_countries', store=True, readonly=1)
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
+    fee_amount = fields.Monetary('Fee Amount', default=0)
     is_per_route = fields.Boolean('Is Per Route', default=False)
     is_per_segment = fields.Boolean('Is Per Segment', default=False)
     is_per_pax = fields.Boolean('Is Per Pax', default=False)
@@ -231,6 +234,7 @@ class PricingProviderLine(models.Model):
             'destination_city_ids': destination_city_ids,
             'destination_country_codes': destination_country_codes,
             'currency_code': self.currency_id and self.currency_id.name or '',
+            'fee_amount': self.fee_amount,
             'is_per_route': self.is_per_route,
             'is_per_segment': self.is_per_segment,
             'is_per_pax': self.is_per_pax,
