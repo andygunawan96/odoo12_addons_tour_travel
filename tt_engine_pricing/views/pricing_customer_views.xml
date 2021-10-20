@@ -21,7 +21,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="agent_id"/>
+                            <field name="agent_id" readonly="1"/>
                             <field name="agent_type_id"/>
                         </group>
                         <group>

@@ -97,14 +97,16 @@ class PricingCustomer(models.Model):
         customer_parent_ids = [rec.id for rec in self.customer_parent_ids]
         res = {
             'id': self.id,
+            'agent_id': self.agent_id and self.agent_id.id or 0,
+            'agent_type_code': self.agent_type_id and self.agent_type_id.code or '',
             'provider_type': self.provider_type_id and self.provider_type_id.code or '',
             'carrier_access_type': self.carrier_access_type,
             'carrier_codes': carrier_codes,
-            'line_ids': line_ids,
             'customer_parent_type_access_type': self.customer_parent_type_access_type,
             'customer_parent_types': customer_parent_types,
             'customer_parent_access_type': self.customer_parent_access_type,
             'customer_parent_ids': customer_parent_ids,
+            'line_ids': line_ids
         }
         return res
 
@@ -232,6 +234,7 @@ class PricingProviderLine(models.Model):
             'destination_city_ids': destination_city_ids,
             'destination_country_codes': destination_country_codes,
             'currency_code': self.currency_id and self.currency_id.name or '',
+            'fee_amount': self.fee_amount,
             'is_per_route': self.is_per_route,
             'is_per_segment': self.is_per_segment,
             'is_per_pax': self.is_per_pax,
