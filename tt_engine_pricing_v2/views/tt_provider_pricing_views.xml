@@ -1,0 +1,449 @@
+<odoo>
+    <!--  Provider Pricing  -->
+    <record id="provider_pricing_view_form" model="ir.ui.view">
+        <field name="name">provider.pricing.view.form</field>
+        <field name="model">tt.provider.pricing</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Test Get Data" type="object" name="test_get_data" groups="base.group_no_one"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="provider_type_id"/>
+                        </group>
+                        <group>
+                            <field name="state" widget="radio"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Providers" name="providers">
+                            <group>
+                                <group>
+                                    <field name="provider_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Provider List">
+                                <field name="provider_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Carriers" name="carriers">
+                            <group>
+                                <group>
+                                    <field name="carrier_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Carrier List">
+                                <field name="carrier_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    <hr/>
+                    <group string="Rules">
+                        <field name="line_ids" nolabel="1" context="{'default_pricing_id': id}"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="provider_pricing_view_tree" model="ir.ui.view">
+        <field name="name">provider.pricing.view.tree</field>
+        <field name="model">tt.provider.pricing</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="provider_type_id"/>
+                <field name="state"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="provider_pricing_view_search" model="ir.ui.view">
+        <field name="name">provider.pricing.view.search</field>
+        <field name="model">tt.provider.pricing</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <field name="provider_name"/>
+            <field name="carrier_name"/>
+            <filter name="enabled" string="Enabled" domain="[('state','=','enable')]"/>
+            <filter name="disabled" string="Disabled" domain="[('state','=','disable')]"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+            <group expand="0" string="Group By">
+                <filter string="Provider Type" name="provider_type" context="{'group_by': 'provider_type_id'}" help="Provider Type"/>
+            </group>
+        </search>
+        </field>
+    </record>
+
+    <record id="provider_pricing_action" model="ir.actions.act_window">
+        <field name="name">Provider Pricing</field>
+        <field name="res_model">tt.provider.pricing</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <menuitem id="provider_pricing_menu" parent="tt_engine_pricing_v2.menu_tour_travel_pricing_booking"
+              groups="tt_base.group_pricing_provider_level_1" name="Provider Pricing" action="provider_pricing_action"
+              sequence="10"/>
+
+    <!--  Provider Pricing Line  -->
+    <record id="provider_pricing_line_view_form" model="ir.ui.view">
+        <field name="name">provider.pricing.line.view.form</field>
+        <field name="model">tt.provider.pricing.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="pricing_id" invisible="1"/>
+                            <field name="provider_type_id" invisible="1"/>
+                            <field name="set_expiration_date"/>
+                            <field name="date_from" attrs="{'invisible': [('set_expiration_date', '=', False)], 'required': [('set_expiration_date', '=', True)]}"/>
+                            <field name="date_to" attrs="{'invisible': [('set_expiration_date', '=', False)], 'required': [('set_expiration_date', '=', True)]}"/>
+                        </group>
+                        <group>
+                            <field name="state" widget="radio"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Route" name="route">
+                            <notebook>
+                                <page string="Origin" name="origin">
+                                    <group string="Origin Route">
+                                        <group>
+                                            <field name="origin_access_type" widget="radio"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <group string="Origins">
+                                        <field name="origin_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Origin Cities">
+                                        <field name="origin_city_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Origin Countries">
+                                        <field name="origin_country_ids" nolabel="1"/>
+                                    </group>
+                                </page>
+                                <page string="Destination" name="destination">
+                                    <group string="Destination Route">
+                                        <group>
+                                            <field name="destination_access_type" widget="radio"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <group string="Destinations">
+                                        <field name="destination_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Destination Cities">
+                                        <field name="destination_city_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Destination Countries">
+                                        <field name="destination_country_ids" nolabel="1"/>
+                                    </group>
+                                </page>
+                                <page string="Class of Service" name="class_of_service">
+                                    <group string="Class of Services">
+                                        <group>
+                                            <field name="class_of_service_access_type" widget="radio"/>
+                                            <field name="class_of_service_list"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <!--
+                                    <group string="Class of Services">
+                                        <field name="class_of_service_ids" nolabel="1"/>
+                                    </group>
+                                    -->
+                                    <div>
+                                        <pre>NOTES:
+Use comma for the separator of each values: A,B,C,D.
+Or you can define one value
+
+Input Example :
+V,S,Y,B,J,I</pre>
+                                    </div>
+                                </page>
+                                <page string="Charge Code" name="charge_code">
+                                    <group string="Charge Codes">
+                                        <group>
+                                            <field name="charge_code_access_type" widget="radio"/>
+                                            <field name="charge_code_list"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <!--
+                                    <group string="Charge Codes">
+                                        <field name="charge_code_ids" nolabel="1"/>
+                                    </group>
+                                    -->
+                                    <div>
+                                        <pre>NOTES:
+Use comma for the separator of each values: A,B,C,D.
+Or you can define one value
+
+Input Example :
+YR,D5,G7</pre>
+                                    </div>
+                                </page>
+                            </notebook>
+                        </page>
+                        <page string="Less" name="less">
+                            <group string="Vendor Less">
+                                <group>
+                                    <field name="less_percentage"/>
+                                    <field name="less_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <div>
+                                <pre>NOTES:
+Usage example in Amadeus.
+Input Example : 5
+Amadeus cryptic sample request will be : FM5
+(Will be applied to all paxs, except for infant, infant will be excluded)</pre>
+                            </div>
+                        </page>
+                        <page string="Reservation" name="reservation">
+                            <notebook>
+                                <page string="Sales" name="reservation_sales">
+                                    <group string="Reservation Sales Upsell">
+                                        <group string="By Amount">
+                                            <field name="rsv_sales_upsell_amount"/>
+                                            <field name="rsv_sales_upsell_route"/>
+                                            <field name="rsv_sales_upsell_segment"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                    </group>
+                                </page>
+                                <page string="NTA" name="reservation_nta">
+                                    <group string="Reservation NTA Upsell">
+                                        <group string="By Amount">
+                                            <field name="rsv_nta_upsell_amount"/>
+                                            <field name="rsv_nta_upsell_route"/>
+                                            <field name="rsv_nta_upsell_segment"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </page>
+                        <page string="Ticketing" name="ticketing">
+                            <notebook>
+                                <page string="Sales" name="ticketing_sales">
+                                    <group string="Ticketing Sales" col="3" colspan="3">
+                                        <group string="Basic Fare">
+                                            <field name="tkt_sales_fare_percentage"/>
+                                            <field name="tkt_sales_fare_amount"/>
+                                            <field name="tkt_sales_fare_infant"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="tkt_sales_tax_percentage"/>
+                                            <field name="tkt_sales_tax_amount"/>
+                                            <field name="tkt_sales_tax_infant"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="tkt_sales_total_percentage"/>
+                                            <field name="tkt_sales_total_amount"/>
+                                            <field name="tkt_sales_total_infant"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="tkt_sales_upsell_percentage"/>
+                                            <field name="tkt_sales_upsell_minimum"/>
+                                            <field name="tkt_sales_upsell_percentage_infant"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="tkt_sales_upsell_amount"/>
+                                            <field name="tkt_sales_upsell_route"/>
+                                            <field name="tkt_sales_upsell_segment"/>
+<!--                                            <field name="tkt_sales_upsell_pax"/>-->
+                                            <field name="tkt_sales_upsell_amount_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="NTA" name="ticketing_nta">
+                                    <group string="Ticketing NTA" col="3" colspan="3">
+                                        <group string="Basic Fare">
+                                            <field name="tkt_nta_fare_percentage"/>
+                                            <field name="tkt_nta_fare_amount"/>
+                                            <field name="tkt_nta_fare_infant"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="tkt_nta_tax_percentage"/>
+                                            <field name="tkt_nta_tax_amount"/>
+                                            <field name="tkt_nta_tax_infant"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="tkt_nta_total_percentage"/>
+                                            <field name="tkt_nta_total_amount"/>
+                                            <field name="tkt_nta_total_infant"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="tkt_nta_upsell_percentage"/>
+                                            <field name="tkt_nta_upsell_minimum"/>
+                                            <field name="tkt_nta_upsell_percentage_infant"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="tkt_nta_upsell_amount"/>
+                                            <field name="tkt_nta_upsell_route"/>
+                                            <field name="tkt_nta_upsell_segment"/>
+<!--                                            <field name="tkt_nta_upsell_pax"/>-->
+                                            <field name="tkt_nta_upsell_amount_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </page>
+                        <page string="Ancillary" name="ancillary">
+                            <notebook>
+                                <page string="Sales" name="ancillary_sales">
+                                    <group string="Ancillary Sales" col="3" colspan="3">
+                                        <group string="Basic Fare">
+                                            <field name="anc_sales_fare_percentage"/>
+                                            <field name="anc_sales_fare_amount"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="anc_sales_tax_percentage"/>
+                                            <field name="anc_sales_tax_amount"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="anc_sales_total_percentage"/>
+                                            <field name="anc_sales_total_amount"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="anc_sales_upsell_percentage"/>
+                                            <field name="anc_sales_upsell_minimum"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="anc_sales_upsell_amount"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="NTA" name="ancillary_nta">
+                                    <group string="Ancillary NTA" col="3" colspan="3">
+                                        <group string="Basic Fare">
+                                            <field name="anc_nta_fare_percentage"/>
+                                            <field name="anc_nta_fare_amount"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="anc_nta_tax_percentage"/>
+                                            <field name="anc_nta_tax_amount"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="anc_nta_total_percentage"/>
+                                            <field name="anc_nta_total_amount"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="anc_nta_upsell_percentage"/>
+                                            <field name="anc_nta_upsell_minimum"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="anc_nta_upsell_amount"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="provider_pricing_line_view_tree" model="ir.ui.view">
+        <field name="name">provider.pricing.line.view.tree</field>
+        <field name="model">tt.provider.pricing.line</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="set_expiration_date"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="provider_pricing_line_view_search" model="ir.ui.view">
+        <field name="name">provider.pricing.line.view.search</field>
+        <field name="model">tt.provider.pricing.line</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <filter name="enabled" string="Enabled" domain="[('state','=','enable')]"/>
+            <filter name="disabled" string="Disabled" domain="[('state','=','disable')]"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+            <group expand="0" string="Group By">
+                <filter string="Provider Type" name="provider_type" context="{'group_by': 'provider_type_id'}" help="Provider Type"/>
+            </group>
+        </search>
+        </field>
+    </record>
+
+    <!--  -  -->
+</odoo>
