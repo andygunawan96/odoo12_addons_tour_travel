@@ -53,7 +53,7 @@ class AgentPricing(models.Model):
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_agent_pricing_carrier_rel', 'pricing_id', 'carrier_id',
                                    string='Carriers')
 
-    line_ids = fields.One2many('tt.agent.pricing.line', 'pricing_id', string='Rules', context={'active_test': False})
+    line_ids = fields.One2many('tt.agent.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
@@ -198,20 +198,20 @@ class AgentPricingLine(models.Model):
 
     origin_name = fields.Char('Origin Name')
     origin_access_type = fields.Selection(ACCESS_TYPE, 'Origin Access Type', default='all', required=True)
-    origin_ids = fields.Many2many('tt.destinations', 'tt_agent_pricing_destinations_rel',
+    origin_ids = fields.Many2many('tt.destinations', 'tt_agent_pricing_destinations_origin_rel',
                                   'pricing_line_id', 'destination_id', string='Origin')
-    origin_city_ids = fields.Many2many('res.city', 'tt_agent_pricing_city_rel',
+    origin_city_ids = fields.Many2many('res.city', 'tt_agent_pricing_city_origin_rel',
                                        'pricing_line_id', 'city_id', string='Origin Cities')
-    origin_country_ids = fields.Many2many('res.country', 'tt_agent_pricing_country_rel',
+    origin_country_ids = fields.Many2many('res.country', 'tt_agent_pricing_country_origin_rel',
                                           'pricing_line_id', 'country_id', string='Origin Countries')
 
     destination_name = fields.Char('Destination Name')
     destination_access_type = fields.Selection(ACCESS_TYPE, 'Destination Access Type', default='all', required=True)
-    destination_ids = fields.Many2many('tt.destinations', 'tt_agent_pricing_destinations_rel',
+    destination_ids = fields.Many2many('tt.destinations', 'tt_agent_pricing_destinations_destination_rel',
                                        'pricing_line_id', 'destination_id', string='Destination')
-    destination_city_ids = fields.Many2many('res.city', 'tt_agent_pricing_city_rel',
+    destination_city_ids = fields.Many2many('res.city', 'tt_agent_pricing_city_destination_rel',
                                             'pricing_line_id', 'city_id', string='Destination Cities')
-    destination_country_ids = fields.Many2many('res.country', 'tt_agent_pricing_country_rel',
+    destination_country_ids = fields.Many2many('res.country', 'tt_agent_pricing_country_destination_rel',
                                                'pricing_line_id', 'country_id', string='Destination Countries')
 
     class_of_service_name = fields.Char('Class of Service Name')
@@ -244,7 +244,7 @@ class AgentPricingLine(models.Model):
     commission_pax = fields.Boolean('Commission Pax', default=False)
     commission_infant = fields.Boolean('Commission Include Infant', default=False)
     upline_name = fields.Char('Upline Name', compute='_compute_upline_name')
-    upline_ids = fields.One2many('tt.agent.pricing.upline', 'pricing_line_id', string='Uplines', context={'active_test': False})
+    upline_ids = fields.One2many('tt.agent.pricing.upline', 'pricing_line_id', string='Uplines', context={'active_test': False}, copy=True)
     residual_amount_to = fields.Selection([
         ('ho', 'Head Office'),
         ('parent', 'Parent Agent'),
