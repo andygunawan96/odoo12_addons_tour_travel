@@ -215,7 +215,10 @@ class PrintoutTicketForm(models.AbstractModel):
             for pax_obj in booking_obj.passenger_ids:
                 pax_values.append('%s, %s, %s, %s, %s\n\n' % (pax_obj.name,pax_obj.identity_number,pax_obj.birth_date,pax_obj.email,pax_obj.phone_number))
             if booking_obj.picked_timeslot_id.timeslot_type == 'drive_thru':
-                test_date = '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                if booking_obj.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
+                    test_date = '%s (24 hours)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                else:
+                    test_date = '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
             else:
                 test_date = booking_obj.test_datetime.strftime('%d %B %Y %H:%M')
             qr_values = "%s - PAID\n%s\n%s\n%s\n%s\n\n%s" % (booking_obj.name,test_date,booking_obj.contact_name,booking_obj.contact_phone,booking_obj.provider_booking_ids[0].carrier_id.name,'\n'.join(pax_values))
@@ -884,7 +887,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             descs = []
             for timeslot_obj in rec.timeslot_ids:
                 if timeslot_obj.timeslot_type == 'drive_thru':
-                    descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.00 WIB tergantung banyaknya antrian)')
+                    descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 16.00 WIB)')
                 else:
                     descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
             descs.append(' ')

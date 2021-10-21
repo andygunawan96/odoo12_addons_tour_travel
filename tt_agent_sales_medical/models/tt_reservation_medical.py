@@ -39,7 +39,10 @@ class ReservationMedical(models.Model):
         # tmp = self.name + '\n'
         for timeslot_obj in self.timeslot_ids:
             if timeslot_obj.timeslot_type == 'drive_thru':
-                tmp += '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)')
+                if self.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
+                    tmp += '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (24 hours)')
+                else:
+                    tmp += '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)')
             else:
                 tmp += '\n%s - %s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')),
                                       str(timeslot_obj.datetimeslot_end.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
