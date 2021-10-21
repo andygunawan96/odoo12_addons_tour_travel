@@ -137,6 +137,30 @@ class ProviderPricing(models.Model):
             payload = {}
         return payload
 
+    # @api.multi
+    # @api.returns('self', lambda value: value.id)
+    # def copy(self, default=None):
+    #     default = dict(default or {})
+    #     if 'provider_ids' not in default:
+    #         provider_ids = []
+    #         for rec in self.provider_ids:
+    #             rec_obj = rec.copy()
+    #             provider_ids.append((4, rec_obj.id))
+    #         default['provider_ids'] = provider_ids
+    #     if 'carrier_ids' not in default:
+    #         carrier_ids = []
+    #         for rec in self.carrier_ids:
+    #             rec_obj = rec.copy()
+    #             carrier_ids.append((4, rec_obj.id))
+    #         default['carrier_ids'] = carrier_ids
+    #     if 'line_ids' not in default:
+    #         line_ids = []
+    #         for rec in self.line_ids:
+    #             rec_obj = rec.copy()
+    #             line_ids.append((4, rec_obj.id))
+    #         default['line_ids'] = line_ids
+    #     return super().copy(default=default)
+
 
 class ProviderPricingLine(models.Model):
     _name = 'tt.provider.pricing.line'
@@ -404,3 +428,53 @@ class ProviderPricingLine(models.Model):
             'state': self.state,
         }
         return res
+
+    # @api.multi
+    # @api.returns('self', lambda value: value.id)
+    # def copy(self, default=None):
+    #     '''
+    #     origin_ids
+    #     origin_city_ids
+    #     origin_country_ids
+    #     destination_ids
+    #     destination_city_ids
+    #     destination_country_ids
+    #     '''
+    #     default = dict(default or {})
+    #     if 'origin_ids' not in default:
+    #         origin_ids = []
+    #         for rec in self.origin_ids:
+    #             rec_obj = rec.copy()
+    #             origin_ids.append((4, rec_obj.id))
+    #         default['origin_ids'] = origin_ids
+    #     if 'origin_city_ids' not in default:
+    #         origin_city_ids = []
+    #         for rec in self.origin_city_ids:
+    #             rec_obj = rec.copy()
+    #             origin_city_ids.append((4, rec_obj.id))
+    #         default['origin_city_ids'] = origin_city_ids
+    #     if 'origin_country_ids' not in default:
+    #         origin_country_ids = []
+    #         for rec in self.origin_country_ids:
+    #             rec_obj = rec.copy()
+    #             origin_country_ids.append((4, rec_obj.id))
+    #         default['origin_country_ids'] = origin_country_ids
+    #     if 'destination_ids' not in default:
+    #         destination_ids = []
+    #         for rec in self.destination_ids:
+    #             rec_obj = rec.copy()
+    #             destination_ids.append((4, rec_obj.id))
+    #         default['destination_ids'] = destination_ids
+    #     if 'destination_city_ids' not in default:
+    #         destination_city_ids = []
+    #         for rec in self.destination_city_ids:
+    #             rec_obj = rec.copy()
+    #             destination_city_ids.append((4, rec_obj.id))
+    #         default['destination_city_ids'] = destination_city_ids
+    #     if 'destination_country_ids' not in default:
+    #         destination_country_ids = []
+    #         for rec in self.destination_country_ids:
+    #             rec_obj = rec.copy()
+    #             destination_country_ids.append((4, rec_obj.id))
+    #         default['destination_country_ids'] = destination_country_ids
+    #     return super().copy(default=default)
