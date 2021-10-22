@@ -99,10 +99,6 @@
                 <button name="print_eticket"
                         class="oe_stat_button" states="issued,done"
                         string="Print E-Ticket" type="object" icon="fa-print"/>
-
-                <button name="print_eticket_original"
-                        class="oe_stat_button" states="issued,done"
-                        string="Get Original Ticket" type="object" icon="fa-print"/>
                 <button name="print_eticket_with_price"
                         class="oe_stat_button" states="issued,done"
                         string="Print E-Ticket (Price)" type="object" icon="fa-print"/>

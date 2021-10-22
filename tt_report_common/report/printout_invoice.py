@@ -91,7 +91,7 @@ class PrintoutTicketForm(models.AbstractModel):
                     elif rec2.charge_type.lower() in ['roc', 'tax']:
                         price_target['tax'] += rec2.total
 
-                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain']:
+                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical']:
                     for rec2 in provider.ticket_ids:
                         for price_detail in a[provider.pnr]:
                             if rec2.pax_type == price_detail['pax_type']:

@@ -1119,8 +1119,8 @@ class Reservationmedical(models.Model):
             pdf_report_bytes = medical_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'medical Ticket %s.pdf' % book_obj.name,
-                    'file_reference': 'medical Ticket',
+                    'filename': 'Medical Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'Medical Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },

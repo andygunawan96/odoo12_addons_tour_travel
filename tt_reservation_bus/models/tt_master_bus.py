@@ -30,7 +30,7 @@ class BusStation(models.Model):
     city_id = fields.Many2one('res.city', 'City ID')
     provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True)
 
-    bus_journey_ids = fields.Many2many('tt.master.bus.station', 'tt_bus_journey_rel', 'station_id', 'journey_id', string='Bus Journey', readonly=True)
+    bus_journey_ids = fields.Many2many('tt.master.bus.station', 'tt_bus_journey_rel', 'station_id', 'journey_id', string='Bus Journey', readonly=False)
     active = fields.Boolean('Active', default=True)
 
 
