@@ -207,26 +207,40 @@
                     </div>
                 </t>
 
-                <span style="font-size: 28px; font-weight: 730">SSR</span><br/>
-                <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
-                    <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
-                        <div class="col-1" style="text-align: center; font-size:17px;">
-                            No.
-                        </div>
-                        <div class="col-4" style="text-align: center; font-size:17px;">
-                            Name
-                        </div>
-                        <div class="col-2" style="text-align: center; font-size:17px; padding-right: 30px;">
-                            SSR
-                        </div>
-                        <div class="col-2" style="text-align: center; font-size:17px;">
-                            Description
-                        </div>
-                        <div class="col-3" style="text-align: right; font-size:17px;">
-                            Journey
-                        </div>
-                    </div>
-                    <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                <t t-set="any_ssr" t-value="0"/>
+                <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
+
+                        <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
+                        <t t-set="journey_pick" t-value=""/>
+                        <t t-set="data_pax" t-value="psg.passenger_id"/>
+                        <t t-if="data_pax.fee_ids">
+                            <t t-set="any_ssr" t-value="1"/>
+                        </t>
+                    </t>
+                </t>
+
+                <t t-if="any_ssr">
+                    <span style="font-size: 28px; font-weight: 730">SSR</span><br/>
+                        <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                            <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                                <div class="col-1" style="text-align: center; font-size:17px;">
+                                    No.
+                                </div>
+                                <div class="col-4" style="text-align: center; font-size:17px;">
+                                    Name
+                                </div>
+                                <div class="col-2" style="text-align: center; font-size:17px; padding-right: 30px;">
+                                    SSR
+                                </div>
+                                <div class="col-2" style="text-align: center; font-size:17px;">
+                                    Description
+                                </div>
+                                <div class="col-3" style="text-align: right; font-size:17px;">
+                                    Journey
+                                </div>
+                            </div>
+                            <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                     <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
                         <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
 
@@ -273,7 +287,8 @@
                             </t>
                         </t>
                     </t>
-                </div>
+                    </div>
+                </t>
 
             </div>
         </div>

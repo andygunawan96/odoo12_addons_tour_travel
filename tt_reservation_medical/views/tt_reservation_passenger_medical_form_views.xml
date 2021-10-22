@@ -22,25 +22,11 @@
                         <field name="verified_uid"/>
                         <field name="email"/>
                         <field name="phone_number"/>
-                        <field name="profession"/>
-                        <field name="work_place"/>
-                        <field name="address"/>
-                        <field name="kabupaten"/>
-                        <field name="kecamatan"/>
-                        <field name="kelurahan"/>
-                        <field name="rt"/>
-                        <field name="rw"/>
                     </group>
                     <group>
                         <field name="verify"/>
                         <field name="ticket_number"/>
-                        <field name="tempat_lahir"/>
                         <field name="address_ktp"/>
-                        <field name="kabupaten_ktp"/>
-                        <field name="kecamatan_ktp"/>
-                        <field name="kelurahan_ktp"/>
-                        <field name="rt_ktp"/>
-                        <field name="rw_ktp"/>
                     </group>
                 </group>
                 <separator string="Service Charges"/>
@@ -50,7 +36,6 @@
                 }"/>
                 <separator string="Channel Repricing"/>
                 <field name="channel_service_charge_ids"/>
-                <field name="pcr_data" groups="tt_base.group_reservation_level_4"/>
             </xpath>
         </field>
     </record>

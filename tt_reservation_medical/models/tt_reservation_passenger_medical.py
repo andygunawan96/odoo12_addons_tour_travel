@@ -28,22 +28,8 @@ class TtReservationCustomer(models.Model):
     phone_number = fields.Char('Phone Number')
 
     tempat_lahir = fields.Char('Tempat Lahir')
-    profession = fields.Char('Profession')
-    work_place = fields.Char('Work Place')
-    address = fields.Char('Address')
-    rt = fields.Char('RT')
-    rw = fields.Char('RW')
-    kabupaten = fields.Char('Kabupaten')
-    kecamatan = fields.Char('Kecamatan')
-    kelurahan = fields.Char('Kelurahan')
     address_ktp = fields.Char('Address KTP')
-    rt_ktp = fields.Char('RT KTP')
-    rw_ktp = fields.Char('RW KTP')
-    kabupaten_ktp = fields.Char('Kabupaten KTP')
-    kecamatan_ktp = fields.Char('Kecamatan KTP')
-    kelurahan_ktp = fields.Char('Kelurahan KTP')
 
-    pcr_data = fields.Text('PCR Data')
     is_ticketed = fields.Boolean('Ticketed')
     ticket_number = fields.Char('Ticket Number')
 
@@ -61,6 +47,7 @@ class TtReservationCustomer(models.Model):
             'result_url': self.result_url,
             'label_url': self.label_url,
             'verify': self.verify,
+            'address_ktp': self.address_ktp,
             'sale_service_charges': self.get_service_charges(),
             'email': self.email,
             'phone_number': self.phone_number,
