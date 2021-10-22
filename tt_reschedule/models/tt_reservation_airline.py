@@ -542,6 +542,12 @@ class ReservationAirline(models.Model):
                     continue
                 # TODO HERE NEW END
 
+                # October 20, 2021 - SAM
+                passenger_list = []
+                for psg in commit_data['passengers']:
+                    passenger_list.append(psg['passenger_id'])
+                # END
+
                 # passenger_list = []
                 # passenger_number_list = []
                 # if commit_data['sell_reschedule']:
@@ -1024,7 +1030,7 @@ class ReservationAirline(models.Model):
                     'old_segment_ids': [(6, 0, old_segment_list)],
                     'new_segment_ids': [(6, 0, new_segment_list)],
                     # 'reschedule_line_ids': [(6, 0, reschedule_line_list)],
-                    # 'passenger_ids': [(6, 0, passenger_list)],
+                    'passenger_ids': [(6, 0, passenger_list)],
                     'res_model': airline_obj._name,
                     'res_id': airline_obj.id,
                     'notes': vals.get('notes') and vals['notes'] or '',

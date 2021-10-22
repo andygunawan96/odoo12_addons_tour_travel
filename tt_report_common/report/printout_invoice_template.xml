@@ -343,7 +343,7 @@
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Event eTicket</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/ticket-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reservation.hotel'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher / Ittinerary ID</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher / Itinerary ID</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reservation.ppob'">
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Bills</span><br/>

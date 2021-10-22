@@ -35,6 +35,12 @@ class TransportCarrier(models.Model):
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('tt_base.group_transport_carrier_level_2'):
+            raise UserError('Action failed due to security restriction. Required Transport Carrier Level 2 permission.')
+        return super(TransportCarrier, self).create(vals)
+
     @api.multi
     def unlink(self):
         if not self.env.user.has_group('tt_base.group_transport_carrier_level_5'):

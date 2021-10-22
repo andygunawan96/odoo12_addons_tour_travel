@@ -21,7 +21,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="agent_id"/>
+                            <field name="agent_id" readonly="1"/>
                             <field name="agent_type_id"/>
                         </group>
                         <group>
@@ -187,6 +187,7 @@
                             <field name="upsell_amount"/>
                         </group>
                         <group>
+                            <field name="fee_amount"/>
                             <field name="is_per_route"/>
                             <field name="is_per_segment"/>
                             <field name="is_per_pax"/>
