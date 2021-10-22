@@ -290,12 +290,16 @@ class TtTimeslotmedical(models.Model):
         else:
             return (self.used_count < self.total_timeslot) and availability
 
-    def get_datetimeslot_str(self):
+    def get_datetimeslot_str(self, carrier_code=''):
         if self.datetimeslot:
             if self.timeslot_type != 'drive_thru':
                 return self.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%d %B %Y %H:%M')
             else:
-                return '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % (self.datetimeslot.strftime('%d %B %Y'))
+                if carrier_code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
+                    time_desc = '(24 hours)'
+                else:
+                    time_desc = '(MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)'
+                return '%s %s' % (self.datetimeslot.strftime('%d %B %Y'), time_desc)
         else:
             return 'Date/Time is not specified.'
 

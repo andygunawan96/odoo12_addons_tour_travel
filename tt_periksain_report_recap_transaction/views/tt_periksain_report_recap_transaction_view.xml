@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_medical_vendor_report_recap_transaction_wz_periksain" model="ir.actions.act_window">
+            <field name="name">Recap Transaction Report Periksain</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.medical.vendor.report.recap.transaction.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="tt_medical_vendor_report_recap_transaction.detail_recap_transaction_form"/>
+            <field name="context">
+                {
+                'default_provider_type': 'periksain',
+                }
+            </field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction_periksain"
+                name="Recap Transaction Report Periksain"
+                parent="tt_base.top_external_vendor_transaction"
+                action="action_medical_vendor_report_recap_transaction_wz_periksain"
+                sequence="55"
+                groups="tt_base.group_external_vendor_periksain_level_1"
+        />
+
+        <menuitem id="menu_reservation_report_periksain"
+                  parent="tt_reservation_periksain.top_reservations_periksain"
+                  name="Report"
+                  sequence="3"/>
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction_periksain_ho"
+                name="Recap Transaction Report Periksain"
+                parent="tt_periksain_report_recap_transaction.menu_reservation_report_periksain"
+                action="action_medical_vendor_report_recap_transaction_wz_periksain"
+                sequence="30"
+                groups="tt_base.group_tt_tour_travel"
+        />
+    </data>
+</odoo>
