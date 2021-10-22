@@ -1,0 +1,471 @@
+<odoo>
+    <!--  Agent Pricing  -->
+    <record id="agent_pricing_view_form" model="ir.ui.view">
+        <field name="name">agent.pricing.view.form</field>
+        <field name="model">tt.agent.pricing</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Test Get Data" type="object" name="test_get_data" groups="base.group_no_one"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="agent_type_id"/>
+                        </group>
+                        <group>
+                            <field name="state" widget="radio"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Provider Types" name="provider_types">
+                            <group>
+                                <group>
+                                    <field name="provider_type_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Provider Type List">
+                                <field name="provider_type_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Agents" name="agents">
+                            <group>
+                                <group>
+                                    <field name="agent_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Agent List">
+                                <field name="agent_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Providers" name="providers">
+                            <group>
+                                <group>
+                                    <field name="provider_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Provider List">
+                                <field name="provider_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Carriers" name="carriers">
+                            <group>
+                                <group>
+                                    <field name="carrier_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Carrier List">
+                                <field name="carrier_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    <hr/>
+                    <group string="Rules">
+                        <field name="line_ids" nolabel="1" context="{'default_pricing_id': id}"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="agent_pricing_view_tree" model="ir.ui.view">
+        <field name="name">agent.pricing.view.tree</field>
+        <field name="model">tt.agent.pricing</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="agent_pricing_view_search" model="ir.ui.view">
+        <field name="name">agent.pricing.view.search</field>
+        <field name="model">tt.agent.pricing</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <record id="agent_pricing_action" model="ir.actions.act_window">
+        <field name="name">Agent Pricing</field>
+        <field name="res_model">tt.agent.pricing</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="agent_pricing_menu" parent="tt_engine_pricing_v2.menu_tour_travel_pricing_booking"
+              groups="tt_base.group_pricing_provider_level_1" name="Agent Pricing" action="agent_pricing_action"
+              sequence="20"/>
+
+    <!--  Agent Pricing Line  -->
+    <record id="agent_pricing_line_view_form" model="ir.ui.view">
+        <field name="name">agent.pricing.line.view.form</field>
+        <field name="model">tt.agent.pricing.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="pricing_id" invisible="1"/>
+                            <field name="set_expiration_date"/>
+                            <field name="date_from" attrs="{'invisible': [('set_expiration_date', '=', False)], 'required': [('set_expiration_date', '=', True)]}"/>
+                            <field name="date_to" attrs="{'invisible': [('set_expiration_date', '=', False)], 'required': [('set_expiration_date', '=', True)]}"/>
+                        </group>
+                        <group>
+                            <field name="state" widget="radio"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Route" name="route">
+                            <notebook>
+                                <page string="Origin" name="origin">
+                                    <group string="Origin Route">
+                                        <group>
+                                            <field name="origin_access_type" widget="radio"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <group string="Origins">
+                                        <field name="origin_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Origin Cities">
+                                        <field name="origin_city_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Origin Countries">
+                                        <field name="origin_country_ids" nolabel="1"/>
+                                    </group>
+                                </page>
+                                <page string="Destination" name="destination">
+                                    <group string="Destination Route">
+                                        <group>
+                                            <field name="destination_access_type" widget="radio"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <group string="Destinations">
+                                        <field name="destination_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Destination Cities">
+                                        <field name="destination_city_ids" nolabel="1"/>
+                                    </group>
+                                    <group string="Destination Countries">
+                                        <field name="destination_country_ids" nolabel="1"/>
+                                    </group>
+                                </page>
+                                <page string="Class of Service" name="class_of_service">
+                                    <group string="Class of Services">
+                                        <group>
+                                            <field name="class_of_service_access_type" widget="radio"/>
+                                            <field name="class_of_service_list"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <!--
+                                    <group string="Class of Services">
+                                        <field name="class_of_service_ids" nolabel="1"/>
+                                    </group>
+                                    -->
+                                    <div>
+                                        <pre>NOTES:
+Use comma for the separator of each values: A,B,C,D.
+Or you can define one value
+
+Input Example :
+V,S,Y,B,J,I</pre>
+                                    </div>
+                                </page>
+                                <page string="Charge Code" name="charge_code">
+                                    <group string="Charge Codes">
+                                        <group>
+                                            <field name="charge_code_access_type" widget="radio"/>
+                                            <field name="charge_code_list"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <!--
+                                    <group string="Charge Codes">
+                                        <field name="charge_code_ids" nolabel="1"/>
+                                    </group>
+                                    -->
+                                    <div>
+                                        <pre>NOTES:
+Use comma for the separator of each values: A,B,C,D.
+Or you can define one value
+
+Input Example :
+YR,D5,G7</pre>
+                                    </div>
+                                </page>
+                            </notebook>
+                        </page>
+                        <page string="Commission" name="commission">
+                            <notebook>
+                                <page string="Agent" name="agent">
+                                    <group string="Agent Commission">
+                                        <group string="By Percentage">
+                                            <field name="commission_percentage"/>
+                                            <field name="commission_minimum"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="commission_amount"/>
+                                            <field name="commission_route"/>
+                                            <field name="commission_segment"/>
+                                            <field name="commission_pax"/>
+                                            <field name="commission_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="Parent" name="parent">
+                                    <group string="Parent Charge Fee">
+                                        <group string="By Percentage">
+                                            <field name="parent_charge_percentage"/>
+                                            <field name="parent_charge_minimum"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="parent_charge_amount"/>
+                                            <field name="parent_charge_route"/>
+                                            <field name="parent_charge_segment"/>
+                                            <field name="parent_charge_pax"/>
+                                            <field name="parent_charge_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="HO" name="ho">
+                                    <group string="HO Charge Fee">
+                                        <group string="By Percentage">
+                                            <field name="ho_charge_percentage"/>
+                                            <field name="ho_charge_minimum"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="ho_charge_amount"/>
+                                            <field name="ho_charge_route"/>
+                                            <field name="ho_charge_segment"/>
+                                            <field name="ho_charge_pax"/>
+                                            <field name="ho_charge_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                            <hr/>
+                            <group>
+                                <group>
+                                    <field name="residual_amount_to"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Uplines">
+                                <field name="upline_ids" nolabel="1" context="{'default_pricing_line_id': id}"/>
+                            </group>
+                            <div>
+                                <pre>NOTES:
+Uplines sequence order from parent to HO (Up to Down)</pre>
+                            </div>
+                        </page>
+                        <page string="Reservation" name="reservation">
+                            <group string="Reservation Upsell">
+                                <group string="By Amount">
+                                    <field name="rsv_sales_upsell_amount"/>
+                                    <field name="rsv_sales_upsell_route"/>
+                                    <field name="rsv_sales_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Ticketing" name="ticketing">
+                            <group string="Ticketing Advanced Upsell">
+                                <group string="By Percentage">
+                                    <field name="tkt_sales_upsell_percentage"/>
+                                    <field name="tkt_sales_upsell_minimum"/>
+                                    <field name="tkt_sales_upsell_percentage_infant"/>
+                                </group>
+                                <group string="By Amount">
+                                    <field name="tkt_sales_upsell_amount"/>
+                                    <field name="tkt_sales_upsell_route"/>
+                                    <field name="tkt_sales_upsell_segment"/>
+<!--                                    <field name="tkt_sales_upsell_pax"/>-->
+                                    <field name="tkt_sales_upsell_amount_infant"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Ancillary" name="ancillary">
+                            <group string="Ancillary Advanced Upsell">
+                                <group string="By Percentage">
+                                    <field name="anc_sales_upsell_percentage"/>
+                                    <field name="anc_sales_upsell_minimum"/>
+                                </group>
+                                <group string="By Amount">
+                                    <field name="anc_sales_upsell_amount"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="agent_pricing_line_view_tree" model="ir.ui.view">
+        <field name="name">agent.pricing.line.view.tree</field>
+        <field name="model">tt.agent.pricing.line</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="agent_pricing_line_view_search" model="ir.ui.view">
+        <field name="name">agent.pricing.line.view.search</field>
+        <field name="model">tt.agent.pricing.line</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+    <!--  Agent Pricing Upline  -->
+    <record id="agent_pricing_upline_view_form" model="ir.ui.view">
+        <field name="name">agent.pricing.upline.view.form</field>
+        <field name="model">tt.agent.pricing.upline</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="pricing_line_id" invisible="1"/>
+                            <field name="agent_type_id"/>
+                        </group>
+                        <group>
+                            <field name="state" widget="radio"/>
+                        </group>
+                    </group>
+                    <group string="Commission">
+                        <group string="By Percentage">
+                            <field name="commission_percentage"/>
+                            <field name="commission_minimum"/>
+                        </group>
+                        <group string="By Amount">
+                            <field name="commission_amount"/>
+                            <field name="commission_route"/>
+                            <field name="commission_segment"/>
+                            <field name="commission_pax"/>
+                            <field name="commission_infant"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="agent_pricing_upline_view_tree" model="ir.ui.view">
+        <field name="name">agent.pricing.upline.view.tree</field>
+        <field name="model">tt.agent.pricing.upline</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="active == False">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="commission_percentage"/>
+                <field name="commission_minimum"/>
+                <field name="commission_amount"/>
+                <field name="commission_route"/>
+                <field name="commission_segment"/>
+                <field name="commission_pax"/>
+                <field name="commission_infant"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="agent_pricing_upline_view_search" model="ir.ui.view">
+        <field name="name">agent.pricing.upline.view.search</field>
+        <field name="model">tt.agent.pricing.upline</field>
+        <field name="arch" type="xml">
+        <search>
+            <field name="name"/>
+            <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+        </search>
+        </field>
+    </record>
+
+</odoo>
