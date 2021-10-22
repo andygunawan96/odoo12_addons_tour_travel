@@ -343,16 +343,28 @@
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Event eTicket</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/ticket-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reservation.hotel'">
-                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher / Ittinerary ID</span><br/>
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Hotel Voucher / Itinerary ID</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/hotel-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reservation.ppob'">
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Bills</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.bus'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Bus</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bus-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reservation.periksain'">
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Periksain</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
                 </t><t t-elif="doc_model == 'tt.reservation.phc'">
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">PHC</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.medical'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Medical</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.swabexpress'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Swab Express</span><br/>
+                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
+                </t><t t-elif="doc_model == 'tt.reservation.labpintar'">
+                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Lab Pintar</span><br/>
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/swab-white.png'"/>
                 </t><t t-else="">
                     <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Other</span><br/>
@@ -648,25 +660,6 @@
                     <span style="font-size: 18px; font-weight: 730">IMPORTANT NOTES</span><br/>
                     <ol style="margin: 0 25px;">
                         <span t-raw="invoice_footer"/>
-                        <t t-if="doc.state != 'paid'">
-                            <li style="font-size: 14px;">
-                                Please transfer to the following account:
-                                <ul>
-                                    <!-- <t t-set="limit" t-value="3"/>-->
-                                    <t t-set="current" t-value="0"/>
-                                    <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
-                                        <!-- <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and current &lt; limit">-->
-                                        <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
-                                            <li style="font-size: 14px;"><span t-field="payment_id.bank_id.name"/> <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
-                                            <t t-set="current" t-value="current + 1"/>
-                                        </t>
-                                    </t>
-                                    <t t-if="current == 0">
-                                        <li>Direct payment (cash) at <span t-field="doc.agent_id.name"/></li>
-                                    </t>
-                                </ul>
-                            </li>
-                        </t>
                         <li style="font-size: 14px;">This invoice is generated by computer system and is considered as a legal invoice of <t t-esc="doc.agent_id.name"/></li>
                     </ol>
                 </t>

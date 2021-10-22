@@ -35,10 +35,10 @@
                     <span t-field="doc.contact_name"/>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:170px;">Order Number</td>
+                <td style="width:170px;">TORS Issued</td>
                 <td style="width:10px;">:</td>
-                <td style="width:330px; text-align: right;">
-                    <span t-field="doc.name"/>
+                <td style="width:330px;text-align: right;">
+                    <i t-field="doc.issued_date"/>
                 </td>
             </tr>
             <tr>
@@ -48,11 +48,9 @@
                     <i t-field="doc.sudo().contact_phone"/>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:170px;">TORS Issued</td>
-                <td style="width:10px;">:</td>
-                <td style="width:330px;text-align: right;">
-                    <i t-field="doc.issued_date"/>
-                </td>
+                <td style="width:170px;"/>
+                <td style="width:10px;"/>
+                <td style="width:330px;text-align: right;"/>
             </tr>
         </table>
 
@@ -61,7 +59,12 @@
             <t t-if="doc.timeslot_ids">
                 <t t-foreach="doc.timeslot_ids" t-as="line">
                     <t t-if="line.timeslot_type == 'drive_thru'">
-                        <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)</i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+                        <t t-if="doc.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']">
+                            <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (24 hours)</i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+                        </t>
+                        <t t-else="">
+                            <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)</i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+                        </t>
                     </t>
                     <t t-else="">
                         <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
@@ -128,5 +131,6 @@
             <span t-raw="airline_ticket_footer"/>
         </t>
 
+        <span t-raw="medical_footer"/>
     </template>
 </odoo>

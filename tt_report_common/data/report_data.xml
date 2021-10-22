@@ -134,9 +134,64 @@
             menu="False"
         />
         <report
+            string="HO Invoice Bus"
+            id="action_report_printout_invoice_ho_bus"
+            model="tt.reservation.bus"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+        <report
             string="HO Invoice Periksain"
             id="action_report_printout_invoice_ho_periksain"
             model="tt.reservation.periksain"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+        <report
+            string="HO Invoice PHC"
+            id="action_report_printout_invoice_ho_phc"
+            model="tt.reservation.phc"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+        <report
+            string="HO Invoice Medical"
+            id="action_report_printout_invoice_ho_medical"
+            model="tt.reservation.medical"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+        <report
+            string="HO Invoice Swab Express"
+            id="action_report_printout_invoice_ho_swabexpress"
+            model="tt.reservation.swabexpress"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+        <report
+            string="HO Invoice Lab Pintar"
+            id="action_report_printout_invoice_ho_labpintar"
+            model="tt.reservation.labpintar"
             report_type="qweb-html"
             name="tt_report_common.printout_invoice_ho"
             file="tt_report_common.printout_invoice_ho"

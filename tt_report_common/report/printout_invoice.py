@@ -91,7 +91,7 @@ class PrintoutTicketForm(models.AbstractModel):
                     elif rec2.charge_type.lower() in ['roc', 'tax']:
                         price_target['tax'] += rec2.total
 
-                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain']:
+                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical']:
                     for rec2 in provider.ticket_ids:
                         for price_detail in a[provider.pnr]:
                             if rec2.pax_type == price_detail['pax_type']:
@@ -215,7 +215,10 @@ class PrintoutTicketForm(models.AbstractModel):
             for pax_obj in booking_obj.passenger_ids:
                 pax_values.append('%s, %s, %s, %s, %s\n\n' % (pax_obj.name,pax_obj.identity_number,pax_obj.birth_date,pax_obj.email,pax_obj.phone_number))
             if booking_obj.picked_timeslot_id.timeslot_type == 'drive_thru':
-                test_date = '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                if booking_obj.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
+                    test_date = '%s (24 hours)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                else:
+                    test_date = '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
             else:
                 test_date = booking_obj.test_datetime.strftime('%d %B %Y %H:%M')
             qr_values = "%s - PAID\n%s\n%s\n%s\n%s\n\n%s" % (booking_obj.name,test_date,booking_obj.contact_name,booking_obj.contact_phone,booking_obj.provider_booking_ids[0].carrier_id.name,'\n'.join(pax_values))
@@ -884,7 +887,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             descs = []
             for timeslot_obj in rec.timeslot_ids:
                 if timeslot_obj.timeslot_type == 'drive_thru':
-                    descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 15.00 WIB tergantung banyaknya antrian)')
+                    descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 16.00 WIB)')
                 else:
                     descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
             descs.append(' ')
@@ -2494,6 +2497,72 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.tour'
             elif internal_model_id == 7:
                 data['context']['active_model'] = 'tt.reservation.periksain'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+        values = {}
+        pnr_length = 0
+        header_width = 90
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec2.total
+                    a[rec2.pax_type]['qty'] += rec2.pax_count
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.total
+            values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
+            'header_width': str(header_width),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'printout_tz': pytz.timezone('Asia/Jakarta')
+        }
+
+
+class PrintoutMedicalItineraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_medical_itinerary'
+    _description = 'Report Common Printout Medical Itinerary'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            elif internal_model_id == 7:
+                data['context']['active_model'] = 'tt.reservation.periksain'
+            elif internal_model_id == 8:
+                data['context']['active_model'] = 'tt.reservation.phc'
+            elif internal_model_id == 9:
+                data['context']['active_model'] = 'tt.reservation.medical'
             else:
                 data['context']['active_model'] = 'tt.agent.invoice'
 
