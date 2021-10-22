@@ -26,6 +26,7 @@ class TtProviderBus(models.Model):
     departure_date = fields.Char('Departure Date')
     return_date = fields.Char('Return Date')
     arrival_date = fields.Char('Arrival Date')
+    is_provider_group = fields.Boolean('Is Provider Group')
 
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
     journey_ids = fields.One2many('tt.journey.bus', 'provider_booking_id', string='Journeys')
