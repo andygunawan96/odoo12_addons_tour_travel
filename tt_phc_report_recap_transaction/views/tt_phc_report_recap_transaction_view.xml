@@ -33,7 +33,7 @@
         <menuitem
                 id="menu_medical_vendor_report_recap_transaction_phc_ho"
                 name="Recap Transaction Report PHC"
-                parent="tt_medical_vendor_report_recap_transaction.menu_reservation_report_phc"
+                parent="tt_phc_report_recap_transaction.menu_reservation_report_phc"
                 action="action_medical_vendor_report_recap_transaction_wz_phc"
                 sequence="30"
                 groups="tt_base.group_tt_tour_travel"
