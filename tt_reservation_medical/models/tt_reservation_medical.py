@@ -1447,5 +1447,8 @@ class Reservationmedical(models.Model):
         else:
             desc_txt += 'Test Type: ANTIGEN TEST\n'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
-        desc_txt += 'Test Date/Time: ' + self.picked_timeslot_id.get_datetimeslot_str() + '<br/>'
+        desc_txt += 'Test Date/Time: ' + self.picked_timeslot_id.get_datetimeslot_str(self.provider_booking_ids[0].carrier_id.code) + '<br/>'
         return desc_txt
+
+    def get_timeslot_for_email(self):
+        return self.picked_timeslot_id.get_datetimeslot_str(self.provider_booking_ids[0].carrier_id.code)

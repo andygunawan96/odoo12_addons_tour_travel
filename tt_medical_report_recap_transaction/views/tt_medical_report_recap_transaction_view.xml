@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_medical_vendor_report_recap_transaction_wz_medical" model="ir.actions.act_window">
+            <field name="name">Recap Transaction Report Medical</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.medical.vendor.report.recap.transaction.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="tt_medical_vendor_report_recap_transaction.detail_recap_transaction_form"/>
+            <field name="context">
+                {
+                'default_provider_type': 'medical',
+                }
+            </field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction_medical"
+                name="Recap Transaction Report Medical"
+                parent="tt_base.top_external_vendor_transaction"
+                action="action_medical_vendor_report_recap_transaction_wz_medical"
+                sequence="75"
+                groups="tt_base.group_external_vendor_medical_level_1"
+        />
+
+        <menuitem id="menu_reservation_report_medical"
+                  parent="tt_reservation_medical.top_reservations_medical"
+                  name="Report"
+                  sequence="3"/>
+
+        <menuitem
+                id="menu_medical_vendor_report_recap_transaction_medical_ho"
+                name="Recap Transaction Report Medical"
+                parent="tt_medical_report_recap_transaction.menu_reservation_report_medical"
+                action="action_medical_vendor_report_recap_transaction_wz_medical"
+                sequence="30"
+                groups="tt_base.group_tt_tour_travel"
+        />
+    </data>
+</odoo>
