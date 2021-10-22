@@ -376,6 +376,7 @@ class Reservationmedical(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers_data[idx]['email'],
                     'phone_number': passengers_data[idx]['phone_number'],
+                    'address_ktp': passengers_data[idx]['address'],
                 })
 
             for psg in list_passenger_value:

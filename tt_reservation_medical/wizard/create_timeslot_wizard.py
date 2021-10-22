@@ -300,11 +300,16 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
                  ('timeslot_type', '=', 'drive_thru')])
             if not db:
                 default_data_obj = self.env['tt.timeslot.medical.default'].search([], limit=1)
+
+                if datetimeslot.strftime('%A') == 'Sunday': # NATHOS HARI MINGGU
+                    max_book_datetime = datetimeslot.replace(hour=5,minute=0,second=0,microsecond=0)
+                else:
+                    max_book_datetime = datetimeslot.replace(hour=8,minute=0,second=0,microsecond=0)
                 self.env['tt.timeslot.medical'].create({
                     'dateslot': date,
                     'datetimeslot': datetimeslot,
                     'datetimeslot_end': datetimeslot_end,
-                    'max_book_datetime': datetimeslot.replace(hour=9,minute=0,second=0,microsecond=0),
+                    'max_book_datetime': max_book_datetime,
                     'destination_id': rec.id,
                     'total_timeslot': max_timeslot,
                     'total_adult_timeslot': adult_timeslot,
