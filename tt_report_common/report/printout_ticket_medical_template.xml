@@ -35,10 +35,10 @@
                     <span t-field="doc.contact_name"/>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:170px;">Order Number</td>
+                <td style="width:170px;">TORS Issued</td>
                 <td style="width:10px;">:</td>
-                <td style="width:330px; text-align: right;">
-                    <span t-field="doc.name"/>
+                <td style="width:330px;text-align: right;">
+                    <i t-field="doc.issued_date"/>
                 </td>
             </tr>
             <tr>
@@ -48,11 +48,9 @@
                     <i t-field="doc.sudo().contact_phone"/>
                 </td>
                 <td style="width:100px;"/>
-                <td style="width:170px;">TORS Issued</td>
-                <td style="width:10px;">:</td>
-                <td style="width:330px;text-align: right;">
-                    <i t-field="doc.issued_date"/>
-                </td>
+                <td style="width:170px;"/>
+                <td style="width:10px;"/>
+                <td style="width:330px;text-align: right;"/>
             </tr>
         </table>
 
@@ -133,5 +131,6 @@
             <span t-raw="airline_ticket_footer"/>
         </t>
 
+        <span t-raw="medical_footer"/>
     </template>
 </odoo>

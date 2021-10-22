@@ -58,7 +58,7 @@
                         </div>
                         <div class="col-9" style="background-color: #FFF; border: 1px solid #BBB; padding: 10px 25px; margin: 0px;">
                             <div class="row">
-                                <div class="col-2" style="margin-right: 0px">
+                                <div class="col-3" style="margin-right: 0px">
                                     <span style="font-size: 16px; font-weight:200">Test Type:</span><br/>
                                     <span style="font-size: 16px; font-weight:200">Test Date :</span><br/>
                                     <span style="font-size: 16px; font-weight:200">Address  :</span>
