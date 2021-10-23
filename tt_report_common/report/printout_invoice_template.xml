@@ -293,7 +293,7 @@
 
             </div>
             <div class="col-5 text-center">
-                <t t-if="qr_code_data">
+                <t t-if="qr_code_data and doc_model != 'tt.reservation.medical'">
                     <!--<t t-call="tt_report_common.print_qr_code"/>-->
                 </t>
                 <t t-else="">
