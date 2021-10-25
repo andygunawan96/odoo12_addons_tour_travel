@@ -299,6 +299,17 @@
                 menu="False"
         />
         <report
+                string="Bus Ticket"
+                id="action_report_printout_reservation_bus"
+                model="tt.reservation.bus"
+                report_type="qweb-html"
+                name="tt_report_common.printout_ticket"
+                file="tt_report_common.printout_ticket"
+                paperformat="tt_report_common.paperformat_A4_no_margin"
+                print_report_name="'Bus Ticket - %s' % object.name"
+                menu="False"
+        />
+        <report
             string="Airlines Itinerary Form"
             id="action_printout_itinerary_airline"
             model="tt.reservation.airline"
@@ -415,6 +426,17 @@
             report_type="qweb-html"
             name="tt_report_common.printout_medical_itinerary"
             file="tt_report_common.printout_medical_itinerary"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Itinerary - %s' % (object.name)"
+            menu="False"
+        />
+        <report
+            string="Bus Itinerary Form"
+            id="action_printout_itinerary_bus"
+            model="tt.reservation.bus"
+            report_type="qweb-html"
+            name="tt_report_common.printout_bus_itinerary"
+            file="tt_report_common.printout_bus_itinerary"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Itinerary - %s' % (object.name)"
             menu="False"

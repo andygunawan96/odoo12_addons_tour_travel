@@ -1286,6 +1286,96 @@
         </div>
     </template>
 
+    <template id="bus_itinerary_view">
+        <!-- Main Params -->
+        <div class="row">
+            <div class="col-12">
+                <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+                    <span style="font-size: 28px; font-weight: 730">Itinerary Detail(s)</span><br/>
+                    <table class="table table-sm" style="text-align:center;">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Departure</th>
+                                <th>Arrival</th>
+                                <th>Carrier</th>
+                                <!--                                <th>Flight</th>-->
+                                <!--                                <th>Departure Date</th>-->
+                                <!--                                <th>Arrival Date</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.journey_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_journey_id">
+                                <tr>
+                                    <td><span t-field="provider_journey_id.pnr"/></td>
+                                    <td>
+                                        <span t-field="provider_journey_id.origin_id.name"/><br/>
+                                        <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="provider_journey_id.destination_id.name"/><br/>
+                                        <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/>
+                                    </td>
+                                    <td><span t-field="provider_journey_id.carrier_id.name"/></td>
+                                    <!--                                    <td><span t-field="provider_journey_id.name"/></td>-->
+                                    <!--                                    <td><span t-field="provider_segment_id.departure_date" t-options ='{"format": "dd/MM/yyyy HH:mm:ss"}'/></td>-->
+                                    <!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->
+                                    <!--                                    <td><span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_segment_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/></td>-->
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <span style="font-size: 28px; font-weight: 730">Passenger Detail(s)</span><br/>
+                    <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                        <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                            <div class="col-1" style="text-align: center; font-size:17px;">
+                                No.
+                            </div>
+                            <div class="col-4" style="text-align: center; font-size:17px;">
+                                Name
+                            </div>
+                            <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
+                                Birth Date
+                            </div>
+                            <div class="col-2" style="text-align: center; font-size:17px;">
+                                Pax Type
+                            </div>
+                            <div class="col-3" style="text-align: center; font-size:17px;">
+                                Facility(s)
+                            </div>
+                        </div>
+                        <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                        <t t-set="psg_index" t-value="0"/>
+                        <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
+                            <div class="row" style="margin-left: 0px; margin-right: 0px">
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                </div>
+                                <div class="col-4" style="text-align: left">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                </div>
+                                <div class="col-2" style="text-align: right">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                </div>
+                                <div class="col-2" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
+                                </div>
+                                <div class="col-3" style="text-align: center">
+                                    -
+                                    <!--<i style="margin-right:3px;" class="fa fa-suitcase"/>-->
+                                    <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
+                                    <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
+                                </div>
+                            </div>
+                        </t>
+                        <div style="margin-bottom: 5px"/>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+
     <template id="json_itinerary_content_view">
         <div class="row">
             <div class="col-12">
@@ -1677,6 +1767,30 @@
                             </div>
 
                             <t t-call="tt_report_common.medical_itinerary_view"/>
+                            <t t-call="tt_report_common.itinerary_price_detail"/>
+                            <br/>
+                            <t t-call="tt_report_common.itinerary_signature"/>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_bus_itinerary">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
+                            <div style="margin-bottom: 10px; margin-top: 10px;">
+                                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                            </div>
+
+                            <t t-call="tt_report_common.bus_itinerary_view"/>
                             <t t-call="tt_report_common.itinerary_price_detail"/>
                             <br/>
                             <t t-call="tt_report_common.itinerary_signature"/>
