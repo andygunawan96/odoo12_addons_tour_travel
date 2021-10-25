@@ -22,7 +22,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
 
     start_date = fields.Date('Start Date',required=True, default=fields.Date.context_today)
     end_date = fields.Date('End Date',required=True, default=fields.Date.context_today)
-    time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,19:00,20:00,21:00')
+    time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,19:00')
 
     id_time_vendor = fields.Text('ID Time Vendor', default='')
     id_jenis_tindakan_vendor = fields.Text('ID Jenis Tindakan Vendor', default='')
@@ -108,7 +108,16 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
         pcr_list = False
         pcr_priority_list = False
         if from_cron:
-            default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data')
+            if self.area_id.code == 'SUB':
+                default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data')
+            elif self.area_id.code == 'CGK':
+                default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_cgk')
+            elif self.area_id.code == 'BDG':
+                default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_bdg')
+            elif self.area_id.code == 'DPS':
+                default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_dps')
+            else:
+                default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_upg')
             antigen_list = [(6, 0, [x.id for x in default_data.antigen_price_ids])]
             pcr_list = [(6, 0, [x.id for x in default_data.pcr_price_ids])]
             pcr_priority_list = [(6, 0, [x.id for x in default_data.pcr_priority_price_ids])]
@@ -122,10 +131,8 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
 
         ##convert to timezone 0
         time_objs = []
-        time_objs_id_swabexpress = []
         for idx, time_str in enumerate(timelist):
             time_objs.append((datetime.strptime(time_str,'%H:%M') - timedelta(hours=7)).time())
-            time_objs_id_swabexpress.append(id_timelist_swabexpress[idx] if len(id_timelist_swabexpress) > idx else id_timelist_swabexpress[0])
 
         db = self.env['tt.timeslot.swabexpress'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date), ('timeslot_type','=',self.timeslot_type), ('agent_id','=',self.agent_id.id if self.agent_id else False)])
         db_list = [str(data.datetimeslot) for data in db]
@@ -133,23 +140,23 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
             for idx, this_time in enumerate(time_objs):
                 this_date = self.start_date + timedelta(days=this_date_counter)
                 datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
-                if str(datetimeslot) not in db_list:
-
-                    create_values.append({
-                        'dateslot': this_date,
-                        'datetimeslot': datetimeslot,
-                        'destination_id': self.area_id.id,
-                        'total_timeslot': self.total_timeslot,
-                        'currency_id': self.currency_id.id,
-                        'timeslot_type': self.timeslot_type,
-                        'antigen_price_ids': antigen_list,
-                        'pcr_price_ids': pcr_list,
-                        'pcr_priority_price_ids': pcr_priority_list,
-                        'additional_price': self.additional_price,
-                        'single_supplement': self.single_supplement,
-                        'overtime_surcharge': self.overtime_surcharge,
-                        'cito_surcharge': self.cito_surcharge,
-                        'agent_id': self.agent_id.id if self.agent_id else False,
-                    })
+                if datetimeslot.strftime('%A') != 'Sunday' or datetimeslot.strftime('%A') == 'Sunday' and datetimeslot.strftime('%H:%M') != '19:00':
+                    if str(datetimeslot) not in db_list:
+                        create_values.append({
+                            'dateslot': this_date,
+                            'datetimeslot': datetimeslot,
+                            'destination_id': self.area_id.id,
+                            'total_timeslot': self.total_timeslot,
+                            'currency_id': self.currency_id.id,
+                            'timeslot_type': self.timeslot_type,
+                            'antigen_price_ids': antigen_list,
+                            'pcr_price_ids': pcr_list,
+                            'pcr_priority_price_ids': pcr_priority_list,
+                            'additional_price': default_data.additional_price,
+                            'single_supplement': default_data.single_supplement,
+                            'overtime_surcharge': default_data.overtime_surcharge,
+                            'cito_surcharge': default_data.cito_surcharge,
+                            'agent_id': self.agent_id.id if self.agent_id else False,
+                        })
 
         self.env['tt.timeslot.swabexpress'].create(create_values)
