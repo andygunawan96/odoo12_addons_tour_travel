@@ -241,6 +241,7 @@ class TtCustomerParentTypeApiInherit(models.Model):
         res = {
             '%scustomer_parent_type_id' % prefix: self.id,
             '%scustomer_parent_type_name' % prefix: self.name,
+            '%scustomer_parent_type_code' % prefix: self.code,
         }
         return res
 
