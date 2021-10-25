@@ -34,7 +34,7 @@ class TtLabPintarApiCon(models.Model):
 
     def send_confirm_order_notification(self,document_number,confirm_name,timeslot,address):
         request = {
-            'code': 9917,
+            'code': 9930,
             'message': '{} has been Confirmed by {}\n{}\n{}'.format(document_number,confirm_name,timeslot,address),
             "title": 'CONFIRMED <b>%s</b>' % (document_number)
         }
