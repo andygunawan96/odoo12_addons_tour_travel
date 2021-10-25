@@ -55,6 +55,10 @@ class PrintoutTicketForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.periksain'
             elif internal_model_id == 8:
                 data['context']['active_model'] = 'tt.reservation.phc'
+            elif internal_model_id == 9:
+                data['context']['active_model'] = 'tt.reservation.medical'
+            elif internal_model_id == 10:
+                data['context']['active_model'] = 'tt.reservation.bus'
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
@@ -91,7 +95,7 @@ class PrintoutTicketForm(models.AbstractModel):
                     elif rec2.charge_type.lower() in ['roc', 'tax']:
                         price_target['tax'] += rec2.total
 
-                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical']:
+                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus']:
                     for rec2 in provider.ticket_ids:
                         for price_detail in a[provider.pnr]:
                             if rec2.pax_type == price_detail['pax_type']:
@@ -167,6 +171,8 @@ class PrintoutTicketForm(models.AbstractModel):
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('phc_ticket', agent_id)
         elif data['context']['active_model'] == 'tt.reservation.medical':
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('medical_ticket', agent_id)
+        elif data['context']['active_model'] == 'tt.reservation.bus':
+            airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('bus_ticket', agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -1563,14 +1569,13 @@ class PrintoutInvoice(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'is_invoice': True
         }
-        if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain']:
+        if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain', 'tt.reservation.medical']:
             val.update({
                 'terms_conditions': resv_obj.get_terms_conditions_email()
             })
-        elif resv_obj._name in ['tt.reservation.medical',]:
+        if resv_obj._name in ['tt.reservation.medical']:
             val.update({
-                'qr_code_data': resv_obj.to_dict(),
-                'terms_conditions': resv_obj.get_terms_conditions_email()
+                'qr_code_data': resv_obj.to_dict()
             })
         return val
 
@@ -2563,6 +2568,74 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.phc'
             elif internal_model_id == 9:
                 data['context']['active_model'] = 'tt.reservation.medical'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+        values = {}
+        pnr_length = 0
+        header_width = 90
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec2.total
+                    a[rec2.pax_type]['qty'] += rec2.pax_count
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.total
+            values[rec.id] = [a[new_a] for new_a in a]
+            pnr_length = len(rec.pnr)
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
+            'header_width': str(header_width),
+            'price_lines': values,
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'printout_tz': pytz.timezone('Asia/Jakarta')
+        }
+
+
+class PrintoutBusItineraryForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_bus_itinerary'
+    _description = 'Report Common Printout Bus Itinerary'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            elif internal_model_id == 4:
+                data['context']['active_model'] = 'tt.reservation.activity'
+            elif internal_model_id == 5:
+                data['context']['active_model'] = 'tt.reservation.tour'
+            elif internal_model_id == 7:
+                data['context']['active_model'] = 'tt.reservation.periksain'
+            elif internal_model_id == 8:
+                data['context']['active_model'] = 'tt.reservation.phc'
+            elif internal_model_id == 9:
+                data['context']['active_model'] = 'tt.reservation.medical'
+            elif internal_model_id == 10:
+                data['context']['active_model'] = 'tt.reservation.bus'
             else:
                 data['context']['active_model'] = 'tt.agent.invoice'
 
