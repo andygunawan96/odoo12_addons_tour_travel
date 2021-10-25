@@ -48,7 +48,7 @@ class TtCronLogInhLabPintar(models.Model):
     def cron_auto_create_timeslot_labpintar(self):
         try:
             time_string = ''
-            list_jam_default = "08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00" ## DEFAULT JAM
+            list_jam_default = "08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00" ## DEFAULT JAM
             time_string_list = []
             for rec_default_time in list_jam_default.split(','):
                 if not any(rec_data['time'] == rec_default_time for rec_data in time_string_list):

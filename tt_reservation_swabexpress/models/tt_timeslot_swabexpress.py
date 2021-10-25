@@ -111,12 +111,14 @@ class TtTimeslotSwabExpress(models.Model):
     def get_available_timeslot_api(self, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        if '08:00' < str(current_wib_datetime.time())[:5] < '17:00':
+        if '09:00' < str(current_wib_datetime.time())[:5] < '19:00' and current_wib_datetime.strftime('%A') != 'Sunday':
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
         else:
-            min_datetime = current_datetime.replace(hour=7,minute=0, second=0, microsecond=0)
-            if current_datetime > min_datetime:
+            min_datetime = current_datetime.replace(hour=8,minute=0, second=0, microsecond=0)
+            if current_datetime > min_datetime and current_wib_datetime.strftime('%A') != 'Saturday':
                 min_datetime = min_datetime + timedelta(days=1)
+            else:
+                min_datetime = min_datetime + timedelta(days=2)
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime)]
 
         timeslots = self.search(dom)

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="bus_footer">
+        <div class="footer" style="position: absolute; left: 0; right: 0;">
+            <div class="text-center" style="border-top: 1px solid black; font-size: 10px; font-weight: 300">
+                <ul class="list-inline">
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/></li>
+
+                    <!--                    <li t-if="agent.fax and agent.phone">&amp;bull;</li>-->
+                    <!--                    <li t-if="agent.fax">Fax: <span t-field="agent.fax"/></li>-->
+
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email or doc.agent_id.email and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/></li>
+
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website and doc.agent_id.email or doc.agent_id.website or doc.agent_id.website and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/></li>
+
+                    <li class="pull-right">Page:
+                        <span class="page"/>
+                        /
+                        <span class="topage"/>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </template>
+
+    <template id="printout_ticket_bus_template">
+        <!-- No. Booking -->
+        <div style="margin-bottom: 20px; margin-top: 20px;">
+            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+        </div>
+
+        <!-- Flight Detail (Title) -->
+        <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
+            <div style="margin-bottom: 10px; margin-top: 20px;">
+                <span style="font-size: 28px; font-weight: 730">Journey Detail(s)</span><br/>
+            </div>
+
+            <!-- Flight Detail (Content) -->
+            <div class="box" style="margin-bottom: 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px;">
+                <div class="title" t-att-style="'background-color: '+ base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
+                    <div class="row">
+                        <div class="col-2" style="text-align: center; font-size:17px;">
+                            PNR
+                        </div>
+                        <div class="col-4" style="text-align: center; font-size:17px;">
+                            Departure
+                        </div>
+                        <div class="col-4" style="text-align: center; font-size:17px;">
+                            Arrival
+                        </div>
+                        <div class="col-2" style="text-align: center; font-size:17px;">
+                            Carrier
+                        </div>
+                    </div>
+                </div>
+                <t t-foreach="doc.journey_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_journey_id">
+                    <div class="row" style="margin-left: 0px; margin-right: 0px">
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_journey_id.pnr"/></label>
+                        </div>
+                        <div class="col-4" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <span t-field="provider_journey_id.origin_id.name"/><br/>
+                                <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/>
+                            </label>
+                        </div>
+                        <div class="col-4" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <span t-field="provider_journey_id.destination_id.name"/><br/>
+                                <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/>
+                            </label>
+                        </div>
+                        <div class="col-2" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_journey_id.carrier_name"/><br/><span t-field="provider_journey_id.carrier_number"/></label>
+                        </div>
+                    </div>
+                </t>
+                <div style="margin-bottom: 5px"/>
+            </div>
+
+            <!-- Passenger Detail (Title) -->
+            <div style="margin-bottom: 10px; margin-top: 20px;">
+                <span style="font-size: 28px; font-weight: 730">Passenger Detail(s)</span><br/>
+            </div>
+
+            <!-- Passenger Detail (Content) -->
+            <div class="box" style="margin-top: 20px; margin-bottom: 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
+                    <div class="col-1" style="text-align: center; font-size:17px;">
+                        No.
+                    </div>
+                    <div class="col-4" style="text-align: left; font-size:17px;">
+                        Name
+                    </div>
+                    <div class="col-3" style="text-align: right; font-size:17px; padding-right: 30px;">
+                        Ticket Number
+                    </div>
+                    <div class="col-4" style="text-align: right; font-size:17px; padding-right: 30px;">
+                        Barcode
+                    </div>
+                </div>
+                <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
+                <t t-set="psg_index" t-value="0"/>
+                <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
+                    <div class="row" style="margin-left: 0px; margin-right: 0px">
+                        <div class="col-1" style="text-align: center">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                        </div>
+                        <div class="col-4" style="text-align: left">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                        </div>
+                        <div class="col-3" style="text-align: right">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.ticket_number"><span t-field="psg.ticket_number"/></t><t t-else="">-</t></label>
+                        </div>
+                        <div class="col-4" style="text-align: right">
+                            <t t-if="psg.ticket_number"><img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', psg.ticket_number, 60, 60)" style="margin: 5px;"/></t><t t-else="">-</t>
+                        </div>
+                    </div>
+                </t>
+                <div style="margin-bottom: 5px"/>
+            </div>
+        </t>
+
+        <!-- Price & Addons Detail (if with price) -->
+        <t t-if="with_price">
+            <t t-foreach="doc.provider_booking_ids" t-as="length">
+                <!--<t t-call="tt_report_common.price_ticket"/>-->
+                <t t-call="tt_report_common.price_detail"/>
+            </t>
+        </t>
+
+        <!-- Important Notes -->
+        <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s)</h4>
+        <span t-raw="airline_ticket_footer"/>
+        <span t-raw="bus_footer"/>
+    </template>
+</odoo>
