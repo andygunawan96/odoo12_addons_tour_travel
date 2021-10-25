@@ -116,7 +116,8 @@
         </record>
 
         <record id="tt_timeslot_swabexpress_default_data" model="tt.timeslot.swabexpress.default">
-            <field name="name">Default Timeslot Data</field>
+            <field name="name">Default Timeslot Data SUB</field>
+            <!--DEFAULT DATA SBY-->
             <field name="single_supplement">25000</field>
             <field name="overtime_surcharge">50000</field>
             <field name="admin_fee_antigen_drivethru">10000</field>
@@ -141,6 +142,38 @@
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_priority_5_person'),
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_priority_10_person'),
                              ])]"/>
+        </record>
+
+        <record id="tt_timeslot_swabexpress_default_data_cgk" model="tt.timeslot.swabexpress.default">
+            <field name="name">Default Timeslot Data Jakarta</field>
+            <field name="single_supplement">25000</field>
+            <field name="overtime_surcharge">50000</field>
+            <field name="admin_fee_antigen_drivethru">10000</field>
+            <field name="additional_price">20000</field>
+        </record>
+
+        <record id="tt_timeslot_swabexpress_default_data_bdg" model="tt.timeslot.swabexpress.default">
+            <field name="name">Default Timeslot Data Bandung</field>
+            <field name="single_supplement">25000</field>
+            <field name="overtime_surcharge">50000</field>
+            <field name="admin_fee_antigen_drivethru">10000</field>
+            <field name="additional_price">20000</field>
+        </record>
+
+        <record id="tt_timeslot_swabexpress_default_data_dps" model="tt.timeslot.swabexpress.default">
+            <field name="name">Default Timeslot Data Bali</field>
+            <field name="single_supplement">25000</field>
+            <field name="overtime_surcharge">50000</field>
+            <field name="admin_fee_antigen_drivethru">10000</field>
+            <field name="additional_price">20000</field>
+        </record>
+
+        <record id="tt_timeslot_swabexpress_default_data_upg" model="tt.timeslot.swabexpress.default">
+            <field name="name">Default Timeslot Data Makassar</field>
+            <field name="single_supplement">25000</field>
+            <field name="overtime_surcharge">50000</field>
+            <field name="admin_fee_antigen_drivethru">10000</field>
+            <field name="additional_price">20000</field>
         </record>
     </data>
 </odoo>
