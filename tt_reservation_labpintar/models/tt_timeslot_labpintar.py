@@ -116,10 +116,10 @@ class TtTimeslotLabPintar(models.Model):
     def get_available_timeslot_api(self, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        if '08:00' < str(current_wib_datetime.time())[:5] < '17:00':
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
+        if '09:00' < str(current_wib_datetime.time())[:5] < '18:00': # MAX BELI JAM 6 SORE
+            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=6))]
         else:
-            min_datetime = current_datetime.replace(hour=7,minute=0, second=0, microsecond=0)
+            min_datetime = current_datetime.replace(hour=8,minute=0, second=0, microsecond=0) #KALAU DILUAR JAM OPERATIONAL JAM 3 BARU BOLEH BELI
             if current_datetime > min_datetime:
                 min_datetime = min_datetime + timedelta(days=1)
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime)]
