@@ -64,7 +64,7 @@ class TtCronLogInhLabPintar(models.Model):
                     [('provider_type_id','=',self.env.ref('tt_reservation_labpintar.tt_provider_type_labpintar').id)]):
                 # CREATE
                 wiz_obj = self.env['create.timeslot.labpintar.wizard'].create({
-                    'end_date': datetime.today() + timedelta(days=3),
+                    'end_date': datetime.today() + timedelta(days=4),
                     'area_id': rec.id,
                     'time_string': time_string,
                 })
