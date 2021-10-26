@@ -66,7 +66,7 @@ class TtCronLogInhSwabExpress(models.Model):
 
                 # CREATE
                 wiz_obj = self.env['create.timeslot.swabexpress.wizard'].create({
-                    'end_date': datetime.today() + timedelta(days=3),
+                    'end_date': datetime.today() + timedelta(days=4),
                     'area_id': rec.id,
                     'time_string': time_string
                 })

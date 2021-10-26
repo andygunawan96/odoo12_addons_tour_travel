@@ -55,7 +55,6 @@
                         <field name="agent_id"/>
                         <field name="timeslot_type"/>
                         <field name="total_timeslot"/>
-                        <field name="total_timeslot"/>
                     </group>
                     <group string="Antigen">
                         <field name="antigen_price_ids"/>
