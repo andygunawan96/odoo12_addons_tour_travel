@@ -162,9 +162,9 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
                         'pcr_express_price_ids': pcr_express_list,
                         'pcr_priority_price_ids': pcr_priority_list,
                         'srbd_price_ids': srbd_list,
-                        'single_supplement': self.single_supplement,
-                        'overtime_surcharge': self.overtime_surcharge,
-                        'cito_surcharge': self.cito_surcharge,
+                        'single_supplement': data_default.single_supplement,
+                        'overtime_surcharge': data_default.overtime_surcharge,
+                        'cito_surcharge': data_default.cito_surcharge,
                         'agent_id': self.agent_id.id if self.agent_id else False,
                     })
 
