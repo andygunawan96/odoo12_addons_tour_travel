@@ -9,7 +9,7 @@
             <xpath expr="//group[@name='basic_info']" position="after">
                 <group>
                     <field name="email"/>
-                    <field name="address"/>
+                    <field name="address_ktp"/>
                     <field name="phone_number"/>
                     <!--<field name="sample_method"/>-->
                     <!--<field name="provinsi"/>-->
