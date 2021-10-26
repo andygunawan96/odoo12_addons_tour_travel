@@ -18,7 +18,7 @@ class TtReservationCustomer(models.Model):
     booking_id = fields.Many2one('tt.reservation.swabexpress', 'Booking')
 
     email = fields.Char('Email')
-    address = fields.Char('Address')
+    address_ktp = fields.Char('Address KTP')
     phone_number = fields.Char('Phone Number')
 
     # provinsi = fields.Char('Pronvinsi')
@@ -38,7 +38,8 @@ class TtReservationCustomer(models.Model):
             'email': self.email,
             'phone_number': self.phone_number,
             'result_url': self.result_url,
-            'ticket_number': self.ticket_number
+            'ticket_number': self.ticket_number,
+            'address_ktp': self.address_ktp
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()

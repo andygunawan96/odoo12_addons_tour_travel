@@ -52,6 +52,8 @@ class TtProviderSwabExpress(models.Model):
     error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error History',
                                         domain=[('res_model', '=', 'tt.provider.swabexpress')])
 
+    additional_info = fields.Boolean('Peduli Lindungi', default=False)
+
     # reconcile purpose#
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines', 'Reconciled')
     reconcile_time = fields.Datetime('Reconcile Time')
@@ -390,7 +392,8 @@ class TtProviderSwabExpress(models.Model):
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
             'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
-            'tickets': ticket_list
+            'tickets': ticket_list,
+            'additional_info': self.additional_info
         }
 
         return res

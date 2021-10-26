@@ -20,6 +20,7 @@
                             <field name="booking_id"/>
                             <field name="pnr"/>
                             <field name="pnr2"/>
+                            <field name="additional"/>
                             <field name="provider_id"/>
                             <field name="carrier_id"/>
                             <field name="balance_due"/>

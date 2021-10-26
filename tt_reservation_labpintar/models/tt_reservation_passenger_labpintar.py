@@ -18,7 +18,7 @@ class TtReservationCustomer(models.Model):
     booking_id = fields.Many2one('tt.reservation.labpintar', 'Booking')
 
     email = fields.Char('Email')
-    address = fields.Char('Address')
+    address_ktp = fields.Char('Address KTP')
     phone_number = fields.Char('Phone Number')
 
     # provinsi = fields.Char('Pronvinsi')
@@ -38,6 +38,7 @@ class TtReservationCustomer(models.Model):
             'email': self.email,
             'phone_number': self.phone_number,
             'result_url': self.result_url,
+            'address_ktp': self.address_ktp,
             'ticket_number': self.ticket_number
         })
         if len(self.channel_service_charge_ids.ids)>0:

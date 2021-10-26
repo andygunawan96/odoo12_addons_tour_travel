@@ -305,6 +305,7 @@ class ReservationLabPintar(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
                     'phone_number': passengers[idx]['phone_number'],
+                    'address_ktp': passengers[idx]['address_ktp'],
                 })
 
             for psg in list_passenger_value:
