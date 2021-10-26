@@ -550,6 +550,7 @@ class ReservationSwabExpress(models.Model):
             'hold_date': fields.Datetime.now() + timedelta(minutes=10),
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
+            'is_additional_info': booking_data.get('peduli_lindungi') or False,
             'sequence': 1,
             'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,

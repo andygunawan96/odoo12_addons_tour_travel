@@ -52,7 +52,7 @@ class TtProviderSwabExpress(models.Model):
     error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error History',
                                         domain=[('res_model', '=', 'tt.provider.swabexpress')])
 
-    additional_info = fields.Boolean('Peduli Lindungi', default=False)
+    is_additional_info = fields.Boolean('Peduli Lindungi', default=False)
 
     # reconcile purpose#
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines', 'Reconciled')
