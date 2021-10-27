@@ -356,6 +356,7 @@ class TtProviderBus(models.Model):
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
+            'is_provider_group': self.is_provider_group,
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or ''
         }
 
