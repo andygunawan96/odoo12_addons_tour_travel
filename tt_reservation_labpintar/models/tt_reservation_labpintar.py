@@ -263,9 +263,42 @@ class ReservationLabPintar(models.Model):
                         cito_suplement_price = timeslot_objs.cito_surcharge
                     else:
                         break
-        else:
+        elif carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_pcr').id:
             for rec in timeslot_objs:
                 for pcr_price_pax in rec.pcr_price_ids:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
+                        base_price = pcr_price_pax.base_price
+                        commission_price = pcr_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
+        elif carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_pcr_express').id:
+            for rec in timeslot_objs:
+                for pcr_price_pax in rec.pcr_express_price_ids:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
+                        base_price = pcr_price_pax.base_price
+                        commission_price = pcr_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
+        elif carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_pcr_priority').id:
+            for rec in timeslot_objs:
+                for pcr_price_pax in rec.pcr_priority_price_ids:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
+                        base_price = pcr_price_pax.base_price
+                        commission_price = pcr_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
+        else:
+            for rec in timeslot_objs:
+                for pcr_price_pax in rec.srbd_price_ids:
                     if req['pax_count'] >= pcr_price_pax['min_pax']:
                         base_price = pcr_price_pax.base_price
                         commission_price = pcr_price_pax.commission
