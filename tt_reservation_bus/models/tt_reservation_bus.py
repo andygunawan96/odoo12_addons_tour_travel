@@ -463,7 +463,10 @@ class TtReservationBus(models.Model):
         res = []
         name = {'provider':[],'carrier':[]}
         sequence = 0
-        for schedule in schedules:
+        is_provider_group = False
+        for idx, schedule in enumerate(schedules, start=1):
+            if idx == len(schedules):
+                is_provider_group = True
             provider_id = provider_obj.get_provider_id(schedule['provider'],_destination_type)
             name['provider'].append(schedule['provider'])
             _logger.info(schedule['provider'])
@@ -523,7 +526,8 @@ class TtReservationBus(models.Model):
                 'carrier_name': provider_carrier_name,
                 'booked_uid': api_context['co_uid'],
                 'booked_date': datetime.now(),
-                'journey_ids': this_pnr_journey
+                'journey_ids': this_pnr_journey,
+                'is_provider_group': is_provider_group
             }
 
             res.append(provider_bus_obj.create(values))
