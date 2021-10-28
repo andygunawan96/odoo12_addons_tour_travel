@@ -33,6 +33,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
     base_price_pcr_express = fields.Monetary('Base Price per PAX PCR Express')
     base_price_srbd = fields.Monetary('Base Price per PAX S-RBD')
     admin_fee_antigen_drivethru = fields.Monetary('Admin Fee Antigen DriveThru')
+    admin_fee_pcr_drivethru = fields.Monetary('Admin Fee PCR DriveThru')
 
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
@@ -58,6 +59,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
             new_rec.single_supplement = new_rec.default_data_id.single_supplement
             new_rec.overtime_surcharge = new_rec.default_data_id.overtime_surcharge
             new_rec.admin_fee_antigen_drivethru = new_rec.default_data_id.admin_fee_antigen_drivethru
+            new_rec.admin_fee_pcr_drivethru = new_rec.default_data_id.admin_fee_pcr_drivethru
         return new_rec
 
     @api.onchange('default_data_id')
@@ -77,6 +79,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
         self.single_supplement = self.default_data_id.single_supplement
         self.overtime_surcharge = self.default_data_id.overtime_surcharge
         self.admin_fee_antigen_drivethru = self.default_data_id.admin_fee_antigen_drivethru
+        self.admin_fee_pcr_drivethru = self.default_data_id.admin_fee_pcr_drivethru
 
     @api.onchange('start_date')
     def _onchange_start_date(self):
@@ -133,6 +136,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                         'commission_antigen': self.commission_antigen,
                         'commission_pcr': self.commission_pcr,
                         'admin_fee_antigen_drivethru': self.admin_fee_antigen_drivethru,
+                        'admin_fee_pcr_drivethru': self.admin_fee_pcr_drivethru,
                         'commission_pcr_priority': self.commission_pcr_priority,
                         'commission_pcr_express': self.commission_pcr_express,
                         'commission_srbd': self.commission_srbd,
@@ -169,6 +173,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                 'currency_id': self.env.user.company_id.currency_id.id,
                 'timeslot_type': 'drive_thru',
                 'admin_fee_antigen_drivethru': default_data_obj.admin_fee_antigen_drivethru,
+                'admin_fee_pcr_drivethru': default_data_obj.admin_fee_pcr_drivethru,
                 'commission_antigen': default_data_obj.commission_antigen,
                 'commission_pcr': default_data_obj.commission_pcr_dt,
                 'commission_pcr_priority': default_data_obj.commission_pcr_priority,

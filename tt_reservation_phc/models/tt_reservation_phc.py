@@ -234,6 +234,8 @@ class Reservationphc(models.Model):
                     commission_price = rec.commission_pcr
                     overtime_price = rec.overtime_surcharge
                     single_suplement_price = rec.single_supplement
+                    if carrier_obj.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id:
+                        admin_fee = rec.admin_fee_pcr_drivethru
         elif carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_priority').id]:
             for rec in timeslot_objs:
                 if rec.base_price_pcr_priority > base_price:

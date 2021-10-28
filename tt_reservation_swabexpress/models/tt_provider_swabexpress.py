@@ -393,7 +393,7 @@ class TtProviderSwabExpress(models.Model):
             'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             'tickets': ticket_list,
-            'additional_info': self.additional_info
+            'is_additional_info': self.is_additional_info
         }
 
         return res
