@@ -306,6 +306,8 @@ class TtReservationBus(models.Model):
                         continue
                     if req.get('force_issued'):
                         self.update_pnr_booked(provider_obj,provider,context)
+                    else:
+                        self.update_passenger_ticket(provider_obj,provider,context)
 
                     #action issued dan create ticket number
                     provider_obj.action_issued_api_bus(context)
@@ -565,6 +567,9 @@ class TtReservationBus(models.Model):
                 'class_of_service': param_journey.get('fares')[0].get('class_of_service',''),
                 'carrier_name': param_journey.get('carrier_name')
             })
+
+    def update_passenger_ticket(self,provider_obj,provider,context):
+        provider_obj.assign_pax_ticket_number(provider['tickets'])
 
     def pick_destination(self, data):
         dest1 = data[0][2]['origin_id']
