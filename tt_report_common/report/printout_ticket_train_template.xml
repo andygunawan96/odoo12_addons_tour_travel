@@ -40,11 +40,13 @@
                 <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
                     <div class="col-2">
                         <img src="/tt_report_common/static/images/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
-                        <!--<img t-if="doc.agent_id.image" t-att-src="'data:image/png;base64,%s' % doc.agent_id.image" style="max-height: 56px; margin-top: 9px;"/>-->
                     </div>
-                    <div class="col-10" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
+                    <div class="col-8" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
                         <span>BUKTI PEMBELIAN TIKET KERETA API</span><br/>
                         <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
+                    </div>
+                    <div class="col-2">
+                      <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" style="max-height: 80px; margin-top: 9px;"/>
                     </div>
                 </div>
                 <t t-set="provider_total" t-value="0"/>
