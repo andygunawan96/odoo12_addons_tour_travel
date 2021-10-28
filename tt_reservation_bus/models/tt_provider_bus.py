@@ -267,6 +267,14 @@ class TtProviderBus(models.Model):
                 })]
             })
 
+    def assign_pax_ticket_number(self,passengers):
+        for psg in passengers:
+            for tic in self.ticket_ids:
+                if tic.passenger_id.sequence == psg.get('passenger_sequence'):
+                    tic.write({
+                        'ticket_number': psg.get('ticket_number')
+                    })
+
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
