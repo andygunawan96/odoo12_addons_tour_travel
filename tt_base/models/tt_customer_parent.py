@@ -1,7 +1,11 @@
 from odoo import fields,api,models
+import json,traceback,logging
 from ...tools import ERR
+from ...tools.ERR import RequestException
 from odoo.exceptions import UserError
 from datetime import datetime
+
+_logger = logging.getLogger(__name__)
 
 
 class TtCustomerParent(models.Model):
@@ -132,6 +136,31 @@ class TtCustomerParent(models.Model):
             rec.write({
                 'is_send_email_cc': True
             })
+
+    def get_corporate_data_api(self, data, context):
+        try:
+            cor_data = self.env['tt.customer.parent'].search([('seq_id', '=', data['cp_seq_id'])], limit=1)
+            cust_data = self.env['tt.customer'].search([('seq_id', '=', data['c_seq_id'])], limit=1)
+            if not cor_data or not cust_data:
+                raise RequestException(1024)
+            if cor_data[0].parent_agent_id.id != context['co_agent_id']:
+                raise RequestException(1022, additional_message="Your agent does not have access to this Customer Parent.")
+            if cor_data[0].id not in cust_data[0].customer_parent_ids.ids:
+                raise RequestException(1022, additional_message="The Customer you selected is not in the selected Customer Parent customer list.")
+            res = {
+                'customer_parent_name': cor_data[0].name,
+                'customer_parent_id': cor_data[0].id,
+                'customer_seq_id': cust_data[0].seq_id,
+                'customer_parent_type_name': cor_data[0].customer_parent_type_id.name,
+                'customer_parent_type_code': cor_data[0].customer_parent_type_id.code
+            }
+            return ERR.get_no_error(res)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1022)
 
     def action_confirm(self):
         if self.state != 'draft':

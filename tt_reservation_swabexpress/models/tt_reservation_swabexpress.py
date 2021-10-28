@@ -256,7 +256,7 @@ class ReservationSwabExpress(models.Model):
         if carrier_id == self.env.ref('tt_reservation_swabexpress.tt_transport_carrier_swabexpress_antigen').id:
             for rec in timeslot_objs:
                 for antigen_price_pax in rec.antigen_price_ids:
-                    if antigen_price_pax.base_price > base_price and req['pax_count'] >= antigen_price_pax['min_pax']:
+                    if req['pax_count'] >= antigen_price_pax['min_pax']:
                         base_price = antigen_price_pax.base_price
                         commission_price = antigen_price_pax.commission
                         overtime_price = timeslot_objs.overtime_surcharge
@@ -269,7 +269,7 @@ class ReservationSwabExpress(models.Model):
         elif carrier_id == self.env.ref('tt_reservation_swabexpress.tt_transport_carrier_swabexpress_pcr').id:
             for rec in timeslot_objs:
                 for pcr_price_pax in rec.pcr_price_ids:
-                    if pcr_price_pax.base_price > base_price and req['pax_count'] >= pcr_price_pax['min_pax']:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
                         base_price = pcr_price_pax.base_price
                         commission_price = pcr_price_pax.commission
                         overtime_price = timeslot_objs.overtime_surcharge
@@ -280,7 +280,7 @@ class ReservationSwabExpress(models.Model):
         else:
             for rec in timeslot_objs:
                 for pcr_priority_price_pax in rec.pcr_priority_price_ids:
-                    if pcr_priority_price_pax.base_price > base_price and req['pax_count'] >= pcr_priority_price_pax['min_pax']:
+                    if req['pax_count'] >= pcr_priority_price_pax['min_pax']:
                         base_price = pcr_priority_price_pax.base_price
                         commission_price = pcr_priority_price_pax.commission
                         overtime_price = timeslot_objs.overtime_surcharge
@@ -318,6 +318,7 @@ class ReservationSwabExpress(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
                     'phone_number': passengers[idx]['phone_number'],
+                    'address_ktp': passengers[idx]['address_ktp'],
                 })
 
             for psg in list_passenger_value:
@@ -549,6 +550,7 @@ class ReservationSwabExpress(models.Model):
             'hold_date': fields.Datetime.now() + timedelta(minutes=10),
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
+            'is_additional_info': booking_data.get('peduli_lindungi') or False,
             'sequence': 1,
             'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,

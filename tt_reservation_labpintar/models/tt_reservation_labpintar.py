@@ -255,7 +255,7 @@ class ReservationLabPintar(models.Model):
         if carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_antigen').id:
             for rec in timeslot_objs:
                 for antigen_price_pax in rec.antigen_price_ids:
-                    if antigen_price_pax.base_price > base_price and req['pax_count'] >= antigen_price_pax['min_pax']:
+                    if req['pax_count'] >= antigen_price_pax['min_pax']:
                         base_price = antigen_price_pax.base_price
                         commission_price = antigen_price_pax.commission
                         overtime_price = timeslot_objs.overtime_surcharge
@@ -263,10 +263,43 @@ class ReservationLabPintar(models.Model):
                         cito_suplement_price = timeslot_objs.cito_surcharge
                     else:
                         break
-        else:
+        elif carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_pcr').id:
             for rec in timeslot_objs:
                 for pcr_price_pax in rec.pcr_price_ids:
-                    if pcr_price_pax.base_price > base_price and req['pax_count'] >= pcr_price_pax['min_pax']:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
+                        base_price = pcr_price_pax.base_price
+                        commission_price = pcr_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
+        elif carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_pcr_express').id:
+            for rec in timeslot_objs:
+                for pcr_price_pax in rec.pcr_express_price_ids:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
+                        base_price = pcr_price_pax.base_price
+                        commission_price = pcr_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
+        elif carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_pcr_priority').id:
+            for rec in timeslot_objs:
+                for pcr_price_pax in rec.pcr_priority_price_ids:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
+                        base_price = pcr_price_pax.base_price
+                        commission_price = pcr_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
+        else:
+            for rec in timeslot_objs:
+                for pcr_price_pax in rec.srbd_price_ids:
+                    if req['pax_count'] >= pcr_price_pax['min_pax']:
                         base_price = pcr_price_pax.base_price
                         commission_price = pcr_price_pax.commission
                         overtime_price = timeslot_objs.overtime_surcharge
@@ -305,6 +338,7 @@ class ReservationLabPintar(models.Model):
                     'customer_id': list_customer_id[idx].id,
                     'email': passengers[idx]['email'],
                     'phone_number': passengers[idx]['phone_number'],
+                    'address_ktp': passengers[idx]['address_ktp'],
                 })
 
             for psg in list_passenger_value:
