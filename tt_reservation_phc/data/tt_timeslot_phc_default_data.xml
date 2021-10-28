@@ -18,6 +18,7 @@
             <field name="single_supplement">25000</field>
             <field name="overtime_surcharge">50000</field>
             <field name="admin_fee_antigen_drivethru">10000</field>
+            <field name="admin_fee_pcr_drivethru">10000</field>
         </record>
     </data>
 </odoo>

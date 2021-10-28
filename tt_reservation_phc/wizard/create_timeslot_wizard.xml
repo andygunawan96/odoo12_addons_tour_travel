@@ -42,6 +42,7 @@
                     <group string="PCR Regular">
                         <field name="base_price_pcr"/>
                         <field name="commission_pcr"/>
+                        <field name="admin_fee_pcr_drivethru"/>
                     </group>
 
                     <group string="PCR Priority">
