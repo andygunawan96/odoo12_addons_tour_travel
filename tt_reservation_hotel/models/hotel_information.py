@@ -131,10 +131,26 @@ class HotelInformation(models.Model):
     def render_cache_city(self):
         self.env['test.search'].update_cache_city()
 
+    # result:
+    # {'A1': '001', 'A2': '002', 'A3': '003'}
+    # Misal 1 Hotel ada code same provider dia kereplace dengan nilai terakhir
     def get_provider_code_fmt(self):
         provider_fmt = {}
         for rec in self.provider_hotel_ids:
             provider_fmt.update({rec.provider_id.alias: rec.code})
+        return provider_fmt
+
+    # result:
+    # {'1~A1': '001', '1~A2': '002', '2~A2': '003', '1~A3': '004'}
+    # def get_provider_code_fmt(self):
+    def get_provider_code_fmt_ver1(self):
+        provider_fmt = {}
+        provider_counter = {}
+        for rec in self.provider_hotel_ids:
+            if not provider_counter.get(rec.provider_id.alias):
+                provider_counter[rec.provider_id.alias] = 0
+            provider_counter[rec.provider_id.alias] += 1
+            provider_fmt.update({str(provider_counter[rec.provider_id.alias]) + '~' + rec.provider_id.alias: rec.code})
         return provider_fmt
 
     def get_hotel_image_fmt(self):
