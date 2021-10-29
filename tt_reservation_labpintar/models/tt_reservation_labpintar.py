@@ -254,7 +254,7 @@ class ReservationLabPintar(models.Model):
         #ASUMSI HARGA URUT DARI MIN PAX TERKECIL
         if carrier_id == self.env.ref('tt_reservation_labpintar.tt_transport_carrier_labpintar_antigen').id:
             for rec in timeslot_objs:
-                for antigen_price_pax in rec.antigen_price_ids:
+                for antigen_price_pax in rec.antigen_price_ids:## di berikan asumsi data dari backend ada dan minimal ad 1 pax.
                     if req['pax_count'] >= antigen_price_pax['min_pax']:
                         base_price = antigen_price_pax.base_price
                         commission_price = antigen_price_pax.commission
