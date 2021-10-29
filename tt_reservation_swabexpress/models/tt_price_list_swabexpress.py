@@ -18,10 +18,11 @@ class TtPriceListSwabExpress(models.Model):
     _name = 'tt.price.list.swabexpress'
     _description = 'Rodex Model Price List Swab Express'
     _rec_name = 'name'
+    _order = 'min_pax'
 
     seq_id = fields.Char('Sequence ID',readonly=True)
     name = fields.Char('Name', required=True)
-    min_pax = fields.Integer('Minimum Pax', required=True)
+    min_pax = fields.Integer('Minimum Pax', required=True, default=1)
     commission = fields.Monetary('Commission per PAX')
     base_price = fields.Monetary('Base Price per PAX')
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
