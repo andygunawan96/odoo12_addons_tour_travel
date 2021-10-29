@@ -549,7 +549,7 @@ access_tt_customer_parent_for_accounting_operator,tt.customer.parent.for.account
 
 access_tt_customer_parent_for_customer_parent_level_1,tt.customer.parent.for.customer.parent.level.1,model_tt_customer_parent,tt_base.group_customer_parent_level_1,1,0,0,0
 access_tt_customer_parent_for_customer_parent_level_2,tt.customer.parent.for.customer.parent.level.2,model_tt_customer_parent,tt_base.group_customer_parent_level_2,1,0,1,0
-access_tt_customer_parent_for_customer_parent_level_3,tt.customer.parent.for.customer.parent.level.3,model_tt_customer_parent,tt_base.group_customer_parent_level_3,1,1,1,0
+access_tt_customer_parent_for_customer_parent_level_3,tt.customer.parent.for.customer.parent.level.3,model_tt_customer_parent,tt_base.group_customer_parent_level_3,1,1,1,1
 access_tt_customer_parent_for_customer_parent_level_4,tt.customer.parent.for.customer.parent.level.4,model_tt_customer_parent,tt_base.group_customer_parent_level_4,1,1,1,0
 access_tt_customer_parent_for_customer_parent_level_5,tt.customer.parent.for.customer.parent.level.5,model_tt_customer_parent,tt_base.group_customer_parent_level_5,1,1,1,1
 

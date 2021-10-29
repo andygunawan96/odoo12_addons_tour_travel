@@ -79,6 +79,12 @@ class TtCustomerParent(models.Model):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('cust.par')
         return super(TtCustomerParent, self).create(vals_list)
 
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('tt_base.group_customer_parent_level_5'):
+            raise UserError('Action failed due to security restriction. Required Customer Parent Level 5 permission.')
+        return super(TtCustomerParent, self).unlink()
+
     @api.model
     def customer_parent_action_view_customer(self):
         action = self.env.ref('tt_base.tt_customer_parent_action_view').read()[0]
