@@ -2400,6 +2400,9 @@ class HotelInformation(models.Model):
         return temp
 
     def advance_find_similar_name_from_database_2(self):
+        if not self.destination_id or not self.city_id:
+            self.fill_country_city()
+
         city_ids = self.compute_related_city(self.city_id)
         same_hotel_obj = self.advance_find_similar_name_from_database(self.name, self.city_id.name, city_ids, self.destination_id.id, False)
 
@@ -2446,7 +2449,8 @@ class HotelInformation(models.Model):
                 'hotel_id': create_hotel_id.id,
                 'provider_id': '',
             })
-            img.pop('tag') #traveloka
+            if img.get('tag'):
+                img.pop('tag') #traveloka
             self.env['tt.hotel.image'].create(img)
 
         # Create Facility
@@ -3055,7 +3059,7 @@ class HotelInformation(models.Model):
                 vendor_city = vendor_city_url[len(base_cache_directory) + len(master_provider):-5]
                 with open(vendor_city_url, 'r') as f1:
                     vendor_hotel_objs = f1.read()
-                f1.close
+                f1.close()
 
                 _logger.info(msg='Processing Vendor: ' + master_provider + ' From: ' + vendor_city)
                 try:
@@ -3732,7 +3736,7 @@ class HotelInformation(models.Model):
         _logger.info(msg='============== Render Done ==============')
         return True
 
-    # 3a. Send Newest Hotel to GW
+    # 3a. Partial Update Data
     # Notes: Part ini di panggil untuk revisi data Cache pada suatu kota
     # Contoh: Update nama hotel, adding new info kyak facility ataupun Gmbar
     def v3_partial_send_cache(self):
@@ -3740,6 +3744,7 @@ class HotelInformation(models.Model):
         f2 = f2.read()
         catalog = json.loads(f2)
 
+        _logger.info(msg='============== Render Start ==============')
         catalog.sort(key=lambda k: k['index'])
         rewrite_city = self.env['ir.config_parameter'].sudo().get_param('rewrite.city')
         for rewrite_city_name in rewrite_city.split(','):
@@ -3803,8 +3808,9 @@ class HotelInformation(models.Model):
     # Todo: Pertimbangkan saat new hotel pnya meal type code & facility code yg tidak terdaftar
     # Notes: Control datane disini biar next search dia tidak kosongan / gagal di tampilin
     def v2_receive_data_from_gateway(self):
+        render_city = 'Surabaya'
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        city_file_url = base_cache_directory + '/from_cache/Surabaya.json'
+        city_file_url = base_cache_directory + '/from_cache/'+ render_city +'.json'
         f2 = open(city_file_url, 'r')
         f2 = f2.read()
         catalog = json.loads(f2)
@@ -3828,6 +3834,7 @@ class HotelInformation(models.Model):
             hotel_fmt = self.formating_homas(rec, hotel_id, provider, city_id, city_name, destination_obj.id)
             hotel_fmt['location']['address'] = rec['location']['address']
             self.create_or_edit_hotel(hotel_fmt, -1)
+        self.file_log_write('Read and Save Record '+ render_city +' Done')
         return True
 
     # Tgl 22 Desember 2020:

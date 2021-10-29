@@ -102,56 +102,68 @@ class HotelInformation(models.Model):
     # Notes: Bagian ini bakal sering berubah
     def v2_collect_by_human_dida(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        with open(base_cache_directory + 'dida/00_master/AvailHotelSummary_V0.csv', 'r') as f:
-            hotel_ids = csv.reader(f, delimiter="|")
 
-            hotel_fmt_list = {}
-            index = False
-            for hotel in hotel_ids:
-                if not index:
-                    index = hotel
-                    continue
-                # _logger.info("Processing (" + hotel[1] + ").")
-                hotel_fmt = {
-                    'id': hotel[0],
-                    'name': hotel[1],
-                    'street': hotel[3],
-                    'street2': hotel[19] or '',
-                    'street3': 'State: ' + hotel[8] or '' + ', Country: ' + hotel[9],
-                    'description': hotel[16] and 'AirportCode: ' + hotel[16] or '',
-                    'email': '',
-                    'images': [],
-                    'facilities': [],
-                    'phone': hotel[15],
-                    'fax': '',
-                    'zip': hotel[11],
-                    'website': '',
-                    'lat': hotel[13],
-                    'long': hotel[12],
-                    'rating': hotel[14] and hotel[14].split(',')[0] or 0,
-                    'hotel_type': '',
-                    'city': hotel[5],
-                    'country': hotel[9],
-                }
-                if not hotel_fmt_list.get(hotel_fmt['country']):
-                    hotel_fmt_list[hotel_fmt['country']] = {}
-                if not hotel_fmt_list[hotel_fmt['country']].get(hotel_fmt['city']):
-                    hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']] = []
-                hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']].append(hotel_fmt)
+        # Unremark buat baca dari cache
+        # with open(base_cache_directory + 'dida/00_master/AvailHotelSummary_V0.csv', 'r') as f:
+        #     hotel_ids = csv.reader(f, delimiter="|")
+        api_context = {
+            'co_uid': self.env.user.id
+        }
+        search_req = {
+            'provider': 'dida',
+            'type': 'GetStaticInformation',
+            'limit': '',
+            'offset': '',
+            'codes': '',
+        }
+        hotel_ids = API_CN_HOTEL.get_record_by_api(search_req, api_context)
+        hotel_fmt_list = {}
+        index = False
+        for hotel in hotel_ids['response']['response'].split('\r\n')[:-1]:
+            hotel = hotel.split('|')
+            if not index:
+                index = hotel
+                continue
+            # _logger.info("Processing (" + hotel[1] + ").")
+            hotel_fmt = {
+                'id': hotel[0],
+                'name': hotel[1],
+                'street': hotel[3],
+                'street2': hotel[19] or '',
+                'street3': 'State: ' + hotel[8] or '' + ', Country: ' + hotel[9],
+                'description': hotel[16] and 'AirportCode: ' + hotel[16] or '',
+                'email': '',
+                'images': [],
+                'facilities': [],
+                'phone': hotel[15],
+                'fax': '',
+                'zip': hotel[11],
+                'website': '',
+                'lat': hotel[13],
+                'long': hotel[12],
+                'rating': hotel[14] and hotel[14].split(',')[0] or 0,
+                'hotel_type': '',
+                'city': hotel[5],
+                'country': hotel[9],
+            }
+            if not hotel_fmt_list.get(hotel_fmt['country']):
+                hotel_fmt_list[hotel_fmt['country']] = {}
+            if not hotel_fmt_list[hotel_fmt['country']].get(hotel_fmt['city']):
+                hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']] = []
+            hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']].append(hotel_fmt)
 
-            for country in hotel_fmt_list.keys():
-                txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
-                filename = base_cache_directory + "dida/" + txt_country
-                if not os.path.exists(filename):
-                    os.mkdir(filename)
-                for city in hotel_fmt_list[country].keys():
-                    txt_city = city.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
-                    _logger.info("Write File " + txt_country + " City: " + txt_city)
-                    filename1 = filename + "/" + txt_city + ".json"
-                    file = open(filename1, 'w')
-                    file.write(json.dumps(hotel_fmt_list[country][city]))
-                    file.close()
-        f.close()
+        for country in hotel_fmt_list.keys():
+            txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
+            filename = base_cache_directory + "dida/" + txt_country
+            if not os.path.exists(filename):
+                os.mkdir(filename)
+            for city in hotel_fmt_list[country].keys():
+                txt_city = city.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
+                _logger.info("Write File " + txt_country + " City: " + txt_city)
+                filename1 = filename + "/" + txt_city + ".json"
+                file = open(filename1, 'w')
+                file.write(json.dumps(hotel_fmt_list[country][city]))
+                file.close()
 
     def v2_collect_by_human_csv_dida(self):
         return True

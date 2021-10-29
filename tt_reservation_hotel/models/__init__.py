@@ -36,3 +36,4 @@ from . import read_hotelspro
 from . import read_quantum
 from . import read_traveloka
 from . import read_webbeds
+from . import read_miki

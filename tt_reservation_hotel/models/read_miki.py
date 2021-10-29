@@ -74,7 +74,7 @@ class HotelInformation(models.Model):
 
             for country in hotel_list.keys():
                 txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')',                                                               '')
-                filename = base_cache_directory + "miki/" + txt_country
+                filename = base_cache_directory + "miki_api/" + txt_country
                 if not os.path.exists(filename):
                     os.mkdir(filename)
                 for city in hotel_list[country].keys():
@@ -104,43 +104,47 @@ class HotelInformation(models.Model):
                 file.close()
             except:
                 continue
-            for hotel in xmltodict.parse(hotel_list)['productInfoResponse']['productInfo']['product']:
-                # if hotel['productDescription']['productName'].title() == 'Achat Comfort':
-                #     pass
-                imgs = hotel['hotelProductInfo'].get('images') and hotel['hotelProductInfo']['images']['image'] or []
-                hotel_fmt = {
-                    'id': hotel['productCode']['#text'],
-                    'name': hotel['productDescription']['productName'].title(),
-                    'street': hotel['hotelProductInfo']['contactInfo']['address'].get('street1'),
-                    'street2': '',
-                    'street3': hotel['hotelProductInfo']['contactInfo']['address'].get('street2',''),
-                    'description': hotel['productDescription']['productDetailText'],
-                    'email': '',
-                    'images': imgs and [{'name': img['@imageCaption'], 'url': img['@imageURL']} for img in isinstance(imgs, list) and imgs or [imgs]] or [],
-                    'facilities': [key for (key, value) in hotel['hotelProductInfo']['hotelFacilities'].items() if value == 'true'] + [key for (key, value) in hotel['hotelProductInfo']['hotelRoomFacilities'].items() if value == 'true'],
-                    'phone': hotel['hotelProductInfo']['contactInfo'].get('telephoneNumber'),
-                    'fax': hotel['hotelProductInfo']['contactInfo'].get('faxNumber'),
-                    'zip': hotel['hotelProductInfo']['contactInfo']['address'].get('street3'),
-                    'website': '',
-                    'lat': '',
-                    'long': '',
-                    'rating': hotel['hotelProductInfo']['hotelInfo'].get('starRating') or '',
-                    'hotel_type': '',
-                    'city': hotel['hotelProductInfo']['contactInfo']['address'].get('city', '').title(),
-                    'country': hotel['hotelProductInfo']['contactInfo']['address'].get('country') or '',
-                }
-                _logger.info("Adding Hotel:" + hotel_fmt['name'] + ' in City: ' + hotel_fmt['city'])
-                if not country_ids.get(hotel_fmt['country']):
-                    country_ids[hotel_fmt['country']] = {}
-                if not country_ids[hotel_fmt['country']].get(hotel_fmt['city']):
-                    country_ids[hotel_fmt['country']][hotel_fmt['city']] = []
-                country_ids[hotel_fmt['country']][hotel_fmt['city']].append(hotel_fmt)
+            try:
+                for hotel in isinstance(xmltodict.parse(hotel_list)['productInfoResponse']['productInfo']['product'], list) and xmltodict.parse(hotel_list)['productInfoResponse']['productInfo']['product'] or [xmltodict.parse(hotel_list)['productInfoResponse']['productInfo']['product'],]:
+                    # if hotel['productDescription']['productName'].title() == 'Achat Comfort':
+                    #     pass
+                    imgs = hotel['hotelProductInfo'].get('images') and hotel['hotelProductInfo']['images']['image'] or []
+                    hotel_fmt = {
+                        'id': hotel['productCode']['#text'],
+                        'name': hotel['productDescription']['productName'].title(),
+                        'street': hotel['hotelProductInfo']['contactInfo']['address'].get('street1'),
+                        'street2': '',
+                        'street3': hotel['hotelProductInfo']['contactInfo']['address'].get('street2',''),
+                        'description': hotel['productDescription']['productDetailText'],
+                        'email': hotel['hotelProductInfo']['contactInfo'].get('email'),
+                        'images': imgs and [{'name': img['@imageCaption'], 'url': img['@imageURL']} for img in isinstance(imgs, list) and imgs or [imgs]] or [],
+                        'facilities': [key for (key, value) in hotel['hotelProductInfo']['hotelFacilities'].items() if value == 'true'] + [key for (key, value) in hotel['hotelProductInfo']['hotelRoomFacilities'].items() if value == 'true'],
+                        'phone': hotel['hotelProductInfo']['contactInfo'].get('telephoneNumber'),
+                        'fax': hotel['hotelProductInfo']['contactInfo'].get('faxNumber'),
+                        'zip': hotel['hotelProductInfo']['contactInfo']['address'].get('street3'),
+                        'website': '',
+                        'lat': '',
+                        'long': '',
+                        'rating': hotel['hotelProductInfo']['hotelInfo'].get('starRating') or '',
+                        'hotel_type': '',
+                        'city': hotel['hotelProductInfo']['contactInfo']['address'].get('city', '').title(),
+                        'country': hotel['hotelProductInfo']['contactInfo']['address'].get('country') or '',
+                    }
+                    _logger.info("Adding Hotel:" + hotel_fmt['name'] + ' in City: ' + hotel_fmt['city'])
+                    if not country_ids.get(hotel_fmt['country']):
+                        country_ids[hotel_fmt['country']] = {}
+                    if not country_ids[hotel_fmt['country']].get(hotel_fmt['city']):
+                        country_ids[hotel_fmt['country']][hotel_fmt['city']] = []
+                    country_ids[hotel_fmt['country']][hotel_fmt['city']].append(hotel_fmt)
 
+            except:
+                _logger.info(msg='Error while Processing {}'.format(hotel['productDescription']['productName'],))
+                continue
         # Write per City
         need_to_add = [['Name', 'Hotel Qty']]
         for country in country_ids.keys():
             txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
-            filename = base_cache_directory + "miki/" + txt_country
+            filename = base_cache_directory + "miki_api/" + txt_country
             if not os.path.exists(filename):
                 os.mkdir(filename)
             for city in country_ids[country].keys():

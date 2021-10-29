@@ -100,7 +100,8 @@ class HotelInformation(models.Model):
     # Notes: Mesti bantuan human untuk upload file location serta formating
     # Notes: Bagian ini bakal sering berubah
     # Todo: Perlu catat source data ne
-    def v2_collect_by_human_knb(self):
+    # def v2_collect_by_human_knb(self):
+    def v2_collect_by_human_json_knb(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
         # Find all xls file in selected directory
@@ -185,11 +186,12 @@ class HotelInformation(models.Model):
 
         return True
 
-    def v2_collect_by_human_csv_knb(self):
+    def v2_collect_by_human_knb(self):
+    # def v2_collect_by_human_csv_knb(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         need_to_add_list = [['No', 'City', 'Country', 'Hotel qty']]
         # Find all xls file in selected directory
-        path = base_cache_directory + 'knb/master/'
+        path = base_cache_directory + 'knb/00_master/'
         for country_file in glob.glob(os.path.join(path, '*.csv')):
             _logger.info("========================================")
             _logger.info("Write Country arc " + country_file.split('/')[-1].split('_')[2])
@@ -247,11 +249,30 @@ class HotelInformation(models.Model):
             f.close()
             # Create Folder Country Here
             path = base_cache_directory + "knb/" + country_file.split('/')[-1].split('_')[2]
-            if not os.path.isfile(path):
+            if not os.path.isdir(path):
                 os.makedirs(path)
             for city in hotel_list.keys():
-                _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + 'Hotel(s)')
+                _logger.info("City: " + city + ' Get:' + str(len(hotel_list[city])) + ' Hotel(s)')
                 filename = path + "/" + city.strip().split('/')[0] + ".json"
+
+                # Read dulu file yg lama
+                if os.path.isfile(filename):
+                    with open(filename, 'r') as f:
+                        file_content = f.read()
+                        file_content = json.loads(file_content)
+                        for hotel_data in hotel_list[city]:
+                            is_new = True
+                            for hotel_file_content in file_content:
+                                if hotel_data['id'] == hotel_file_content['id']:
+                                    is_new = False
+                                    break
+                            if is_new:
+                                file_content.append(hotel_data)
+                                _logger.info('Append New Hotel ' + hotel_data['name'])
+                            else:
+                                _logger.info('Skipping ' + hotel_data['name'] + ' (' + hotel_data['id'] + ') Already Exist')
+                    hotel_list[city] = file_content
+
                 file = open(filename, 'w')
                 file.write(json.dumps(hotel_list[city]))
                 file.close()
