@@ -219,7 +219,7 @@ class PrintoutTicketForm(models.AbstractModel):
             # }
             pax_values = []
             for pax_obj in booking_obj.passenger_ids:
-                pax_values.append('%s, %s, %s, %s, %s\n\n' % (pax_obj.name,pax_obj.identity_number,pax_obj.birth_date,pax_obj.email,pax_obj.phone_number))
+                pax_values.append('%s, %s, %s, %s, %s, %s\n\n' % (pax_obj.name,pax_obj.identity_number,pax_obj.birth_date,pax_obj.email,pax_obj.phone_number,pax_obj.address_ktp))
             if booking_obj.picked_timeslot_id.timeslot_type == 'drive_thru':
                 if booking_obj.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
                     test_date = '%s (24 hours)' % booking_obj.test_datetime.strftime('%d %B %Y')
