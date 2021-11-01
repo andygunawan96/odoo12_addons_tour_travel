@@ -38,8 +38,7 @@ class ReservationSwabExpress(models.Model):
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
         # tmp = self.name + '\n'
         for timeslot_obj in self.timeslot_ids:
-            tmp += '\n%s - %s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')),
-                                  str(timeslot_obj.datetimeslot_end.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
+            tmp += '\n%s' % (str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
         tmp += '\n\nAddress : %s' % (self.test_address)
         return tmp
 
