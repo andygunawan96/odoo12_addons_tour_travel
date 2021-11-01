@@ -252,6 +252,7 @@ class ReservationSwabExpress(models.Model):
         single_suplement_price = 0
         cito_suplement_price = 0
         additional = 0 # PEDULI LINDUNGI
+        address_surcharges = 0
         #ASUMSI HARGA URUT DARI MIN PAX TERKECIL
         if carrier_id == self.env.ref('tt_reservation_swabexpress.tt_transport_carrier_swabexpress_antigen').id:
             for rec in timeslot_objs:
@@ -262,6 +263,7 @@ class ReservationSwabExpress(models.Model):
                         overtime_price = timeslot_objs.overtime_surcharge
                         single_suplement_price = timeslot_objs.single_supplement
                         cito_suplement_price = timeslot_objs.cito_surcharge
+                        address_surcharge = timeslot_objs.address_surcharge
                         if req['peduli_lindungi']:
                             additional = timeslot_objs.additional_price # PEDULI LINDUNGI
                     else:
@@ -275,6 +277,7 @@ class ReservationSwabExpress(models.Model):
                         overtime_price = timeslot_objs.overtime_surcharge
                         single_suplement_price = timeslot_objs.single_supplement
                         cito_suplement_price = timeslot_objs.cito_surcharge
+                        address_surcharge = timeslot_objs.address_surcharge
                     else:
                         break
         else:
@@ -286,6 +289,7 @@ class ReservationSwabExpress(models.Model):
                         overtime_price = timeslot_objs.overtime_surcharge
                         single_suplement_price = timeslot_objs.single_supplement
                         cito_suplement_price = timeslot_objs.cito_surcharge
+                        address_surcharge = timeslot_objs.address_surcharge
                     else:
                         break
 
@@ -294,7 +298,8 @@ class ReservationSwabExpress(models.Model):
             "pax_count": req['pax_count'],
             "base_price_per_pax": base_price,
             "extra_price_per_pax": extra_charge_per_pax,#50000
-            "commission_per_pax": commission_price
+            "commission_per_pax": commission_price,
+            "address_surcharge": address_surcharge
         })
 
     def create_booking_swabexpress_api(self, req, context):

@@ -70,6 +70,7 @@
                         <field name="single_supplement"/>
                         <field name="overtime_surcharge"/>
                         <field name="cito_surcharge"/>
+                        <field name="address_surcharge"/>
                     </group>
                     <separator string="Confirmed to Customer Booking(s)"/>
                     <field name="booking_used_ids"/>
@@ -121,6 +122,7 @@
                         <field name="overtime_surcharge"/>
                         <field name="cito_surcharge"/>
                         <field name="additional_price"/>
+                        <field name="address_surcharge"/>
                     </group>
                 </sheet>
             </form>

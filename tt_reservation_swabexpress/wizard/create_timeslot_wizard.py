@@ -15,6 +15,7 @@ BASE_PRICE_PER_PAX_PCR = 650000 ## harga 1 /pax
 SINGLE_SUPPLEMENT = 25000 ## 1 orang
 OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
 CITO_SURCHARGE = 25000## Urgent cito surcharge range 2-5jam stlh jam book
+ADDRESS_SURCHARGE = 100000## Urgent cito surcharge range 2-5jam stlh jam book
 
 class CreateTimeslotSwabExpressWizard(models.TransientModel):
     _name = "create.timeslot.swabexpress.wizard"
@@ -45,6 +46,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
     single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
     cito_surcharge = fields.Monetary('Cito Surcharge', default=CITO_SURCHARGE, required=True)
+    address_surcharge = fields.Monetary('Cito Surcharge', default=ADDRESS_SURCHARGE, required=True)
 
     agent_id = fields.Many2one('tt.agent', 'Agent')
     default_data_id = fields.Many2one('tt.timeslot.swabexpress.default', 'Default Data')
@@ -78,6 +80,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
         self.single_supplement = self.default_data_id.single_supplement
         self.overtime_surcharge = self.default_data_id.overtime_surcharge
         self.cito_surcharge = self.default_data_id.cito_surcharge
+        self.address_surcharge = self.default_data_id.address_surcharge
         self.additional_price = self.default_data_id.additional_price
 
     @api.onchange('start_date')
@@ -156,6 +159,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
                             'single_supplement': default_data.single_supplement,
                             'overtime_surcharge': default_data.overtime_surcharge,
                             'cito_surcharge': default_data.cito_surcharge,
+                            'address_surcharge': default_data.address_surcharge,
                             'agent_id': self.agent_id.id if self.agent_id else False,
                         })
 
