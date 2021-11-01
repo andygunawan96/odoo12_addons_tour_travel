@@ -19,6 +19,7 @@ Key Features
         'views/menu_item_base.xml',
         'views/tt_provider_pricing_views.xml',
         'views/tt_agent_pricing_views.xml',
+        'views/tt_customer_pricing_views.xml',
     ],
     'demo': [],
     'qweb': [],

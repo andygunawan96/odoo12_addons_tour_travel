@@ -93,6 +93,7 @@ class ProviderPricing(models.Model):
 
     def get_data(self):
         res = {
+            'id': self.id,
             'name': self.name if self.name else '',
             'provider_type_code': self.provider_type_id.code if self.provider_type_id else '',
             'provider': {
@@ -251,6 +252,7 @@ class ProviderPricingLine(models.Model):
 
     def get_data(self):
         res = {
+            'id': self.id,
             'name': self.name if self.name else '',
             'set_expiration_date': self.set_expiration_date,
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
