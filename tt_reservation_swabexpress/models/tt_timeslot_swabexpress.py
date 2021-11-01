@@ -16,6 +16,7 @@ MAX_PER_SLOT = 5
 SINGLE_SUPPLEMENT = 0 ## 1 orang
 OVERTIME_SURCHARGE = 0 ## lebih dari 18.00 /pax
 CITO_SURCHARGE = 0## Urgent cito surcharge range 2-5jam stlh jam book
+ADDRESS_SURCHARGE = 100000## Fee per bookingan
 
 class TtTimeslotSwabExpress(models.Model):
     _name = 'tt.timeslot.swabexpress'
@@ -56,6 +57,8 @@ class TtTimeslotSwabExpress(models.Model):
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
     cito_surcharge = fields.Monetary('Cito Surcharge')
+
+    address_surcharge = fields.Monetary('Address Surcharge', default=0)
 
     total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)
 
@@ -194,5 +197,6 @@ class TtTimeslotswabexpressdefault(models.Model):
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
 
     cito_surcharge = fields.Monetary('Cito Surcharge', default=CITO_SURCHARGE, required=True)
+    address_surcharge = fields.Monetary('Address Surcharge', default=ADDRESS_SURCHARGE, required=True)
 
     additional_price = fields.Monetary('Tambahan Peduli Lindungi')

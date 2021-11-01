@@ -194,21 +194,48 @@ class TtAgent(models.Model):
 
     def get_balance_agent_api(self,context):
         customer_parent_id = context.get('co_customer_parent_id')
-        if customer_parent_id:
+        frontend_security = context.get('co_agent_frontend_security', [])
+        if 'corp_limitation' in frontend_security:  # customer parent login
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
-            balance = customer_parent_obj.actual_balance
-            currency_code = customer_parent_obj.currency_id.name
+            balance = 0
+            customer_parent_balance = customer_parent_obj.actual_balance
+            currency_code = ''
+            customer_parent_currency_code = customer_parent_obj.currency_id.name
             credit_limit = customer_parent_obj.credit_limit
-        else:
+            is_show_balance = False
+            is_show_customer_parent_balance = True
+            is_show_credit_limit = True
+        elif customer_parent_id:  # agent as customer parent login
+            agent_obj = self.browse(context['co_agent_id'])
+            customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
+            balance = agent_obj.balance
+            customer_parent_balance = customer_parent_obj.actual_balance
+            currency_code = agent_obj.currency_id.name
+            customer_parent_currency_code = customer_parent_obj.currency_id.name
+            credit_limit = customer_parent_obj.credit_limit
+            is_show_balance = True
+            is_show_customer_parent_balance = True
+            is_show_credit_limit = True
+        else:  # agent login
             agent_obj = self.browse(context['co_agent_id'])
             balance = agent_obj.balance
-            currency_code =  agent_obj.currency_id.name
+            customer_parent_balance = 0
+            currency_code = agent_obj.currency_id.name
+            customer_parent_currency_code = ''
             credit_limit = 0
+            is_show_balance = True
+            is_show_customer_parent_balance = False
+            is_show_credit_limit = False
 
         return ERR.get_no_error({
             'balance': balance,
+            'customer_parent_balance': customer_parent_balance,
             'credit_limit': credit_limit,
-            'currency_code': currency_code
+            'customer_parent_currency_code': customer_parent_currency_code,
+            'currency_code': currency_code,
+            'is_show_balance': is_show_balance,
+            'is_show_customer_parent_balance': is_show_customer_parent_balance,
+            'is_show_credit_limit': is_show_credit_limit
         })
 
     def get_data(self):
