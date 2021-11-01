@@ -194,20 +194,35 @@ class TtAgent(models.Model):
 
     def get_balance_agent_api(self,context):
         customer_parent_id = context.get('co_customer_parent_id')
-        if customer_parent_id:
+        frontend_security = context.get('co_agent_frontend_security', [])
+        if 'corp_limitation' in frontend_security:
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
-            balance = customer_parent_obj.actual_balance
-            currency_code = customer_parent_obj.currency_id.name
+            balance = 0
+            customer_parent_balance = customer_parent_obj.actual_balance
+            currency_code = ''
+            customer_parent_currency_code = customer_parent_obj.currency_id.name
+            credit_limit = customer_parent_obj.credit_limit
+        elif customer_parent_id:
+            agent_obj = self.browse(context['co_agent_id'])
+            customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
+            balance = agent_obj.balance
+            customer_parent_balance = customer_parent_obj.actual_balance
+            currency_code = agent_obj.currency_id.name
+            customer_parent_currency_code = customer_parent_obj.currency_id.name
             credit_limit = customer_parent_obj.credit_limit
         else:
             agent_obj = self.browse(context['co_agent_id'])
             balance = agent_obj.balance
-            currency_code =  agent_obj.currency_id.name
+            customer_parent_balance = 0
+            currency_code = agent_obj.currency_id.name
+            customer_parent_currency_code = ''
             credit_limit = 0
 
         return ERR.get_no_error({
             'balance': balance,
+            'customer_parent_balance': customer_parent_balance,
             'credit_limit': credit_limit,
+            'customer_parent_currency_code': customer_parent_currency_code,
             'currency_code': currency_code
         })
 
