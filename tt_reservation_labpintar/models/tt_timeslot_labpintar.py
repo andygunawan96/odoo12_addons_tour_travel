@@ -13,10 +13,9 @@ import json
 _logger = logging.getLogger(__name__)
 
 MAX_PER_SLOT = 5
-SINGLE_SUPPLEMENT = 25000 ## 1 orang
-OVERTIME_SURCHARGE = 50000 ## lebih dari 18.00 /pax
-ADMIN_FEE_ANTIGEN_DRIVETHRU = 10000
-CITO_SURCHARGE = 25000## Urgent cito surcharge range 2-5jam stlh jam book
+SINGLE_SUPPLEMENT = 0 ## 1 orang
+OVERTIME_SURCHARGE = 0 ## lebih dari 18.00 /pax
+CITO_SURCHARGE = 0## Urgent cito surcharge range 2-5jam stlh jam book
 
 class TtTimeslotLabPintar(models.Model):
     _name = 'tt.timeslot.labpintar'

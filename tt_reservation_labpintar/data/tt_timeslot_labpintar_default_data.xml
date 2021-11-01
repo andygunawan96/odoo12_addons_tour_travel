@@ -133,10 +133,9 @@
 
         <record id="tt_timeslot_labpintar_default_data" model="tt.timeslot.labpintar.default">
             <field name="name">Default Timeslot Data</field>
-            <field name="single_supplement">25000</field>
-            <field name="overtime_surcharge">50000</field>
-            <field name="admin_fee_antigen_drivethru">10000</field>
-            <field name="additional_price">20000</field>
+            <field name="single_supplement">0</field>
+            <field name="overtime_surcharge">0</field>
+            <field name="cito_surcharge">0</field>
             <field name="antigen_price_ids"
                    eval="[(6,0,[ref('tt_reservation_labpintar.tt_price_list_labpintar_antigen_1_person'),
                                 ref('tt_reservation_labpintar.tt_price_list_labpintar_antigen_2_person'),
