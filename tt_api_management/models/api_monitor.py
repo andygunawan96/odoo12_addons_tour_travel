@@ -34,6 +34,8 @@ class ApiMonitor(models.Model):
                     'provider_type_id': provider_type_obj.id,
                     'req_data': req['req_data'],
                 })
+            else:
+                monitor_data_obj = monitor_data_obj[0]
 
             self.env['tt.api.monitor.data.record'].create({
                 'monitor_data_id': monitor_data_obj[0].id
