@@ -761,7 +761,10 @@ class Reservationphc(models.Model):
         #check drive thru atau tidak, menentukan hold date
         drive_thru = False
         if carrier_obj and carrier_obj.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_antigen').id,
-                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
+                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id,
+                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_priority').id,
+                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_express').id,
+                                              self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_srbd')]:
             # hold_date = fields.Datetime.now().replace(hour=16,minute=30) + timedelta(days=8)
             hold_date = timeslot_write_data[0].datetimeslot.replace(hour=10, minute=0, second=0, microsecond=0)
             drive_thru = True
@@ -1365,8 +1368,12 @@ class Reservationphc(models.Model):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
         if self.provider_booking_ids[0].carrier_id.id in [self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_home_care_pcr').id, self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr').id]:
             desc_txt += 'Test Type: PCR TEST\n'
+        elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_priority').id:
+            desc_txt += 'Test Type: PCR PRIORITY TEST\n'
         elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_pcr_express').id:
             desc_txt += 'Test Type: PCR EXPRESS TEST\n'
+        elif self.provider_booking_ids[0].carrier_id.id == self.env.ref('tt_reservation_phc.tt_transport_carrier_phc_drive_thru_srbd').id:
+            desc_txt += 'Test Type: S-RBD TEST\n'
         else:
             desc_txt += 'Test Type: ANTIGEN TEST\n'
         desc_txt += 'Test Address: ' + self.test_address + '<br/>'
