@@ -340,6 +340,12 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                             </group>
                         </page>
                         <page string="Ancillary" name="ancillary">
+                            <div>
+                                <center>
+                                    <h3>Currently Not Available</h3>
+                                </center>
+                            </div>
+                            <!--
                             <group string="Ancillary Advanced Upsell">
                                 <group string="By Percentage">
                                     <field name="anc_sales_upsell_percentage"/>
@@ -349,6 +355,7 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                                     <field name="anc_sales_upsell_amount"/>
                                 </group>
                             </group>
+                            -->
                         </page>
                     </notebook>
                 </sheet>
