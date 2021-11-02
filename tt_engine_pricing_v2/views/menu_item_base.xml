@@ -6,5 +6,11 @@
                   groups="tt_base.group_pricing_provider_level_1,tt_base.group_pricing_agent_level_1"
                   parent="tt_base.top_tour_travel_configuration"
                   sequence="91"/>
+
+            <menuitem id="menu_transaction_pricing_booking"
+                      name="Pricing (New)"
+                      groups="tt_base.group_pricing_customer_level_1"
+                      parent="tt_base.top_transaction_configuration"
+                      sequence="20"/>
     </data>
 </odoo>

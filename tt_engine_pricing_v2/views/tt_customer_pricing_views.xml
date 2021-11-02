@@ -143,7 +143,7 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="customer_pricing_menu" parent="tt_engine_pricing_v2.menu_tour_travel_pricing_booking"
+    <menuitem id="customer_pricing_menu" parent="tt_engine_pricing_v2.menu_transaction_pricing_booking"
               groups="tt_base.group_pricing_customer_level_1" name="Customer Pricing" action="customer_pricing_action"
               sequence="30"/>
 
