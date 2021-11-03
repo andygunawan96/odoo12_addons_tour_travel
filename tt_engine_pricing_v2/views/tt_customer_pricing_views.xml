@@ -295,6 +295,12 @@ YR,D5,G7</pre>
                             </group>
                         </page>
                         <page string="Ancillary" name="ancillary">
+                            <div>
+                                <center>
+                                    <h3>Currently Not Available</h3>
+                                </center>
+                            </div>
+                            <!--
                             <group string="Ancillary Advanced Upsell">
                                 <group string="By Percentage">
                                     <field name="anc_sales_upsell_percentage"/>
@@ -304,6 +310,7 @@ YR,D5,G7</pre>
                                     <field name="anc_sales_upsell_amount"/>
                                 </group>
                             </group>
+                            -->
                         </page>
                     </notebook>
                 </sheet>

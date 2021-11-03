@@ -349,6 +349,12 @@ Amadeus cryptic sample request will be : FM5
                             </notebook>
                         </page>
                         <page string="Ancillary" name="ancillary">
+                            <div>
+                                <center>
+                                    <h3>Currently Not Available</h3>
+                                </center>
+                            </div>
+                            <!--
                             <notebook>
                                 <page string="Sales" name="ancillary_sales">
                                     <group string="Ancillary Sales" col="3" colspan="3">
@@ -401,6 +407,7 @@ Amadeus cryptic sample request will be : FM5
                                     </group>
                                 </page>
                             </notebook>
+                            -->
                         </page>
                     </notebook>
                 </sheet>
