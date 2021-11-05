@@ -1030,11 +1030,11 @@ class ReservationLabPintar(models.Model):
 
     def get_terms_conditions_email(self):
         if self.carrier_name == 'LPKATG':
-            template_obj = self.env.ref('tt_report_common.labpintar_antigen_information')
+            template_obj = self.env.ref('tt_reservation_labpintar.labpintar_antigen_information')
         elif self.carrier_name == 'LPKPCR':
-            template_obj = self.env.ref('tt_report_common.labpintar_pcr_information')
+            template_obj = self.env.ref('tt_reservation_labpintar.labpintar_pcr_information')
         else:
-            template_obj = self.env.ref('tt_report_common.labpintar_pcr_priority_information')
+            template_obj = self.env.ref('tt_reservation_labpintar.labpintar_pcr_priority_information')
         return template_obj.html
 
     def get_terms_conditions_email_old(self):

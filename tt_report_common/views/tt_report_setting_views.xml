@@ -20,10 +20,10 @@
                     </div>
                     <group>
                         <group>
+                            <field name="sequence"/>
                             <field name="code"/>
                             <field name="agent_id"/>
                             <field name="html"/>
-
                         </group>
                     </group>
                 </sheet>
