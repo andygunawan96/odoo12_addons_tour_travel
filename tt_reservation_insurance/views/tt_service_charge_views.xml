@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_service_charge_insurance_inherit_form_view" model="ir.ui.view">
+        <field name="name">tt.service.charge.insurance.inherit.form.view</field>
+        <field name="model">tt.service.charge</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_service_charge_form_view"/>
+        <field name="arch" type="xml">
+            <field name="description" position="after">
+                <field name="passenger_insurance_ids"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
