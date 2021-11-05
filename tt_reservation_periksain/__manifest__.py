@@ -22,6 +22,7 @@ TT_TRANSPORT
         'data/tt_transport_carrier_periksain.xml',
         'data/ir_send_email.xml',
         'data/ir_cron_data.xml',
+        'data/report_common_setting_data_periksain.xml',
 
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
