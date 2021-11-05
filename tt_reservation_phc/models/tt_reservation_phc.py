@@ -1312,19 +1312,19 @@ class Reservationphc(models.Model):
 
     def get_terms_conditions_email(self):
         if self.carrier_name == 'PHCHCKPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_homecare_information')
+            template_obj = self.env.ref('tt_reservation_phc.phc_pcr_homecare_information')
         elif self.carrier_name == 'PHCDTKPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_information')
+            template_obj = self.env.ref('tt_reservation_phc.phc_pcr_information')
         elif self.carrier_name == 'PHCDTOPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_priority_information')
+            template_obj = self.env.ref('tt_reservation_phc.phc_pcr_priority_information')
         elif self.carrier_name == 'PHCDTEPCR':
-            template_obj = self.env.ref('tt_report_common.phc_pcr_express_information')
+            template_obj = self.env.ref('tt_reservation_phc.phc_pcr_express_information')
         elif self.carrier_name == 'PHCDTKSRBD':
-            template_obj = self.env.ref('tt_report_common.phc_srbd_drive_thru_information')
+            template_obj = self.env.ref('tt_reservation_phc.phc_srbd_drive_thru_information')
         elif self.carrier_name == 'PHCHCKATG':
-            template_obj = self.env.ref('tt_report_common.phc_antigen_homecare_information')
+            template_obj = self.env.ref('tt_reservation_phc.phc_antigen_homecare_information')
         else:
-            template_obj = self.env.ref('tt_report_common.phc_antigen_information')
+            template_obj = self.env.ref('tt_reservation_phc.phc_antigen_information')
         return template_obj.html
 
     def get_terms_conditions_email_old(self):

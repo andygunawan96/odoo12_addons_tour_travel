@@ -998,9 +998,9 @@ class ReservationPeriksain(models.Model):
 
     def get_terms_conditions_email(self):
         if self.carrier_name == 'PRKPCR':
-            template_obj = self.env.ref('tt_report_common.periksain_pcr_information')
+            template_obj = self.env.ref('tt_reservation_periksain.periksain_pcr_information')
         else:
-            template_obj = self.env.ref('tt_report_common.periksain_antigen_information')
+            template_obj = self.env.ref('tt_reservation_periksain.periksain_antigen_information')
         return template_obj.html
 
     def get_terms_conditions_email_old(self):

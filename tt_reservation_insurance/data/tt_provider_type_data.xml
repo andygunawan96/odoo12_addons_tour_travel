@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_type_insurance" model="tt.provider.type">
+            <field name="name">Insurance</field>
+            <field name="code">insurance</field>
+            <field name="active">1</field>
+        </record>
+    </data>
+</odoo>
