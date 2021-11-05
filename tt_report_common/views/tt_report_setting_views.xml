@@ -36,6 +36,7 @@
         <field name="model">tt.report.common.setting</field>
         <field name="arch" type="xml">
             <tree string="Report Setting">
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="agent_id"/>

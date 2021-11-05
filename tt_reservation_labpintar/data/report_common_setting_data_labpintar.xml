@@ -1,0 +1,68 @@
+<odoo>
+    <data noupdate="1">
+        <record id="labpintar_antigen_information" model="tt.report.common.setting">
+            <field name="name">Lab Pintar Antigen Information</field>
+            <field name="code">labpintar_antigen_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information Antigen
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="labpintar_pcr_information" model="tt.report.common.setting">
+            <field name="name">Lab Pintar PCR Information</field>
+            <field name="code">labpintar_pcr_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information PCR
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="labpintar_pcr_express_information" model="tt.report.common.setting">
+            <field name="name">Lab Pintar PCR Express Information</field>
+            <field name="code">labpintar_pcr_express_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information PCR Express
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="labpintar_pcr_priority_information" model="tt.report.common.setting">
+            <field name="name">Lab Pintar PCR Priority Information</field>
+            <field name="code">labpintar_pcr_priority_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information PCR Priority
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="labpintar_srbd_priority_information" model="tt.report.common.setting">
+            <field name="name">Lab Pintar SRBD Information</field>
+            <field name="code">labpintar_srbd_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information SRBD
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

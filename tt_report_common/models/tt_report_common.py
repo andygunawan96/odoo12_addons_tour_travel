@@ -6,8 +6,9 @@ _logger = logging.getLogger(__name__)
 class TtReportCommonSetting(models.Model):
     _name = 'tt.report.common.setting'
     _description = 'Report Common Setting'
-    _order = ''
+    _order = 'sequence'
 
+    sequence = fields.Integer('Sequence')
     name = fields.Char('Name')
     code = fields.Char('code')
     html = fields.Html('Footer HTML')

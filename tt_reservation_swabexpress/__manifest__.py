@@ -23,6 +23,7 @@ TT_TRANSPORT
         'data/tt_timeslot_swabexpress_default_data.xml',
         'data/ir_send_email.xml',
         'data/ir_cron_data.xml',
+        'data/report_common_setting_data_swabexpress.xml',
 
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
