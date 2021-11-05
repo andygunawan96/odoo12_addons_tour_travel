@@ -1,5 +1,8 @@
 from odoo import models, fields, api
+from ...tools.api import Response
+import traceback,logging
 
+_logger = logging.getLogger(__name__)
 
 class ResRate(models.Model):
     _name = 'tt.provider.rate'
@@ -15,3 +18,31 @@ class ResRate(models.Model):
     buy_rate = fields.Monetary('Buy Rate', currency_field='rate_currency_id')
     sell_rate = fields.Monetary('Sell Rate', currency_field='rate_currency_id')
     active = fields.Boolean('Active', default=True)
+
+
+    def get_currency_rate_api(self):
+        try:
+            _objs = self.search([])
+            # response = [rec.get_ssr_data() for rec in _objs]
+            currency_rate = [rec.get_currency_rate_data() for rec in _objs]
+            response = {
+                'currency_rate_data': currency_rate,
+            }
+            res = Response().get_no_error(response)
+        except Exception as e:
+            _logger.error('Error Get SSR API, %s, %s' % (str(e), traceback.format_exc()))
+            res = Response().get_error(str(e), 500)
+        return res
+
+    def get_currency_rate_data(self):
+        res = {
+            'name': self.name,
+            'provider': self.provider_id.code,
+            'date': self.date.strftime('%Y-%m-%d'),
+            'base_currency': self.currency_id.name,
+            'to_currency':  self.rate_currency_id.name,
+            'buy_rate': self.buy_rate,
+            'sell_rate': self.sell_rate,
+            'active': self.active,
+        }
+        return res
