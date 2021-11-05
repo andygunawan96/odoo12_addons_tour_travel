@@ -49,6 +49,7 @@
                             <field name="origin_id"/>
                             <field name="destination_id"/>
                             <field name="departure_date"/>
+                            <field name="arrival_date"/>
                         </group>
                         <group>
                             <field name="master_trip"/>
@@ -115,6 +116,7 @@
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>
+                <field name="arrival_date"/>
                 <!--<field name="total"/>-->
                 <field name="state"/>
             </tree>

@@ -91,6 +91,7 @@
                     <group>
                         <field name="sector_type"/>
                         <field name="departure_date" string="Departure Date"/>
+                        <field name="arrival_date" string="Arrival Date"/>
                     </group>
                 </group>
             </xpath>
