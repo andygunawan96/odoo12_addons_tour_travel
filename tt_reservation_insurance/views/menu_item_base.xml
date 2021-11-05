@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- Insurance -->
+        <menuitem id="top_reservations_insurance"
+                  parent="tt_reservation.main_reservations"
+                  name="Insurance"
+                  sequence="21"
+                  groups="base.group_user"/>
+        
+        <menuitem id="menu_reservations_insurance"
+                  parent="tt_reservation_insurance.top_reservations_insurance"
+                  name="Booking"
+                  sequence="1"/>
+
+    </data>
+</odoo>
