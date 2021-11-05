@@ -22,10 +22,14 @@
                             <field name="pnr"/>
                             <field name="pnr2"/>
                             <field name="provider_id"/>
+                            <field name="carrier_id"/>
+                            <field name="product_type"/>
                             <field name="balance_due"/>
                             <field name="total_price"/>
                             <field name="reconcile_line_id"/>
                             <field name="reconcile_time"/>
+                            <field name="sid_issued"/>
+                            <field name="sid_cancel"/>
                         </group>
                         <group>
                             <field name="hold_date"/>
@@ -45,9 +49,11 @@
                             <field name="origin_id"/>
                             <field name="destination_id"/>
                             <field name="departure_date"/>
-                            <field name="arrival_date"/>
                         </group>
                         <group>
+                            <field name="master_trip"/>
+                            <field name="master_area"/>
+                            <field name="plan_trip"/>
                             <field name="currency_id"/>
                             <field name="sid_issued"/>
                             <field name="sid_cancel"/>
@@ -102,10 +108,13 @@
             <tree>
                 <field name="pnr"/>
                 <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="carrier_id"/>
+                <field name="master_trip"/>
+                <field name="master_area"/>
+                <field name="plan_trip"/>
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>
-                <field name="arrival_date"/>
                 <!--<field name="total"/>-->
                 <field name="state"/>
             </tree>

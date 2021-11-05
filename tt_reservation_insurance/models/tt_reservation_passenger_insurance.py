@@ -15,6 +15,7 @@ class TtReservationCustomer(models.Model):
     is_ticketed = fields.Boolean('Ticketed')
     account_number = fields.Char('Passenger Account Number')
     account_name = fields.Char('Passenger Account Name')
+    passport_type = fields.Selection(variables.IDENTITY_TYPE, 'Passport Type')
     passport_number = fields.Char('Passport Number')
     passport_expdate = fields.Date('Passport Expire Date')
     passport_country_of_issued_id = fields.Many2one('res.country', 'Passport Issued Country')

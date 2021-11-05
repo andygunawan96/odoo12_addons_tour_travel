@@ -27,7 +27,6 @@ class TtProviderInsurance(models.Model):
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
     departure_date = fields.Char('Departure Date', readonly=True, states={'draft': [('readonly', False)]})
-    arrival_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
     master_trip = fields.Selection([('1', 'Single Trip (Tunggal)'), ('2', 'Annual (Tahunan)')], 'Master Trip', readonly=True, states={'draft': [('readonly', False)]})
     master_area = fields.Selection([('1', 'Asia Pacific (Asia Pasifik)'), ('2', 'World Wide (Seluruh Dunia)'),
                                     ('3', 'Schengen Countries (Negara Schengen)'), ('4', 'Domestic (Domestik)')], 'Master Area', readonly=True, states={'draft': [('readonly', False)]})
@@ -773,7 +772,6 @@ class TtProviderInsurance(models.Model):
             'origin': self.origin_id.code,
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
-            'arrival_date': self.arrival_date,
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',

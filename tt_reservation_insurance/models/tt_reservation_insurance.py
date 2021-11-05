@@ -18,7 +18,6 @@ class ReservationInsurance(models.Model):
     _order = "id desc"
     _description = "Reservation Insurance"
 
-    direction = fields.Selection(variables.JOURNEY_DIRECTION, string='Direction', default='OW', required=True, readonly=True, states={'draft': [('readonly', False)]})
     origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
     destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
     sector_type = fields.Char('Sector', readonly=True, compute='_compute_sector_type', store=True)

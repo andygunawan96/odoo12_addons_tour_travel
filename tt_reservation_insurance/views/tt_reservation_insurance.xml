@@ -90,10 +90,7 @@
                     </group>
                     <group>
                         <field name="sector_type"/>
-                        <field name="direction"/>
                         <field name="departure_date" string="Departure Date"/>
-                        <field name="arrival_date" attrs="{'invisible': [('direction', '=', 'OW')],
-                            'required': [('direction', '=', 'ret')]}"/>
                     </group>
                 </group>
             </xpath>
@@ -109,6 +106,7 @@
                             <field name="nationality_id"/>
                             <field name="identity_type"/>
                             <field name="identity_number"/>
+                            <field name="passport_number"/>
                         </tree>
                     </field>
                 </page>
