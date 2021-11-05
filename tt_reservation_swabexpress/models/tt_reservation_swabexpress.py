@@ -263,7 +263,7 @@ class ReservationSwabExpress(models.Model):
                         overtime_price = timeslot_objs.overtime_surcharge
                         single_suplement_price = timeslot_objs.single_supplement
                         cito_suplement_price = timeslot_objs.cito_surcharge
-                        address_surcharge = timeslot_objs.address_surcharge
+                        # address_surcharge = timeslot_objs.address_surcharge #ANTIGEN TIDAK BAYAR PER BOOKING 5 NOV 2021
                         if req['peduli_lindungi']:
                             additional = timeslot_objs.additional_price # PEDULI LINDUNGI
                     else:
