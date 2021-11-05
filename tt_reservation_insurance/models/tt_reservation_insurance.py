@@ -31,10 +31,6 @@ class ReservationInsurance(models.Model):
     provider_booking_ids = fields.One2many('tt.provider.insurance', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default= lambda self: self.env.ref('tt_reservation_insurance.tt_provider_type_insurance'))
-    split_from_resv_id = fields.Many2one('tt.reservation.insurance', 'Splitted From', readonly=1)
-    split_to_resv_ids = fields.One2many('tt.reservation.insurance', 'split_from_resv_id', 'Splitted To', readonly=1)
-    split_uid = fields.Many2one('res.users', 'Splitted by', readonly=True)
-    split_date = fields.Datetime('Splitted Date', readonly=True)
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     printout_ticket_original_ids = fields.Many2many('tt.upload.center', 'reservation_insurance_attachment_rel', 'ori_ticket_id',
