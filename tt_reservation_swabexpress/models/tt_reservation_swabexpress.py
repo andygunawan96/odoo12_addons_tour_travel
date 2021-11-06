@@ -252,7 +252,7 @@ class ReservationSwabExpress(models.Model):
         single_suplement_price = 0
         cito_suplement_price = 0
         additional = 0 # PEDULI LINDUNGI
-        address_surcharges = 0
+        address_surcharge = 0
         #ASUMSI HARGA URUT DARI MIN PAX TERKECIL
         if carrier_id == self.env.ref('tt_reservation_swabexpress.tt_transport_carrier_swabexpress_antigen').id:
             for rec in timeslot_objs:
