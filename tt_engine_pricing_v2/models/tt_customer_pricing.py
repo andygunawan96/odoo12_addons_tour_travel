@@ -146,6 +146,7 @@ class CustomerPricing(models.Model):
     def get_data(self):
         res = {
             'id': self.id,
+            'sequence': self.sequence,
             'name': self.name if self.name else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'customer_parent_type': {
@@ -168,7 +169,7 @@ class CustomerPricing(models.Model):
                 'access_type': self.provider_type_access_type,
                 'provider_type_code_list': [rec.code for rec in self.provider_type_ids]
             },
-            'rule_list': [rec.get_data() for rec in self.line_ids],
+            'rule_list': [rec.get_data() for rec in self.line_ids if rec.active],
             'state': self.state,
         }
         return res
@@ -181,7 +182,7 @@ class CustomerPricing(models.Model):
             expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
             expired_date = expired_date.strftime(FORMAT_DATETIME)
             for obj in objs:
-                if not obj.active or obj.state == 'disable':
+                if not obj.active:
                     continue
 
                 vals = obj.get_data()
@@ -266,6 +267,7 @@ class CustomerPricingLine(models.Model):
     def get_data(self):
         res = {
             'id': self.id,
+            'sequence': self.sequence,
             'name': self.name if self.name else '',
             'set_expiration_date': self.set_expiration_date,
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
