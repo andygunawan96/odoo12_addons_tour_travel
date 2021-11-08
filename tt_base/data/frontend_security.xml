@@ -5,6 +5,11 @@
         <field name="code">ticketing</field>
     </record>
 
+    <record id="able_to_ticketing_insurance" model="tt.frontend.security">
+        <field name="name">Ticketing Insurance</field>
+        <field name="code">ticketing_insurance</field>
+    </record>
+
     <record id="able_to_verify_phc" model="tt.frontend.security">
         <field name="name">Verify PHC</field>
         <field name="code">verify_phc</field>
