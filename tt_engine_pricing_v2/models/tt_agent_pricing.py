@@ -130,6 +130,7 @@ class AgentPricing(models.Model):
     def get_data(self):
         res = {
             'id': self.id,
+            'sequence': self.sequence,
             'name': self.name if self.name else '',
             'agent_type_code': self.agent_type_id.code if self.agent_type_id else '',
             'provider': {
@@ -148,7 +149,7 @@ class AgentPricing(models.Model):
                 'access_type': self.agent_access_type,
                 'agent_id_list': [rec.id for rec in self.agent_ids]
             },
-            'rule_list': [rec.get_data() for rec in self.line_ids],
+            'rule_list': [rec.get_data() for rec in self.line_ids if rec.active],
             'state': self.state,
         }
         return res
@@ -161,7 +162,7 @@ class AgentPricing(models.Model):
             expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
             expired_date = expired_date.strftime(FORMAT_DATETIME)
             for obj in objs:
-                if not obj.active or obj.state == 'disable':
+                if not obj.active:
                     continue
 
                 vals = obj.get_data()
@@ -293,6 +294,7 @@ class AgentPricingLine(models.Model):
     def get_data(self):
         res = {
             'id': self.id,
+            'sequence': self.sequence,
             'name': self.name if self.name else '',
             'set_expiration_date': self.set_expiration_date,
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
@@ -360,7 +362,7 @@ class AgentPricingLine(models.Model):
                     }
                 },
                 'residual_amount_to': self.residual_amount_to,
-                'upline_list': [rec.get_data() for rec in self.upline_ids],
+                'upline_list': [rec.get_data() for rec in self.upline_ids if rec.active],
             },
             'ticketing': {
                 'sales': {
@@ -437,6 +439,7 @@ class AgentPricingUpline(models.Model):
     def get_data(self):
         res = {
             'id': self.id,
+            'sequence': self.sequence,
             'agent_type_code': self.agent_type_id.code if self.agent_type_id else '',
             'commission_by_percentage': {
                 'percentage': self.commission_percentage,
