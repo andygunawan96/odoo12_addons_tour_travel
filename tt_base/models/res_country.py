@@ -2,7 +2,6 @@ from odoo import api, fields, models, _
 from ...tools.api import Response
 import logging, traceback
 
-
 _logger = logging.getLogger(__name__)
 
 
