@@ -5,6 +5,8 @@ import traceback
 from ...tools.api import Response
 import logging
 import copy
+from ...tools.ERR import RequestException
+from ...tools import ERR
 
 _logger = logging.getLogger(__name__)
 
@@ -173,3 +175,13 @@ class Destinations(models.Model):
     def remove_city(self):
         for rec in self.search([]):
             rec.city_id = False
+
+    def get_all_city_for_insurance(self):
+        res = {}
+        data = self.search([])
+        for rec in data:
+            if not res.get(rec.country_id.name):
+                res[rec.country_id.name] = []
+            if not rec.city in res[rec.country_id.name]:
+                res[rec.country_id.name].append(rec.city)
+        return ERR.get_no_error(res)
