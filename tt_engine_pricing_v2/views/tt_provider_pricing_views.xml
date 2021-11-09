@@ -276,6 +276,20 @@ Amadeus cryptic sample request will be : FM5
                                         </group>
                                     </group>
                                 </page>
+                                <page string="NTA Agent" name="reservation_nta_agent">
+                                    <group>
+                                        <field name="rsv_nta_agent_same_as_nta"/>
+                                    </group>
+                                    <group string="Reservation NTA Agent Upsell" attrs="{'invisible': [('rsv_nta_agent_same_as_nta', '=', True)]}">
+                                        <group string="By Amount">
+                                            <field name="rsv_nta_agent_upsell_amount"/>
+                                            <field name="rsv_nta_agent_upsell_route"/>
+                                            <field name="rsv_nta_agent_upsell_segment"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                </page>
                             </notebook>
                         </page>
                         <page string="Ticketing" name="ticketing">
@@ -346,6 +360,42 @@ Amadeus cryptic sample request will be : FM5
                                         </group>
                                     </group>
                                 </page>
+                                <page string="NTA Agent" name="ticketing_nta_agent">
+                                    <group>
+                                        <field name="tkt_nta_agent_same_as_nta"/>
+                                    </group>
+                                    <group string="Ticketing NTA Agent" col="3" colspan="3" attrs="{'invisible': [('tkt_nta_agent_same_as_nta', '=', True)]}">
+                                        <group string="Basic Fare">
+                                            <field name="tkt_nta_agent_fare_percentage"/>
+                                            <field name="tkt_nta_agent_fare_amount"/>
+                                            <field name="tkt_nta_agent_fare_infant"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="tkt_nta_agent_tax_percentage"/>
+                                            <field name="tkt_nta_agent_tax_amount"/>
+                                            <field name="tkt_nta_agent_tax_infant"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="tkt_nta_agent_total_percentage"/>
+                                            <field name="tkt_nta_agent_total_amount"/>
+                                            <field name="tkt_nta_agent_total_infant"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell" attrs="{'invisible': [('tkt_nta_agent_same_as_nta', '=', True)]}">
+                                        <group string="By Percentage">
+                                            <field name="tkt_nta_agent_upsell_percentage"/>
+                                            <field name="tkt_nta_agent_upsell_minimum"/>
+                                            <field name="tkt_nta_agent_upsell_percentage_infant"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="tkt_nta_agent_upsell_amount"/>
+                                            <field name="tkt_nta_agent_upsell_route"/>
+                                            <field name="tkt_nta_agent_upsell_segment"/>
+<!--                                            <field name="tkt_nta_agent_upsell_pax"/>-->
+                                            <field name="tkt_nta_agent_upsell_amount_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
                             </notebook>
                         </page>
                         <page string="Ancillary" name="ancillary">
@@ -403,6 +453,34 @@ Amadeus cryptic sample request will be : FM5
                                         </group>
                                         <group string="By Amount">
                                             <field name="anc_nta_upsell_amount"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="NTA Agent" name="ancillary_nta_agent">
+                                    <group>
+                                        <field name="anc_nta_agent_same_as_nta"/>
+                                    </group>
+                                    <group string="Ancillary NTA Agent" col="3" colspan="3" attrs="{'invisible': [('anc_nta_agent_same_as_nta', '=', True)]}">
+                                        <group string="Basic Fare">
+                                            <field name="anc_nta_agent_fare_percentage"/>
+                                            <field name="anc_nta_agent_fare_amount"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="anc_nta_agent_tax_percentage"/>
+                                            <field name="anc_nta_agent_tax_amount"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="anc_nta_agent_total_percentage"/>
+                                            <field name="anc_nta_agent_total_amount"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell" attrs="{'invisible': [('anc_nta_agent_same_as_nta', '=', True)]}">
+                                        <group string="By Percentage">
+                                            <field name="anc_nta_agent_upsell_percentage"/>
+                                            <field name="anc_nta_agent_upsell_minimum"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="anc_nta_agent_upsell_amount"/>
                                         </group>
                                     </group>
                                 </page>
