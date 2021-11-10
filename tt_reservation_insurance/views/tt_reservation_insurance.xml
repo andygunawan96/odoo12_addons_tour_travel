@@ -85,13 +85,13 @@
                 <separator string="Trip Information"/>
                 <group>
                     <group>
-                        <field name="origin_id" string="Origin" options="{'no_create': True}"/>
-                        <field name="destination_id" string="Destination" options="{'no_create': True}"/>
+                        <field name="origin" string="Origin" options="{'no_create': True}"/>
+                        <field name="destination" string="Destination" options="{'no_create': True}"/>
                     </group>
                     <group>
                         <field name="sector_type"/>
-                        <field name="departure_date" string="Departure Date"/>
-                        <field name="arrival_date" string="Arrival Date"/>
+                        <field name="start_date" string="Start Date"/>
+                        <field name="end_date" string="End Date"/>
                     </group>
                 </group>
             </xpath>
@@ -141,8 +141,8 @@
                     <!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
-                    <!--                        &lt;!&ndash;<field name="arrival_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="start_date"/>&ndash;&gt;-->
+                    <!--                        &lt;!&ndash;<field name="end_date"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->

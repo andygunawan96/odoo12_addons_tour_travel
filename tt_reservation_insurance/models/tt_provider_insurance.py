@@ -14,7 +14,7 @@ class TtProviderInsurance(models.Model):
     _name = 'tt.provider.insurance'
     _inherit = 'tt.history'
     _rec_name = 'pnr'
-    _order = 'departure_date'
+    _order = 'start_date'
     _description = 'Provider Insurance'
 
     pnr = fields.Char('PNR', readonly=True, states={'draft': [('readonly', False)]})
@@ -24,10 +24,10 @@ class TtProviderInsurance(models.Model):
     booking_id = fields.Many2one('tt.reservation.insurance', 'Order Number', ondelete='cascade', readonly=True, states={'draft': [('readonly', False)]})
     sequence = fields.Integer('Sequence', readonly=True, states={'draft': [('readonly', False)]})
     balance_due = fields.Float('Balance Due', readonly=True, states={'draft': [('readonly', False)]})
-    origin_id = fields.Many2one('tt.destinations', 'Origin', readonly=True, states={'draft': [('readonly', False)]})
-    destination_id = fields.Many2one('tt.destinations', 'Destination', readonly=True, states={'draft': [('readonly', False)]})
-    departure_date = fields.Char('Departure Date', readonly=True, states={'draft': [('readonly', False)]})
-    arrival_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
+    origin = fields.Char('Origin', readonly=True, states={'draft': [('readonly', False)]})
+    destination = fields.Char('Destination', readonly=True, states={'draft': [('readonly', False)]})
+    start_date = fields.Char('Start Date', readonly=True, states={'draft': [('readonly', False)]})
+    end_date = fields.Char('End Date', readonly=True, states={'draft': [('readonly', False)]})
     master_trip = fields.Selection([('1', 'Single Trip (Tunggal)'), ('2', 'Annual (Tahunan)')], 'Master Trip', readonly=True, states={'draft': [('readonly', False)]})
     master_area = fields.Selection([('1', 'Asia Pacific (Asia Pasifik)'), ('2', 'World Wide (Seluruh Dunia)'),
                                     ('3', 'Schengen Countries (Negara Schengen)'), ('4', 'Domestic (Domestik)')], 'Master Area', readonly=True, states={'draft': [('readonly', False)]})
@@ -128,23 +128,6 @@ class TtProviderInsurance(models.Model):
             'type': 'ir.actions.client',
             'tag': 'reload',
         }
-
-    def action_sync_refund_status(self):
-        req = {
-            'user_id': self.cancel_uid.id,
-            'pnr': self.pnr,
-            'pnr2': self.pnr2,
-            'provider': self.provider_id.code
-        }
-        res = self.env['tt.insurance.api.con'].send_sync_refund_status(req)
-        if res['error_code'] != 0:
-            return False
-        if res['response']['status'] == 'CANCELLED':
-            self.write({
-                'state': 'cancel',
-                'cancel_date': datetime.now()
-            })
-            self.booking_id.check_provider_state({'co_uid': self.cancel_uid.id})
 
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
@@ -478,38 +461,27 @@ class TtProviderInsurance(models.Model):
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
-    def create_ticket_api(self,passengers,pnr=""):
+    def create_ticket_api(self, passengers):
         ticket_list = []
+        ticket_found = []
         ticket_not_found = []
-
         #################
         for passenger in self.booking_id.passenger_ids:
             passenger.is_ticketed = False
         #################
-
         for psg in passengers:
             psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
-                                                                ('%s%s' % (psg.get('first_name', ''),
-                                                                           psg.get('last_name', ''))).lower().replace(' ',''))
+                                                                       ('%s%s' % (psg.get('first_name', ''),
+                                                                                  psg.get('last_name',
+                                                                                          ''))).lower().replace(' ',
+                                                                                                                ''))
 
             if not psg_obj:
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower()*2 ==
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() * 2 ==
                                                                            ('%s%s' % (psg.get('first_name', ''),
                                                                                       psg.get('last_name',
-                                                                                              ''))).lower().replace(' ',''))
-
-            # September 29, 2021 - SAM
-            # Menambahkan mekanisme match data tiket
-            # Ada vendor yang memotong pada first_name
-            if not psg_obj:
-                psg_name = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.last_name.lower().replace(' ', ''), x.first_name.lower().replace(' ', '')))
-
-            if not psg_obj:
-                psg_name = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.first_name.lower().replace(' ', ''), x.first_name.lower().replace(' ', '')))
-            # END
-
+                                                                                              ''))).lower().replace(' ',
+                                                                                                                    ''))
             if psg_obj:
                 _logger.info(json.dumps(psg_obj.ids))
                 if len(psg_obj.ids) > 1:
@@ -517,144 +489,60 @@ class TtProviderInsurance(models.Model):
                         if not psg_o.is_ticketed:
                             psg_obj = psg_o
                             break
-
-                _logger.info(str(psg_obj))
                 ticket_list.append((0, 0, {
                     'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
+                    'ticket_number': '',
                     'passenger_id': psg_obj.id
                 }))
                 psg_obj.is_ticketed = True
-                psg_obj.create_ssr(psg['fees'],pnr,self.id)
+                ticket_found.append(psg_obj.id)
             else:
-                _logger.info("psg not found :" + json.dumps(psg))
-                _logger.info("psg info: %s " % (
-                    ','.join([rec.name.replace(' ', '').lower() for rec in self.booking_id.passenger_ids])
-                ))
                 ticket_not_found.append(psg)
-
-        psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.is_ticketed == False)
-        for idx, psg in enumerate(ticket_not_found):
-            if idx >= len(psg_with_no_ticket):
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                }))
-            else:
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                    'passenger_id': psg_with_no_ticket[idx].id
-                }))
-                psg_with_no_ticket[idx].is_ticketed = True
-                psg_with_no_ticket[idx].create_ssr(psg['fees'],pnr,self.id)
 
         self.write({
             'ticket_ids': ticket_list
         })
 
-    def update_ticket_api(self,passengers):##isi ticket number
+    def update_ticket_api(self, passengers):  ##isi ticket number
         ticket_not_found = []
-        # September 29, 2021 - SAM
-        # Update mekanisme kriteria match tiket.
-        # Mekanisme match digunakan ilike, karena pada vendor nama bisa terpotong
-        match_ticket_list = []
         for psg in passengers:
-            psg_name_1 = '%s%s' % (psg.get('first_name', '').lower().replace(' ', ''), psg.get('last_name', '').lower().replace(' ', ''))
-            psg_name_2 = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
-            psg_ticket_number = psg.get('ticket_number', '')
-            has_ticket_number = True if psg_ticket_number else False
-
             ticket_found = False
             for ticket in self.ticket_ids:
-                if ticket.id in match_ticket_list:
-                    continue
-
-                # ticket_passenger_name = ticket.passenger_id and ticket.passenger_id.name or ''
-                # psg_name = ticket_passenger_name.replace(' ','').lower()
-                # if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ','').lower() in [psg_name, psg_name*2] and not ticket.ticket_number or (psg.get('ticket_number') and ticket.ticket_number == psg.get('ticket_number')):
-                if ticket.passenger_id:
-                    ticket_first_name = ticket.passenger_id.first_name.lower().replace(' ', '') if ticket.passenger_id.first_name else ''
-                    ticket_last_name = ticket.passenger_id.last_name.lower().replace(' ', '') if ticket.passenger_id.last_name else ''
-                    ticket_name_1 = '%s%s' % (ticket_first_name, ticket_last_name)
-                    ticket_name_2 = '%s%s' % (ticket_last_name, ticket_first_name)
-                    ticket_name_3 = '%s%s' % (ticket_first_name, ticket_first_name)
-                    ticket_number = ticket.ticket_number if ticket.ticket_number else ''
-
-                    is_match = False
-                    if ticket_number:
-                        if has_ticket_number and psg_ticket_number == ticket_number:
-                            is_match = True
-                    else:
-                        if (psg_name_1 in ticket_name_1) or (psg_name_1 in ticket_name_3) or (psg_name_2 in ticket_name_2) or (psg_name_2 in ticket_name_3):
-                            is_match = True
-                    if is_match:
-                        match_ticket_list.append(ticket.id)
-                        ticket_values = {
-                            'ticket_number': psg.get('ticket_number', ''),
-                            'ff_number': psg.get('ff_number', ''),
-                        }
-                        # if ticket_values['ff_code']:
-                        #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
-                        #     if loyalty_id:
-                        #         ticket_values['loyalty_program_id'] = loyalty_id
-                        ticket.write(ticket_values)
-                        ticket_found = True
-                        ticket.passenger_id.is_ticketed = True
-                        break
+                psg_name = ticket.passenger_id.name.replace(' ', '').lower()
+                if ('%s%s' % (psg['first_name'], psg['last_name'])).replace(' ', '').lower() in [psg_name,
+                                                                                                 psg_name * 2] and not ticket.ticket_number:
+                    ticket.write({
+                        'ticket_number': psg.get('ticket_number', '')
+                    })
+                    ticket_found = True
+                    ticket.passenger_id.is_ticketed = True
+                    break
             if not ticket_found:
                 ticket_not_found.append(psg)
-        # END
 
         for psg in ticket_not_found:
-            # April 21, 2020 - SAM
-            # self.write({
-            #     'ticket_ids': [(0,0,{
-            #         'ticket_number': psg.get('ticket_number'),
-            #         'pax_type': psg.get('pax_type'),
-            #     })]
-            # })
-            ticket_values = {
-                'ticket_number': psg.get('ticket_number'),
-                'ff_number': psg.get('ff_number', ''),
-                'pax_type': psg.get('pax_type'),
-            }
-            if psg.get('passenger_id'):
-                ticket_values['passenger_id'] = psg['passenger_id']
-            # if ticket_values['ff_code']:
-            #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
-            #     if loyalty_id:
-            #         ticket_values['loyalty_program_id'] = loyalty_id
             self.write({
-                'ticket_ids': [(0, 0, ticket_values)]
+                'ticket_ids': [(0, 0, {
+                    'ticket_number': psg.get('ticket_number'),
+                    'pax_type': psg.get('pax_type'),
+                })]
             })
-            # END
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
 
         for scs in service_charge_vals:
-            # update 19 Feb 2020 maximum per pax sesuai dengan pax_count dari service charge
-            # scs['pax_count'] = 0
-            # April 28, 2020 - SAM
             currency_id = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
             foreign_currency_id = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
             scs_pax_count = 0
             total = 0
-            # scs['passenger_insurance_ids'] = []
-            # scs['total'] = 0
-            # scs['currency_id'] = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
-            # scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
-            # scs['provider_insurance_booking_id'] = self.id
             passenger_insurance_ids = []
             for psg in self.ticket_ids:
                 if scs['pax_type'] == psg.pax_type and scs_pax_count < scs['pax_count']:
-                    # scs['passenger_insurance_ids'].append(psg.passenger_id.id)
                     passenger_insurance_ids.append(psg.passenger_id.id)
                     # scs['pax_count'] += 1
                     scs_pax_count += 1
-                    # scs['total'] += scs['amount']
                     total += scs['amount']
             scs.update({
                 'passenger_insurance_ids': [(6, 0, passenger_insurance_ids)],
@@ -666,21 +554,8 @@ class TtProviderInsurance(models.Model):
             })
             scs.pop('currency')
             scs.pop('foreign_currency')
-            # scs['passenger_insurance_ids'] = [(6,0,scs['passenger_insurance_ids'])]
-            # scs['description'] = self.pnr
             # END
             service_chg_obj.create(scs)
-
-        # "sequence": 1,
-        # "charge_code": "fare",
-        # "charge_type": "FARE",
-        # "currency": "IDR",
-        # "amount": 4800000,
-        # "foreign_currency": "IDR",
-        # "foreign_amount": 4800000,
-        # "pax_count": 3,
-        # "pax_type": "ADT",
-        # "total": 14400000
 
     def delete_service_charge(self):
         ledger_created = False
@@ -743,56 +618,29 @@ class TtProviderInsurance(models.Model):
         #     raise UserError("Cannot create ledger, ledger has been created before.")
 
     def to_dict(self):
-        journey_list = []
-        for rec in self.journey_ids:
-            journey_list.append(rec.to_dict())
         ticket_list = []
         for rec in self.ticket_ids:
             ticket_list.append(rec.to_dict())
-
-        service_charges = []
-        for rec in self.cost_service_charge_ids:
-            if rec.charge_type == 'RAC' and not rec.charge_code == 'rac':
-                continue
-            service_charges.append(rec.to_dict())
-
-        rules = []
-        for rec in self.rule_ids:
-            rules.append(rec.to_dict())
-
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
             'provider': self.provider_id.code,
             'provider_id': self.id,
-            'agent_id': self.booking_id.agent_id.id if self.booking_id and self.booking_id.agent_id else '',
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'sequence': self.sequence,
             'balance_due': self.balance_due,
-            'origin': self.origin_id.code,
-            'destination': self.destination_id.code,
-            'departure_date': self.departure_date,
-            'arrival_date': self.arrival_date,
-            'journeys': journey_list,
+            'total_price': self.total_price,
+            'origin': self.origin,
+            'destination': self.destination,
+            'start_date': self.start_date,
+            'end_date': self.end_date,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
-            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
-            # 'service_charges': service_charges,
-            # April 29, 2020 - SAM
-            'reference': self.reference,
-            'total_price': self.total_price,
-            'penalty_amount': self.penalty_amount,
-            'penalty_currency': self.penalty_currency and self.penalty_currency or '',
-            'is_advance_purchase': self.is_advance_purchase,
-            'is_force_issued': self.booking_id.is_force_issued,
-            'is_halt_process': self.booking_id.is_halt_process,
-            # END
-            # June 28, 2021 - SAM
-            'rules': rules,
-            # END
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or ''
         }
+
         return res
 
     def get_carrier_name(self):
@@ -802,122 +650,3 @@ class TtProviderInsurance(models.Model):
                 if segment.carrier_id:
                     carrier_names.add(segment.carrier_id.name)
         return carrier_names
-
-    # def get_cost_service_charges(self):
-    #     sc_value = {}
-    #     for p_sc in self.cost_service_charge_ids:
-    #         p_charge_type = p_sc.charge_type
-    #         p_pax_type = p_sc.pax_type
-    #         if p_charge_type == 'RAC' and p_sc.charge_code !=  'rac':
-    #             continue
-    #         if not sc_value.get(p_pax_type):
-    #             sc_value[p_pax_type] = {}
-    #         if not sc_value[p_pax_type].get(p_charge_type):
-    #             sc_value[p_pax_type][p_charge_type] = {}
-    #             sc_value[p_pax_type][p_charge_type].update({
-    #                 'amount': 0,
-    #                 'foreign_amount': 0
-    #             })
-    #         sc_value[p_pax_type][p_charge_type].update({
-    #             'charge_code': p_sc.charge_code,
-    #             'currency': p_sc.currency_id.name,
-    #             'pax_count': p_sc.pax_count,
-    #             'total': p_sc.total,
-    #             'foreign_currency': p_sc.foreign_currency_id.name,
-    #             'amount': sc_value[p_pax_type][p_charge_type]['amount'] + p_sc.amount,
-    #             'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
-    #         })
-    #     return sc_value
-
-    # June 2, 2021 - SAM
-    def action_reprice_provider(self):
-        if not self.provider_id:
-            raise Exception('Provider is not set')
-        req = {
-            "provider": self.provider_id.code,
-            "pnr": self.pnr,
-            "pnr2": self.pnr2,
-            "reference": self.reference
-        }
-        res = self.env['tt.insurance.api.con'].send_reprice_booking_vendor(req)
-        _logger.info('Action Reprice Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
-
-        try:
-            if res['error_code'] != 0:
-                order_number = self.booking_id.name if self.booking_id else ''
-                msg = [
-                    'Reprice Provider - ERROR',
-                    '',
-                    'Order Number: %s' % order_number,
-                    'PNR: %s' % self.pnr,
-                    'Error: %s' % res['error_msg'],
-                ]
-                data = {
-                    'code': 9903,
-                    'message': '\n'.join(msg),
-                    'provider': self.provider_id.code,
-                }
-                GatewayConnector().telegram_notif_api(data, {})
-                return False
-
-            order_number = self.booking_id.name if self.booking_id else ''
-            msg = [
-                'Reprice Provider - SUCCESS',
-                '',
-                'Order Number: %s' % order_number,
-                'PNR: %s' % self.pnr,
-                'Original Total Price: %s' % self.total_price,
-                'New Total Price: %s' % res['response']['total_price'],
-            ]
-            data = {
-                'code': 9901,
-                'message': '\n'.join(msg),
-                'provider': self.provider_id.code,
-            }
-            GatewayConnector().telegram_notif_api(data, {})
-        except:
-            _logger.error('Action reprice provider, error notif telegram, %s, %s' % (self.pnr, traceback.format_exc()))
-
-        return True
-    # END
-
-    def update_pricing_details(self, fare_data):
-        try:
-            pricing_provider_line_ids = []
-            for rec in self.pricing_provider_line_ids:
-                pricing_provider_line_ids.append((2, rec.id))
-            if 'pricing_provider_list' in fare_data:
-                for pp in fare_data['pricing_provider_list']:
-                    pricing_provider_line_ids.append((0, 0, pp))
-
-            pricing_agent_ids = []
-            for rec in self.pricing_agent_ids:
-                pricing_agent_ids.append((2, rec.id))
-            if 'pricing_agent_list' in fare_data:
-                for pp in fare_data['pricing_agent_list']:
-                    pricing_agent_ids.append((0, 0, pp))
-
-            if pricing_provider_line_ids or pricing_agent_ids:
-                self.write({
-                    'pricing_provider_line_ids': pricing_provider_line_ids,
-                    'pricing_agent_ids': pricing_agent_ids,
-                })
-        except:
-            _logger.error('Error update pricing details, %s' % traceback.format_exc())
-        return True
-
-
-class TtProviderInsuranceRule(models.Model):
-    _name = 'tt.provider.insurance.rule'
-    _description = 'Provider insurance Rule'
-
-    name = fields.Char('Name', default='')
-    description = fields.Text('Description', default='')
-    provider_booking_id = fields.Many2one('tt.provider.insurance', string='Provider Booking', ondelete='cascade')
-
-    def to_dict(self):
-        res = {
-            'name': self.name if self.name else '',
-            'description': [self.description] if self.description else [],
-        }
-        return res
