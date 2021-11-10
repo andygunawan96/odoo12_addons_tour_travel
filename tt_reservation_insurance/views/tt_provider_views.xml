@@ -46,10 +46,10 @@
                     </group>
                     <group string="Itinerary Info">
                         <group>
-                            <field name="origin_id"/>
-                            <field name="destination_id"/>
-                            <field name="departure_date"/>
-                            <field name="arrival_date"/>
+                            <field name="origin"/>
+                            <field name="destination"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
                         </group>
                         <group>
                             <field name="master_trip"/>
@@ -113,10 +113,10 @@
                 <field name="master_trip"/>
                 <field name="master_area"/>
                 <field name="plan_trip"/>
-                <field name="origin_id"/>
-                <field name="destination_id"/>
-                <field name="departure_date"/>
-                <field name="arrival_date"/>
+                <field name="origin"/>
+                <field name="destination"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
                 <!--<field name="total"/>-->
                 <field name="state"/>
             </tree>

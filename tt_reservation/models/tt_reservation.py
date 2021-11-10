@@ -494,6 +494,8 @@ class TtReservation(models.Model):
             psg_obj = passenger_obj.create(psg)
             if psg.get('identity'):
                 psg_obj.add_or_update_identity(psg['identity'])
+            if psg.get('identity_passport'):
+                psg_obj.add_or_update_identity(psg['identity_passport'])
             res_ids.append(psg_obj)
 
         return res_ids
@@ -514,7 +516,7 @@ class TtReservation(models.Model):
         for rec in passenger:
             nationality_id = country_obj.search([('code','=ilike',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
-            list_passenger_value.append((0,0,{
+            pax_data = (0,0,{
                 'name': "%s %s" % (rec['first_name'],rec['last_name']),
                 'first_name': rec['first_name'],
                 'last_name': rec['last_name'],
@@ -527,7 +529,16 @@ class TtReservation(models.Model):
                 'identity_expdate': identity and identity['identity_expdate'] or False,
                 'identity_country_of_issued_id': identity and country_obj.search([('code','=ilike',identity['identity_country_of_issued_code'])],limit=1).id or False,
                 'sequence': rec['sequence']
-            }))
+            })
+            identity_passport = rec.get('identity_passport')
+            if identity_passport:
+                pax_data[2].update({
+                    'passport_type': identity_passport['identity_type'],
+                    'passport_number': identity_passport['identity_number'],
+                    'passport_expdate': identity_passport['identity_expdate'],
+                    'passport_country_of_issued_id': country_obj.search([('code','=ilike',identity_passport['identity_country_of_issued_code'])],limit=1).id,
+                })
+            list_passenger_value.append(pax_data)
 
         return list_passenger_value
 
