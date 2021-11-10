@@ -512,6 +512,19 @@
             <field name="sequence">185</field>
         </record>
 
+        <record model="ir.module.category" id="module_category_master_data_mitrakeluarga">
+            <field name="name">Master Data Mitra Keluarga</field>
+            <field name="description">To manage Mitra Keluarga Master Data</field>
+            <field name="sequence">186</field>
+        </record>
+
+
+        <record model="ir.module.category" id="module_category_external_vendor_mitrakeluarga">
+            <field name="name">External Vendor Mitra Keluarga</field>
+            <field name="description">To manage Mitra Keluarga as External Vendor</field>
+            <field name="sequence">187</field>
+        </record>
+
     <!--    old categories start from here-->
 
         <record model="ir.module.category" id="module_category_sub_agent_user">

@@ -32,5 +32,6 @@ from . import tt_phc_api
 from . import tt_medical_api
 from . import tt_swabexpress_api
 from . import tt_labpintar_api
+from . import tt_mitrakeluarga_api
 from . import tt_bus_api
 from . import tt_insurance_api

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_price_list_mitrakeluarga_drivethru_antigen" model="tt.price.list.mitrakeluarga">
+            <field name="name">Default Antigen Drive Thru</field>
+            <field name="min_pax">1</field>
+            <field name="commission">25000</field>
+            <field name="base_price">90000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_mitrakeluarga_homecare_antigen" model="tt.price.list.mitrakeluarga">
+            <field name="name">Default Antigen Home Care</field>
+            <field name="min_pax">1</field>
+            <field name="commission">9000</field>
+            <field name="base_price">90000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_mitrakeluarga_drivethru_pcr" model="tt.price.list.mitrakeluarga">
+            <field name="name">Default PCR Drive Thru</field>
+            <field name="min_pax">1</field>
+            <field name="commission">25000</field>
+            <field name="base_price">275000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_mitrakeluarga_homecare_pcr" model="tt.price.list.mitrakeluarga">
+            <field name="name">Default PCR Home Care</field>
+            <field name="min_pax">1</field>
+            <field name="commission">27500</field>
+            <field name="base_price">275000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_mitrakeluarga_drivethru_srbd" model="tt.price.list.mitrakeluarga">
+            <field name="name">Default SRBD Drive Thru</field>
+            <field name="min_pax">1</field>
+            <field name="commission">25000</field>
+            <field name="base_price">190000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_mitrakeluarga_homecare_srbd" model="tt.price.list.mitrakeluarga">
+            <field name="name">Default SRBD Home Care</field>
+            <field name="min_pax">1</field>
+            <field name="commission">19000</field>
+            <field name="base_price">190000</field>
+            <field name="active">True</field>
+        </record>
+
+
+        <record id="tt_timeslot_mitrakeluarga_default_data_homecare_sub" model="tt.timeslot.mitrakeluarga.default">
+            <field name="name">Default Timeslot Data Home Care</field>
+            <!--DEFAULT DATA SBY-->
+            <field name="single_supplement">0</field>
+            <field name="overtime_surcharge">0</field>
+            <field name="cito_surcharge">0</field>
+            <field name="antigen_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_homecare_antigen')
+                             ])]"/>
+            <field name="pcr_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_homecare_pcr')
+                             ])]"/>
+            <field name="srbd_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_homecare_srbd')
+                             ])]"/>
+        </record>
+
+        <record id="tt_timeslot_mitrakeluarga_default_data_drivethru_sub" model="tt.timeslot.mitrakeluarga.default">
+            <field name="name">Default Timeslot Data Drive Thru</field>
+            <!--DEFAULT DATA SBY-->
+            <field name="single_supplement">0</field>
+            <field name="overtime_surcharge">0</field>
+            <field name="cito_surcharge">0</field>
+            <field name="antigen_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_drivethru_antigen')
+                             ])]"/>
+            <field name="pcr_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_drivethru_pcr')
+                             ])]"/>
+            <field name="srbd_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_drivethru_srbd')
+                             ])]"/>
+        </record>
+
+    </data>
+</odoo>

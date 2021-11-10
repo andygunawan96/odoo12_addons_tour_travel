@@ -4,8 +4,8 @@
 
         <record id="tt_transport_carrier_swabexpress_antigen" model="tt.transport.carrier">
             <field name="name">Antigen</field>
-            <field name="code">SEKATG</field>
-            <field name="icao">SEKATG</field>
+            <field name="code">SEHCKATG</field>
+            <field name="icao">SEHCKATG</field>
             <field name="call_sign">SWAB EXPRESS ANTIGEN</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_swabexpress.tt_provider_type_swabexpress"/>
@@ -13,16 +13,16 @@
 
         <record id="tt_transport_carrier_swabexpress_pcr" model="tt.transport.carrier">
             <field name="name">PCR</field>
-            <field name="code">SEKPCR</field>
-            <field name="icao">SEKPCR</field>
+            <field name="code">SEHCKPCR</field>
+            <field name="icao">SEHCKPCR</field>
             <field name="call_sign">SWAB EXPRESS PCR</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_swabexpress.tt_provider_type_swabexpress"/>
         </record>
         <record id="tt_transport_carrier_swabexpress_pcr_priority" model="tt.transport.carrier">
             <field name="name">PCR Priority</field>
-            <field name="code">SEPPCR</field>
-            <field name="icao">SEPPCR</field>
+            <field name="code">SEHCPPCR</field>
+            <field name="icao">SEHCPPCR</field>
             <field name="call_sign">SWAB EXPRESS PCR Priority</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_swabexpress.tt_provider_type_swabexpress"/>
