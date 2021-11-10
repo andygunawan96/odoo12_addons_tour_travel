@@ -514,11 +514,11 @@ class TtProviderAirline(models.Model):
             # Ada vendor yang memotong pada first_name
             if not psg_obj:
                 psg_name = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.last_name.lower().replace(' ', ''), x.first_name.lower().replace(' ', '')))
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.last_name.lower().replace(' ', '') if x.last_name else '', x.first_name.lower().replace(' ', '') if x.first_name else ''))
 
             if not psg_obj:
                 psg_name = '%s%s' % (psg.get('last_name', '').lower().replace(' ', ''), psg.get('first_name', '').lower().replace(' ', ''))
-                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.first_name.lower().replace(' ', ''), x.first_name.lower().replace(' ', '')))
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: psg_name in '%s%s' % (x.first_name.lower().replace(' ', '') if x.first_name else '', x.first_name.lower().replace(' ', '') if x.first_name else ''))
             # END
 
             if psg_obj:
