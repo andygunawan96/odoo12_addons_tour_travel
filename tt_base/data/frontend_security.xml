@@ -55,6 +55,11 @@
         <field name="code">ticketing_medical</field>
     </record>
 
+    <record id="able_to_ticketing_mitra_keluarga" model="tt.frontend.security">
+        <field name="name">Ticketing Mitra Keluarga</field>
+        <field name="code">ticketing_mitrakeluarga</field>
+    </record>
+
     <record id="able_to_confirm_order_medical" model="tt.frontend.security">
         <field name="name">Confirm Order Medical</field>
         <field name="code">confirm_order_medical</field>
