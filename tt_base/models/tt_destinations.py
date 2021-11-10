@@ -5,10 +5,13 @@ import traceback
 from ...tools.api import Response
 import logging
 import copy
-from ...tools.ERR import RequestException
-from ...tools import ERR
+from datetime import datetime, timedelta
+from ...tools import util, ERR
+
 
 _logger = logging.getLogger(__name__)
+FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
+EXPIRED_SECONDS = 300
 
 
 @api.model
@@ -185,3 +188,56 @@ class Destinations(models.Model):
             if not rec.city in res[rec.country_id.name]:
                 res[rec.country_id.name].append(rec.city)
         return ERR.get_no_error(res)
+
+    # November 10, 2021 - SAM
+    # New Get Data API Function for DestinationToolsV3
+    def get_destination_data_api(self):
+        try:
+            objs = self.env['tt.destinations'].sudo().search([])
+            destination_data = {}
+            date_now = datetime.now().strftime(FORMAT_DATETIME)
+            expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
+            expired_date = expired_date.strftime(FORMAT_DATETIME)
+
+            country_data = {}
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                provider_type = obj.provider_type_id.code if obj.provider_type_id else ''
+                if not provider_type:
+                    continue
+
+                vals = obj.get_destination_data()
+                destination_code = vals['code']
+
+                if not destination_code:
+                    continue
+
+                country_code = obj.country_id.code if obj.country_id else ''
+                if country_code and country_code not in country_data:
+                    country_data[country_code] = obj.country_id.get_country_data()
+
+                vals.update({
+                    'country_code': country_code,
+                    'country_id': country_data.get(country_code, {})
+                })
+
+                if provider_type not in destination_data:
+                    destination_data[provider_type] = {
+                        # 'destination_list': [],
+                        'destination_dict': {},
+                        'create_date': date_now,
+                        'expired_date': expired_date,
+                    }
+                # destination_data[provider_type]['destination_list'].append(vals)
+                destination_data[provider_type]['destination_dict'][destination_code] = vals
+
+            payload = {
+                'destination_data': destination_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Destination Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+    # END
