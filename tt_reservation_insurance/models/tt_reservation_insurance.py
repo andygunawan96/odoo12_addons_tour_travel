@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import base64
 import json
 import copy
+import pytz
 
 _logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ class ReservationInsurance(models.Model):
         # May 11, 20202 - SAM
         # Bisa di comment, karena fungsi mengisi hold dan pnr telah dipisahkan
         if hold_date:
-            write_values['hold_date'] = hold_date
+            write_values['hold_date'] = hold_date and hold_date.strftime('%Y-%m-%d %H:%M:%S') or False
         if pnr_list:
             write_values['pnr'] = ', '.join(pnr_list)
         # END
@@ -276,10 +277,9 @@ class ReservationInsurance(models.Model):
 
             book_obj = self.create(values)
             provider_ids, name_ids = book_obj._create_provider_api(book_data, context)
-
+            hold_date = False
             for provider_obj in provider_ids:
                 provider_obj.create_ticket_api(passengers)
-
                 service_charges_val = []
                 for svc in book_data['service_charges']:
                     ## currency di skip default ke company
@@ -613,22 +613,6 @@ class ReservationInsurance(models.Model):
             # issued
             ##credit limit
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-
-            # May 13, 2020 - SAM
-            # if req.get('force_issued'):
-            #     self.calculate_service_charge()
-            #     self.action_booked_api_insurance(context, pnr_list, hold_date)
-            #     payment_res = self.payment_insurance_api({'book_id': req['book_id'],
-            #                                             'member': req.get('member', False),
-            #                                             'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
-            #     if payment_res['error_code'] != 0:
-            #         try:
-            #             self.env['tt.insurance.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
-            #         except Exception as e:
-            #             _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
-            #         raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
-            # END
-            # self.calculate_service_charge()
             self.action_issued_api_insurance(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
@@ -637,9 +621,7 @@ class ReservationInsurance(models.Model):
             self.action_partial_issued_api_insurance(context['co_uid'],customer_parent_id)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
-            # self.calculate_service_charge()
-            # self.action_booked_api_insurance(context, pnr_list, hold_date)
-            self.action_booked_api_insurance(context)
+            self.action_booked_api_insurance(context, pnr_list, hold_date)
         elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
             # partial booked
             # self.calculate_service_charge()
@@ -797,13 +779,22 @@ class ReservationInsurance(models.Model):
         name['carrier'].append(carrier_id.name)
         sequence = 0
         values = {
+            'pnr': self.name,
             'provider_id': provider_id,
+            'carrier_id': carrier_id.id,
             'booking_id': self.id,
             'sequence': sequence,
             'origin': book_data['origin'],
             'destination': book_data['destination'],
             'start_date': book_data['date_start'],
             'end_date': book_data['date_end'],
+            'master_area': book_data['master_area_id'],
+            'plan_trip': book_data['plan_trip_id'],
+            'master_trip': book_data['master_trip_id'],
+            'product_type': book_data['product_type_id'],
+            'balance_due': book_data['total'],
+            'total_price': book_data['total'],
+            'hold_date': (datetime.strptime(book_data['date_start'], '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d') + ' 23:00:00',
             'state': 'booked',
             'booked_uid': api_context['co_uid'],
             'booked_date': datetime.now()
@@ -904,6 +895,9 @@ class ReservationInsurance(models.Model):
                 pnr_list.append(rec.pnr)
 
         if hold_date:
+            user_tz = pytz.timezone('Asia/Jakarta')
+            hold_date_utc = user_tz.localize(fields.Datetime.from_string(hold_date.strftime('%Y-%m-%d %H:%M:%S')))
+            hold_date = hold_date_utc.astimezone(pytz.timezone('UTC'))
             hold_date_str = hold_date.strftime('%Y-%m-%d %H:%M:%S')
             if self.hold_date != hold_date_str:
                 values['hold_date'] = hold_date_str

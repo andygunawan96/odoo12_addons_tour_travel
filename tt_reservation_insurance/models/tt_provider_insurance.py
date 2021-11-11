@@ -23,7 +23,7 @@ class TtProviderInsurance(models.Model):
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft', readonly=True, states={'draft': [('readonly', False)]})
     booking_id = fields.Many2one('tt.reservation.insurance', 'Order Number', ondelete='cascade', readonly=True, states={'draft': [('readonly', False)]})
     sequence = fields.Integer('Sequence', readonly=True, states={'draft': [('readonly', False)]})
-    balance_due = fields.Float('Balance Due', readonly=True, states={'draft': [('readonly', False)]})
+    balance_due = fields.Float('Balance Due', default=0, readonly=True, states={'draft': [('readonly', False)]})
     origin = fields.Char('Origin', readonly=True, states={'draft': [('readonly', False)]})
     destination = fields.Char('Destination', readonly=True, states={'draft': [('readonly', False)]})
     start_date = fields.Char('Start Date', readonly=True, states={'draft': [('readonly', False)]})
@@ -189,7 +189,7 @@ class TtProviderInsurance(models.Model):
         values = {}
         # todo ini buat ngambil semua key data dari response yang dikirim
         provider_data_keys = [key for key in provider_data.keys()]
-        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency', 'is_hold_date_sync', 'is_advance_purchase']:
+        for key in ['pnr', 'pnr2', 'reference', 'balance_due', 'balance_due_str', 'total_price', 'penalty_amount', 'penalty_currency']:
             # if not provider_data.get(key):
             # todo ini buat ngecek klo key nya ada baru di update value nya
             if key not in provider_data_keys:
@@ -385,6 +385,7 @@ class TtProviderInsurance(models.Model):
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
                 'sid_issued': context['signature'],
+                'balance_due': 0
             }
             if not rec.booked_date:
                 values.update({
@@ -635,6 +636,16 @@ class TtProviderInsurance(models.Model):
             'destination': self.destination,
             'start_date': self.start_date,
             'end_date': self.end_date,
+            'carrier_code': self.carrier_id.code,
+            'carrier_name': self.carrier_id.name,
+            'master_area': self.master_area,
+            'master_area_str': dict(self._fields['master_area'].selection).get(self.master_area),
+            'plan_trip': self.plan_trip,
+            'plan_trip_str': dict(self._fields['plan_trip'].selection).get(self.plan_trip),
+            'master_trip': self.master_trip,
+            'master_trip_str': dict(self._fields['master_trip'].selection).get(self.master_trip),
+            'product_type': self.product_type,
+            'product_type_str': dict(self._fields['product_type'].selection).get(self.product_type),
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
