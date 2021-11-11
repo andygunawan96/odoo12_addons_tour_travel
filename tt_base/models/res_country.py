@@ -67,6 +67,33 @@ class Country(models.Model):
             return found
         return False
 
+    # November 11, 2021 - SAM
+    # New Get Country API
+    def get_country_api(self):
+        try:
+            objs = self.env['res.country'].sudo().search([])
+            country_data = {
+                'country_dict': {}
+            }
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                vals = obj.get_country_data()
+                country_code = vals['code']
+                if not country_code:
+                    continue
+
+                country_data['country_dict'][country_code] = vals
+
+            payload = {
+                'country_data': country_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Country Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+
 
 class CountryState(models.Model):
     _inherit = "res.country.state"
