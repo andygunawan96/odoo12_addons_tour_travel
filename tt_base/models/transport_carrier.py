@@ -118,6 +118,39 @@ class TransportCarrier(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
+    # November 11, 2021 - SAM
+    # New Get Carrier API
+    def get_carrier_api(self):
+        try:
+            objs = self.env['tt.transport.carrier'].sudo().search([])
+            carrier_data = {}
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                provider_type_code = obj.provider_type_id.code if obj.provider_type_id else ''
+                if not provider_type_code:
+                    continue
+
+                vals = obj.get_carrier_data()
+                carrier_code = vals['code']
+                if not carrier_code:
+                    continue
+
+                if provider_type_code not in carrier_data:
+                    carrier_data[provider_type_code] = {
+                        'carrier_dict': {},
+                    }
+                carrier_data[provider_type_code]['carrier_dict'][carrier_code] = vals
+
+            payload = {
+                'carrier_data': carrier_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Carrier Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+
 
 class TransportCarrierType(models.Model):
     _name = 'tt.transport.carrier.type'
@@ -182,3 +215,36 @@ class TransportCarrierType(models.Model):
             _logger.error('Error Get Carrier Type List, %s, %s' % (str(e), traceback.format_exc()))
             res = Response().get_error(str(e), 500)
         return res
+
+    # November 11, 2021 - SAM
+    # New Get Carrier Type API
+    def get_carrier_type_api(self):
+        try:
+            objs = self.env['tt.transport.carrier.type'].sudo().search([])
+            carrier_type_data = {}
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                provider_type_code = obj.provider_type_id.code if obj.provider_type_id else ''
+                if not provider_type_code:
+                    continue
+
+                vals = obj.get_carrier_type_data()
+                carrier_type_code = vals['code']
+                if not carrier_type_code:
+                    continue
+
+                if provider_type_code not in carrier_type_data:
+                    carrier_type_data[provider_type_code] = {
+                        'carrier_type_dict': {},
+                    }
+                carrier_type_data[provider_type_code]['carrier_type_dict'][carrier_type_code] = vals
+
+            payload = {
+                'carrier_type_data': carrier_type_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Carrier Type Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload

@@ -161,6 +161,47 @@ class TtSSRList(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
+    # November 11, 2021 - SAM
+    # New Get SSR API
+    def get_ssr_data_api(self):
+        try:
+            objs = self.env['tt.ssr.list'].sudo().search([])
+            ssr_data = {}
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                provider_type_code = obj.provider_type_id.code if obj.provider_type_id else ''
+                provider_code = obj.provider_id.code if obj.provider_id else ''
+
+                if not provider_type_code or not provider_code:
+                    continue
+
+                vals = obj.get_ssr_data()
+                ssr_code = vals['code']
+                if not ssr_code:
+                    continue
+
+                if provider_type_code not in ssr_data:
+                    ssr_data[provider_type_code] = {
+                        'provider_dict': {},
+                    }
+
+                if provider_code not in ssr_data[provider_type_code]['provider_dict']:
+                    ssr_data[provider_type_code]['provider_dict'][provider_code] = {
+                        'ssr_dict': {}
+                    }
+
+                ssr_data[provider_type_code]['provider_dict'][provider_code]['ssr_dict'][ssr_code] = vals
+
+            payload = {
+                'ssr_data': ssr_data
+            }
+        except Exception as e:
+            _logger.error('Error Get SSR Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+
 
 class TtSSRListLine(models.Model):
     _name = 'tt.ssr.list.line'
