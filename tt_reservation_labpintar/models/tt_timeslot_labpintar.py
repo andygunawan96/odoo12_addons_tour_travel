@@ -203,3 +203,4 @@ class TtTimeslotlabpintardefault(models.Model):
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
 
     cito_surcharge = fields.Monetary('Cito Surcharge', default=CITO_SURCHARGE, required=True)
+    time_string = fields.Text('Time String', default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00', required=True)

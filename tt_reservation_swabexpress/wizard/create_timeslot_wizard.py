@@ -82,6 +82,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
         self.cito_surcharge = self.default_data_id.cito_surcharge
         self.address_surcharge = self.default_data_id.address_surcharge
         self.additional_price = self.default_data_id.additional_price
+        self.time_string = self.default_data_id.time_string
 
     @api.onchange('start_date')
     def _onchange_start_date(self):
@@ -104,7 +105,6 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
         date_delta = date_delta.days+1
         create_values = []
         timelist = self.time_string.split(',')
-        id_timelist_swabexpress = self.id_time_vendor.split(',')
 
         #price list
         antigen_list = False
@@ -128,6 +128,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
             single_supplement = default_data.single_supplement
             overtime_surcharge = default_data.overtime_surcharge
             cito_surcharge = default_data.cito_surcharge
+            address_surcharge = default_data.address_surcharge
             address_surcharge = default_data.address_surcharge
         else:
             if self.antigen_price_ids:
