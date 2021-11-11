@@ -73,3 +73,26 @@ class TtFrequentFlyerAirline(models.Model):
             _logger.error('Error Get Frequent Flyer Airline List API, %s' % traceback.format_exc())
             res = ERR.get_error(500)
         return res
+
+    # November 11, 2021 - SAM
+    # New Get Frequent Flyer API
+    def get_frequent_flyer_airline_api(self):
+        try:
+            objs = self.env['tt.frequent.flyer.airline'].sudo().search([])
+            frequent_flyer_airline_data = {
+                'frequent_flyer_airline_list': []
+            }
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                vals = obj.to_dict()
+                frequent_flyer_airline_data['frequent_flyer_airline_list'].append(vals)
+
+            payload = {
+                'frequent_flyer_airline_data': frequent_flyer_airline_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Frequent Flyer Airline Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
