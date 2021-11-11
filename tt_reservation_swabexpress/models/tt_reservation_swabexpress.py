@@ -1015,9 +1015,9 @@ class ReservationSwabExpress(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
-        if self.carrier_name == 'SEKATG':
+        if self.carrier_name == 'SEHCKATG':
             template_obj = self.env.ref('tt_reservation_swabexpress.swabexpress_antigen_information')
-        elif self.carrier_name == 'SEKPCR':
+        elif self.carrier_name == 'SEHCKPCR':
             template_obj = self.env.ref('tt_reservation_swabexpress.swabexpress_pcr_information')
         else:
             template_obj = self.env.ref('tt_reservation_swabexpress.swabexpress_pcr_priority_information')

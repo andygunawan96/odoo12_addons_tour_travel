@@ -539,7 +539,38 @@ class ReportSelling(models.Model):
         pro_labpintar.carrier_name as provider_carrier_name,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
-        reservation.child as reservation_child, 
+        reservation.child as reservation_child,
+        reservation.infant as reservation_infant,
+        provider_type.name as provider_type_name,
+        provider.name as provider_name,
+        COUNT(reservation_passenger.booking_id) as reservation_passenger,
+        agent.name as agent_name, agent_type.name as agent_type_name,
+        ledger.id as ledger_id, ledger.ref as ledger_name,
+        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
+        """
+
+    # select mitra keluarga is a spesific function to build query for mitra keluarga search only
+    # it will not work for other provider type
+    @staticmethod
+    def _select_mitrakeluarga():
+        return """
+        reservation.id as reservation_id, reservation.state as reservation_state, reservation.name as reservation_order_number, 
+        reservation.create_date as reservation_create_date_og, 
+        reservation.carrier_name as carrier_name,
+        reservation.provider_name as reservation_provider_name,
+        reservation.booked_date as reservation_booked_date_og,
+        reservation.issued_date as reservation_issued_date_og,
+        reservation.total as amount, 
+        reservation.total_commission as commission_amount,
+        reservation.payment_method as reservation_payment_method,
+        reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
+        customer.id as customer_id, customer.name as customer_name,
+        customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
+        pro_mitrakeluarga.carrier_name as provider_carrier_name,
+        reservation.elder as reservation_elder, 
+        reservation.adult as reservation_adult, 
+        reservation.child as reservation_child,
         reservation.infant as reservation_infant,
         provider_type.name as provider_type_name,
         provider.name as provider_name,
@@ -821,6 +852,22 @@ class ReportSelling(models.Model):
             """
 
     @staticmethod
+    def _from_mitrakeluarga():
+        return """tt_reservation_mitrakeluarga reservation
+            LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
+            LEFT JOIN tt_customer_parent customer_parent ON customer_parent.id = reservation.customer_parent_id
+            LEFT JOIN tt_provider_type provider_type ON reservation.provider_type_id = provider_type.id
+            LEFT JOIN tt_reservation_passenger_activity reservation_passenger ON reservation_passenger.booking_id = reservation.id
+            LEFT JOIN tt_agent agent ON agent.id = reservation.agent_id
+            LEFT JOIN tt_agent_type agent_type ON agent_type.id = reservation.agent_type_id
+            LEFT JOIN tt_provider_mitrakeluarga pro_mitrakeluarga ON pro_mitrakeluarga.booking_id = reservation.id
+            LEFT JOIN tt_provider provider ON provider.id = pro_mitrakeluarga.provider_id
+            LEFT JOIN tt_ledger ledger ON ledger.res_model = reservation.res_model AND ledger.res_id = reservation.id
+            LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
+            LEFT JOIN tt_agent_Type ledger_agent_type ON ledger_agent_type.id = ledger.agent_type_id
+            """
+
+    @staticmethod
     def _from_offline():
         return """tt_reservation_offline reservation
         LEFT JOIN tt_customer customer ON customer.id = reservation.booker_id
@@ -897,6 +944,10 @@ class ReportSelling(models.Model):
     @staticmethod
     def _group_by_labpintar():
         return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_labpintar.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+
+    @staticmethod
+    def _group_by_mitrakeluarga():
+        return """reservation.id, provider_type.name, agent.name, agent_type.name, provider.name, pro_mitrakeluarga.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_invoice():
@@ -1136,6 +1187,15 @@ class ReportSelling(models.Model):
                 i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
         return lines
 
+    def _convert_data_mitrakeluarga(self, lines):
+        for i in lines:
+            i['reservation_create_date'] = self._datetime_user_context(i['reservation_create_date_og'])
+            if i['reservation_booked_date_og']:
+                i['reservation_booked_date'] = self._datetime_user_context(i['reservation_booked_date_og'])
+            if i['reservation_issued_date_og']:
+                i['reservation_issued_date'] = self._datetime_user_context(i['reservation_issued_date_og'])
+        return lines
+
     def _convert_data_invoice(self, lines):
         for i in lines:
             i['create_date'] = self._datetime_user_context(i['create_date_og'])
@@ -1200,6 +1260,8 @@ class ReportSelling(models.Model):
             query = 'SELECT {} '.format(self._select_swabexpress())
         elif provider_checker == 'labpintar' or provider_checker == 'overall_labpintar':
             query = 'SELECT {} '.format(self._select_labpintar())
+        elif provider_checker == 'mitrakeluarga' or provider_checker == 'overall_mitrakeluarga':
+            query = 'SELECT {} '.format(self._select_mitrakeluarga())
         elif provider_checker == 'invoice':
             query = 'SELECT {} '.format(self._select_invoice())
         else:
@@ -1368,6 +1430,17 @@ class ReportSelling(models.Model):
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
+            query += 'ORDER BY {} '.format(self._order_by())
+        elif provider_checker == 'mitrakeluarga':
+            query += 'FROM {} '.format(self._from_mitrakeluarga())
+            query += 'WHERE {} '.format(self._where(date_from, date_to))
+            if context['provider']:
+                query += 'AND {} '.format(self._where_provider(context['provider']))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
+            if agent_seq_id:
+                query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
@@ -1548,6 +1621,18 @@ class ReportSelling(models.Model):
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'overall_mitrakeluarga':
+            query += 'FROM {} '.format(self._from_mitrakeluarga())
+            query += 'WHERE {} '.format(self._where_profit())
+            if context['provider']:
+                query += 'AND {} '.format(self._where_provider(context['provider']))
+            if context['agent_type_code']:
+                query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
+            if agent_seq_id:
+                query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_passport':
             query += 'FROM {} '.format(self._from('passport'))
             query += 'WHERE {} '.format(self._where_profit())
@@ -1633,6 +1718,11 @@ class ReportSelling(models.Model):
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by_issued())
+        elif provider_checker == 'chanel_overall_mitrakeluarga':
+            query += 'FROM {} '.format(self._from_mitrakeluarga())
+            query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
+            query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'invoice':
             query += 'FROM {} '.format(self._from_invoice())
             first_data = True
@@ -1690,6 +1780,8 @@ class ReportSelling(models.Model):
                 lines = self._convert_data_swabexpress(lines)
             elif provider_type == 'labpintar':
                 lines = self._convert_data_labpintar(lines)
+            elif provider_type == 'mitrakeluarga':
+                lines = self._convert_data_mitrakeluarga(lines)
             elif provider_type == 'invoice':
                 lines = self._convert_data_invoice(lines)
             else:

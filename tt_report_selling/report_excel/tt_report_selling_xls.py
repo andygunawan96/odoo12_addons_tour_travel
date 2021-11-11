@@ -56,6 +56,8 @@ class ReportSellingXls(models.TransientModel):
             res = self._print_report_excel_swabexpress(data)
         if data['form']['provider_type'] == 'labpintar':
             res = self._print_report_excel_labpintar(data)
+        if data['form']['provider_type'] == 'mitrakeluarga':
+            res = self._print_report_excel_mitrakeluarga(data)
         return res
 
     def _print_report_excel_all(self, data):
@@ -3911,6 +3913,127 @@ class ReportSellingXls(models.TransientModel):
 
         attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
             {'name': 'Sales Lab Pintar Report Summary.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
+        return {
+            'context': self.env.context,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'tt.agent.report.excel.output.wizard',
+            'res_id': attach_id.id,
+            'type': 'ir.actions.act_window',
+            'target': 'new'
+        }
+
+    def _print_report_excel_mitrakeluarga(self, data):
+        stream = BytesIO()
+        workbook = xlsxwriter.Workbook(stream)
+        style = tools_excel.XlsxwriterStyle(workbook)
+        row_height = 13
+
+        values = self.env['report.tt_report_selling.report_selling']._prepare_valued(data['form'])
+
+        sheet_name = values['data_form']['subtitle']
+        sheet = workbook.add_worksheet(sheet_name)
+        sheet.set_landscape()
+        sheet.hide_gridlines(2)
+
+        # ========== TITLE & SUBTITLE =================
+        sheet.merge_range('A1:G2', values['data_form']['agent_name'], style.title)
+        sheet.merge_range('A3:G4', values['data_form']['title'], style.title2)
+        sheet.write('G5', 'Printing Date : ' + values['data_form']['date_now'].strftime('%d-%b-%Y %H:%M'),
+                    style.print_date)
+        sheet.write('A5', 'State : ' + values['data_form']['state'], style.table_data)
+        # sheet.freeze_panes(9, 0)
+
+        month = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+        summary_by_date = []
+        product_summary = []
+        for i in values['lines']:
+            # ============= Issued Booked ratio by date ==================
+            try:
+                month_index = self.check_date_index(summary_by_date, {'year': i['booked_year'],
+                                                                      'month': month[int(i['booked_month']) - 1]})
+                if month_index == -1:
+                    temp_dict = {
+                        'year': i['booked_year'],
+                        'month': month[int(i['booked_month']) - 1],
+                        'detail': self.add_month_detail()
+                    }
+                    try:
+                        splits = i['reservation_booked_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        temp_dict['detail'][day_index]['booked_counter'] += 1
+                    except:
+                        pass
+                    try:
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        temp_dict['detail'][day_index]['issued_counter'] += 1
+                    except:
+                        pass
+                    summary_by_date.append(temp_dict)
+                else:
+                    try:
+                        splits = i['reservation_booked_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_by_date[month_index]['detail'][day_index]['booked_counter'] += 1
+                    except:
+                        pass
+                    try:
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_by_date[month_index]['detail'][day_index]['issued_counter'] += 1
+                    except:
+                        pass
+            except:
+                pass
+
+            product_index = self.check_index(product_summary, 'product', i['carrier_name'])
+            if product_index == -1:
+                temp_dict = {
+                    'product': i['carrier_name'],
+                    'counter': 1,
+                    'adult_count': i['reservation_adult'],
+                    'child_count': i['reservation_child'],
+                    'infant_count': i['reservation_infant'],
+                    'passenger': i['reservation_passenger'],
+                    'amount': i['amount']
+                }
+                product_summary.append(temp_dict)
+            else:
+                product_summary[product_index]['counter'] += 1
+                product_summary[product_index]['passenger'] += i['reservation_passenger']
+                product_summary[product_index]['amount'] += i['amount']
+                product_summary[product_index]['adult_count'] += i['reservation_adult']
+                product_summary[product_index]['child_count'] += i['reservation_child']
+                product_summary[product_index]['infant_count'] += i['reservation_infant']
+
+        row_data = 9
+        sheet.write(row_data, 0, 'No.', style.table_head_center)
+        sheet.write(row_data, 1, 'Product Name', style.table_head_center)
+        sheet.write(row_data, 2, '# of Transaction', style.table_head_center)
+        sheet.write(row_data, 3, 'Amount', style.table_head_center)
+        sheet.write(row_data, 4, 'Passenger', style.table_head_center)
+        counter = 0
+        for i in product_summary:
+            row_data += 1
+            counter += 1
+            sty_table_data = style.table_data
+            if row_data % 2 == 0:
+                sty_table_data = style.table_data_even
+
+            sheet.write(row_data, 0, counter, sty_table_data)
+            sheet.write(row_data, 1, i['product'], sty_table_data)
+            sheet.write(row_data, 2, i['counter'], sty_table_data)
+            sheet.write(row_data, 3, i['amount'], sty_table_data)
+            sheet.write(row_data, 4, i['passenger'], sty_table_data)
+
+        workbook.close()
+
+        attach_id = self.env['tt.agent.report.excel.output.wizard'].create(
+            {'name': 'Sales Mitra Keluarga Report Summary.xlsx', 'file_output': base64.encodebytes(stream.getvalue())})
         return {
             'context': self.env.context,
             'view_type': 'form',

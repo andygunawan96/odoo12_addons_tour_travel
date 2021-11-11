@@ -255,6 +255,8 @@ class ReservationInsurance(models.Model):
             for idx,rec in enumerate(list_passenger_value):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
+                    'email': passengers_data[idx]['email'],
+                    'phone_number': passengers_data[idx]['phone_number'],
                     'insurance_data': passengers_data[idx].get('data_insurance') and json.dumps(passengers_data[idx]['data_insurance']) or ''
                 })
 
