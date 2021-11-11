@@ -794,7 +794,7 @@ class ReservationInsurance(models.Model):
             'product_type': book_data['product_type_id'],
             'balance_due': book_data['total'],
             'total_price': book_data['total'],
-            'hold_date': datetime.strptime(book_data['date_start'], '%Y-%m-%d') - timedelta(days=1),
+            'hold_date': (datetime.strptime(book_data['date_start'], '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d') + ' 23:00:00',
             'state': 'booked',
             'booked_uid': api_context['co_uid'],
             'booked_date': datetime.now()
