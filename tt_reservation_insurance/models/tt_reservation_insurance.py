@@ -792,6 +792,8 @@ class ReservationInsurance(models.Model):
             'plan_trip': book_data['plan_trip_id'],
             'master_trip': book_data['master_trip_id'],
             'product_type': book_data['product_type_id'],
+            'balance_due': book_data['total'],
+            'total_price': book_data['total'],
             'hold_date': datetime.strptime(book_data['date_start'], '%Y-%m-%d') - timedelta(days=1),
             'state': 'booked',
             'booked_uid': api_context['co_uid'],

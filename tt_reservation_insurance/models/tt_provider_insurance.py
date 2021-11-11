@@ -385,6 +385,7 @@ class TtProviderInsurance(models.Model):
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
                 'sid_issued': context['signature'],
+                'balance_due': 0
             }
             if not rec.booked_date:
                 values.update({
