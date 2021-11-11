@@ -85,6 +85,7 @@ class CreateTimeslotLabPintarWizard(models.TransientModel):
         self.single_supplement = self.default_data_id.single_supplement
         self.overtime_surcharge = self.default_data_id.overtime_surcharge
         self.cito_surcharge = self.default_data_id.cito_surcharge
+        self.time_string = self.default_data_id.time_string
 
     @api.onchange('start_date')
     def _onchange_start_date(self):

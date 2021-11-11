@@ -110,6 +110,9 @@
                     <h1>
                         <field name="name" placeholder="Template Name"/>
                     </h1>
+                    <group string="Time">
+                        <field name="time_string"/>
+                    </group>
                     <group string="Antigen">
                         <field name="antigen_price_ids"/>
                     </group>
