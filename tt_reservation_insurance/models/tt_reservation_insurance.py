@@ -779,7 +779,9 @@ class ReservationInsurance(models.Model):
         name['carrier'].append(carrier_id.name)
         sequence = 0
         values = {
+            'pnr': self.name,
             'provider_id': provider_id,
+            'carrier_id': carrier_id.id,
             'booking_id': self.id,
             'sequence': sequence,
             'origin': book_data['origin'],
