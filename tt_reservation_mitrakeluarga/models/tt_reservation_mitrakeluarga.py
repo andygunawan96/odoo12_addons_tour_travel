@@ -1009,12 +1009,18 @@ class ReservationMitraKeluarga(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
-        if self.carrier_name == 'MKKATG':
-            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_antigen_information')
-        elif self.carrier_name == 'MKKPCR':
-            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_pcr_information')
+        if self.carrier_name == 'MKHCKATG':
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_homecare_antigen_information')
+        elif self.carrier_name == 'MKDTKATG':
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_information')
+        elif self.carrier_name == 'MKHCKPCR':
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_homecare_pcr_information')
+        elif self.carrier_name == 'MKDTKPCR':
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_pcr_information')
+        elif self.carrier_name == 'MKHCKSRBD':
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_homecare_srbd_information')
         else:
-            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_srbd_information')
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_srbd_information')
         return template_obj.html
 
     def get_terms_conditions_email_old(self):
