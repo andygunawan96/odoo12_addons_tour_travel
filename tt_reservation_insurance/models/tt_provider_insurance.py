@@ -636,6 +636,8 @@ class TtProviderInsurance(models.Model):
             'destination': self.destination,
             'start_date': self.start_date,
             'end_date': self.end_date,
+            'carrier_code': self.carrier_id.code,
+            'carrier_name': self.carrier_id.name,
             'master_area': self.master_area,
             'master_area_str': dict(self._fields['master_area'].selection).get(self.master_area),
             'plan_trip': self.plan_trip,
