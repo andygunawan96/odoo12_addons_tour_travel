@@ -8,14 +8,12 @@ class TtPhcApiCon(models.Model):
     table_name = 'tt.reservation.insurance'
 
     def action_call(self,table_obj,action,data,context):
-        if action == 'get_config':
-            res = self.env['tt.destinations'].get_all_city_for_insurance()
-        elif action == 'create_booking':
+        if action == 'create_booking':
             res = table_obj.create_booking_insurance_api(data,context)
         elif action == 'update_pnr_provider':
-            res = table_obj.update_pnr_provider_phc_api(data,context)
+            res = table_obj.update_pnr_provider_insurance_api(data,context)
         elif action == 'get_booking':
-            res = table_obj.get_booking_phc_api(data,context)
+            res = table_obj.get_booking_insurance_api(data,context)
         else:
             raise RequestException(999)
         return res

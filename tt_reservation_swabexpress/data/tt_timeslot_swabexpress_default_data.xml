@@ -377,6 +377,7 @@
             <field name="overtime_surcharge">0</field>
             <field name="cito_surcharge">0</field>
             <field name="additional_price">20000</field>
+            <field name="time_string">08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,19:00</field>
             <field name="antigen_price_ids"
                    eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_1_person_bdg'),
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_2_person_bdg'),
@@ -399,6 +400,7 @@
             <field name="overtime_surcharge">0</field>
             <field name="cito_surcharge">0</field>
             <field name="additional_price">20000</field>
+            <field name="time_string">08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,19:00</field>
             <field name="antigen_price_ids"
                    eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_1_person_dps'),
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_2_person_dps'),

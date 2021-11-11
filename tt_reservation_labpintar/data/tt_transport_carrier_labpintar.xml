@@ -4,8 +4,8 @@
 
         <record id="tt_transport_carrier_labpintar_antigen" model="tt.transport.carrier">
             <field name="name">Antigen</field>
-            <field name="code">LPKATG</field>
-            <field name="icao">LPKATG</field>
+            <field name="code">LPHCKATG</field>
+            <field name="icao">LPHCKATG</field>
             <field name="call_sign">LAB PINTAR ANTIGEN</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_labpintar.tt_provider_type_labpintar"/>
@@ -13,8 +13,8 @@
 
         <record id="tt_transport_carrier_labpintar_pcr" model="tt.transport.carrier">
             <field name="name">PCR</field>
-            <field name="code">LPKPCR</field>
-            <field name="icao">LPKPCR</field>
+            <field name="code">LPHCKPCR</field>
+            <field name="icao">LPHCKPCR</field>
             <field name="call_sign">LAB PINTAR PCR</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_labpintar.tt_provider_type_labpintar"/>
@@ -22,8 +22,8 @@
 
         <record id="tt_transport_carrier_labpintar_pcr_express" model="tt.transport.carrier">
             <field name="name">PCR Express</field>
-            <field name="code">LPEPCR</field>
-            <field name="icao">LPEPCR</field>
+            <field name="code">LPHCEPCR</field>
+            <field name="icao">LPHCEPCR</field>
             <field name="call_sign">LAB PINTAR PCR Express</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_labpintar.tt_provider_type_labpintar"/>
@@ -31,8 +31,8 @@
 
         <record id="tt_transport_carrier_labpintar_pcr_priority" model="tt.transport.carrier">
             <field name="name">PCR Priority</field>
-            <field name="code">LPPPCR</field>
-            <field name="icao">LPPPCR</field>
+            <field name="code">LPHCPPCR</field>
+            <field name="icao">LPHCPPCR</field>
             <field name="call_sign">LAB PINTAR PCR Priority</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_labpintar.tt_provider_type_labpintar"/>
@@ -40,8 +40,8 @@
 
         <record id="tt_transport_carrier_labpintar_srbd" model="tt.transport.carrier">
             <field name="name">SRBD</field>
-            <field name="code">LPKSRBD</field>
-            <field name="icao">LPKSRBD</field>
+            <field name="code">LPHCKSRBD</field>
+            <field name="icao">LPHCKSRBD</field>
             <field name="call_sign">LAB PINTAR SRBD</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_labpintar.tt_provider_type_labpintar"/>

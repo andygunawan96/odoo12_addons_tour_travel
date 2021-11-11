@@ -4,7 +4,7 @@
         <field name="name">tt.reservation.swabexpress.filter.view</field>
         <field name="model">tt.reservation.swabexpress</field>
         <field name="arch" type="xml">
-            <search string="Search swab express Booking">
+            <search string="Search Swab Express Booking">
                 <field name="name"/>
                 <field name="pnr"/>
                 <field name="carrier_name" groups=""/>
@@ -382,7 +382,7 @@
     </record>
 
     <record id="tt_reservation_swabexpress_action_external_views" model="ir.actions.act_window" >
-        <field name="name">Reservation swab express</field>
+        <field name="name">Reservation Swab Express</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">tt.reservation.swabexpress</field>
         <field name="view_type">form</field>
@@ -398,7 +398,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_swabexpress_action_views_booked">
-        <field name="name">Reservation swab express (Booked)</field>
+        <field name="name">Reservation Swab Express (Booked)</field>
         <field name="res_model">tt.reservation.swabexpress</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -413,7 +413,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_swabexpress_action_views_issued">
-        <field name="name">Reservation swab express (Issued)</field>
+        <field name="name">Reservation Swab Express (Issued)</field>
         <field name="res_model">tt.reservation.swabexpress</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -428,7 +428,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="tt_reservation_swabexpress_action_views_failed_expired">
-        <field name="name">Reservation swab express (Failed/Expired)</field>
+        <field name="name">Reservation Swab Express (Failed/Expired)</field>
         <field name="res_model">tt.reservation.swabexpress</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>

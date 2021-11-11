@@ -82,6 +82,7 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
         self.cito_surcharge = self.default_data_id.cito_surcharge
         self.address_surcharge = self.default_data_id.address_surcharge
         self.additional_price = self.default_data_id.additional_price
+        self.time_string = self.default_data_id.time_string
 
     @api.onchange('start_date')
     def _onchange_start_date(self):
@@ -104,13 +105,12 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
         date_delta = date_delta.days+1
         create_values = []
         timelist = self.time_string.split(',')
-        id_timelist_swabexpress = self.id_time_vendor.split(',')
 
         #price list
         antigen_list = False
         pcr_list = False
         pcr_priority_list = False
-        if from_cron:
+        if from_cron == True:
             if self.area_id.code == 'SUB':
                 default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data')
             elif self.area_id.code == 'CGK':
@@ -124,6 +124,12 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
             antigen_list = [(6, 0, [x.id for x in default_data.antigen_price_ids])]
             pcr_list = [(6, 0, [x.id for x in default_data.pcr_price_ids])]
             pcr_priority_list = [(6, 0, [x.id for x in default_data.pcr_priority_price_ids])]
+            additional_price = default_data.additional_price
+            single_supplement = default_data.single_supplement
+            overtime_surcharge = default_data.overtime_surcharge
+            cito_surcharge = default_data.cito_surcharge
+            address_surcharge = default_data.address_surcharge
+            address_surcharge = default_data.address_surcharge
         else:
             if self.antigen_price_ids:
                 antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
@@ -131,6 +137,11 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
                 pcr_list = [(6, 0, [x.id for x in self.pcr_price_ids])]
             if self.pcr_priority_price_ids:
                 pcr_priority_list = [(6, 0, [x.id for x in self.pcr_priority_price_ids])]
+            additional_price = self.additional_price
+            single_supplement = self.single_supplement
+            overtime_surcharge = self.overtime_surcharge
+            cito_surcharge = self.cito_surcharge
+            address_surcharge = self.address_surcharge
 
         ##convert to timezone 0
         time_objs = []
@@ -155,11 +166,11 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
                             'antigen_price_ids': antigen_list,
                             'pcr_price_ids': pcr_list,
                             'pcr_priority_price_ids': pcr_priority_list,
-                            'additional_price': default_data.additional_price,
-                            'single_supplement': default_data.single_supplement,
-                            'overtime_surcharge': default_data.overtime_surcharge,
-                            'cito_surcharge': default_data.cito_surcharge,
-                            'address_surcharge': default_data.address_surcharge,
+                            'additional_price': additional_price,
+                            'single_supplement': single_supplement,
+                            'overtime_surcharge': overtime_surcharge,
+                            'cito_surcharge': cito_surcharge,
+                            'address_surcharge': address_surcharge,
                             'agent_id': self.agent_id.id if self.agent_id else False,
                         })
 
