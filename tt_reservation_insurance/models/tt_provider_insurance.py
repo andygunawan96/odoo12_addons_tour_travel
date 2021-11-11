@@ -23,7 +23,7 @@ class TtProviderInsurance(models.Model):
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft', readonly=True, states={'draft': [('readonly', False)]})
     booking_id = fields.Many2one('tt.reservation.insurance', 'Order Number', ondelete='cascade', readonly=True, states={'draft': [('readonly', False)]})
     sequence = fields.Integer('Sequence', readonly=True, states={'draft': [('readonly', False)]})
-    balance_due = fields.Float('Balance Due', readonly=True, states={'draft': [('readonly', False)]})
+    balance_due = fields.Float('Balance Due', default=0, readonly=True, states={'draft': [('readonly', False)]})
     origin = fields.Char('Origin', readonly=True, states={'draft': [('readonly', False)]})
     destination = fields.Char('Destination', readonly=True, states={'draft': [('readonly', False)]})
     start_date = fields.Char('Start Date', readonly=True, states={'draft': [('readonly', False)]})

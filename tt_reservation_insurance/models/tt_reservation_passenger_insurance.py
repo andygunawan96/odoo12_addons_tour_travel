@@ -31,6 +31,11 @@ class TtReservationCustomer(models.Model):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
             'sale_service_charges': self.get_service_charges(),
+            'passport_type': self.passport_type and self.passport_type or '',
+            'passport_number': self.passport_number and self.passport_number or '',
+            'passport_expdate': self.passport_expdate and self.passport_expdate.strftime('%Y-%m-%d'),
+            'passport_country_of_issued_id': self.passport_country_of_issued_id and self.passport_country_of_issued_id.code or '',
+            'insurance_data': self.insurance_data and json.loads(self.insurance_data) or {},
             'seq_id': self.seq_id
         })
         if len(self.channel_service_charge_ids.ids)>0:
