@@ -1029,9 +1029,9 @@ class ReservationLabPintar(models.Model):
         return passengers
 
     def get_terms_conditions_email(self):
-        if self.carrier_name == 'LPKATG':
+        if self.carrier_name == 'LPHCKATG':
             template_obj = self.env.ref('tt_reservation_labpintar.labpintar_antigen_information')
-        elif self.carrier_name == 'LPKPCR':
+        elif self.carrier_name == 'LPHCKPCR':
             template_obj = self.env.ref('tt_reservation_labpintar.labpintar_pcr_information')
         else:
             template_obj = self.env.ref('tt_reservation_labpintar.labpintar_pcr_priority_information')

@@ -16,6 +16,8 @@ class TtReservationCustomer(models.Model):
     is_ticketed = fields.Boolean('Ticketed')
     account_number = fields.Char('Passenger Account Number')
     account_name = fields.Char('Passenger Account Name')
+    email = fields.Char('Email')
+    phone_number = fields.Char('Phone Number')
     passport_type = fields.Selection(variables.IDENTITY_TYPE, 'Passport Type')
     passport_number = fields.Char('Passport Number')
     passport_expdate = fields.Date('Passport Expire Date')
@@ -36,6 +38,8 @@ class TtReservationCustomer(models.Model):
             'passport_expdate': self.passport_expdate and self.passport_expdate.strftime('%Y-%m-%d'),
             'passport_country_of_issued_id': self.passport_country_of_issued_id and self.passport_country_of_issued_id.code or '',
             'insurance_data': self.insurance_data and json.loads(self.insurance_data) or {},
+            'email': self.email,
+            'phone_number': self.phone_number,
             'seq_id': self.seq_id
         })
         if len(self.channel_service_charge_ids.ids)>0:
