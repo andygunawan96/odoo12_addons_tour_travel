@@ -369,60 +369,17 @@ class ReservationInsurance(models.Model):
                 # book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
-                    # default_hold_date = datetime.now().replace(microsecond=0) + timedelta(minutes=30)
-                    # curr_hold_date = datetime.strptime(util.get_without_empty(provider,'hold_date',str(default_hold_date)), '%Y-%m-%d %H:%M:%S')
-                    # if curr_hold_date == default_hold_date:
-                    #     provider['hold_date'] = str(curr_hold_date)
-                    # if curr_hold_date < hold_date:
-                    #     hold_date = curr_hold_date
-                    # if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
-                    #     continue
                     self.update_pnr_booked(provider_obj,provider,context)
-                    book_obj.update_journey(provider)
                     provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
-                    # May 20, 2020 - SAM
-                    # Testing di comment
-                    # # if req.get('force_issued'):
-                    # if provider_obj.state != 'booked':
-                    #     self.update_pnr_booked(provider_obj,provider,context)
-                    # END
+                    if 'tickets' in provider:
+                        provider_obj.update_ticket_api(provider['tickets'])
 
-                    # May 13, 2020 - SAM
-                    # if provider.get('pnr', '') != provider_obj.pnr:
-                    #     provider_obj.write({'pnr': provider['pnr']})
-                    #     for sc in provider_obj.cost_service_charge_ids:
-                    #         sc.description = provider['pnr']
-                    #     any_pnr_changed = True
-                    # END
-
-                    #action issued dan create ticket number
-                    # Apabila status sudah issued, biasanya connector tidak melakukan proses sehingga variabel passengers tidak ada
-                    if 'passengers' in provider:
-                        provider_obj.update_ticket_api(provider['passengers'])
-
-                    # October 12, 2020 - SAM
-                    # Hanya akan melakukan update ticket apabila state sebelumnya adalah issued
                     if provider_obj.state == 'issued':
                         continue
-                    # END
-
-                    # May 20, 2020 - SAM
-                    # provider_obj.action_issued_api_insurance(context)
                     provider_obj.action_issued_api_insurance(provider, context)
-                    # END
                     any_provider_changed = True
-
-
-                    ## 23 Mar 2021, di pindahkan ke gateway tidak lagi sync sendiri
-                    # #get balance vendor
-                    # if provider_obj.provider_id.track_balance:
-                    #     try:
-                    #         # print("GET BALANCE : "+str(self.env['tt.insurance.api.con'].get_balance(provider_obj.provider_id.code)['response']['balance']))
-                    #         provider_obj.provider_id.sync_balance()
-                    #     except Exception as e:
-                    #         _logger.error(traceback.format_exc())
                 elif provider['status'] == 'FAIL_BOOKED':
                     provider_obj.action_failed_booked_api_insurance(provider.get('error_code', -1),provider.get('error_msg', ''))
                     any_provider_changed = True
@@ -497,50 +454,6 @@ class ReservationInsurance(models.Model):
 
     def to_dict_reschedule(self):
         return []
-
-    # July 2, 2021 - SAM
-    # Ubah fungsi update journey
-    # def update_journey(self, provider):
-    #     if 'sell_reschedule' in provider:
-    #         start_date = ''
-    #         end_date = ''
-    #         for idx, provider_obj in enumerate(self.provider_booking_ids):
-    #             if provider_obj.pnr == provider['pnr']:
-    #                 for idy, journey_obj in enumerate(provider_obj.journey_ids):
-    #                     for idz, segment_obj in enumerate(journey_obj.segment_ids):
-    #                         segment_obj.segment_code = provider['journeys'][idy]['segments'][idz]['segment_code']
-    #                         segment_obj.carrier_code = provider['journeys'][idy]['segments'][idz]['carrier_code']
-    #                         segment_obj.carrier_number = provider['journeys'][idy]['segments'][idz]['carrier_number']
-    #                         segment_obj.end_date = provider['journeys'][idy]['segments'][idz]['end_date']
-    #                         segment_obj.start_date = provider['journeys'][idy]['segments'][idz]['start_date']
-    #                         segment_obj.class_of_service = provider['journeys'][idy]['segments'][idz]['class_of_service']
-    #                         for count, leg_obj in enumerate(segment_obj.leg_ids):
-    #                             if provider['journeys'][idy]['segments'][idz].get('legs'):
-    #                                 leg_obj.leg_code = provider['journeys'][idy]['segments'][idz]['legs'][count]['leg_code']
-    #                                 leg_obj.end_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['end_date']
-    #                                 leg_obj.start_date = provider['journeys'][idy]['segments'][idz]['legs'][count]['start_date']
-    #                     journey_obj.journey_code = "%s,%s,%s,%s,%s,%s,%s" % (journey_obj.segment_ids[0].carrier_code, journey_obj.segment_ids[0].carrier_number, journey_obj.segment_ids[0].origin.code, journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['start_date'], journey_obj.segment_ids[0].destination.code, journey_obj.segment_ids[0]['end_date'], journey_obj.segment_ids[0].provider_id.code)
-    #                     journey_obj.end_date = journey_obj.segment_ids[0]['end_date']
-    #                     journey_obj.start_date = journey_obj.segment_ids[len(journey_obj.segment_ids)-1]['start_date']
-    #                 provider_obj.end_date = provider_obj.journey_ids[len(provider_obj.journey_ids)-1]['end_date']
-    #                 provider_obj.start_date = provider_obj.journey_ids[0]['start_date']
-    #             if idx == 0:
-    #                 start_date = provider_obj.start_date[:10]
-    #                 end_date = provider_obj.end_date[:10]
-    #             else:
-    #                 end_date = provider_obj.start_date[:10]
-    #         self.start_date = start_date
-    #         if self.direction != 'OW':
-    #             self.end_date = end_date
-    #
-    #         #add seat here
-    #
-    #         # if self.direction != 'OW':
-    #         #     if len(self.provider_booking_ids) == 0:
-    #         #         self.end_date = self.provider_booking_ids[len(self.provider_booking_ids)-1].end_date[:10]
-    #         #     else:
-    #         #         self.provider_booking_ids[len(self.provider_booking_ids) - 1].start_date[:10]
-
 
     def get_booking_insurance_api(self,req, context):
         try:
