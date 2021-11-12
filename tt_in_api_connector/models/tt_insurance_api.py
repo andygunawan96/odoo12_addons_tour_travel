@@ -14,6 +14,8 @@ class TtPhcApiCon(models.Model):
             res = table_obj.update_pnr_provider_insurance_api(data,context)
         elif action == 'get_booking':
             res = table_obj.get_booking_insurance_api(data,context)
+        elif action == 'payment':
+            res = table_obj.payment_insurance_api(data,context)
         else:
             raise RequestException(999)
         return res

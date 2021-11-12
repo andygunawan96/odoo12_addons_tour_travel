@@ -134,23 +134,24 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
             for idx, this_time in enumerate(time_objs):
                 this_date = self.start_date + timedelta(days=this_date_counter)
                 datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
-                if datetimeslot.strftime('%A') != 'Sunday' or datetimeslot.strftime('%A') == 'Sunday' and datetimeslot.strftime('%H:%M') != '19:00':
-                    if str(datetimeslot) not in db_list:
-                        create_values.append({
-                            'dateslot': this_date,
-                            'datetimeslot': datetimeslot,
-                            'destination_id': self.area_id.id,
-                            'total_timeslot': self.total_timeslot,
-                            'currency_id': self.currency_id.id,
-                            'timeslot_type': self.timeslot_type,
-                            'antigen_price_ids': antigen_list,
-                            'pcr_price_ids': pcr_list,
-                            'srbd_price_ids': srbd_list,
-                            'single_supplement': single_supplement,
-                            'overtime_surcharge': overtime_surcharge,
-                            'cito_surcharge': cito_surcharge,
-                            'agent_id': self.agent_id.id if self.agent_id else False,
-                        })
+                max_book_datetime = datetimeslot.replace(hour=8, minute=0, second=0, microsecond=0)
+                if str(datetimeslot) not in db_list:
+                    create_values.append({
+                        'dateslot': this_date,
+                        'datetimeslot': datetimeslot,
+                        'destination_id': self.area_id.id,
+                        'total_timeslot': self.total_timeslot,
+                        'currency_id': self.currency_id.id,
+                        'timeslot_type': self.timeslot_type,
+                        'antigen_price_ids': antigen_list,
+                        'pcr_price_ids': pcr_list,
+                        'srbd_price_ids': srbd_list,
+                        'max_book_datetime': max_book_datetime,
+                        'single_supplement': single_supplement,
+                        'overtime_surcharge': overtime_surcharge,
+                        'cito_surcharge': cito_surcharge,
+                        'agent_id': self.agent_id.id if self.agent_id else False,
+                    })
 
         self.env['tt.timeslot.mitrakeluarga'].create(create_values)
 
@@ -172,10 +173,12 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
                     single_supplement = default_data_obj.single_supplement
                     overtime_surcharge = default_data_obj.overtime_surcharge
                     cito_surcharge = default_data_obj.cito_surcharge
+                    max_book_datetime = datetimeslot.replace(hour=8, minute=30, second=0, microsecond=0)
                     self.env['tt.timeslot.mitrakeluarga'].create({
                         'dateslot': date,
                         'datetimeslot': datetimeslot,
                         'destination_id': rec.id,
+                        'max_book_datetime': max_book_datetime,
                         'total_timeslot': pcr_timeslot,
                         'currency_id': self.env.user.company_id.currency_id.id,
                         'timeslot_type': 'drive_thru',
