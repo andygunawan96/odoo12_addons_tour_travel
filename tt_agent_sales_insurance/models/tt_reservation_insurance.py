@@ -34,8 +34,9 @@ class ReservationInsurance(models.Model):
         tmp = ''
         # vals = []
         for rec in self.provider_booking_ids:
-            tmp += '%s(%s) - %s(%s),' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
-            tmp += '%s - %s\n ' % (rec.start_date[:16], rec.end_date[:16])
+            tmp += '%s\n' % rec.carrier_id.name
+            tmp += '%s - %s,' % (rec.origin, rec.destination)
+            tmp += '%s - %s\n ' % (rec.start_date, rec.end_date)
         return tmp
 
     def action_create_invoice(self,acquirer_id,co_uid,customer_parent_id):
