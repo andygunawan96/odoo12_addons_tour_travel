@@ -81,7 +81,9 @@
                             <field name="passenger_insurance_ids"/>
                         </tree>
                     </field>
-
+                    <group>
+                        <field name="additional_service_charges" groups="tt_base.group_tt_tour_travel"/>
+                    </group>
                     <separator string="Error History"/>
                     <field name="error_history_ids">
                         <tree>

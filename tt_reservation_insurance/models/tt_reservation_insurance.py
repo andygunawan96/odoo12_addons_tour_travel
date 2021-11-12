@@ -773,7 +773,10 @@ class ReservationInsurance(models.Model):
         provider_insurance_obj = self.env['tt.provider.insurance']
         provider_id = self.env['tt.provider'].get_provider_id(book_data['provider'], _destination_type)
         carrier_id = self.env['tt.transport.carrier'].get_id(book_data['carrier_code'],_destination_type)
-
+        def_service_charges = {
+            'default': book_data.get('service_charges_default') and book_data['service_charges_default'] or [],
+            'idr': book_data.get('service_charges_idr') and book_data['service_charges_idr'] or []
+        }
         # lis of providers ID
         res = []
         name = {'provider': [], 'carrier': []}
@@ -799,7 +802,8 @@ class ReservationInsurance(models.Model):
             'hold_date': (datetime.strptime(book_data['date_start'], '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d') + ' 23:00:00',
             'state': 'booked',
             'booked_uid': api_context['co_uid'],
-            'booked_date': datetime.now()
+            'booked_date': datetime.now(),
+            'additional_service_charges': json.dumps(def_service_charges)
         }
         res.append(provider_insurance_obj.create(values))
         name['provider'] = list(set(name['provider']))

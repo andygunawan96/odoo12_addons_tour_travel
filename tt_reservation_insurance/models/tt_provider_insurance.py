@@ -40,10 +40,9 @@ class TtProviderInsurance(models.Model):
     sid_cancel = fields.Char('SID Cancel', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
     total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]})
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_insurance_booking_id', 'Cost Service Charges', readonly=True, states={'draft': [('readonly', False)]})
-
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
-
+    additional_service_charges = fields.Text('Additional Service Charges', readonly=True)
     promotion_code = fields.Char(string='Promotion Code', readonly=True, states={'draft': [('readonly', False)]})
 
 
@@ -649,6 +648,7 @@ class TtProviderInsurance(models.Model):
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
+            'additional_service_charges': self.additional_service_charges and json.loads(self.additional_service_charges) or {},
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or ''
         }
 
