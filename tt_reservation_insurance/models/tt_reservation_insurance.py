@@ -803,7 +803,7 @@ class ReservationInsurance(models.Model):
             'state': 'booked',
             'booked_uid': api_context['co_uid'],
             'booked_date': datetime.now(),
-            'additional_service_charges': json.dumps(def_service_charges)
+            'additional_vendor_pricing_info': json.dumps(def_service_charges)
         }
         res.append(provider_insurance_obj.create(values))
         name['provider'] = list(set(name['provider']))
