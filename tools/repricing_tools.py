@@ -7,6 +7,7 @@ from .destination_tools import DestinationToolsV2 as DestinationTools
 
 
 _logger = logging.getLogger(__name__)
+FORMAT_DATETIME = '%Y-%m-%d %H:%M:%S'
 
 
 class RepricingTools(object):
@@ -1107,3 +1108,1653 @@ class RepricingTools(object):
                 results = self.get_service_charge_pricing(**values)
                 service_charge_result += results
         return service_charge_result
+
+
+class ProviderPricing(object):
+    def __init__(self, provider_type):
+        self.provider_type = provider_type
+        self.data = {}
+        self.do_config()
+
+    def do_config(self):
+        data = self.get_backend_data()
+        if not data:
+            return False
+
+        for provider_type, rec in data.get('provider_pricing_data', {}).items():
+            if self.provider_type == provider_type:
+                self.data = rec
+        return True
+
+    def get_backend_data(self):
+        try:
+            payload = request.env['tt.provider.pricing'].sudo().get_provider_pricing_api()
+        except Exception as e:
+            _logger.error('Error Get Provider Pricing Backend Data, %s' % str(e))
+            payload = {}
+        return payload
+
+    def get_pricing_data(self, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, pricing_datetime, **kwargs):
+        # if self.is_data_expired():
+        #     self.do_config()
+        if not self.data:
+            return {}
+
+        for rec in self.data['provider_pricing_list']:
+            if rec['state'] == 'disable':
+                continue
+
+            is_provider = False
+            is_carrier = False
+            provider_data = rec['provider']
+            if provider_data['access_type'] == 'all':
+                is_provider = True
+            elif not provider_code:
+                pass
+            elif provider_data['access_type'] == 'allow' and provider_code in provider_data['provider_code_list']:
+                is_provider = True
+            elif provider_data['access_type'] == 'restrict' and provider_code not in provider_data['provider_code_list']:
+                is_provider = True
+
+            carrier_data = rec['carrier']
+            if carrier_data['access_type'] == 'all':
+                is_carrier = True
+            elif not carrier_code:
+                pass
+            elif carrier_data['access_type'] == 'allow' and carrier_code in carrier_data['carrier_code_list']:
+                is_carrier = True
+            elif carrier_data['access_type'] == 'restrict' and carrier_code not in carrier_data['carrier_code_list']:
+                is_carrier = True
+
+            result_list = [is_provider, is_carrier]
+            if not all(res for res in result_list):
+                continue
+
+            for rule in rec['rule_list']:
+                if rule['state'] == 'disable':
+                    continue
+                if rule['set_expiration_date']:
+                    if pricing_datetime < rule['date_from'] or pricing_datetime > rule['date_to']:
+                        continue
+
+                is_origin = False
+                is_destination = False
+                is_class_of_service = False
+                is_charge_code = False
+
+                route_data_origin = rule['route']['origin']
+                if route_data_origin['access_type'] == 'all':
+                    is_origin = True
+                elif route_data_origin['access_type'] == 'allow':
+                    if origin_code and origin_code in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                        is_origin = True
+                elif route_data_origin['access_type'] == 'restrict':
+                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                        is_origin = True
+
+                route_data_destination = rule['route']['destination']
+                if route_data_destination['access_type'] == 'all':
+                    is_destination = True
+                elif route_data_destination['access_type'] == 'allow':
+                    if destination_code and destination_code in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                        is_destination = True
+                elif rule['route']['origin']['access_type'] == 'restrict':
+                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                        is_destination = True
+
+                cos_data = rule['route']['class_of_service']
+                if cos_data['access_type'] == 'all':
+                    is_class_of_service = True
+                elif not class_of_service_list:
+                    pass
+                elif cos_data['access_type'] == 'allow' and any(class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+                elif cos_data['access_type'] == 'restrict' and not any(class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+
+                charge_code_data = rule['route']['charge_code']
+                if charge_code_data['access_type'] == 'all':
+                    is_charge_code = True
+                elif not charge_code_list:
+                    pass
+                elif charge_code_data['access_type'] == 'allow' and any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+                elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                if not all(res for res in result_2_list):
+                    continue
+                return rule
+        return {}
+
+    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+        is_infant = True if pax_type == 'INF' else False
+        total_amount = fare_amount + tax_amount
+        final_fare_amount = fare_amount
+        final_tax_amount = tax_amount
+        if 'fare' in price_data:
+            fare_data = price_data['fare']
+            if not is_infant or (is_infant and fare_data.get('is_infant', False)):
+                if fare_data['percentage']:
+                    final_fare_amount = final_fare_amount * (100 + fare_data['percentage']) / 100
+                if fare_data['amount']:
+                    final_fare_amount += fare_data['amount']
+        if 'tax' in price_data:
+            tax_data = price_data['tax']
+            if not is_infant or (is_infant and tax_data.get('is_infant', False)):
+                if tax_data['percentage']:
+                    final_tax_amount = final_tax_amount * (100 + tax_data['percentage']) / 100
+                if tax_data['amount']:
+                    final_tax_amount += tax_data['amount']
+
+        final_total_amount = final_fare_amount + final_tax_amount
+        if 'total' in price_data:
+            total_data = price_data['total']
+            if not is_infant or (is_infant and total_data.get('is_infant', False)):
+                if total_data['percentage']:
+                    final_total_amount = final_total_amount * (100 + total_data['percentage']) / 100
+                if total_data['amount']:
+                    final_total_amount += total_data['amount']
+        if 'upsell_by_percentage' in price_data:
+            upsell_data = price_data['upsell_by_percentage']
+            if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                add_amount = final_total_amount * upsell_data['percentage'] / 100
+                if add_amount < upsell_data['minimum']:
+                    add_amount = upsell_data['minimum']
+                final_total_amount += add_amount
+
+        if 'upsell_by_amount' in price_data:
+            upsell_data = price_data['upsell_by_amount']
+            if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                multiply_amount = 1
+                if upsell_data['is_route']:
+                    multiply_amount *= route_count
+                if upsell_data['is_segment']:
+                    multiply_amount *= segment_count
+
+                add_amount = upsell_data['amount'] * multiply_amount
+                final_total_amount += add_amount
+
+        upsell_amount = final_total_amount - total_amount
+
+        payload = {
+            'upsell_amount': round(upsell_amount),
+        }
+        return payload
+
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+        sales_data = rule_obj['ticketing']['sales']
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = fare_amount + tax_amount + total_upsell_amount
+
+        nta_data = rule_obj['ticketing']['nta']
+        nta_res = self.calculate_price(nta_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        nta_total_amount = fare_amount + tax_amount + nta_res['upsell_amount']
+
+        nta_agent_data = rule_obj['ticketing']['nta_agent']
+        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
+
+        # total_commission_amount = sales_total_amount - nta_total_amount
+        total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'ticketing',
+            'fare_amount': fare_amount,
+            'tax_amount': tax_amount,
+            'pax_type': pax_type,
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'sales_amount': sales_total_amount,
+            'nta_amount': nta_total_amount,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_commission_amount,
+            'ho_commission_amount': ho_commission_amount,
+        }
+        return payload
+
+    def get_ancillary_calculation(self, rule_obj, fare_amount, tax_amount, **kwargs):
+        sales_data = rule_obj['ancillary']['sales']
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount)
+        total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = fare_amount + tax_amount + total_upsell_amount
+
+        nta_data = rule_obj['ancillary']['nta']
+        nta_res = self.calculate_price(nta_data, fare_amount, tax_amount)
+        nta_total_amount = fare_amount + tax_amount + nta_res['upsell_amount']
+
+        nta_agent_data = rule_obj['ancillary']['nta_agent']
+        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount)
+        nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
+
+        # total_commission_amount = sales_total_amount - nta_total_amount
+        total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'ancillary',
+            'fare_amount': fare_amount,
+            'tax_amount': tax_amount,
+            'sales_amount': sales_total_amount,
+            'nta_amount': nta_total_amount,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_commission_amount,
+            'ho_commission_amount': ho_commission_amount,
+        }
+        return payload
+
+    def get_reservation_calculation(self, rule_obj, route_count=0, segment_count=0, **kwargs):
+        sales_data = rule_obj['reservation']['sales']
+        sales_res = self.calculate_price(sales_data, 0.0, 0.0, '', route_count, segment_count)
+        total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = total_upsell_amount
+
+        nta_data = rule_obj['reservation']['nta']
+        nta_res = self.calculate_price(nta_data, 0.0, 0.0, '', route_count, segment_count)
+        nta_total_amount = nta_res['upsell_amount']
+
+        nta_agent_data = rule_obj['reservation']['nta_agent']
+        nta_agent_res = self.calculate_price(nta_agent_data, 0.0, 0.0, '', route_count, segment_count)
+        nta_agent_total_amount = nta_agent_res['upsell_amount']
+
+        # total_commission_amount = sales_total_amount - nta_total_amount
+        total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'reservation',
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_commission_amount,
+            'ho_commission_amount': ho_commission_amount,
+        }
+        return payload
+
+    def get_less_calculation(self, rule_obj, pax_type, **kwargs):
+        less_data = rule_obj['less']
+        less_percentage = less_data['percentage']
+        if pax_type == 'INF' and not less_data.get('is_infant', False):
+            less_percentage = 0
+
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'less',
+            'pax_type': pax_type,
+            'less_percentage': less_percentage
+        }
+        return payload
+
+
+class AgentPricing(object):
+    def __init__(self, agent_type):
+        self.agent_type = agent_type
+        self.data = {}
+        self.do_config()
+
+    def do_config(self):
+        data = self.get_backend_data()
+        if not data:
+            return False
+
+        for agent_type, rec in data.get('agent_pricing_data', {}).items():
+            if self.agent_type == agent_type:
+                self.data = rec
+        return True
+
+    def get_backend_data(self):
+        try:
+            payload = request.env['tt.agent.pricing'].sudo().get_agent_pricing_api()
+        except Exception as e:
+            _logger.error('Error Get Agent Pricing Backend Data, %s' % str(e))
+            payload = {}
+        return payload
+
+    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, pricing_datetime, **kwargs):
+        # if self.is_data_expired():
+        #     self.do_config()
+        if not self.data:
+            return {}
+
+        for rec in self.data['agent_pricing_list']:
+            if rec['state'] == 'disable':
+                continue
+
+            is_provider_type = False
+            is_agent = False
+            is_provider = False
+            is_carrier = False
+            provider_type_data = rec['provider_type']
+            if provider_type_data['access_type'] == 'all':
+                is_provider_type = True
+            elif not provider_type_code:
+                pass
+            elif provider_type_data['access_type'] == 'allow' and provider_type_code in provider_type_data['provider_type_code_list']:
+                is_provider_type = True
+            elif provider_type_data['access_type'] == 'restrict' and provider_type_code not in provider_type_data['provider_type_code_list']:
+                is_provider_type = True
+
+            agent_data = rec['agent']
+            if agent_data['access_type'] == 'all':
+                is_agent = True
+            elif not agent_id:
+                pass
+            elif agent_data['access_type'] == 'allow' and agent_id in agent_data['agent_id_list']:
+                is_agent = True
+            elif agent_data['access_type'] == 'restrict' and agent_id not in agent_data['agent_id_list']:
+                is_agent = True
+
+            provider_data = rec['provider']
+            if provider_data['access_type'] == 'all':
+                is_provider = True
+            elif not provider_code:
+                pass
+            elif provider_data['access_type'] == 'allow' and provider_code in provider_data['provider_code_list']:
+                is_provider = True
+            elif provider_data['access_type'] == 'restrict' and provider_code not in provider_data['provider_code_list']:
+                is_provider = True
+
+            carrier_data = rec['carrier']
+            if carrier_data['access_type'] == 'all':
+                is_carrier = True
+            elif not carrier_code:
+                pass
+            elif carrier_data['access_type'] == 'allow' and carrier_code in carrier_data['carrier_code_list']:
+                is_carrier = True
+            elif carrier_data['access_type'] == 'restrict' and carrier_code not in carrier_data['carrier_code_list']:
+                is_carrier = True
+
+            result_list = [is_provider_type, is_agent, is_provider, is_carrier]
+            if not all(res for res in result_list):
+                continue
+
+            for rule in rec['rule_list']:
+                if rule['state'] == 'disable':
+                    continue
+
+                if rule['set_expiration_date']:
+                    if pricing_datetime < rule['date_from'] or pricing_datetime > rule['date_to']:
+                        continue
+
+                is_origin = False
+                is_destination = False
+                is_class_of_service = False
+                is_charge_code = False
+
+                route_data_origin = rule['route']['origin']
+                if route_data_origin['access_type'] == 'all':
+                    is_origin = True
+                elif route_data_origin['access_type'] == 'allow':
+                    if origin_code and origin_code in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                        is_origin = True
+                elif route_data_origin['access_type'] == 'restrict':
+                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                        is_origin = True
+
+                route_data_destination = rule['route']['destination']
+                if route_data_destination['access_type'] == 'all':
+                    is_destination = True
+                elif route_data_destination['access_type'] == 'allow':
+                    if destination_code and destination_code in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                        is_destination = True
+                elif rule['route']['origin']['access_type'] == 'restrict':
+                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                        is_destination = True
+
+                cos_data = rule['route']['class_of_service']
+                if cos_data['access_type'] == 'all':
+                    is_class_of_service = True
+                elif not class_of_service_list:
+                    pass
+                elif cos_data['access_type'] == 'allow' and any(
+                        class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+                elif cos_data['access_type'] == 'restrict' and not any(
+                        class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+
+                charge_code_data = rule['route']['charge_code']
+                if charge_code_data['access_type'] == 'all':
+                    is_charge_code = True
+                elif not charge_code_list:
+                    pass
+                elif charge_code_data['access_type'] == 'allow' and any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+                elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                if not all(res for res in result_2_list):
+                    continue
+                return rule
+        return {}
+
+    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+        is_infant = True if pax_type == 'INF' else False
+        total_amount = fare_amount + tax_amount
+        final_total_amount = total_amount
+        if 'upsell_by_percentage' in price_data:
+            upsell_data = price_data['upsell_by_percentage']
+            if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                add_amount = final_total_amount * upsell_data['percentage'] / 100
+                if add_amount < upsell_data['minimum']:
+                    add_amount = upsell_data['minimum']
+                final_total_amount += add_amount
+
+        if 'upsell_by_amount' in price_data:
+            upsell_data = price_data['upsell_by_amount']
+            if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                multiply_amount = 1
+                if upsell_data['is_route']:
+                    multiply_amount *= route_count
+                if upsell_data['is_segment']:
+                    multiply_amount *= segment_count
+
+                add_amount = upsell_data['amount'] * multiply_amount
+                final_total_amount += add_amount
+
+        upsell_amount = final_total_amount - total_amount
+
+        payload = {
+            'upsell_amount': round(upsell_amount),
+        }
+        return payload
+
+    def calculate_commission(self, price_data, commission_amount, agent_id, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
+        total_charge = 0.0
+        total_commission = 0.0
+        if 'charge_by_percentage' in price_data:
+            charge_data = price_data['charge_by_percentage']
+            if charge_data['percentage']:
+                add_amount = commission_amount * charge_data['percentage'] / 100
+                if add_amount < charge_data['minimum']:
+                    add_amount = charge_data['minimum']
+                total_charge += add_amount
+        if 'charge_by_amount' in price_data:
+            charge_data = price_data['charge_by_amount']
+            if charge_data['amount']:
+                multiplier = 1
+                if charge_data['is_route']:
+                    multiplier *= route_count
+                if charge_data['is_segment']:
+                    multiplier *= segment_count
+
+                total_pax = 0
+                if charge_data['is_pax']:
+                    total_pax += pax_count
+                if charge_data['is_infant']:
+                    total_pax += infant_count
+
+                if total_pax:
+                    multiplier *= total_pax
+
+                add_amount = charge_data['amount'] * multiplier
+                total_charge += add_amount
+        if 'commission_by_percentage' in price_data:
+            com_data = price_data['commission_by_percentage']
+            if com_data['percentage']:
+                add_amount = commission_amount * com_data['percentage'] / 100
+                if add_amount < com_data['minimum']:
+                    add_amount = com_data['minimum']
+                total_commission += add_amount
+        if 'commission_by_amount' in price_data:
+            com_data = price_data['commission_by_amount']
+            if com_data['amount']:
+                multiplier = 1
+                if com_data['is_route']:
+                    multiplier *= route_count
+                if com_data['is_segment']:
+                    multiplier *= segment_count
+
+                total_pax = 0
+                if com_data['is_pax']:
+                    total_pax += pax_count
+                if com_data['is_infant']:
+                    total_pax += infant_count
+
+                if total_pax:
+                    multiplier *= total_pax
+
+                add_amount = com_data['amount'] * multiplier
+                total_commission += add_amount
+
+        payload = {
+            'agent_id': agent_id,
+            'commission_amount': round(total_commission),
+            'charge_amount': round(total_charge),
+        }
+        return payload
+
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+        sales_data = rule_obj['ticketing']['sales']
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = fare_amount + tax_amount + total_upsell_amount
+
+        nta_total_amount = fare_amount + tax_amount
+
+        total_commission_amount = sales_total_amount - nta_total_amount
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'ticketing',
+            'fare_amount': fare_amount,
+            'tax_amount': tax_amount,
+            'pax_type': pax_type,
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'sales_amount': sales_total_amount,
+            'nta_amount': nta_total_amount,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_commission_amount
+        }
+        return payload
+
+    def get_ancillary_calculation(self, rule_obj, fare_amount, tax_amount, **kwargs):
+        sales_data = rule_obj['ancillary']['sales']
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount)
+        total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = fare_amount + tax_amount + total_upsell_amount
+
+        nta_total_amount = fare_amount + tax_amount
+
+        total_commission_amount = sales_total_amount - nta_total_amount
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'ancillary',
+            'fare_amount': fare_amount,
+            'tax_amount': tax_amount,
+            'sales_amount': sales_total_amount,
+            'nta_amount': nta_total_amount,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_commission_amount
+        }
+        return payload
+
+    def get_reservation_calculation(self, rule_obj, route_count=0, segment_count=0, **kwargs):
+        sales_data = rule_obj['reservation']['sales']
+        sales_res = self.calculate_price(sales_data, 0.0, 0.0, '', route_count, segment_count)
+        total_upsell_amount = sales_res['upsell_amount']
+
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'reservation',
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_upsell_amount
+        }
+        return payload
+
+    def get_commission_calculation(self, rule_obj, commission_amount, agent_id, upline_list, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
+        com_data = rule_obj['commission']
+        parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
+        ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
+
+        parent_charge_amount = parent_res['charge_amount']
+        if parent_charge_amount > commission_amount:
+            parent_charge_amount = 0.0
+        else:
+            commission_amount -= parent_charge_amount
+
+        ho_charge_amount = ho_res['charge_amount']
+        if ho_charge_amount > commission_amount:
+            ho_charge_amount = 0.0
+        else:
+            commission_amount -= ho_charge_amount
+
+        agent_res = self.calculate_commission(com_data['agent'], commission_amount, agent_id, pax_count, infant_count, route_count, segment_count)
+        upline_res_list = []
+        upline_head = 0
+        for upline in upline_list[1:]:
+            for idx, upline_obj in enumerate(com_data['upline_list']):
+                if idx < upline_head:
+                    continue
+
+                if upline_obj['agent_type_code'] == upline['agent_type_id']['code']:
+                    upline_head = idx + 1
+                    upline_res = self.calculate_commission(upline_obj, commission_amount, upline['id'], pax_count, infant_count, route_count, segment_count)
+                    upline_res_list.append(upline_res)
+                    break
+
+        agent_commission_amount = agent_res['commission_amount']
+        if agent_commission_amount > commission_amount:
+            agent_commission_amount = 0.0
+        else:
+            commission_amount -= agent_commission_amount
+
+        for upline_res in upline_res_list:
+            if upline_res['commission_amount'] > commission_amount:
+                upline_res['commission_amount'] = 0.0
+            else:
+                commission_amount -= upline_res['commission_amount']
+
+        residual_agent_id = upline_list[-1]['id']
+        if com_data['residual_amount_to'] == 'parent':
+            residual_agent_id = upline_list[1]['id']
+
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'commission',
+            'agent_id': agent_id,
+            'upline_list': upline_list,
+            'pax_count': pax_count,
+            'infant_count': infant_count,
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'parent_charge_amount': parent_charge_amount,
+            'parent_agent_id': upline_list[1]['id'],
+            'ho_charge_amount': ho_charge_amount,
+            'ho_agent_id': upline_list[-1]['id'],
+            'agent_commission_amount': agent_commission_amount,
+            'upline_commission_list': upline_res_list,
+            'residual_amount': commission_amount,
+            'residual_agent_id': residual_agent_id
+        }
+        return payload
+
+
+class CustomerPricing(object):
+    def __init__(self, agent_id):
+        self.agent_id = agent_id
+        self.data = {}
+        self.do_config()
+
+    def do_config(self):
+        data = self.get_backend_data()
+        if not data:
+            return False
+
+        for agent_id, rec in data.get('customer_pricing_data', {}).items():
+            if self.agent_id == int(agent_id):
+                self.data = rec
+        return True
+
+    def get_backend_data(self):
+        try:
+            payload = request.env['tt.customer.pricing'].sudo().get_customer_pricing_api()
+        except Exception as e:
+            _logger.error('Error Get Customer Pricing Backend Data, %s' % str(e))
+            payload = {}
+        return payload
+
+    def get_pricing_data(self, customer_parent_type_code, customer_parent_id, provider_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, pricing_datetime, **kwargs):
+        # if self.is_data_expired():
+        #     self.do_config()
+        if not self.data:
+            return {}
+
+        for rec in self.data['customer_pricing_list']:
+            if rec['state'] == 'disable':
+                continue
+
+            is_customer_parent_type = False
+            is_customer_parent = False
+            is_provider_type = False
+            is_provider = False
+            is_carrier = False
+
+            customer_parent_type_data = rec['customer_parent_type']
+            if customer_parent_type_data['access_type'] == 'all':
+                is_customer_parent_type = True
+            elif not customer_parent_type_code:
+                pass
+            elif customer_parent_type_data['access_type'] == 'allow' and customer_parent_type_code in customer_parent_type_data['customer_parent_type_code_list']:
+                is_customer_parent_type = True
+            elif customer_parent_type_data['access_type'] == 'restrict' and customer_parent_type_code not in customer_parent_type_data['customer_parent_type_code_list']:
+                is_customer_parent_type = True
+
+            customer_parent_data = rec['customer_parent']
+            if customer_parent_data['access_type'] == 'all':
+                is_customer_parent = True
+            elif not customer_parent_id:
+                pass
+            elif customer_parent_data['access_type'] == 'allow' and customer_parent_id in customer_parent_data['customer_parent_id_list']:
+                is_customer_parent = True
+            elif customer_parent_data['access_type'] == 'restrict' and customer_parent_id not in customer_parent_data['customer_parent_id_list']:
+                is_customer_parent = True
+
+            provider_type_data = rec['provider_type']
+            if provider_type_data['access_type'] == 'all':
+                is_provider_type = True
+            elif not provider_type_code:
+                pass
+            elif provider_type_data['access_type'] == 'allow' and provider_type_code in provider_type_data['provider_type_code_list']:
+                is_provider_type = True
+            elif provider_type_data['access_type'] == 'restrict' and provider_type_code not in provider_type_data['provider_type_code_list']:
+                is_provider_type = True
+
+            provider_data = rec['provider']
+            if provider_data['access_type'] == 'all':
+                is_provider = True
+            elif not provider_code:
+                pass
+            elif provider_data['access_type'] == 'allow' and provider_code in provider_data['provider_code_list']:
+                is_provider = True
+            elif provider_data['access_type'] == 'restrict' and provider_code not in provider_data['provider_code_list']:
+                is_provider = True
+
+            carrier_data = rec['carrier']
+            if carrier_data['access_type'] == 'all':
+                is_carrier = True
+            elif not carrier_code:
+                pass
+            elif carrier_data['access_type'] == 'allow' and carrier_code in carrier_data['carrier_code_list']:
+                is_carrier = True
+            elif carrier_data['access_type'] == 'restrict' and carrier_code not in carrier_data['carrier_code_list']:
+                is_carrier = True
+
+            result_list = [is_customer_parent_type, is_customer_parent, is_provider_type, is_provider, is_carrier]
+            if not all(res for res in result_list):
+                continue
+
+            for rule in rec['rule_list']:
+                if rule['state'] == 'disable':
+                    continue
+
+                if rule['set_expiration_date']:
+                    if pricing_datetime < rule['date_from'] or pricing_datetime > rule['date_to']:
+                        continue
+
+                is_origin = False
+                is_destination = False
+                is_class_of_service = False
+                is_charge_code = False
+
+                route_data_origin = rule['route']['origin']
+                if route_data_origin['access_type'] == 'all':
+                    is_origin = True
+                elif route_data_origin['access_type'] == 'allow':
+                    if origin_code and origin_code in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                        is_origin = True
+                elif route_data_origin['access_type'] == 'restrict':
+                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                        is_origin = True
+
+                route_data_destination = rule['route']['destination']
+                if route_data_destination['access_type'] == 'all':
+                    is_destination = True
+                elif route_data_destination['access_type'] == 'allow':
+                    if destination_code and destination_code in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                        is_destination = True
+                elif rule['route']['origin']['access_type'] == 'restrict':
+                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                        is_destination = True
+
+                cos_data = rule['route']['class_of_service']
+                if cos_data['access_type'] == 'all':
+                    is_class_of_service = True
+                elif not class_of_service_list:
+                    pass
+                elif cos_data['access_type'] == 'allow' and any(class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+                elif cos_data['access_type'] == 'restrict' and not any(class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+
+                charge_code_data = rule['route']['charge_code']
+                if charge_code_data['access_type'] == 'all':
+                    is_charge_code = True
+                elif not charge_code_list:
+                    pass
+                elif charge_code_data['access_type'] == 'allow' and any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+                elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                if not all(res for res in result_2_list):
+                    continue
+                return rule
+        return {}
+
+    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+        is_infant = True if pax_type == 'INF' else False
+        total_amount = fare_amount + tax_amount
+        final_total_amount = total_amount
+        if 'upsell_by_percentage' in price_data:
+            upsell_data = price_data['upsell_by_percentage']
+            if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                add_amount = final_total_amount * upsell_data['percentage'] / 100
+                if add_amount < upsell_data['minimum']:
+                    add_amount = upsell_data['minimum']
+                final_total_amount += add_amount
+
+        if 'upsell_by_amount' in price_data:
+            upsell_data = price_data['upsell_by_amount']
+            if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                multiply_amount = 1
+                if upsell_data['is_route']:
+                    multiply_amount *= route_count
+                if upsell_data['is_segment']:
+                    multiply_amount *= segment_count
+
+                add_amount = upsell_data['amount'] * multiply_amount
+                final_total_amount += add_amount
+
+        upsell_amount = final_total_amount - total_amount
+
+        payload = {
+            'upsell_amount': round(upsell_amount),
+        }
+        return payload
+
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+        sales_data = rule_obj['ticketing']['sales']
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = fare_amount + tax_amount + total_upsell_amount
+
+        nta_total_amount = fare_amount + tax_amount
+
+        total_commission_amount = sales_total_amount - nta_total_amount
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'ticketing',
+            'fare_amount': fare_amount,
+            'tax_amount': tax_amount,
+            'pax_type': pax_type,
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'sales_amount': sales_total_amount,
+            'nta_amount': nta_total_amount,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_commission_amount
+        }
+        return payload
+
+    def get_ancillary_calculation(self, rule_obj, fare_amount, tax_amount, **kwargs):
+        sales_data = rule_obj['ancillary']['sales']
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount)
+        total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = fare_amount + tax_amount + total_upsell_amount
+
+        nta_total_amount = fare_amount + tax_amount
+
+        total_commission_amount = sales_total_amount - nta_total_amount
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'ancillary',
+            'fare_amount': fare_amount,
+            'tax_amount': tax_amount,
+            'sales_amount': sales_total_amount,
+            'nta_amount': nta_total_amount,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_commission_amount
+        }
+        return payload
+
+    def get_reservation_calculation(self, rule_obj, route_count=0, segment_count=0, **kwargs):
+        sales_data = rule_obj['reservation']['sales']
+        sales_res = self.calculate_price(sales_data, 0.0, 0.0, '', route_count, segment_count)
+        total_upsell_amount = sales_res['upsell_amount']
+
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'reservation',
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'upsell_amount': total_upsell_amount,
+            'commission_amount': total_upsell_amount
+        }
+        return payload
+
+
+# November 12, 2021 - SAM
+class RepricingToolsV2(object):
+    def __init__(self, provider_type, context):
+        self.provider_type = provider_type
+        self.context = context
+        self.agent_type = ''
+        self.agent_id = ''
+        self.agent_type_data = {}
+        self.customer_parent_type = ''
+        self.customer_parent_id = ''
+        self.upline_list = []
+        self.ho_agent_id = ''
+        self.ticket_fare_list = []
+        self.ancillary_fare_list = []
+        self.provider_data_dict = {}
+        self.agent_data_dict = {}
+        self.customer_data_dict = {}
+
+        if self.context:
+            upline_list = self.context.get('co_user_info', [])
+            customer_parent_type = self.context.get('co_customer_parent_type_code', '')
+            if not customer_parent_type:
+                customer_parent_type = 'fpo'
+
+            self.__dict__.update({
+                'agent_type': self.context.get('co_agent_type_code', ''),
+                'agent_id': self.context.get('co_agent_id', ''),
+                'upline_list': upline_list,
+                'customer_parent_type': customer_parent_type,
+                'customer_parent_id': self.context.get('co_customer_parent_id', ''),
+                'agent_type_data': upline_list[0]['agent_type_id'] if upline_list else {},
+                'ho_agent_id': upline_list[-1]['id'] if upline_list else '',
+            })
+
+        self.provider_pricing = ProviderPricing(provider_type)
+        self.agent_pricing = AgentPricing(self.agent_type)
+        self.customer_pricing = CustomerPricing(self.agent_id)
+
+    def _default_sc_summary_values(self):
+        res = {
+            'total_fare_amount': 0.0,
+            'total_tax_amount': 0.0,
+            'total_upsell_amount': 0.0,
+            'total_commission_amount': 0.0
+        }
+        return res
+
+    def ceil(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = ceil(temp) * digit
+        return res
+
+    def floor(self, data, number):
+        digit = 1
+        for i in range(number):
+            digit *= 10
+        temp = data / digit
+        res = floor(temp) * digit
+        return res
+
+    def round(self, data, agent_data={}):
+        if not agent_data:
+            res = round(data)
+            return res
+
+        if agent_data['rounding_amount_type'] == 'round':
+            digit = 1
+            for i in range(agent_data['rounding_places']):
+                digit *= 10
+            temp = data / digit
+            res = round(temp) * digit
+        elif agent_data['rounding_amount_type'] == 'ceil':
+            res = self.ceil(data, agent_data['rounding_places'])
+        elif agent_data['rounding_amount_type'] == 'floor':
+            res = self.floor(data, agent_data['rounding_places'])
+        else:
+            res = data
+        return res
+
+    def clear_fare_list(self):
+        self.ticket_fare_list = []
+        self.ancillary_fare_list = []
+
+    def add_ticket_fare(self, fare_data):
+        self.ticket_fare_list.append(fare_data)
+
+    def add_ancillary_fare(self, fare_data):
+        self.ancillary_fare_list.append(fare_data)
+
+    def get_provider_less(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', **kwargs):
+        if not self.ticket_fare_list:
+            raise Exception('Ticket Fare List is empty')
+
+        class_of_service_list = []
+        charge_code_list = []
+        pax_count_dict = {
+            'ADT': 0
+        }
+        for fare in self.ticket_fare_list:
+            if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
+                class_of_service_list.append(fare['class_of_service'])
+
+            if 'service_charges' not in fare:
+                continue
+                # raise Exception('Service Charges is not found')
+
+            for idx, sc in enumerate(fare['service_charges']):
+                charge_code = sc['charge_code']
+                if charge_code not in charge_code_list:
+                    charge_code_list.append(charge_code)
+
+                pax_type = sc['pax_type']
+                pax_count = sc['pax_count']
+                if pax_type not in pax_count_dict or pax_count_dict[pax_type] < pax_count:
+                    pax_count_dict[pax_type] = pax_count
+
+        rule_param = {
+            'provider_code': provider,
+            'carrier_code': carrier_code,
+            'origin_code': origin,
+            'origin_city': origin_city,
+            'origin_country': origin_country,
+            'destination_code': destination,
+            'destination_city': destination_city,
+            'destination_country': destination_country,
+            'class_of_service_list': class_of_service_list,
+            'charge_code_list': charge_code_list,
+            'pricing_datetime': datetime.now().strftime(FORMAT_DATETIME)
+        }
+        rule_obj = self.provider_pricing.get_pricing_data(**rule_param)
+        pricing_less_list = []
+        for pax_type, pax_count in pax_count_dict.items():
+            if not pax_count:
+                continue
+
+            res = self.provider_pricing.get_less_calculation(rule_obj, pax_type)
+            pricing_less_list.append(res)
+
+        payload = {
+            'pricing_less_list': pricing_less_list
+        }
+        return payload
+
+    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, **kwargs):
+        '''
+            pricing_datetime = %Y-%m-%d %H:%M:%S
+        '''
+        if not self.ticket_fare_list:
+            _logger.error('Ticket Fare List is empty')
+            return False
+            # raise Exception('Ticket Fare List is empty')
+
+        if not pricing_datetime:
+            pricing_datetime = datetime.now().strftime(FORMAT_DATETIME)
+
+        # sc_temp = copy.deepcopy(self.ticket_fare_list[0]['service_charges'][0])
+
+        # Ada nama field total yang berbeda di webservice lain jadi dibuat dinamis
+        # total_field_name = 'total'
+        # for key in sc_temp.keys():
+        #     if 'total' in key:
+        #         total_field_name = key
+        #         break
+
+        ## 1
+        pax_count_dict = {
+            'ADT': 0
+        }
+        sc_summary_dict = {
+            'ADT': self._default_sc_summary_values()
+        }
+        class_of_service_list = class_of_service_list if class_of_service_list else []
+        charge_code_list = charge_code_list if charge_code_list else []
+        total_commission_amount = 0.0
+        sc_temp = None
+        for fare in self.ticket_fare_list:
+            if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
+                class_of_service_list.append(fare['class_of_service'])
+
+            if 'service_charges' not in fare:
+                continue
+                # raise Exception('Service Charges is not found')
+
+            del_sc_id_list = []
+            for idx, sc in enumerate(fare['service_charges']):
+                if not sc_temp:
+                    sc_temp = copy.deepcopy(sc)
+
+                charge_code = sc['charge_code']
+                if charge_code not in charge_code_list:
+                    charge_code_list.append(charge_code)
+
+                pax_type = sc['pax_type']
+
+                if pax_type not in sc_summary_dict:
+                    sc_summary_dict[pax_type] = self._default_sc_summary_values()
+                sc_data = sc_summary_dict[pax_type]
+
+                pax_count = sc['pax_count']
+                if pax_type not in pax_count_dict or pax_count_dict[pax_type] < pax_count:
+                    pax_count_dict[pax_type] = pax_count
+
+                amount = self.round(sc['amount'])
+                sc_total = amount * pax_count
+                sc.update({
+                    'amount': amount,
+                    # 'foreign_amount': amount,
+                    'total': sc_total
+                })
+                if sc['charge_type'] == 'FARE':
+                    sc_data['total_fare_amount'] += sc_total
+                elif sc['charge_type'] == 'ROC':
+                    sc_data['total_upsell_amount'] += sc_total
+                elif sc['charge_type'] == 'RAC':
+                    sc_total = -sc_total
+                    sc_data['total_commission_amount'] += sc_total
+                    total_commission_amount += sc_total
+                    del_sc_id_list.append(idx)
+                else:
+                    sc_data['total_tax_amount'] += sc_total
+
+            for idx in del_sc_id_list[::-1]:
+                fare['service_charges'].pop(idx)
+
+        if not sc_temp:
+            _logger.error('Service Charge detail is not found')
+            return False
+            # raise Exception('Service Charge detail is not found')
+
+        ## 2
+
+        rule_param = {
+            'provider_code': provider,
+            'carrier_code': carrier_code,
+            'origin_code': origin,
+            'origin_city': origin_city,
+            'origin_country': origin_country,
+            'destination_code': destination,
+            'destination_city': destination_city,
+            'destination_country': destination_country,
+            'class_of_service_list': class_of_service_list,
+            'charge_code_list': charge_code_list,
+            'pricing_datetime': pricing_datetime,
+        }
+        rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_id), self.customer_parent_type, str(self.customer_parent_id)] + class_of_service_list + charge_code_list
+        rule_key = ''.join(rule_key_list)
+        if rule_key in self.provider_data_dict:
+            rule_obj = self.provider_data_dict[rule_key]
+        else:
+            rule_obj = self.provider_pricing.get_pricing_data(**rule_param)
+            self.provider_data_dict[rule_key] = rule_obj
+
+        if rule_key in self.agent_data_dict:
+            agent_obj = self.agent_data_dict[rule_key]
+        else:
+            agent_obj = self.agent_pricing.get_pricing_data(self.provider_type, self.agent_id, **rule_param)
+            self.agent_data_dict[rule_key] = agent_obj
+
+        if rule_key in self.customer_data_dict:
+            cust_obj = self.customer_data_dict[rule_key]
+        else:
+            cust_obj = self.customer_pricing.get_pricing_data(self.customer_parent_type, self.customer_parent_id, self.provider_type, **rule_param)
+            self.customer_data_dict[rule_key] = cust_obj
+
+        fare_data = self.ticket_fare_list[-1]
+        for pax_type, sc_sum in sc_summary_dict.items():
+            pax_count = pax_count_dict[pax_type]
+            fare_amount = sc_sum['total_fare_amount'] / pax_count
+            tax_amount = sc_sum['total_tax_amount'] / pax_count
+            sub_total = fare_amount + tax_amount
+
+            calc_param = {
+                'fare_amount': fare_amount,
+                'pax_type': pax_type,
+                'route_count': route_count,
+                'segment_count': segment_count,
+            }
+            if rule_obj:
+                tkt_res = self.provider_pricing.get_ticketing_calculation(rule_obj=rule_obj, tax_amount=tax_amount, **calc_param)
+
+                if tkt_res['upsell_amount']:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'ROC',
+                        'charge_code': 'roc',
+                        'pax_type': pax_type,
+                        'pax_count': pax_count,
+                        'amount': tkt_res['upsell_amount'],
+                        'foreign_amount': tkt_res['upsell_amount'],
+                        'total': tkt_res['upsell_amount'] * pax_count,
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+                if tkt_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'racho',
+                        'pax_type': pax_type,
+                        'pax_count': pax_count,
+                        'amount': -tkt_res['ho_commission_amount'],
+                        'foreign_amount': -tkt_res['ho_commission_amount'],
+                        'total': -tkt_res['ho_commission_amount'] * pax_count,
+                        'commission_agent_id': self.ho_agent_id,
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+                tkt_commission_total = tkt_res['commission_amount'] * pax_count
+                total_commission_amount += tkt_commission_total
+
+                tax_amount += tkt_res['upsell_amount']
+                sub_total += tkt_res['upsell_amount']
+
+            # Pembulatan
+            round_total = self.round(sub_total, self.agent_type_data)
+            diff_total = round_total - sub_total
+            if diff_total:
+                sc_total = diff_total * pax_count
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'ROC',
+                    'charge_code': 'rocround',
+                    'pax_type': pax_type,
+                    'pax_count': pax_count,
+                    'amount': diff_total,
+                    'foreign_amount': diff_total,
+                    'total': sc_total,
+                })
+                fare_data['service_charges'].append(sc_values)
+                total_commission_amount += sc_total
+            # Pembulatan END
+
+            if agent_obj:
+                agent_tkt = self.agent_pricing.get_ticketing_calculation(rule_obj=agent_obj, tax_amount=tax_amount, **calc_param)
+
+                if agent_tkt['upsell_amount']:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'ROC',
+                        'charge_code': 'rocagt',
+                        'pax_type': pax_type,
+                        'pax_count': pax_count,
+                        'amount': agent_tkt['upsell_amount'],
+                        'foreign_amount': agent_tkt['upsell_amount'],
+                        'total': agent_tkt['upsell_amount'] * pax_count,
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+                if agent_tkt['commission_amount'] and show_commission:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'rac',
+                        'pax_type': pax_type,
+                        'pax_count': pax_count,
+                        'amount': -agent_tkt['commission_amount'],
+                        'foreign_amount': -agent_tkt['commission_amount'],
+                        'total': -agent_tkt['commission_amount'] * pax_count,
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+                tax_amount += agent_tkt['upsell_amount']
+
+            if cust_obj:
+                cust_tkt = self.customer_pricing.get_ticketing_calculation(cust_obj, tax_amount=tax_amount, **calc_param)
+
+                if cust_tkt['upsell_amount']:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'ROC',
+                        'charge_code': 'roccust',
+                        'pax_type': pax_type,
+                        'pax_count': pax_count,
+                        'amount': cust_tkt['upsell_amount'],
+                        'foreign_amount': cust_tkt['upsell_amount'],
+                        'total': cust_tkt['upsell_amount'] * pax_count,
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+                if cust_tkt['commission_amount'] and show_commission:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'rac',
+                        'pax_type': pax_type,
+                        'pax_count': pax_count,
+                        'amount': -cust_tkt['commission_amount'],
+                        'foreign_amount': -cust_tkt['commission_amount'],
+                        'total': -cust_tkt['commission_amount'] * pax_count,
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+                tax_amount += cust_tkt['upsell_amount']
+
+        ## 3
+        for fare in self.ancillary_fare_list:
+            if 'service_charges' not in fare:
+                continue
+                # raise Exception('Service Charges is not found')
+            elif not fare['service_charges']:
+                continue
+
+            fare_amount = 0.0
+            tax_amount = 0.0
+            del_sc_id_list = []
+            for idx, sc in enumerate(fare['service_charges']):
+                if sc['charge_type'] == 'FARE':
+                    fare_amount += sc['amount']
+                elif sc['charge_type'] == 'ROC':
+                    continue
+                elif sc['charge_type'] == 'RAC':
+                    total_commission_amount += -sc['amount']
+                    del_sc_id_list.append(idx)
+                else:
+                    tax_amount += sc['amount']
+
+            for idx in del_sc_id_list[::-1]:
+                fare['service_charge'].pop(idx)
+
+            sc_anc_temp = copy.deepcopy(fare['service_charges'][0])
+            if rule_obj:
+                tkt_anc_res = self.provider_pricing.get_ancillary_calculation(rule_obj, fare_amount, tax_amount)
+
+                if tkt_anc_res['upsell_amount']:
+                    sc_values = copy.deepcopy(sc_anc_temp)
+                    sc_values.update({
+                        'charge_type': 'ROC',
+                        'charge_code': 'roc',
+                        'amount': tkt_anc_res['upsell_amount'],
+                        'foreign_amount': tkt_anc_res['upsell_amount'],
+                        'total': tkt_anc_res['upsell_amount'],
+                    })
+                    fare['service_charges'].append(sc_values)
+
+                if tkt_anc_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                    sc_values = copy.deepcopy(sc_anc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'racho',
+                        'amount': -tkt_anc_res['ho_commission_amount'],
+                        'foreign_amount': -tkt_anc_res['ho_commission_amount'],
+                        'total': -tkt_anc_res['ho_commission_amount'],
+                        'commission_agent_id': self.ho_agent_id,
+                    })
+                    fare['service_charges'].append(sc_values)
+
+                total_commission_amount += tkt_anc_res['commission_amount']
+                tax_amount += tkt_anc_res['upsell_amount']
+
+            if agent_obj:
+                agent_anc_tkt = self.agent_pricing.get_ancillary_calculation(agent_obj, fare_amount, tax_amount)
+
+                if agent_anc_tkt['upsell_amount']:
+                    sc_values = copy.deepcopy(sc_anc_temp)
+                    sc_values.update({
+                        'charge_type': 'ROC',
+                        'charge_code': 'rocagt',
+                        'amount': agent_anc_tkt['upsell_amount'],
+                        'foreign_amount': agent_anc_tkt['upsell_amount'],
+                        'total': agent_anc_tkt['upsell_amount'],
+                    })
+                    fare['service_charges'].append(sc_values)
+
+                if agent_anc_tkt['commission_amount'] and show_commission:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'rac',
+                        'pax_type': sc_anc_temp['pax_type'],
+                        'pax_count': 1,
+                        'amount': -agent_anc_tkt['commission_amount'],
+                        'foreign_amount': -agent_anc_tkt['commission_amount'],
+                        'total': -agent_anc_tkt['commission_amount'],
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+            if cust_obj:
+                cust_anc_tkt = self.customer_pricing.get_ancillary_calculation(cust_obj, fare_amount, tax_amount)
+
+                if cust_anc_tkt['upsell_amount']:
+                    sc_values = copy.deepcopy(sc_anc_temp)
+                    sc_values.update({
+                        'charge_type': 'ROC',
+                        'charge_code': 'roccust',
+                        'amount': cust_anc_tkt['upsell_amount'],
+                        'foreign_amount': cust_anc_tkt['upsell_amount'],
+                        'total': cust_anc_tkt['upsell_amount'],
+                    })
+                    fare['service_charges'].append(sc_values)
+
+                if cust_anc_tkt['commission_amount'] and show_commission:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'rac',
+                        'pax_type': sc_anc_temp['pax_type'],
+                        'pax_count': 1,
+                        'amount': -cust_anc_tkt['commission_amount'],
+                        'foreign_amount': -cust_anc_tkt['commission_amount'],
+                        'total': -cust_anc_tkt['commission_amount'],
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+        ## 4
+
+        if rule_obj:
+            tkt_rsv_res = self.provider_pricing.get_reservation_calculation(rule_obj, route_count, segment_count)
+            if tkt_rsv_res['upsell_amount']:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'ROC',
+                    'charge_code': 'rocrsv',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': tkt_rsv_res['upsell_amount'],
+                    'foreign_amount': tkt_rsv_res['upsell_amount'],
+                    'total': tkt_rsv_res['upsell_amount'],
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            if tkt_rsv_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'RAC',
+                    'charge_code': 'rachorsv',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': -tkt_rsv_res['ho_commission_amount'],
+                    'foreign_amount': -tkt_rsv_res['ho_commission_amount'],
+                    'total': -tkt_rsv_res['ho_commission_amount'],
+                    'commission_agent_id': self.ho_agent_id
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            total_commission_amount += tkt_rsv_res['commission_amount']
+
+        if cust_obj:
+            cust_rsv_res = self.customer_pricing.get_reservation_calculation(cust_obj, route_count, segment_count)
+            if cust_rsv_res['upsell_amount']:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'ROC',
+                    'charge_code': 'rocrsvcust',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': cust_rsv_res['upsell_amount'],
+                    'foreign_amount': cust_rsv_res['upsell_amount'],
+                    'total': cust_rsv_res['upsell_amount'],
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            if cust_rsv_res['commission_amount'] and show_commission:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'RAC',
+                    'charge_code': 'rac',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': -cust_rsv_res['commission_amount'],
+                    'foreign_amount': -cust_rsv_res['commission_amount'],
+                    'total': -cust_rsv_res['commission_amount'],
+                })
+                fare_data['service_charges'].append(sc_values)
+
+        if agent_obj:
+            agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, route_count, segment_count)
+            if agent_rsv_res['upsell_amount']:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'ROC',
+                    'charge_code': 'rocrsvagt',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': agent_rsv_res['upsell_amount'],
+                    'foreign_amount': agent_rsv_res['upsell_amount'],
+                    'total': agent_rsv_res['upsell_amount'],
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            if agent_rsv_res['commission_amount'] and show_commission:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'RAC',
+                    'charge_code': 'rac',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': -agent_rsv_res['commission_amount'],
+                    'foreign_amount': -agent_rsv_res['commission_amount'],
+                    'total': -agent_rsv_res['commission_amount'],
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            total_pax_count = 0
+            infant_count = 0
+            for pax_type, pax_count in pax_count_dict.items():
+                if pax_type == 'INF':
+                    infant_count += pax_count
+                else:
+                    total_pax_count += pax_count
+
+            com_param = {
+                'rule_obj': agent_obj,
+                'commission_amount': total_commission_amount,
+                'agent_id': self.agent_id,
+                'upline_list': self.upline_list,
+                'pax_count': total_pax_count,
+                'infant_count': infant_count,
+                'route_count': route_count,
+                'segment_count': segment_count,
+            }
+            agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
+            if agent_com_res['agent_commission_amount'] and show_commission:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'RAC',
+                    'charge_code': 'rac',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': -agent_com_res['agent_commission_amount'],
+                    'foreign_amount': -agent_com_res['agent_commission_amount'],
+                    'total': -agent_com_res['agent_commission_amount'],
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            if agent_com_res['parent_charge_amount'] and show_commission and show_upline_commission:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'RAC',
+                    'charge_code': 'rac0',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': -agent_com_res['parent_charge_amount'],
+                    'foreign_amount': -agent_com_res['parent_charge_amount'],
+                    'total': -agent_com_res['parent_charge_amount'],
+                    'commission_agent_id': agent_com_res['parent_agent_id']
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            if agent_com_res['ho_charge_amount'] and show_commission and show_upline_commission:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'RAC',
+                    'charge_code': 'rac0',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': -agent_com_res['ho_charge_amount'],
+                    'foreign_amount': -agent_com_res['ho_charge_amount'],
+                    'total': -agent_com_res['ho_charge_amount'],
+                    'commission_agent_id': agent_com_res['ho_agent_id']
+                })
+                fare_data['service_charges'].append(sc_values)
+
+            for idx, upline in enumerate(agent_com_res['upline_commission_list'], 1):
+                if upline['commission_amount'] and show_commission and show_upline_commission:
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'rac%s' % idx,
+                        'pax_type': 'ADT',
+                        'pax_count': 1,
+                        'amount': -upline['commission_amount'],
+                        'foreign_amount': -upline['commission_amount'],
+                        'total': -upline['commission_amount'],
+                        'commission_agent_id': upline['agent_id']
+                    })
+                    fare_data['service_charges'].append(sc_values)
+
+            if agent_com_res['residual_amount'] and show_commission and show_upline_commission:
+                sc_values = copy.deepcopy(sc_temp)
+                sc_values.update({
+                    'charge_type': 'RAC',
+                    'charge_code': 'racsd',
+                    'pax_type': 'ADT',
+                    'pax_count': 1,
+                    'amount': -agent_com_res['residual_amount'],
+                    'foreign_amount': -agent_com_res['residual_amount'],
+                    'total': -agent_com_res['residual_amount'],
+                    'commission_agent_id': agent_com_res['residual_agent_id']
+                })
+                fare_data['service_charges'].append(sc_values)
+
+        # Pembulatan
+        # grand_total = 0.0
+        # for fare in self.ticket_fare_list:
+        #     for sc in fare['service_charges']:
+        #         if sc['charge_type'] != 'RAC':
+        #             grand_total += sc['total']
+        # for fare in self.ancillary_fare_list:
+        #     for sc in fare['service_charges']:
+        #         if sc['charge_type'] != 'RAC':
+        #             grand_total += sc['total']
+        # round_gt = self.round(grand_total, self.agent_type_data)
+        # diff_gt = round_gt - grand_total
+        # if diff_gt:
+        #     sc_values = copy.deepcopy(sc_temp)
+        #     sc_values.update({
+        #         'charge_type': 'ROC',
+        #         'charge_code': 'roc',
+        #         'pax_type': 'ADT',
+        #         'pax_count': 1,
+        #         'amount': diff_gt,
+        #         'foreign_amount': diff_gt,
+        #         'total': diff_gt,
+        #     })
+        #     fare_data['service_charges'].append(sc_values)
+        return True

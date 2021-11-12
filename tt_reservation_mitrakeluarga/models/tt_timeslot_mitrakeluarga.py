@@ -56,6 +56,7 @@ class TtTimeslotMitraKeluarga(models.Model):
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
     cito_surcharge = fields.Monetary('Cito Surcharge')
 
+    max_book_datetime = fields.Datetime('Max Book Datetime', required=True, default=fields.Datetime.now, help="MAX BOOK DATETIME FOR DRIVE THRU")
 
     total_timeslot = fields.Integer('Max Timeslot', required=True, default=5)
 
@@ -107,18 +108,29 @@ class TtTimeslotMitraKeluarga(models.Model):
     #     }
     # }
 
-    def get_available_timeslot_api(self, context):
+    def get_available_timeslot_api(self, req, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        if '09:00' < str(current_wib_datetime.time())[:5] < '19:00' and current_wib_datetime.strftime('%A') != 'Sunday':
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
-        else:
-            min_datetime = current_datetime.replace(hour=8,minute=0, second=0, microsecond=0)
-            if current_datetime > min_datetime and current_wib_datetime.strftime('%A') != 'Saturday':
-                min_datetime = min_datetime + timedelta(days=1)
+        carrier_obj = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])], limit=1)
+        dom = ['|', ('agent_id', '=', False), ('agent_id', '=', context['co_agent_id'])]
+        #HOMECARE
+        if carrier_obj.id in [self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_antigen').id,
+                              self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_pcr').id,
+                              self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_srbd').id]:
+            dom.append(('timeslot_type', '=', 'home_care'))
+            if '09:00' < str(current_wib_datetime.time())[:5] < '19:00' and current_wib_datetime.strftime(
+                    '%A') != 'Sunday':
+                dom.append(('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3)))
             else:
-                min_datetime = min_datetime + timedelta(days=2)
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime)]
+                min_datetime = current_datetime.replace(hour=8, minute=0, second=0, microsecond=0)
+                if current_datetime > min_datetime:
+                    min_datetime = min_datetime + timedelta(days=1)
+                dom.append(('datetimeslot', '>', min_datetime))
+        else: #Drive Thru
+            dom.append(('timeslot_type', '=', 'drive_thru'))
+            dom.append(('max_book_datetime', '>=', datetime.now(pytz.utc)))
+            dom.append(('total_timeslot', '>', 0))
+
 
         timeslots = self.search(dom)
         # max_date = date.today()
@@ -194,4 +206,5 @@ class TtTimeslotMitraKeluargadefault(models.Model):
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)
 
     cito_surcharge = fields.Monetary('Cito Surcharge', default=CITO_SURCHARGE, required=True)
+    max_book_datetime = fields.Datetime('Max Book Datetime', required=True, default=fields.Datetime.now)
 

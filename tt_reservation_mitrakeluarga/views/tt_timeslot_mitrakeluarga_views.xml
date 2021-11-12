@@ -49,6 +49,7 @@
                     <group>
                         <field name="dateslot"/>
                         <field name="datetimeslot"/>
+                        <field name="max_book_datetime"/>
                         <field name="destination_id"/>
                         <field name="selected_count"/>
                         <field name="used_count"/>
