@@ -200,6 +200,17 @@
             menu="False"
         />
         <report
+            string="HO Invoice Insurance"
+            id="action_report_printout_invoice_ho_insurance"
+            model="tt.reservation.insurance"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+        <report
             string="Vendor Invoice Event"
             id="action_report_printout_invoice_vendor_event"
             model="tt.reservation.event"
@@ -307,6 +318,17 @@
                 file="tt_report_common.printout_ticket"
                 paperformat="tt_report_common.paperformat_A4_no_margin"
                 print_report_name="'Bus Ticket - %s' % object.name"
+                menu="False"
+        />
+        <report
+                string="Insurance Ticket"
+                id="action_report_printout_reservation_insurance"
+                model="tt.reservation.insurance"
+                report_type="qweb-html"
+                name="tt_report_common.printout_ticket"
+                file="tt_report_common.printout_ticket"
+                paperformat="tt_report_common.paperformat_A4_no_margin"
+                print_report_name="'Insurance Ticket - %s' % object.name"
                 menu="False"
         />
         <report
@@ -437,6 +459,17 @@
             report_type="qweb-html"
             name="tt_report_common.printout_bus_itinerary"
             file="tt_report_common.printout_bus_itinerary"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Itinerary - %s' % (object.name)"
+            menu="False"
+        />
+        <report
+            string="Insurance Itinerary Form"
+            id="action_printout_itinerary_insurance"
+            model="tt.reservation.insurance"
+            report_type="qweb-html"
+            name="tt_report_common.printout_insurance_itinerary"
+            file="tt_report_common.printout_insurance_itinerary"
             paperformat="tt_report_common.paperformat_A4_no_margin"
             print_report_name="'Itinerary - %s' % (object.name)"
             menu="False"
