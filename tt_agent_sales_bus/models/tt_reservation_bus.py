@@ -34,7 +34,7 @@ class ReservationBus(models.Model):
         tmp = ''
         # vals = []
         for rec in self.journey_ids:
-            tmp += '%s(%s) - %s(%s),' % (rec.origin_id.city, rec.origin_id.code, rec.destination_id.city, rec.destination_id.code)
+            tmp += '%s - %s,' % (rec.origin_id.name, rec.destination_id.name)
             tmp += '%s - %s\n ' % (rec.departure_date[:16], rec.arrival_date[:16])
         return tmp
 

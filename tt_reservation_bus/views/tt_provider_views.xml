@@ -35,6 +35,7 @@
                             <field name="sequence"/>
                             <field name="booking_id"/>
                             <field name="pnr"/>
+                            <field name="vendor_additional_info"/>
                             <field name="provider_id"/>
                             <field name="is_provider_group" help="Indicates this PNR is in the same group with the next unticked PNR."/>
                             <field name="balance_due"/>
