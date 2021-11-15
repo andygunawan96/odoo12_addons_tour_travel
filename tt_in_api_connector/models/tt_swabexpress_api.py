@@ -11,7 +11,7 @@ class TtSwabExpressApiCon(models.Model):
         if action == 'get_config':
             res = self.env['tt.provider.swabexpress'].get_carriers_api()
         elif action == 'get_availability':
-            res = self.env['tt.timeslot.swabexpress'].get_available_timeslot_api(context)
+            res = self.env['tt.timeslot.swabexpress'].get_available_timeslot_api(data,context)
         elif action == 'get_price':
             res = table_obj.get_price_swabexpress_api(data,context)
         elif action == 'create_booking':

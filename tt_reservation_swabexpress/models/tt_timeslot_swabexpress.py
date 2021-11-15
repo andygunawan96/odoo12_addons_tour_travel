@@ -110,46 +110,61 @@ class TtTimeslotSwabExpress(models.Model):
     #     }
     # }
 
-    def get_available_timeslot_api(self, context):
+    def get_available_timeslot_api(self, req, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        if '09:00' < str(current_wib_datetime.time())[:5] < '19:00' and current_wib_datetime.strftime('%A') != 'Sunday':
+        if '09:00' <= str(current_wib_datetime.time())[:5] < '19:00':
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
+        # else:
+        #     min_datetime = current_datetime.replace(hour=8,minute=0, second=0, microsecond=0)
+        #     if current_datetime > min_datetime and current_wib_datetime.strftime('%A') != 'Saturday':
+        #         min_datetime = min_datetime + timedelta(days=1)
+        #     elif current_datetime < min_datetime and current_wib_datetime.strftime('%A') != 'Saturday':
+        #         min_datetime = min_datetime
+        #     else:
+        #         min_datetime = min_datetime + timedelta(days=2)
+        #     dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>=', min_datetime)]
+
+            timeslots = self.search(dom)
+            # max_date = date.today()
+            timeslot_dict = {}
+            for rec in timeslots:
+                if rec.destination_id.name not in timeslot_dict:
+                    timeslot_dict[rec.destination_id.name] = {
+                        'max_date': str(date.today()),
+                        'min_date': str(date.max),
+                        'timeslots': {}
+                    }
+                str_dateslot = str(rec.dateslot)
+                add_timeslot = True
+                if current_datetime.strftime('%A') == 'Saturday' and rec.datetimeslot.strftime('%A') == 'Sunday' or \
+                        current_datetime.strftime('%A') == 'Sunday' and rec.datetimeslot.strftime('%A') == 'Sunday' or \
+                        rec.datetimeslot.strftime('%A') == 'Sunday' and rec.datetimeslot.strftime('%H:%M') > '17:00' or \
+                        rec.datetimeslot.strftime('%A') == 'Sunday' and rec.datetimeslot.strftime('%H:%M') > '17:00' or \
+                        req['carrier_code'] in [self.env.ref('tt_reservation_swabexpress.tt_transport_carrier_swabexpress_pcr_priority').code] and rec.datetimeslot.strftime('%H:%M') > '03:00':
+                        # HARI SABTU TIDAK BISA BELI TINDAKAN MINGGU
+                        # HARI MINGGU TIDAK BISA BELI TINDAKAN MINGGU
+                        # HARI MINGGU MAX HANYA JAM 5 SORE
+                        # EXPRESS HANYA ADA JAM 8 9 10
+                    add_timeslot = False
+                if add_timeslot: #TIMESLOT SESUAI
+                    if str_dateslot > timeslot_dict[rec.destination_id.name]['max_date']:
+                        timeslot_dict[rec.destination_id.name]['max_date'] = str_dateslot
+                    if str_dateslot < timeslot_dict[rec.destination_id.name]['min_date']:
+                        timeslot_dict[rec.destination_id.name]['min_date'] = str_dateslot
+                    if str_dateslot not in timeslot_dict[rec.destination_id.name]['timeslots']:
+                        timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot] = []
+                if add_timeslot:
+                    timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
+                        'time': str(rec.datetimeslot)[11:16],
+                        'seq_id': rec.seq_id,
+                        'availability': rec.get_availability(),
+                        'group_booking': True if rec.agent_id else False
+                    })
+            print(json.dumps(timeslot_dict))
+            return ERR.get_no_error(timeslot_dict)
         else:
-            min_datetime = current_datetime.replace(hour=8,minute=0, second=0, microsecond=0)
-            if current_datetime > min_datetime and current_wib_datetime.strftime('%A') != 'Saturday':
-                min_datetime = min_datetime + timedelta(days=1)
-            else:
-                min_datetime = min_datetime + timedelta(days=2)
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', min_datetime)]
-
-        timeslots = self.search(dom)
-        # max_date = date.today()
-        timeslot_dict = {}
-        for rec in timeslots:
-            if rec.destination_id.name not in timeslot_dict:
-                timeslot_dict[rec.destination_id.name] = {
-                    'max_date': str(date.today()),
-                    'min_date': str(date.max),
-                    'timeslots': {}
-                }
-            str_dateslot = str(rec.dateslot)
-            if str_dateslot > timeslot_dict[rec.destination_id.name]['max_date']:
-                timeslot_dict[rec.destination_id.name]['max_date'] = str_dateslot
-            if str_dateslot < timeslot_dict[rec.destination_id.name]['min_date']:
-                timeslot_dict[rec.destination_id.name]['min_date'] = str_dateslot
-
-            if str_dateslot not in timeslot_dict[rec.destination_id.name]['timeslots']:
-                timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot] = []
-
-            timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot].append({
-                'time': str(rec.datetimeslot)[11:16],
-                'seq_id': rec.seq_id,
-                'availability': rec.get_availability(),
-                'group_booking': True if rec.agent_id else False
-            })
-        print(json.dumps(timeslot_dict))
-        return ERR.get_no_error(timeslot_dict)
+            return ERR.get_error(500,additional_message='Can book on 09:00 - 19:00')
 
     def get_availability(self):
         return self.used_count < self.total_timeslot
