@@ -420,6 +420,13 @@
                             </div>
                         </t>
                     </t>
+                    <t t-elif="doc_model == 'tt.reservation.insurance'">
+                        <t t-call="tt_report_common.external_layout">
+                            <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
+                                <t t-call="tt_report_common.printout_ticket_insurance_template"/>
+                            </div>
+                        </t>
+                    </t>
                     <t t-else="">
                         <t t-call="tt_report_common.external_layout">
                             <br/>
