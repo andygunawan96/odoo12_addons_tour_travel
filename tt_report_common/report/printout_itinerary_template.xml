@@ -1296,6 +1296,7 @@
                         <thead>
                             <tr>
                                 <th>PNR</th>
+                                <th>Booking Code</th>
                                 <th>Departure</th>
                                 <th>Arrival</th>
                                 <th>Carrier</th>
@@ -1308,6 +1309,7 @@
                             <t t-foreach="doc.journey_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_journey_id">
                                 <tr>
                                     <td><span t-field="provider_journey_id.pnr"/></td>
+                                    <td><span t-field="provider_itin_id.vendor_additional_info"/></td>
                                     <td>
                                         <span t-field="provider_journey_id.origin_id.name"/><br/>
                                         <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/>
