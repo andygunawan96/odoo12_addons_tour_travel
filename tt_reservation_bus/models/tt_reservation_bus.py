@@ -342,7 +342,7 @@ class TtReservationBus(models.Model):
                     any_provider_changed = True
 
             for rec in book_obj.provider_booking_ids:
-                if rec.pnr:
+                if rec.pnr and rec.pnr not in pnr_list:
                     pnr_list.append(rec.pnr)
 
             if any_provider_changed:
