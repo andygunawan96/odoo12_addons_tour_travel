@@ -42,38 +42,38 @@
             <div class="box" style="margin-bottom: 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px;">
                 <div class="title" t-att-style="'background-color: '+ base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                     <div class="row">
-                        <div class="col-3" style="text-align: center; font-size:17px;">
+                        <div class="col-2" style="text-align: center; font-size:17px;">
                             Booking Code
                         </div>
-                        <div class="col-3" style="text-align: center; font-size:17px;">
+                        <div class="col-4" style="text-align: center; font-size:17px;">
                             Departure
                         </div>
-                        <div class="col-3" style="text-align: center; font-size:17px;">
+                        <div class="col-4" style="text-align: center; font-size:17px;">
                             Arrival
                         </div>
-                        <div class="col-3" style="text-align: center; font-size:17px;">
+                        <div class="col-2" style="text-align: center; font-size:17px;">
                             Carrier
                         </div>
                     </div>
                 </div>
                 <t t-foreach="doc.journey_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_journey_id">
                     <div class="row" style="margin-left: 0px; margin-right: 0px">
-                        <div class="col-3" style="text-align: center">
+                        <div class="col-2" style="text-align: center">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.vendor_additional_info"/></label>
                         </div>
-                        <div class="col-3" style="text-align: center">
+                        <div class="col-4" style="text-align: center">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 <span t-field="provider_journey_id.origin_id.name"/><br/>
                                 <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.departure_date[:16],'%Y-%m-%d %H:%M'))"/>
                             </label>
                         </div>
-                        <div class="col-3" style="text-align: center">
+                        <div class="col-4" style="text-align: center">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 <span t-field="provider_journey_id.destination_id.name"/><br/>
                                 <span t-esc="time.strftime('%d %b %Y %H:%M', time.strptime(provider_journey_id.arrival_date[:16],'%Y-%m-%d %H:%M'))"/>
                             </label>
                         </div>
-                        <div class="col-3" style="text-align: center">
+                        <div class="col-2" style="text-align: center">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_journey_id.carrier_name"/><br/><span t-field="provider_journey_id.carrier_number"/></label>
                         </div>
                     </div>
