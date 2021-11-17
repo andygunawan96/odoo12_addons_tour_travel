@@ -310,7 +310,7 @@
                 menu="False"
         />
         <report
-                string="Medical Ticket"
+                string="Mitra Keluarga Ticket"
                 id="action_report_printout_reservation_mitrakeluarga"
                 model="tt.reservation.mitrakeluarga"
                 report_type="qweb-html"
