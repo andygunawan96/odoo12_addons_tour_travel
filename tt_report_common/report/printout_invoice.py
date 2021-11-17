@@ -61,6 +61,8 @@ class PrintoutTicketForm(models.AbstractModel):
                 data['context']['active_model'] = 'tt.reservation.bus'
             elif internal_model_id == 11:
                 data['context']['active_model'] = 'tt.reservation.insurance'
+            elif internal_model_id == 12:
+                data['context']['active_model'] = 'tt.reservation.mitrakeluarga'
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
@@ -97,7 +99,7 @@ class PrintoutTicketForm(models.AbstractModel):
                     elif rec2.charge_type.lower() in ['roc', 'tax']:
                         price_target['tax'] += rec2.total
 
-                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus', 'insurance']:
+                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus', 'insurance', 'mitrakeluarga']:
                     for rec2 in provider.ticket_ids:
                         for price_detail in a[provider.pnr]:
                             if rec2.pax_type == price_detail['pax_type']:
@@ -177,6 +179,8 @@ class PrintoutTicketForm(models.AbstractModel):
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('bus_ticket', agent_id)
         elif data['context']['active_model'] == 'tt.reservation.insurance':
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('insurance_ticket', agent_id)
+        elif data['context']['active_model'] == 'tt.reservation.mitrakeluarga':
+            airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('mitrakeluarga_ticket', agent_id)
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -207,7 +211,7 @@ class PrintoutTicketForm(models.AbstractModel):
                 'with_price': False,
             })
 
-        if data['context']['active_model'] == 'tt.reservation.medical':
+        if data['context']['active_model'] in ['tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
             booking_obj = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
             # qr_dict = {
             #     'order_number': to_dict['order_number'],
@@ -225,10 +229,13 @@ class PrintoutTicketForm(models.AbstractModel):
             for pax_obj in booking_obj.passenger_ids:
                 pax_values.append('%s, %s, %s, %s, %s, %s\n\n' % (pax_obj.name,pax_obj.identity_number,pax_obj.birth_date,pax_obj.email,pax_obj.phone_number,pax_obj.address_ktp))
             if booking_obj.picked_timeslot_id.timeslot_type == 'drive_thru':
-                if booking_obj.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
-                    test_date = '%s (24 hours)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                if data['context']['active_model'] == 'tt.reservation.medical':
+                    if booking_obj.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
+                        test_date = '%s (24 hours)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                    else:
+                        test_date = '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
                 else:
-                    test_date = '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                    test_date = '%s (MON-SAT: 08.00 - 20.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
             else:
                 test_date = booking_obj.test_datetime.strftime('%d %B %Y %H:%M')
             qr_values = "%s - PAID\n%s\n%s\n%s\n%s\n\n%s" % (booking_obj.name,test_date,booking_obj.contact_name,booking_obj.contact_phone,booking_obj.provider_booking_ids[0].carrier_id.name,'\n'.join(pax_values))
@@ -1573,11 +1580,11 @@ class PrintoutInvoice(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'is_invoice': True
         }
-        if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain', 'tt.reservation.medical']:
+        if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain', 'tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
             val.update({
                 'terms_conditions': resv_obj.get_terms_conditions_email()
             })
-        if resv_obj._name in ['tt.reservation.medical']:
+        if resv_obj._name in ['tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
             val.update({
                 'qr_code_data': resv_obj.to_dict()
             })

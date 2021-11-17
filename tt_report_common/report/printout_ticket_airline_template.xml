@@ -399,7 +399,7 @@
                         <t t-set="data_report_margin_bottom" t-value="0"/>
                         <t t-call="tt_report_common.printout_ticket_train_template"/>
                     </t>
-                    <t t-elif="doc_model == 'tt.reservation.medical'">
+                    <t t-elif="doc_model in ['tt.reservation.medical','tt.reservation.mitrakeluarga']">
                         <t t-call="tt_report_common.external_layout">
                             <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.printout_ticket_medical_template"/>
