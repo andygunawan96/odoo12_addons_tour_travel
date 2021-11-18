@@ -310,6 +310,17 @@
                 menu="False"
         />
         <report
+                string="Mitra Keluarga Ticket"
+                id="action_report_printout_reservation_mitrakeluarga"
+                model="tt.reservation.mitrakeluarga"
+                report_type="qweb-html"
+                name="tt_report_common.printout_ticket"
+                file="tt_report_common.printout_ticket"
+                paperformat="tt_report_common.paperformat_A4_no_margin"
+                print_report_name="'Mitra Keluarga Ticket - %s' % object.name"
+                menu="False"
+        />
+        <report
                 string="Bus Ticket"
                 id="action_report_printout_reservation_bus"
                 model="tt.reservation.bus"
