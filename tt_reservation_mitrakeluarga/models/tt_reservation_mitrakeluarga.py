@@ -959,7 +959,7 @@ class ReservationMitraKeluarga(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        mitrakeluarga_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_mitrakeluarga')
+        mitrakeluarga_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_medical')
 
         if not book_obj.printout_ho_invoice_id:
             if book_obj.agent_id:

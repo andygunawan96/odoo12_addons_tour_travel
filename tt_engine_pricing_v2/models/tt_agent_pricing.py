@@ -226,6 +226,9 @@ class AgentPricingLine(models.Model):
 
     parent_charge_percentage = fields.Float('Parent Charge (%)', default=0)
     parent_charge_minimum = fields.Float('Parent Charge Minimum', default=0)
+    parent_charge_has_minimum = fields.Boolean('Has Minimum', default=True)
+    parent_charge_maximum = fields.Float('Maximum Amount', default=0)
+    parent_charge_has_maximum = fields.Boolean('Has Maximum', default=False)
     parent_charge_amount = fields.Float('Parent Charge Amount', default=0)
     parent_charge_route = fields.Boolean('Parent Charge Route', default=False)
     parent_charge_segment = fields.Boolean('Parent Charge Segment', default=False)
@@ -233,6 +236,9 @@ class AgentPricingLine(models.Model):
     parent_charge_infant = fields.Boolean('Parent Charge Include Infant', default=False)
     ho_charge_percentage = fields.Float('HO Charge (%)', default=0)
     ho_charge_minimum = fields.Float('HO Charge Minimum', default=0)
+    ho_charge_has_minimum = fields.Boolean('Has Minimum', default=True)
+    ho_charge_maximum = fields.Float('Maximum Amount', default=0)
+    ho_charge_has_maximum = fields.Boolean('Has Maximum', default=False)
     ho_charge_amount = fields.Float('HO Charge Amount', default=0)
     ho_charge_route = fields.Boolean('HO Charge Route', default=False)
     ho_charge_segment = fields.Boolean('HO Charge Segment', default=False)
@@ -240,6 +246,9 @@ class AgentPricingLine(models.Model):
     ho_charge_infant = fields.Boolean('HO Charge Include Infant', default=False)
     commission_percentage = fields.Float('Commission (%)', default=0)
     commission_minimum = fields.Float('Commission Minimum', default=0)
+    commission_has_minimum = fields.Boolean('Has Minimum', default=True)
+    commission_maximum = fields.Float('Maximum Amount', default=0)
+    commission_has_maximum = fields.Boolean('Has Maximum', default=False)
     commission_amount = fields.Float('Commission Amount', default=0)
     commission_route = fields.Boolean('Commission Route', default=False)
     commission_segment = fields.Boolean('Commission Segment', default=False)
@@ -254,7 +263,10 @@ class AgentPricingLine(models.Model):
     ], 'Residual Amount To', default='ho')
 
     tkt_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
-    tkt_sales_upsell_minimum = fields.Float('Upsell Minimum Amount', default=0)
+    tkt_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    tkt_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
+    tkt_sales_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    tkt_sales_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
     tkt_sales_upsell_percentage_infant = fields.Boolean('Apply Upsell Percentage to Infant', default=False)
     tkt_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
     tkt_sales_upsell_route = fields.Boolean('Upsell per Route', default=False)
@@ -263,7 +275,10 @@ class AgentPricingLine(models.Model):
     tkt_sales_upsell_amount_infant = fields.Boolean('Apply Upsell Amount to Infant', default=False)
 
     anc_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
-    anc_sales_upsell_minimum = fields.Float('Upsell Minimum Amount', default=0)
+    anc_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    anc_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
+    anc_sales_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    anc_sales_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
     anc_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
 
     rsv_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
@@ -325,7 +340,10 @@ class AgentPricingLine(models.Model):
                 'agent': {
                     'commission_by_percentage': {
                         'percentage': self.commission_percentage,
-                        'minimum': self.commission_minimum
+                        'minimum': self.commission_minimum,
+                        'has_minimum': self.commission_has_minimum,
+                        'maximum': self.commission_maximum,
+                        'has_maximum': self.commission_has_maximum,
                     },
                     'commission_by_amount': {
                         'amount': self.commission_amount,
@@ -339,6 +357,9 @@ class AgentPricingLine(models.Model):
                     'charge_by_percentage': {
                         'percentage': self.parent_charge_percentage,
                         'minimum': self.parent_charge_minimum,
+                        'has_minimum': self.parent_charge_has_minimum,
+                        'maximum': self.parent_charge_maximum,
+                        'has_maximum': self.parent_charge_has_maximum,
                     },
                     'charge_by_amount': {
                         'amount': self.parent_charge_amount,
@@ -352,6 +373,9 @@ class AgentPricingLine(models.Model):
                     'charge_by_percentage': {
                         'percentage': self.ho_charge_percentage,
                         'minimum': self.ho_charge_minimum,
+                        'has_minimum': self.ho_charge_has_minimum,
+                        'maximum': self.ho_charge_maximum,
+                        'has_maximum': self.ho_charge_has_maximum,
                     },
                     'charge_by_amount': {
                         'amount': self.ho_charge_amount,
@@ -369,6 +393,9 @@ class AgentPricingLine(models.Model):
                     'upsell_by_percentage': {
                         'percentage': self.tkt_sales_upsell_percentage,
                         'minimum': self.tkt_sales_upsell_minimum,
+                        'has_minimum': self.tkt_sales_upsell_has_minimum,
+                        'maximum': self.tkt_sales_upsell_maximum,
+                        'has_maximum': self.tkt_sales_upsell_has_maximum,
                         'is_infant': self.tkt_sales_upsell_percentage_infant
                     },
                     'upsell_by_amount': {
@@ -385,6 +412,9 @@ class AgentPricingLine(models.Model):
                     'upsell_by_percentage': {
                         'percentage': self.anc_sales_upsell_percentage,
                         'minimum': self.anc_sales_upsell_minimum,
+                        'has_minimum': self.anc_sales_upsell_has_minimum,
+                        'maximum': self.anc_sales_upsell_maximum,
+                        'has_maximum': self.anc_sales_upsell_has_maximum,
                     },
                     'upsell_by_amount': {
                         'amount': self.anc_sales_upsell_amount,
@@ -419,6 +449,9 @@ class AgentPricingUpline(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     commission_percentage = fields.Float('Commission (%)', default=0)
     commission_minimum = fields.Float('Commission Minimum', default=0)
+    commission_has_minimum = fields.Boolean('Has Minimum', default=True)
+    commission_maximum = fields.Float('Commission Maximum', default=0)
+    commission_has_maximum = fields.Boolean('Has Maximum', default=False)
     commission_amount = fields.Float('Commission Amount', default=0)
     commission_route = fields.Boolean('Commission Route', default=False)
     commission_segment = fields.Boolean('Commission Segment', default=False)
@@ -443,7 +476,10 @@ class AgentPricingUpline(models.Model):
             'agent_type_code': self.agent_type_id.code if self.agent_type_id else '',
             'commission_by_percentage': {
                 'percentage': self.commission_percentage,
-                'minimum': self.commission_minimum
+                'minimum': self.commission_minimum,
+                'has_minimum': self.commission_has_minimum,
+                'maximum': self.commission_maximum,
+                'has_maximum': self.commission_has_maximum,
             },
             'commission_by_amount': {
                 'amount': self.commission_amount,
