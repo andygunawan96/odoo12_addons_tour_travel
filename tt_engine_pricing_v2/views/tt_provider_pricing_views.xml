@@ -315,7 +315,10 @@ Amadeus cryptic sample request will be : FM5
                                     <group string="Advanced Upsell">
                                         <group string="By Percentage">
                                             <field name="tkt_sales_upsell_percentage"/>
-                                            <field name="tkt_sales_upsell_minimum"/>
+                                            <field name="tkt_sales_upsell_has_minimum"/>
+                                            <field name="tkt_sales_upsell_minimum" attrs="{'invisible': [('tkt_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="tkt_sales_upsell_has_maximum"/>
+                                            <field name="tkt_sales_upsell_maximum" attrs="{'invisible': [('tkt_sales_upsell_has_maximum', '=', False)]}"/>
                                             <field name="tkt_sales_upsell_percentage_infant"/>
                                         </group>
                                         <group string="By Amount">
@@ -348,7 +351,10 @@ Amadeus cryptic sample request will be : FM5
                                     <group string="Advanced Upsell">
                                         <group string="By Percentage">
                                             <field name="tkt_nta_upsell_percentage"/>
-                                            <field name="tkt_nta_upsell_minimum"/>
+                                            <field name="tkt_nta_upsell_has_minimum"/>
+                                            <field name="tkt_nta_upsell_minimum" attrs="{'invisible': [('tkt_nta_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="tkt_nta_upsell_has_maximum"/>
+                                            <field name="tkt_nta_upsell_maximum" attrs="{'invisible': [('tkt_nta_upsell_has_maximum', '=', False)]}"/>
                                             <field name="tkt_nta_upsell_percentage_infant"/>
                                         </group>
                                         <group string="By Amount">
@@ -384,7 +390,10 @@ Amadeus cryptic sample request will be : FM5
                                     <group string="Advanced Upsell" attrs="{'invisible': [('tkt_nta_agent_same_as_nta', '=', True)]}">
                                         <group string="By Percentage">
                                             <field name="tkt_nta_agent_upsell_percentage"/>
-                                            <field name="tkt_nta_agent_upsell_minimum"/>
+                                            <field name="tkt_nta_agent_upsell_has_minimum"/>
+                                            <field name="tkt_nta_agent_upsell_minimum" attrs="{'invisible': [('tkt_nta_agent_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="tkt_nta_agent_upsell_has_maximum"/>
+                                            <field name="tkt_nta_agent_upsell_maximum" attrs="{'invisible': [('tkt_nta_agent_upsell_has_maximum', '=', False)]}"/>
                                             <field name="tkt_nta_agent_upsell_percentage_infant"/>
                                         </group>
                                         <group string="By Amount">
@@ -424,7 +433,10 @@ Amadeus cryptic sample request will be : FM5
                                     <group string="Advanced Upsell">
                                         <group string="By Percentage">
                                             <field name="anc_sales_upsell_percentage"/>
-                                            <field name="anc_sales_upsell_minimum"/>
+                                            <field name="anc_sales_upsell_has_minimum"/>
+                                            <field name="anc_sales_upsell_minimum" attrs="{'invisible': [('anc_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="anc_sales_upsell_has_maximum"/>
+                                            <field name="anc_sales_upsell_maximum" attrs="{'invisible': [('anc_sales_upsell_has_maximum', '=', False)]}"/>
                                         </group>
                                         <group string="By Amount">
                                             <field name="anc_sales_upsell_amount"/>
@@ -449,7 +461,10 @@ Amadeus cryptic sample request will be : FM5
                                     <group string="Advanced Upsell">
                                         <group string="By Percentage">
                                             <field name="anc_nta_upsell_percentage"/>
-                                            <field name="anc_nta_upsell_minimum"/>
+                                            <field name="anc_nta_upsell_has_minimum"/>
+                                            <field name="anc_nta_upsell_minimum" attrs="{'invisible': [('anc_nta_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="anc_nta_upsell_has_maximum"/>
+                                            <field name="anc_nta_upsell_maximum" attrs="{'invisible': [('anc_nta_upsell_has_maximum', '=', False)]}"/>
                                         </group>
                                         <group string="By Amount">
                                             <field name="anc_nta_upsell_amount"/>
@@ -477,7 +492,10 @@ Amadeus cryptic sample request will be : FM5
                                     <group string="Advanced Upsell" attrs="{'invisible': [('anc_nta_agent_same_as_nta', '=', True)]}">
                                         <group string="By Percentage">
                                             <field name="anc_nta_agent_upsell_percentage"/>
-                                            <field name="anc_nta_agent_upsell_minimum"/>
+                                            <field name="anc_nta_agent_upsell_has_minimum"/>
+                                            <field name="anc_nta_agent_upsell_minimum" attrs="{'invisible': [('anc_nta_agent_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="anc_nta_agent_upsell_has_maximum"/>
+                                            <field name="anc_nta_agent_upsell_maximum" attrs="{'invisible': [('anc_nta_agent_upsell_has_maximum', '=', False)]}"/>
                                         </group>
                                         <group string="By Amount">
                                             <field name="anc_nta_agent_upsell_amount"/>

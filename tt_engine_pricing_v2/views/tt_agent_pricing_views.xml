@@ -254,7 +254,10 @@ YR,D5,G7</pre>
                                     <group string="Agent Commission">
                                         <group string="By Percentage">
                                             <field name="commission_percentage"/>
-                                            <field name="commission_minimum"/>
+                                            <field name="commission_has_minimum"/>
+                                            <field name="commission_minimum" attrs="{'invisible': [('commission_has_minimum', '=', False)]}"/>
+                                            <field name="commission_has_maximum"/>
+                                            <field name="commission_maximum" attrs="{'invisible': [('commission_has_maximum', '=', False)]}"/>
                                         </group>
                                         <group string="By Amount">
                                             <field name="commission_amount"/>
@@ -269,7 +272,10 @@ YR,D5,G7</pre>
                                     <group string="Parent Charge Fee (Charge Before Share Commission)">
                                         <group string="By Percentage">
                                             <field name="parent_charge_percentage"/>
-                                            <field name="parent_charge_minimum"/>
+                                            <field name="parent_charge_has_minimum"/>
+                                            <field name="parent_charge_minimum" attrs="{'invisible': [('parent_charge_has_minimum', '=', False)]}"/>
+                                            <field name="parent_charge_has_maximum"/>
+                                            <field name="parent_charge_maximum" attrs="{'invisible': [('parent_charge_has_maximum', '=', False)]}"/>
                                         </group>
                                         <group string="By Amount">
                                             <field name="parent_charge_amount"/>
@@ -284,7 +290,10 @@ YR,D5,G7</pre>
                                     <group string="HO Charge Fee (Charge Before Share Commission)">
                                         <group string="By Percentage">
                                             <field name="ho_charge_percentage"/>
-                                            <field name="ho_charge_minimum"/>
+                                            <field name="ho_charge_has_minimum"/>
+                                            <field name="ho_charge_minimum" attrs="{'invisible': [('ho_charge_has_minimum', '=', False)]}"/>
+                                            <field name="ho_charge_has_maximum"/>
+                                            <field name="ho_charge_maximum" attrs="{'invisible': [('ho_charge_has_maximum', '=', False)]}"/>
                                         </group>
                                         <group string="By Amount">
                                             <field name="ho_charge_amount"/>
@@ -327,7 +336,10 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                             <group string="Ticketing Advanced Upsell">
                                 <group string="By Percentage">
                                     <field name="tkt_sales_upsell_percentage"/>
-                                    <field name="tkt_sales_upsell_minimum"/>
+                                    <field name="tkt_sales_upsell_has_minimum"/>
+                                    <field name="tkt_sales_upsell_minimum" attrs="{'invisible': [('tkt_sales_upsell_has_minimum', '=', False)]}"/>
+                                    <field name="tkt_sales_upsell_has_maximum"/>
+                                    <field name="tkt_sales_upsell_maximum" attrs="{'invisible': [('tkt_sales_upsell_has_maximum', '=', False)]}"/>
                                     <field name="tkt_sales_upsell_percentage_infant"/>
                                 </group>
                                 <group string="By Amount">
@@ -349,7 +361,10 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                             <group string="Ancillary Advanced Upsell">
                                 <group string="By Percentage">
                                     <field name="anc_sales_upsell_percentage"/>
-                                    <field name="anc_sales_upsell_minimum"/>
+                                    <field name="anc_sales_upsell_has_minimum"/>
+                                    <field name="anc_sales_upsell_minimum" attrs="{'invisible': [('anc_sales_upsell_has_minimum', '=', False)]}"/>
+                                    <field name="anc_sales_upsell_has_maximum"/>
+                                    <field name="anc_sales_upsell_maximum" attrs="{'invisible': [('anc_sales_upsell_has_maximum', '=', False)]}"/>
                                 </group>
                                 <group string="By Amount">
                                     <field name="anc_sales_upsell_amount"/>
@@ -425,7 +440,10 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                     <group string="Commission">
                         <group string="By Percentage">
                             <field name="commission_percentage"/>
-                            <field name="commission_minimum"/>
+                            <field name="commission_has_minimum"/>
+                            <field name="commission_minimum" attrs="{'invisible': [('commission_has_minimum', '=', False)]}"/>
+                            <field name="commission_has_maximum"/>
+                            <field name="commission_maximum" attrs="{'invisible': [('commission_has_maximum', '=', False)]}"/>
                         </group>
                         <group string="By Amount">
                             <field name="commission_amount"/>
