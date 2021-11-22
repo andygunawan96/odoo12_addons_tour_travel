@@ -1653,46 +1653,12 @@ class TtVisa(models.Model):
                 biometrics = {
                     'needs': pax.biometrics
                 }
-                sale = {}
-                for ssc in pax.cost_service_charge_ids:
-                    if ssc.charge_code == 'rac':
-                        sale['RAC'] = {
-                            'charge_code': ssc.charge_code,
-                            'amount': ssc.amount
-                        }
-                        if ssc.currency_id:
-                            sale['RAC'].update({
-                                'currency': ssc.currency_id.name
-                            })
-                    elif ssc.charge_code == 'fare':
-                        sale['TOTAL'] = {
-                            'charge_code': 'total',
-                            'amount': ssc.amount
-                        }
-                        if ssc['currency_id']:
-                            sale['TOTAL'].update({
-                                'currency': ssc.currency_id.name
-                            })
-                    elif ssc.charge_code == 'disc':
-                        sale['DISC'] = {
-                            'charge_code': ssc.charge_code,
-                            'amount': ssc.amount
-                        }
-                        if ssc['currency_id']:
-                            sale['DISC'].update({
-                                'currency': ssc.currency_id.name
-                            })
-                for ssc in pax.channel_service_charge_ids:
-                    csc = {
-                        'amount': 0,
-                        'charge_code': ''
-                    }
-                    if ssc.charge_code == 'csc':
-                        csc = {
-                            'charge_code': ssc.charge_code,
-                            'amount': csc['amount'] + abs(ssc.amount)
-                        }
-                    sale['CSC'] = csc
+                channel_service_charges = {}
+                if len(pax.channel_service_charge_ids.ids) > 0:
+                    channel_service_charges = pax.get_channel_service_charges()
+                sale_service_charges = pax.get_service_charges()
+
+
                 """ Requirements """
                 for require in pax.to_requirement_ids:
                     if require.is_copy == False and require.is_ori == False:
@@ -1724,16 +1690,17 @@ class TtVisa(models.Model):
                             'location': bio.location_biometrics_id
                         })
                 biometrics['biometrics_list'] = biometrics_list
+
                 passenger.append({
                     'title': pax.title,
                     'first_name': pax.first_name,
                     'last_name': pax.last_name,
                     'birth_date': str(pax.birth_date),
                     'gender': pax.gender,
+                    'age': pax.age.split(' ')[0][:-1],
                     'passport_number': pax.passport_number or '',
                     'passport_expdate': str(pax.passport_expdate) or '',
                     'visa': {
-                        'price': sale,
                         'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(
                             pax.pricelist_id.entry_type) if pax.pricelist_id else '',
                         'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(
@@ -1747,6 +1714,8 @@ class TtVisa(models.Model):
                         'interview': interview,
                         'biometrics': biometrics
                     },
+                    'channel_service_charges': channel_service_charges,
+                    'sale_service_charges': sale_service_charges,
                     'sequence': idx
                 })
             state_visa = {}
@@ -1932,124 +1901,268 @@ class TtVisa(models.Model):
             elif data['state'] == 'failed':
                 book_obj.action_fail_booked_visa()
 
-    def create_booking_visa_api(self, data, context):  #
-        sell_visa = data['sell_visa']  # self.param_sell_visa
-        booker = data['booker']  # self.param_booker
-        contact = data['contact']  # self.param_contact
-        passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
-        search = data['search']  # self.param_search
-        payment = data['payment']  # self.param_payment
-        context = context  # self.param_context
-        voucher = data['voucher']  # self.param_voucher
+    # def create_booking_visa_api(self, data, context):  #
+    #     sell_visa = data['sell_visa']  # self.param_sell_visa
+    #     booker = data['booker']  # self.param_booker
+    #     contact = data['contact']  # self.param_contact
+    #     passengers = copy.deepcopy(data['passenger'])  # self.param_passenger
+    #     search = data['search']  # self.param_search
+    #     payment = data['payment']  # self.param_payment
+    #     context = context  # self.param_context
+    #     voucher = data['voucher']  # self.param_voucher
+    #     try:
+    #         # cek saldo
+    #         total_price = 0
+    #         for psg in passengers:
+    #             visa_pricelist_obj = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', psg['master_visa_Id'])])
+    #             if visa_pricelist_obj:
+    #                 total_price += visa_pricelist_obj.sale_price
+    #
+    #         user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
+    #
+    #         header_val = {}
+    #
+    #         booker_id = self.create_booker_api(booker, context)
+    #         contact_id = self.create_contact_api(contact[0], booker_id, context)
+    #         passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
+    #
+    #         to_psg_ids = self._create_visa_order(passengers, passenger_ids, context)  # create visa order data['passenger']
+    #         if to_psg_ids['error_code'] == 0:
+    #             psg_ids = to_psg_ids['response']
+    #         else:
+    #             return to_psg_ids  # Return error code & msg
+    #
+    #         pricing = self.create_sale_service_charge_value(passengers, psg_ids, context, sell_visa)  # create pricing dict
+    #
+    #         voucher = ''
+    #         if data['voucher']:
+    #             voucher = data['voucher']['voucher_reference']
+    #
+    #         header_val.update({
+    #             'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
+    #             'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
+    #             'booker_id': booker_id.id,
+    #             'voucher_code': voucher,
+    #             'is_member': payment['member'],
+    #             'payment_method': payment['acquirer_seq_id'],
+    #             'payment_active': True,
+    #             'contact_title': contact[0]['title'],
+    #             'contact_id': contact_id.id,
+    #             'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
+    #             'contact_email': contact_id.email,
+    #             'contact_phone': "%s - %s" % (contact_id.phone_ids[0].calling_code,contact_id.phone_ids[0].calling_number),
+    #             'passenger_ids': [(6, 0, psg_ids)],
+    #             'adult': sell_visa['pax']['adult'],
+    #             'child': sell_visa['pax']['child'],
+    #             'infant': sell_visa['pax']['infant'],
+    #             'state': 'booked',
+    #             'agent_id': context['co_agent_id'],
+    #             'customer_parent_id': context.get('co_customer_parent_id', False),
+    #             'user_id': context['co_uid'],
+    #         })
+    #
+    #         book_obj = self.sudo().create(header_val)
+    #
+    #         for psg in book_obj.passenger_ids:
+    #             for scs in psg.cost_service_charge_ids:
+    #                 scs['description'] = book_obj.name
+    #
+    #         book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
+    #         book_obj.ho_validate_date = datetime.now() + timedelta(days=3)
+    #         book_obj.hold_date = datetime.now() + timedelta(days=31)
+    #
+    #         book_obj.pnr = book_obj.name
+    #
+    #         book_obj.write({
+    #             'state_visa': 'confirm',
+    #             'confirmed_date': datetime.now(),
+    #             'confirmed_uid': context['co_uid']
+    #         })
+    #         book_obj.message_post(body='Order CONFIRMED')
+    #
+    #         self._calc_grand_total()
+    #
+    #         country_obj = self.env['res.country']
+    #         provider_obj = self.env['tt.provider']
+    #
+    #         provider = provider_obj.env['tt.provider'].search([('code', '=', sell_visa['provider'])], limit=1)
+    #         country = country_obj.search([('name', '=', search['destination'])], limit=1)
+    #
+    #         vals = {
+    #             'booking_id': book_obj.id,
+    #             'pnr': book_obj.name,
+    #             'provider_id': provider.id,
+    #             'country_id': country.id,
+    #             'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y')
+    #         }
+    #         provider_visa_obj = book_obj.env['tt.provider.visa'].sudo().create(vals)
+    #
+    #         book_obj.get_list_of_provider_visa()
+    #
+    #         for psg in book_obj.passenger_ids:
+    #             vals = {
+    #                 'provider_id': provider_visa_obj.id,
+    #                 'passenger_id': psg.id,
+    #                 'pax_type': psg.passenger_type,
+    #                 'pricelist_id': psg.pricelist_id.id
+    #             }
+    #             self.env['tt.provider.visa.passengers'].sudo().create(vals)
+    #
+    #         provider_visa_obj.delete_service_charge()
+    #         provider_visa_obj.create_service_charge(pricing)
+    #         book_obj.calculate_service_charge()
+    #
+    #         book_obj.action_booked_visa(context)
+    #
+    #         response = {
+    #             'order_number': book_obj.name
+    #         }
+    #         res = self.get_booking_visa_api(response, context)
+    #         return res
+    #     except RequestException as e:
+    #         _logger.error(traceback.format_exc())
+    #         try:
+    #             book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
+    #         except:
+    #             _logger.error('Creating Notes Error')
+    #         return e.error_dict()
+    #     except Exception as e:
+    #         _logger.error(traceback.format_exc())
+    #         try:
+    #             book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
+    #         except:
+    #             _logger.error('Creating Notes Error')
+    #         self.env.cr.rollback()
+    #         return ERR.get_error(1004, additional_message='There\'s something wrong.')
+
+    def create_booking_visa_api(self, req, context):
+        _logger.info("Create\n" + json.dumps(req))
+        booker = req['booker']
+        contacts = req['contacts']
+        passengers = req['passengers']
+        booking_data = req['search']
+        sell_visa = req['sell_visa']
+        payment = req['payment']  # self.param_payment
+        voucher = ''
+        if req.get('voucher'):
+            voucher = req['voucher']['voucher_reference']
         try:
-            # cek saldo
-            total_price = 0
-            for psg in passengers:
-                visa_pricelist_obj = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', psg['master_visa_Id'])])
-                if visa_pricelist_obj:
-                    total_price += visa_pricelist_obj.sale_price
+            values = self._prepare_booking_api(booking_data,sell_visa,context)
+            booker_obj = self.create_booker_api(booker,context)
+            contact_obj = self.create_contact_api(contacts[0],booker_obj,context)
 
-            user_obj = self.env['res.users'].sudo().browse(context['co_uid'])
+            list_passenger_value = self.create_passenger_value_api(passengers)
+            list_customer_id = self.create_customer_api(passengers,context,booker_obj.seq_id,contact_obj.seq_id)
 
-            header_val = {}
-
-            booker_id = self.create_booker_api(booker, context)
-            contact_id = self.create_contact_api(contact[0], booker_id, context)
-            passenger_ids = self.create_customer_api(passengers, context, booker_id, contact_id)  # create passenger
-
-            to_psg_ids = self._create_visa_order(passengers, passenger_ids, context)  # create visa order data['passenger']
+            to_psg_ids = self._create_visa_order(passengers, list_passenger_value, context)  # create visa order data['passenger']
             if to_psg_ids['error_code'] == 0:
                 psg_ids = to_psg_ids['response']
             else:
                 return to_psg_ids  # Return error code & msg
+            #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
+            # for idx,rec in enumerate(list_passenger_value):
+            #     rec[2].update({
+            #         'customer_id': list_customer_id[idx].id,
+            #     })
+            #
+            # for psg in list_passenger_value:
+            #     util.pop_empty_key(psg[2])
 
-            pricing = self.create_sale_service_charge_value(passengers, psg_ids, context, sell_visa)  # create pricing dict
-
-            voucher = ''
-            if data['voucher']:
-                voucher = data['voucher']['voucher_reference']
-
-            header_val.update({
-                'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
-                'country_id': self.env['res.country'].sudo().search([('name', '=', search['destination'])], limit=1).id,
-                'booker_id': booker_id.id,
-                'voucher_code': voucher,
-                'is_member': payment['member'],
+            values.update({
+                'user_id': context['co_uid'],
+                'sid_booked': context['signature'],
+                'booker_id': booker_obj.id,
+                'contact_title': contacts[0]['title'],
+                'contact_id': contact_obj.id,
+                'contact_name': contact_obj.name,
+                'contact_email': contact_obj.email,
+                'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
+                'passenger_ids': [(6, 0, psg_ids)],
+                # 'passenger_ids': list_passenger_value,
                 'payment_method': payment['acquirer_seq_id'],
                 'payment_active': True,
-                'contact_title': contact[0]['title'],
-                'contact_id': contact_id.id,
-                'contact_name': contact[0]['first_name'] + ' ' + contact[0]['last_name'],
-                'contact_email': contact_id.email,
-                'contact_phone': "%s - %s" % (contact_id.phone_ids[0].calling_code,contact_id.phone_ids[0].calling_number),
-                'passenger_ids': [(6, 0, psg_ids)],
-                'adult': sell_visa['pax']['adult'],
-                'child': sell_visa['pax']['child'],
-                'infant': sell_visa['pax']['infant'],
-                'state': 'booked',
-                'agent_id': context['co_agent_id'],
-                'customer_parent_id': context.get('co_customer_parent_id', False),
-                'user_id': context['co_uid'],
+                'voucher_code': voucher,
             })
 
-            book_obj = self.sudo().create(header_val)
-
-            for psg in book_obj.passenger_ids:
-                for scs in psg.cost_service_charge_ids:
-                    scs['description'] = book_obj.name
-
-            book_obj.document_to_ho_date = datetime.now() + timedelta(days=1)
-            book_obj.ho_validate_date = datetime.now() + timedelta(days=3)
-            book_obj.hold_date = datetime.now() + timedelta(days=31)
-
-            book_obj.pnr = book_obj.name
-
+            book_obj = self.create(values)
             book_obj.write({
                 'state_visa': 'confirm',
                 'confirmed_date': datetime.now(),
-                'confirmed_uid': context['co_uid']
+                'confirmed_uid': context['co_uid'],
+                'pnr': book_obj.name
             })
-            book_obj.message_post(body='Order CONFIRMED')
+            for provider_obj in book_obj.provider_booking_ids:
+                provider_obj.create_ticket_api(passengers)
+                provider_obj.pnr = book_obj.name
+                service_charges_val = []
+                visa_list = []
+                for pax in passengers:
+                    add = True
+                    for visa in visa_list:
+                        if pax['master_visa_Id'] == visa['id']:
+                            add = False
+                            visa['pax_count'] += 1
+                    if add:
+                        for visa in sell_visa['search_data']:
+                            if visa['id'] == pax['master_visa_Id']:
+                                visa_list.append({
+                                    'id': pax['master_visa_Id'],
+                                    'pax_count': 1,
+                                    'service_charges': visa['service_charges']
+                                })
+                                break
 
-            self._calc_grand_total()
+                for psg in book_obj.passenger_ids:
+                    vals = {
+                        'provider_id': provider_obj.id,
+                        'passenger_id': psg.id,
+                        'pax_type': psg.passenger_type,
+                        'pricelist_id': psg.pricelist_id.id
+                    }
+                    provider_obj.passenger_ids.create(vals)
 
-            country_obj = self.env['res.country']
-            provider_obj = self.env['tt.provider']
+                for visa in visa_list:
+                    for svc in visa['service_charges']:
+                        ## currency di skip default ke company
+                        service_charges_val.append({
+                            "pax_type": svc['pax_type'],
+                            "pax_count": visa['pax_count'],
+                            "amount": svc['amount'],
+                            "total_amount": svc['amount'] * visa['pax_count'],
+                            "foreign_amount": svc['foreign_amount'],
+                            "charge_code": svc['charge_code'],
+                            "charge_type": svc['charge_type'],
+                            "commission_agent_id": svc.get('commission_agent_id', False)
+                        })
 
-            provider = provider_obj.env['tt.provider'].search([('code', '=', sell_visa['provider'])], limit=1)
-            country = country_obj.search([('name', '=', search['destination'])], limit=1)
+                provider_obj.create_service_charge(service_charges_val)
 
-            vals = {
-                'booking_id': book_obj.id,
-                'pnr': book_obj.name,
-                'provider_id': provider.id,
-                'country_id': country.id,
-                'departure_date': datetime.strptime(search['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y')
-            }
-            provider_visa_obj = book_obj.env['tt.provider.visa'].sudo().create(vals)
-
-            book_obj.get_list_of_provider_visa()
-
-            for psg in book_obj.passenger_ids:
-                vals = {
-                    'provider_id': provider_visa_obj.id,
-                    'passenger_id': psg.id,
-                    'pax_type': psg.passenger_type,
-                    'pricelist_id': psg.pricelist_id.id
-                }
-                self.env['tt.provider.visa.passengers'].sudo().create(vals)
-
-            provider_visa_obj.delete_service_charge()
-            provider_visa_obj.create_service_charge(pricing)
             book_obj.calculate_service_charge()
+            book_obj.check_provider_state(context)
 
-            book_obj.action_booked_visa(context)
+            response_provider_ids = []
+            for provider in book_obj.provider_booking_ids:
+                response_provider_ids.append({
+                    'id': provider.id,
+                    'code': provider.provider_id.code,
+                })
+
+            #channel repricing upsell
+            if req.get('repricing_data'):
+                req['repricing_data']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
 
             response = {
                 'order_number': book_obj.name
             }
             res = self.get_booking_visa_api(response, context)
-            return res
+            response = {
+                'book_id': book_obj.id,
+                'order_number': book_obj.name,
+                'provider_ids': response_provider_ids,
+                'journey': res['response']['journey']
+            }
+            return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             try:
@@ -2060,11 +2173,56 @@ class TtVisa(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             try:
-                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc() + '\n'
+                book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
             except:
                 _logger.error('Creating Notes Error')
-            self.env.cr.rollback()
-            return ERR.get_error(1004, additional_message='There\'s something wrong.')
+            return ERR.get_error(1004)
+
+    def _prepare_booking_api(self, booking_data, sell_visa, context_gateway):
+        country_obj = self.env['res.country']
+        provider_obj = self.env['tt.provider']
+
+        provider = provider_obj.env['tt.provider'].search([('code', '=', sell_visa['provider'])], limit=1)
+        country = country_obj.search([('name', '=', booking_data['destination'])], limit=1)
+
+        provider_type_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa')
+        provider_obj = self.env['tt.provider'].sudo().search([('code', '=', sell_visa['provider']), ('provider_type_id', '=', provider_type_id.id)], limit=1)
+
+        # "pax_type": "ADT",
+        # "pax_count": 1,
+        # "amount": 150000,
+        # "total_amount": 150000,
+        # "foreign_amount": 150000,
+        # "currency": "IDR",
+        # "foreign_currency": "IDR",
+        # "charge_code": "fare",
+        # "charge_type": "FARE"
+
+        provider_vals = {
+            'state': 'booked',
+            'provider_id': provider.id,
+            'country_id': country.id,
+            'departure_date': datetime.strptime(booking_data['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
+            'hold_date': datetime.now() + timedelta(days=31),
+            'booked_uid': context_gateway['co_uid'],
+            'booked_date': fields.Datetime.now()
+        }
+
+        booking_tmp = {
+            'state': 'booked',
+            'provider_type_id': provider_type_id.id,
+            'agent_id': context_gateway['co_agent_id'],
+            'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
+            'user_id': context_gateway['co_uid'],
+            'provider_name': provider_obj.code,
+            'country_id': country.id,
+            'hold_date': datetime.now() + timedelta(days=31),
+            'departure_date': datetime.strptime(booking_data['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
+            'provider_booking_ids': [(0,0,provider_vals)],
+            'booked_uid': context_gateway['co_uid'],
+            'booked_date': fields.Datetime.now()
+        }
+        return booking_tmp
 
     # to generate sale service charge
     def calculate_service_charge(self):
@@ -2272,10 +2430,8 @@ class TtVisa(models.Model):
                 if pricelist_id is False:
                     raise RequestException(1004,
                                            additional_message='Error create Passenger Visa : Reference Code not Found.')
-                psg_vals = passenger_ids[idx][0].copy_to_passenger()
+                psg_vals = passenger_ids[idx][2]
                 psg_vals.update({
-                    'name': psg_vals['first_name'] + ' ' + psg_vals['last_name'],
-                    'customer_id': passenger_ids[idx][0].id,
                     'title': psg['title'],
                     'pricelist_id': pricelist_id,
                     'passenger_type': psg['pax_type'],

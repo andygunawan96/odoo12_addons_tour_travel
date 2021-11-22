@@ -115,7 +115,7 @@ class VisaSyncProducts(models.TransientModel):
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
                 if provider == 'rodextrip_visa':
-                    if product_obj:
+                    if product_obj and product_obj.provider_id.code == provider:
                         product_obj.active = False #inactive
                     req = {
                         'provider': provider,
