@@ -282,7 +282,10 @@ YR,D5,G7</pre>
                             <group string="Ticketing Advanced Upsell">
                                 <group string="By Percentage">
                                     <field name="tkt_sales_upsell_percentage"/>
-                                    <field name="tkt_sales_upsell_minimum"/>
+                                    <field name="tkt_sales_upsell_has_minimum"/>
+                                    <field name="tkt_sales_upsell_minimum" attrs="{'invisible': [('tkt_sales_upsell_has_minimum', '=', False)]}"/>
+                                    <field name="tkt_sales_upsell_has_maximum"/>
+                                    <field name="tkt_sales_upsell_maximum" attrs="{'invisible': [('tkt_sales_upsell_has_maximum', '=', False)]}"/>
                                     <field name="tkt_sales_upsell_percentage_infant"/>
                                 </group>
                                 <group string="By Amount">
@@ -304,7 +307,10 @@ YR,D5,G7</pre>
                             <group string="Ancillary Advanced Upsell">
                                 <group string="By Percentage">
                                     <field name="anc_sales_upsell_percentage"/>
-                                    <field name="anc_sales_upsell_minimum"/>
+                                    <field name="anc_sales_upsell_has_minimum"/>
+                                    <field name="anc_sales_upsell_minimum" attrs="{'invisible': [('anc_sales_upsell_has_minimum', '=', False)]}"/>
+                                    <field name="anc_sales_upsell_has_maximum"/>
+                                    <field name="anc_sales_upsell_maximum" attrs="{'invisible': [('anc_sales_upsell_has_maximum', '=', False)]}"/>
                                 </group>
                                 <group string="By Amount">
                                     <field name="anc_sales_upsell_amount"/>

@@ -245,7 +245,10 @@ class CustomerPricingLine(models.Model):
     charge_code_list = fields.Char('Charge Code List', help='Use comma (,) for separate the values')
 
     tkt_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
-    tkt_sales_upsell_minimum = fields.Float('Upsell Minimum Amount', default=0)
+    tkt_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    tkt_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
+    tkt_sales_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    tkt_sales_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
     tkt_sales_upsell_percentage_infant = fields.Boolean('Apply Upsell Percentage to Infant', default=False)
     tkt_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
     tkt_sales_upsell_route = fields.Boolean('Upsell per Route', default=False)
@@ -254,7 +257,10 @@ class CustomerPricingLine(models.Model):
     tkt_sales_upsell_amount_infant = fields.Boolean('Apply Upsell Amount to Infant', default=False)
 
     anc_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
-    anc_sales_upsell_minimum = fields.Float('Upsell Minimum Amount', default=0)
+    anc_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    anc_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
+    anc_sales_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    anc_sales_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
     anc_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
 
     rsv_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
@@ -299,6 +305,9 @@ class CustomerPricingLine(models.Model):
                     'upsell_by_percentage': {
                         'percentage': self.tkt_sales_upsell_percentage,
                         'minimum': self.tkt_sales_upsell_minimum,
+                        'has_minimum': self.tkt_sales_upsell_has_minimum,
+                        'maximum': self.tkt_sales_upsell_maximum,
+                        'has_maximum': self.tkt_sales_upsell_has_maximum,
                         'is_infant': self.tkt_sales_upsell_percentage_infant
                     },
                     'upsell_by_amount': {
@@ -315,6 +324,9 @@ class CustomerPricingLine(models.Model):
                     'upsell_by_percentage': {
                         'percentage': self.anc_sales_upsell_percentage,
                         'minimum': self.anc_sales_upsell_minimum,
+                        'has_minimum': self.anc_sales_upsell_has_minimum,
+                        'maximum': self.anc_sales_upsell_maximum,
+                        'has_maximum': self.anc_sales_upsell_has_maximum,
                     },
                     'upsell_by_amount': {
                         'amount': self.anc_sales_upsell_amount,

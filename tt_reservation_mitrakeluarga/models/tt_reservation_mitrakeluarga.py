@@ -770,8 +770,8 @@ class ReservationMitraKeluarga(models.Model):
             pdf_report_bytes = mitrakeluarga_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Swab Express Ticket %s.pdf' % book_obj.name,
-                    'file_reference': 'Swab Express Ticket',
+                    'filename': 'Mitra Keluarga Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'Mitra Keluarga Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -827,8 +827,8 @@ class ReservationMitraKeluarga(models.Model):
             pdf_report_bytes = mitrakeluarga_ticket_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Swab Express Ticket %s.pdf' % book_obj.name,
-                    'file_reference': 'Swab Express Ticket',
+                    'filename': 'Mitra Keluarga Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'Mitra Keluarga Ticket',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -959,7 +959,7 @@ class ReservationMitraKeluarga(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
-        mitrakeluarga_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_mitrakeluarga')
+        mitrakeluarga_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_medical')
 
         if not book_obj.printout_ho_invoice_id:
             if book_obj.agent_id:

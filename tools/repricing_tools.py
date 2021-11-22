@@ -1275,9 +1275,13 @@ class ProviderPricing(object):
         if 'upsell_by_percentage' in price_data:
             upsell_data = price_data['upsell_by_percentage']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                has_minimum = upsell_data.get('has_minimum', True)
+                has_maximum = upsell_data.get('has_maximum', False)
                 add_amount = final_total_amount * upsell_data['percentage'] / 100
-                if add_amount < upsell_data['minimum']:
+                if has_minimum and add_amount < upsell_data['minimum']:
                     add_amount = upsell_data['minimum']
+                if has_maximum and add_amount > upsell_data['maximum']:
+                    add_amount = upsell_data['maximum']
                 final_total_amount += add_amount
 
         if 'upsell_by_amount' in price_data:
@@ -1571,9 +1575,13 @@ class AgentPricing(object):
         if 'upsell_by_percentage' in price_data:
             upsell_data = price_data['upsell_by_percentage']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                has_minimum = upsell_data.get('has_minimum', True)
+                has_maximum = upsell_data.get('has_maximum', False)
                 add_amount = final_total_amount * upsell_data['percentage'] / 100
-                if add_amount < upsell_data['minimum']:
+                if has_minimum and add_amount < upsell_data['minimum']:
                     add_amount = upsell_data['minimum']
+                if has_maximum and add_amount > upsell_data['maximum']:
+                    add_amount = upsell_data['maximum']
                 final_total_amount += add_amount
 
         if 'upsell_by_amount' in price_data:
@@ -1964,9 +1972,13 @@ class CustomerPricing(object):
         if 'upsell_by_percentage' in price_data:
             upsell_data = price_data['upsell_by_percentage']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
+                has_minimum = upsell_data.get('has_minimum', True)
+                has_maximum = upsell_data.get('has_maximum', False)
                 add_amount = final_total_amount * upsell_data['percentage'] / 100
-                if add_amount < upsell_data['minimum']:
+                if has_minimum and add_amount < upsell_data['minimum']:
                     add_amount = upsell_data['minimum']
+                if has_maximum and add_amount > upsell_data['maximum']:
+                    add_amount = upsell_data['maximum']
                 final_total_amount += add_amount
 
         if 'upsell_by_amount' in price_data:
