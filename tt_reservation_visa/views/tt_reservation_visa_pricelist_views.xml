@@ -45,6 +45,7 @@
                         <group string="NTA Calculation">
                             <field name="visa_nta_price" groups="tt_base.group_tt_tour_travel"/>
                             <field name="delivery_nta_price" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="other_additional_price" groups="tt_base.group_tt_tour_travel"/>
                         </group>
                     </group>
                     <group>

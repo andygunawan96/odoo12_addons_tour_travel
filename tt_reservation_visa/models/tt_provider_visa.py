@@ -2,6 +2,9 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
+import logging
+import json
+_logger = logging.getLogger(__name__)
 
 STATE_VISA = [
     ('fail_booked', 'Failed (Book)'),
@@ -59,6 +62,8 @@ class TtProviderVisa(models.Model):
                                  states={'draft': [('readonly', False)]})
 
     use_vendor = fields.Boolean('Use Vendor', readonly=True, default=False)
+
+    ticket_ids = fields.One2many('tt.ticket.visa', 'provider_id', 'Ticket Number')
 
     booked_uid = fields.Many2one('res.users', 'Booked By')
     booked_date = fields.Datetime('Booking Date')
@@ -146,34 +151,57 @@ class TtProviderVisa(models.Model):
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
+    # def create_service_charge(self, service_charge_vals):
+    #     service_chg_obj = self.env['tt.service.charge']
+    #     currency_obj = self.env['res.currency']
+    #
+    #     for scs in service_charge_vals:
+    #         scs['pax_count'] = 0  # jumlah pax
+    #         scs['total'] = 0  # total pricing
+    #         scs['passenger_visa_ids'] = []
+    #         scs['currency_id'] = currency_obj.get_id('IDR')  # currency (IDR)
+    #         scs['foreign_currency_id'] = currency_obj.get_id('IDR')  # currency (foreign)
+    #         scs['provider_visa_booking_id'] = self.id  # id provider visa
+    #         if scs['charge_code'] != 'disc':
+    #             for psg in self.passenger_ids:
+    #                 if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
+    #                     scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
+    #                     scs['pax_count'] += 1
+    #                     scs['total'] += scs['amount']
+    #         else:
+    #             for psg in self.passenger_ids:
+    #                 scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
+    #                 scs['pax_count'] += 1
+    #                 scs['total'] += scs['amount']
+    #         scs['passenger_visa_ids'] = [(6, 0, scs['passenger_visa_ids'])]
+    #         if 'commission_agent_id' in scs:
+    #             scs['commission_agent_id'] = scs['commission_agent_id']
+    #         scs['description'] = self.pnr and self.pnr or ''
+    #         if scs['total'] != 0:
+    #             service_chg_obj.create(scs)
+
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
 
         for scs in service_charge_vals:
-            scs['pax_count'] = 0  # jumlah pax
-            scs['total'] = 0  # total pricing
+            # update 19 Feb 2020 maximum per pax sesuai dengan pax_count dari service charge
+            # scs['pax_count'] = 0
+            scs_pax_count = 0
             scs['passenger_visa_ids'] = []
-            scs['currency_id'] = currency_obj.get_id('IDR')  # currency (IDR)
-            scs['foreign_currency_id'] = currency_obj.get_id('IDR')  # currency (foreign)
-            scs['provider_visa_booking_id'] = self.id  # id provider visa
-            if scs['charge_code'] != 'disc':
-                for psg in self.passenger_ids:
-                    if scs['pax_type'] == psg.pax_type and scs['pricelist_id'] == psg.pricelist_id.id:
-                        scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
-                        scs['pax_count'] += 1
-                        scs['total'] += scs['amount']
-            else:
-                for psg in self.passenger_ids:
-                    scs['passenger_visa_ids'].append(psg.passenger_id.id)  # add passenger to passenger visa ids
-                    scs['pax_count'] += 1
+            scs['total'] = 0
+            scs['currency_id'] = currency_obj.get_id(scs.get('currency'), default_param_idr=True)
+            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'), default_param_idr=True)
+            scs['provider_visa_booking_id'] = self.id
+            for psg in self.ticket_ids:
+                if scs['pax_type'] == psg.pax_type and scs_pax_count < scs['pax_count']:
+                    scs['passenger_visa_ids'].append(psg.passenger_id.id)
+                    # scs['pax_count'] += 1
+                    scs_pax_count += 1
                     scs['total'] += scs['amount']
             scs['passenger_visa_ids'] = [(6, 0, scs['passenger_visa_ids'])]
-            if 'commission_agent_id' in scs:
-                scs['commission_agent_id'] = scs['commission_agent_id']
-            scs['description'] = self.pnr and self.pnr or ''
-            if scs['total'] != 0:
-                service_chg_obj.create(scs)
+            scs['description'] = self.pnr and self.pnr or str(self.sequence)
+            service_chg_obj.create(scs)
 
     def delete_service_charge(self):
         ledger_created = False
@@ -360,7 +388,7 @@ class TtProviderVisa(models.Model):
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'country': self.country_id.name,
             'country_code': self.country_id.code,
-            'country_id': self.country_id,
+            'country_id': self.country_id.id,
             'departure_date': self.departure_date,
             'passengers': passenger_list,
             'vendors': vendor_list
@@ -369,3 +397,45 @@ class TtProviderVisa(models.Model):
 
     def get_carrier_name(self):
         return []
+
+    def create_ticket_api(self, passengers):
+        ticket_list = []
+        ticket_found = []
+        ticket_not_found = []
+        #################
+        for passenger in self.booking_id.passenger_ids:
+            passenger.is_ticketed = False
+        #################
+        for psg in passengers:
+            psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() ==
+                                                                       ('%s%s' % (psg.get('first_name', ''),
+                                                                                  psg.get('last_name',
+                                                                                          ''))).lower().replace(' ',
+                                                                                                                ''))
+
+            if not psg_obj:
+                psg_obj = self.booking_id.passenger_ids.filtered(lambda x: x.name.replace(' ', '').lower() * 2 ==
+                                                                           ('%s%s' % (psg.get('first_name', ''),
+                                                                                      psg.get('last_name',
+                                                                                              ''))).lower().replace(' ',
+                                                                                                                    ''))
+            if psg_obj:
+                _logger.info(json.dumps(psg_obj.ids))
+                if len(psg_obj.ids) > 1:
+                    for psg_o in psg_obj:
+                        if not psg_o.is_ticketed:
+                            psg_obj = psg_o
+                            break
+                ticket_list.append((0, 0, {
+                    'pax_type': psg.get('pax_type'),
+                    'ticket_number': '',
+                    'passenger_id': psg_obj.id
+                }))
+                psg_obj.is_ticketed = True
+                ticket_found.append(psg_obj.id)
+            else:
+                ticket_not_found.append(psg)
+
+        self.write({
+            'ticket_ids': ticket_list
+        })
