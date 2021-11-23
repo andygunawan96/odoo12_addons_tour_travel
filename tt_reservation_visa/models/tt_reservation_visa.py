@@ -266,8 +266,9 @@ class TtVisa(models.Model):
 
     def action_sync_status_visa_api(self, req):
         try:
+            error_msg = ''
             if req.get('data'):
-                book_id = self.env['tt.provider.visa'].search([('pnr', '=', req['data'].get('order_number'))],
+                book_id = self.env['tt.provider.visa'].search([('pnr2', '=', req['data'].get('order_number'))],
                                                               limit=1).booking_id #get book_id
                 book_obj = self.env['tt.reservation.visa'].search([('id', '=', book_id.id)], limit=1) #ambil book obj
                 # book_obj = self.env['tt.reservation.visa'].search([('name', '=', req['data']['order_number'])], limit=1) #local
@@ -313,8 +314,12 @@ class TtVisa(models.Model):
                 elif req['data'].get('state') == 'to_agent':
                     self.action_to_agent_visa_by_api(book_obj)
                 else:
+                    error_msg = 'data not found'
                     _logger.error("get credential error")
-            return Response().get_no_error()
+            if error_msg:
+                return Response().get_error(error_msg, 500)
+            else:
+                return Response().get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc(e))
             return Response().get_error(error_message='contact b2b', error_code=500)
@@ -1691,10 +1696,16 @@ class TtVisa(models.Model):
                         })
                 biometrics['biometrics_list'] = biometrics_list
 
+                """ PROVIDER BOOKING IDS"""
+                prov_list = []
+                for rec in book_obj.provider_booking_ids:
+                    prov_list.append(rec.to_dict())
+
                 passenger.append({
                     'title': pax.title,
                     'first_name': pax.first_name,
                     'last_name': pax.last_name,
+                    'name': '%s %s' % (pax.first_name, pax.last_name),
                     'birth_date': str(pax.birth_date),
                     'gender': pax.gender,
                     'age': pax.age.split(' ')[0][:-1],
@@ -1880,7 +1891,8 @@ class TtVisa(models.Model):
                     'state_visa': dict(book_obj._fields['state_visa'].selection).get(book_obj.state_visa)
                 },
                 'passengers': passenger,
-                'state_visa_arr': state_visa
+                'state_visa_arr': state_visa,
+                'provider_bookings': prov_list
             })
             _logger.info("Get resp\n" + json.dumps(res_dict))
             return Response().get_no_error(res_dict)

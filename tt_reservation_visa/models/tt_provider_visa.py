@@ -388,7 +388,7 @@ class TtProviderVisa(models.Model):
             'state_description': variables.BOOKING_STATE_STR[self.state],
             'country': self.country_id.name,
             'country_code': self.country_id.code,
-            'country_id': self.country_id,
+            'country_id': self.country_id.id,
             'departure_date': self.departure_date,
             'passengers': passenger_list,
             'vendors': vendor_list
