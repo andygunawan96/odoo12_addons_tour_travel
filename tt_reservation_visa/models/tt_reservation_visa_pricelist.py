@@ -115,7 +115,7 @@ class VisaSyncProducts(models.TransientModel):
                 product_obj = product_obj and product_obj[0] or False
                 temp = []
                 if provider == 'rodextrip_visa':
-                    if product_obj:
+                    if product_obj and product_obj.provider_id.code == provider:
                         product_obj.active = False #inactive
                     req = {
                         'provider': provider,
@@ -142,6 +142,7 @@ class VisaSyncProducts(models.TransientModel):
                                 'name': res['response']['name'],
                                 'notes': res['response']['notes'],
                                 'nta_price': res['response']['nta_price'],
+                                'other_additional_price': res['response']['other_additional_price'],
                                 'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
                                 'reference_code': res['response']['reference_code'] + '_rdx',
@@ -171,6 +172,7 @@ class VisaSyncProducts(models.TransientModel):
                                 'name': res['response']['name'],
                                 'notes': res['response']['notes'],
                                 'nta_price': res['response']['nta_price'],
+                                'other_additional_price': res['response']['other_additional_price'],
                                 'pax_type': res['response']['pax_type'],
                                 'process_type': res['response']['process_type'],
                                 'reference_code': res['response']['reference_code'] + '_rdx',
@@ -255,6 +257,7 @@ class VisaPricelist(models.Model):
 
     visa_nta_price = fields.Monetary('Visa NTA Price', default=0)
     delivery_nta_price = fields.Monetary('Delivery NTA Price', default=0)
+    other_additional_price = fields.Monetary('Other Price', default=0)
 
     nta_price = fields.Monetary('NTA Price', default=0, compute="_compute_nta_price", store=True)
     cost_price = fields.Monetary('Cost Price', default=0)
@@ -280,11 +283,11 @@ class VisaPricelist(models.Model):
             rec.commission_price = rec.sale_price - rec.cost_price
 
     @api.multi
-    @api.depends('visa_nta_price', 'delivery_nta_price')
-    @api.onchange('visa_nta_price', 'delivery_nta_price')
+    @api.depends('visa_nta_price', 'delivery_nta_price', 'other_additional_price')
+    @api.onchange('visa_nta_price', 'delivery_nta_price', 'other_additional_price')
     def _compute_nta_price(self):
         for rec in self:
-            rec.nta_price = rec.visa_nta_price + rec.delivery_nta_price
+            rec.nta_price = rec.visa_nta_price + rec.delivery_nta_price + rec.other_additional_price
 
     @api.multi
     @api.onchange('duration')
