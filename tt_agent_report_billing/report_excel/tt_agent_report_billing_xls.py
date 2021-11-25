@@ -43,8 +43,7 @@ class AgentReportBillingXls(models.TransientModel):
         sheet.write('I9', 'Billing Number', style.table_head_center)
         sheet.write('J9', 'Payment', style.table_head_center)
         # sheet.write('J9', 'Acquirer', style.table_head_center)
-        sheet.write('K9', 'Payment Amount', style.table_head_center)
-        sheet.write('L9', 'State', style.table_head_center)
+        sheet.write('K9', 'State', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -70,15 +69,9 @@ class AgentReportBillingXls(models.TransientModel):
                     #count paid amount
                     filtered_data = filter(lambda x: x['billing_number'] == i['billing_number'], values['second_line'])
                     invoice_total = 0
-                    invoice_paid = 0
                     for j in filtered_data:
                         try:
                             invoice_total += j['invoice_total']
-                        except:
-                            pass
-
-                        try:
-                            invoice_paid += j['invoice_paid']
                         except:
                             pass
 
@@ -107,8 +100,7 @@ class AgentReportBillingXls(models.TransientModel):
                     sheet.write(row_data, 7, invoice_total, sty_amount)
                     sheet.write(row_data, 8, i['billing_number'], sty_table_data)
                     sheet.write(row_data, 9, '', sty_table_data)
-                    sheet.write(row_data, 10, invoice_paid , sty_amount)
-                    sheet.write(row_data, 11, i['billing_state'], sty_table_data)
+                    sheet.write(row_data, 10, i['billing_state'], sty_table_data)
 
                 #     to print per item
                     main_data = filter(lambda x: x['billing_number'] == i['billing_number'], values['lines'])
@@ -136,8 +128,7 @@ class AgentReportBillingXls(models.TransientModel):
                         sheet.write(row_data, 7, j['invoice_amount'], sty_amount)
                         sheet.write(row_data, 8, '*Invoice Detail', sty_table_data)
                         sheet.write(row_data, 9, j['payment_number'], sty_table_data)
-                        sheet.write(row_data, 10, j['invoice_paid'], sty_amount)
-                        sheet.write(row_data, 11, j['billing_state'], sty_table_data)
+                        sheet.write(row_data, 10, j['billing_state'], sty_table_data)
                 else:
                     continue
             except:
