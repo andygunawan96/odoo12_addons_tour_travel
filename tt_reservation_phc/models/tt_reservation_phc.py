@@ -340,7 +340,7 @@ class Reservationphc(models.Model):
                         "pax_type": svc['pax_type'],
                         "pax_count": svc['pax_count'],
                         "amount": svc['amount'],
-                        "total_amount": svc['total_amount'],
+                        "total": svc['total'],
                         "foreign_amount": svc['foreign_amount'],
                         "charge_code": svc['charge_code'],
                         "charge_type": svc['charge_type'],
