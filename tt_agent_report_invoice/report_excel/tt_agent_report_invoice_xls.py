@@ -1,3 +1,5 @@
+import traceback
+
 from odoo import models
 from ...tools import tools_excel
 from io import BytesIO
@@ -162,7 +164,7 @@ class AgentReportInvoiceXls(models.TransientModel):
                             sheet.write(row_data, 15, '', sty_table_data)
 
                     except:
-                        _logger.error("ERROR in Invoice Name : {} ".format(i['invoice_number']))
+                        _logger.error("ERROR in Invoice Name : {}\n{}".format(i['invoice_number'],traceback.format_exc()))
                         raise UserError("ERROR in Invoice Name : {} ".format(i['invoice_number']))
 
                 for j in filtered_data:
@@ -199,7 +201,7 @@ class AgentReportInvoiceXls(models.TransientModel):
                             sheet.write(row_data, 14, j['invoice_line_reference'], sty_table_data)
                             sheet.write(row_data, 15, j['invoice_line_total'], sty_amount)
                         except:
-                            _logger.error("ERROR in Invoice Name : {} , Invoice Line : {}".format(i['invoice_number'], j['invoice_line']))
+                            _logger.error("ERROR in Invoice Name : {} , Invoice Line : {}\n{}".format(i['invoice_number'], j['invoice_line'],traceback.format_exc()))
                             raise UserError("ERROR in Invoice Name : {} , Invoice Line : {}".format(i['invoice_number'], j['invoice_line']))
             else:
                 continue
