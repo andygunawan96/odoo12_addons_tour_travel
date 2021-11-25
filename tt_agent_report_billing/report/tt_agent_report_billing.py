@@ -13,9 +13,9 @@ class AgentReportBilling(models.Model):
     @staticmethod
     def _select():
         return """billing.name as billing_number, billing.date_billing as billing_date, billing.due_date as billing_due_date,
-        billing.state as billing_state, billing.paid_amount as paid_amount,
+        billing.state as billing_state,
         agent.name as agent_name,
-        invoice.total as invoice_amount, invoice.name as invoice_number, invoice.paid_amount as invoice_paid,
+        invoice.total as invoice_amount, invoice.name as invoice_number,
         payment.name as payment_number,
         customer.name as customer_name, customer_type.name as customer_type_name
         """
@@ -23,7 +23,7 @@ class AgentReportBilling(models.Model):
     @staticmethod
     def _select_more():
         return """billing.name as billing_number, 
-        invoice.total as invoice_total, invoice.paid_amount as invoice_paid
+        invoice.total as invoice_total
         """
 
     @staticmethod

@@ -26,6 +26,14 @@
         </record>
 
 
+        <record id="tt_transport_carrier_activity_rda" model="tt.transport.carrier">
+            <field name="name">Rodextrip Activity</field>
+            <field name="code">RDA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_activity.tt_provider_type_activity"/>
+        </record>
+
+
     </data>
 </odoo>
     
