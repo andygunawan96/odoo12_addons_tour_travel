@@ -129,13 +129,13 @@ class AgentReportInvoiceXls(models.TransientModel):
                                     'payment_acquirer': j['payment_acquirer'],
                                     'payment_account': j['payment_acquirer_account_number'],
                                     'transaction_counter': 1,
-                                    'total_amount': float(j['payment_pay_amount'])
+                                    'total_amount': float(j.get('payment_pay_amount',0))
                                 }
                                 summary.append(temp_dict)
                             else:
                                 summary[returning_index]['transaction_counter'] += 1
                                 try:
-                                    summary[returning_index]['total_amount'] += float(j['payment_pay_amount'])
+                                    summary[returning_index]['total_amount'] += float(j.get('payment_pay_amount',0))
                                 except:
                                     summary[returning_index]['total_amount'] += 0.0
 
@@ -157,7 +157,7 @@ class AgentReportInvoiceXls(models.TransientModel):
                                 to_print += ' ' + str(j['payment_acquirer_account_number'])
                             sheet.write(row_data, 9, to_print, sty_table_data)
                             sheet.write(row_data, 10, j['payment_ref'], sty_table_data)
-                            sheet.write(row_data, 11, j['payment_pay_amount'], sty_amount)
+                            sheet.write(row_data, 11, j.get('payment_pay_amount',0), sty_amount)
                             sheet.write(row_data, 12, '', sty_table_data)
                             sheet.write(row_data, 13, '', sty_table_data)
                             sheet.write(row_data, 14, '', sty_table_data)
