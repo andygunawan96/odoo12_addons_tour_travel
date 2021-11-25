@@ -245,7 +245,7 @@ class VisaPricelist(models.Model):
     visa_type = fields.Selection(VISA_TYPE, 'Visa Type')
     process_type = fields.Selection(PROCESS_TYPE, 'Process Type')
 
-    reference_code = fields.Char('Reference Code', required=False)
+    reference_code = fields.Char('Reference Code', required=False, copy=False)
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain)
     active = fields.Boolean('Active', default=True)
 
@@ -294,6 +294,26 @@ class VisaPricelist(models.Model):
     def _compute_duration(self):
         for rec in self:
             rec.commercial_duration = '%s day(s)' % str(rec.duration)
+
+    @api.model
+    def create(self, values):
+        if values.get('reference_code'):
+            if self.search([('reference_code','=',values['reference_code'])]):
+                values['reference_code'] = ''
+        res = super(VisaPricelist, self).create(values)
+        return res
+
+    def write(self, values):
+        if values.get('reference_code'):
+            if self.search([('reference_code','=',values['reference_code'])]):
+                raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
+        return super(VisaPricelist, self).write(values)
+
+    # @api.onchange('reference_code')
+    # def _compute_duration(self):
+    #     if self.reference_code:
+    #         if self.search(['reference_code','=',self.reference_code]):
+    #             raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
 
     def get_config_api(self):
         try:
