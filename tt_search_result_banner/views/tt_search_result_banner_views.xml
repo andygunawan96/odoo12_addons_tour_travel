@@ -50,6 +50,14 @@
                         <field name="sector_type"/>
                         <field name="sequence"/>
                     </group>
+
+                    <separator string="Origin Country"/>
+                    <field name = "origin_country"/>
+                    <group>
+                        <field name = "cabin_class_access_type"/>
+                    </group>
+                    <separator string="Cabin Class(es)"/>
+                    <field name="cabin_class_ids"/>
                     <group>
                         <field name = "provider_access_type"/>
                     </group>

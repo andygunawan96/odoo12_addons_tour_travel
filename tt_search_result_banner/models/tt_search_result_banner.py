@@ -20,6 +20,9 @@ class SearchResultBanner(models.Model):
     minimum_days = fields.Integer('Minimum Days', default=0)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     sector_type = fields.Selection([('all', 'All'), ('domestic', 'Domestic'), ('international', 'International')], 'Sector', default='all', required=True)
+    origin_country = fields.Many2one('res.country','Origin Country', required=True, help="""For Domestic""")
+    cabin_class_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Cabin Class Access Type', default='all')
+    cabin_class_ids = fields.Many2many('tt.master.cabin.class', "tt_search_banner_cabin_class_rel", "search_banner_id", "cabin_class_id", "Cabin Class")
     provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Provider Access Type', default='all')
     provider_ids = fields.Many2many('tt.provider', "tt_search_banner_provider_rel", "search_banner_id", "provider_id", "Provider", domain="[('provider_type_id', '=', provider_type_id)]")
     carrier_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")], 'Product Access Type', default='all')
@@ -59,6 +62,7 @@ class SearchResultBanner(models.Model):
         carrier_list = [rec.code for rec in self.carrier_ids]
         origin_list = [rec.code for rec in self.origin_ids]
         destination_list = [rec.code for rec in self.destination_ids]
+        cabin_class_list = [rec.code for rec in self.cabin_class_ids]
         res = {
             'name': self.name,
             'description': self.description,
@@ -77,5 +81,18 @@ class SearchResultBanner(models.Model):
             'destination_ids': destination_list,
             'sequence': self.sequence,
             'active': self.active,
+            'origin_country': self.origin_country.code,
+            'cabin_class_access_type': self.cabin_class_access_type,
+            'cabin_class_ids': cabin_class_list,
         }
         return res
+
+class MasterCabinClass(models.Model):
+    _name = 'tt.master.cabin.class'
+    _inherit = 'tt.history'
+    _description = 'Master Cabin Class'
+
+    code = fields.Char('Code', required=True)
+    name = fields.Text('Name', required=True)
+    description = fields.Text('Description', default='')
+    active = fields.Boolean('Active', default='True')
