@@ -1918,7 +1918,9 @@ class ReportSelling(models.Model):
         # get data from form
         date_from = data_form['date_from']
         date_to = data_form['date_to']
-        agent_id = data_form['agent_id']
+        agent_id = ''
+        if data_form.get('agent_id'):
+            agent_id = self.env['tt.agent'].search([('id','=',data_form['agent_id'])]).seq_id
         provider_type = data_form['provider_type']
         # proceed data
         context = {
