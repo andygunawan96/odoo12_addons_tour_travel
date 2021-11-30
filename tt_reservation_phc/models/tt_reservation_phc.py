@@ -997,7 +997,7 @@ class Reservationphc(models.Model):
     def sync_verified_with_phc(self):
         if self.state_vendor != 'verified':
             for rec in self.passenger_ids:
-                if rec.ticket_number:
+                if rec.ticket_number and not rec.verify:
                     phc_status_res = self.env['tt.phc.api.con'].sync_status_with_phc({
                         'carrier_code': self.carrier_name,
                         'ticket_number': rec.ticket_number,

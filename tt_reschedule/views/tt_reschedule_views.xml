@@ -66,8 +66,10 @@
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_adjustment_level_3"
                             context="{
-                        'default_res_model': 'tt.reschedule',
-                        'default_res_id': id,
+                        'default_reschedule_model': 'tt.reschedule',
+                        'default_reschedule_id': id,
+                        'default_res_model'; res_model,
+                        'default_res_id': res_id,
                         'default_agent_id': agent_id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
