@@ -68,7 +68,7 @@
                             context="{
                         'default_reschedule_model': 'tt.reschedule',
                         'default_reschedule_id': id,
-                        'default_res_model'; res_model,
+                        'default_res_model': res_model,
                         'default_res_id': res_id,
                         'default_agent_id': agent_id,
                         'default_referenced_document': name,
