@@ -175,8 +175,6 @@ class TtProviderTour(models.Model):
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'balance_due': provider_data.get('balance_due') and provider_data['balance_due'] or 0,
-                'total_price': provider_data.get('total_price') and provider_data['total_price'] or 0,
             })
             for rec2 in rec.cost_service_charge_ids:
                 rec2.sudo().write({

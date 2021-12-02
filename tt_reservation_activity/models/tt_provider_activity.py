@@ -163,8 +163,6 @@ class TtProviderActivity(models.Model):
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'balance_due': provider_data.get('balance_due') and provider_data['balance_due'] or 0,
-                'total_price': provider_data.get('total_price') and provider_data['total_price'] or 0,
             })
             for rec2 in rec.cost_service_charge_ids:
                 rec2.sudo().write({
@@ -324,30 +322,41 @@ class TtProviderActivity(models.Model):
         currency_obj = self.env['res.currency']
 
         for scs in service_charge_vals:
-            scs['pax_count'] = 0
-            scs['passenger_activity_ids'] = []
-            scs['total'] = 0
-            scs['currency_id'] = currency_obj.get_id('IDR')
-            scs['foreign_currency_id'] = currency_obj.get_id('IDR')
-            scs['provider_activity_booking_id'] = self.id
-            if scs['charge_code'] != 'disc':
-                for psg in self.ticket_ids:
-                    if scs['pax_type'] == psg.pax_type and scs['sku_id'] == psg.ticket_number:
-                        scs['passenger_activity_ids'].append(psg.passenger_id.id)
-                        scs['pax_count'] += 1
-                        scs['total'] += scs['amount']
-            # scs.pop('currency')
-            # scs.pop('foreign_currency')
-                scs.pop('sku_id')
-            else:
-                for psg in self.ticket_ids:
-                    scs['passenger_activity_ids'].append(psg.passenger_id.id)
-                    scs['pax_count'] += 1
-                    scs['total'] += scs['amount']
-            scs['passenger_activity_ids'] = [(6,0,scs['passenger_activity_ids'])]
-            scs['description'] = self.pnr and self.pnr or ''
-            if scs['total'] != 0:
-                service_chg_obj.create(scs)
+            # update 19 Feb 2020 maximum per pax sesuai dengan pax_count dari service charge
+            # scs['pax_count'] = 0
+            # April 28, 2020 - SAM
+            currency_id = currency_obj.get_id(scs.get('currency'), default_param_idr=True)
+            foreign_currency_id = currency_obj.get_id(scs.get('foreign_currency'), default_param_idr=True)
+            scs_pax_count = 0
+            total = 0
+            # scs['passenger_activity_ids'] = []
+            # scs['total'] = 0
+            # scs['currency_id'] = currency_obj.get_id(scs.get('currency'),default_param_idr=True)
+            # scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'),default_param_idr=True)
+            # scs['provider_activity_booking_id'] = self.id
+            passenger_activity_ids = []
+            for psg in self.ticket_ids:
+                if scs['pax_type'] == psg.pax_type and scs_pax_count < scs['pax_count']:
+                    # scs['passenger_activity_ids'].append(psg.passenger_id.id)
+                    passenger_activity_ids.append(psg.passenger_id.id)
+                    # scs['pax_count'] += 1
+                    scs_pax_count += 1
+                    # scs['total'] += scs['amount']
+                    total += scs['amount']
+            scs.update({
+                'passenger_activity_ids': [(6, 0, passenger_activity_ids)],
+                'total': total,
+                'currency_id': currency_id,
+                'foreign_currency_id': foreign_currency_id,
+                'provider_activity_booking_id': self.id,
+                'description': self.pnr and self.pnr or str(self.sequence),
+            })
+            scs.pop('currency')
+            scs.pop('foreign_currency')
+            # scs['passenger_activity_ids'] = [(6,0,scs['passenger_activity_ids'])]
+            # scs['description'] = self.pnr
+            # END
+            service_chg_obj.create(scs)
 
         # "sequence": 1,
         # "charge_code": "fare",
