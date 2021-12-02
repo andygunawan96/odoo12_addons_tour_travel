@@ -17,6 +17,7 @@ Key Features
 
     # always loaded
     'data': [
+        'data/master_cabin_class.xml',
         'security/ir.model.access.csv',
         'views/tt_search_result_banner_views.xml',
     ],
