@@ -69,7 +69,7 @@ class TtCronLogInhphc(models.Model):
 
     def cron_auto_sync_verification_data_phc(self):
         try:
-            book_objs = self.env['tt.reservation.phc'].search([('state_vendor', '=', 'new_order')])
+            book_objs = self.env['tt.reservation.phc'].search([('state_vendor', '=', 'new_order'),('state','=','issued')])
             for book_obj in book_objs:
                 book_obj.sync_verified_with_phc()
         except Exception as e:

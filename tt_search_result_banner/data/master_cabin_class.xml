@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+            <field name="name">Economy (Airline)</field>
+            <field name="code">Y</field>
+            <field name="active">1</field>
+        </record>
+        <record id="tt_master_cabin_class_airline_premium_economy" model="tt.master.cabin.class">
+            <field name="name">Premium Economy (Airline)</field>
+            <field name="code">W</field>
+            <field name="active">1</field>
+        </record>
+        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+            <field name="name">Business Class (Airline)</field>
+            <field name="code">C</field>
+            <field name="active">1</field>
+        </record>
+        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+            <field name="name">First Class (Airline)</field>
+            <field name="code">F</field>
+            <field name="active">1</field>
+        </record>
+
+        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+            <field name="name">Executive Class (Train)</field>
+            <field name="code">E</field>
+            <field name="active">1</field>
+        </record>
+        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+            <field name="name">Economy Class (Train)</field>
+            <field name="code">K</field>
+            <field name="active">1</field>
+        </record>
+        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+            <field name="name">Business Class (Train)</field>
+            <field name="code">B</field>
+            <field name="active">1</field>
+        </record>
+
+    </data>
+</odoo>
+    

@@ -28,6 +28,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, provider_type.name as provider_type_name, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -35,7 +36,7 @@ class ReportSelling(models.Model):
         agent.name as agent_name, agent_type.name as agent_type_name,
         provider.name as provider_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -59,6 +60,7 @@ class ReportSelling(models.Model):
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount,
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.sector_type as reservation_sector, 
         reservation.provider_name as reservation_provider_name, 
@@ -83,7 +85,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -99,6 +101,7 @@ class ReportSelling(models.Model):
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.sector_type as reservation_sector, 
         reservation.provider_name as reservation_provider_name, 
@@ -119,7 +122,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -140,6 +143,7 @@ class ReportSelling(models.Model):
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.hotel_name as reservation_hotel_name,
         reservation.hotel_city as hotel_city,
@@ -156,7 +160,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -174,6 +178,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount,
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         customer.id as customer_id, customer.name as customer_name,
         customer_parent.id as customer_parent_id, customer_parent.name as customer_parent_name,
@@ -189,7 +194,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -207,6 +212,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.provider_name as reservation_provider_name, 
         reservation.elder as reservation_elder, 
@@ -227,7 +233,7 @@ class ReportSelling(models.Model):
         agent.name as agent_name, agent_type.name as agent_type_name,
         provider.name as provider_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -245,6 +251,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.elder as reservation_elder, 
         reservation.adult as reservation_adult, 
@@ -258,7 +265,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.visa_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -278,6 +285,7 @@ class ReportSelling(models.Model):
         reservation.done_date as reservation_done_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.elder as reservation_elder,
         reservation.adult as reservation_adult,
@@ -292,7 +300,7 @@ class ReportSelling(models.Model):
         provider.name as provider_name,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -311,6 +319,7 @@ class ReportSelling(models.Model):
         reservation.provider_name as reservation_provider_name,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.event_name as reservation_event_name,
         reservation.elder as reservation_elder, 
@@ -324,7 +333,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -341,6 +350,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -355,7 +365,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -372,6 +382,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -386,7 +397,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -403,6 +414,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -417,7 +429,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -434,6 +446,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -448,7 +461,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -464,6 +477,7 @@ class ReportSelling(models.Model):
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.carrier_name as carrier_name,
         reservation.sector_type as reservation_sector, 
         reservation.provider_name as reservation_provider_name, 
@@ -484,7 +498,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -500,6 +514,7 @@ class ReportSelling(models.Model):
         reservation.create_date as reservation_create_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.sector_type as reservation_sector, 
         reservation.provider_name as reservation_provider_name, 
         reservation.booked_date as reservation_booked_date_og, 
@@ -518,7 +533,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -535,6 +550,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -549,7 +565,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -566,6 +582,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -580,7 +597,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -597,6 +614,7 @@ class ReportSelling(models.Model):
         reservation.issued_date as reservation_issued_date_og,
         reservation.total as amount, 
         reservation.total_commission as commission_amount,
+        reservation.total - reservation.agent_nta as commission,
         reservation.payment_method as reservation_payment_method,
         reservation.agent_id as agent_id, reservation.agent_type_id as agent_type_id,
         customer.id as customer_id, customer.name as customer_name,
@@ -611,7 +629,7 @@ class ReportSelling(models.Model):
         COUNT(reservation_passenger.booking_id) as reservation_passenger,
         agent.name as agent_name, agent_type.name as agent_type_name,
         ledger.id as ledger_id, ledger.ref as ledger_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, ledger_agent_type.name as ledger_agent_type_name,
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider
         """
 
@@ -1918,7 +1936,9 @@ class ReportSelling(models.Model):
         # get data from form
         date_from = data_form['date_from']
         date_to = data_form['date_to']
-        agent_id = data_form['agent_id']
+        agent_id = ''
+        if data_form.get('agent_id'):
+            agent_id = self.env['tt.agent'].search([('id','=',data_form['agent_id'])]).seq_id
         provider_type = data_form['provider_type']
         # proceed data
         context = {

@@ -999,14 +999,19 @@ class ReservationAirline(models.Model):
                 else:
                     try:
                         msg_list = [
-                            'Update reservation is not applied',
+                            'Some updates in the reservation are not applied due to different status',
                             '',
                             'Order Number : %s' % airline_obj.name,
                             'Backend Data : %s (%s)' % (commit_data['pnr'], commit_data['status']),
-                            'Vendor Data : %s (%s)' % (rsv_prov_obj.pnr, rsv_prov_obj.state.upper())
+                            'Vendor Data : %s (%s)' % (rsv_prov_obj.pnr, rsv_prov_obj.state.upper()),
+                            '',
+                            'NOTES :',
+                            '- Applied updates for schedule changes',
+                            '- Change fees are not applied',
+                            '- Change Service charges not applied (for BOOKED reservation)'
                         ]
                         msg = '\n'.join(msg_list)
-                        thread_obj = Thread(target=self._do_error_notif, args=('Do Error Notif', msg))
+                        thread_obj = Thread(target=self._do_error_notif, args=('Update Error Notif', msg))
                         thread_obj.start()
                     except Exception as e:
                         _logger.error('Error do error notif, %s' % str(e))

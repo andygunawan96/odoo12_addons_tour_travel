@@ -469,6 +469,7 @@ class ReservationActivity(models.Model):
             search_request = req.get('search_request') and req['search_request'] or False
             file_upload = req.get('file_upload') and req['file_upload'] or False
             provider = req.get('provider') and req['provider'] or ''
+            carrier = req.get('carrier_code') and req['carrier_code'] or ''
             pricing = req.get('pricing') and req['pricing'] or []
 
             header_val = search_request
@@ -482,6 +483,7 @@ class ReservationActivity(models.Model):
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             if not provider_id:
                 raise RequestException(1002)
+            carrier_id = self.env['tt.transport.carrier'].sudo().search([('code', '=', carrier)], limit=1)
             provider_id = provider_id[0]
             activity_product_id = self.env['tt.master.activity'].sudo().search([('uuid', '=', search_request['product_uuid']), ('provider_id', '=', provider_id.id)], limit=1)
             if not activity_product_id:
@@ -599,10 +601,20 @@ class ReservationActivity(models.Model):
                         'booking_id': book_obj.id
                     })
 
+            balance_due = 0
+            for temp_sc in pricing:
+                if temp_sc['charge_type'] not in ['ROC', 'RAC']:
+                    balance_due += temp_sc['pax_count'] * temp_sc['amount']
+
             provider_activity_vals = {
                 'booking_id': book_obj.id,
                 'provider_id': provider_id.id,
-                'balance_due': req['amount'],
+                'carrier_id': carrier_id and carrier_id[0].id,
+                'carrier_code': carrier_id and carrier_id[0].code,
+                'carrier_name': carrier_id and carrier_id[0].name,
+                'balance_due': balance_due,
+                'total_price': balance_due,
+                'sequence': 1
             }
 
             provider_activity_obj = self.env['tt.provider.activity'].sudo().create(provider_activity_vals)
@@ -615,8 +627,7 @@ class ReservationActivity(models.Model):
                 }
                 self.env['tt.ticket.activity'].sudo().create(vals)
             provider_activity_obj.delete_service_charge()
-            for rec in pricing:
-                provider_activity_obj.create_service_charge(rec)
+            provider_activity_obj.create_service_charge(pricing)
 
             reservation_details_vals = {
                 'provider_booking_id': provider_activity_obj.id,
