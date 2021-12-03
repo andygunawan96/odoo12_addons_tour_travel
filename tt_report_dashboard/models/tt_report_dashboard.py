@@ -1060,20 +1060,22 @@ class TtReportDashboard(models.Model):
             summary_provider = []
 
             # declare current id
-            current_id = [] # IVAN testing ganti list karena jika case beda id id sama tetapi beda order bisa ketambah
+            current_id = {} # IVAN testing ganti list karena jika case beda id id sama tetapi beda order bisa ketambah
             current_journey = ''
             current_segment = ''
-            current_pnr = ''
+            current_pnr = {}
             pnr_within = []
 
             # third we process the data to produce a trim proceed data, that is only need to be show
 
             # for every data in issued_values['lines']
             for i in issued_values['lines']:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
                 try:
                     # check if reservation id is not equal to current reservation id
                     # by default current id is empty string ('')
-                    if i['reservation_id'] not in current_id:
+                    if i['reservation_id'] not in current_id[i['provider_type_name']]:
                         #reset pnr list
                         pnr_within = []
                         # if reservation id is not equal to current id it means, it's a different reservation than previous line
@@ -1200,7 +1202,7 @@ class TtReportDashboard(models.Model):
                                     summary_provider[provider_index]['total_commission'] = i['commission_amount']
                                 else:
                                     summary_provider[provider_index]['total_commission'] = i['commission']
-                        current_id.append(i['reservation_id'])
+                        current_id[i['provider_type_name']].append(i['reservation_id'])
                     else:
                         # if current id equal to i['reservation_id']
                         # get current journey
@@ -1571,14 +1573,16 @@ class TtReportDashboard(models.Model):
             summary_issued = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
             current_segment = ''
             current_pnr = ''
             pnr_within = []
 
             # proceed invoice with the assumption of create date = issued date
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         # reset pnr
                         pnr_within = []
@@ -1929,7 +1933,7 @@ class TtReportDashboard(models.Model):
                             destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
                             destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
                             destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     # els in here means iterate data has the same order number as previous lines
                     # with that we only need to update ledger count
@@ -2467,12 +2471,14 @@ class TtReportDashboard(models.Model):
             summary_issued = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
             current_journey = ''
 
             # proceed invoice with the assumption of create date = issued date
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         # set journey to current journey (id)
                         current_journey = i['journey_id']
@@ -2692,7 +2698,7 @@ class TtReportDashboard(models.Model):
                             destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
 
                     # update current id
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     # els in here means iterate data has the same order number as previous lines
                     # with that we only need to update ledger count
@@ -2989,10 +2995,12 @@ class TtReportDashboard(models.Model):
             issued_depart_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -3145,7 +3153,7 @@ class TtReportDashboard(models.Model):
                     # ============= end of Issued compareed to depart date ==============
 
                     # update current id to reservation id of current iteration
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -3467,10 +3475,12 @@ class TtReportDashboard(models.Model):
             product_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[
@@ -3557,7 +3567,7 @@ class TtReportDashboard(models.Model):
                         product_summary[product_index]['infant_count'] += i['reservation_infant']
                     # ============= end of product summary ==============================
 
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -3819,10 +3829,12 @@ class TtReportDashboard(models.Model):
             product_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -3907,7 +3919,7 @@ class TtReportDashboard(models.Model):
                         product_summary[product_index]['infant_count'] += i['reservation_infant']
                     # ============= end of product summary ==============================
 
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -4168,10 +4180,12 @@ class TtReportDashboard(models.Model):
             product_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -4253,7 +4267,7 @@ class TtReportDashboard(models.Model):
                             product_summary[product_index]['infant_count'] += i['reservation_infant']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -4515,10 +4529,12 @@ class TtReportDashboard(models.Model):
             country_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -4595,7 +4611,7 @@ class TtReportDashboard(models.Model):
                     except:
                         pass
 
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -4856,10 +4872,12 @@ class TtReportDashboard(models.Model):
             offline_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -4937,7 +4955,7 @@ class TtReportDashboard(models.Model):
                     except:
                         pass
 
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -5198,10 +5216,12 @@ class TtReportDashboard(models.Model):
             ppob_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -5279,7 +5299,7 @@ class TtReportDashboard(models.Model):
                             ppob_summary[ppob_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -5548,12 +5568,13 @@ class TtReportDashboard(models.Model):
             # proceed invoice with the assumption of create date = issued date
             summary_issued = []
             passport_summary = []
-
+            current_id = {}
             # declare current id
-            current_id = ''
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -5618,7 +5639,7 @@ class TtReportDashboard(models.Model):
                         # populate passport_summary
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -5877,10 +5898,12 @@ class TtReportDashboard(models.Model):
             phc_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -5958,7 +5981,7 @@ class TtReportDashboard(models.Model):
                             phc_summary[phc_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -6215,10 +6238,12 @@ class TtReportDashboard(models.Model):
             periksain_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -6296,7 +6321,7 @@ class TtReportDashboard(models.Model):
                             periksain_summary[periksain_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -6553,10 +6578,12 @@ class TtReportDashboard(models.Model):
             medical_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -6634,7 +6661,7 @@ class TtReportDashboard(models.Model):
                             medical_summary[medical_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -6925,12 +6952,14 @@ class TtReportDashboard(models.Model):
             summary_issued = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
             current_journey = ''
 
             # proceed invoice with the assumption of create date = issued date
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         # set journey to current journey (id)
                         current_journey = i['journey_id']
@@ -7150,7 +7179,7 @@ class TtReportDashboard(models.Model):
                             destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
 
                     # update current id
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     # els in here means iterate data has the same order number as previous lines
                     # with that we only need to update ledger count
@@ -7440,10 +7469,12 @@ class TtReportDashboard(models.Model):
             insurance_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -7521,7 +7552,7 @@ class TtReportDashboard(models.Model):
                             insurance_summary[insurance_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -7778,10 +7809,12 @@ class TtReportDashboard(models.Model):
             swabexpress_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -7859,7 +7892,7 @@ class TtReportDashboard(models.Model):
                             swabexpress_summary[swabexpress_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -8116,10 +8149,12 @@ class TtReportDashboard(models.Model):
             labpintar_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -8197,7 +8232,7 @@ class TtReportDashboard(models.Model):
                             labpintar_summary[labpintar_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -8454,10 +8489,12 @@ class TtReportDashboard(models.Model):
             mitrakeluarga_summary = []
 
             # declare current id
-            current_id = ''
+            current_id = {}
 
             for i in issued_values['lines']:
-                if i['reservation_id'] != current_id:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
@@ -8535,7 +8572,7 @@ class TtReportDashboard(models.Model):
                             mitrakeluarga_summary[mitrakeluarga_index]['passenger_count'] += i['reservation_passenger']
                     except:
                         pass
-                    current_id = i['reservation_id']
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
                 else:
                     if i['ledger_transaction_type'] == 3:
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
@@ -8881,12 +8918,12 @@ class TtReportDashboard(models.Model):
                     pass
 
                 # ============= Summary by Carrier ===========================
-                if not i['reservation_provider_name']:
-                    i['reservation_provider_name'] = "Undefined"
-                carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['reservation_provider_name'])
+                if not i['provider_type_name']:
+                    i['provider_type_name'] = "Undefined"
+                carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['provider_type_name'])
                 if carrier_index == -1:
                     temp_dict = {
-                        'carrier_name': i['reservation_provider_name'],
+                        'carrier_name': i['provider_type_name'],
                         'international_counter': 0,
                         'international_valuation': 0,
                         'domestic_counter': 0,
@@ -9476,10 +9513,10 @@ class TtReportDashboard(models.Model):
                 pass
 
             # ============= Carrier summary check ========================
-            carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['reservation_provider_name'])
+            carrier_index = self.check_index(carrier_name_summary, 'carrier_name', i['provider_type_name'])
             if carrier_index == -1:
                 temp_dict = {
-                    'carrier_name': i['reservation_provider_name'],
+                    'carrier_name': i['provider_type_name'],
                     'international_counter': 0,
                     'domestic_counter': 0,
                     'elder_count': i['reservation_elder'],
@@ -9841,10 +9878,10 @@ class TtReportDashboard(models.Model):
                     hotel_summary[hotel_index]['other'] += 1
 
             # provider summary
-            provider_index = self.check_index(provider_summary, 'provider', i['reservation_provider_name'])
+            provider_index = self.check_index(provider_summary, 'provider', i['provider_type_name'])
             if provider_index == -1:
                 temp_dict = {
-                    'provider': i['reservation_provider_name'],
+                    'provider': i['provider_type_name'],
                     'counter': 1,
                     'issued': 0,
                     'fail_issued': 0,
@@ -9991,10 +10028,10 @@ class TtReportDashboard(models.Model):
                 else:
                     tour_route_summary[tour_route_index]['counter'] += 1
 
-                provider_index = self.check_index(provider_summary, 'provider', i['reservation_provider_name'])
+                provider_index = self.check_index(provider_summary, 'provider', i['provider_type_name'])
                 if provider_index == -1:
                     temp_dict = {
-                        'provider': i['reservation_provider_name'],
+                        'provider': i['provider_type_name'],
                         'total_amount': i['amount'],
                         'counter': 1,
                         'issued': 0,
