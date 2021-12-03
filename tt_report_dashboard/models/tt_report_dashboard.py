@@ -1075,7 +1075,7 @@ class TtReportDashboard(models.Model):
                 try:
                     # check if reservation id is not equal to current reservation id
                     # by default current id is empty string ('')
-                    if i['reservation_id'] not in current_id[i['provider_type_name']]:
+                    if i['reservation_id'] not in current_id[i['provider_type_name']] or i['reservation_id'] in current_id[i['provider_type_name']] and summary_provider[-1]['total_price'] == 0:
                         #reset pnr list
                         pnr_within = []
                         # if reservation id is not equal to current id it means, it's a different reservation than previous line
@@ -1160,7 +1160,7 @@ class TtReportDashboard(models.Model):
                         else:
                             provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
                         if provider_index == -1:
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True or i['ledger_agent_type_name'] != 'HO':
+                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True or i['ledger_agent_type_name'] != 'HO': #BUAT USER HO YANG LEDGER AGENT TYPE HO ATAU AGENT
                                 if i['provider_type_name'] == 'Offline':
                                     temp_dict = {
                                         'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
@@ -1177,14 +1177,23 @@ class TtReportDashboard(models.Model):
                                         'total_price': i['amount'],
                                         'total_commission': i['commission'] if is_ho == False else i['commission_amount']
                                     }
-                            else:
-                                temp_dict = {
-                                    'provider': i['provider_type_name'],
-                                    'counter': 1,
-                                    i['reservation_state']: 1,
-                                    'total_price': 0,
-                                    'total_commission': 0
-                                }
+                            else: # KALAU AGENT TETAPI DAPAT KOMISI HO BIKIN DULU TAPI DI ISIKAN VALUE DI NEXT LOOP (KALAU KETEMU)
+                                if i['provider_type_name'] == 'Offline':
+                                    temp_dict = {
+                                        'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
+                                        'counter': 0,
+                                        i['reservation_state']: 0,
+                                        'total_price': 0,
+                                        'total_commission': 0
+                                    }
+                                else:
+                                    temp_dict = {
+                                        'provider': i['provider_type_name'],
+                                        'counter': 0,
+                                        i['reservation_state']: 0,
+                                        'total_price': 0,
+                                        'total_commission': 0
+                                    }
                             summary_provider.append(temp_dict)
                         else:
                             summary_provider[provider_index]['counter'] += 1
@@ -1264,7 +1273,7 @@ class TtReportDashboard(models.Model):
                                         profit_agent += i['debit'] - i['credit']
                         else:
                             # else
-                            if current_journey == temp_journey:
+                            if current_journey == temp_journey and i['reservation_id'] not in current_id[i['provider_type_name']]:
                                 if i['ledger_transaction_type'] == 3:
                                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
                                     splits = i['reservation_issued_date'].split("-")
