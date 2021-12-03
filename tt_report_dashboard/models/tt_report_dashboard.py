@@ -1273,19 +1273,18 @@ class TtReportDashboard(models.Model):
                                         profit_agent += i['debit'] - i['credit']
                         else:
                             # else
-                            if current_journey == temp_journey and i['reservation_id'] not in current_id[i['provider_type_name']]:
-                                if i['ledger_transaction_type'] == 3:
-                                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                                    splits = i['reservation_issued_date'].split("-")
-                                    day_index = int(splits[2]) - 1
-                                    if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_ho += i['debit'] - i['credit']
-                                    elif i['ledger_agent_type_name'] != 'HO':
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_agent += i['debit'] - i['credit']
+                            if i['ledger_transaction_type'] == 3:
+                                month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                                splits = i['reservation_issued_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
+                                elif i['ledger_agent_type_name'] != 'HO':
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
                 except:
                     pass
 
