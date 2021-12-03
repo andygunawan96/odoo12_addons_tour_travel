@@ -1026,7 +1026,7 @@ class TtReportDashboard(models.Model):
 
             # global result variable
             total = 0
-            profit_total = 0
+            profit_total = 0 # GANTI PROFIT = DEBIT - CREDIT AGAR REVERSE LEDGER KE DETECT
             profit_ho = 0
             profit_agent = 0
             num_data = 0
@@ -1124,13 +1124,13 @@ class TtReportDashboard(models.Model):
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -1145,13 +1145,13 @@ class TtReportDashboard(models.Model):
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # after adding summary issued we group the data by provider
                         if i['provider_type_name'] == 'Offline':
@@ -1241,13 +1241,13 @@ class TtReportDashboard(models.Model):
                                     splits = i['reservation_issued_date'].split("-")
                                     day_index = int(splits[2]) - 1
                                     if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                        profit_total += i['debit']
-                                        profit_ho += i['debit']
+                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                        profit_total += i['debit'] - i['credit']
+                                        profit_ho += i['debit'] - i['credit']
                                     elif i['ledger_agent_type_name'] != 'HO':
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                        profit_total += i['debit']
-                                        profit_agent += i['debit']
+                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                        profit_total += i['debit'] - i['credit']
+                                        profit_agent += i['debit'] - i['credit']
                             elif current_segment == i['segment_id'] and current_pnr == i['ledger_pnr']:
                                 # count like always
                                 if i['ledger_transaction_type'] == 3:
@@ -1255,13 +1255,13 @@ class TtReportDashboard(models.Model):
                                     splits = i['reservation_issued_date'].split("-")
                                     day_index = int(splits[2]) - 1
                                     if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                        profit_total += i['debit']
-                                        profit_ho += i['debit']
+                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                        profit_total += i['debit'] - i['credit']
+                                        profit_ho += i['debit'] - i['credit']
                                     elif i['ledger_agent_type_name'] != 'HO':
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                        profit_total += i['debit']
-                                        profit_agent += i['debit']
+                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                        profit_total += i['debit'] - i['credit']
+                                        profit_agent += i['debit'] - i['credit']
                         else:
                             # else
                             if current_journey == temp_journey:
@@ -1270,13 +1270,13 @@ class TtReportDashboard(models.Model):
                                     splits = i['reservation_issued_date'].split("-")
                                     day_index = int(splits[2]) - 1
                                     if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                        profit_total += i['debit']
-                                        profit_ho += i['debit']
+                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                        profit_total += i['debit'] - i['credit']
+                                        profit_ho += i['debit'] - i['credit']
                                     elif i['ledger_agent_type_name'] != 'HO':
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                        profit_total += i['debit']
-                                        profit_agent += i['debit']
+                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                        profit_total += i['debit'] - i['credit']
+                                        profit_agent += i['debit'] - i['credit']
                 except:
                     pass
 
@@ -1620,13 +1620,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -1644,13 +1644,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -1966,13 +1966,13 @@ class TtReportDashboard(models.Model):
                             # if HQ guy asking then we'll count everything
                             # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_ho += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
                             elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_agent += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
 
                         # update top carrier base on same reservation but diff segment and diff pnr
                         try:
@@ -2074,13 +2074,13 @@ class TtReportDashboard(models.Model):
                             # if HQ guy asking then we'll count everything
                             # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_ho += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
                             elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_agent += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
 
             # grouping data
             # it's like spliting the data into smaller container
@@ -2509,13 +2509,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -2533,13 +2533,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -2718,13 +2718,13 @@ class TtReportDashboard(models.Model):
                             # if HQ guy asking then we'll count everything
                             # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_ho += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
                             elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_agent += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -3027,13 +3027,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3051,13 +3051,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -3164,13 +3164,13 @@ class TtReportDashboard(models.Model):
                             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                             # if HQ guy asking then we'll count everything
                             # if not HQ guy then we'll only count respected agennt
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3508,13 +3508,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3532,13 +3532,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -3579,13 +3579,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3861,13 +3861,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3885,13 +3885,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -3930,13 +3930,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -4212,13 +4212,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -4236,13 +4236,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         product_index = self.check_index(product_summary, 'product', i['reservation_event_name'])
                         if product_index == -1:
@@ -4278,13 +4278,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -4564,13 +4564,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -4588,13 +4588,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # ============= Country summary Report =======================
                         country_index = self.check_index(country_summary, 'country', i['country_name'])
@@ -4622,13 +4622,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -4907,13 +4907,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -4931,13 +4931,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # group data by offline provider type (airline, train, etc)
                         offline_index = self.check_index(offline_summary, 'provider_type', i['reservation_offline_provider_type'])
@@ -4966,13 +4966,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -5251,13 +5251,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -5275,13 +5275,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate ppob_summary
                         ppob_index = self.check_index(ppob_summary, 'product', i['carrier_name'])
@@ -5310,13 +5310,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -5604,13 +5604,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -5628,13 +5628,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate passport_summary
                     except:
@@ -5651,13 +5651,13 @@ class TtReportDashboard(models.Model):
                             # if HQ guy asking then we'll count everything
                             # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_ho += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
                             elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_agent += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -5933,13 +5933,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -5957,13 +5957,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate phc_summary
                         phc_index = self.check_index(phc_summary, 'product', i['carrier_name'])
@@ -5992,13 +5992,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -6273,13 +6273,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -6297,13 +6297,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate periksain_summary
                         periksain_index = self.check_index(periksain_summary, 'product', i['carrier_name'])
@@ -6332,13 +6332,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -6613,13 +6613,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -6637,13 +6637,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate medical_summary
                         medical_index = self.check_index(medical_summary, 'product', i['carrier_name'])
@@ -6672,13 +6672,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -6990,13 +6990,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -7014,13 +7014,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -7199,13 +7199,13 @@ class TtReportDashboard(models.Model):
                             # if HQ guy asking then we'll count everything
                             # if not HQ guy then we'll only count respected agennt
                             if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_ho += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
                             elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                profit_total += i['debit']
-                                profit_agent += i['debit']
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_agent += i['debit'] - i['credit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -7504,13 +7504,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -7528,13 +7528,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate insurance_summary
                         insurance_index = self.check_index(insurance_summary, 'product', i['carrier_name'])
@@ -7563,13 +7563,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -7844,13 +7844,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -7868,13 +7868,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate swabexpress_summary
                         swabexpress_index = self.check_index(swabexpress_summary, 'product', i['carrier_name'])
@@ -7903,13 +7903,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -8184,13 +8184,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -8208,13 +8208,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate labpintar_summary
                         labpintar_index = self.check_index(labpintar_summary, 'product', i['carrier_name'])
@@ -8243,13 +8243,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -8524,13 +8524,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -8548,13 +8548,13 @@ class TtReportDashboard(models.Model):
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
                                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_ho += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
                                 elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                                    profit_total += i['debit']
-                                    profit_agent += i['debit']
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
 
                         # populate mitrakeluarga_summary
                         mitrakeluarga_index = self.check_index(mitrakeluarga_summary, 'product', i['carrier_name'])
@@ -8583,13 +8583,13 @@ class TtReportDashboard(models.Model):
                         # if HQ guy asking then we'll count everything
                         # if not HQ guy then we'll only count respected agennt
                         if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_ho += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
                         elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit']
-                            profit_total += i['debit']
-                            profit_agent += i['debit']
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
