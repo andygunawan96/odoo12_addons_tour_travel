@@ -1160,7 +1160,7 @@ class TtReportDashboard(models.Model):
                         else:
                             provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
                         if provider_index == -1:
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True or i['ledger_agent_type_name'] != 'HO':
+                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True or i['ledger_agent_type_name'] != 'HO': #BUAT USER HO YANG LEDGER AGENT TYPE HO ATAU AGENT
                                 if i['provider_type_name'] == 'Offline':
                                     temp_dict = {
                                         'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
@@ -1177,14 +1177,23 @@ class TtReportDashboard(models.Model):
                                         'total_price': i['amount'],
                                         'total_commission': i['commission'] if is_ho == False else i['commission_amount']
                                     }
-                            else:
-                                temp_dict = {
-                                    'provider': i['provider_type_name'],
-                                    'counter': 1,
-                                    i['reservation_state']: 1,
-                                    'total_price': 0,
-                                    'total_commission': 0
-                                }
+                            else: # KALAU AGENT TETAPI DAPAT KOMISI HO BIKIN DULU TAPI DI ISIKAN VALUE DI NEXT LOOP (KALAU KETEMU)
+                                if i['provider_type_name'] == 'Offline':
+                                    temp_dict = {
+                                        'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
+                                        'counter': 0,
+                                        i['reservation_state']: 0,
+                                        'total_price': 0,
+                                        'total_commission': 0
+                                    }
+                                else:
+                                    temp_dict = {
+                                        'provider': i['provider_type_name'],
+                                        'counter': 0,
+                                        i['reservation_state']: 0,
+                                        'total_price': 0,
+                                        'total_commission': 0
+                                    }
                             summary_provider.append(temp_dict)
                         else:
                             summary_provider[provider_index]['counter'] += 1
@@ -1222,6 +1231,27 @@ class TtReportDashboard(models.Model):
                         except:
                             temp_pnr = ''
 
+                        if i['reservation_id'] in current_id[i['provider_type_name']] and summary_provider[-1]['total_price'] == 0: #KALAU PROVIDER BELUM TERTAMBAH ASUMSI SUMMARY PROVIDER SUDAH ADA
+                            if i['provider_type_name'] == 'Offline':
+                                to_check = i['provider_type_name'] + "_" + i['reservation_offline_provider_type']
+                                provider_index = self.check_index(summary_provider, "provider", to_check)
+                            else:
+                                provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
+                            summary_provider[provider_index]['counter'] += 1
+                            try:
+                                summary_provider[provider_index][i['reservation_state']] += 1
+                                summary_provider[provider_index]['total_price'] += i['amount']
+                                if is_ho == True:
+                                    summary_provider[provider_index]['total_commission'] += i['commission_amount']
+                                else:
+                                    summary_provider[provider_index]['total_commission'] += i['commission']
+                            except:
+                                summary_provider[provider_index][i['reservation_state']] = 1
+                                summary_provider[provider_index]['total_price'] = i['amount']
+                                if is_ho == True:
+                                    summary_provider[provider_index]['total_commission'] = i['commission_amount']
+                                else:
+                                    summary_provider[provider_index]['total_commission'] = i['commission']
                         # check if provider is airline
                         if i['provider_type_name'] == 'Airline':
                             if current_segment != i['segment_id'] and current_pnr != i['ledger_pnr']:
@@ -1264,21 +1294,20 @@ class TtReportDashboard(models.Model):
                                         profit_agent += i['debit'] - i['credit']
                         else:
                             # else
-                            if current_journey == temp_journey:
-                                if i['ledger_transaction_type'] == 3:
-                                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                                    splits = i['reservation_issued_date'].split("-")
-                                    day_index = int(splits[2]) - 1
-                                    if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_ho += i['debit'] - i['credit']
-                                    elif i['ledger_agent_type_name'] != 'HO':
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_agent += i['debit'] - i['credit']
-                except:
-                    pass
+                            if i['ledger_transaction_type'] == 3:
+                                month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                                splits = i['reservation_issued_date'].split("-")
+                                day_index = int(splits[2]) - 1
+                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
+                                elif i['ledger_agent_type_name'] != 'HO':
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_agent += i['debit'] - i['credit']
+                except Exception as e:
+                    _logger.error("ERROR REPORT DASHBOARD %s" % traceback.format_exc())
 
             # for every section in summary
             for i in summary_issued:
