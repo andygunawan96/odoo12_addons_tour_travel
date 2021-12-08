@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from ...tools import variables
 from datetime import datetime
+from ...tools.repricing_tools import RepricingTools, RepricingToolsV2
 
 STATE_OFFLINE = [
     ('draft', 'Draft'),
@@ -215,19 +216,8 @@ class ProviderOffline(models.Model):
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
-    def create_service_charge(self):
-        self.delete_service_charge()
-
-        if self.booking_id.offline_provider_type != 'other':
-            provider_type_id = self.env['tt.provider.type'].search(
-                [('code', '=', self.booking_id.offline_provider_type)], limit=1)
-        else:
-            provider_type_id = self.env['tt.provider.type'].search(
-                [('code', '=', self.env.ref('tt_reservation_offline.tt_provider_type_offline').code)], limit=1)
+    def generate_sc_repricing(self):
         scs_list = []
-        scs_list_2 = []
-        pricing_obj = self.env['tt.pricing.agent'].sudo()
-        sale_price = 0
         provider_line_count = 0
         if self.booking_id.provider_type_id_name not in ['activity']:
             line_count = 0
@@ -418,34 +408,172 @@ class ProviderOffline(models.Model):
                 'amount': self.booking_id.admin_fee_ho / len(self.booking_id.line_ids) / len(self.booking_id.passenger_ids),
                 'total': self.booking_id.admin_fee_ho / len(self.booking_id.line_ids)
             })
+        return scs_list
 
-            ho_agent = self.env.ref('tt_base.rodex_ho')
-            scs_list_2.append({
-                'commission_agent_id': ho_agent and ho_agent.id or False,
-                'currency_id': currency_obj and currency_obj[0].id or self.booking_id.agent_id.currency_id.id,
-                'charge_code': 'hsc',
-                'charge_type': 'RAC',
-                'description': '',
+    def generate_sc_repricing_v2(self):
+        context = self.env['tt.api.credential'].get_userid_credential({
+            'user_id': self.booking_id.user_id.id
+        })
+        if not context.get('error_code'):
+            context = context['response']
+        else:
+            raise UserError('Failed to generate service charge, context user not found.')
+        repr_tool = RepricingToolsV2('offline', context)
+        scs_dict = {
+            'service_charges': []
+        }
+        provider_line_count = 0
+        if self.booking_id.provider_type_id_name not in ['activity']:
+            line_count = 0
+            for line in self.booking_id.line_ids:
+                line_count += 1
+                if line.provider_id.id == self.provider_id.id:
+                    if line.pnr == self.pnr:
+                        provider_line_count += 1
+            sale_price = self.booking_id.input_total / line_count * provider_line_count
+        else:
+            if self.booking_id.line_ids:
+                sale_price = self.booking_id.input_total / len(self.booking_id.line_ids)
+            else:
+                sale_price = self.booking_id.input_total
+
+        total_commission_amount = self.booking_id.total_commission_amount
+        segment_count = len(self.booking_id.line_ids)
+        route_count = 1
+        adt_count = 0
+        chd_count = 0
+        inf_count = 0
+        total_pax_count = 0
+        # Get all pricing per pax
+        adt_id_list = []
+        chd_id_list = []
+        inf_id_list = []
+        for psg in self.booking_id.passenger_ids:
+            if psg.pax_type == 'INF':
+                inf_count += 1
+                inf_id_list.append(psg.id)
+            elif psg.pax_type == 'CHD':
+                chd_count += 1
+                chd_id_list.append(psg.id)
+            else:
+                adt_count += 1
+                adt_id_list.append(psg.id)
+            total_pax_count += 1
+
+        if adt_count > 0:
+            scs_dict['service_charges'].append({
+                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'currency_id': self.currency_id.id,
                 'pax_type': 'ADT',
-                'passenger_offline_ids': scs_list[0]['passenger_offline_ids'],
-                'provider_offline_booking_id': self.id,
-                'pax_count': len(self.booking_id.passenger_ids),
-                'amount': -self.booking_id.admin_fee_ho / len(self.booking_id.line_ids) / len(self.booking_id.passenger_ids),
-                'total': -self.booking_id.admin_fee_ho / len(self.booking_id.line_ids)
+                'pax_count': adt_count,
+                'total': (sale_price / len(self.booking_id.passenger_ids)) * adt_count,
+            })
+            scs_dict['service_charges'].append({
+                'amount': (total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'charge_code': 'rac',
+                'charge_type': 'RAC',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'ADT',
+                'pax_count': adt_count,
+                'total': ((total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1) * adt_count,
+            })
+        if chd_count > 0:
+            scs_dict['service_charges'].append({
+                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'CHD',
+                'pax_count': chd_count,
+                'total': (sale_price / len(self.booking_id.passenger_ids)) * chd_count,
+            })
+            scs_dict['service_charges'].append({
+                'amount': (total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'charge_code': 'rac',
+                'charge_type': 'RAC',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'CHD',
+                'pax_count': chd_count,
+                'total': ((total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1) * chd_count,
             })
 
+        if inf_count > 0:
+            scs_dict['service_charges'].append({
+                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'INF',
+                'pax_count': inf_count,
+                'total': (sale_price / len(self.booking_id.passenger_ids)) * inf_count,
+            })
+            scs_dict['service_charges'].append({
+                'amount': (total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'charge_code': 'rac',
+                'charge_type': 'RAC',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'INF',
+                'pax_count': inf_count,
+                'total': ((total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1) * inf_count,
+            })
+
+        if self.booking_id.admin_fee_ho:
+            scs_dict['service_charges'].append({
+                'currency_id': self.currency_id.id,
+                'charge_code': 'adm',
+                'charge_type': 'ROC',
+                'pax_type': 'ADT',
+                'pax_count': len(self.booking_id.passenger_ids),
+                'amount': self.booking_id.admin_fee_ho / len(self.booking_id.line_ids) / len(self.booking_id.passenger_ids),
+                'total': self.booking_id.admin_fee_ho / len(self.booking_id.line_ids)
+            })
+
+        repr_tool.add_ticket_fare(scs_dict)
+        carrier_code = ''
+        for line in self.booking_id.line_ids:
+            if line.pnr == self.pnr and line.carrier_id:
+                carrier_code = line.carrier_id.code
+        rule_param = {
+            'provider': self.provider_id.code,
+            'carrier_code': carrier_code,
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'show_commission': True,
+            'pricing_datetime': '',
+        }
+        repr_tool.calculate_pricing(**rule_param)
+
+        for scs in scs_dict['service_charges']:
+            if scs['amount'] != 0:
+                if scs['pax_type'] == 'INF':
+                    psg_id_list = inf_id_list
+                elif scs['pax_type'] == 'CHD':
+                    psg_id_list = chd_id_list
+                else:
+                    psg_id_list = adt_id_list
+                scs.update({
+                    'passenger_offline_ids': psg_id_list,
+                    'description': '',
+                    'provider_offline_booking_id': self.id
+                })
+
+        return scs_dict['service_charges']
+
+    def create_service_charge(self):
+        self.delete_service_charge()
+        scs_list = self.generate_sc_repricing()
+        # scs_list = self.generate_sc_repricing_v2()
+
         # Insert into cost service charge
-        scs_list_3 = []
         service_chg_obj = self.env['tt.service.charge']
         for scs in scs_list:
             scs['passenger_offline_ids'] = [(6, 0, scs['passenger_offline_ids'])]
             if abs(scs['total']) != 0:
-                scs_obj = service_chg_obj.create(scs)
-                scs_list_3.append(scs_obj.id)
+                service_chg_obj.create(scs)
 
-    def create_service_charge_hotel(self, index):
-        self.delete_service_charge()
-
+    def generate_sc_repricing_hotel(self, index):
         book_obj = self.booking_id
         scs_list = []
 
@@ -519,7 +647,8 @@ class ProviderOffline(models.Model):
                 'fare_amount': 0,
                 'tax_amount': 0,
                 'roc_amount': 0,
-                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'rac_amount': (total_amount / len(
+                    self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
                 'origin': '',
@@ -557,7 +686,8 @@ class ProviderOffline(models.Model):
                 'fare_amount': 0,
                 'tax_amount': 0,
                 'roc_amount': 0,
-                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'rac_amount': (total_amount / len(
+                    self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
                 'origin': '',
@@ -595,7 +725,8 @@ class ProviderOffline(models.Model):
                 'fare_amount': 0,
                 'tax_amount': 0,
                 'roc_amount': 0,
-                'rac_amount': (total_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'rac_amount': (total_amount / len(
+                    self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
                 'currency': 'IDR',
                 'provider': self.provider_id.code,
                 'origin': '',
@@ -669,15 +800,201 @@ class ProviderOffline(models.Model):
                 'pax_count': 1,
                 'total': -basic_admin_fee * line_obj.obj_qty * days_int_current,
             })
+        return scs_list
+
+    def generate_sc_repricing_hotel_v2(self, index):
+        context = self.env['tt.api.credential'].get_userid_credential({
+            'user_id': self.booking_id.user_id.id
+        })
+        if not context.get('error_code'):
+            context = context['response']
+        else:
+            raise UserError('Failed to generate service charge, context user not found.')
+        repr_tool = RepricingToolsV2('offline', context)
+        scs_dict = {
+            'service_charges': []
+        }
+
+        book_obj = self.booking_id
+
+        carrier_code = ''
+        provider_line_count = 0
+        for line in self.booking_id.line_ids:
+            if line.provider_id.id == self.provider_id.id:
+                if line.pnr == self.pnr:
+                    if line.carrier_id:
+                        carrier_code = line.carrier_id.code
+                    provider_line_count += 1
+
+        total_commission_amount = book_obj.total_commission_amount
+        segment_count = 1
+        route_count = 1
+        adt_count = 0
+        chd_count = 0
+        inf_count = 0
+        total_pax_count = 0
+        # Get all pricing per pax
+        adt_id_list = []
+        chd_id_list = []
+        inf_id_list = []
+        for psg in self.booking_id.passenger_ids:
+            if psg.pax_type == 'INF':
+                inf_count += 1
+                inf_id_list.append(psg.id)
+            elif psg.pax_type == 'CHD':
+                chd_count += 1
+                chd_id_list.append(psg.id)
+            else:
+                adt_count += 1
+                adt_id_list.append(psg.id)
+            total_pax_count += 1
+
+        line_obj = book_obj.line_ids[index]
+
+        check_in_current = datetime.strptime(line_obj.check_in, '%Y-%m-%d')
+        check_out_current = datetime.strptime(line_obj.check_out, '%Y-%m-%d')
+        days_current = check_out_current - check_in_current
+        days_int_current = int(days_current.days)
+
+        total_line_qty = 0
+        for line in book_obj.line_ids:
+            check_in = datetime.strptime(line.check_in, '%Y-%m-%d')
+            check_out = datetime.strptime(line.check_out, '%Y-%m-%d')
+            days = check_out - check_in
+            days_int = int(days.days)
+            route_count = days_int
+            segment_count = line.obj_qty
+
+            total_line_qty += days_int * line.obj_qty
+
+        sale_price = book_obj.input_total / total_line_qty * line_obj.obj_qty * days_int_current
+
+        if adt_count > 0:
+            scs_dict['service_charges'].append({
+                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'pax_type': 'ADT',
+                'currency_id': self.currency_id.id,
+                'pax_count': adt_count,
+                'total': (sale_price / len(self.booking_id.passenger_ids)) * adt_count,
+            })
+            scs_dict['service_charges'].append({
+                'amount': (total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'charge_code': 'rac',
+                'charge_type': 'RAC',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'ADT',
+                'pax_count': adt_count,
+                'total': ((total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1) * adt_count,
+            })
+
+        if chd_count > 0:
+            scs_dict['service_charges'].append({
+                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'pax_type': 'CHD',
+                'currency_id': self.currency_id.id,
+                'pax_count': chd_count,
+                'total': (sale_price / len(self.booking_id.passenger_ids)) * chd_count,
+            })
+            scs_dict['service_charges'].append({
+                'amount': (total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'charge_code': 'rac',
+                'charge_type': 'RAC',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'CHD',
+                'pax_count': chd_count,
+                'total': ((total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1) * chd_count,
+            })
+
+        if inf_count > 0:
+            scs_dict['service_charges'].append({
+                'amount': sale_price / len(self.booking_id.passenger_ids),
+                'charge_code': 'fare',
+                'charge_type': 'FARE',
+                'pax_type': 'INF',
+                'currency_id': self.currency_id.id,
+                'pax_count': inf_count,
+                'total': (sale_price / len(self.booking_id.passenger_ids)) * inf_count,
+            })
+            scs_dict['service_charges'].append({
+                'amount': (total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1,
+                'charge_code': 'rac',
+                'charge_type': 'RAC',
+                'currency_id': self.currency_id.id,
+                'pax_type': 'INF',
+                'pax_count': inf_count,
+                'total': ((total_commission_amount / len(self.booking_id.line_ids) * provider_line_count / total_pax_count) * -1) * inf_count,
+            })
+
+        basic_admin_fee = 0
+        if book_obj.admin_fee_id:
+            for line in book_obj.admin_fee_id.admin_fee_line_ids:
+                basic_admin_fee += line.amount
+        if self.booking_id.admin_fee_ho:
+            scs_dict['service_charges'].append({
+                'amount': basic_admin_fee * line_obj.obj_qty * days_int_current,
+                'charge_code': 'adm',
+                'charge_type': 'ROC',
+                'pax_type': 'ADT',
+                'currency_id': self.currency_id.id,
+                'pax_count': 1,
+                'total': basic_admin_fee * line_obj.obj_qty * days_int_current,
+            })
+
+            ho_agent = self.env['tt.agent'].sudo().search(
+                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            scs_dict['service_charges'].append({
+                'commission_agent_id': ho_agent and ho_agent[0].id or False,
+                'amount': -basic_admin_fee * line_obj.obj_qty * days_int_current,
+                'charge_code': 'hsc',
+                'charge_type': 'RAC',
+                'pax_type': 'ADT',
+                'currency_id': self.currency_id.id,
+                'pax_count': 1,
+                'total': -basic_admin_fee * line_obj.obj_qty * days_int_current,
+            })
+        repr_tool.add_ticket_fare(scs_dict)
+
+        rule_param = {
+            'provider': self.provider_id.code,
+            'carrier_code': carrier_code,
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'show_commission': True,
+            'pricing_datetime': '',
+        }
+        repr_tool.calculate_pricing(**rule_param)
+
+        for scs in scs_dict['service_charges']:
+            if scs['amount'] != 0:
+                if scs['pax_type'] == 'INF':
+                    psg_id_list = inf_id_list
+                elif scs['pax_type'] == 'CHD':
+                    psg_id_list = chd_id_list
+                else:
+                    psg_id_list = adt_id_list
+                scs.update({
+                    'passenger_offline_ids': psg_id_list,
+                    'description': '',
+                    'provider_offline_booking_id': self.id
+                })
+
+        return scs_dict['service_charges']
+
+    def create_service_charge_hotel(self, index):
+        self.delete_service_charge()
+        scs_list = self.generate_sc_repricing_hotel(index)
+        # scs_list = self.generate_sc_repricing_hotel_v2(index)
 
         # Insert into cost service charge
-        scs_list_3 = []
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list:
             scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
             if abs(scs_2['total']) != 0:
-                scs_obj = service_chg_obj.create(scs_2)
-                scs_list_3.append(scs_obj.id)
+                service_chg_obj.create(scs_2)
 
     def delete_service_charge(self):
         ledger_created = False

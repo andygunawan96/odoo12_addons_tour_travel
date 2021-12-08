@@ -198,10 +198,10 @@
                                 <field name="hold_date" invisible="0" readonly="0" string="Time Limit"/>
                                 <!--                                <field name="expired_date" required="1"/>-->
                                 <field name="currency_id" invisible="1"/>
-                                <label for="create_uid" string="Created"/>
+                                <label for="user_id" string="Created"/>
                                 <div>
                                     <field name="create_date" readonly="1" class="oe_inline"/> -
-                                    <field name="create_uid" readonly="1" class="oe_inline"/>
+                                    <field name="user_id" readonly="1" class="oe_inline"/>
                                 </div>
                                 <label for="confirm_uid" string="Confirmed"/>
                                 <div attrs="{'invisible': [('state_offline', '=', False)]}">
