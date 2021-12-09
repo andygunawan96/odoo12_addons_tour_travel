@@ -1069,7 +1069,7 @@ class ReservationAirline(models.Model):
                     rsch_obj.send_reschedule_from_button()
                     rsch_obj.validate_reschedule_from_button()
                     rsch_obj.finalize_reschedule_from_button()
-                    # reschedule_obj.action_done()
+                    rsch_obj.action_done()
                     # END
                 else:
                     rsch_obj.cancel_reschedule_from_button()

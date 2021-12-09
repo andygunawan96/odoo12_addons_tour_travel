@@ -142,6 +142,33 @@ class ApiManagement(models.Model):
             res = Response().get_error(str(e), 500)
         return res
 
+    def get_userid_credential(self, data):
+        try:
+            _user = self.env['res.users'].sudo().browse(int(data['user_id']))
+
+            if _user.is_banned:
+                additional_msg = ""
+                try:
+                    additional_msg = 'Until %s.' % datetime.strftime(self.env['tt.ban.user'].search([('user_id', '=', _user.id)], limit=1).end_datetime+timedelta(hours=7), '%Y-%m-%d %I %p')
+                except:
+                    pass
+                raise RequestException(1029,additional_message=additional_msg)
+
+            response = _user.get_credential(prefix='co_')
+
+            # April 9, 2019 - SAM
+            # Menambahkan uplines dari user
+            co_user_info = self.env['tt.agent'].sudo().get_agent_level(response['co_agent_id'])
+            response['co_user_info'] = co_user_info
+            res = Response().get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            res = Response().get_error(str(e), 500)
+        return res
+
+
 class ResUsersApiInherit(models.Model):
     _inherit = 'res.users'
 
