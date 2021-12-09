@@ -153,49 +153,8 @@ class ApiManagement(models.Model):
                 except:
                     pass
                 raise RequestException(1029,additional_message=additional_msg)
-            if not _user.is_api_user:
-                raise Exception('User is not allowed to access API')
 
-            _obj = self.sudo().search([('user_id', '=', int(data['user_id'])), ('api_key', '=', data['api_key']),
-                                       ('active', '=', 1)], limit=1)
-            if not _obj:
-                raise Exception('API Key is not match')
-
-            values = _user.get_credential(prefix='co_')
-            values.update({
-                'signature': self._generate_signature()
-            })
-            response = _obj.get_credential()
-            # April 11, 2019 - SAM
-            # Sementara host IP dikosongkan hingga menemukan cara untuk mendapatkan host IP user
-            # if not context['host_ip'] in response['host_ips']:
-            #     raise Exception('Host IP is not allowed to access')
-            if data.get('co_user') and data.get('co_password'):
-                if response['api_role'] == 'operator':
-                    raise Exception('User Role is not allowed to do Co User login')
-                co_uid = _DB_CON.authenticate(data['co_user'], data['co_password'])
-                if not co_uid:
-                    raise Exception('Co User and Co Password is not match')
-                _co_user = self.env['res.users'].sudo().browse(co_uid)
-
-                if _co_user.is_banned:
-                    additional_msg = ""
-                    try:
-                        addtional_msg = 'Until %s.' % datetime.strftime(
-                            self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
-                                                           limit=1).end_datetime+timedelta(hours=7),
-                            '%Y-%m-%d %I %p')
-                    except:
-                        pass
-                    raise RequestException(1029, additional_message=addtional_msg)
-
-                values.update(_co_user.get_credential(prefix='co_'))
-            if data.get('co_uid'):
-                if response['api_role'] != 'admin':
-                    raise Exception('User Role is not allowed.')
-                _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
-                values.update(_co_user.get_credential(prefix='co_'))
-            response.update(values)
+            response = _user.get_credential(prefix='co_')
 
             # April 9, 2019 - SAM
             # Menambahkan uplines dari user
