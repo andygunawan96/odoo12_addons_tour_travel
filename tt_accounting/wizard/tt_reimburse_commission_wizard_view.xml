@@ -25,8 +25,8 @@
                     </group>
                 </group>
                 <footer>
-                    <button name="reimburse_commission" string="Reimburse Commission" type="object" class="oe_highlight"/>
-<!--                    <button name="reimburse_commission_v2" string="Reimburse Commission" type="object" class="oe_highlight"/>-->
+<!--                    <button name="reimburse_commission" string="Reimburse Commission" type="object" class="oe_highlight"/>-->
+                    <button name="reimburse_commission_v2" string="Reimburse Commission" type="object" class="oe_highlight"/>
                     or
                     <button string="Cancel" class="oe_link" special="cancel" />
                 </footer>
