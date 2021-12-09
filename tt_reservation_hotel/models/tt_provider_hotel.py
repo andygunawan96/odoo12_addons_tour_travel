@@ -65,7 +65,7 @@ class TransportBookingProvider(models.Model):
 
         ##fixme salahhh, ini ke reverse semua provider bukan provider ini saja
         for rec in self.booking_id.ledger_ids:
-            if rec.pnr == self.pnr and not rec.is_reversed:
+            if rec.pnr in [self.pnr, str(self.sequence)] and not rec.is_reversed:
                 rec.reverse_ledger()
 
         self.write({
@@ -117,10 +117,16 @@ class TransportBookingProvider(models.Model):
                 'balance_due': 0
             })
 
-    def action_failed_issued_api_hotel(self):
+    def action_failed_issued_api_hotel(self, err_code, err_msg):
         for rec in self:
             rec.write({
-                'state': 'fail_issued'
+                'state': 'fail_issued',
+                'error_history_ids': [(0,0,{
+                    'res_model': self._name,
+                    'res_id': self.id,
+                    'error_code': err_code,
+                    'error_msg': err_msg
+                })]
             })
 
     def action_expired(self):

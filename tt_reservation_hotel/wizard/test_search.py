@@ -699,7 +699,7 @@ class TestSearch(models.Model):
         vend_hotel = self.env['tt.provider.hotel'].create({
             'provider_id': provider_id or '',
             'booking_id': resv_id.id,
-            'pnr': '',
+            'pnr': '0',
             'pnr2': '',
             'balance_due': resv_id.total_nta,
             'total_price': resv_id.total_nta,
@@ -1092,7 +1092,7 @@ class TestSearch(models.Model):
                 resv_obj.total += csc.total
         # if resv_obj.state not in ['issued', 'fail_issued']:
         #     resv_obj.sudo().action_issued(acq_id, co_uid)
-        return resv_obj.sudo().action_done(issued_res)
+        return resv_obj.sudo().action_done(issued_res, context)
 
     # Asumsi Destinasi sdah berupa kode negara
     def get_provider_for_destination(self, dest_id):
