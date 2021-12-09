@@ -419,33 +419,6 @@ class HotelReservation(models.Model):
         self.booked_uid = context.get('co_uid') or self.env.user.id,
         return True
 
-    # # @api.one
-    # # def action_refund(self):
-    # def action_reverse_ledger_from_button(self):
-    #     if self.state != 'fail_issued':
-    #         raise UserError("Cannot refund, non Fail Issued state")
-    #     if self.state == 'fail_refunded':
-    #         raise UserError("Cannot refund, this PNR has been refunded.")
-    #
-    #     # if not self.is_ledger_created:
-    #     #     raise UserError("This Provider Ledger is not Created.")
-    #
-    #     for ledger_id in self.ledger_ids:
-    #         ledger_id.reverse_ledger()
-    #         # self._refund_ledger()
-    #
-    #     self.write({
-    #         'state': 'fail_refunded',
-    #         # 'is_ledger_created': False,
-    #         'refund_uid': self.env.user.id,
-    #         'refund_date': datetime.now()
-    #     })
-    #
-    #     return {
-    #         'type': 'ir.actions.client',
-    #         'tag': 'reload',
-    #     }
-
     @api.multi
     def action_set_as_draft(self):
         for rec in self:
@@ -999,6 +972,146 @@ class HotelReservation(models.Model):
             'sale_service_charge_ids': this_service_charges
         })
         #END
+
+    # Update Pake API in_connector
+
+    # Pindahan dari test.search
+    # def create_reservation(self, req, context={}):
+    def create_booking_hotel_api(self, data, context):
+        total_rate = 0
+        total_commision = 0
+
+        provider_data = data.get('provider_data', '')
+        special_req = data.get('special_request', 'No Special Request')
+        cancellation_policy = data.get('cancellation_policy', '')
+
+        context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
+
+        booker_obj = self.env['tt.reservation.hotel'].create_booker_api(data['booker'], context)
+        contact_objs = []
+        for con in data['contact']:
+            contact_objs.append(self.env['tt.reservation.hotel'].create_contact_api(con, booker_obj, context))
+        contact_obj = contact_objs[0]
+
+        backend_hotel_obj = self.get_backend_object(data['price_codes'][0]['provider'], data['hotel_obj']['id'])
+        vals = self.prepare_resv_value(backend_hotel_obj, data['hotel_obj'], data['checkin_date'],
+                                       data['checkout_date'], data['price_codes'],
+                                       booker_obj, contact_obj, provider_data, special_req, data['passengers'],
+                                       context['agent_id'], cancellation_policy, context.get('hold_date', False))
+        # Set Customer Type by Payment
+        if data['payment_id']:
+            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_id']['seq_id'])])
+        else:
+            acq_obj = False
+
+        if acq_obj:
+            customer_parent_id = self.env['tt.agent'].sudo().browse(
+                context['agent_id']).customer_parent_walkin_id.id  ##fpo
+        elif not data['payment_id']:
+            if context['hold_date']:
+                customer_parent_id = self.env['tt.agent'].sudo().browse(
+                    context['agent_id']).customer_parent_walkin_id.id
+            else:
+                customer_parent_id = False
+        else:
+            customer_parent_id = self.env['tt.customer.parent'].search(
+                [('seq_id', '=', data['payment_id']['seq_id'])], limit=1).id
+
+        vals.update({
+            'customer_parent_id': customer_parent_id,
+            'sid_booked': context['signature'],
+            'user_id': context.get('co_uid') or self.env.user.id,
+        })
+        passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(data['passengers'], context,
+                                                                              booker_obj.id,
+                                                                              contact_obj.id)  # create passenger
+
+        resv_id = self.env['tt.reservation.hotel'].create(vals)
+        resv_id.hold_date = context.get('hold_date', False)
+        # resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
+        for idx, rec in enumerate(passenger_objs):
+            self.env['tt.reservation.passenger.hotel'].create({
+                'booking_id': resv_id.id,
+                'customer_id': rec.id,
+                'tittle': data['passengers'][idx]['title'],
+                'first_name': rec.first_name,
+                'last_name': rec.last_name,
+                'gender': rec.gender,
+                'birth_date': rec.birth_date,
+                'nationality_id': rec.nationality_id.id,
+                'identity_type': rec.identity_ids and rec.identity_ids[0].identity_type or '',
+                'identity_number': rec.identity_ids and rec.identity_ids[0].identity_number or '',
+            })
+
+        for price_obj in data['price_codes']:
+            for room_rate in price_obj['rooms']:
+                vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])],
+                                                                            limit=1).id
+                provider_id = self.env['tt.provider'].search(
+                    [('code', '=', self.unmasking_provider(price_obj['provider']))], limit=1).id
+                detail = self.env['tt.hotel.reservation.details'].sudo().create({
+                    'provider_id': provider_id,
+                    'reservation_id': resv_id.id,
+                    'date': fields.Datetime.from_string(data['checkin_date']),
+                    'date_end': fields.Datetime.from_string(data['checkout_date']),
+                    'sale_price': float(room_rate['price_total']),
+                    'prov_sale_price': float(room_rate['price_total_currency']),
+                    'prov_currency_id': vendor_currency_id,
+                    'room_name': room_rate['description'],
+                    'room_vendor_code': price_obj['price_code'],
+                    'room_type': room_rate['type'],
+                    'meal_type': price_obj['meal_type'],
+                    'commission_amount': float(room_rate.get('commission', 0)),
+                })
+                self.env.cr.commit()
+                for charge_id in room_rate['nightly_prices']:
+                    self.env['tt.room.date'].sudo().create({
+                        'detail_id': detail.id,
+                        'date': charge_id['date'],
+                        'sale_price': charge_id['price'],  # charge_id['price_currency'],
+                        'commission_amount': charge_id['commission'],
+                        'meal_type': '',
+                    })
+                    # Merge Jika Room type yg sama 2
+                    for price in charge_id['service_charges']:
+                        price.update({
+                            'resv_hotel_id': resv_id.id,
+                            'total': price['amount'] * price['pax_count'],
+                        })
+                        self.env['tt.service.charge'].create(price)
+
+                # todo Room Info IDS
+                total_rate += float(room_rate['price_total'])
+                total_commision += float(room_rate['commission'])
+        resv_id.total = total_rate
+
+        # Create provider_booking_ids
+        vend_hotel = self.env['tt.provider.hotel'].create({
+            'provider_id': provider_id or '',
+            'booking_id': resv_id.id,
+            'pnr': '',
+            'pnr2': '',
+            'balance_due': resv_id.total_nta,
+            'total_price': resv_id.total_nta,
+            'checkin_date': data['checkin_date'],
+            'checkout_date': data['checkout_date'],
+            'hotel_id': resv_id.hotel_id.id,
+            'hotel_name': resv_id.hotel_name,
+            'hotel_address': resv_id.hotel_address,
+            'hotel_city': resv_id.hotel_city,
+            'hotel_phone': resv_id.hotel_phone,
+            'sid': context['sid'],
+        })
+
+        vend_hotel.create_service_charge(resv_id.sale_service_charge_ids)
+
+        resv_id.action_booked(context)
+        return self.get_booking_result(resv_id.id, context)
+
+    #
+    def update_cost_service_charge_hotel_api(self, data, context):
+        return data
+
 
 class ServiceCharge(models.Model):
     _inherit = "tt.service.charge"
