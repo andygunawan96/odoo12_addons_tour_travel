@@ -80,7 +80,6 @@
                                 ref('tt_base.able_to_ticketing_tour'),
                                 ref('tt_base.able_to_ticketing_train'),
                                 ref('tt_base.able_to_ticketing_visa'),
-                                ref('tt_base.report'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_login'),

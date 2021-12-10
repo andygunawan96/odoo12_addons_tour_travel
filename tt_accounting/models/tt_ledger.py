@@ -203,7 +203,7 @@ class Ledger(models.Model):
     def get_allowed_rule(self):
         return {
             'is_reversed': (##Field yang mau di check
-                False,## boleh tumpuk atau tidak, False = hanya bisa edit jika False, True boleh replace
+                False,## boleh tumpuk atau tidak, False = hanya bisa edit jika field yg mau di check valuenya False, True boleh replace
                 ('is_reversed', 'reverse_id')##yang boleh di edit
             ),
             'description': (
