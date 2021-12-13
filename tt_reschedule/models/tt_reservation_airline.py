@@ -1069,7 +1069,8 @@ class ReservationAirline(models.Model):
                     rsch_obj.send_reschedule_from_button()
                     rsch_obj.validate_reschedule_from_button()
                     rsch_obj.finalize_reschedule_from_button()
-                    rsch_obj.action_done()
+                    # Klo dari API dia bypass PO
+                    rsch_obj.action_done(bypass_po=True)
                     # END
                 else:
                     rsch_obj.cancel_reschedule_from_button()
