@@ -2529,6 +2529,9 @@ class ReservationAirline(models.Model):
                 'new_pnr': ','.join([prov_booking_dict['new_data']['pnr'] for prov_booking_dict in data['provider_bookings']]),
                 'provider_ids': [(6,0,provider_data_list)],
                 'passenger_ids': [(6,0,passenger_data_sequence_list)],
+                'is_split_journey': provider_data_list != [],
+                'is_split_passenger': passenger_data_sequence_list != [],
+                'is_split_provider': False,
             })
             # Call submit function
             wizard_obj.submit_split_reservation()

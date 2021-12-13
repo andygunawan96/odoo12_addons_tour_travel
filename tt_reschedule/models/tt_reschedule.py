@@ -532,11 +532,14 @@ class TtReschedule(models.Model):
                     required = True
         return required
 
-    def action_done(self):
+    def action_done(self, bypass_po=False):
         if self.state != 'final':
             raise UserError("Cannot Approve because state is not 'Finalized'.")
         if self.check_po_required():
-            raise UserError(_('Purchase Order is required in one Line or more. Please check all Line(s)!'))
+            if bypass_po:
+                _logger.info('Skipping PO process for {}, Rescheduled by API'.format(self.name))
+            else:
+                raise UserError(_('Purchase Order is required in one Line or more. Please check all Line(s)!'))
 
         self.action_create_invoice()
         self.write({
