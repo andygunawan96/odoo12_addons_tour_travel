@@ -146,6 +146,7 @@
                     <group name="paxgroup">
                         <group string="Booker Information">
                             <field name="booker_id"/>
+                            <field name="booker_insentif"/>
                         </group>
                         <group string="Contact Information">
                             <field name="contact_id"/>
