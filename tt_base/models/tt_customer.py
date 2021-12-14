@@ -261,7 +261,9 @@ class TtCustomer(models.Model):
             if req.get('cust_code'):
                 dom.append(('seq_id','=',req['cust_code']))
             if util.get_without_empty(context,'co_customer_parent_id'):
+                dom.append('|')
                 dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
+                dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
             customer_list_obj = self.search(dom,limit=100)
 
             customer_list = []

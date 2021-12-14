@@ -66,6 +66,8 @@ class TtReservation(models.Model):
     booker_id = fields.Many2one('tt.customer','Booker', ondelete='restrict', readonly=True, states={'draft':[('readonly',False)]})
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', readonly=True, states={'draft': [('readonly', False)]})
 
+    booker_insentif = fields.Monetary('Insentif Booker')
+
     contact_name = fields.Char('Contact Name',readonly=True)  # fixme oncreate later
     contact_title = fields.Char('Contact Title',readonly=True)
     contact_email = fields.Char('Contact Email',readonly=True)
@@ -766,6 +768,8 @@ class TtReservation(models.Model):
             'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             # END
         }
+        if self.booker_insentif:
+            res['booker_insentif'] = self.booker_insentif
         if include_total_nta:
             res['total_nta'] = self.total_nta
         return res
@@ -823,6 +827,24 @@ class TtReservation(models.Model):
             if book_obj.agent_id.id == context['co_agent_id']:
                 for psg in req['passengers']:
                     book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'])
+            else:
+                return ERR.get_error(1001)
+        except Exception as e:
+            _logger.error(str(e) + traceback.format_exc())
+            return ERR.get_error(500, additional_message=str(e))
+        return ERR.get_no_error()
+
+    ##butuh field
+    def booker_insentif_api(self, req, context):
+        try:
+            resv_obj = self.env['tt.reservation.%s' % (req['provider_type'])]
+            book_obj = resv_obj.get_book_obj(req.get('book_id'), req.get('order_number'))
+            try:
+                book_obj.create_date
+            except:
+                return ERR.get_error(1001)
+            if book_obj.agent_id.id == context['co_agent_id']:
+                book_obj.booker_insentif = req['booker']['amount']
             else:
                 return ERR.get_error(1001)
         except Exception as e:

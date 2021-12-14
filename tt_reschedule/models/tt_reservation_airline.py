@@ -848,7 +848,12 @@ class ReservationAirline(models.Model):
                         ]
                         old_ssr_info_list.append('\n'.join(old_ssr_info))
 
-                    if set(fee_data_list).difference(set(obj_fee_data_list)) or (not fee_data_list and obj_fee_data_list):
+                    # December 7, 2021 - SAM
+                    # Fix flow ssr change, deteksi penambahan ssr
+                    fee_data_count = len(fee_data_list)
+                    obj_fee_data_count = len(obj_fee_data_list)
+                    # if set(fee_data_list).difference(set(obj_fee_data_list)) or (not fee_data_list and obj_fee_data_list):
+                    if set(fee_data_list).difference(set(obj_fee_data_list)) or (fee_data_count != obj_fee_data_count):
                         is_any_ssr_change = True
 
                     old_ssr_value = [
@@ -1069,7 +1074,8 @@ class ReservationAirline(models.Model):
                     rsch_obj.send_reschedule_from_button()
                     rsch_obj.validate_reschedule_from_button()
                     rsch_obj.finalize_reschedule_from_button()
-                    rsch_obj.action_done()
+                    # Klo dari API dia bypass PO
+                    rsch_obj.action_done(bypass_po=True)
                     # END
                 else:
                     rsch_obj.cancel_reschedule_from_button()
