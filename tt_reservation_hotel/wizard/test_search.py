@@ -1092,7 +1092,7 @@ class TestSearch(models.Model):
                 resv_obj.total += csc.total
         # if resv_obj.state not in ['issued', 'fail_issued']:
         #     resv_obj.sudo().action_issued(acq_id, co_uid)
-        return resv_obj.sudo().action_done(issued_res, context)
+        return resv_obj.sudo().action_done(issued_res)
 
     # Asumsi Destinasi sdah berupa kode negara
     def get_provider_for_destination(self, dest_id):
