@@ -1366,18 +1366,18 @@ class ProviderPricing(object):
         }
         return payload
 
-    def get_reservation_calculation(self, rule_obj, route_count=0, segment_count=0, **kwargs):
+    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, **kwargs):
         sales_data = rule_obj['reservation']['sales']
-        sales_res = self.calculate_price(sales_data, 0.0, 0.0, '', route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count)
         total_upsell_amount = sales_res['upsell_amount']
         sales_total_amount = total_upsell_amount
 
         nta_data = rule_obj['reservation']['nta']
-        nta_res = self.calculate_price(nta_data, 0.0, 0.0, '', route_count, segment_count)
+        nta_res = self.calculate_price(nta_data, total_amount, 0.0, '', route_count, segment_count)
         nta_total_amount = nta_res['upsell_amount']
 
         nta_agent_data = rule_obj['reservation']['nta_agent']
-        nta_agent_res = self.calculate_price(nta_agent_data, 0.0, 0.0, '', route_count, segment_count)
+        nta_agent_res = self.calculate_price(nta_agent_data, total_amount, 0.0, '', route_count, segment_count)
         nta_agent_total_amount = nta_agent_res['upsell_amount']
 
         # total_commission_amount = sales_total_amount - nta_total_amount
@@ -1713,9 +1713,9 @@ class AgentPricing(object):
         }
         return payload
 
-    def get_reservation_calculation(self, rule_obj, route_count=0, segment_count=0, **kwargs):
+    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, **kwargs):
         sales_data = rule_obj['reservation']['sales']
-        sales_res = self.calculate_price(sales_data, 0.0, 0.0, '', route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count)
         total_upsell_amount = sales_res['upsell_amount']
 
         payload = {
@@ -2045,9 +2045,9 @@ class CustomerPricing(object):
         }
         return payload
 
-    def get_reservation_calculation(self, rule_obj, route_count=0, segment_count=0, **kwargs):
+    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, **kwargs):
         sales_data = rule_obj['reservation']['sales']
-        sales_res = self.calculate_price(sales_data, 0.0, 0.0, '', route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count)
         total_upsell_amount = sales_res['upsell_amount']
 
         payload = {
@@ -2568,10 +2568,11 @@ class RepricingToolsV2(object):
                     fare_data['service_charges'].append(sc_values)
 
         ## 4
-
+        rsv_total_amount = 0.0
         if rule_obj:
-            tkt_rsv_res = self.provider_pricing.get_reservation_calculation(rule_obj, route_count, segment_count)
+            tkt_rsv_res = self.provider_pricing.get_reservation_calculation(rule_obj, rsv_total_amount, route_count, segment_count)
             if tkt_rsv_res['upsell_amount']:
+                rsv_total_amount += tkt_rsv_res['upsell_amount']
                 sc_values = copy.deepcopy(sc_temp)
                 sc_values.update({
                     'charge_type': 'ROC',
@@ -2601,8 +2602,9 @@ class RepricingToolsV2(object):
             total_commission_amount += tkt_rsv_res['commission_amount']
 
         if cust_obj:
-            cust_rsv_res = self.customer_pricing.get_reservation_calculation(cust_obj, route_count, segment_count)
+            cust_rsv_res = self.customer_pricing.get_reservation_calculation(cust_obj, rsv_total_amount, route_count, segment_count)
             if cust_rsv_res['upsell_amount']:
+                rsv_total_amount += cust_rsv_res['upsell_amount']
                 sc_values = copy.deepcopy(sc_temp)
                 sc_values.update({
                     'charge_type': 'ROC',
@@ -2629,8 +2631,9 @@ class RepricingToolsV2(object):
                 fare_data['service_charges'].append(sc_values)
 
         if agent_obj:
-            agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, route_count, segment_count)
+            agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, rsv_total_amount, route_count, segment_count)
             if agent_rsv_res['upsell_amount']:
+                rsv_total_amount += agent_rsv_res['upsell_amount']
                 sc_values = copy.deepcopy(sc_temp)
                 sc_values.update({
                     'charge_type': 'ROC',
