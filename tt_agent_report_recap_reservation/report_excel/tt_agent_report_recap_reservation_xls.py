@@ -51,8 +51,10 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.write('O9', 'Currency', style.table_head_center)
         sheet.write('P9', 'NTA Amount', style.table_head_center)
         sheet.write('Q9', 'Total Commission', style.table_head_center)
-        sheet.write('R9', 'Grand Total', style.table_head_center)
-        sheet.merge_range('S9:T9', 'Keterangan', style.table_head_center)
+        sheet.write('R9', 'Commission Booker', style.table_head_center)
+        sheet.write('S9', 'Upsell', style.table_head_center)
+        sheet.write('T9', 'Grand Total', style.table_head_center)
+        sheet.merge_range('U9:V9', 'Keterangan', style.table_head_center)
 
 
         # ====== SET WIDTH AND HEIGHT ==========
@@ -81,6 +83,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
         order_number = ''
         datas = values['lines']
         service_charge = values['second_lines']
+        channel_pricing = values['third_lines']
         #proceed the data
 
         filtered_data = []
@@ -90,7 +93,10 @@ class AgentReportRecapReservationXls(models.TransientModel):
             if temp_order_number != i['order_number']:
                 #set checker for order number
                 temp_order_number = i['order_number']
-
+                upsell = 0
+                for svc_csc in channel_pricing:
+                    if svc_csc['order_number'] == temp_order_number:
+                        upsell += svc_csc['service_charge_amount']
                 #get pnr list
                 try:
                     pnr_list = i['pnr'].split(", ")
@@ -132,9 +138,11 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 sheet.write(row_data, 14, i['currency_name'], sty_table_data_center)
                 sheet.write(row_data, 15, i['total_nta'], sty_amount)
                 sheet.write(row_data, 16, i['total_commission'], sty_amount)
-                sheet.write(row_data, 17, i['grand_total'], sty_amount)
-                sheet.write(row_data, 18, '', sty_table_data)
-                sheet.write(row_data, 19, '', sty_amount)
+                sheet.write(row_data, 17, i['commission_booker'], sty_amount)
+                sheet.write(row_data, 18, upsell, sty_amount)
+                sheet.write(row_data, 19, i['grand_total'], sty_amount)
+                sheet.write(row_data, 20, '', sty_table_data)
+                sheet.write(row_data, 21, '', sty_amount)
 
                 # filtered data
                 filtered_data = []
@@ -199,9 +207,11 @@ class AgentReportRecapReservationXls(models.TransientModel):
                     sheet.write(row_data, 14, '', sty_table_data_center)
                     sheet.write(row_data, 15, nta_total, sty_amount)
                     sheet.write(row_data, 16, commission, sty_amount)
-                    sheet.write(row_data, 17, grand_total, sty_amount)
-                    sheet.write(row_data, 18, '', sty_table_data)
-                    sheet.write(row_data, 19, '', sty_amount)
+                    sheet.write(row_data, 17, '', sty_amount)
+                    sheet.write(row_data, 18, '', sty_amount)
+                    sheet.write(row_data, 19, grand_total, sty_amount)
+                    sheet.write(row_data, 20, '', sty_table_data)
+                    sheet.write(row_data, 21, '', sty_amount)
 
                     for k in temp_book:
                         if k['ledger_transaction_type'] == 3:
@@ -236,8 +246,10 @@ class AgentReportRecapReservationXls(models.TransientModel):
                             sheet.write(row_data, 15, '', sty_amount)
                             sheet.write(row_data, 16, '', sty_amount)
                             sheet.write(row_data, 17, '', sty_amount)
-                            sheet.write(row_data, 18, k['ledger_agent_name'], sty_table_data)
-                            sheet.write(row_data, 19, k['debit'], sty_amount)
+                            sheet.write(row_data, 18, '', sty_amount)
+                            sheet.write(row_data, 19, '', sty_amount)
+                            sheet.write(row_data, 20, k['ledger_agent_name'], sty_table_data)
+                            sheet.write(row_data, 21, k['debit'], sty_amount)
 
         row_data += 1
         sty_table_data_center = style.table_data_center_border
@@ -263,8 +275,10 @@ class AgentReportRecapReservationXls(models.TransientModel):
         sheet.write(row_data, 15, '', sty_amount)
         sheet.write(row_data, 16, '', sty_amount)
         sheet.write(row_data, 17, '', sty_amount)
-        sheet.write(row_data, 18, '', sty_table_data)
+        sheet.write(row_data, 18, '', sty_amount)
         sheet.write(row_data, 19, '', sty_amount)
+        sheet.write(row_data, 20, '', sty_table_data)
+        sheet.write(row_data, 21, '', sty_amount)
             #proceed
         workbook.close()
 
