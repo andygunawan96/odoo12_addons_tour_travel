@@ -95,7 +95,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 temp_order_number = i['order_number']
                 upsell = 0
                 for svc_csc in channel_pricing:
-                    if svc_csc['order_number'] == temp_order_number:
+                    if svc_csc['order_number'] == temp_order_number and isinstance(svc_csc['service_charge_amount'], int): #check order number sama & upsell int
                         upsell += svc_csc['service_charge_amount']
                 #get pnr list
                 try:
