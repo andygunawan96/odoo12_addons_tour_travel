@@ -276,7 +276,12 @@ PROVIDER_TYPE_PREFIX = {
     'VT': 'event',
     'PK': 'periksain',
     'PH': 'phc',
-    'MD': 'medical'
+    'MD': 'medical',
+    'MK': 'mitrakeluarga',
+    'LP': 'labpintar',
+    'SE': 'swabexpress',
+    'IR': 'insurance',
+    'BU': 'bus'
 }
 
 PRODUCT_STATE = [
