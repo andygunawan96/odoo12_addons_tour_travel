@@ -402,7 +402,7 @@ class VisaPricelist(models.Model):
             'sale_price': self.sale_price,
             'visa_nta_price': self.visa_nta_price,
             'visa_type': self.visa_type,
-
+            'other_additional_price': self.other_additional_price
         }
 
     def get_product_detail_api(self,data):
