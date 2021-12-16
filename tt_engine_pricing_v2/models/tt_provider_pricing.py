@@ -293,15 +293,30 @@ class ProviderPricingLine(models.Model):
     rsv_nta_upsell_amount = fields.Float('Upsell Amount', default=0)
     rsv_nta_upsell_route = fields.Boolean('Upsell per Route', default=False)
     rsv_nta_upsell_segment = fields.Boolean('Upsell per Segment', default=False)
+    rsv_nta_upsell_percentage = fields.Float('Upsell (%)', default=0)
+    rsv_nta_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    rsv_nta_upsell_has_minimum = fields.Boolean('Has Minimum', default=False)
+    rsv_nta_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    rsv_nta_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
 
     rsv_nta_agent_same_as_nta = fields.Boolean('Same as NTA', default=True)
     rsv_nta_agent_upsell_amount = fields.Float('Upsell Amount', default=0)
     rsv_nta_agent_upsell_route = fields.Boolean('Upsell per Route', default=False)
     rsv_nta_agent_upsell_segment = fields.Boolean('Upsell per Segment', default=False)
+    rsv_nta_agent_upsell_percentage = fields.Float('Upsell (%)', default=0)
+    rsv_nta_agent_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    rsv_nta_agent_upsell_has_minimum = fields.Boolean('Has Minimum', default=False)
+    rsv_nta_agent_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    rsv_nta_agent_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
 
     rsv_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
     rsv_sales_upsell_route = fields.Boolean('Upsell per Route', default=False)
     rsv_sales_upsell_segment = fields.Boolean('Upsell per Segment', default=False)
+    rsv_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
+    rsv_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    rsv_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=False)
+    rsv_sales_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    rsv_sales_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
 
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
@@ -518,21 +533,42 @@ class ProviderPricingLine(models.Model):
                         'amount': self.rsv_nta_upsell_amount,
                         'is_route': self.rsv_nta_upsell_route,
                         'is_segment': self.rsv_nta_upsell_segment,
-                    }
+                    },
+                    'upsell_by_percentage': {
+                        'percentage': self.rsv_nta_upsell_percentage,
+                        'minimum': self.rsv_nta_upsell_minimum,
+                        'has_minimum': self.rsv_nta_upsell_has_minimum,
+                        'maximum': self.rsv_nta_upsell_maximum,
+                        'has_maximum': self.rsv_nta_upsell_has_maximum,
+                    },
                 },
                 'nta_agent': {
                     'upsell_by_amount': {
                         'amount': self.rsv_nta_agent_upsell_amount,
                         'is_route': self.rsv_nta_agent_upsell_route,
                         'is_segment': self.rsv_nta_agent_upsell_segment,
-                    }
+                    },
+                    'upsell_by_percentage': {
+                        'percentage': self.rsv_nta_agent_upsell_percentage,
+                        'minimum': self.rsv_nta_agent_upsell_minimum,
+                        'has_minimum': self.rsv_nta_agent_upsell_has_minimum,
+                        'maximum': self.rsv_nta_agent_upsell_maximum,
+                        'has_maximum': self.rsv_nta_agent_upsell_has_maximum,
+                    },
                 },
                 'sales': {
                     'upsell_by_amount': {
                         'amount': self.rsv_sales_upsell_amount,
                         'is_route': self.rsv_sales_upsell_route,
                         'is_segment': self.rsv_sales_upsell_segment,
-                    }
+                    },
+                    'upsell_by_percentage': {
+                        'percentage': self.rsv_sales_upsell_percentage,
+                        'minimum': self.rsv_sales_upsell_minimum,
+                        'has_minimum': self.rsv_sales_upsell_has_minimum,
+                        'maximum': self.rsv_sales_upsell_maximum,
+                        'has_maximum': self.rsv_sales_upsell_has_maximum,
+                    },
                 }
             },
             'state': self.state,
