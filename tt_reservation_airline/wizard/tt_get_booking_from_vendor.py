@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from ...tools import ERR
 from ...tools.api import Response
 import traceback, logging
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -474,6 +475,11 @@ class TtGetBookingFromVendorReview(models.TransientModel):
         for rec in retrieve_res['passengers']:
             rec['is_get_booking_from_vendor'] = True
             rec['is_search_allowed'] = False
+            if rec.get('identity'):
+                if rec['identity'].get('identity_expdate'):
+                    if datetime.strptime(rec['identity']['identity_expdate'], '%Y-%m-%d').year < 1900:
+                        rec['identity'] = {}
+
 
         create_req = {
             "force_issued": False,

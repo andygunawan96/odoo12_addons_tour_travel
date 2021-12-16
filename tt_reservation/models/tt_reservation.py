@@ -23,7 +23,12 @@ PROVIDER_TYPE_SELECTION = {
     'BT': 'ppob',
     'EV': 'event',
     'PK': 'periksain',
-    'PH': 'phc'
+    'PH': 'phc',
+    'MK': 'mitrakeluarga',
+    'LP': 'labpintar',
+    'SE': 'swabexpress',
+    'IR': 'insurance',
+    'BU': 'bus'
 }
 
 class TtReservation(models.Model):
