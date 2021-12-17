@@ -113,7 +113,7 @@ class TtTimeslotSwabExpress(models.Model):
     def get_available_timeslot_api(self, req, context):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
-        if '09:00' <= str(current_wib_datetime.time())[:5] < '19:00':
+        if '08:00' <= str(current_wib_datetime.time())[:5] < '20:00':
             dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
         # else:
         #     min_datetime = current_datetime.replace(hour=8,minute=0, second=0, microsecond=0)
@@ -164,7 +164,7 @@ class TtTimeslotSwabExpress(models.Model):
             print(json.dumps(timeslot_dict))
             return ERR.get_no_error(timeslot_dict)
         else:
-            return ERR.get_error(500,additional_message='Can book on 09:00 - 19:00')
+            return ERR.get_error(500,additional_message='Can book on 08:00 - 20:00')
 
     def get_availability(self):
         return self.used_count < self.total_timeslot

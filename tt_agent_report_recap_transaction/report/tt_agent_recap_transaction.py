@@ -26,7 +26,7 @@ class AgentReportRecapTransacion(models.Model):
             agent_type.name as agent_type_name, ledger.id as ledger_id, ledger.ref as ledger_name,
             ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr,
             ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider,
-            ledger.description as ledger_description
+            ledger.description as ledger_description, rsv.booker_insentif as commission_booker
             """
 
     @staticmethod
@@ -44,6 +44,14 @@ class AgentReportRecapTransacion(models.Model):
             booking_service_charge.total as booking_charge_total, booking_service_charge.charge_type as booking_charge_type,
             booking_service_charge.charge_code as booking_charge_code, booking_service_charge.is_ledger_created as ledger_created
             """
+
+    @staticmethod
+    def _select_join_channel_repricing():
+        return """
+                rsv.id, rsv.name as order_number, rsv.pnr, rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.state,
+                passenger_ids.name as name, service_charges.charge_type as charge_type, service_charges.amount as service_charge_amount
+
+                """
 
     ################
     #   All of FROM function to build FROM function in SQL
@@ -77,6 +85,36 @@ class AgentReportRecapTransacion(models.Model):
         LEFT JOIN tt_provider_""" + provider_type + """ booking_ids ON booking_ids.booking_id = rsv.id
         LEFT JOIN tt_service_charge booking_service_charge ON booking_service_charge.provider_""" + provider_type + """_booking_id = booking_ids.id
         """
+        return query
+
+    @staticmethod
+    def _from_join_channel_repricing(provider_type):
+        query = """tt_reservation_""" + provider_type + """ rsv """
+        # query += """LEFT JOIN tt_provider_""" + provider_type + """ booking_ids """
+        query += """
+                LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id"""
+        if provider_type == 'visa':
+            query += """
+                            LEFT JOIN tt_reservation_visa_order_passengers passenger_ids ON passenger_ids.visa_id = rsv.id
+                            """
+        elif provider_type == 'offline':
+            query += """
+                            LEFT JOIN tt_reservation_offline_passenger passenger_ids ON passenger_ids.booking_id = rsv.id
+                            """
+        elif provider_type == 'passport':
+            query += """
+                            LEFT JOIN tt_reservation_passport_order_passengers passenger_ids ON passenger_ids.passport_id = rsv.id
+                            """
+        else:
+            query += """
+                LEFT JOIN tt_reservation_passenger_""" + provider_type + """ passenger_ids ON passenger_ids.booking_id = rsv.id
+                """
+
+        query += """
+                LEFT JOIN tt_reservation_""" + provider_type + """_channel_charge_rel scs_rel ON scs_rel.passenger_id = passenger_ids.id
+                LEFT JOIN tt_service_charge service_charges ON scs_rel.service_charge_id = service_charges.id
+               """
+        # LEFT JOIN tt_service_charge booking_service_charge ON booking_service_charge.tt_reservation_""" + provider_type + """_cost_charge_rel = scs_rel.id
         return query
 
     ################
@@ -113,6 +151,21 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue')""" % state
         return where
 
+    @staticmethod
+    def _where_join_channel_repricing(date_from, date_to, agent_id, provider_type, state):
+        where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
+        # if state == 'failed':
+        #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
+        # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
+        if agent_id:
+            where += """ AND rsv.agent_id = %s""" % agent_id
+        if provider_type and provider_type != 'all':
+            where += """ AND provider_type.code = '%s'""" % provider_type
+        # where += """ AND ledger.is_reversed = 'FALSE'"""
+        if state:
+            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue')""" % state
+        return where
+
     ################
     #   All of ORDER function to build ORDER BY function in SQL
     #   name of the function correspond to respected SELECT, FORM, WHERE, GROUP BY functions for easy development
@@ -127,6 +180,12 @@ class AgentReportRecapTransacion(models.Model):
         return """
         rsv.create_date, rsv.name
         """
+
+    @staticmethod
+    def _order_by_join_channel_repricing():
+        return """
+                rsv.create_date, rsv.name
+                """
 
     ################
     #   Function to build the full query
@@ -170,6 +229,23 @@ class AgentReportRecapTransacion(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    def _lines_join_channel_repricing(self, date_from, date_to, agent_id, provider_type, state):
+        # SELECT
+        query = 'SELECT ' + self._select_join_channel_repricing()
+
+        # FROM
+        query += 'FROM ' + self._from_join_channel_repricing(provider_type)
+
+        # WHERE
+        query += 'WHERE ' + self._where_join_channel_repricing(date_from, date_to, agent_id, provider_type, state)
+
+        # ORDER BY
+        query += 'ORDER BY ' + self._order_by_join_channel_repricing()
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
     # this function handle preparation to call query builder for service charge
     def _get_lines_data(self, date_from, date_to, agent_id, provider_type, state):
         lines = []
@@ -194,6 +270,18 @@ class AgentReportRecapTransacion(models.Model):
             provider_types = variables.PROVIDER_TYPE
             for provider_type in provider_types:
                 report_lines = self._lines_join_service_charge(date_from, date_to, agent_id, provider_type, state)
+                for j in report_lines:
+                    lines.append(j)
+        return lines
+
+    def _get_lines_data_join_channel_repricing(self, date_from, date_to, agent_id, provider_type, state):
+        lines = []
+        if provider_type != 'all':
+            lines = self._lines_join_channel_repricing(date_from, date_to, agent_id, provider_type, state)
+        else:
+            provider_types = variables.PROVIDER_TYPE
+            for provider_type in provider_types:
+                report_lines = self._lines_join_channel_repricing(date_from, date_to, agent_id, provider_type, state)
                 for j in report_lines:
                     lines.append(j)
         return lines
@@ -229,13 +317,15 @@ class AgentReportRecapTransacion(models.Model):
         state = data_form['state']
         provider_type = data_form['provider_type']
         # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
-        lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
-        second_lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, provider_type, state)
+        lines = self._get_lines_data(date_from, date_to, agent_id, provider_type, state) #BOOKING
+        second_lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, provider_type, state) #SERVICE CHARGE
+        third_lines = self._get_lines_data_join_channel_repricing(date_from, date_to, agent_id, provider_type,state)  # UPSELL
         # second_lines = []
         self._report_title(data_form)
 
         return {
             'lines': lines,
             'second_lines': second_lines,
+            'third_lines': third_lines,
             'data_form': data_form
         }
