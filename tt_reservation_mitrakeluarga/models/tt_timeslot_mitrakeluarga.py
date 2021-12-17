@@ -118,9 +118,9 @@ class TtTimeslotMitraKeluarga(models.Model):
                               self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_pcr').id,
                               self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_srbd').id]:
             dom.append(('timeslot_type', '=', 'home_care'))
-            if '09:00' < str(current_wib_datetime.time())[:5] < '19:00' and current_wib_datetime.strftime(
+            if '08:00' < str(current_wib_datetime.time())[:5] < '20:00' and current_wib_datetime.strftime(
                     '%A') != 'Sunday':
-                dom.append(('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3)))
+                dom.append(('datetimeslot', '>', datetime.now(pytz.utc).replace(hour=1) + timedelta(days=1))) # Elin request H+1
             else:
                 min_datetime = current_datetime.replace(hour=8, minute=0, second=0, microsecond=0)
                 if current_datetime > min_datetime:
