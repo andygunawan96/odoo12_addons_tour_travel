@@ -310,43 +310,43 @@ class TtReportDashboard(models.Model):
 
         type = data['report_type']
         if type == 'overall':
-            res = self.get_report_overall(data, is_ho)
+            res = self.get_report_overall(data, is_ho, context)
         elif type == 'overall_airline':
-            res = self.get_report_overall_airline(data, is_ho)
+            res = self.get_report_overall_airline(data, is_ho, context)
         elif type == 'overall_train':
-            res = self.get_report_overall_train(data, is_ho)
+            res = self.get_report_overall_train(data, is_ho, context)
         elif type == 'overall_event':
-            res = self.get_report_overall_event(data, is_ho)
+            res = self.get_report_overall_event(data, is_ho, context)
         elif type == 'overall_tour':
-            res = self.get_report_overall_tour(data, is_ho)
+            res = self.get_report_overall_tour(data, is_ho, context)
         elif type == 'overall_activity':
-            res = self.get_report_overall_activity(data, is_ho)
+            res = self.get_report_overall_activity(data, is_ho, context)
         elif type == 'overall_hotel':
-            res = self.get_report_overall_hotel(data, is_ho)
+            res = self.get_report_overall_hotel(data, is_ho, context)
         elif type == 'overall_visa':
-            res = self.get_report_overall_visa(data, is_ho)
+            res = self.get_report_overall_visa(data, is_ho, context)
         elif type == 'overall_offline':
-            res = self.get_report_overall_offline(data, is_ho)
+            res = self.get_report_overall_offline(data, is_ho, context)
         elif type == 'overall_ppob':
-            res = self.get_report_overall_ppob(data, is_ho)
+            res = self.get_report_overall_ppob(data, is_ho, context)
         elif type == 'overall_passport':
-            res = self.get_report_overall_passport(data, is_ho)
+            res = self.get_report_overall_passport(data, is_ho, context)
         elif type == 'overall_phc':
-            res = self.get_report_overall_phc(data, is_ho)
+            res = self.get_report_overall_phc(data, is_ho, context)
         elif type == 'overall_periksain':
-            res = self.get_report_overall_periksain(data, is_ho)
+            res = self.get_report_overall_periksain(data, is_ho, context)
         elif type == 'overall_medical':
-            res = self.get_report_overall_medical(data, is_ho)
+            res = self.get_report_overall_medical(data, is_ho, context)
         elif type == 'overall_bus':
-            res = self.get_report_overall_bus(data, is_ho)
+            res = self.get_report_overall_bus(data, is_ho, context)
         elif type == 'overall_insurance':
-            res = self.get_report_overall_insurance(data, is_ho)
+            res = self.get_report_overall_insurance(data, is_ho, context)
         elif type == 'overall_swabexpress':
-            res = self.get_report_overall_swabexpress(data, is_ho)
+            res = self.get_report_overall_swabexpress(data, is_ho, context)
         elif type == 'overall_labpintar':
-            res = self.get_report_overall_labpintar(data, is_ho)
+            res = self.get_report_overall_labpintar(data, is_ho, context)
         elif type == 'overall_mitrakeluarga':
-            res = self.get_report_overall_mitrakeluarga(data, is_ho)
+            res = self.get_report_overall_mitrakeluarga(data, is_ho, context)
 
         # under this section is old or test function, left it there for future reference
         elif type == 'airline':
@@ -653,9 +653,12 @@ class TtReportDashboard(models.Model):
     # this function handle and process data for customer ranking by revenue
     # data = form data from frontend
     # profit = reservation data from function who calls this function (reservation data contains profit data)
-    def get_report_group_by_customer(self, data, profit, is_ho):
+    def get_report_group_by_customer(self, data, profit, is_ho, context):
         try:
-            # prepare data to get channel base on reservation performance in database
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
+                # prepare data to get channel base on reservation performance in database
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
@@ -742,24 +745,19 @@ class TtReportDashboard(models.Model):
                 # by customer
                 person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
                 try:
-                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['ledger_id'] not in list_person:
-                        if is_ho and i['ledger_transaction_type'] == 3:
-                            summary_customer[person_index]['profit'] += i['commission_amount']
-                        else:
-                            summary_customer[person_index]['profit'] += i['debit']
-                        list_person.append(i['ledger_id'])
+                    if i['ledger_transaction_type'] == 3 and is_ho or i['ledger_transaction_type'] == 3 and agent_name_context == i['ledger_agent_name']:
+                        summary_customer[person_index]['profit'] += i['debit']
+
+                    list_person.append(i['ledger_id'])
                 except:
                     pass
 
                 # by customer type
                 person_type_index = self.customer_parent_index(summary_customer_parent, {'customer_parent_id': i['customer_parent_id'], 'customer_parent_name': i['customer_parent_name']})
                 try:
-                    if i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['ledger_id'] not in list_customer:
-                        if is_ho and i['ledger_transaction_type'] == 3:
-                            summary_customer_parent[person_type_index]['profit'] += i['commission_amount']
-                        else:
-                            summary_customer_parent[person_type_index]['profit'] += i['debit']
-                        list_customer.append(i['ledger_id'])
+                    if i['ledger_transaction_type'] == 3 and is_ho or i['ledger_transaction_type'] == 3 and agent_name_context == i['ledger_agent_name']:
+                        summary_customer_parent[person_index]['profit'] += i['debit']
+                    list_customer.append(i['ledger_id'])
                 except:
                     pass
 
@@ -845,8 +843,11 @@ class TtReportDashboard(models.Model):
     # this function handle and process data for channel ranking by revenue
     # data = form data from frontend
     # profit = reservation data from function who calls this function (reservation data contains profit data)
-    def get_report_group_by_chanel(self, data, profit, is_ho):
+    def get_report_group_by_chanel(self, data, profit, is_ho, context={}):
         try:
+            agent_id_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # prepare data to get channel base on reservation performance in database
             temp_dict = {
                 'start_date': data['start_date'],
@@ -913,12 +914,9 @@ class TtReportDashboard(models.Model):
             for i in profit:
                 person_index = self.person_index_by_name(summary_chanel, {'agent_name': i['ledger_agent_name'], 'agent_type_name': i['ledger_agent_type_name']})
                 try:
-                    if is_ho == True and summary_ho == True and i['ledger_id'] not in list_id or i['ledger_agent_type_name'] != self.env.ref('tt_base.agent_type_ho').name and i['ledger_id'] not in list_id:
-                        if is_ho and i['ledger_transaction_type'] == 3:
-                            summary_chanel[person_index]['profit'] += i['commission_amount']
-                        else:
-                            summary_chanel[person_index]['profit'] += i['debit']
-                        list_id.append(i['ledger_id'])
+                    if i['ledger_transaction_type'] == 3 and is_ho or i['ledger_transaction_type'] == 3 and agent_name_context == i['ledger_agent_name']:
+                        summary_chanel[person_index]['profit'] += i['debit']
+                    list_id.append(i['ledger_id'])
 
                 except:
                     pass
@@ -973,11 +971,17 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for all of provider Type
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall(self, data, is_ho):
+    def get_report_overall(self, data, is_ho, context={}):
         try:
             # check if user ask for a specific provider
             # this function is to tell the sql handler that the data we want is base on issued date
             # the default of sql query is to search by created date
+            agent_name_context = None
+            agent_seq_id_name = None
+            if context:
+                agent_name_context = context['co_agent_name']
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id','=', data['agent_seq_id'])], limit=1).name
             if data['provider']:
                 provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
                 data['report_type'] = 'overall_' + provider_type['provider_type_id'].code
@@ -1028,6 +1032,7 @@ class TtReportDashboard(models.Model):
             total = 0
             profit_total = 0 # GANTI PROFIT = DEBIT - CREDIT AGAR REVERSE LEDGER KE DETECT
             profit_ho = 0
+            profit_agent_parent = 0
             profit_agent = 0
             num_data = 0
             invoice_total = 0
@@ -1069,245 +1074,376 @@ class TtReportDashboard(models.Model):
             # third we process the data to produce a trim proceed data, that is only need to be show
 
             # for every data in issued_values['lines']
+            # iterate every value in chanel_values['lines']
+            for i in issued_values['lines']:
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+
+                month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+
+                if month_index == -1:
+                    # data is not exist
+                    # create data
+                    temp_dict = {
+                        'year': i['issued_year'],
+                        'month_index': int(i['issued_month']),
+                        'month': month[int(i['issued_month']) - 1],
+                        'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                    }
+                    # add the first data
+                    # seperate string date to extract day date
+                    splits = i['reservation_issued_date'].split("-")
+                    day_index = int(splits[2]) - 1
+
+                    # assign the first value to temp dict
+                    temp_dict['detail'][day_index]['reservation'] += 1
+                    temp_dict['detail'][day_index]['revenue'] += i['amount']
+
+                    # add to global variable
+                    total += i['amount']
+                    num_data += 1
+                    # add to final list
+                    summary_issued.append(temp_dict)
+                else:
+                    # data exist
+                    if i['reservation_id'] not in current_id[i['provider_type_name']]:
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                        total += i['amount']
+                        num_data += 1
+
+                # proceed profit first graph
+                if i['ledger_transaction_type'] == 3:
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+                                                                         'month': month[int(i['issued_month']) - 1]})
+                    splits = i['reservation_issued_date'].split("-")
+                    day_index = int(splits[2]) - 1
+                    if is_ho and i['ledger_agent_type_name'] == 'HO':
+                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        profit_total += i['debit'] - i['credit']
+                        profit_ho += i['debit'] - i['credit']
+                    elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        profit_total += i['debit'] - i['credit']
+                        profit_agent += i['debit'] - i['credit']
+                    elif i['ledger_agent_type_name'] != 'HO': # BUAT PARENT AGENT
+                        if is_ho:
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                        profit_agent_parent += i['debit'] - i['credit']
+
+                current_id[i['provider_type_name']].append(i['reservation_id'])
+
+            current_id = {}  # IVAN testing ganti list karena jika case beda id id sama tetapi beda order bisa ketambah
             for i in issued_values['lines']:
                 if not current_id.get(i['provider_type_name']):
                     current_id[i['provider_type_name']] = []
-                try:
-                    # check if reservation id is not equal to current reservation id
-                    # by default current id is empty string ('')
-                    if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                        #reset pnr list
-                        pnr_within = []
-                        # if reservation id is not equal to current id it means, it's a different reservation than previous line
+                if i['provider_type_name'] == 'Offline':
+                    to_check = i['provider_type_name'] + "_" + i['reservation_offline_provider_type']
+                    provider_index = self.check_index(summary_provider, "provider", to_check)
+                else:
+                    provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
 
-                        # triple try except is to keep track with current pnr, journey, and segment, making sure that the program dosen't count twite for the same data
-                        try:
-                            current_journey = i['journey_id']
-                        except:
-                            current_journey = ''
-
-                        try:
-                            current_segment = i['segment_id']
-                        except:
-                            current_segment = ''
-
-                        try:
-                            current_pnr = i['ledger_pnr']
-                            pnr_within.append(i['ledger_pnr'])
-                        except:
-                            current_pnr = ''
-
-                        # get index of month
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                            }
-
-                            # add the first data
-                            # seperate string date to extract day date
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-
-                            # assign the first value to temp dict
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-
-                            # add to global variable
-                            total += i['amount']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
-
-                        # after adding summary issued we group the data by provider
-                        if i['provider_type_name'] == 'Offline':
-                            to_check = i['provider_type_name'] + "_" + i['reservation_offline_provider_type']
-                            provider_index = self.check_index(summary_provider, "provider", to_check)
-                        else:
-                            provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
-                        if provider_index == -1:
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True or i['ledger_agent_type_name'] != 'HO': #BUAT USER HO YANG LEDGER AGENT TYPE HO ATAU AGENT
-                                if i['provider_type_name'] == 'Offline':
-                                    temp_dict = {
-                                        'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
-                                        'counter': 1,
-                                        i['reservation_state']: 1,
-                                        'total_price': i['amount'],
-                                        'total_commission': i['commission'] if is_ho == False else i['commission_amount']
-                                    }
-                                else:
-                                    temp_dict = {
-                                        'provider': i['provider_type_name'],
-                                        'counter': 1,
-                                        i['reservation_state']: 1,
-                                        'total_price': i['amount'],
-                                        'total_commission': i['commission'] if is_ho == False else i['commission_amount']
-                                    }
-                            else: # KALAU AGENT TETAPI DAPAT KOMISI HO BIKIN DULU TAPI DI ISIKAN VALUE DI NEXT LOOP (KALAU KETEMU)
-                                if i['provider_type_name'] == 'Offline':
-                                    temp_dict = {
-                                        'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
-                                        'counter': 0,
-                                        i['reservation_state']: 0,
-                                        'total_price': 0,
-                                        'total_commission': 0
-                                    }
-                                else:
-                                    temp_dict = {
-                                        'provider': i['provider_type_name'],
-                                        'counter': 0,
-                                        i['reservation_state']: 0,
-                                        'total_price': 0,
-                                        'total_commission': 0
-                                    }
-                            summary_provider.append(temp_dict)
-                        else:
-                            summary_provider[provider_index]['counter'] += 1
-                            try:
-                                summary_provider[provider_index][i['reservation_state']] += 1
-                                summary_provider[provider_index]['total_price'] += i['amount']
-                                if is_ho == True:
-                                    summary_provider[provider_index]['total_commission'] += i['commission_amount']
-                                else:
-                                    summary_provider[provider_index]['total_commission'] += i['commission']
-                            except:
-                                summary_provider[provider_index][i['reservation_state']] = 1
-                                summary_provider[provider_index]['total_price'] = i['amount']
-                                if is_ho == True:
-                                    summary_provider[provider_index]['total_commission'] = i['commission_amount']
-                                else:
-                                    summary_provider[provider_index]['total_commission'] = i['commission']
-                        current_id[i['provider_type_name']].append(i['reservation_id'])
+                if provider_index == -1:
+                    if i['provider_type_name'] == 'Offline':
+                        temp_dict = {
+                            'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
+                            'counter': 1,
+                            i['reservation_state']: 1,
+                            'total_price': i['amount'],
+                            'total_commission': i['commission'] if is_ho == False else i['commission_amount']
+                        }
                     else:
-                        # if current id equal to i['reservation_id']
-                        # get current journey
-                        # this try except to prevent error for data without journey information
+                        temp_dict = {
+                            'provider': i['provider_type_name'],
+                            'counter': 1,
+                            i['reservation_state']: 1,
+                            'total_price': 0,
+                            'total_commission': 0
+                        }
+                    summary_provider.append(temp_dict)
+                else:
+                    if i['reservation_id'] not in current_id[i['provider_type_name']]:
+                        summary_provider[provider_index]['counter'] += 1
                         try:
-                            temp_journey = i['journey_id']
+                            summary_provider[provider_index][i['reservation_state']] += 1
                         except:
-                            temp_journey = ''
+                            summary_provider[provider_index][i['reservation_state']] = 1
 
-                        try:
-                            temp_segment = i['segment_id']
-                        except:
-                            temp_segment = ''
 
-                        try:
-                            temp_pnr = i['ledger_pnr']
-                        except:
-                            temp_pnr = ''
+                if i['ledger_transaction_type'] == 3:
+                    if is_ho or agent_name_context == i['ledger_agent_name']:
+                        summary_provider[provider_index]['total_price'] += i['amount']
+                        summary_provider[provider_index]['total_commission'] += i['debit']
 
-                        if i['reservation_id'] in current_id[i['provider_type_name']] and summary_provider[-1]['total_price'] == 0: #KALAU PROVIDER BELUM TERTAMBAH ASUMSI SUMMARY PROVIDER SUDAH ADA
-                            if i['provider_type_name'] == 'Offline':
-                                to_check = i['provider_type_name'] + "_" + i['reservation_offline_provider_type']
-                                provider_index = self.check_index(summary_provider, "provider", to_check)
-                            else:
-                                provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
-                            summary_provider[provider_index]['counter'] += 1
-                            try:
-                                summary_provider[provider_index][i['reservation_state']] += 1
-                                summary_provider[provider_index]['total_price'] += i['amount']
-                                if is_ho == True:
-                                    summary_provider[provider_index]['total_commission'] += i['commission_amount']
-                                else:
-                                    summary_provider[provider_index]['total_commission'] += i['commission']
-                            except:
-                                summary_provider[provider_index][i['reservation_state']] = 1
-                                summary_provider[provider_index]['total_price'] = i['amount']
-                                if is_ho == True:
-                                    summary_provider[provider_index]['total_commission'] = i['commission_amount']
-                                else:
-                                    summary_provider[provider_index]['total_commission'] = i['commission']
-                        # check if provider is airline
-                        if i['provider_type_name'] == 'Airline':
-                            if current_segment != i['segment_id'] and current_pnr != i['ledger_pnr']:
-                                # if both segment and pnr is diff, then we want to count the ledger
-                                # hence update to current pnr and segment
-                                current_segment = i['segment_id']
-                                current_pnr = i['ledger_pnr']
+                current_id[i['provider_type_name']].append(i['reservation_id'])
 
-                                if current_pnr in pnr_within:
-                                    continue
-                                else:
-                                    pnr_within.append(current_pnr)
 
-                                # count like always
-                                if i['ledger_transaction_type'] == 3:
-                                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                                    splits = i['reservation_issued_date'].split("-")
-                                    day_index = int(splits[2]) - 1
-                                    if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_ho += i['debit'] - i['credit']
-                                    elif i['ledger_agent_type_name'] != 'HO':
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_agent += i['debit'] - i['credit']
-                            elif current_segment == i['segment_id'] and current_pnr == i['ledger_pnr']:
-                                # count like always
-                                if i['ledger_transaction_type'] == 3:
-                                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                                    splits = i['reservation_issued_date'].split("-")
-                                    day_index = int(splits[2]) - 1
-                                    if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_ho += i['debit'] - i['credit']
-                                    elif i['ledger_agent_type_name'] != 'HO':
-                                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                        profit_total += i['debit'] - i['credit']
-                                        profit_agent += i['debit'] - i['credit']
-                        else:
-                            # else
-                            if i['ledger_transaction_type'] == 3:
-                                month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                                splits = i['reservation_issued_date'].split("-")
-                                day_index = int(splits[2]) - 1
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
-                except Exception as e:
-                    _logger.error("ERROR REPORT DASHBOARD %s" % traceback.format_exc())
+            ##
+
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     try:
+            #         # check if reservation id is not equal to current reservation id
+            #         # by default current id is empty string ('')
+            #         if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #             #reset pnr list
+            #             pnr_within = []
+            #             # if reservation id is not equal to current id it means, it's a different reservation than previous line
+            #
+            #             # triple try except is to keep track with current pnr, journey, and segment, making sure that the program dosen't count twite for the same data
+            #             try:
+            #                 current_journey = i['journey_id']
+            #             except:
+            #                 current_journey = ''
+            #
+            #             try:
+            #                 current_segment = i['segment_id']
+            #             except:
+            #                 current_segment = ''
+            #
+            #             try:
+            #                 current_pnr = i['ledger_pnr']
+            #                 pnr_within.append(i['ledger_pnr'])
+            #             except:
+            #                 current_pnr = ''
+            #
+            #             # get index of month
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+            #                 }
+            #
+            #                 # add the first data
+            #                 # seperate string date to extract day date
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #
+            #                 # assign the first value to temp dict
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount']
+            #
+            #                 # add to global variable
+            #                 total += i['amount']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+            #                 total += i['amount']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # after adding summary issued we group the data by provider
+            #             if i['provider_type_name'] == 'Offline':
+            #                 to_check = i['provider_type_name'] + "_" + i['reservation_offline_provider_type']
+            #                 provider_index = self.check_index(summary_provider, "provider", to_check)
+            #             else:
+            #                 provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
+            #             if provider_index == -1:
+            #                 if i['ledger_agent_type_name'] == 'HO' and is_ho == True or i['ledger_agent_type_name'] != 'HO': #BUAT USER HO YANG LEDGER AGENT TYPE HO ATAU AGENT
+            #                     if i['provider_type_name'] == 'Offline':
+            #                         temp_dict = {
+            #                             'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
+            #                             'counter': 1,
+            #                             i['reservation_state']: 1,
+            #                             'total_price': i['amount'],
+            #                             'total_commission': i['commission'] if is_ho == False else i['commission_amount']
+            #                         }
+            #                     else:
+            #                         temp_dict = {
+            #                             'provider': i['provider_type_name'],
+            #                             'counter': 1,
+            #                             i['reservation_state']: 1,
+            #                             'total_price': i['amount'],
+            #                             'total_commission': i['commission'] if is_ho == False else i['commission_amount']
+            #                         }
+            #                 else: # KALAU AGENT TETAPI DAPAT KOMISI HO BIKIN DULU TAPI DI ISIKAN VALUE DI NEXT LOOP (KALAU KETEMU)
+            #                     if i['provider_type_name'] == 'Offline':
+            #                         temp_dict = {
+            #                             'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
+            #                             'counter': 0,
+            #                             i['reservation_state']: 0,
+            #                             'total_price': 0,
+            #                             'total_commission': 0
+            #                         }
+            #                     else:
+            #                         temp_dict = {
+            #                             'provider': i['provider_type_name'],
+            #                             'counter': 0,
+            #                             i['reservation_state']: 0,
+            #                             'total_price': 0,
+            #                             'total_commission': 0
+            #                         }
+            #                 summary_provider.append(temp_dict)
+            #             else:
+            #                 summary_provider[provider_index]['counter'] += 1
+            #                 try:
+            #                     summary_provider[provider_index][i['reservation_state']] += 1
+            #                     summary_provider[provider_index]['total_price'] += i['amount']
+            #                     if is_ho == True:
+            #                         summary_provider[provider_index]['total_commission'] += i['commission_amount']
+            #                     else:
+            #                         summary_provider[provider_index]['total_commission'] += i['commission']
+            #                 except:
+            #                     summary_provider[provider_index][i['reservation_state']] = 1
+            #                     summary_provider[provider_index]['total_price'] = i['amount']
+            #                     if is_ho == True:
+            #                         summary_provider[provider_index]['total_commission'] = i['commission_amount']
+            #                     else:
+            #                         summary_provider[provider_index]['total_commission'] = i['commission']
+            #             current_id[i['provider_type_name']].append(i['reservation_id'])
+            #         else:
+            #             # if current id equal to i['reservation_id']
+            #             # get current journey
+            #             # this try except to prevent error for data without journey information
+            #             try:
+            #                 temp_journey = i['journey_id']
+            #             except:
+            #                 temp_journey = ''
+            #
+            #             try:
+            #                 temp_segment = i['segment_id']
+            #             except:
+            #                 temp_segment = ''
+            #
+            #             try:
+            #                 temp_pnr = i['ledger_pnr']
+            #             except:
+            #                 temp_pnr = ''
+            #
+            #             if i['reservation_id'] in current_id[i['provider_type_name']] and summary_provider[-1]['total_price'] == 0: #KALAU PROVIDER BELUM TERTAMBAH ASUMSI SUMMARY PROVIDER SUDAH ADA
+            #                 if i['provider_type_name'] == 'Offline':
+            #                     to_check = i['provider_type_name'] + "_" + i['reservation_offline_provider_type']
+            #                     provider_index = self.check_index(summary_provider, "provider", to_check)
+            #                 else:
+            #                     provider_index = self.check_index(summary_provider, "provider", i['provider_type_name'])
+            #                 summary_provider[provider_index]['counter'] += 1
+            #                 try:
+            #                     summary_provider[provider_index][i['reservation_state']] += 1
+            #                     summary_provider[provider_index]['total_price'] += i['amount']
+            #                     if is_ho == True:
+            #                         summary_provider[provider_index]['total_commission'] += i['commission_amount']
+            #                     else:
+            #                         summary_provider[provider_index]['total_commission'] += i['commission']
+            #                 except:
+            #                     summary_provider[provider_index][i['reservation_state']] = 1
+            #                     summary_provider[provider_index]['total_price'] = i['amount']
+            #                     if is_ho == True:
+            #                         summary_provider[provider_index]['total_commission'] = i['commission_amount']
+            #                     else:
+            #                         summary_provider[provider_index]['total_commission'] = i['commission']
+            #             # check if provider is airline
+            #             if i['provider_type_name'] == 'Airline':
+            #                 if current_segment != i['segment_id'] and current_pnr != i['ledger_pnr']:
+            #                     # if both segment and pnr is diff, then we want to count the ledger
+            #                     # hence update to current pnr and segment
+            #                     current_segment = i['segment_id']
+            #                     current_pnr = i['ledger_pnr']
+            #
+            #                     if current_pnr in pnr_within:
+            #                         continue
+            #                     else:
+            #                         pnr_within.append(current_pnr)
+            #
+            #                     # count like always
+            #                     if i['ledger_transaction_type'] == 3:
+            #                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #                         splits = i['reservation_issued_date'].split("-")
+            #                         day_index = int(splits[2]) - 1
+            #                         if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                             profit_total += i['debit'] - i['credit']
+            #                             profit_ho += i['debit'] - i['credit']
+            #                         # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                         #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         #     profit_total += i['debit'] - i['credit']
+            #                         #     profit_ho += i['debit'] - i['credit']
+            #                         # elif i['ledger_agent_type_name'] != 'HO':
+            #                         #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         #     profit_total += i['debit'] - i['credit']
+            #                         #     profit_agent += i['debit'] - i['credit']
+            #                 elif current_segment == i['segment_id'] and current_pnr == i['ledger_pnr']:
+            #                     # count like always
+            #                     if i['ledger_transaction_type'] == 3:
+            #                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #                         splits = i['reservation_issued_date'].split("-")
+            #                         day_index = int(splits[2]) - 1
+            #                         if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                             profit_total += i['debit'] - i['credit']
+            #                             profit_ho += i['debit'] - i['credit']
+            #                         # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                         #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         #     profit_total += i['debit'] - i['credit']
+            #                         #     profit_ho += i['debit'] - i['credit']
+            #                         # elif i['ledger_agent_type_name'] != 'HO':
+            #                         #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         #     profit_total += i['debit'] - i['credit']
+            #                         #     profit_agent += i['debit'] - i['credit']
+            #             else:
+            #                 # else
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #                     splits = i['reservation_issued_date'].split("-")
+            #                     day_index = int(splits[2]) - 1
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #     except Exception as e:
+            #         _logger.error("ERROR REPORT DASHBOARD %s" % traceback.format_exc())
 
             # for every section in summary
             for i in summary_issued:
@@ -1449,6 +1585,7 @@ class TtReportDashboard(models.Model):
                 'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
+                'profit_agent_parent': profit_agent_parent,
                 'profit_agent': profit_agent,
                 'first_overview': summary_provider,
             }
@@ -1466,13 +1603,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -1485,8 +1622,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for airline
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_airline(self, data, is_ho):
+    def get_report_overall_airline(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -1647,15 +1787,11 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -1671,15 +1807,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -1993,15 +2133,19 @@ class TtReportDashboard(models.Model):
                             day_index = int(splits[2]) - 1
                             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                             # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agennt
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            # if not HQ guy then we'll only count respected agent
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
                                 profit_ho += i['debit'] - i['credit']
-                            elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                profit_total += i['debit'] - i['credit']
-                                profit_agent += i['debit'] - i['credit']
+                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_ho += i['debit'] - i['credit']
+                            # elif i['ledger_agent_type_name'] != 'HO':
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_agent += i['debit'] - i['credit']
 
                         # update top carrier base on same reservation but diff segment and diff pnr
                         try:
@@ -2101,15 +2245,19 @@ class TtReportDashboard(models.Model):
                             day_index = int(splits[2]) - 1
                             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                             # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agennt
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            # if not HQ guy then we'll only count respected agent
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
                                 profit_ho += i['debit'] - i['credit']
-                            elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                profit_total += i['debit'] - i['credit']
-                                profit_agent += i['debit'] - i['credit']
+                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_ho += i['debit'] - i['credit']
+                            # elif i['ledger_agent_type_name'] != 'HO':
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_agent += i['debit'] - i['credit']
 
             # grouping data
             # it's like spliting the data into smaller container
@@ -2403,8 +2551,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for train
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_train(self, data, is_ho):
+    def get_report_overall_train(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -2536,15 +2687,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -2560,15 +2715,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -2745,15 +2904,19 @@ class TtReportDashboard(models.Model):
                             # add profit to respected array
                             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                             # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agennt
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            # if not HQ guy then we'll only count respected agent
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
                                 profit_ho += i['debit'] - i['credit']
-                            elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                profit_total += i['debit'] - i['credit']
-                                profit_agent += i['debit'] - i['credit']
+                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_ho += i['debit'] - i['credit']
+                            # elif i['ledger_agent_type_name'] != 'HO':
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_agent += i['debit'] - i['credit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -2957,8 +3120,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for hotel
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_hotel(self, data, is_ho):
+    def get_report_overall_hotel(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -3054,15 +3220,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3078,15 +3248,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -3189,17 +3363,21 @@ class TtReportDashboard(models.Model):
                                                                              'month': month[int(i['issued_month']) - 1]})
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                            # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agennt
+                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                        # if HQ guy asking then we'll count everything
+                        # if not HQ guy then we'll only count respected agennt
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3440,8 +3618,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for tour
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_tour(self, data, is_ho):
+    def get_report_overall_tour(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -3535,15 +3716,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3559,15 +3744,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -3606,15 +3795,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -3794,8 +3987,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for activity
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_activity(self, data, is_ho):
+    def get_report_overall_activity(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -3888,15 +4084,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -3912,15 +4112,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -3957,15 +4161,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -4145,8 +4353,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for event
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_event(self, data, is_ho):
+    def get_report_overall_event(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -4239,15 +4450,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -4263,15 +4478,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         product_index = self.check_index(product_summary, 'product', i['reservation_event_name'])
                         if product_index == -1:
@@ -4305,15 +4524,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -4494,8 +4717,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for visa
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_visa(self, data, is_ho):
+    def get_report_overall_visa(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -4591,15 +4817,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -4615,15 +4845,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # ============= Country summary Report =======================
                         country_index = self.check_index(country_summary, 'country', i['country_name'])
@@ -4649,15 +4883,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -4837,8 +5075,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for offline
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_offline(self, data, is_ho):
+    def get_report_overall_offline(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -4934,15 +5175,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -4958,15 +5203,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # group data by offline provider type (airline, train, etc)
                         offline_index = self.check_index(offline_summary, 'provider_type', i['reservation_offline_provider_type'])
@@ -4993,15 +5242,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -5182,8 +5435,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for ppob
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_ppob(self, data, is_ho):
+    def get_report_overall_ppob(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -5278,15 +5534,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -5302,15 +5562,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate ppob_summary
                         ppob_index = self.check_index(ppob_summary, 'product', i['carrier_name'])
@@ -5337,15 +5601,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -5525,8 +5793,11 @@ class TtReportDashboard(models.Model):
     # this function handle data handler and processing for passport
     # data = form data from frontend
     # is_ho = ho checker from main function
-    def get_report_overall_passport(self, data, is_ho):
+    def get_report_overall_passport(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -5631,15 +5902,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -5655,15 +5930,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate passport_summary
                     except:
@@ -5678,15 +5957,19 @@ class TtReportDashboard(models.Model):
                         if i['ledger_transaction_type'] == 3:
                             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                             # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agennt
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            # if not HQ guy then we'll only count respected agent
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
                                 profit_ho += i['debit'] - i['credit']
-                            elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                profit_total += i['debit'] - i['credit']
-                                profit_agent += i['debit'] - i['credit']
+                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_ho += i['debit'] - i['credit']
+                            # elif i['ledger_agent_type_name'] != 'HO':
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -5864,8 +6147,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_phc(self, data, is_ho):
+    def get_report_overall_phc(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -5960,15 +6246,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -5985,14 +6275,19 @@ class TtReportDashboard(models.Model):
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i[
+                                        'credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate phc_summary
                         phc_index = self.check_index(phc_summary, 'product', i['carrier_name'])
@@ -6019,15 +6314,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -6204,8 +6503,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_periksain(self, data, is_ho):
+    def get_report_overall_periksain(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -6300,15 +6602,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -6324,15 +6630,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate periksain_summary
                         periksain_index = self.check_index(periksain_summary, 'product', i['carrier_name'])
@@ -6359,15 +6669,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -6544,8 +6858,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_medical(self, data, is_ho):
+    def get_report_overall_medical(self, data, is_ho, context = {}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -6640,15 +6957,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -6664,15 +6985,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate medical_summary
                         medical_index = self.check_index(medical_summary, 'product', i['carrier_name'])
@@ -6699,15 +7024,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -6884,8 +7213,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_bus(self, data, is_ho):
+    def get_report_overall_bus(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -7017,15 +7349,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -7041,15 +7377,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
                     except:
                         pass
 
@@ -7226,15 +7566,19 @@ class TtReportDashboard(models.Model):
                             # add profit to respected array
                             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                             # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agennt
-                            if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            # if not HQ guy then we'll only count respected agent
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
                                 profit_ho += i['debit'] - i['credit']
-                            elif i['ledger_agent_type_name'] != 'HO':
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                profit_total += i['debit'] - i['credit']
-                                profit_agent += i['debit'] - i['credit']
+                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_ho += i['debit'] - i['credit']
+                            # elif i['ledger_agent_type_name'] != 'HO':
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_agent += i['debit'] - i['credit']
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -7435,8 +7779,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_insurance(self, data, is_ho):
+    def get_report_overall_insurance(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -7531,15 +7878,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -7555,15 +7906,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate insurance_summary
                         insurance_index = self.check_index(insurance_summary, 'product', i['carrier_name'])
@@ -7590,15 +7945,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -7775,8 +8134,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_swabexpress(self, data, is_ho):
+    def get_report_overall_swabexpress(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -7872,14 +8234,18 @@ class TtReportDashboard(models.Model):
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
                                 # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -7895,15 +8261,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate swabexpress_summary
                         swabexpress_index = self.check_index(swabexpress_summary, 'product', i['carrier_name'])
@@ -7930,15 +8300,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -8115,8 +8489,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_labpintar(self, data, is_ho):
+    def get_report_overall_labpintar(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -8211,15 +8588,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -8235,15 +8616,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate labpintar_summary
                         labpintar_index = self.check_index(labpintar_summary, 'product', i['carrier_name'])
@@ -8270,15 +8655,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
@@ -8455,8 +8844,11 @@ class TtReportDashboard(models.Model):
             _logger.error(traceback.format_exc())
             raise e
 
-    def get_report_overall_mitrakeluarga(self, data, is_ho):
+    def get_report_overall_mitrakeluarga(self, data, is_ho, context={}):
         try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
             # process datetime to GMT
             # convert string to datetime
             start_date = self.convert_to_datetime(data['start_date'])
@@ -8551,15 +8943,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                             # add to the big list
                             summary_issued.append(temp_dict)
@@ -8575,15 +8971,19 @@ class TtReportDashboard(models.Model):
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                                 # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
                                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                     profit_total += i['debit'] - i['credit']
                                     profit_ho += i['debit'] - i['credit']
-                                elif i['ledger_agent_type_name'] != 'HO':
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_agent += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
 
                         # populate mitrakeluarga_summary
                         mitrakeluarga_index = self.check_index(mitrakeluarga_summary, 'product', i['carrier_name'])
@@ -8610,15 +9010,19 @@ class TtReportDashboard(models.Model):
                         day_index = int(splits[2]) - 1
                         # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                         # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO':
-                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            profit_total += i['debit'] - i['credit']
-                            profit_agent += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
 
             # for every section in summary
             for i in summary_issued:
