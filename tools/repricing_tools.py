@@ -2357,8 +2357,7 @@ class RepricingToolsV2(object):
 
         # December 17, 2021 - SAM
         # Flow 2
-        code_list = ['', 'agt', 'cust']
-        for pricing_idx, pricing_obj in enumerate([rule_obj, cust_obj, agent_obj]):
+        for pricing_idx in range(3):
             for pax_type, sc_sum in sc_summary_dict.items():
                 pax_count = pax_count_dict[pax_type]
                 fare_amount = sc_sum['total_fare_amount'] / pax_count
