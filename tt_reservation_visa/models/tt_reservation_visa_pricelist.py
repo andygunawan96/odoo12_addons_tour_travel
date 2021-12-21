@@ -421,7 +421,7 @@ class VisaPricelist(models.Model):
     def search_api(self, data):
         try:
             list_of_visa = []
-            for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate'])])):
+            for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate']),('reference_code','!=','')])): #agar kalau duplicate reference kosong tidak tampil (harus diisi manual / compute reference code)
                 requirement = []
                 attachments = []
                 for rec1 in rec.requirement_ids:
