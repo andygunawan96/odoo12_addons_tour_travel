@@ -255,6 +255,7 @@ class ReservationAirline(models.Model):
                     'currency_id': airline_obj.currency_id.id,
                     'service_type': airline_obj.provider_type_id.id,
                     'referenced_pnr': airline_obj.pnr,
+                    'referenced_document': airline_obj.name,
                     'old_segment_ids': [(6, 0, old_segment_list)],
                     'new_segment_ids': [(6, 0, new_segment_list)],
                     # 'reschedule_line_ids': [(6, 0, reschedule_line_list)],
