@@ -1288,9 +1288,9 @@ class ProviderPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
-                if upsell_data['is_route']:
+                if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
-                if upsell_data['is_segment']:
+                if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
 
                 add_amount = upsell_data['amount'] * multiply_amount
@@ -1588,9 +1588,9 @@ class AgentPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
-                if upsell_data['is_route']:
+                if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
-                if upsell_data['is_segment']:
+                if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
 
                 add_amount = upsell_data['amount'] * multiply_amount
@@ -1617,15 +1617,15 @@ class AgentPricing(object):
             charge_data = price_data['charge_by_amount']
             if charge_data['amount']:
                 multiplier = 1
-                if charge_data['is_route']:
+                if 'is_route' in charge_data and charge_data['is_route']:
                     multiplier *= route_count
-                if charge_data['is_segment']:
+                if 'is_segment' in charge_data and charge_data['is_segment']:
                     multiplier *= segment_count
 
                 total_pax = 0
-                if charge_data['is_pax']:
+                if 'is_pax' in charge_data and charge_data['is_pax']:
                     total_pax += pax_count
-                if charge_data['is_infant']:
+                if 'is_infant' in charge_data and charge_data['is_infant']:
                     total_pax += infant_count
 
                 if total_pax:
@@ -1644,15 +1644,15 @@ class AgentPricing(object):
             com_data = price_data['commission_by_amount']
             if com_data['amount']:
                 multiplier = 1
-                if com_data['is_route']:
+                if 'is_route' in com_data and com_data['is_route']:
                     multiplier *= route_count
-                if com_data['is_segment']:
+                if 'is_segment' in com_data and com_data['is_segment']:
                     multiplier *= segment_count
 
                 total_pax = 0
-                if com_data['is_pax']:
+                if 'is_pax' in com_data and com_data['is_pax']:
                     total_pax += pax_count
-                if com_data['is_infant']:
+                if 'is_infant' in com_data and com_data['is_infant']:
                     total_pax += infant_count
 
                 if total_pax:
@@ -1985,9 +1985,9 @@ class CustomerPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
-                if upsell_data['is_route']:
+                if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
-                if upsell_data['is_segment']:
+                if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
 
                 add_amount = upsell_data['amount'] * multiply_amount
