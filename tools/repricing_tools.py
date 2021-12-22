@@ -1288,9 +1288,9 @@ class ProviderPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
-                if upsell_data['is_route']:
+                if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
-                if upsell_data['is_segment']:
+                if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
 
                 add_amount = upsell_data['amount'] * multiply_amount
@@ -1588,9 +1588,9 @@ class AgentPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
-                if upsell_data['is_route']:
+                if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
-                if upsell_data['is_segment']:
+                if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
 
                 add_amount = upsell_data['amount'] * multiply_amount
@@ -1617,15 +1617,15 @@ class AgentPricing(object):
             charge_data = price_data['charge_by_amount']
             if charge_data['amount']:
                 multiplier = 1
-                if charge_data['is_route']:
+                if 'is_route' in charge_data and charge_data['is_route']:
                     multiplier *= route_count
-                if charge_data['is_segment']:
+                if 'is_segment' in charge_data and charge_data['is_segment']:
                     multiplier *= segment_count
 
                 total_pax = 0
-                if charge_data['is_pax']:
+                if 'is_pax' in charge_data and charge_data['is_pax']:
                     total_pax += pax_count
-                if charge_data['is_infant']:
+                if 'is_infant' in charge_data and charge_data['is_infant']:
                     total_pax += infant_count
 
                 if total_pax:
@@ -1644,15 +1644,15 @@ class AgentPricing(object):
             com_data = price_data['commission_by_amount']
             if com_data['amount']:
                 multiplier = 1
-                if com_data['is_route']:
+                if 'is_route' in com_data and com_data['is_route']:
                     multiplier *= route_count
-                if com_data['is_segment']:
+                if 'is_segment' in com_data and com_data['is_segment']:
                     multiplier *= segment_count
 
                 total_pax = 0
-                if com_data['is_pax']:
+                if 'is_pax' in com_data and com_data['is_pax']:
                     total_pax += pax_count
-                if com_data['is_infant']:
+                if 'is_infant' in com_data and com_data['is_infant']:
                     total_pax += infant_count
 
                 if total_pax:
@@ -1985,9 +1985,9 @@ class CustomerPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
-                if upsell_data['is_route']:
+                if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
-                if upsell_data['is_segment']:
+                if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
 
                 add_amount = upsell_data['amount'] * multiply_amount
@@ -2238,6 +2238,7 @@ class RepricingToolsV2(object):
         class_of_service_list = class_of_service_list if class_of_service_list else []
         charge_code_list = charge_code_list if charge_code_list else []
         total_commission_amount = 0.0
+        total_reservation_amount = 0.0
         sc_temp = None
         for fare in self.ticket_fare_list:
             if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
@@ -2275,8 +2276,9 @@ class RepricingToolsV2(object):
                 })
                 if sc['charge_type'] == 'FARE':
                     sc_data['total_fare_amount'] += sc_total
-                elif sc['charge_type'] == 'ROC':
-                    sc_data['total_upsell_amount'] += sc_total
+                    total_reservation_amount += sc_total
+                # elif sc['charge_type'] == 'ROC':
+                #     sc_data['total_upsell_amount'] += sc_total
                 elif sc['charge_type'] == 'RAC':
                     sc_total = -sc_total
                     sc_data['total_commission_amount'] += sc_total
@@ -2284,6 +2286,7 @@ class RepricingToolsV2(object):
                     del_sc_id_list.append(idx)
                 else:
                     sc_data['total_tax_amount'] += sc_total
+                    total_reservation_amount += sc_total
 
             for idx in del_sc_id_list[::-1]:
                 fare['service_charges'].pop(idx)
@@ -2292,6 +2295,28 @@ class RepricingToolsV2(object):
             _logger.error('Service Charge detail is not found')
             return False
             # raise Exception('Service Charge detail is not found')
+
+        for fare in self.ancillary_fare_list:
+            if 'service_charges' not in fare:
+                continue
+                # raise Exception('Service Charges is not found')
+            elif not fare['service_charges']:
+                continue
+
+            del_sc_id_list = []
+            for idx, sc in enumerate(fare['service_charges']):
+                if sc['charge_type'] == 'FARE':
+                    total_reservation_amount += sc['amount']
+                # elif sc['charge_type'] == 'ROC':
+                #     continue
+                elif sc['charge_type'] == 'RAC':
+                    total_commission_amount += -sc['amount']
+                    del_sc_id_list.append(idx)
+                else:
+                    total_reservation_amount += sc['amount']
+
+            for idx in del_sc_id_list[::-1]:
+                fare['service_charge'].pop(idx)
 
         ## 2
 
@@ -2329,447 +2354,483 @@ class RepricingToolsV2(object):
             self.customer_data_dict[rule_key] = cust_obj
 
         fare_data = self.ticket_fare_list[-1]
-        for pax_type, sc_sum in sc_summary_dict.items():
-            pax_count = pax_count_dict[pax_type]
-            fare_amount = sc_sum['total_fare_amount'] / pax_count
-            tax_amount = sc_sum['total_tax_amount'] / pax_count
-            sub_total = fare_amount + tax_amount
 
-            calc_param = {
-                'fare_amount': fare_amount,
-                'pax_type': pax_type,
-                'route_count': route_count,
-                'segment_count': segment_count,
-            }
-            if rule_obj:
-                tkt_res = self.provider_pricing.get_ticketing_calculation(rule_obj=rule_obj, tax_amount=tax_amount, **calc_param)
+        # December 17, 2021 - SAM
+        # Flow 2
+        for pricing_idx in range(3):
+            for pax_type, sc_sum in sc_summary_dict.items():
+                pax_count = pax_count_dict[pax_type]
+                fare_amount = sc_sum['total_fare_amount'] / pax_count
+                tax_amount = sc_sum['total_tax_amount'] / pax_count
+                sub_total = fare_amount + tax_amount
 
-                if tkt_res['upsell_amount']:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'ROC',
-                        'charge_code': 'roc',
-                        'pax_type': pax_type,
-                        'pax_count': pax_count,
-                        'amount': tkt_res['upsell_amount'],
-                        'foreign_amount': tkt_res['upsell_amount'],
-                        'total': tkt_res['upsell_amount'] * pax_count,
-                    })
-                    fare_data['service_charges'].append(sc_values)
-
-                if tkt_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'RAC',
-                        'charge_code': 'racho',
-                        'pax_type': pax_type,
-                        'pax_count': pax_count,
-                        'amount': -tkt_res['ho_commission_amount'],
-                        'foreign_amount': -tkt_res['ho_commission_amount'],
-                        'total': -tkt_res['ho_commission_amount'] * pax_count,
-                        'commission_agent_id': self.ho_agent_id,
-                    })
-                    fare_data['service_charges'].append(sc_values)
-
-                tkt_commission_total = tkt_res['commission_amount'] * pax_count
-                total_commission_amount += tkt_commission_total
-
-                tax_amount += tkt_res['upsell_amount']
-                sub_total += tkt_res['upsell_amount']
-
-            # Pembulatan
-            round_total = self.round(sub_total, self.agent_type_data)
-            diff_total = round_total - sub_total
-            if diff_total:
-                sc_total = diff_total * pax_count
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'ROC',
-                    'charge_code': 'rocround',
+                calc_param = {
+                    'fare_amount': fare_amount,
                     'pax_type': pax_type,
-                    'pax_count': pax_count,
-                    'amount': diff_total,
-                    'foreign_amount': diff_total,
-                    'total': sc_total,
-                })
-                fare_data['service_charges'].append(sc_values)
-                total_commission_amount += sc_total
-            # Pembulatan END
+                    'route_count': route_count,
+                    'segment_count': segment_count,
+                }
+                if pricing_idx == 0:
+                    if rule_obj:
+                        tkt_res = self.provider_pricing.get_ticketing_calculation(rule_obj=rule_obj, tax_amount=tax_amount, **calc_param)
 
-            if agent_obj:
-                agent_tkt = self.agent_pricing.get_ticketing_calculation(rule_obj=agent_obj, tax_amount=tax_amount, **calc_param)
+                        if tkt_res['upsell_amount']:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'ROC',
+                                'charge_code': 'roc',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': tkt_res['upsell_amount'],
+                                'foreign_amount': tkt_res['upsell_amount'],
+                                'total': tkt_res['upsell_amount'] * pax_count,
+                            })
+                            fare_data['service_charges'].append(sc_values)
+                            sc_total = tkt_res['upsell_amount'] * pax_count
+                            total_reservation_amount += sc_total
 
-                if agent_tkt['upsell_amount']:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'ROC',
-                        'charge_code': 'rocagt',
-                        'pax_type': pax_type,
-                        'pax_count': pax_count,
-                        'amount': agent_tkt['upsell_amount'],
-                        'foreign_amount': agent_tkt['upsell_amount'],
-                        'total': agent_tkt['upsell_amount'] * pax_count,
-                    })
-                    fare_data['service_charges'].append(sc_values)
+                        if tkt_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'racho',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': -tkt_res['ho_commission_amount'],
+                                'foreign_amount': -tkt_res['ho_commission_amount'],
+                                'total': -tkt_res['ho_commission_amount'] * pax_count,
+                                'commission_agent_id': self.ho_agent_id,
+                            })
+                            fare_data['service_charges'].append(sc_values)
 
-                if agent_tkt['commission_amount'] and show_commission:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'RAC',
-                        'charge_code': 'rac',
-                        'pax_type': pax_type,
-                        'pax_count': pax_count,
-                        'amount': -agent_tkt['commission_amount'],
-                        'foreign_amount': -agent_tkt['commission_amount'],
-                        'total': -agent_tkt['commission_amount'] * pax_count,
-                    })
-                    fare_data['service_charges'].append(sc_values)
+                        tkt_commission_total = tkt_res['commission_amount'] * pax_count
+                        total_commission_amount += tkt_commission_total
 
-                tax_amount += agent_tkt['upsell_amount']
+                        tax_amount += tkt_res['upsell_amount']
+                        sub_total += tkt_res['upsell_amount']
 
-            if cust_obj:
-                cust_tkt = self.customer_pricing.get_ticketing_calculation(cust_obj, tax_amount=tax_amount, **calc_param)
+                    # Pembulatan
+                    round_total = self.round(sub_total, self.agent_type_data)
+                    diff_total = round_total - sub_total
+                    if diff_total:
+                        sc_total = diff_total * pax_count
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'ROC',
+                            'charge_code': 'rocround',
+                            'pax_type': pax_type,
+                            'pax_count': pax_count,
+                            'amount': diff_total,
+                            'foreign_amount': diff_total,
+                            'total': sc_total,
+                        })
+                        fare_data['service_charges'].append(sc_values)
+                        total_reservation_amount += sc_total
+                        # December 21, 2021 - SAM
+                        # Sementara pembulatan masuk ke komisi ho agar tidak bingung saat penghitungan komisi agent
+                        # total_commission_amount += sc_total
+                        if self.ho_agent_id:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'racroundho',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': -diff_total,
+                                'foreign_amount': -diff_total,
+                                'total': -diff_total * pax_count,
+                                'commission_agent_id': self.ho_agent_id,
+                            })
+                            fare_data['service_charges'].append(sc_values)
+                        # END
+                    # Pembulatan END
 
-                if cust_tkt['upsell_amount']:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'ROC',
-                        'charge_code': 'roccust',
-                        'pax_type': pax_type,
-                        'pax_count': pax_count,
-                        'amount': cust_tkt['upsell_amount'],
-                        'foreign_amount': cust_tkt['upsell_amount'],
-                        'total': cust_tkt['upsell_amount'] * pax_count,
-                    })
-                    fare_data['service_charges'].append(sc_values)
+                if pricing_idx == 1:
+                    if agent_obj:
+                        agent_tkt = self.agent_pricing.get_ticketing_calculation(rule_obj=agent_obj, tax_amount=tax_amount, **calc_param)
 
-                if cust_tkt['commission_amount'] and show_commission:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'RAC',
-                        'charge_code': 'rac',
-                        'pax_type': pax_type,
-                        'pax_count': pax_count,
-                        'amount': -cust_tkt['commission_amount'],
-                        'foreign_amount': -cust_tkt['commission_amount'],
-                        'total': -cust_tkt['commission_amount'] * pax_count,
-                    })
-                    fare_data['service_charges'].append(sc_values)
+                        if agent_tkt['upsell_amount']:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'ROC',
+                                'charge_code': 'rocagt',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': agent_tkt['upsell_amount'],
+                                'foreign_amount': agent_tkt['upsell_amount'],
+                                'total': agent_tkt['upsell_amount'] * pax_count,
+                            })
+                            fare_data['service_charges'].append(sc_values)
+                            sc_total = agent_tkt['upsell_amount'] * pax_count
+                            total_reservation_amount += sc_total
 
-                tax_amount += cust_tkt['upsell_amount']
+                        if agent_tkt['commission_amount'] and show_commission:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'rac',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': -agent_tkt['commission_amount'],
+                                'foreign_amount': -agent_tkt['commission_amount'],
+                                'total': -agent_tkt['commission_amount'] * pax_count,
+                            })
+                            fare_data['service_charges'].append(sc_values)
 
-        ## 3
-        for fare in self.ancillary_fare_list:
-            if 'service_charges' not in fare:
-                continue
-                # raise Exception('Service Charges is not found')
-            elif not fare['service_charges']:
-                continue
+                        tax_amount += agent_tkt['upsell_amount']
 
-            fare_amount = 0.0
-            tax_amount = 0.0
-            del_sc_id_list = []
-            for idx, sc in enumerate(fare['service_charges']):
-                if sc['charge_type'] == 'FARE':
-                    fare_amount += sc['amount']
-                elif sc['charge_type'] == 'ROC':
+                if pricing_idx == 2:
+                    if cust_obj:
+                        cust_tkt = self.customer_pricing.get_ticketing_calculation(cust_obj, tax_amount=tax_amount, **calc_param)
+
+                        if cust_tkt['upsell_amount']:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'ROC',
+                                'charge_code': 'roccust',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': cust_tkt['upsell_amount'],
+                                'foreign_amount': cust_tkt['upsell_amount'],
+                                'total': cust_tkt['upsell_amount'] * pax_count,
+                            })
+                            fare_data['service_charges'].append(sc_values)
+                            sc_total = cust_tkt['upsell_amount'] * pax_count
+                            total_reservation_amount += sc_total
+
+                        if cust_tkt['commission_amount'] and show_commission:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'rac',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': -cust_tkt['commission_amount'],
+                                'foreign_amount': -cust_tkt['commission_amount'],
+                                'total': -cust_tkt['commission_amount'] * pax_count,
+                            })
+                            fare_data['service_charges'].append(sc_values)
+
+                        tax_amount += cust_tkt['upsell_amount']
+
+            ## 3
+            for fare in self.ancillary_fare_list:
+                if 'service_charges' not in fare:
                     continue
-                elif sc['charge_type'] == 'RAC':
-                    total_commission_amount += -sc['amount']
-                    del_sc_id_list.append(idx)
-                else:
-                    tax_amount += sc['amount']
+                    # raise Exception('Service Charges is not found')
+                elif not fare['service_charges']:
+                    continue
 
-            for idx in del_sc_id_list[::-1]:
-                fare['service_charge'].pop(idx)
+                fare_amount = 0.0
+                tax_amount = 0.0
+                del_sc_id_list = []
+                for idx, sc in enumerate(fare['service_charges']):
+                    if sc['charge_type'] == 'FARE':
+                        fare_amount += sc['amount']
+                    # elif sc['charge_type'] == 'ROC':
+                    #     continue
+                    elif sc['charge_type'] == 'RAC':
+                        del_sc_id_list.append(idx)
+                    else:
+                        tax_amount += sc['amount']
 
-            sc_anc_temp = copy.deepcopy(fare['service_charges'][0])
-            if rule_obj:
-                tkt_anc_res = self.provider_pricing.get_ancillary_calculation(rule_obj, fare_amount, tax_amount)
+                for idx in del_sc_id_list[::-1]:
+                    fare['service_charge'].pop(idx)
 
-                if tkt_anc_res['upsell_amount']:
-                    sc_values = copy.deepcopy(sc_anc_temp)
-                    sc_values.update({
-                        'charge_type': 'ROC',
-                        'charge_code': 'roc',
-                        'amount': tkt_anc_res['upsell_amount'],
-                        'foreign_amount': tkt_anc_res['upsell_amount'],
-                        'total': tkt_anc_res['upsell_amount'],
-                    })
-                    fare['service_charges'].append(sc_values)
+                sc_anc_temp = copy.deepcopy(fare['service_charges'][0])
+                if pricing_idx == 0:
+                    if rule_obj:
+                        tkt_anc_res = self.provider_pricing.get_ancillary_calculation(rule_obj, fare_amount, tax_amount)
 
-                if tkt_anc_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
-                    sc_values = copy.deepcopy(sc_anc_temp)
-                    sc_values.update({
-                        'charge_type': 'RAC',
-                        'charge_code': 'racho',
-                        'amount': -tkt_anc_res['ho_commission_amount'],
-                        'foreign_amount': -tkt_anc_res['ho_commission_amount'],
-                        'total': -tkt_anc_res['ho_commission_amount'],
-                        'commission_agent_id': self.ho_agent_id,
-                    })
-                    fare['service_charges'].append(sc_values)
+                        if tkt_anc_res['upsell_amount']:
+                            sc_values = copy.deepcopy(sc_anc_temp)
+                            sc_values.update({
+                                'charge_type': 'ROC',
+                                'charge_code': 'roc',
+                                'amount': tkt_anc_res['upsell_amount'],
+                                'foreign_amount': tkt_anc_res['upsell_amount'],
+                                'total': tkt_anc_res['upsell_amount'],
+                            })
+                            fare['service_charges'].append(sc_values)
+                            total_reservation_amount += tkt_anc_res['upsell_amount']
 
-                total_commission_amount += tkt_anc_res['commission_amount']
-                tax_amount += tkt_anc_res['upsell_amount']
+                        if tkt_anc_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                            sc_values = copy.deepcopy(sc_anc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'racho',
+                                'amount': -tkt_anc_res['ho_commission_amount'],
+                                'foreign_amount': -tkt_anc_res['ho_commission_amount'],
+                                'total': -tkt_anc_res['ho_commission_amount'],
+                                'commission_agent_id': self.ho_agent_id,
+                            })
+                            fare['service_charges'].append(sc_values)
 
-            if agent_obj:
-                agent_anc_tkt = self.agent_pricing.get_ancillary_calculation(agent_obj, fare_amount, tax_amount)
+                        total_commission_amount += tkt_anc_res['commission_amount']
+                        tax_amount += tkt_anc_res['upsell_amount']
 
-                if agent_anc_tkt['upsell_amount']:
-                    sc_values = copy.deepcopy(sc_anc_temp)
-                    sc_values.update({
-                        'charge_type': 'ROC',
-                        'charge_code': 'rocagt',
-                        'amount': agent_anc_tkt['upsell_amount'],
-                        'foreign_amount': agent_anc_tkt['upsell_amount'],
-                        'total': agent_anc_tkt['upsell_amount'],
-                    })
-                    fare['service_charges'].append(sc_values)
+                if pricing_idx == 1:
+                    if agent_obj:
+                        agent_anc_tkt = self.agent_pricing.get_ancillary_calculation(agent_obj, fare_amount, tax_amount)
 
-                if agent_anc_tkt['commission_amount'] and show_commission:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'RAC',
-                        'charge_code': 'rac',
-                        'pax_type': sc_anc_temp['pax_type'],
-                        'pax_count': 1,
-                        'amount': -agent_anc_tkt['commission_amount'],
-                        'foreign_amount': -agent_anc_tkt['commission_amount'],
-                        'total': -agent_anc_tkt['commission_amount'],
-                    })
-                    fare_data['service_charges'].append(sc_values)
+                        if agent_anc_tkt['upsell_amount']:
+                            sc_values = copy.deepcopy(sc_anc_temp)
+                            sc_values.update({
+                                'charge_type': 'ROC',
+                                'charge_code': 'rocagt',
+                                'amount': agent_anc_tkt['upsell_amount'],
+                                'foreign_amount': agent_anc_tkt['upsell_amount'],
+                                'total': agent_anc_tkt['upsell_amount'],
+                            })
+                            fare['service_charges'].append(sc_values)
+                            total_reservation_amount += agent_anc_tkt['upsell_amount']
 
-            if cust_obj:
-                cust_anc_tkt = self.customer_pricing.get_ancillary_calculation(cust_obj, fare_amount, tax_amount)
+                        if agent_anc_tkt['commission_amount'] and show_commission:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'rac',
+                                'pax_type': sc_anc_temp['pax_type'],
+                                'pax_count': 1,
+                                'amount': -agent_anc_tkt['commission_amount'],
+                                'foreign_amount': -agent_anc_tkt['commission_amount'],
+                                'total': -agent_anc_tkt['commission_amount'],
+                            })
+                            fare_data['service_charges'].append(sc_values)
 
-                if cust_anc_tkt['upsell_amount']:
-                    sc_values = copy.deepcopy(sc_anc_temp)
-                    sc_values.update({
-                        'charge_type': 'ROC',
-                        'charge_code': 'roccust',
-                        'amount': cust_anc_tkt['upsell_amount'],
-                        'foreign_amount': cust_anc_tkt['upsell_amount'],
-                        'total': cust_anc_tkt['upsell_amount'],
-                    })
-                    fare['service_charges'].append(sc_values)
+                if pricing_idx == 2:
+                    if cust_obj:
+                        cust_anc_tkt = self.customer_pricing.get_ancillary_calculation(cust_obj, fare_amount, tax_amount)
 
-                if cust_anc_tkt['commission_amount'] and show_commission:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'RAC',
-                        'charge_code': 'rac',
-                        'pax_type': sc_anc_temp['pax_type'],
-                        'pax_count': 1,
-                        'amount': -cust_anc_tkt['commission_amount'],
-                        'foreign_amount': -cust_anc_tkt['commission_amount'],
-                        'total': -cust_anc_tkt['commission_amount'],
-                    })
-                    fare_data['service_charges'].append(sc_values)
+                        if cust_anc_tkt['upsell_amount']:
+                            sc_values = copy.deepcopy(sc_anc_temp)
+                            sc_values.update({
+                                'charge_type': 'ROC',
+                                'charge_code': 'roccust',
+                                'amount': cust_anc_tkt['upsell_amount'],
+                                'foreign_amount': cust_anc_tkt['upsell_amount'],
+                                'total': cust_anc_tkt['upsell_amount'],
+                            })
+                            fare['service_charges'].append(sc_values)
+                            total_reservation_amount += cust_anc_tkt['upsell_amount']
 
-        ## 4
-        rsv_total_amount = 0.0
-        if rule_obj:
-            tkt_rsv_res = self.provider_pricing.get_reservation_calculation(rule_obj, rsv_total_amount, route_count, segment_count)
-            if tkt_rsv_res['upsell_amount']:
-                rsv_total_amount += tkt_rsv_res['upsell_amount']
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'ROC',
-                    'charge_code': 'rocrsv',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': tkt_rsv_res['upsell_amount'],
-                    'foreign_amount': tkt_rsv_res['upsell_amount'],
-                    'total': tkt_rsv_res['upsell_amount'],
-                })
-                fare_data['service_charges'].append(sc_values)
+                        if cust_anc_tkt['commission_amount'] and show_commission:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'rac',
+                                'pax_type': sc_anc_temp['pax_type'],
+                                'pax_count': 1,
+                                'amount': -cust_anc_tkt['commission_amount'],
+                                'foreign_amount': -cust_anc_tkt['commission_amount'],
+                                'total': -cust_anc_tkt['commission_amount'],
+                            })
+                            fare_data['service_charges'].append(sc_values)
 
-            if tkt_rsv_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'RAC',
-                    'charge_code': 'rachorsv',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': -tkt_rsv_res['ho_commission_amount'],
-                    'foreign_amount': -tkt_rsv_res['ho_commission_amount'],
-                    'total': -tkt_rsv_res['ho_commission_amount'],
-                    'commission_agent_id': self.ho_agent_id
-                })
-                fare_data['service_charges'].append(sc_values)
+            ## 4
+            if pricing_idx == 0:
+                if rule_obj:
+                    tkt_rsv_res = self.provider_pricing.get_reservation_calculation(rule_obj, total_reservation_amount, route_count, segment_count)
+                    if tkt_rsv_res['upsell_amount']:
+                        total_reservation_amount += tkt_rsv_res['upsell_amount']
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'ROC',
+                            'charge_code': 'rocrsv',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': tkt_rsv_res['upsell_amount'],
+                            'foreign_amount': tkt_rsv_res['upsell_amount'],
+                            'total': tkt_rsv_res['upsell_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-            total_commission_amount += tkt_rsv_res['commission_amount']
+                    if tkt_rsv_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'rachorsv',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -tkt_rsv_res['ho_commission_amount'],
+                            'foreign_amount': -tkt_rsv_res['ho_commission_amount'],
+                            'total': -tkt_rsv_res['ho_commission_amount'],
+                            'commission_agent_id': self.ho_agent_id
+                        })
+                        fare_data['service_charges'].append(sc_values)
+                    total_commission_amount += tkt_rsv_res['commission_amount']
 
-        if cust_obj:
-            cust_rsv_res = self.customer_pricing.get_reservation_calculation(cust_obj, rsv_total_amount, route_count, segment_count)
-            if cust_rsv_res['upsell_amount']:
-                rsv_total_amount += cust_rsv_res['upsell_amount']
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'ROC',
-                    'charge_code': 'rocrsvcust',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': cust_rsv_res['upsell_amount'],
-                    'foreign_amount': cust_rsv_res['upsell_amount'],
-                    'total': cust_rsv_res['upsell_amount'],
-                })
-                fare_data['service_charges'].append(sc_values)
+            if pricing_idx == 1:
+                if agent_obj:
+                    agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, total_reservation_amount, route_count, segment_count)
+                    if agent_rsv_res['upsell_amount']:
+                        total_reservation_amount += agent_rsv_res['upsell_amount']
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'ROC',
+                            'charge_code': 'rocrsvagt',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': agent_rsv_res['upsell_amount'],
+                            'foreign_amount': agent_rsv_res['upsell_amount'],
+                            'total': agent_rsv_res['upsell_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-            if cust_rsv_res['commission_amount'] and show_commission:
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'RAC',
-                    'charge_code': 'rac',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': -cust_rsv_res['commission_amount'],
-                    'foreign_amount': -cust_rsv_res['commission_amount'],
-                    'total': -cust_rsv_res['commission_amount'],
-                })
-                fare_data['service_charges'].append(sc_values)
+                    if agent_rsv_res['commission_amount'] and show_commission:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'rac',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -agent_rsv_res['commission_amount'],
+                            'foreign_amount': -agent_rsv_res['commission_amount'],
+                            'total': -agent_rsv_res['commission_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-        if agent_obj:
-            agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, rsv_total_amount, route_count, segment_count)
-            if agent_rsv_res['upsell_amount']:
-                rsv_total_amount += agent_rsv_res['upsell_amount']
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'ROC',
-                    'charge_code': 'rocrsvagt',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': agent_rsv_res['upsell_amount'],
-                    'foreign_amount': agent_rsv_res['upsell_amount'],
-                    'total': agent_rsv_res['upsell_amount'],
-                })
-                fare_data['service_charges'].append(sc_values)
+                    total_pax_count = 0
+                    infant_count = 0
+                    for pax_type, pax_count in pax_count_dict.items():
+                        if pax_type == 'INF':
+                            infant_count += pax_count
+                        else:
+                            total_pax_count += pax_count
 
-            if agent_rsv_res['commission_amount'] and show_commission:
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'RAC',
-                    'charge_code': 'rac',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': -agent_rsv_res['commission_amount'],
-                    'foreign_amount': -agent_rsv_res['commission_amount'],
-                    'total': -agent_rsv_res['commission_amount'],
-                })
-                fare_data['service_charges'].append(sc_values)
+                    com_param = {
+                        'rule_obj': agent_obj,
+                        'commission_amount': total_commission_amount,
+                        'agent_id': self.agent_id,
+                        'upline_list': self.upline_list,
+                        'pax_count': total_pax_count,
+                        'infant_count': infant_count,
+                        'route_count': route_count,
+                        'segment_count': segment_count,
+                    }
+                    agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
+                    if agent_com_res['agent_commission_amount'] and show_commission:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'rac',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -agent_com_res['agent_commission_amount'],
+                            'foreign_amount': -agent_com_res['agent_commission_amount'],
+                            'total': -agent_com_res['agent_commission_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-            total_pax_count = 0
-            infant_count = 0
-            for pax_type, pax_count in pax_count_dict.items():
-                if pax_type == 'INF':
-                    infant_count += pax_count
-                else:
-                    total_pax_count += pax_count
+                    if agent_com_res['parent_charge_amount'] and show_commission and show_upline_commission:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'rac0',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -agent_com_res['parent_charge_amount'],
+                            'foreign_amount': -agent_com_res['parent_charge_amount'],
+                            'total': -agent_com_res['parent_charge_amount'],
+                            'commission_agent_id': agent_com_res['parent_agent_id']
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-            com_param = {
-                'rule_obj': agent_obj,
-                'commission_amount': total_commission_amount,
-                'agent_id': self.agent_id,
-                'upline_list': self.upline_list,
-                'pax_count': total_pax_count,
-                'infant_count': infant_count,
-                'route_count': route_count,
-                'segment_count': segment_count,
-            }
-            agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
-            if agent_com_res['agent_commission_amount'] and show_commission:
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'RAC',
-                    'charge_code': 'rac',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': -agent_com_res['agent_commission_amount'],
-                    'foreign_amount': -agent_com_res['agent_commission_amount'],
-                    'total': -agent_com_res['agent_commission_amount'],
-                })
-                fare_data['service_charges'].append(sc_values)
+                    if agent_com_res['ho_charge_amount'] and show_commission and show_upline_commission:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'rac0',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -agent_com_res['ho_charge_amount'],
+                            'foreign_amount': -agent_com_res['ho_charge_amount'],
+                            'total': -agent_com_res['ho_charge_amount'],
+                            'commission_agent_id': agent_com_res['ho_agent_id']
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-            if agent_com_res['parent_charge_amount'] and show_commission and show_upline_commission:
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'RAC',
-                    'charge_code': 'rac0',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': -agent_com_res['parent_charge_amount'],
-                    'foreign_amount': -agent_com_res['parent_charge_amount'],
-                    'total': -agent_com_res['parent_charge_amount'],
-                    'commission_agent_id': agent_com_res['parent_agent_id']
-                })
-                fare_data['service_charges'].append(sc_values)
+                    for idx, upline in enumerate(agent_com_res['upline_commission_list'], 1):
+                        if upline['commission_amount'] and show_commission and show_upline_commission:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'rac%s' % idx,
+                                'pax_type': 'ADT',
+                                'pax_count': 1,
+                                'amount': -upline['commission_amount'],
+                                'foreign_amount': -upline['commission_amount'],
+                                'total': -upline['commission_amount'],
+                                'commission_agent_id': upline['agent_id']
+                            })
+                            fare_data['service_charges'].append(sc_values)
 
-            if agent_com_res['ho_charge_amount'] and show_commission and show_upline_commission:
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'RAC',
-                    'charge_code': 'rac0',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': -agent_com_res['ho_charge_amount'],
-                    'foreign_amount': -agent_com_res['ho_charge_amount'],
-                    'total': -agent_com_res['ho_charge_amount'],
-                    'commission_agent_id': agent_com_res['ho_agent_id']
-                })
-                fare_data['service_charges'].append(sc_values)
+                    if agent_com_res['residual_amount'] and show_commission and show_upline_commission:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'racsd',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -agent_com_res['residual_amount'],
+                            'foreign_amount': -agent_com_res['residual_amount'],
+                            'total': -agent_com_res['residual_amount'],
+                            'commission_agent_id': agent_com_res['residual_agent_id']
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-            for idx, upline in enumerate(agent_com_res['upline_commission_list'], 1):
-                if upline['commission_amount'] and show_commission and show_upline_commission:
-                    sc_values = copy.deepcopy(sc_temp)
-                    sc_values.update({
-                        'charge_type': 'RAC',
-                        'charge_code': 'rac%s' % idx,
-                        'pax_type': 'ADT',
-                        'pax_count': 1,
-                        'amount': -upline['commission_amount'],
-                        'foreign_amount': -upline['commission_amount'],
-                        'total': -upline['commission_amount'],
-                        'commission_agent_id': upline['agent_id']
-                    })
-                    fare_data['service_charges'].append(sc_values)
+                # Pembulatan
+                # grand_total = 0.0
+                # for fare in self.ticket_fare_list:
+                #     for sc in fare['service_charges']:
+                #         if sc['charge_type'] != 'RAC':
+                #             grand_total += sc['total']
+                # for fare in self.ancillary_fare_list:
+                #     for sc in fare['service_charges']:
+                #         if sc['charge_type'] != 'RAC':
+                #             grand_total += sc['total']
+                # round_gt = self.round(grand_total, self.agent_type_data)
+                # diff_gt = round_gt - grand_total
+                # if diff_gt:
+                #     sc_values = copy.deepcopy(sc_temp)
+                #     sc_values.update({
+                #         'charge_type': 'ROC',
+                #         'charge_code': 'roc',
+                #         'pax_type': 'ADT',
+                #         'pax_count': 1,
+                #         'amount': diff_gt,
+                #         'foreign_amount': diff_gt,
+                #         'total': diff_gt,
+                #     })
+                #     fare_data['service_charges'].append(sc_values)
 
-            if agent_com_res['residual_amount'] and show_commission and show_upline_commission:
-                sc_values = copy.deepcopy(sc_temp)
-                sc_values.update({
-                    'charge_type': 'RAC',
-                    'charge_code': 'racsd',
-                    'pax_type': 'ADT',
-                    'pax_count': 1,
-                    'amount': -agent_com_res['residual_amount'],
-                    'foreign_amount': -agent_com_res['residual_amount'],
-                    'total': -agent_com_res['residual_amount'],
-                    'commission_agent_id': agent_com_res['residual_agent_id']
-                })
-                fare_data['service_charges'].append(sc_values)
+            if pricing_idx == 2:
+                if cust_obj:
+                    cust_rsv_res = self.customer_pricing.get_reservation_calculation(cust_obj, total_reservation_amount, route_count, segment_count)
+                    if cust_rsv_res['upsell_amount']:
+                        total_reservation_amount += cust_rsv_res['upsell_amount']
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'ROC',
+                            'charge_code': 'rocrsvcust',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': cust_rsv_res['upsell_amount'],
+                            'foreign_amount': cust_rsv_res['upsell_amount'],
+                            'total': cust_rsv_res['upsell_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
 
-        # Pembulatan
-        # grand_total = 0.0
-        # for fare in self.ticket_fare_list:
-        #     for sc in fare['service_charges']:
-        #         if sc['charge_type'] != 'RAC':
-        #             grand_total += sc['total']
-        # for fare in self.ancillary_fare_list:
-        #     for sc in fare['service_charges']:
-        #         if sc['charge_type'] != 'RAC':
-        #             grand_total += sc['total']
-        # round_gt = self.round(grand_total, self.agent_type_data)
-        # diff_gt = round_gt - grand_total
-        # if diff_gt:
-        #     sc_values = copy.deepcopy(sc_temp)
-        #     sc_values.update({
-        #         'charge_type': 'ROC',
-        #         'charge_code': 'roc',
-        #         'pax_type': 'ADT',
-        #         'pax_count': 1,
-        #         'amount': diff_gt,
-        #         'foreign_amount': diff_gt,
-        #         'total': diff_gt,
-        #     })
-        #     fare_data['service_charges'].append(sc_values)
+                    if cust_rsv_res['commission_amount'] and show_commission:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'rac',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -cust_rsv_res['commission_amount'],
+                            'foreign_amount': -cust_rsv_res['commission_amount'],
+                            'total': -cust_rsv_res['commission_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
         return True

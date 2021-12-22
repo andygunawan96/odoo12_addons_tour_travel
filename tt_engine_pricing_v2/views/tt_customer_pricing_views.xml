@@ -269,17 +269,17 @@ YR,D5,G7</pre>
                         </page>
                         <page string="Reservation" name="reservation">
                             <group string="Reservation Upsell">
-                                <group string="By Amount">
-                                    <field name="rsv_sales_upsell_amount"/>
-                                    <field name="rsv_sales_upsell_route"/>
-                                    <field name="rsv_sales_upsell_segment"/>
-                                </group>
                                 <group string="By Percentage">
                                     <field name="rsv_sales_upsell_percentage"/>
                                     <field name="rsv_sales_upsell_has_minimum"/>
                                     <field name="rsv_sales_upsell_minimum" attrs="{'invisible': [('rsv_sales_upsell_has_minimum', '=', False)]}"/>
                                     <field name="rsv_sales_upsell_has_maximum"/>
                                     <field name="rsv_sales_upsell_maximum" attrs="{'invisible': [('rsv_sales_upsell_has_maximum', '=', False)]}"/>
+                                </group>
+                                <group string="By Amount">
+                                    <field name="rsv_sales_upsell_amount"/>
+                                    <field name="rsv_sales_upsell_route"/>
+                                    <field name="rsv_sales_upsell_segment"/>
                                 </group>
                             </group>
                         </page>

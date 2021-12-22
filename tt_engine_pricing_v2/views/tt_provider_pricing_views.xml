@@ -256,23 +256,33 @@ Amadeus cryptic sample request will be : FM5
                             <notebook>
                                 <page string="Sales" name="reservation_sales">
                                     <group string="Reservation Sales Upsell">
+                                        <group string="By Percentage">
+                                            <field name="rsv_sales_upsell_percentage"/>
+                                            <field name="rsv_sales_upsell_has_minimum"/>
+                                            <field name="rsv_sales_upsell_minimum" attrs="{'invisible': [('rsv_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="rsv_sales_upsell_has_maximum"/>
+                                            <field name="rsv_sales_upsell_maximum" attrs="{'invisible': [('rsv_sales_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
                                         <group string="By Amount">
                                             <field name="rsv_sales_upsell_amount"/>
                                             <field name="rsv_sales_upsell_route"/>
                                             <field name="rsv_sales_upsell_segment"/>
                                         </group>
                                     </group>
-                                    <group>
-                                    </group>
                                 </page>
                                 <page string="NTA" name="reservation_nta">
                                     <group string="Reservation NTA Upsell">
+                                        <group string="By Percentage">
+                                            <field name="rsv_nta_upsell_percentage"/>
+                                            <field name="rsv_nta_upsell_has_minimum"/>
+                                            <field name="rsv_nta_upsell_minimum" attrs="{'invisible': [('rsv_nta_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="rsv_nta_upsell_has_maximum"/>
+                                            <field name="rsv_nta_upsell_maximum" attrs="{'invisible': [('rsv_nta_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
                                         <group string="By Amount">
                                             <field name="rsv_nta_upsell_amount"/>
                                             <field name="rsv_nta_upsell_route"/>
                                             <field name="rsv_nta_upsell_segment"/>
-                                        </group>
-                                        <group>
                                         </group>
                                     </group>
                                 </page>
@@ -281,12 +291,17 @@ Amadeus cryptic sample request will be : FM5
                                         <field name="rsv_nta_agent_same_as_nta"/>
                                     </group>
                                     <group string="Reservation NTA Agent Upsell" attrs="{'invisible': [('rsv_nta_agent_same_as_nta', '=', True)]}">
+                                        <group string="By Percentage">
+                                            <field name="rsv_nta_agent_upsell_percentage"/>
+                                            <field name="rsv_nta_agent_upsell_has_minimum"/>
+                                            <field name="rsv_nta_agent_upsell_minimum" attrs="{'invisible': [('rsv_nta_agent_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="rsv_nta_agent_upsell_has_maximum"/>
+                                            <field name="rsv_nta_agent_upsell_maximum" attrs="{'invisible': [('rsv_nta_agent_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
                                         <group string="By Amount">
                                             <field name="rsv_nta_agent_upsell_amount"/>
                                             <field name="rsv_nta_agent_upsell_route"/>
                                             <field name="rsv_nta_agent_upsell_segment"/>
-                                        </group>
-                                        <group>
                                         </group>
                                     </group>
                                 </page>
