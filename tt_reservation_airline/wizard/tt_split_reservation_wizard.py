@@ -215,6 +215,10 @@ class TtSplitReservationWizard(models.TransientModel):
         if self.is_split_journey and self.is_split_passenger:
             pass  # planned
         elif self.is_split_journey:
+            aff_pnr_list = []
+            aff_prov_list = []
+            new_aff_prov_list = []
+
             provider_dict = {}
             reduced_amt = self.splitted_journey_price
             split_method = reduced_amt and 'amount' or 'half'
@@ -222,6 +226,13 @@ class TtSplitReservationWizard(models.TransientModel):
             old_pax_dict = {}
             for rec in book_obj.provider_booking_ids:
                 if rec.id in journey_provider_list:
+                    if rec.pnr:
+                        if rec.pnr not in aff_pnr_list:
+                            aff_pnr_list.append(rec.pnr)
+                    else:
+                        if rec.sequence not in aff_pnr_list:
+                            aff_pnr_list.append(rec.sequence)
+                    aff_prov_list.append(rec)
                     prov_val = {
                         'sequence': rec.sequence,
                         'booking_id': new_book_obj.id,
@@ -246,6 +257,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         'currency_id': rec.currency_id and rec.currency_id.id or False,
                     }
                     new_prov_obj = self.env['tt.provider.airline'].sudo().create(prov_val)
+                    new_aff_prov_list.append(new_prov_obj)
                     provider_dict.update({
                         str(rec.id): new_prov_obj.id
                     })
@@ -361,15 +373,18 @@ class TtSplitReservationWizard(models.TransientModel):
                 for rec2 in rec.cost_service_charge_ids:
                     rec2.is_ledger_created = False
 
-            if book_obj.ledger_ids:
-                for led in book_obj.ledger_ids:
-                    if not led.is_reversed:
-                        led.reverse_ledger()
-                for prov in book_obj.provider_booking_ids:
-                    prov.action_create_ledger(book_obj.issued_uid.id)
-                for prov in new_book_obj.provider_booking_ids:
-                    prov.action_create_ledger(new_book_obj.issued_uid.id)
+            for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                led.reverse_ledger()
+            for aff_prov in aff_prov_list:
+                aff_prov.action_create_ledger(book_obj.issued_uid.id)
+            for aff_prov in new_aff_prov_list:
+                aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
+
         elif self.is_split_provider and self.is_split_passenger:
+            aff_pnr_list = []
+            aff_prov_list = []
+            new_aff_prov_list = []
+
             tot_adult = 0
             tot_child = 0
             tot_infant = 0
@@ -384,6 +399,14 @@ class TtSplitReservationWizard(models.TransientModel):
             exists_passenger_type = {'ADT': 0, 'CHD': 0, 'INF': 0}
             for rec in book_obj.provider_booking_ids:
                 if rec.id in self.provider_ids.ids:
+                    if rec.pnr:
+                        if rec.pnr not in aff_pnr_list:
+                            aff_pnr_list.append(rec.pnr)
+                    else:
+                        if rec.sequence not in aff_pnr_list:
+                            aff_pnr_list.append(rec.sequence)
+                    aff_prov_list.append(rec)
+
                     old_cost_list = []
                     old_cost_dict = {}
                     for rec2 in rec.cost_service_charge_ids:
@@ -483,6 +506,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             'currency_id': rec.currency_id and rec.currency_id.id or False,
                         }
                         new_prov_obj = self.env['tt.provider.airline'].sudo().create(prov_val)
+                        new_aff_prov_list.append(new_prov_obj)
                         provider_dict.update({
                             str(rec.id): new_prov_obj.id
                         })
@@ -551,6 +575,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             })
                     else:
                         new_prov_obj = self.env['tt.provider.airline'].sudo().browse(int(provider_dict[str(rec.id)]))
+                        new_aff_prov_list.append(new_prov_obj)
                         for val in old_cost_dict.values():
                             dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
                             dict_cost_obj.sudo().write({
@@ -575,7 +600,7 @@ class TtSplitReservationWizard(models.TransientModel):
                 for tkt in rec.ticket_ids:
                     if tkt.passenger_id.id not in exists_passenger_ids:
                         exists_passenger_ids.append(tkt.passenger_id.id)
-                        exists_passenger_type[tkt.passenger_id.pax_type] += 1
+                        exists_passenger_type[tkt.pax_type] += 1
             for x in unlink_provider_booking_ids:
                 book_obj.provider_booking_ids = [(3, x)]  # use 2 / 3
 
@@ -596,16 +621,17 @@ class TtSplitReservationWizard(models.TransientModel):
                 'infant': int(tot_infant)
             })
 
-            if book_obj.ledger_ids:
-                for led in book_obj.ledger_ids:
-                    if not led.is_reversed:
-                        led.reverse_ledger()
-                for prov in book_obj.provider_booking_ids:
-                    prov.action_create_ledger(book_obj.issued_uid.id)
-                for prov in new_book_obj.provider_booking_ids:
-                    prov.action_create_ledger(new_book_obj.issued_uid.id)
+            for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                led.reverse_ledger()
+            for aff_prov in aff_prov_list:
+                aff_prov.action_create_ledger(book_obj.issued_uid.id)
+            for aff_prov in new_aff_prov_list:
+                aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
 
         elif self.is_split_provider:
+            aff_pnr_list = []
+            aff_prov_list = []
+            new_aff_prov_list = []
             new_book_obj.sudo().write({
                 'adult': book_obj.adult,
                 'child': book_obj.child,
@@ -620,6 +646,13 @@ class TtSplitReservationWizard(models.TransientModel):
                 for rec2 in book_obj.provider_booking_ids:
                     if rec2.pnr == rec.pnr:
                         rec2.booking_id = new_book_obj.id
+                        if rec2.pnr:
+                            if rec2.pnr not in aff_pnr_list:
+                                aff_pnr_list.append(rec2.pnr)
+                        else:
+                            if rec2.sequence not in aff_pnr_list:
+                                aff_pnr_list.append(rec2.sequence)
+                        new_aff_prov_list.append(rec2)
                 for rec2 in rec.cost_service_charge_ids:
                     new_pax_id_list = []
                     for rec3 in rec2.passenger_airline_ids:
@@ -658,24 +691,22 @@ class TtSplitReservationWizard(models.TransientModel):
                         'passenger_airline_ids': [(6,0,new_pax_id_list)]
                     })
 
-            for rec in book_obj.provider_booking_ids:
-                for rec2 in rec.cost_service_charge_ids:
-                    rec2.is_ledger_created = False
-
             for rec in new_book_obj.provider_booking_ids:
                 for rec2 in rec.cost_service_charge_ids:
                     rec2.is_ledger_created = False
 
-            if book_obj.ledger_ids:
-                for led in book_obj.ledger_ids:
-                    if not led.is_reversed:
-                        led.reverse_ledger()
-                for prov in book_obj.provider_booking_ids:
-                    prov.action_create_ledger(book_obj.issued_uid.id)
-                for prov in new_book_obj.provider_booking_ids:
-                    prov.action_create_ledger(new_book_obj.issued_uid.id)
+            for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                led.reverse_ledger()
+            for aff_prov in aff_prov_list:
+                aff_prov.action_create_ledger(book_obj.issued_uid.id)
+            for aff_prov in new_aff_prov_list:
+                aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
 
         elif self.is_split_passenger:
+            aff_pnr_list = []
+            aff_prov_list = []
+            new_aff_prov_list = []
+
             tot_adult = 0
             tot_child = 0
             tot_infant = 0
@@ -683,6 +714,14 @@ class TtSplitReservationWizard(models.TransientModel):
             old_provider_list = []
             provider_dict = {}
             for rec in book_obj.provider_booking_ids:
+                if rec.pnr:
+                    if rec.pnr not in aff_pnr_list:
+                        aff_pnr_list.append(rec.pnr)
+                else:
+                    if rec.sequence not in aff_pnr_list:
+                        aff_pnr_list.append(rec.sequence)
+                aff_prov_list.append(rec)
+
                 old_cost_list = []
                 old_cost_dict = {}
                 for rec2 in rec.cost_service_charge_ids:
@@ -757,6 +796,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         'currency_id': rec.currency_id and rec.currency_id.id or False,
                     }
                     new_prov_obj = self.env['tt.provider.airline'].sudo().create(prov_val)
+                    new_aff_prov_list.append(new_prov_obj)
                     provider_dict.update({
                         str(rec.id): new_prov_obj.id
                     })
@@ -825,6 +865,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         })
                 else:
                     new_prov_obj = self.env['tt.provider.airline'].sudo().browse(int(provider_dict[str(rec.id)]))
+                    new_aff_prov_list.append(new_prov_obj)
                     for val in old_cost_dict.values():
                         dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
                         dict_cost_obj.sudo().write({
@@ -855,14 +896,12 @@ class TtSplitReservationWizard(models.TransientModel):
                 'infant': int(book_obj.infant) - int(tot_infant)
             })
 
-            if book_obj.ledger_ids:
-                for led in book_obj.ledger_ids:
-                    if not led.is_reversed:
-                        led.reverse_ledger()
-                for prov in book_obj.provider_booking_ids:
-                    prov.action_create_ledger(book_obj.issued_uid.id)
-                for prov in new_book_obj.provider_booking_ids:
-                    prov.action_create_ledger(new_book_obj.issued_uid.id)
+            for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                led.reverse_ledger()
+            for aff_prov in aff_prov_list:
+                aff_prov.action_create_ledger(book_obj.issued_uid.id)
+            for aff_prov in new_aff_prov_list:
+                aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
 
         book_obj.calculate_pnr_provider_carrier()
         new_book_obj.calculate_pnr_provider_carrier()
