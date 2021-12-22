@@ -255,6 +255,7 @@ class ReservationAirline(models.Model):
                     'currency_id': airline_obj.currency_id.id,
                     'service_type': airline_obj.provider_type_id.id,
                     'referenced_pnr': airline_obj.pnr,
+                    'referenced_document': airline_obj.name,
                     'old_segment_ids': [(6, 0, old_segment_list)],
                     'new_segment_ids': [(6, 0, new_segment_list)],
                     # 'reschedule_line_ids': [(6, 0, reschedule_line_list)],
@@ -710,15 +711,34 @@ class ReservationAirline(models.Model):
                 # New
                 resv_segment_str = ';'.join([key for key in resv_segment_dict.keys()])
                 for journey in commit_data['journeys']:
-                    for seg in journey['segments']:
-                        seg_key = '{origin}{destination}'.format(**seg)
-                        if seg_key not in resv_segment_dict:
-                            _logger.error('Segment not found %s, segment list in data %s' % (seg_key, resv_segment_str))
+                    orig_segment = journey['segments'][0]
+                    dest_segment = journey['segments'][-1]
+                    journey_key = '%s%s' % (orig_segment['origin'], dest_segment['destination'])
+                    if journey_key not in resv_journey_dict:
+                        _logger.error('Journey not found %s, journey list in data %s' % (journey_key, resv_segment_str))
+                        continue
+                    journey_prov_data = resv_journey_dict[journey_key]
+                    commit_segment_total = len(journey['segments'])
+                    prov_data_segment_total = len(journey_prov_data.segment_ids)
+                    if journey_prov_data.departure_date == orig_segment['departure_date'] and journey_prov_data.arrival_date == dest_segment['arrival_date']:
+                        if commit_segment_total == prov_data_segment_total:
                             continue
 
-                        prov_segment_data = resv_segment_dict[seg_key]
-                        if prov_segment_data.departure_date == seg['departure_date'] and prov_segment_data.arrival_date == seg['arrival_date']:
-                            continue
+                    for seg_obj in journey_prov_data.segment_ids:
+                        seg_obj.write({
+                            'journey_id': None
+                        })
+                        old_segment_list.append(seg_obj.id)
+
+                    for seg in journey['segments']:
+                        # seg_key = '{origin}{destination}'.format(**seg)
+                        # if seg_key not in resv_segment_dict:
+                        #     _logger.error('Segment not found %s, segment list in data %s' % (seg_key, resv_segment_str))
+                        #     continue
+                        #
+                        # prov_segment_data = resv_segment_dict[seg_key]
+                        # if prov_segment_data.departure_date == seg['departure_date'] and prov_segment_data.arrival_date == seg['arrival_date']:
+                        #     continue
 
                         provider_obj = rsv_prov_obj.provider_id if rsv_prov_obj else None
                         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
@@ -790,7 +810,7 @@ class ReservationAirline(models.Model):
                         # Membuat data baru untuk reservasi
                         n_seg_values.update({
                             'provider_id': provider_obj.id if provider_obj else None,
-                            'journey_id': prov_segment_data.journey_id.id if prov_segment_data.journey_id else None
+                            'journey_id': journey_prov_data.id,
                         })
                         n_resv_seg_obj = self.env['tt.segment.airline'].sudo().create(n_seg_values)
                         leg_values.update({
@@ -800,10 +820,10 @@ class ReservationAirline(models.Model):
                         self.env['tt.leg.airline'].sudo().create(leg_values)
 
                         # Menghilangkan data lama pada tt reservation airline
-                        prov_segment_data.write({
-                            'journey_id': None
-                        })
-                        old_segment_list.append(prov_segment_data.id)
+                        # prov_segment_data.write({
+                        #     'journey_id': None
+                        # })
+                        # old_segment_list.append(prov_segment_data.id)
                 # New End
 
                 # # TODO CEK DATA SSR DAN SEAT
