@@ -27,7 +27,7 @@ class TtProviderBus(models.Model):
     return_date = fields.Char('Return Date')
     arrival_date = fields.Char('Arrival Date')
     is_provider_group = fields.Boolean('Is Provider Group')
-    vendor_additional_info = fields.Text('Additional Info', help="""Vendor Additional Info (BUAT PNR Code traveloka)""")
+    payment_code = fields.Char('Payment Code') #payment code vendor
     sid_issued = fields.Char('SID Issued')#signature generate sendiri
     journey_ids = fields.One2many('tt.journey.bus', 'provider_booking_id', string='Journeys')
     cost_service_charge_ids = fields.One2many('tt.service.charge', 'provider_bus_booking_id', 'Cost Service Charges')
@@ -163,7 +163,7 @@ class TtProviderBus(models.Model):
             rec.write({
                 'pnr': provider_data['pnr'],
                 'pnr2': provider_data['pnr2'],
-                'vendor_additional_info': provider_data.get('vendor_additional_info') or '',
+                'payment_code': provider_data.get('payment_code') or '',
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
@@ -361,7 +361,7 @@ class TtProviderBus(models.Model):
             'destination': self.destination_id.code,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
-            'vendor_additional_info': self.vendor_additional_info,
+            'payment_code': self.payment_code,
             'journeys': journey_list,
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',

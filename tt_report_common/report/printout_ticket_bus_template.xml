@@ -59,7 +59,7 @@
                 <t t-foreach="provider_itin_id.journey_ids" t-as="provider_journey_id">
                     <div class="row" style="margin-left: 0px; margin-right: 0px">
                         <div class="col-2" style="text-align: center">
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.vendor_additional_info"/></label>
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.payment_code"/></label>
                         </div>
                         <div class="col-4" style="text-align: center">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

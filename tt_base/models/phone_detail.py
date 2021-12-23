@@ -141,8 +141,3 @@ class PhoneDetail(models.Model):
 
     def compute_number(self):
         self._compute_phone_number()
-
-    def generate_phone_number(self):
-        for rec in self.search([]):
-            _logger.info('%s %s' % (rec.agent_id,rec.id))
-            rec.compute_number()
