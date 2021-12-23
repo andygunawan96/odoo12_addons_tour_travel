@@ -31,17 +31,20 @@ class AgentPricing(models.Model):
     name = fields.Char('Name', compute='_compute_name', store=True)
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
+    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type (FIELD WILL BE DELETED)')
+
+    agent_type_name = fields.Char('Agent Type Name', compute='_compute_agent_type_name', store=True)
+    agent_type_access_type = fields.Selection(ACCESS_TYPE, 'Agent Type Access Type', default='allow', required=True)
+    agent_type_ids = fields.Many2many('tt.agent.type', 'tt_agent_pricing_agent_type_rel', 'pricing_id', 'agent_type_id', string='Agent Types')
 
     provider_type_name = fields.Char('Provider Type Name', compute='_compute_provider_type_name', store=True)
-    provider_type_access_type = fields.Selection(ACCESS_TYPE, 'Provider Type Access Type', default='allow', required=True)
-    provider_type_ids = fields.Many2many('tt.provider.type', 'tt_agent_pricing_provider_type_rel', 'pricing_id', 'provider_type_id',
-                                         string='Provider Types')
+    provider_type_access_type = fields.Selection(ACCESS_TYPE, 'Provider Type Access Type', default='all', required=True)
+    provider_type_ids = fields.Many2many('tt.provider.type', 'tt_agent_pricing_provider_type_rel', 'pricing_id', 'provider_type_id', string='Provider Types')
 
     agent_name = fields.Char('Agent Name', compute='_compute_agent_name', store=True)
     agent_access_type = fields.Selection(ACCESS_TYPE, 'Agent Access Type', default='all', required=True)
     agent_ids = fields.Many2many('tt.agent', 'tt_agent_pricing_agent_rel', 'pricing_id',
-                                 'agent_id', string='Agents', domain='[("agent_type_id", "=", agent_type_id)]')
+                                 'agent_id', string='Agents')
 
     provider_name = fields.Char('Provider Name', compute='_compute_provider_name', store=True)
     provider_access_type = fields.Selection(ACCESS_TYPE, 'Provider Access Type', default='all', required=True)
@@ -58,12 +61,32 @@ class AgentPricing(models.Model):
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
-    @api.depends('agent_type_id', 'provider_type_name', 'agent_name', 'provider_name', 'carrier_name')
+    def action_compute_all_name(self):
+        for rec in self:
+            rec._compute_agent_type_name()
+            rec._compute_provider_type_name()
+            rec._compute_provider_name()
+            rec._compute_carrier_name()
+            rec._compute_agent_name()
+            rec._compute_name()
+
+    def action_set_all_agent_type(self):
+        for rec in self:
+            if not rec.agent_type_id:
+                continue
+            if rec.agent_type_id.id in rec.agent_type_ids.ids:
+                continue
+
+            rec.write({
+                'agent_type_ids': [(4, rec.agent_type_id.id)]
+            })
+
+    @api.depends('agent_type_name', 'provider_type_name', 'agent_name', 'provider_name', 'carrier_name')
     def _compute_name(self):
         for rec in self:
             name_list = []
-            if rec.agent_type_id:
-                name_list.append(rec.agent_type_id.name)
+            if rec.agent_type_name:
+                name_list.append('%s' % rec.agent_type_name)
             if rec.agent_name:
                 name_list.append('[%s]' % rec.agent_name)
             if rec.carrier_name:
@@ -75,6 +98,17 @@ class AgentPricing(models.Model):
 
             name = ' '.join(name_list)
             rec.name = name
+
+    @api.depends('agent_type_access_type', 'agent_type_ids')
+    def _compute_agent_type_name(self):
+        for rec in self:
+            name_list = []
+            agent_type_name = 'For All Agent Types'
+            if rec.agent_type_access_type != 'all':
+                for agent_type in rec.agent_type_ids:
+                    name_list.append('%s' % agent_type.code)
+                agent_type_name = '%s in Agent Type %s' % (rec.agent_type_access_type.title(), ','.join(name_list))
+            rec.agent_type_name = agent_type_name
 
     @api.depends('provider_type_access_type', 'provider_type_ids')
     def _compute_provider_type_name(self):
@@ -132,7 +166,11 @@ class AgentPricing(models.Model):
             'id': self.id,
             'sequence': self.sequence,
             'name': self.name if self.name else '',
-            'agent_type_code': self.agent_type_id.code if self.agent_type_id else '',
+            # 'agent_type_code': self.agent_type_id.code if self.agent_type_id else '',
+            'agent_type': {
+                'access_type': self.agent_type_access_type,
+                'agent_type_code_list': [rec.code for rec in self.agent_type_ids]
+            },
             'provider': {
                 'access_type': self.provider_access_type,
                 'provider_code_list': [rec.code for rec in self.provider_ids]
@@ -157,7 +195,9 @@ class AgentPricing(models.Model):
     def get_agent_pricing_api(self):
         try:
             objs = self.env['tt.agent.pricing'].sudo().search([])
-            agent_pricing_data = {}
+            agent_pricing_data = {
+                'agent_pricing_list': []
+            }
             date_now = datetime.now().strftime(FORMAT_DATETIME)
             expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
             expired_date = expired_date.strftime(FORMAT_DATETIME)
@@ -166,14 +206,18 @@ class AgentPricing(models.Model):
                     continue
 
                 vals = obj.get_data()
-                agent_type_code = vals['agent_type_code']
-                if agent_type_code not in agent_pricing_data:
-                    agent_pricing_data[agent_type_code] = {
-                        'agent_pricing_list': [],
-                        'create_date': date_now,
-                        'expired_date': expired_date,
-                    }
-                agent_pricing_data[agent_type_code]['agent_pricing_list'].append(vals)
+                # December 23, 2021 - SAM
+                # Update struktur pricing agent
+
+                # agent_type_code = vals['agent_type_code']
+                # if agent_type_code not in agent_pricing_data:
+                #     agent_pricing_data[agent_type_code] = {
+                #         'agent_pricing_list': [],
+                #         'create_date': date_now,
+                #         'expired_date': expired_date,
+                #     }
+                # agent_pricing_data[agent_type_code]['agent_pricing_list'].append(vals)
+                agent_pricing_data['agent_pricing_list'].append(vals)
 
             payload = {
                 'agent_pricing_data': agent_pricing_data

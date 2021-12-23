@@ -7,6 +7,8 @@
             <form>
                 <header>
                     <button string="Test Get Data" type="object" name="test_get_data" groups="base.group_no_one"/>
+                    <button string="Action Compute All Name" type="object" name="action_compute_all_name" groups="base.group_no_one"/>
+                    <button string="Action Set All Agent Type Value to One2Many" type="object" name="action_set_all_agent_type" groups="base.group_no_one"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -31,6 +33,18 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Agent Types" name="agent_types">
+                            <group>
+                                <group>
+                                    <field name="agent_type_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Agent Type List">
+                                <field name="agent_type_ids" nolabel="1"/>
+                            </group>
+                        </page>
                         <page string="Provider Types" name="provider_types">
                             <group>
                                 <group>
@@ -248,6 +262,7 @@ YR,D5,G7</pre>
                                 </page>
                             </notebook>
                         </page>
+                        <!--
                         <page string="Commission" name="commission">
                             <notebook>
                                 <page string="Agent" name="agent">
@@ -321,6 +336,7 @@ YR,D5,G7</pre>
 Uplines sequence order from parent to HO (Up to Down)</pre>
                             </div>
                         </page>
+                        -->
                         <page string="Reservation" name="reservation">
                             <group string="Reservation Upsell">
                                 <group string="By Percentage">
