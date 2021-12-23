@@ -27,7 +27,7 @@ class ttCronTopUpValidator(models.Model):
                     if transaction:
                         date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"))
                         if date_exist:
-                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C')
+                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C' and x.transaction_connection != 'connect') #check mutasi bank yg belum connect saja
                             if result:
                                 if result.transaction_message == '':
                                     reference_code = result.transaction_code
