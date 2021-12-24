@@ -19,7 +19,7 @@ class AgentReportRecapReservation(models.Model):
         provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
         currency.name as currency_name,
         agent_type.name as agent_type_name,
-        ledger.debit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, 
+        ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr, 
         ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider, 
         rsv.booker_insentif as commission_booker
         """
@@ -336,6 +336,7 @@ class AgentReportRecapReservation(models.Model):
             for provider_type in provider_types:
                 report_lines = self._lines(date_from, date_to, agent_id, provider_type, state)
                 report_lines = self._convert_data(report_lines, provider_type)
+                report_lines = self._convert_data_commission(report_lines, provider_type)
                 for line in report_lines:
                     lines.append(line)
         return lines
@@ -391,6 +392,12 @@ class AgentReportRecapReservation(models.Model):
             except:
                 pass
             rec['state'] = variables.BOOKING_STATE_STR[rec['state']] if rec['state'] else ''  # STATE_OFFLINE_STR[rec['state']]
+        return lines
+
+    def _convert_data_commission(self, lines, provider_type):
+        for rec in lines:
+            if rec['ledger_transaction_type'] == 3: #PADA LEDGER COMMISSION UPDATE DATA DEBIT DENGAN CREDIT
+                rec['debit'] -= rec['credit']
         return lines
 
     @staticmethod

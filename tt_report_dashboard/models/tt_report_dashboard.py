@@ -748,7 +748,7 @@ class TtReportDashboard(models.Model):
                     if i['ledger_transaction_type'] == 3:
                         if i['ledger_id'] not in list_person:
                             if is_ho or agent_name_context == i['ledger_agent_name']:
-                                summary_customer[person_index]['profit'] += i['debit']
+                                summary_customer[person_index]['profit'] += i['debit'] - i['credit']
                                 list_person.append(i['ledger_id'])
                 except:
                     pass
@@ -759,7 +759,7 @@ class TtReportDashboard(models.Model):
                     if i['ledger_transaction_type'] == 3:
                         if i['ledger_id'] not in list_customer:
                             if is_ho or agent_name_context == i['ledger_agent_name']:
-                                summary_customer_parent[person_type_index]['profit'] += i['debit']
+                                summary_customer_parent[person_type_index]['profit'] += i['debit'] - i['credit']
                                 list_customer.append(i['ledger_id'])
                 except:
                     pass
@@ -1192,14 +1192,16 @@ class TtReportDashboard(models.Model):
                             summary_provider[provider_index][i['reservation_state']] = 1
                 reservation_id_list_issued[i['provider_type_name']].append(i['reservation_id'])
 
+                #profit
                 if i['ledger_transaction_type'] == 3:
                     if is_ho or agent_name_context == i['ledger_agent_name']:
                         if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                             summary_provider[provider_index]['total_commission'] += i['debit'] - i['credit']
                             ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
-                    if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                        summary_provider[provider_index]['total_price'] += i['amount']
-                        reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+                #revenue
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    summary_provider[provider_index]['total_price'] += i['amount']
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
 
 
@@ -2552,13 +2554,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -3121,13 +3123,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -3619,13 +3621,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -3988,13 +3990,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -4354,13 +4356,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -4718,13 +4720,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -5076,13 +5078,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -5436,13 +5438,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -5794,13 +5796,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -6151,13 +6153,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -6507,13 +6509,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -6862,13 +6864,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -7217,13 +7219,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -7783,13 +7785,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -8138,13 +8140,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -8493,13 +8495,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -8848,13 +8850,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -9203,13 +9205,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
