@@ -45,12 +45,20 @@ class ProviderPricing(models.Model):
     carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_provider_pricing_carrier_rel', 'pricing_id', 'carrier_id',
                                    string='Carriers', domain='[("provider_type_id", "=", provider_type_id)]')
 
+    agent_type_name = fields.Char('Agent Type Name', compute='_compute_agent_type_name', store=True)
+    agent_type_access_type = fields.Selection(ACCESS_TYPE, 'Agent Type Access Type', default='all', required=True)
+    agent_type_ids = fields.Many2many('tt.agent.type', 'tt_provider_pricing_agent_type_rel', 'pricing_id', 'agent_type_id', string='Agent Types')
+
+    agent_name = fields.Char('Agent Name', compute='_compute_agent_name', store=True)
+    agent_access_type = fields.Selection(ACCESS_TYPE, 'Agent Access Type', default='all', required=True)
+    agent_ids = fields.Many2many('tt.agent', 'tt_provider_pricing_agent_rel', 'pricing_id', 'agent_id', string='Agents')
+
     line_ids = fields.One2many('tt.provider.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
-    @api.depends('provider_type_id', 'provider_name', 'carrier_name')
+    @api.depends('provider_type_id', 'provider_name', 'carrier_name', 'agent_type_name', 'agent_name')
     def _compute_name(self):
         for rec in self:
             name_list = []
@@ -85,6 +93,28 @@ class ProviderPricing(models.Model):
                     name_list.append('%s (%s)' % (carrier.name, carrier.code))
                 carrier_name = '%s for Carrier %s' % (rec.carrier_access_type.title(), ','.join(name_list))
             rec.carrier_name = carrier_name
+
+    @api.depends('agent_type_access_type', 'agent_type_ids')
+    def _compute_agent_type_name(self):
+        for rec in self:
+            name_list = []
+            agent_type_name = 'For All Agent Types'
+            if rec.agent_type_access_type != 'all':
+                for agent_type in rec.agent_type_ids:
+                    name_list.append('%s' % agent_type.code)
+                agent_type_name = '%s in Agent Type %s' % (rec.agent_type_access_type.title(), ','.join(name_list))
+            rec.agent_type_name = agent_type_name
+
+    @api.depends('agent_access_type', 'agent_ids')
+    def _compute_agent_name(self):
+        for rec in self:
+            name_list = []
+            agent_name = 'for All Agents'
+            if rec.agent_access_type != 'all':
+                for agent in rec.agent_ids:
+                    name_list.append('%s' % agent.name)
+                agent_name = '%s for %s' % (rec.agent_access_type.title(), ','.join(name_list))
+            rec.agent_name = agent_name
 
     def test_get_data(self):
         res = self.get_data()
