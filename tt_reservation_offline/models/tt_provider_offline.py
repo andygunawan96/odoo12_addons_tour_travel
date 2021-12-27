@@ -563,8 +563,8 @@ class ProviderOffline(models.Model):
 
     def create_service_charge(self):
         self.delete_service_charge()
-        scs_list = self.generate_sc_repricing()
-        # scs_list = self.generate_sc_repricing_v2()
+        # scs_list = self.generate_sc_repricing()
+        scs_list = self.generate_sc_repricing_v2()
 
         # Insert into cost service charge
         service_chg_obj = self.env['tt.service.charge']
@@ -986,8 +986,8 @@ class ProviderOffline(models.Model):
 
     def create_service_charge_hotel(self, index):
         self.delete_service_charge()
-        scs_list = self.generate_sc_repricing_hotel(index)
-        # scs_list = self.generate_sc_repricing_hotel_v2(index)
+        # scs_list = self.generate_sc_repricing_hotel(index)
+        scs_list = self.generate_sc_repricing_hotel_v2(index)
 
         # Insert into cost service charge
         service_chg_obj = self.env['tt.service.charge']

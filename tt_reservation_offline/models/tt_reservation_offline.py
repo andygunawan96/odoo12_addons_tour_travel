@@ -1511,8 +1511,8 @@ class IssuedOffline(models.Model):
         #is commission, send total_amount to v2
         for rec in self:
             if rec.offline_provider_type:
-                all_scs_list = rec.generate_sc_repricing()
-                # all_scs_list = rec.generate_sc_repricing_v2()
+                # all_scs_list = rec.generate_sc_repricing()
+                all_scs_list = rec.generate_sc_repricing_v2()
 
                 rec.agent_commission = 0
                 rec.parent_agent_commission = 0
