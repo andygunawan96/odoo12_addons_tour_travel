@@ -33,7 +33,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Agent Types" name="agent_types">
+                        <page string="Agents" name="agent_types">
                             <group>
                                 <group>
                                     <field name="agent_type_access_type" widget="radio"/>
@@ -44,20 +44,6 @@
                             <group string="Agent Type List">
                                 <field name="agent_type_ids" nolabel="1"/>
                             </group>
-                        </page>
-                        <page string="Provider Types" name="provider_types">
-                            <group>
-                                <group>
-                                    <field name="provider_type_access_type" widget="radio"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
-                            <group string="Provider Type List">
-                                <field name="provider_type_ids" nolabel="1"/>
-                            </group>
-                        </page>
-                        <page string="Agents" name="agents">
                             <group>
                                 <group>
                                     <field name="agent_access_type" widget="radio"/>
@@ -69,7 +55,17 @@
                                 <field name="agent_ids" nolabel="1"/>
                             </group>
                         </page>
-                        <page string="Providers" name="providers">
+                        <page string="Providers and Carriers" name="provider_types">
+                            <group>
+                                <group>
+                                    <field name="provider_type_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Provider Type List">
+                                <field name="provider_type_ids" nolabel="1"/>
+                            </group>
                             <group>
                                 <group>
                                     <field name="provider_access_type" widget="radio"/>
@@ -80,8 +76,6 @@
                             <group string="Provider List">
                                 <field name="provider_ids" nolabel="1"/>
                             </group>
-                        </page>
-                        <page string="Carriers" name="carriers">
                             <group>
                                 <group>
                                     <field name="carrier_access_type" widget="radio"/>
