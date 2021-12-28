@@ -31,7 +31,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Customer Parent Types" name="customer_parent_types">
+                        <page string="Customer Parents" name="customer_parent_types">
                             <group>
                                 <group>
                                     <field name="customer_parent_type_access_type" widget="radio"/>
@@ -42,8 +42,6 @@
                             <group string="Customer Parent Type List">
                                 <field name="customer_parent_type_ids" nolabel="1"/>
                             </group>
-                        </page>
-                        <page string="Customer Parents" name="customer_parents">
                             <group>
                                 <group>
                                     <field name="customer_parent_access_type" widget="radio"/>
@@ -62,7 +60,7 @@
                                 </field>
                             </group>
                         </page>
-                        <page string="Provider Types" name="provider_types">
+                        <page string="Providers and Carriers" name="provider_types">
                             <group>
                                 <group>
                                     <field name="provider_type_access_type" widget="radio"/>
@@ -73,8 +71,6 @@
                             <group string="Provider Type List">
                                 <field name="provider_type_ids" nolabel="1"/>
                             </group>
-                        </page>
-                        <page string="Providers" name="providers">
                             <group>
                                 <group>
                                     <field name="provider_access_type" widget="radio"/>
@@ -85,8 +81,6 @@
                             <group string="Provider List">
                                 <field name="provider_ids" nolabel="1"/>
                             </group>
-                        </page>
-                        <page string="Carriers" name="carriers">
                             <group>
                                 <group>
                                     <field name="carrier_access_type" widget="radio"/>
