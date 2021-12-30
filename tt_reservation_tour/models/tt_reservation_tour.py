@@ -549,7 +549,7 @@ class ReservationTour(models.Model):
             provider_booking_list = []
             for prov in book_obj.provider_booking_ids:
                 provider_booking_list.append(prov.to_dict())
-            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            response = book_obj.to_dict(context)
             response.update({
                 'provider_booking': provider_booking_list,
                 'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False
@@ -584,7 +584,7 @@ class ReservationTour(models.Model):
             provider_booking_list = []
             for prov in book_obj.provider_booking_ids:
                 provider_booking_list.append(prov.to_dict())
-            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            response = book_obj.to_dict(context)
             response.update({
                 'provider_booking': provider_booking_list,
                 'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
@@ -741,7 +741,7 @@ class ReservationTour(models.Model):
             provider_booking_list = []
             for prov in book_obj.provider_booking_ids:
                 provider_booking_list.append(prov.to_dict())
-            response = book_obj.to_dict(context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id)
+            response = book_obj.to_dict(context)
             response.update({
                 'provider_booking': provider_booking_list,
                 'booking_uuid': book_obj.booking_uuid and book_obj.booking_uuid or False,
