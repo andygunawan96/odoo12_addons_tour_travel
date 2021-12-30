@@ -421,6 +421,21 @@ class ReservationAirline(models.Model):
             if not airline_obj:
                 raise RequestException(1001, additional_message="Airline reservation %s is not found in our system." % order_id)
 
+            # hapus ticket ori
+            for ticket_ori in airline_obj.printout_ticket_original_ids:
+                ticket_ori.active = False
+            # hapus ticket yg sudah ada
+            if airline_obj.printout_ticket_id:
+                airline_obj.printout_ticket_id.unlink()
+            if airline_obj.printout_ticket_price_id:
+                airline_obj.printout_ticket_price_id.unlink()
+            if airline_obj.printout_ticket_price_id:
+                airline_obj.printout_ticket_price_id.unlink()
+            if airline_obj.printout_ho_invoice_id:
+                airline_obj.printout_ho_invoice_id.unlink()
+            if airline_obj.printout_vendor_invoice_id:
+                airline_obj.printout_vendor_invoice_id.unlink()
+
             resv_journey_dict = {}
             resv_segment_dict = {}
             for journey in airline_obj.journey_ids:

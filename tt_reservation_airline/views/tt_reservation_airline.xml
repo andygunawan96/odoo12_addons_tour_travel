@@ -155,6 +155,7 @@
                         <tree>
                             <field name="name"/>
                             <field name="url"/>
+                            <field name="active"/>
                         </tree>
                     </field>
                 </page>

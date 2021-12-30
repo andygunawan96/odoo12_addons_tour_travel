@@ -44,7 +44,7 @@ class ReservationAirline(models.Model):
 
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     printout_ticket_original_ids = fields.Many2many('tt.upload.center', 'reservation_airline_attachment_rel', 'ori_ticket_id',
-                                       'attachment_id', string='Attachments')
+                                       'attachment_id', string='Attachments', domain=['|', ('active', '=', True), ('active', '=', False)])
     is_hold_date_sync = fields.Boolean('Hold Date Sync', compute='compute_hold_date_sync', default=True, store=True)
 
     @api.multi
@@ -1811,7 +1811,8 @@ class ReservationAirline(models.Model):
                 }
             )
             attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
-        book_obj.printout_ticket_original_ids = [(6, 0, attachments)]
+        for rec_attachment in attachments:
+            book_obj.printout_ticket_original_ids = [(4, rec_attachment)]
 
     @api.multi
     def print_eticket_original(self, data, ctx=None):
@@ -1830,8 +1831,12 @@ class ReservationAirline(models.Model):
         datas['is_with_price'] = True
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
+        has_ticket_ori = False
+        for rec_ticket_ori in book_obj.printout_ticket_original_ids:
+            if rec_ticket_ori.active == True:
+                has_ticket_ori = True
 
-        if not book_obj.printout_ticket_original_ids:
+        if not has_ticket_ori:
             # gateway get ticket
             req = {"data": []}
             for provider_booking_obj in book_obj.provider_booking_ids:
@@ -1854,9 +1859,10 @@ class ReservationAirline(models.Model):
         else:
             url = []
             for ticket in book_obj.printout_ticket_original_ids:
-                url.append({
-                    'url': ticket.url
-                })
+                if ticket.active == True:
+                    url.append({
+                        'url': ticket.url
+                    })
             return url
 
     @api.multi
