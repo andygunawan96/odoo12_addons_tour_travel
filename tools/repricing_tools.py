@@ -1210,7 +1210,7 @@ class ProviderPricing(object):
                         is_destination = True
                     elif destination_country and destination_country in route_data_destination['country_code_list']:
                         is_destination = True
-                elif rule['route']['origin']['access_type'] == 'restrict':
+                elif route_data_destination['access_type'] == 'restrict':
                     if destination_code and destination_code not in route_data_destination['destination_code_list']:
                         is_destination = True
                     elif destination_city and destination_city not in route_data_destination['city_code_list']:
@@ -1544,7 +1544,7 @@ class AgentPricing(object):
                         is_destination = True
                     elif destination_country and destination_country in route_data_destination['country_code_list']:
                         is_destination = True
-                elif rule['route']['origin']['access_type'] == 'restrict':
+                elif route_data_destination['access_type'] == 'restrict':
                     if destination_code and destination_code not in route_data_destination['destination_code_list']:
                         is_destination = True
                     elif destination_city and destination_city not in route_data_destination['city_code_list']:
@@ -1943,7 +1943,7 @@ class CustomerPricing(object):
                         is_destination = True
                     elif destination_country and destination_country in route_data_destination['country_code_list']:
                         is_destination = True
-                elif rule['route']['origin']['access_type'] == 'restrict':
+                elif route_data_destination['access_type'] == 'restrict':
                     if destination_code and destination_code not in route_data_destination['destination_code_list']:
                         is_destination = True
                     elif destination_city and destination_city not in route_data_destination['city_code_list']:
@@ -2210,7 +2210,7 @@ class AgentCommission(object):
                         is_destination = True
                     elif destination_country and destination_country in route_data_destination['country_code_list']:
                         is_destination = True
-                elif rule['route']['origin']['access_type'] == 'restrict':
+                elif route_data_destination['access_type'] == 'restrict':
                     if destination_code and destination_code not in route_data_destination['destination_code_list']:
                         is_destination = True
                     elif destination_city and destination_city not in route_data_destination['city_code_list']:
@@ -2417,7 +2417,7 @@ class RepricingToolsV2(object):
         self.provider_pricing = ProviderPricing(provider_type)
         self.agent_pricing = AgentPricing(self.agent_type)
         self.customer_pricing = CustomerPricing(self.agent_id)
-        self.agent_commission = AgentCommission(self.agent_id)
+        self.agent_commission = AgentCommission(self.agent_type)
 
     def _default_sc_summary_values(self):
         res = {
