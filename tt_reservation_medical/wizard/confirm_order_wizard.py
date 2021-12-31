@@ -21,7 +21,8 @@ class ConfirmOrdermedicalWizard(models.TransientModel):
         if not self.analyst_ids:
             raise UserError("Please Pick Timeslot and Input Analyst")
         self.booking_id.write({
-            'analyst_ids': [(6,0,self.analyst_ids.ids)]
+            'analyst_ids': [(6,0,self.analyst_ids.ids)],
+            'state_vendor': 'confirmed_order'
         })
 
         try:
