@@ -159,7 +159,7 @@
             <field name="model">payment.acquirer</field>
             <field name="arch" type="xml">
                 <tree string="Payment Acquirer">
-                    <field name="sequence" widger="handle"/>.
+                    <field name="sequence" widget="handle"/>
                     <field name="name"/>
                     <field name="provider_id"/>
                     <field name="agent_id"/>

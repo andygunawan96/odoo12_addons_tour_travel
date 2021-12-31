@@ -745,19 +745,22 @@ class TtReportDashboard(models.Model):
                 # by customer
                 person_index = self.customer_index(summary_customer, {'customer_id': i['customer_id'], 'customer_name': i['customer_name']})
                 try:
-                    if i['ledger_transaction_type'] == 3 and is_ho or i['ledger_transaction_type'] == 3 and agent_name_context == i['ledger_agent_name']:
-                        summary_customer[person_index]['profit'] += i['debit']
-
-                    list_person.append(i['ledger_id'])
+                    if i['ledger_transaction_type'] == 3:
+                        if i['ledger_id'] not in list_person:
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
+                                summary_customer[person_index]['profit'] += i['debit'] - i['credit']
+                                list_person.append(i['ledger_id'])
                 except:
                     pass
 
                 # by customer type
                 person_type_index = self.customer_parent_index(summary_customer_parent, {'customer_parent_id': i['customer_parent_id'], 'customer_parent_name': i['customer_parent_name']})
                 try:
-                    if i['ledger_transaction_type'] == 3 and is_ho or i['ledger_transaction_type'] == 3 and agent_name_context == i['ledger_agent_name']:
-                        summary_customer_parent[person_index]['profit'] += i['debit']
-                    list_customer.append(i['ledger_id'])
+                    if i['ledger_transaction_type'] == 3:
+                        if i['ledger_id'] not in list_customer:
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
+                                summary_customer_parent[person_type_index]['profit'] += i['debit'] - i['credit']
+                                list_customer.append(i['ledger_id'])
                 except:
                     pass
 
@@ -845,6 +848,7 @@ class TtReportDashboard(models.Model):
     # profit = reservation data from function who calls this function (reservation data contains profit data)
     def get_report_group_by_chanel(self, data, profit, is_ho, context={}):
         try:
+            agent_name_context = None
             agent_id_context = None
             if context:
                 agent_name_context = context['co_agent_name']
@@ -914,9 +918,11 @@ class TtReportDashboard(models.Model):
             for i in profit:
                 person_index = self.person_index_by_name(summary_chanel, {'agent_name': i['ledger_agent_name'], 'agent_type_name': i['ledger_agent_type_name']})
                 try:
-                    if i['ledger_transaction_type'] == 3 and is_ho or i['ledger_transaction_type'] == 3 and agent_name_context == i['ledger_agent_name']:
-                        summary_chanel[person_index]['profit'] += i['debit']
-                    list_id.append(i['ledger_id'])
+                    if i['ledger_id'] not in list_id:
+                        if i['ledger_transaction_type'] == 3:
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
+                                summary_chanel[person_index]['profit'] += i['debit'] - i['credit']
+                            list_id.append(i['ledger_id'])
 
                 except:
                     pass
@@ -1065,7 +1071,8 @@ class TtReportDashboard(models.Model):
             summary_provider = []
 
             # declare current id
-            current_id = {} # IVAN testing ganti list karena jika case beda id id sama tetapi beda order bisa ketambah
+            reservation_id_list = {} #dict of list provider agar id kembar tidak tertumpuk
+            ledger_id_list = {} #dict of list provider agar id kembar tidak tertumpuk
             current_journey = ''
             current_segment = ''
             current_pnr = {}
@@ -1075,73 +1082,83 @@ class TtReportDashboard(models.Model):
 
             # for every data in issued_values['lines']
             # iterate every value in chanel_values['lines']
-            for i in issued_values['lines']:
+            for idx,i in enumerate(issued_values['lines']):
                 # if for some reason current reservation_id is the same as current_id (previous iteration id)
                 # then continue
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                if month_index == -1:
-                    # data is not exist
-                    # create data
-                    temp_dict = {
-                        'year': i['issued_year'],
-                        'month_index': int(i['issued_month']),
-                        'month': month[int(i['issued_month']) - 1],
-                        'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                    }
-                    # add the first data
-                    # seperate string date to extract day date
-                    splits = i['reservation_issued_date'].split("-")
-                    day_index = int(splits[2]) - 1
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
 
-                    # assign the first value to temp dict
-                    temp_dict['detail'][day_index]['reservation'] += 1
-                    temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount']
 
-                    # add to global variable
-                    total += i['amount']
-                    num_data += 1
-                    # add to final list
-                    summary_issued.append(temp_dict)
-                else:
-                    # data exist
-                    if i['reservation_id'] not in current_id[i['provider_type_name']]:
+                        # add to global variable
+                        total += i['amount']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
                         summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
                         total += i['amount']
                         num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
-                # proceed profit first graph
-                if i['ledger_transaction_type'] == 3:
-                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                         'month': month[int(i['issued_month']) - 1]})
-                    splits = i['reservation_issued_date'].split("-")
-                    day_index = int(splits[2]) - 1
-                    if is_ho and i['ledger_agent_type_name'] == 'HO':
-                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        profit_total += i['debit'] - i['credit']
-                        profit_ho += i['debit'] - i['credit']
-                    elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
-                        summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        profit_total += i['debit'] - i['credit']
-                        profit_agent += i['debit'] - i['credit']
-                    elif i['ledger_agent_type_name'] != 'HO': # BUAT PARENT AGENT
-                        if is_ho:
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
-                        profit_agent_parent += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
 
-                current_id[i['provider_type_name']].append(i['reservation_id'])
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
+            reservation_id_list_issued = {}  # dict of list provider agar id kembar tidak tertumpuk
+            ledger_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            current_id = {}  # IVAN testing ganti list karena jika case beda id id sama tetapi beda order bisa ketambah
             for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
+                if not reservation_id_list_issued.get(i['provider_type_name']):
+                    reservation_id_list_issued[i['provider_type_name']] = []
                 if i['provider_type_name'] == 'Offline':
                     to_check = i['provider_type_name'] + "_" + i['reservation_offline_provider_type']
                     provider_index = self.check_index(summary_provider, "provider", to_check)
@@ -1154,8 +1171,8 @@ class TtReportDashboard(models.Model):
                             'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
                             'counter': 1,
                             i['reservation_state']: 1,
-                            'total_price': i['amount'],
-                            'total_commission': i['commission'] if is_ho == False else i['commission_amount']
+                            'total_price': 0,
+                            'total_commission': 0
                         }
                     else:
                         temp_dict = {
@@ -1167,20 +1184,25 @@ class TtReportDashboard(models.Model):
                         }
                     summary_provider.append(temp_dict)
                 else:
-                    if i['reservation_id'] not in current_id[i['provider_type_name']]:
+                    if i['reservation_id'] not in reservation_id_list_issued[i['provider_type_name']]:
                         summary_provider[provider_index]['counter'] += 1
                         try:
                             summary_provider[provider_index][i['reservation_state']] += 1
                         except:
                             summary_provider[provider_index][i['reservation_state']] = 1
+                reservation_id_list_issued[i['provider_type_name']].append(i['reservation_id'])
 
-
+                #profit
                 if i['ledger_transaction_type'] == 3:
                     if is_ho or agent_name_context == i['ledger_agent_name']:
-                        summary_provider[provider_index]['total_price'] += i['amount']
-                        summary_provider[provider_index]['total_commission'] += i['debit']
+                        if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                            summary_provider[provider_index]['total_commission'] += i['debit'] - i['credit']
+                            ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
+                #revenue
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    summary_provider[provider_index]['total_price'] += i['amount']
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
-                current_id[i['provider_type_name']].append(i['reservation_id'])
 
 
             ##
@@ -2532,13 +2554,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -3101,13 +3123,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -3599,13 +3621,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -3968,13 +3990,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -4334,13 +4356,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -4698,13 +4720,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -5056,13 +5078,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -5416,13 +5438,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -5774,13 +5796,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -6131,13 +6153,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -6487,13 +6509,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -6842,13 +6864,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -7197,13 +7219,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -7763,13 +7785,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -8118,13 +8140,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -8473,13 +8495,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -8828,13 +8850,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)
@@ -9183,13 +9205,13 @@ class TtReportDashboard(models.Model):
             # fourth and fifth with customer and customer parent respectively
 
             # get by chanel
-            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho)
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
 
             # adding chanel_data graph
             to_return.update(chanel_data)
 
             # if agent then we will populate with customer data (aka booker, and customer parent)
-            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
 
             # add customer to data
             to_return.update(customer_data)

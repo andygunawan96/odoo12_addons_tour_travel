@@ -1210,7 +1210,7 @@ class ProviderPricing(object):
                         is_destination = True
                     elif destination_country and destination_country in route_data_destination['country_code_list']:
                         is_destination = True
-                elif rule['route']['origin']['access_type'] == 'restrict':
+                elif route_data_destination['access_type'] == 'restrict':
                     if destination_code and destination_code not in route_data_destination['destination_code_list']:
                         is_destination = True
                     elif destination_city and destination_city not in route_data_destination['city_code_list']:
@@ -1420,9 +1420,10 @@ class AgentPricing(object):
         if not data:
             return False
 
-        for agent_type, rec in data.get('agent_pricing_data', {}).items():
-            if self.agent_type == agent_type:
-                self.data = rec
+        self.data = data.get('agent_pricing_data', {})
+        # for agent_type, rec in data.get('agent_pricing_data', {}).items():
+        #     if self.agent_type == agent_type:
+        #         self.data = rec
         return True
 
     def get_backend_data(self):
@@ -1443,10 +1444,21 @@ class AgentPricing(object):
             if rec['state'] == 'disable':
                 continue
 
+            is_agent_type = False
             is_provider_type = False
             is_agent = False
             is_provider = False
             is_carrier = False
+            agent_type_data = rec['agent_type']
+            if agent_type_data['access_type'] == 'all':
+                is_agent_type = True
+            elif not self.agent_type:
+                pass
+            elif agent_type_data['access_type'] == 'allow' and self.agent_type in agent_type_data['agent_type_code_list']:
+                is_agent_type = True
+            elif agent_type_data['access_type'] == 'restrict' and self.agent_type not in agent_type_data['agent_type_code_list']:
+                is_agent_type = True
+
             provider_type_data = rec['provider_type']
             if provider_type_data['access_type'] == 'all':
                 is_provider_type = True
@@ -1487,7 +1499,7 @@ class AgentPricing(object):
             elif carrier_data['access_type'] == 'restrict' and carrier_code not in carrier_data['carrier_code_list']:
                 is_carrier = True
 
-            result_list = [is_provider_type, is_agent, is_provider, is_carrier]
+            result_list = [is_agent_type, is_provider_type, is_agent, is_provider, is_carrier]
             if not all(res for res in result_list):
                 continue
 
@@ -1532,7 +1544,7 @@ class AgentPricing(object):
                         is_destination = True
                     elif destination_country and destination_country in route_data_destination['country_code_list']:
                         is_destination = True
-                elif rule['route']['origin']['access_type'] == 'restrict':
+                elif route_data_destination['access_type'] == 'restrict':
                     if destination_code and destination_code not in route_data_destination['destination_code_list']:
                         is_destination = True
                     elif destination_city and destination_city not in route_data_destination['city_code_list']:
@@ -1931,7 +1943,7 @@ class CustomerPricing(object):
                         is_destination = True
                     elif destination_country and destination_country in route_data_destination['country_code_list']:
                         is_destination = True
-                elif rule['route']['origin']['access_type'] == 'restrict':
+                elif route_data_destination['access_type'] == 'restrict':
                     if destination_code and destination_code not in route_data_destination['destination_code_list']:
                         is_destination = True
                     elif destination_city and destination_city not in route_data_destination['city_code_list']:
@@ -2061,6 +2073,312 @@ class CustomerPricing(object):
         return payload
 
 
+class AgentCommission(object):
+    def __init__(self, agent_type):
+        self.agent_type = agent_type
+        self.data = {}
+        self.do_config()
+
+    def do_config(self):
+        data = self.get_backend_data()
+        if not data:
+            return False
+
+        self.data = data.get('agent_commission_data', {})
+        # for agent_type, rec in data.get('agent_commission_data', {}).items():
+        #     if self.agent_type == agent_type:
+        #         self.data = rec
+        return True
+
+    def get_backend_data(self):
+        try:
+            payload = request.env['tt.agent.commission'].sudo().get_agent_commission_api()
+        except Exception as e:
+            _logger.error('Error Get Agent Commission Backend Data, %s' % str(e))
+            payload = {}
+        return payload
+
+    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city,
+                         origin_country, destination_code, destination_city, destination_country, class_of_service_list,
+                         charge_code_list, pricing_datetime, **kwargs):
+        # if self.is_data_expired():
+        #     self.do_config()
+        if not self.data:
+            return {}
+
+        for rec in self.data['agent_commission_list']:
+            if rec['state'] == 'disable':
+                continue
+
+            is_agent_type = False
+            is_provider_type = False
+            is_agent = False
+            is_provider = False
+            is_carrier = False
+            agent_type_data = rec['agent_type']
+            if agent_type_data['access_type'] == 'all':
+                is_agent_type = True
+            elif not self.agent_type:
+                pass
+            elif agent_type_data['access_type'] == 'allow' and self.agent_type in agent_type_data['agent_type_code_list']:
+                is_agent_type = True
+            elif agent_type_data['access_type'] == 'restrict' and self.agent_type not in agent_type_data['agent_type_code_list']:
+                is_agent_type = True
+
+            provider_type_data = rec['provider_type']
+            if provider_type_data['access_type'] == 'all':
+                is_provider_type = True
+            elif not provider_type_code:
+                pass
+            elif provider_type_data['access_type'] == 'allow' and provider_type_code in provider_type_data['provider_type_code_list']:
+                is_provider_type = True
+            elif provider_type_data['access_type'] == 'restrict' and provider_type_code not in provider_type_data['provider_type_code_list']:
+                is_provider_type = True
+
+            agent_data = rec['agent']
+            if agent_data['access_type'] == 'all':
+                is_agent = True
+            elif not agent_id:
+                pass
+            elif agent_data['access_type'] == 'allow' and agent_id in agent_data['agent_id_list']:
+                is_agent = True
+            elif agent_data['access_type'] == 'restrict' and agent_id not in agent_data['agent_id_list']:
+                is_agent = True
+
+            provider_data = rec['provider']
+            if provider_data['access_type'] == 'all':
+                is_provider = True
+            elif not provider_code:
+                pass
+            elif provider_data['access_type'] == 'allow' and provider_code in provider_data['provider_code_list']:
+                is_provider = True
+            elif provider_data['access_type'] == 'restrict' and provider_code not in provider_data['provider_code_list']:
+                is_provider = True
+
+            carrier_data = rec['carrier']
+            if carrier_data['access_type'] == 'all':
+                is_carrier = True
+            elif not carrier_code:
+                pass
+            elif carrier_data['access_type'] == 'allow' and carrier_code in carrier_data['carrier_code_list']:
+                is_carrier = True
+            elif carrier_data['access_type'] == 'restrict' and carrier_code not in carrier_data['carrier_code_list']:
+                is_carrier = True
+
+            result_list = [is_agent_type, is_provider_type, is_agent, is_provider, is_carrier]
+            if not all(res for res in result_list):
+                continue
+
+            for rule in rec['rule_list']:
+                if rule['state'] == 'disable':
+                    continue
+
+                if rule['set_expiration_date']:
+                    if pricing_datetime < rule['date_from'] or pricing_datetime > rule['date_to']:
+                        continue
+
+                is_origin = False
+                is_destination = False
+                is_class_of_service = False
+                is_charge_code = False
+
+                route_data_origin = rule['route']['origin']
+                if route_data_origin['access_type'] == 'all':
+                    is_origin = True
+                elif route_data_origin['access_type'] == 'allow':
+                    if origin_code and origin_code in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                        is_origin = True
+                elif route_data_origin['access_type'] == 'restrict':
+                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
+                        is_origin = True
+                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
+                        is_origin = True
+                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                        is_origin = True
+
+                route_data_destination = rule['route']['destination']
+                if route_data_destination['access_type'] == 'all':
+                    is_destination = True
+                elif route_data_destination['access_type'] == 'allow':
+                    if destination_code and destination_code in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                        is_destination = True
+                elif route_data_destination['access_type'] == 'restrict':
+                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
+                        is_destination = True
+                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
+                        is_destination = True
+                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                        is_destination = True
+
+                cos_data = rule['route']['class_of_service']
+                if cos_data['access_type'] == 'all':
+                    is_class_of_service = True
+                elif not class_of_service_list:
+                    pass
+                elif cos_data['access_type'] == 'allow' and any(
+                        class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+                elif cos_data['access_type'] == 'restrict' and not any(
+                        class_of_service in cos_data['class_of_service_list'] for class_of_service in class_of_service_list):
+                    is_class_of_service = True
+
+                charge_code_data = rule['route']['charge_code']
+                if charge_code_data['access_type'] == 'all':
+                    is_charge_code = True
+                elif not charge_code_list:
+                    pass
+                elif charge_code_data['access_type'] == 'allow' and any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+                elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
+                    is_charge_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                if not all(res for res in result_2_list):
+                    continue
+                return rule
+        return {}
+
+    def calculate_commission(self, price_data, commission_amount, agent_id, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
+        total_charge = 0.0
+        total_commission = 0.0
+        if 'charge_by_percentage' in price_data:
+            charge_data = price_data['charge_by_percentage']
+            if charge_data['percentage']:
+                add_amount = commission_amount * charge_data['percentage'] / 100
+                if add_amount < charge_data['minimum']:
+                    add_amount = charge_data['minimum']
+                total_charge += add_amount
+        if 'charge_by_amount' in price_data:
+            charge_data = price_data['charge_by_amount']
+            if charge_data['amount']:
+                multiplier = 1
+                if 'is_route' in charge_data and charge_data['is_route']:
+                    multiplier *= route_count
+                if 'is_segment' in charge_data and charge_data['is_segment']:
+                    multiplier *= segment_count
+
+                total_pax = 0
+                if 'is_pax' in charge_data and charge_data['is_pax']:
+                    total_pax += pax_count
+                if 'is_infant' in charge_data and charge_data['is_infant']:
+                    total_pax += infant_count
+
+                if total_pax:
+                    multiplier *= total_pax
+
+                add_amount = charge_data['amount'] * multiplier
+                total_charge += add_amount
+        if 'commission_by_percentage' in price_data:
+            com_data = price_data['commission_by_percentage']
+            if com_data['percentage']:
+                add_amount = commission_amount * com_data['percentage'] / 100
+                if add_amount < com_data['minimum']:
+                    add_amount = com_data['minimum']
+                total_commission += add_amount
+        if 'commission_by_amount' in price_data:
+            com_data = price_data['commission_by_amount']
+            if com_data['amount']:
+                multiplier = 1
+                if 'is_route' in com_data and com_data['is_route']:
+                    multiplier *= route_count
+                if 'is_segment' in com_data and com_data['is_segment']:
+                    multiplier *= segment_count
+
+                total_pax = 0
+                if 'is_pax' in com_data and com_data['is_pax']:
+                    total_pax += pax_count
+                if 'is_infant' in com_data and com_data['is_infant']:
+                    total_pax += infant_count
+
+                if total_pax:
+                    multiplier *= total_pax
+
+                add_amount = com_data['amount'] * multiplier
+                total_commission += add_amount
+
+        payload = {
+            'agent_id': agent_id,
+            'commission_amount': round(total_commission),
+            'charge_amount': round(total_charge),
+        }
+        return payload
+
+    def get_commission_calculation(self, rule_obj, commission_amount, agent_id, upline_list, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
+        com_data = rule_obj['commission']
+        parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
+        ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
+
+        parent_charge_amount = parent_res['charge_amount']
+        if parent_charge_amount > commission_amount:
+            parent_charge_amount = 0.0
+        else:
+            commission_amount -= parent_charge_amount
+
+        ho_charge_amount = ho_res['charge_amount']
+        if ho_charge_amount > commission_amount:
+            ho_charge_amount = 0.0
+        else:
+            commission_amount -= ho_charge_amount
+
+        agent_res = self.calculate_commission(com_data['agent'], commission_amount, agent_id, pax_count, infant_count, route_count, segment_count)
+        upline_res_list = []
+        upline_head = 0
+        for upline in upline_list[1:]:
+            for idx, upline_obj in enumerate(com_data['upline_list']):
+                if idx < upline_head:
+                    continue
+
+                if upline_obj['agent_type_code'] == upline['agent_type_id']['code']:
+                    upline_head = idx + 1
+                    upline_res = self.calculate_commission(upline_obj, commission_amount, upline['id'], pax_count, infant_count, route_count, segment_count)
+                    upline_res_list.append(upline_res)
+                    break
+
+        agent_commission_amount = agent_res['commission_amount']
+        if agent_commission_amount > commission_amount:
+            agent_commission_amount = 0.0
+        else:
+            commission_amount -= agent_commission_amount
+
+        for upline_res in upline_res_list:
+            if upline_res['commission_amount'] > commission_amount:
+                upline_res['commission_amount'] = 0.0
+            else:
+                commission_amount -= upline_res['commission_amount']
+
+        residual_agent_id = upline_list[-1]['id']
+        if com_data['residual_amount_to'] == 'parent':
+            residual_agent_id = upline_list[1]['id']
+
+        payload = {
+            'rule_id': rule_obj['id'],
+            'section': 'commission',
+            'agent_id': agent_id,
+            'upline_list': upline_list,
+            'pax_count': pax_count,
+            'infant_count': infant_count,
+            'route_count': route_count,
+            'segment_count': segment_count,
+            'parent_charge_amount': parent_charge_amount,
+            'parent_agent_id': upline_list[1]['id'],
+            'ho_charge_amount': ho_charge_amount,
+            'ho_agent_id': upline_list[-1]['id'],
+            'agent_commission_amount': agent_commission_amount,
+            'upline_commission_list': upline_res_list,
+            'residual_amount': commission_amount,
+            'residual_agent_id': residual_agent_id
+        }
+        return payload
+
+
 # November 12, 2021 - SAM
 class RepricingToolsV2(object):
     def __init__(self, provider_type, context):
@@ -2078,6 +2396,7 @@ class RepricingToolsV2(object):
         self.provider_data_dict = {}
         self.agent_data_dict = {}
         self.customer_data_dict = {}
+        self.agent_commission_data_dict = {}
 
         if self.context:
             upline_list = self.context.get('co_user_info', [])
@@ -2098,6 +2417,7 @@ class RepricingToolsV2(object):
         self.provider_pricing = ProviderPricing(provider_type)
         self.agent_pricing = AgentPricing(self.agent_type)
         self.customer_pricing = CustomerPricing(self.agent_id)
+        self.agent_commission = AgentCommission(self.agent_type)
 
     def _default_sc_summary_values(self):
         res = {
@@ -2352,6 +2672,12 @@ class RepricingToolsV2(object):
         else:
             cust_obj = self.customer_pricing.get_pricing_data(self.customer_parent_type, self.customer_parent_id, self.provider_type, **rule_param)
             self.customer_data_dict[rule_key] = cust_obj
+
+        if rule_key in self.agent_commission_data_dict:
+            agent_com_obj = self.agent_commission_data_dict[rule_key]
+        else:
+            agent_com_obj = self.agent_commission.get_pricing_data(self.provider_type, self.agent_id, **rule_param)
+            self.agent_commission_data_dict[rule_key] = agent_com_obj
 
         fare_data = self.ticket_fare_list[-1]
 
@@ -2690,6 +3016,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
+                if agent_com_obj:
                     total_pax_count = 0
                     infant_count = 0
                     for pax_type, pax_count in pax_count_dict.items():
@@ -2699,7 +3026,8 @@ class RepricingToolsV2(object):
                             total_pax_count += pax_count
 
                     com_param = {
-                        'rule_obj': agent_obj,
+                        # 'rule_obj': agent_obj,
+                        'rule_obj': agent_com_obj,
                         'commission_amount': total_commission_amount,
                         'agent_id': self.agent_id,
                         'upline_list': self.upline_list,
@@ -2708,7 +3036,8 @@ class RepricingToolsV2(object):
                         'route_count': route_count,
                         'segment_count': segment_count,
                     }
-                    agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
+                    # agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
+                    agent_com_res = self.agent_commission.get_commission_calculation(**com_param)
                     if agent_com_res['agent_commission_amount'] and show_commission:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({

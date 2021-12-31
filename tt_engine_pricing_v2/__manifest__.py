@@ -20,6 +20,7 @@ Key Features
         'views/tt_provider_pricing_views.xml',
         'views/tt_agent_pricing_views.xml',
         'views/tt_customer_pricing_views.xml',
+        'views/tt_agent_commission_views.xml',
     ],
     'demo': [],
     'qweb': [],
