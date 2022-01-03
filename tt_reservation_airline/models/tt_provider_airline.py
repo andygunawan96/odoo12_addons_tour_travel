@@ -917,6 +917,24 @@ class TtProviderAirline(models.Model):
             _logger.error('Error update pricing details, %s' % traceback.format_exc())
         return True
 
+    # December 29, 2021 - SAM
+    def action_send_vendor_ticket_email(self):
+        if not self.provider_id:
+            raise Exception('Provider is not set')
+        req = {
+            "provider": self.provider_id.code,
+            "pnr": self.pnr,
+            "pnr2": self.pnr2,
+            "reference": self.reference
+        }
+        res = self.env['tt.airline.api.con'].send_vendor_ticket_email(req)
+        _logger.info('Action Send Vendor Ticket Email, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
+
+        if res['error_code'] != 0:
+            raise UserError('Send Vendor Ticket Email Failed, %s' % self.pnr)
+        return True
+    # END
+
 
 class TtProviderAirlineRule(models.Model):
     _name = 'tt.provider.airline.rule'

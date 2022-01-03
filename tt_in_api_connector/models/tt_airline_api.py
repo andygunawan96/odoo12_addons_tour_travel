@@ -131,3 +131,17 @@ class TtAirlineApiCon(models.Model):
                                             request,
                                             'cancel',
                                             timeout=180)
+
+    # December 29, 2021 - SAM
+    def send_vendor_ticket_email(self, req):
+        request = {
+            'proxy_co_uid': req.get('user_id',False),
+            'pnr': req.get('pnr', ''),
+            'pnr2': req.get('pnr2', ''),
+            'provider': req.get('provider'),
+        }
+        return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
+                                            request,
+                                            'send_vendor_ticket_itinerary',
+                                            timeout=120)
+    # END
