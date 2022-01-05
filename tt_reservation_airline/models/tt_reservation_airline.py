@@ -589,6 +589,12 @@ class ReservationAirline(models.Model):
             any_pnr_changed = False
 
             for provider in req['provider_bookings']:
+                # December 31, 2021 - SAM
+                # if 'error_code' not in provider or provider['error_code'] != 0:
+                if 'error_code' in provider and provider['error_code'] != 0:
+                    _logger.error('Update Info Skipped, pnr : %s' % (provider['pnr']))
+                    continue
+                # END
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
                 try:
                     provider_obj.create_date
@@ -912,6 +918,13 @@ class ReservationAirline(models.Model):
         try:
             _logger.info('Update cost\n' + json.dumps(req))
             for provider in req['provider_bookings']:
+                # December 31, 2021 - SAM
+                # if 'error_code' not in provider or provider['error_code'] != 0:
+                if 'error_code' in provider and provider['error_code'] != 0:
+                    _logger.error('Update SC Skipped, pnr : %s' % (provider['pnr']))
+                    continue
+                # END
+
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
                 try:
                     provider_obj.create_date
