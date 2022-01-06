@@ -135,6 +135,7 @@
         <field name="res_model">tt.customer.pricing</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">{'active_test': False}</field>
     </record>
 
     <menuitem id="customer_pricing_menu" parent="tt_engine_pricing_v2.menu_transaction_pricing_booking"
