@@ -1765,20 +1765,28 @@ class AgentPricing(object):
 
     def get_commission_calculation(self, rule_obj, commission_amount, agent_id, upline_list, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
         com_data = rule_obj['commission']
-        parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
-        ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
 
-        parent_charge_amount = parent_res['charge_amount']
-        if parent_charge_amount > commission_amount:
-            parent_charge_amount = 0.0
-        else:
-            commission_amount -= parent_charge_amount
+        parent_charge_amount = 0.0
+        parent_agent_id = ''
+        if upline_list[1:]:
+            parent_agent_id = upline_list[1]['id']
+            parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
+            parent_charge_amount = parent_res['charge_amount']
+            if parent_charge_amount > commission_amount:
+                parent_charge_amount = 0.0
+            else:
+                commission_amount -= parent_charge_amount
 
-        ho_charge_amount = ho_res['charge_amount']
-        if ho_charge_amount > commission_amount:
-            ho_charge_amount = 0.0
-        else:
-            commission_amount -= ho_charge_amount
+        ho_charge_amount = 0.0
+        ho_agent_id = ''
+        if upline_list[-1:]:
+            ho_agent_id = upline_list[-1]['id']
+            ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
+            ho_charge_amount = ho_res['charge_amount']
+            if ho_charge_amount > commission_amount:
+                ho_charge_amount = 0.0
+            else:
+                commission_amount -= ho_charge_amount
 
         agent_res = self.calculate_commission(com_data['agent'], commission_amount, agent_id, pax_count, infant_count, route_count, segment_count)
         upline_res_list = []
@@ -1806,9 +1814,12 @@ class AgentPricing(object):
             else:
                 commission_amount -= upline_res['commission_amount']
 
-        residual_agent_id = upline_list[-1]['id']
-        if com_data['residual_amount_to'] == 'parent':
-            residual_agent_id = upline_list[1]['id']
+        residual_agent_id = ''
+        if upline_list[-1:]:
+            residual_agent_id = upline_list[-1]['id']
+            if upline_list[1:]:
+                if com_data['residual_amount_to'] == 'parent':
+                    residual_agent_id = upline_list[1]['id']
 
         payload = {
             'rule_id': rule_obj['id'],
@@ -1820,9 +1831,9 @@ class AgentPricing(object):
             'route_count': route_count,
             'segment_count': segment_count,
             'parent_charge_amount': parent_charge_amount,
-            'parent_agent_id': upline_list[1]['id'],
+            'parent_agent_id': parent_agent_id,
             'ho_charge_amount': ho_charge_amount,
-            'ho_agent_id': upline_list[-1]['id'],
+            'ho_agent_id': ho_agent_id,
             'agent_commission_amount': agent_commission_amount,
             'upline_commission_list': upline_res_list,
             'residual_amount': commission_amount,
@@ -2336,20 +2347,28 @@ class AgentCommission(object):
 
     def get_commission_calculation(self, rule_obj, commission_amount, agent_id, upline_list, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
         com_data = rule_obj['commission']
-        parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
-        ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
 
-        parent_charge_amount = parent_res['charge_amount']
-        if parent_charge_amount > commission_amount:
-            parent_charge_amount = 0.0
-        else:
-            commission_amount -= parent_charge_amount
+        parent_charge_amount = 0.0
+        parent_agent_id = ''
+        if upline_list[1:]:
+            parent_agent_id = upline_list[1]['id']
+            parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
+            parent_charge_amount = parent_res['charge_amount']
+            if parent_charge_amount > commission_amount:
+                parent_charge_amount = 0.0
+            else:
+                commission_amount -= parent_charge_amount
 
-        ho_charge_amount = ho_res['charge_amount']
-        if ho_charge_amount > commission_amount:
-            ho_charge_amount = 0.0
-        else:
-            commission_amount -= ho_charge_amount
+        ho_charge_amount = 0.0
+        ho_agent_id = ''
+        if upline_list[-1:]:
+            ho_agent_id = upline_list[-1]['id']
+            ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
+            ho_charge_amount = ho_res['charge_amount']
+            if ho_charge_amount > commission_amount:
+                ho_charge_amount = 0.0
+            else:
+                commission_amount -= ho_charge_amount
 
         agent_res = self.calculate_commission(com_data['agent'], commission_amount, agent_id, pax_count, infant_count, route_count, segment_count)
         upline_res_list = []
@@ -2377,9 +2396,12 @@ class AgentCommission(object):
             else:
                 commission_amount -= upline_res['commission_amount']
 
-        residual_agent_id = upline_list[-1]['id']
-        if com_data['residual_amount_to'] == 'parent':
-            residual_agent_id = upline_list[1]['id']
+        residual_agent_id = ''
+        if upline_list[-1:]:
+            residual_agent_id = upline_list[-1]['id']
+            if upline_list[1:]:
+                if com_data['residual_amount_to'] == 'parent':
+                    residual_agent_id = upline_list[1]['id']
 
         payload = {
             'rule_id': rule_obj['id'],
@@ -2391,9 +2413,9 @@ class AgentCommission(object):
             'route_count': route_count,
             'segment_count': segment_count,
             'parent_charge_amount': parent_charge_amount,
-            'parent_agent_id': upline_list[1]['id'],
+            'parent_agent_id': parent_agent_id,
             'ho_charge_amount': ho_charge_amount,
-            'ho_agent_id': upline_list[-1]['id'],
+            'ho_agent_id': ho_agent_id,
             'agent_commission_amount': agent_commission_amount,
             'upline_commission_list': upline_res_list,
             'residual_amount': commission_amount,
@@ -3076,7 +3098,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
-                    if agent_com_res['parent_charge_amount'] and show_commission and show_upline_commission:
+                    if agent_com_res['parent_agent_id'] and agent_com_res['parent_charge_amount'] and show_commission and show_upline_commission:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3090,7 +3112,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
-                    if agent_com_res['ho_charge_amount'] and show_commission and show_upline_commission:
+                    if agent_com_res['ho_agent_id'] and agent_com_res['ho_charge_amount'] and show_commission and show_upline_commission:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3119,7 +3141,7 @@ class RepricingToolsV2(object):
                             })
                             fare_data['service_charges'].append(sc_values)
 
-                    if agent_com_res['residual_amount'] and show_commission and show_upline_commission:
+                    if agent_com_res['residual_agent_id'] and agent_com_res['residual_amount'] and show_commission and show_upline_commission:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
