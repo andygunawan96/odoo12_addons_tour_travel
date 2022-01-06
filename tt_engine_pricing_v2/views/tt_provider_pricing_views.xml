@@ -7,6 +7,7 @@
             <form>
                 <header>
                     <button string="Test Get Data" type="object" name="test_get_data" groups="base.group_no_one"/>
+                    <button string="Action Compute All Name" type="object" name="action_compute_all_name" groups="base.group_no_one"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -53,6 +54,30 @@
                             </group>
                             <group string="Carrier List">
                                 <field name="carrier_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Agents" name="agents">
+                            <group>
+                                <group>
+                                    <field name="agent_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Agent List">
+                                <field name="agent_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Agent Type" name="agent_type">
+                            <group>
+                                <group>
+                                    <field name="agent_type_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Agent Type List">
+                                <field name="agent_type_ids" nolabel="1"/>
                             </group>
                         </page>
                     </notebook>

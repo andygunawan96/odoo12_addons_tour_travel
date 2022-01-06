@@ -62,7 +62,8 @@ class AgentPricing(models.Model):
     active = fields.Boolean('Active', default=True)
 
     def action_compute_all_name(self):
-        for rec in self:
+        objs = self.env['tt.agent.pricing'].sudo().search([])
+        for rec in objs:
             rec._compute_agent_type_name()
             rec._compute_provider_type_name()
             rec._compute_provider_name()
