@@ -58,6 +58,15 @@ class ProviderPricing(models.Model):
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
+    def action_compute_all_name(self):
+        objs = self.env['tt.provider.pricing'].sudo().search([])
+        for rec in objs:
+            rec._compute_agent_type_name()
+            rec._compute_provider_name()
+            rec._compute_carrier_name()
+            rec._compute_agent_name()
+            rec._compute_name()
+
     @api.depends('provider_type_id', 'provider_name', 'carrier_name', 'agent_type_name', 'agent_name')
     def _compute_name(self):
         for rec in self:
@@ -68,6 +77,10 @@ class ProviderPricing(models.Model):
                 name_list.append('[%s]' % rec.carrier_name)
             if rec.provider_name:
                 name_list.append('[%s]' % rec.provider_name)
+            if rec.agent_name:
+                name_list.append('[%s]' % rec.agent_name)
+            if rec.agent_type_name:
+                name_list.append('[%s]' % rec.agent_type_name)
 
             name = ' '.join(name_list)
             rec.name = name
@@ -136,6 +149,14 @@ class ProviderPricing(models.Model):
             'carrier': {
                 'access_type': self.carrier_access_type,
                 'carrier_code_list': [rec.code for rec in self.carrier_ids]
+            },
+            'agent': {
+                'access_type': self.agent_access_type,
+                'agent_id_list': [rec.id for rec in self.agent_ids]
+            },
+            'agent_type': {
+                'access_type': self.agent_type_access_type,
+                'agent_type_code_list': [rec.code for rec in self.agent_type_ids]
             },
             'rule_list': [rec.get_data() for rec in self.line_ids if rec.active],
             'state': self.state
