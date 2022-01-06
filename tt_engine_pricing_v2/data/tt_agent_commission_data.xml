@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--        Pricing Commission Upline-->
+        <record id="tt_agent_commission_btc_upline_ho" model="tt.agent.commission.upline">
+            <field name="agent_type_id" ref="tt_base.agent_type_ho"/>
+            <field name="sequence">10</field>
+            <field name="commission_percentage">100</field>
+        </record>
+
+        <record id="tt_agent_commission_all_agent_upline_ho" model="tt.agent.commission.upline">
+            <field name="agent_type_id" ref="tt_base.agent_type_ho"/>
+            <field name="sequence">10</field>
+            <field name="commission_percentage">30</field>
+        </record>
+
+        <!--        Pricing Commission Line-->
+        <record id="tt_agent_commission_ho_line_standard" model="tt.agent.commission.line">
+            <field name="name">Standard</field>
+            <field name="sequence">100</field>
+            <field name="commission_percentage">100</field>
+        </record>
+        <record id="tt_agent_commission_btc_line_standard" model="tt.agent.commission.line">
+            <field name="name">Standard</field>
+            <field name="sequence">100</field>
+            <field name="commission_percentage">0</field>
+            <field name="upline_ids" eval="[(6,0, [
+                                        ref('tt_agent_commission_btc_upline_ho')
+                                        ])]"/>
+        </record>
+        <record id="tt_agent_commission_all_agent_line_standard" model="tt.agent.commission.line">
+            <field name="name">Standard</field>
+            <field name="sequence">100</field>
+            <field name="commission_percentage">70</field>
+            <field name="upline_ids" eval="[(6,0, [
+                                        ref('tt_agent_commission_all_agent_upline_ho')
+                                        ])]"/>
+        </record>
+
+        <!--        Pricing Commission-->
+        <record id="tt_agent_commission_ho" model="tt.agent.commission">
+            <field name="sequence">999</field>
+            <field name="agent_type_access_type">allow</field>
+            <field name="agent_type_ids" eval="[(6,0, [
+                                        ref('tt_base.agent_type_ho')
+                                        ])]"/>
+            <field name="agent_access_type">all</field>
+            <field name="provider_type_access_type">all</field>
+            <field name="provider_access_type">all</field>
+            <field name="carrier_access_type">all</field>
+            <field name="line_ids" eval="[(6,0, [
+                                        ref('tt_agent_commission_ho_line_standard')
+                                        ])]"/>
+            <field name="active">False</field>
+        </record>
+        <record id="tt_agent_commission_btc" model="tt.agent.commission">
+            <field name="sequence">999</field>
+            <field name="agent_type_access_type">allow</field>
+            <field name="agent_type_ids" eval="[(6,0, [
+                                        ref('tt_base.agent_type_btc')
+                                        ])]"/>
+            <field name="agent_access_type">all</field>
+            <field name="provider_type_access_type">all</field>
+            <field name="provider_access_type">all</field>
+            <field name="carrier_access_type">all</field>
+            <field name="line_ids" eval="[(6,0, [
+                                        ref('tt_agent_commission_btc_line_standard')
+                                        ])]"/>
+            <field name="active">False</field>
+        </record>
+        <record id="tt_agent_commission_all_agent" model="tt.agent.commission">
+            <field name="sequence">1000</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">all</field>
+            <field name="provider_type_access_type">all</field>
+            <field name="provider_access_type">all</field>
+            <field name="carrier_access_type">all</field>
+            <field name="line_ids" eval="[(6,0, [
+                                        ref('tt_agent_commission_all_agent_line_standard')
+                                        ])]"/>
+            <field name="active">False</field>
+        </record>
+    </data>
+</odoo>
