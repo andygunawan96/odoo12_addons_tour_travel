@@ -73,10 +73,10 @@ class ProviderPricing(models.Model):
             name_list = []
             if rec.provider_type_id:
                 name_list.append(rec.provider_type_id.name)
-            if rec.carrier_name:
-                name_list.append('[%s]' % rec.carrier_name)
             if rec.provider_name:
                 name_list.append('[%s]' % rec.provider_name)
+            if rec.carrier_name:
+                name_list.append('[%s]' % rec.carrier_name)
             if rec.agent_name:
                 name_list.append('[%s]' % rec.agent_name)
             if rec.agent_type_name:
