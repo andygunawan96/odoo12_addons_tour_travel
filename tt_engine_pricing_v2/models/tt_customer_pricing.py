@@ -67,16 +67,16 @@ class CustomerPricing(models.Model):
             name_list = []
             if rec.agent_id:
                 name_list.append(rec.agent_id.name)
-            if rec.customer_parent_name:
-                name_list.append('[%s]' % rec.customer_parent_name)
             if rec.customer_parent_type_name:
                 name_list.append('[%s]' % rec.customer_parent_type_name)
-            if rec.carrier_name:
-                name_list.append('[%s]' % rec.carrier_name)
+            if rec.customer_parent_name:
+                name_list.append('[%s]' % rec.customer_parent_name)
             if rec.provider_type_name:
                 name_list.append('[%s]' % rec.provider_type_name)
             if rec.provider_name:
                 name_list.append('[%s]' % rec.provider_name)
+            if rec.carrier_name:
+                name_list.append('[%s]' % rec.carrier_name)
 
             name = ' '.join(name_list)
             rec.name = name
