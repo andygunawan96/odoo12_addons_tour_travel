@@ -58,6 +58,15 @@ class ProviderPricing(models.Model):
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
+    def action_compute_all_name(self):
+        objs = self.env['tt.provider.pricing'].sudo().search([])
+        for rec in objs:
+            rec._compute_agent_type_name()
+            rec._compute_provider_name()
+            rec._compute_carrier_name()
+            rec._compute_agent_name()
+            rec._compute_name()
+
     @api.depends('provider_type_id', 'provider_name', 'carrier_name', 'agent_type_name', 'agent_name')
     def _compute_name(self):
         for rec in self:

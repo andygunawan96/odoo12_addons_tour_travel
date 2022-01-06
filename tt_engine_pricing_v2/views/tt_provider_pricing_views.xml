@@ -7,6 +7,7 @@
             <form>
                 <header>
                     <button string="Test Get Data" type="object" name="test_get_data" groups="base.group_no_one"/>
+                    <button string="Action Compute All Name" type="object" name="action_compute_all_name" groups="base.group_no_one"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
