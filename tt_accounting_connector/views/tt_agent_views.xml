@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_agent_accounting_connector_form_view" model="ir.ui.view">
+        <field name="name">tt.agent.accounting.connector.form.view</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="arch" type="xml">
+            <field name="est_date" position="after">
+                <field name="is_sync_to_acc" groups="base.group_system"/>
+            </field>
+        </field>
+    </record>
+</odoo>
