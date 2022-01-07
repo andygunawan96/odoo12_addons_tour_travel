@@ -9,4 +9,4 @@ _logger = logging.getLogger(__name__)
 class TtAgent(models.Model):
     _inherit = 'tt.agent'
 
-    is_sync_to_acc = fields.Boolean('Sync Transactions to Accounting Software', readonly=False, default=False)
+    is_sync_to_acc = fields.Boolean('Sync Transactions to Accounting Software', default=True)
