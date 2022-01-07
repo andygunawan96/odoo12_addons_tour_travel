@@ -115,12 +115,9 @@ class CreateTimeslotSwabExpressWizard(models.TransientModel):
                 default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data')
             elif self.area_id.code == 'CGK':
                 default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_cgk')
-            elif self.area_id.code == 'BDG':
-                default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_bdg')
             elif self.area_id.code == 'DPS':
                 default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_dps')
-            else:
-                default_data = self.env.ref('tt_reservation_swabexpress.tt_timeslot_swabexpress_default_data_upg')
+
             antigen_list = [(6, 0, [x.id for x in default_data.antigen_price_ids])]
             pcr_list = [(6, 0, [x.id for x in default_data.pcr_price_ids])]
             pcr_priority_list = [(6, 0, [x.id for x in default_data.pcr_priority_price_ids])]

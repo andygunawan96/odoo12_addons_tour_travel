@@ -24,32 +24,10 @@
             <field name="active">1</field>
         </record>
 
-        <record id="tt_destination_swabexpress_bdg" model="tt.destinations">
-            <field name="name">Bandung</field>
-            <field name="code">BDG</field>
-            <field name="city">Bandung</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_swabexpress.tt_provider_type_swabexpress"/>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
         <record id="tt_destination_swabexpress_dps" model="tt.destinations">
             <field name="name">Bali</field>
             <field name="code">DPS</field>
             <field name="city">Bali</field>
-            <field name="country_id" ref="base.id"/>
-            <field name="provider_type_id" ref="tt_reservation_swabexpress.tt_provider_type_swabexpress"/>
-            <field name="timezone_hour">7</field>
-            <field name="tz">Asia/Jakarta</field>
-            <field name="active">1</field>
-        </record>
-
-        <record id="tt_destination_swabexpress_upg" model="tt.destinations">
-            <field name="name">Makassar</field>
-            <field name="code">UPG</field>
-            <field name="city">Makassar</field>
             <field name="country_id" ref="base.id"/>
             <field name="provider_type_id" ref="tt_reservation_swabexpress.tt_provider_type_swabexpress"/>
             <field name="timezone_hour">7</field>

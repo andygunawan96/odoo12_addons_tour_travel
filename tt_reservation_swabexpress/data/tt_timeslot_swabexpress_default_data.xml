@@ -9,15 +9,6 @@
             <field name="active">True</field>
         </record>
 
-        <record id="tt_price_list_swabexpress_antigen_40_person" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 40 Person or more Surabaya</field>
-            <field name="min_pax">40</field>
-            <field name="commission">3750</field>
-            <field name="base_price">75000</field>
-            <field name="active">True</field>
-        </record>
-
-
         <record id="tt_price_list_swabexpress_pcr_1_person" model="tt.price.list.swabexpress">
             <field name="name">Default PCR 1 Person Surabaya</field>
             <field name="min_pax">1</field>
@@ -74,15 +65,6 @@
             <field name="active">True</field>
         </record>
 
-        <record id="tt_price_list_swabexpress_antigen_40_person_cgk" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 40 Person or more Jakarta</field>
-            <field name="min_pax">40</field>
-            <field name="commission">3750</field>
-            <field name="base_price">75000</field>
-            <field name="active">True</field>
-        </record>
-
-
         <record id="tt_price_list_swabexpress_pcr_1_person_cgk" model="tt.price.list.swabexpress">
             <field name="name">Default PCR 1 Person Jakarta</field>
             <field name="min_pax">1</field>
@@ -93,71 +75,6 @@
 
         <record id="tt_price_list_swabexpress_pcr_priority_1_person_cgk" model="tt.price.list.swabexpress">
             <field name="name">Default PCR Priority 1 Person Jakarta</field>
-            <field name="min_pax">1</field>
-            <field name="commission">23750</field>
-            <field name="base_price">495000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_1_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 1 Person Bandung</field>
-            <field name="min_pax">1</field>
-            <field name="commission">10000</field>
-            <field name="base_price">200000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_2_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 2-4 Person Bandung</field>
-            <field name="min_pax">2</field>
-            <field name="commission">6750</field>
-            <field name="base_price">135000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_5_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 5-9 Person Bandung</field>
-            <field name="min_pax">5</field>
-            <field name="commission">6250</field>
-            <field name="base_price">125000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_10_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 10-19 Person Bandung</field>
-            <field name="min_pax">10</field>
-            <field name="commission">4750</field>
-            <field name="base_price">95000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_20_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 20-39 Person Bandung</field>
-            <field name="min_pax">20</field>
-            <field name="commission">4250</field>
-            <field name="base_price">85000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_40_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 40 Person or more Bandung</field>
-            <field name="min_pax">40</field>
-            <field name="commission">3750</field>
-            <field name="base_price">75000</field>
-            <field name="active">True</field>
-        </record>
-
-
-        <record id="tt_price_list_swabexpress_pcr_1_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default PCR 1 Person Bandung</field>
-            <field name="min_pax">1</field>
-            <field name="commission">13750</field>
-            <field name="base_price">295000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_pcr_priority_1_person_bdg" model="tt.price.list.swabexpress">
-            <field name="name">Default PCR Priority 1 Person Bandung</field>
             <field name="min_pax">1</field>
             <field name="commission">23750</field>
             <field name="base_price">495000</field>
@@ -204,15 +121,6 @@
             <field name="active">True</field>
         </record>
 
-        <record id="tt_price_list_swabexpress_antigen_40_person_dps" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 40 Person or more Bali</field>
-            <field name="min_pax">40</field>
-            <field name="commission">3750</field>
-            <field name="base_price">75000</field>
-            <field name="active">True</field>
-        </record>
-
-
         <record id="tt_price_list_swabexpress_pcr_1_person_dps" model="tt.price.list.swabexpress">
             <field name="name">Default PCR 1 Person Bali</field>
             <field name="min_pax">1</field>
@@ -229,71 +137,6 @@
             <field name="active">True</field>
         </record>
 
-        <record id="tt_price_list_swabexpress_antigen_1_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 1 Person Makassar</field>
-            <field name="min_pax">1</field>
-            <field name="commission">10000</field>
-            <field name="base_price">200000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_2_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 2-4 Person Makassar</field>
-            <field name="min_pax">2</field>
-            <field name="commission">6750</field>
-            <field name="base_price">135000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_5_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 5-9 Person Makassar</field>
-            <field name="min_pax">5</field>
-            <field name="commission">6250</field>
-            <field name="base_price">125000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_10_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 10-19 Person Makassar</field>
-            <field name="min_pax">10</field>
-            <field name="commission">4750</field>
-            <field name="base_price">95000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_20_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 20-39 Person Makassar</field>
-            <field name="min_pax">20</field>
-            <field name="commission">4250</field>
-            <field name="base_price">85000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_antigen_40_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default Antigen 40 Person or more Makassar</field>
-            <field name="min_pax">40</field>
-            <field name="commission">3750</field>
-            <field name="base_price">75000</field>
-            <field name="active">True</field>
-        </record>
-
-
-        <record id="tt_price_list_swabexpress_pcr_1_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default PCR 1 Person Makassar</field>
-            <field name="min_pax">1</field>
-            <field name="commission">13750</field>
-            <field name="base_price">295000</field>
-            <field name="active">True</field>
-        </record>
-
-        <record id="tt_price_list_swabexpress_pcr_priority_1_person_upg" model="tt.price.list.swabexpress">
-            <field name="name">Default PCR Priority 1 Person Makassar</field>
-            <field name="min_pax">1</field>
-            <field name="commission">23750</field>
-            <field name="base_price">495000</field>
-            <field name="active">True</field>
-        </record>
-
         <record id="tt_timeslot_swabexpress_default_data" model="tt.timeslot.swabexpress.default">
             <field name="name">Default Timeslot Data Surabaya</field>
             <!--DEFAULT DATA SBY-->
@@ -302,8 +145,7 @@
             <field name="cito_surcharge">0</field>
             <field name="additional_price">0</field>
             <field name="antigen_price_ids"
-                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_1_person'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_40_person')
+                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_1_person')
                              ])]"/>
             <field name="pcr_price_ids"
                    eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_1_person')
@@ -324,37 +166,13 @@
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_2_person_cgk'),
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_5_person_cgk'),
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_10_person_cgk'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_20_person_cgk'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_40_person_cgk')
+                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_20_person_cgk')
                              ])]"/>
             <field name="pcr_price_ids"
                    eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_1_person_cgk')
                              ])]"/>
             <field name="pcr_priority_price_ids"
                    eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_priority_1_person_cgk')
-                             ])]"/>
-        </record>
-
-        <record id="tt_timeslot_swabexpress_default_data_bdg" model="tt.timeslot.swabexpress.default">
-            <field name="name">Default Timeslot Data Bandung</field>
-            <field name="single_supplement">0</field>
-            <field name="overtime_surcharge">0</field>
-            <field name="cito_surcharge">0</field>
-            <field name="additional_price">20000</field>
-            <field name="time_string">08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,19:00</field>
-            <field name="antigen_price_ids"
-                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_1_person_bdg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_2_person_bdg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_5_person_bdg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_10_person_bdg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_20_person_bdg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_40_person_bdg')
-                             ])]"/>
-            <field name="pcr_price_ids"
-                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_1_person_bdg')
-                             ])]"/>
-            <field name="pcr_priority_price_ids"
-                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_priority_1_person_bdg')
                              ])]"/>
         </record>
 
@@ -370,36 +188,13 @@
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_2_person_dps'),
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_5_person_dps'),
                              ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_10_person_dps'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_20_person_dps'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_40_person_dps')
+                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_20_person_dps')
                              ])]"/>
             <field name="pcr_price_ids"
                    eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_1_person_dps')
                              ])]"/>
             <field name="pcr_priority_price_ids"
                    eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_priority_1_person_dps')
-                             ])]"/>
-        </record>
-
-        <record id="tt_timeslot_swabexpress_default_data_upg" model="tt.timeslot.swabexpress.default">
-            <field name="name">Default Timeslot Data Makassar</field>
-            <field name="single_supplement">0</field>
-            <field name="overtime_surcharge">0</field>
-            <field name="cito_surcharge">0</field>
-            <field name="additional_price">20000</field>
-            <field name="antigen_price_ids"
-                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_1_person_upg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_2_person_upg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_5_person_upg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_10_person_upg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_20_person_upg'),
-                             ref('tt_reservation_swabexpress.tt_price_list_swabexpress_antigen_40_person_upg')
-                             ])]"/>
-            <field name="pcr_price_ids"
-                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_1_person_upg')
-                             ])]"/>
-            <field name="pcr_priority_price_ids"
-                   eval="[(6,0,[ref('tt_reservation_swabexpress.tt_price_list_swabexpress_pcr_priority_1_person_upg')
                              ])]"/>
         </record>
     </data>
