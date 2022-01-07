@@ -62,7 +62,8 @@ class AgentPricing(models.Model):
     active = fields.Boolean('Active', default=True)
 
     def action_compute_all_name(self):
-        for rec in self:
+        objs = self.env['tt.agent.pricing'].sudo().search([])
+        for rec in objs:
             rec._compute_agent_type_name()
             rec._compute_provider_type_name()
             rec._compute_provider_name()
@@ -89,12 +90,12 @@ class AgentPricing(models.Model):
                 name_list.append('%s' % rec.agent_type_name)
             if rec.agent_name:
                 name_list.append('[%s]' % rec.agent_name)
-            if rec.carrier_name:
-                name_list.append('[%s]' % rec.carrier_name)
             if rec.provider_type_name:
                 name_list.append('[%s]' % rec.provider_type_name)
             if rec.provider_name:
                 name_list.append('[%s]' % rec.provider_name)
+            if rec.carrier_name:
+                name_list.append('[%s]' % rec.carrier_name)
 
             name = ' '.join(name_list)
             rec.name = name
