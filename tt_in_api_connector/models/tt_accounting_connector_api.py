@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtPhcApiCon(models.Model):
+class TtAccountingConnectorApiCon(models.Model):
     _name = 'tt.accounting.connector.api.con'
     _inherit = 'tt.api.con'
 
