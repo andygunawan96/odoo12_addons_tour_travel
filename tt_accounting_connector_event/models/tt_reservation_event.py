@@ -16,6 +16,7 @@ class TtReservationEvent(models.Model):
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)], limit=1)
             ledger_list = []
+            ref_num_list = []
             if self.agent_id.is_sync_to_acc:
                 for rec in self.ledger_ids:
                     if not rec.is_sent_to_acc:
@@ -57,6 +58,8 @@ class TtReservationEvent(models.Model):
                         rec.sudo().write({
                             'is_sent_to_acc': True
                         })
+                        if rec.ref not in ref_num_list:
+                            ref_num_list.append(rec.ref and rec.ref or '')
             if ledger_list:
                 new_obj = self.env['tt.accounting.queue'].create({
                     'request': json.dumps(ledger_list),
@@ -65,6 +68,8 @@ class TtReservationEvent(models.Model):
                     'res_model': self._name
                 })
                 res = new_obj.to_dict()
+                if func_action in ['reverse', 'split_reservation']:
+                    self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), ", ".join(ref_num_list))
             else:
                 res = {}
             return ERR.get_no_error(res)
