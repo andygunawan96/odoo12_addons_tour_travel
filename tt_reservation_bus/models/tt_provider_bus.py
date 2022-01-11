@@ -58,6 +58,8 @@ class TtProviderBus(models.Model):
 
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
+    rule_ids = fields.One2many('tt.provider.bus.rule', 'provider_booking_id', string='Rules')
+
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.bus')])
 
     total_price = fields.Float('Total Price', default=0)
@@ -347,6 +349,9 @@ class TtProviderBus(models.Model):
         ticket_list = []
         for rec in self.ticket_ids:
             ticket_list.append(rec.to_dict())
+        rules = []
+        for rec in self.rule_ids:
+            rules.append(rec.to_dict())
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -367,7 +372,8 @@ class TtProviderBus(models.Model):
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,
             'is_provider_group': self.is_provider_group,
-            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or ''
+            'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
+            'rules': rules
         }
 
         return res
@@ -404,3 +410,18 @@ class TtProviderBus(models.Model):
     #             'foreign_amount': sc_value[p_pax_type][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
     #         })
     #     return sc_value
+
+class TtProviderBusRule(models.Model):
+    _name = 'tt.provider.bus.rule'
+    _description = 'Provider Bus Rule'
+
+    name = fields.Char('Name', default='')
+    description = fields.Text('Description', default='')
+    provider_booking_id = fields.Many2one('tt.provider.bus', string='Provider Booking', ondelete='cascade')
+
+    def to_dict(self):
+        res = {
+            'name': self.name if self.name else '',
+            'description': [self.description] if self.description else [],
+        }
+        return res
