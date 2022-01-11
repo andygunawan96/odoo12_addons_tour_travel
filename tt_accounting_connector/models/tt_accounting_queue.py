@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 import logging, traceback
 import requests
 import json
+from ...tools.db_connector import GatewayConnector
 
 _logger = logging.getLogger(__name__)
 

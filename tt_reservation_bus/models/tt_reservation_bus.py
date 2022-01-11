@@ -196,7 +196,7 @@ class TtReservationBus(models.Model):
         contacts = req['contacts'][0]
         passengers = req['passengers']
         schedules = req['schedules']
-
+        rules = req['rules']
         try:
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
@@ -232,7 +232,7 @@ class TtReservationBus(models.Model):
             })
 
             book_obj = self.create(values)
-            provider_ids,name_ids = book_obj._create_provider_api(schedules,context)
+            provider_ids,name_ids = book_obj._create_provider_api(schedules,context, rules)
             response_provider_ids = []
             for provider in provider_ids:
                 response_provider_ids.append({
@@ -453,7 +453,7 @@ class TtReservationBus(models.Model):
             _logger.error('Entah status apa')
             raise RequestException(1006)
 
-    def _create_provider_api(self, schedules, api_context):
+    def _create_provider_api(self, schedules, api_context, rules = []):
         dest_obj = self.env['tt.destinations']
         provider_bus_obj = self.env['tt.provider.bus']
         carrier_obj = self.env['tt.transport.carrier']
@@ -514,6 +514,20 @@ class TtReservationBus(models.Model):
             provider_carrier_name = this_pnr_journey[-1][2]['carrier_name']
 
             sequence+=1
+
+            rule_ids = []
+            if rules:
+                try:
+                    if idx <= len(rules):
+                        for rule in rules[idx-1]:
+                            val = {
+                                'name': rule['name'],
+                                'description': rule['description'],
+                            }
+                            rule_ids.append((0, 0, val))
+                except:
+                    _logger.error('Error Create Fare Rules, %s' % traceback.format_exc())
+
             values = {
                 'provider_id': provider_id,
                 'booking_id': self.id,
@@ -529,7 +543,8 @@ class TtReservationBus(models.Model):
                 'booked_uid': api_context['co_uid'],
                 'booked_date': datetime.now(),
                 'journey_ids': this_pnr_journey,
-                'is_provider_group': is_provider_group
+                'is_provider_group': is_provider_group,
+                'rule_ids': rule_ids,
             }
 
             res.append(provider_bus_obj.create(values))
