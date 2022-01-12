@@ -1,0 +1,594 @@
+<odoo>
+    <record id="tt_provider_airline_pricing_form_view" model="ir.ui.view">
+        <field name="name">tt.provider.airline.pricing.form.view</field>
+        <field name="model">tt.provider.airline.pricing</field>
+        <field name="arch" type="xml">
+            <form edit="false" create="true">
+                <header>
+                    <button string="Compute Raw Data" name="compute_raw_data" type="object" groups="base.group_no_one"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="provider_id"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                    <group string="Rule Request Data">
+                        <group>
+                            <field name="rule_provider_type_code"/>
+                            <field name="rule_provider_code"/>
+                            <field name="rule_carrier_code"/>
+                            <field name="rule_pricing_datetime"/>
+                        </group>
+                        <group>
+                            <field name="rule_agent_id"/>
+                            <field name="rule_agent_type_code"/>
+                            <field name="rule_customer_parent_type_code"/>
+                            <field name="rule_customer_parent_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="rule_origin_code"/>
+                            <field name="rule_origin_city"/>
+                            <field name="rule_origin_country"/>
+                        </group>
+                        <group>
+                            <field name="rule_destination_code"/>
+                            <field name="rule_destination_city"/>
+                            <field name="rule_destination_country"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="rule_class_of_service_list"/>
+                        </group>
+                        <group>
+                            <field name="rule_charge_code_list"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Provider" name="pricing_provider">
+                            <group string="Pricing">
+                                <group>
+                                    <field name="provider_pricing_id"/>
+                                    <field name="provider_pricing_sequence"/>
+                                    <field name="provider_pricing_index"/>
+                                    <field name="provider_type_code"/>
+                                    <field name="provider_access_type"/>
+                                    <field name="provider_code_list"/>
+                                    <field name="provider_carrier_access_type"/>
+                                    <field name="provider_carrier_code_list"/>
+                                    <field name="provider_agent_access_type"/>
+                                    <field name="provider_agent_id_list"/>
+                                    <field name="provider_agent_type_access_type"/>
+                                    <field name="provider_agent_type_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="provider_pricing_line_id"/>
+                                    <field name="provider_pricing_line_sequence"/>
+                                    <field name="provider_pricing_line_index"/>
+                                    <field name="provider_set_expiration_date"/>
+                                    <field name="provider_date_from"/>
+                                    <field name="provider_date_to"/>
+                                </group>
+                            </group>
+                            <group string="Route">
+                                <group>
+                                    <field name="provider_origin_access_type"/>
+                                    <field name="provider_origin_code_list"/>
+                                    <field name="provider_origin_city_code_list"/>
+                                    <field name="provider_origin_country_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="provider_destination_access_type"/>
+                                    <field name="provider_destination_code_list"/>
+                                    <field name="provider_destination_city_code_list"/>
+                                    <field name="provider_destination_country_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="provider_class_of_service_access_type"/>
+                                    <field name="provider_class_of_service_list"/>
+                                </group>
+                                <group>
+                                    <field name="provider_charge_code_access_type"/>
+                                    <field name="provider_charge_code_list"/>
+                                </group>
+                            </group>
+                            <group string="Less">
+                                <group>
+                                    <field name="provider_less_percentage"/>
+                                    <field name="provider_less_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <hr/>
+                            <h3>Reservation</h3>
+                            <group string="Reservation Sales" col="3" colspan="3">
+                                <group>
+                                    <field name="provider_rsv_sales_upsell_percentage"/>
+                                    <field name="provider_rsv_sales_upsell_minimum"/>
+                                    <field name="provider_rsv_sales_upsell_has_minimum"/>
+                                    <field name="provider_rsv_sales_upsell_maximum"/>
+                                    <field name="provider_rsv_sales_upsell_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="provider_rsv_sales_upsell_amount"/>
+                                    <field name="provider_rsv_sales_upsell_route"/>
+                                    <field name="provider_rsv_sales_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Reservation NTA" col="3" colspan="3">
+                                <group>
+                                    <field name="provider_rsv_nta_upsell_percentage"/>
+                                    <field name="provider_rsv_nta_upsell_minimum"/>
+                                    <field name="provider_rsv_nta_upsell_has_minimum"/>
+                                    <field name="provider_rsv_nta_upsell_maximum"/>
+                                    <field name="provider_rsv_nta_upsell_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="provider_rsv_nta_upsell_amount"/>
+                                    <field name="provider_rsv_nta_upsell_route"/>
+                                    <field name="provider_rsv_nta_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Reservation NTA Agent" col="3" colspan="3">
+                                <group>
+                                    <field name="provider_rsv_nta_agent_upsell_percentage"/>
+                                    <field name="provider_rsv_nta_agent_upsell_minimum"/>
+                                    <field name="provider_rsv_nta_agent_upsell_has_minimum"/>
+                                    <field name="provider_rsv_nta_agent_upsell_maximum"/>
+                                    <field name="provider_rsv_nta_agent_upsell_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="provider_rsv_nta_agent_upsell_amount"/>
+                                    <field name="provider_rsv_nta_agent_upsell_route"/>
+                                    <field name="provider_rsv_nta_agent_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <hr/>
+                            <h3>Ticketing</h3>
+                            <group string="Ticketing Sales" col="3" colspan="3">
+                                <group>
+                                    <field name="provider_tkt_sales_fare_percentage"/>
+                                    <field name="provider_tkt_sales_fare_amount"/>
+                                    <field name="provider_tkt_sales_fare_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_sales_tax_percentage"/>
+                                    <field name="provider_tkt_sales_tax_amount"/>
+                                    <field name="provider_tkt_sales_tax_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_sales_total_percentage"/>
+                                    <field name="provider_tkt_sales_total_amount"/>
+                                    <field name="provider_tkt_sales_total_infant"/>
+                                </group>
+                            </group>
+                            <group col="3" colspan="3">
+                                <group>
+                                    <field name="provider_tkt_sales_upsell_percentage"/>
+                                    <field name="provider_tkt_sales_upsell_minimum"/>
+                                    <field name="provider_tkt_sales_upsell_has_minimum"/>
+                                    <field name="provider_tkt_sales_upsell_maximum"/>
+                                    <field name="provider_tkt_sales_upsell_has_maximum"/>
+                                    <field name="provider_tkt_sales_upsell_percentage_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_sales_upsell_amount"/>
+                                    <field name="provider_tkt_sales_upsell_route"/>
+                                    <field name="provider_tkt_sales_upsell_segment"/>
+                                    <field name="provider_tkt_sales_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Ticketing NTA" col="3" colspan="3">
+                                <group>
+                                    <field name="provider_tkt_nta_fare_percentage"/>
+                                    <field name="provider_tkt_nta_fare_amount"/>
+                                    <field name="provider_tkt_nta_fare_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_nta_tax_percentage"/>
+                                    <field name="provider_tkt_nta_tax_amount"/>
+                                    <field name="provider_tkt_nta_tax_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_nta_total_percentage"/>
+                                    <field name="provider_tkt_nta_total_amount"/>
+                                    <field name="provider_tkt_nta_total_infant"/>
+                                </group>
+                            </group>
+                            <group col="3" colspan="3">
+                                <group>
+                                    <field name="provider_tkt_nta_upsell_percentage"/>
+                                    <field name="provider_tkt_nta_upsell_minimum"/>
+                                    <field name="provider_tkt_nta_upsell_has_minimum"/>
+                                    <field name="provider_tkt_nta_upsell_maximum"/>
+                                    <field name="provider_tkt_nta_upsell_has_maximum"/>
+                                    <field name="provider_tkt_nta_upsell_percentage_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_nta_upsell_amount"/>
+                                    <field name="provider_tkt_nta_upsell_route"/>
+                                    <field name="provider_tkt_nta_upsell_segment"/>
+                                    <field name="provider_tkt_nta_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Ticketing NTA Agent" col="3" colspan="3">
+                                <group>
+                                    <field name="provider_tkt_nta_agent_fare_percentage"/>
+                                    <field name="provider_tkt_nta_agent_fare_amount"/>
+                                    <field name="provider_tkt_nta_agent_fare_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_nta_agent_tax_percentage"/>
+                                    <field name="provider_tkt_nta_agent_tax_amount"/>
+                                    <field name="provider_tkt_nta_agent_tax_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_nta_agent_total_percentage"/>
+                                    <field name="provider_tkt_nta_agent_total_amount"/>
+                                    <field name="provider_tkt_nta_agent_total_infant"/>
+                                </group>
+                            </group>
+                            <group col="3" colspan="3">
+                                <group>
+                                    <field name="provider_tkt_nta_agent_upsell_percentage"/>
+                                    <field name="provider_tkt_nta_agent_upsell_minimum"/>
+                                    <field name="provider_tkt_nta_agent_upsell_has_minimum"/>
+                                    <field name="provider_tkt_nta_agent_upsell_maximum"/>
+                                    <field name="provider_tkt_nta_agent_upsell_has_maximum"/>
+                                    <field name="provider_tkt_nta_agent_upsell_percentage_infant"/>
+                                </group>
+                                <group>
+                                    <field name="provider_tkt_nta_agent_upsell_amount"/>
+                                    <field name="provider_tkt_nta_agent_upsell_route"/>
+                                    <field name="provider_tkt_nta_agent_upsell_segment"/>
+                                    <field name="provider_tkt_nta_agent_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Agent" name="pricing_agent">
+                            <group string="Pricing">
+                                <group>
+                                    <field name="agent_pricing_id"/>
+                                    <field name="agent_pricing_sequence"/>
+                                    <field name="agent_pricing_index"/>
+                                    <field name="agent_provider_access_type"/>
+                                    <field name="agent_provider_code_list"/>
+                                    <field name="agent_provider_type_access_type"/>
+                                    <field name="agent_provider_type_code_list"/>
+                                    <field name="agent_carrier_access_type"/>
+                                    <field name="agent_carrier_code_list"/>
+                                    <field name="agent_access_type"/>
+                                    <field name="agent_id_list"/>
+                                    <field name="agent_type_access_type"/>
+                                    <field name="agent_type_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_pricing_line_id"/>
+                                    <field name="agent_pricing_line_sequence"/>
+                                    <field name="agent_pricing_line_index"/>
+                                    <field name="agent_set_expiration_date"/>
+                                    <field name="agent_date_from"/>
+                                    <field name="agent_date_to"/>
+                                </group>
+                            </group>
+                            <group string="Route">
+                                <group>
+                                    <field name="agent_origin_access_type"/>
+                                    <field name="agent_origin_code_list"/>
+                                    <field name="agent_origin_city_code_list"/>
+                                    <field name="agent_origin_country_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_destination_access_type"/>
+                                    <field name="agent_destination_code_list"/>
+                                    <field name="agent_destination_city_code_list"/>
+                                    <field name="agent_destination_country_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_class_of_service_access_type"/>
+                                    <field name="agent_class_of_service_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_charge_code_access_type"/>
+                                    <field name="agent_charge_code_list"/>
+                                </group>
+                            </group>
+                            <hr/>
+                            <h3>Reservation</h3>
+                            <group string="Reservation Sales" col="3" colspan="3">
+                                <group>
+                                    <field name="agent_rsv_sales_upsell_percentage"/>
+                                    <field name="agent_rsv_sales_upsell_minimum"/>
+                                    <field name="agent_rsv_sales_upsell_has_minimum"/>
+                                    <field name="agent_rsv_sales_upsell_maximum"/>
+                                    <field name="agent_rsv_sales_upsell_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="agent_rsv_sales_upsell_amount"/>
+                                    <field name="agent_rsv_sales_upsell_route"/>
+                                    <field name="agent_rsv_sales_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <hr/>
+                            <h3>Ticketing</h3>
+                            <group string="Ticketing Sales" col="3" colspan="3">
+                                <group>
+                                    <field name="agent_tkt_sales_upsell_percentage"/>
+                                    <field name="agent_tkt_sales_upsell_minimum"/>
+                                    <field name="agent_tkt_sales_upsell_has_minimum"/>
+                                    <field name="agent_tkt_sales_upsell_maximum"/>
+                                    <field name="agent_tkt_sales_upsell_has_maximum"/>
+                                    <field name="agent_tkt_sales_upsell_percentage_infant"/>
+                                </group>
+                                <group>
+                                    <field name="agent_tkt_sales_upsell_amount"/>
+                                    <field name="agent_tkt_sales_upsell_route"/>
+                                    <field name="agent_tkt_sales_upsell_segment"/>
+                                    <field name="agent_tkt_sales_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Customer" name="pricing_customer">
+                            <group string="Pricing">
+                                <group>
+                                    <field name="customer_pricing_id"/>
+                                    <field name="customer_pricing_sequence"/>
+                                    <field name="customer_pricing_index"/>
+                                    <field name="customer_parent_access_type"/>
+                                    <field name="customer_parent_id_list"/>
+                                    <field name="customer_parent_type_access_type"/>
+                                    <field name="customer_parent_type_code_list"/>
+                                    <field name="customer_provider_access_type"/>
+                                    <field name="customer_provider_code_list"/>
+                                    <field name="customer_provider_type_access_type"/>
+                                    <field name="customer_provider_type_code_list"/>
+                                    <field name="customer_carrier_access_type"/>
+                                    <field name="customer_carrier_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="customer_pricing_line_id"/>
+                                    <field name="customer_pricing_line_sequence"/>
+                                    <field name="customer_pricing_line_index"/>
+                                    <field name="customer_set_expiration_date"/>
+                                    <field name="customer_date_from"/>
+                                    <field name="customer_date_to"/>
+                                </group>
+                            </group>
+                            <group string="Route">
+                                <group>
+                                    <field name="customer_origin_access_type"/>
+                                    <field name="customer_origin_code_list"/>
+                                    <field name="customer_origin_city_code_list"/>
+                                    <field name="customer_origin_country_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="customer_destination_access_type"/>
+                                    <field name="customer_destination_code_list"/>
+                                    <field name="customer_destination_city_code_list"/>
+                                    <field name="customer_destination_country_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="customer_class_of_service_access_type"/>
+                                    <field name="customer_class_of_service_list"/>
+                                </group>
+                                <group>
+                                    <field name="customer_charge_code_access_type"/>
+                                    <field name="customer_charge_code_list"/>
+                                </group>
+                            </group>
+                            <h3>Reservation</h3>
+                            <group string="Reservation Sales" col="3" colspan="3">
+                                <group>
+                                    <field name="customer_rsv_sales_upsell_percentage"/>
+                                    <field name="customer_rsv_sales_upsell_minimum"/>
+                                    <field name="customer_rsv_sales_upsell_has_minimum"/>
+                                    <field name="customer_rsv_sales_upsell_maximum"/>
+                                    <field name="customer_rsv_sales_upsell_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="customer_rsv_sales_upsell_amount"/>
+                                    <field name="customer_rsv_sales_upsell_route"/>
+                                    <field name="customer_rsv_sales_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <hr/>
+                            <h3>Ticketing</h3>
+                            <group string="Ticketing Sales" col="3" colspan="3">
+                                <group>
+                                    <field name="customer_tkt_sales_upsell_percentage"/>
+                                    <field name="customer_tkt_sales_upsell_minimum"/>
+                                    <field name="customer_tkt_sales_upsell_has_minimum"/>
+                                    <field name="customer_tkt_sales_upsell_maximum"/>
+                                    <field name="customer_tkt_sales_upsell_has_maximum"/>
+                                    <field name="customer_tkt_sales_upsell_percentage_infant"/>
+                                </group>
+                                <group>
+                                    <field name="customer_tkt_sales_upsell_amount"/>
+                                    <field name="customer_tkt_sales_upsell_route"/>
+                                    <field name="customer_tkt_sales_upsell_segment"/>
+                                    <field name="customer_tkt_sales_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Agent Commission" name="pricing_agent_commission">
+                            <group string="Pricing">
+                                <group>
+                                    <field name="agent_commission_id"/>
+                                    <field name="agent_commission_sequence"/>
+                                    <field name="agent_commission_index"/>
+                                    <field name="agent_commission_provider_access_type"/>
+                                    <field name="agent_commission_provider_code_list"/>
+                                    <field name="agent_commission_provider_type_access_type"/>
+                                    <field name="agent_commission_provider_type_code_list"/>
+                                    <field name="agent_commission_carrier_access_type"/>
+                                    <field name="agent_commission_carrier_code_list"/>
+                                    <field name="agent_commission_access_type"/>
+                                    <field name="agent_commission_id_list"/>
+                                    <field name="agent_commission_type_access_type"/>
+                                    <field name="agent_commission_type_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_line_id"/>
+                                    <field name="agent_commission_line_sequence"/>
+                                    <field name="agent_commission_line_index"/>
+                                    <field name="agent_commission_set_expiration_date"/>
+                                    <field name="agent_commission_date_from"/>
+                                    <field name="agent_commission_date_to"/>
+                                </group>
+                            </group>
+                            <group string="Route">
+                                <group>
+                                    <field name="agent_commission_origin_access_type"/>
+                                    <field name="agent_commission_origin_code_list"/>
+                                    <field name="agent_commission_origin_city_code_list"/>
+                                    <field name="agent_commission_origin_country_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_destination_access_type"/>
+                                    <field name="agent_commission_destination_code_list"/>
+                                    <field name="agent_commission_destination_city_code_list"/>
+                                    <field name="agent_commission_destination_country_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_commission_class_of_service_access_type"/>
+                                    <field name="agent_commission_class_of_service_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_charge_code_access_type"/>
+                                    <field name="agent_commission_charge_code_list"/>
+                                </group>
+                            </group>
+                            <h3>Commission</h3>
+                            <field name="agent_commission_residual_amount_to"/>
+                            <group string="Agent Commission">
+                                <group>
+                                    <field name="agent_commission_commission_percentage"/>
+                                    <field name="agent_commission_commission_minimum"/>
+                                    <field name="agent_commission_commission_has_minimum"/>
+                                    <field name="agent_commission_commission_maximum"/>
+                                    <field name="agent_commission_commission_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_commission_amount"/>
+                                    <field name="agent_commission_commission_route"/>
+                                    <field name="agent_commission_commission_segment"/>
+                                    <field name="agent_commission_commission_pax"/>
+                                    <field name="agent_commission_commission_infant"/>
+                                </group>
+                            </group>
+                            <group string="Parent Commission (Before Sharing)">
+                                <group>
+                                    <field name="agent_commission_parent_charge_percentage"/>
+                                    <field name="agent_commission_parent_charge_minimum"/>
+                                    <field name="agent_commission_parent_charge_has_minimum"/>
+                                    <field name="agent_commission_parent_charge_maximum"/>
+                                    <field name="agent_commission_parent_charge_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_parent_charge_amount"/>
+                                    <field name="agent_commission_parent_charge_route"/>
+                                    <field name="agent_commission_parent_charge_segment"/>
+                                    <field name="agent_commission_parent_charge_pax"/>
+                                    <field name="agent_commission_parent_charge_infant"/>
+                                </group>
+                            </group>
+                            <group string="HO Commission (Before Sharing)">
+                                <group>
+                                    <field name="agent_commission_ho_charge_percentage"/>
+                                    <field name="agent_commission_ho_charge_minimum"/>
+                                    <field name="agent_commission_ho_charge_has_minimum"/>
+                                    <field name="agent_commission_ho_charge_maximum"/>
+                                    <field name="agent_commission_ho_charge_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_ho_charge_amount"/>
+                                    <field name="agent_commission_ho_charge_route"/>
+                                    <field name="agent_commission_ho_charge_segment"/>
+                                    <field name="agent_commission_ho_charge_pax"/>
+                                    <field name="agent_commission_ho_charge_infant"/>
+                                </group>
+                            </group>
+                            <group string="Uplines">
+                                <field name="upline_ids" nolabel="1">
+                                    <tree>
+                                        <field name="sequence"/>
+                                        <field name="index"/>
+                                        <field name="agent_type_code"/>
+                                        <field name="pricing_type"/>
+                                        <field name="commission_percentage"/>
+                                        <field name="commission_minimum"/>
+                                        <field name="commission_amount"/>
+                                        <field name="commission_route"/>
+                                        <field name="commission_segment"/>
+                                        <field name="commission_pax"/>
+                                        <field name="commission_infant"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                    <hr/>
+                    <group string="Raw Data" groups="base.group_no_one">
+                        <field name="raw_data" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_provider_airline_pricing_tree_view" model="ir.ui.view">
+        <field name="name">tt.provider.airline.pricing.tree.view</field>
+        <field name="model">tt.provider.airline.pricing</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="provider_pricing_line_id"/>
+                <field name="agent_pricing_line_id"/>
+                <field name="customer_pricing_line_id"/>
+                <field name="agent_commission_line_id"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_provider_airline_pricing_action" model="ir.actions.act_window" >
+        <field name="name">Provider Airline Pricing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.provider.pricing</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

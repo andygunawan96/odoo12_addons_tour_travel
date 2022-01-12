@@ -943,6 +943,7 @@ class ReservationAirline(models.Model):
 
                 # June 10, 2021 - SAM
                 _logger.info('Update cost PNR %s' % provider_obj.pnr)
+                pricing_data = None
                 total_service_charge = 0
                 provider_service_charges = []
                 for journey in provider['journeys']:
@@ -950,6 +951,11 @@ class ReservationAirline(models.Model):
                         for fare in segment['fares']:
                             total_service_charge += len(fare['service_charges'])
                             provider_service_charges += copy.deepcopy(fare['service_charges'])
+                            # January 12, 2022 - SAM
+                            # Menambahkan flow update pricing data
+                            if 'pricing_data' in fare:
+                                pricing_data = fare['pricing_data']
+                            # END
 
                 for psg in provider['passengers']:
                     total_service_charge += len(psg['fees'])
@@ -1019,6 +1025,19 @@ class ReservationAirline(models.Model):
                     _logger.info('Create New Ledger %s' % provider_obj.pnr)
                     provider_obj.action_create_ledger(context['co_uid'])
                 # END
+                # END
+
+                # January 12, 2022 - SAM
+                # Menambahkan mekanisme untuk update pricing data
+                try:
+                    if pricing_data and not is_same_service_charge_data:
+                        pricing_obj = self.env['tt.provider.airline.pricing'].create({
+                            'provider_id': provider_obj.id,
+                            'raw_data': json.dumps(pricing_data)
+                        })
+                        pricing_obj.compute_raw_data()
+                except:
+                    _logger.error('Failed update provider airline pricing, %s' % traceback.format_exc())
                 # END
 
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
@@ -1292,6 +1311,7 @@ class ReservationAirline(models.Model):
             pricing_provider_line_ids = []
             pricing_agent_ids = []
             # END
+            pricing_data = None
             for journey in schedule['journeys']:
                 ##create journey
                 this_journey_seg = []
@@ -1342,6 +1362,12 @@ class ReservationAirline(models.Model):
                     fare_data = {}
                     if segment.get('fares'):
                         fare_data = segment['fares'][0]
+
+                        # January 10, 2022 - SAM
+                        if 'pricing_data' in fare_data:
+                            pricing_data = fare_data['pricing_data']
+                        # END
+
                         this_service_charges += fare_data['service_charges']
                         for sc in fare_data['service_charges']:
                             if sc['charge_type'] not in ['ROC', 'RAC']:
@@ -1479,6 +1505,18 @@ class ReservationAirline(models.Model):
             vendor_obj.create_service_charge(this_service_charges)
             # END
             res.append(vendor_obj)
+
+            # January 10, 2022 - SAM
+            try:
+                if pricing_data:
+                    pricing_obj = self.env['tt.provider.airline.pricing'].create({
+                        'provider_id': vendor_obj.id,
+                        'raw_data': json.dumps(pricing_data)
+                    })
+                    pricing_obj.compute_raw_data()
+            except:
+                _logger.error('Failed create provider airline pricing, %s' % traceback.format_exc())
+            # END
 
             if not hasattr(vendor_obj, 'promo_code_ids'):
                 continue
