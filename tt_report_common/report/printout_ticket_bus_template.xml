@@ -78,36 +78,6 @@
                         </div>
                     </div>
                 </t>
-                <t t-foreach="provider_itin_id.rule_ids" t-as="provider_rule_id">
-                    <hr/>
-                    <div style="margin:5px;">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <t t-if="provider_rule_id.name == 'reschedulePolicy'">
-                                <span>Reschedule Policy</span>
-                            </t>
-                            <t t-elif="provider_rule_id.name == 'refundPolicy'">
-                                <span>Refund Policy</span>
-                            </t>
-                            <t t-elif="provider_rule_id.name == 'termsAndConditions'">
-                                <span>Term &amp; Conditions</span>
-                            </t>
-                            <t t-elif="provider_rule_id.name == 'importantInfos'">
-                                <span>Important Info</span>
-                            </t>
-                            <t t-else="">
-                                <span t-field="provider_rule_id.name"/>
-                            </t>
-                        </label>
-                        <t t-if="provider_rule_id.description">
-                            <span t-raw="provider_rule_id.description"/>
-                        </t>
-                        <t t-else="">
-                            <br/>
-                            <span>-</span>
-                            <br/>
-                        </t>
-                    </div>
-                </t>
                 <div style="margin-bottom: 5px"/>
             </div>
 
@@ -152,6 +122,38 @@
                 </t>
                 <div style="margin-bottom: 5px"/>
             </div>
+
+            <div class="box" style="margin-top: 20px; margin-bottom: 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
+                <t t-foreach="provider_itin_id.rule_ids" t-as="provider_rule_id">
+                    <div style="margin:5px;">
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <t t-if="provider_rule_id.name == 'reschedulePolicy'">
+                                <span>Reschedule Policy</span>
+                            </t>
+                            <t t-elif="provider_rule_id.name == 'refundPolicy'">
+                                <span>Refund Policy</span>
+                            </t>
+                            <t t-elif="provider_rule_id.name == 'termsAndConditions'">
+                                <span>Term &amp; Conditions</span>
+                            </t>
+                            <t t-elif="provider_rule_id.name == 'importantInfos'">
+                                <span>Important Info</span><br/>
+                            </t>
+                            <t t-else="">
+                                <span t-field="provider_rule_id.name"/>
+                            </t>
+                        </label><br/>
+                        <t t-if="provider_rule_id.description">
+                            <span style="font-size:10.5px;" t-raw="provider_rule_id.description"/>
+                        </t>
+                        <t t-else="">
+                            <span>-</span>
+                            <br/>
+                        </t>
+                    </div>
+                </t>
+            </div>
+            <p style="page-break-after:always;"/>
         </t>
 
         <!-- Price & Addons Detail (if with price) -->

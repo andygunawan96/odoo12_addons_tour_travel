@@ -167,10 +167,10 @@
                                             </td>
                                             <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
                                                 <t t-if="doc.voucher_id.voucher_type == 'percent'">
-                                                    <span t-esc="doc.voucher_id.voucher_value"/>%
+                                                    <span t-field="doc.voucher_id.voucher_value"/>%
                                                 </t>
                                                 <t t-else="">
-                                                    <span t-esc="doc.voucher_id.voucher_value" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.voucher_id.currency_id}"/>
+                                                    <span t-field="doc.voucher_id.voucher_value"/>
                                                 </t>
                                             </td>
                                             <td style="width: 25%; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; border-radius: 0px 0px 0px 0px; border-color: #CCC; padding: 7px 7px 7px 20px;">
