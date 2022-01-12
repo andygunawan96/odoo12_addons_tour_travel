@@ -1768,6 +1768,12 @@ class AgentPricing(object):
 
         parent_charge_amount = 0.0
         parent_agent_id = ''
+        # January 6, 2022 - SAM
+        # Untuk melakukan pengecekkan apakah user memiliki parent agent (upline) atau tidak
+        # Contoh ada parent agent, upline list [ A , B , C ]
+        # upline_list[1:] => [ B, C ] => Parent Agentnya ada
+        # Contoh tidak ada parent agent, upline list [ A ]
+        # upline_list[1:] => [ ] => Parent Agentnya tidak ada
         if upline_list[1:]:
             parent_agent_id = upline_list[1]['id']
             parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
@@ -1779,7 +1785,7 @@ class AgentPricing(object):
 
         ho_charge_amount = 0.0
         ho_agent_id = ''
-        if upline_list[-1:]:
+        if upline_list:
             ho_agent_id = upline_list[-1]['id']
             ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
             ho_charge_amount = ho_res['charge_amount']
@@ -1815,8 +1821,14 @@ class AgentPricing(object):
                 commission_amount -= upline_res['commission_amount']
 
         residual_agent_id = ''
-        if upline_list[-1:]:
+        if upline_list:
             residual_agent_id = upline_list[-1]['id']
+            # January 6, 2022 - SAM
+            # Untuk melakukan pengecekkan apakah user memiliki parent agent (upline) atau tidak
+            # Contoh ada parent agent, upline list [ A , B , C ]
+            # upline_list[1:] => [ B, C ] => Parent Agentnya ada
+            # Contoh tidak ada parent agent, upline list [ A ]
+            # upline_list[1:] => [ ] => Parent Agentnya tidak ada
             if upline_list[1:]:
                 if com_data['residual_amount_to'] == 'parent':
                     residual_agent_id = upline_list[1]['id']
@@ -2350,6 +2362,12 @@ class AgentCommission(object):
 
         parent_charge_amount = 0.0
         parent_agent_id = ''
+        # January 6, 2022 - SAM
+        # Untuk melakukan pengecekkan apakah user memiliki parent agent (upline) atau tidak
+        # Contoh ada parent agent, upline list [ A , B , C ]
+        # upline_list[1:] => [ B, C ] => Parent Agentnya ada
+        # Contoh tidak ada parent agent, upline list [ A ]
+        # upline_list[1:] => [ ] => Parent Agentnya tidak ada
         if upline_list[1:]:
             parent_agent_id = upline_list[1]['id']
             parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
@@ -2361,7 +2379,7 @@ class AgentCommission(object):
 
         ho_charge_amount = 0.0
         ho_agent_id = ''
-        if upline_list[-1:]:
+        if upline_list:
             ho_agent_id = upline_list[-1]['id']
             ho_res = self.calculate_commission(com_data['ho'], commission_amount, upline_list[-1]['id'], pax_count, infant_count, route_count, segment_count)
             ho_charge_amount = ho_res['charge_amount']
@@ -2397,8 +2415,14 @@ class AgentCommission(object):
                 commission_amount -= upline_res['commission_amount']
 
         residual_agent_id = ''
-        if upline_list[-1:]:
+        if upline_list:
             residual_agent_id = upline_list[-1]['id']
+            # January 6, 2022 - SAM
+            # Untuk melakukan pengecekkan apakah user memiliki parent agent (upline) atau tidak
+            # Contoh ada parent agent, upline list [ A , B , C ]
+            # upline_list[1:] => [ B, C ] => Parent Agentnya ada
+            # Contoh tidak ada parent agent, upline list [ A ]
+            # upline_list[1:] => [ ] => Parent Agentnya tidak ada
             if upline_list[1:]:
                 if com_data['residual_amount_to'] == 'parent':
                     residual_agent_id = upline_list[1]['id']
