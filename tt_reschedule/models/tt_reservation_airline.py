@@ -353,7 +353,7 @@ class ReservationAirline(models.Model):
             if resv_obj and resv_obj.state == 'issued':
                 # July 13, 2020 - SAM
                 # Sementara diasumsikan untuk seluruh proses berhasil
-                reschedule_obj.confirm_reschedule_from_button()
+                reschedule_obj.confirm_reschedule_from_api(context.get('co_uid'))
                 reschedule_obj.send_reschedule_from_button()
                 reschedule_obj.validate_reschedule_from_button()
                 reschedule_obj.finalize_reschedule_from_button()
@@ -1105,7 +1105,7 @@ class ReservationAirline(models.Model):
                 if rsv_prov_obj.state == 'issued':
                     # July 13, 2020 - SAM
                     # Sementara diasumsikan untuk seluruh proses berhasil
-                    rsch_obj.confirm_reschedule_from_button()
+                    rsch_obj.confirm_reschedule_from_api(context.get('co_uid'))
                     rsch_obj.send_reschedule_from_button()
                     rsch_obj.validate_reschedule_from_button()
                     rsch_obj.finalize_reschedule_from_button()
