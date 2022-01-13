@@ -1140,7 +1140,7 @@ class ProviderPricing(object):
         if not self.data:
             return {}
 
-        for rec in self.data['provider_pricing_list']:
+        for rec_idx, rec in enumerate(self.data['provider_pricing_list']):
             if rec['state'] == 'disable':
                 continue
 
@@ -1193,7 +1193,7 @@ class ProviderPricing(object):
             if not all(res for res in result_list):
                 continue
 
-            for rule in rec['rule_list']:
+            for rule_idx, rule in enumerate(rec['rule_list']):
                 if rule['state'] == 'disable':
                     continue
                 if rule['set_expiration_date']:
@@ -1209,36 +1209,84 @@ class ProviderPricing(object):
                 if route_data_origin['access_type'] == 'all':
                     is_origin = True
                 elif route_data_origin['access_type'] == 'allow':
-                    if origin_code and origin_code in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
                 elif route_data_origin['access_type'] == 'restrict':
-                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code not in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city not in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country not in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
 
                 route_data_destination = rule['route']['destination']
                 if route_data_destination['access_type'] == 'all':
                     is_destination = True
                 elif route_data_destination['access_type'] == 'allow':
-                    if destination_code and destination_code in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
                 elif route_data_destination['access_type'] == 'restrict':
-                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code not in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city not in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country not in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
 
                 cos_data = rule['route']['class_of_service']
@@ -1264,6 +1312,18 @@ class ProviderPricing(object):
                 result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
                 if not all(res for res in result_2_list):
                     continue
+
+                pricing_data = copy.deepcopy(rec)
+                if 'rule_list' in pricing_data:
+                    pricing_data.pop('rule_list')
+
+                rule.update({
+                    'pricing_id': rec['id'],
+                    'parent_data': pricing_data,
+                    'rule_id': rule['id'],
+                    'pricing_index': rec_idx,
+                    'rule_index': rule_idx
+                })
                 return rule
         return {}
 
@@ -1463,7 +1523,7 @@ class AgentPricing(object):
         if not self.data:
             return {}
 
-        for rec in self.data['agent_pricing_list']:
+        for rec_idx, rec in enumerate(self.data['agent_pricing_list']):
             if rec['state'] == 'disable':
                 continue
 
@@ -1526,7 +1586,7 @@ class AgentPricing(object):
             if not all(res for res in result_list):
                 continue
 
-            for rule in rec['rule_list']:
+            for rule_idx, rule in enumerate(rec['rule_list']):
                 if rule['state'] == 'disable':
                     continue
 
@@ -1543,36 +1603,84 @@ class AgentPricing(object):
                 if route_data_origin['access_type'] == 'all':
                     is_origin = True
                 elif route_data_origin['access_type'] == 'allow':
-                    if origin_code and origin_code in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
                 elif route_data_origin['access_type'] == 'restrict':
-                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code not in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city not in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country not in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
 
                 route_data_destination = rule['route']['destination']
                 if route_data_destination['access_type'] == 'all':
                     is_destination = True
                 elif route_data_destination['access_type'] == 'allow':
-                    if destination_code and destination_code in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
                 elif route_data_destination['access_type'] == 'restrict':
-                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code not in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city not in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country not in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
 
                 cos_data = rule['route']['class_of_service']
@@ -1600,6 +1708,18 @@ class AgentPricing(object):
                 result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
                 if not all(res for res in result_2_list):
                     continue
+
+                pricing_data = copy.deepcopy(rec)
+                if 'rule_list' in pricing_data:
+                    pricing_data.pop('rule_list')
+
+                rule.update({
+                    'pricing_id': rec['id'],
+                    'parent_data': pricing_data,
+                    'rule_id': rule['id'],
+                    'pricing_index': rec_idx,
+                    'rule_index': rule_idx
+                })
                 return rule
         return {}
 
@@ -1884,7 +2004,7 @@ class CustomerPricing(object):
         if not self.data:
             return {}
 
-        for rec in self.data['customer_pricing_list']:
+        for rec_idx, rec in enumerate(self.data['customer_pricing_list']):
             if rec['state'] == 'disable':
                 continue
 
@@ -1948,7 +2068,7 @@ class CustomerPricing(object):
             if not all(res for res in result_list):
                 continue
 
-            for rule in rec['rule_list']:
+            for rule_idx, rule in enumerate(rec['rule_list']):
                 if rule['state'] == 'disable':
                     continue
 
@@ -1965,36 +2085,84 @@ class CustomerPricing(object):
                 if route_data_origin['access_type'] == 'all':
                     is_origin = True
                 elif route_data_origin['access_type'] == 'allow':
-                    if origin_code and origin_code in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
                 elif route_data_origin['access_type'] == 'restrict':
-                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code not in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city not in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country not in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
 
                 route_data_destination = rule['route']['destination']
                 if route_data_destination['access_type'] == 'all':
                     is_destination = True
                 elif route_data_destination['access_type'] == 'allow':
-                    if destination_code and destination_code in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
                 elif route_data_destination['access_type'] == 'restrict':
-                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code not in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city not in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country not in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
 
                 cos_data = rule['route']['class_of_service']
@@ -2020,6 +2188,18 @@ class CustomerPricing(object):
                 result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
                 if not all(res for res in result_2_list):
                     continue
+
+                pricing_data = copy.deepcopy(rec)
+                if 'rule_list' in pricing_data:
+                    pricing_data.pop('rule_list')
+
+                rule.update({
+                    'pricing_id': rec['id'],
+                    'parent_data': pricing_data,
+                    'rule_id': rule['id'],
+                    'pricing_index': rec_idx,
+                    'rule_index': rule_idx
+                })
                 return rule
         return {}
 
@@ -2152,7 +2332,7 @@ class AgentCommission(object):
         if not self.data:
             return {}
 
-        for rec in self.data['agent_commission_list']:
+        for rec_idx, rec in enumerate(self.data['agent_commission_list']):
             if rec['state'] == 'disable':
                 continue
 
@@ -2215,7 +2395,7 @@ class AgentCommission(object):
             if not all(res for res in result_list):
                 continue
 
-            for rule in rec['rule_list']:
+            for rule_idx, rule in enumerate(rec['rule_list']):
                 if rule['state'] == 'disable':
                     continue
 
@@ -2232,36 +2412,84 @@ class AgentCommission(object):
                 if route_data_origin['access_type'] == 'all':
                     is_origin = True
                 elif route_data_origin['access_type'] == 'allow':
-                    if origin_code and origin_code in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
                 elif route_data_origin['access_type'] == 'restrict':
-                    if origin_code and origin_code not in route_data_origin['destination_code_list']:
-                        is_origin = True
-                    elif origin_city and origin_city not in route_data_origin['city_code_list']:
-                        is_origin = True
-                    elif origin_country and origin_country not in route_data_origin['country_code_list']:
+                    origin_temp_list = []
+                    if origin_code and route_data_origin['destination_code_list']:
+                        if origin_code not in route_data_origin['destination_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_city and route_data_origin['city_code_list']:
+                        if origin_city not in route_data_origin['city_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if origin_country and route_data_origin['country_code_list']:
+                        if origin_country not in route_data_origin['country_code_list']:
+                            origin_temp_list.append(True)
+                        else:
+                            origin_temp_list.append(False)
+                    if all(state == True for state in origin_temp_list):
                         is_origin = True
 
                 route_data_destination = rule['route']['destination']
                 if route_data_destination['access_type'] == 'all':
                     is_destination = True
                 elif route_data_destination['access_type'] == 'allow':
-                    if destination_code and destination_code in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
                 elif route_data_destination['access_type'] == 'restrict':
-                    if destination_code and destination_code not in route_data_destination['destination_code_list']:
-                        is_destination = True
-                    elif destination_city and destination_city not in route_data_destination['city_code_list']:
-                        is_destination = True
-                    elif destination_country and destination_country not in route_data_destination['country_code_list']:
+                    destination_temp_list = []
+                    if destination_code and route_data_destination['destination_code_list']:
+                        if destination_code not in route_data_destination['destination_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_city and route_data_destination['city_code_list']:
+                        if destination_city not in route_data_destination['city_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if destination_country and route_data_destination['country_code_list']:
+                        if destination_country not in route_data_destination['country_code_list']:
+                            destination_temp_list.append(True)
+                        else:
+                            destination_temp_list.append(False)
+                    if all(state == True for state in destination_temp_list):
                         is_destination = True
 
                 cos_data = rule['route']['class_of_service']
@@ -2289,6 +2517,18 @@ class AgentCommission(object):
                 result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
                 if not all(res for res in result_2_list):
                     continue
+
+                pricing_data = copy.deepcopy(rec)
+                if 'rule_list' in pricing_data:
+                    pricing_data.pop('rule_list')
+
+                rule.update({
+                    'pricing_id': rec['id'],
+                    'parent_data': pricing_data,
+                    'rule_id': rule['id'],
+                    'pricing_index': rec_idx,
+                    'rule_index': rule_idx
+                })
                 return rule
         return {}
 
@@ -2594,7 +2834,9 @@ class RepricingToolsV2(object):
             pricing_less_list.append(res)
 
         payload = {
-            'pricing_less_list': pricing_less_list
+            'pricing_less_list': pricing_less_list,
+            'rule_data': rule_param,
+            'provider_pricing_data': rule_obj,
         }
         return payload
 
@@ -2786,7 +3028,7 @@ class RepricingToolsV2(object):
                             sc_total = tkt_res['upsell_amount'] * pax_count
                             total_reservation_amount += sc_total
 
-                        if tkt_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                        if tkt_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id and tkt_res['ho_commission_amount'] > 0:
                             sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -2826,7 +3068,7 @@ class RepricingToolsV2(object):
                         # December 21, 2021 - SAM
                         # Sementara pembulatan masuk ke komisi ho agar tidak bingung saat penghitungan komisi agent
                         # total_commission_amount += sc_total
-                        if self.ho_agent_id:
+                        if self.ho_agent_id and diff_total > 0:
                             sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -2861,7 +3103,7 @@ class RepricingToolsV2(object):
                             sc_total = agent_tkt['upsell_amount'] * pax_count
                             total_reservation_amount += sc_total
 
-                        if agent_tkt['commission_amount'] and show_commission:
+                        if agent_tkt['commission_amount'] and show_commission and agent_tkt['commission_amount'] > 0:
                             sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -2895,7 +3137,7 @@ class RepricingToolsV2(object):
                             sc_total = cust_tkt['upsell_amount'] * pax_count
                             total_reservation_amount += sc_total
 
-                        if cust_tkt['commission_amount'] and show_commission:
+                        if cust_tkt['commission_amount'] and show_commission and cust_tkt['commission_amount'] > 0:
                             sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -2982,7 +3224,7 @@ class RepricingToolsV2(object):
                             fare['service_charges'].append(sc_values)
                             total_reservation_amount += agent_anc_tkt['upsell_amount']
 
-                        if agent_anc_tkt['commission_amount'] and show_commission:
+                        if agent_anc_tkt['commission_amount'] and show_commission and agent_anc_tkt['commission_amount'] > 0:
                             sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -3011,7 +3253,7 @@ class RepricingToolsV2(object):
                             fare['service_charges'].append(sc_values)
                             total_reservation_amount += cust_anc_tkt['upsell_amount']
 
-                        if cust_anc_tkt['commission_amount'] and show_commission:
+                        if cust_anc_tkt['commission_amount'] and show_commission and cust_anc_tkt['commission_amount'] > 0:
                             sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -3042,7 +3284,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
-                    if tkt_rsv_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                    if tkt_rsv_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id and tkt_rsv_res['ho_commission_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3074,7 +3316,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
-                    if agent_rsv_res['commission_amount'] and show_commission:
+                    if agent_rsv_res['commission_amount'] and show_commission and agent_rsv_res['commission_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3109,7 +3351,7 @@ class RepricingToolsV2(object):
                     }
                     # agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
                     agent_com_res = self.agent_commission.get_commission_calculation(**com_param)
-                    if agent_com_res['agent_commission_amount'] and show_commission:
+                    if agent_com_res['agent_commission_amount'] and show_commission and agent_com_res['agent_commission_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3122,7 +3364,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
-                    if agent_com_res['parent_agent_id'] and agent_com_res['parent_charge_amount'] and show_commission and show_upline_commission:
+                    if agent_com_res['parent_agent_id'] and agent_com_res['parent_charge_amount'] and show_commission and show_upline_commission and agent_com_res['parent_charge_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3136,7 +3378,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
-                    if agent_com_res['ho_agent_id'] and agent_com_res['ho_charge_amount'] and show_commission and show_upline_commission:
+                    if agent_com_res['ho_agent_id'] and agent_com_res['ho_charge_amount'] and show_commission and show_upline_commission and agent_com_res['ho_charge_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3151,7 +3393,7 @@ class RepricingToolsV2(object):
                         fare_data['service_charges'].append(sc_values)
 
                     for idx, upline in enumerate(agent_com_res['upline_commission_list'], 1):
-                        if upline['commission_amount'] and show_commission and show_upline_commission:
+                        if upline['commission_amount'] and show_commission and show_upline_commission and upline['commission_amount'] > 0:
                             sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -3165,7 +3407,7 @@ class RepricingToolsV2(object):
                             })
                             fare_data['service_charges'].append(sc_values)
 
-                    if agent_com_res['residual_agent_id'] and agent_com_res['residual_amount'] and show_commission and show_upline_commission:
+                    if agent_com_res['residual_agent_id'] and agent_com_res['residual_amount'] and show_commission and show_upline_commission and agent_com_res['residual_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3221,7 +3463,7 @@ class RepricingToolsV2(object):
                         })
                         fare_data['service_charges'].append(sc_values)
 
-                    if cust_rsv_res['commission_amount'] and show_commission:
+                    if cust_rsv_res['commission_amount'] and show_commission and cust_rsv_res['commission_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'RAC',
@@ -3233,4 +3475,23 @@ class RepricingToolsV2(object):
                             'total': -cust_rsv_res['commission_amount'],
                         })
                         fare_data['service_charges'].append(sc_values)
-        return True
+
+        # January 6, 2022 - SAM
+        # Menambahkan informasi tentang rule yang didapatkan
+        rule_data = {
+            'agent_id': self.agent_id,
+            'agent_type_code': self.agent_type,
+            'provider_type_code': self.provider_type,
+            'customer_parent_type_code': self.customer_parent_type,
+            'customer_parent_id': self.customer_parent_id,
+        }
+        rule_data.update(rule_param)
+        payload = {
+            'rule_data': rule_data,
+            'provider_pricing_data': rule_obj,
+            'agent_pricing_data': agent_obj,
+            'customer_pricing_data': cust_obj,
+            'agent_commission_data': agent_com_obj,
+        }
+        # END
+        return payload
