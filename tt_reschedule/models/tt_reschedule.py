@@ -405,6 +405,12 @@ class TtReschedule(models.Model):
             'confirm_date': datetime.now(),
         })
 
+    def confirm_reschedule_from_api(self, co_uid=False):
+        # From api sma kyak from button cman confirm uid ne di over write lagi
+        self.confirm_reschedule_from_button()
+        if co_uid:
+            self.write({'confirm_uid': co_uid,})
+
     def confirm_reschedule_from_button_ho(self):
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
