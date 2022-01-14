@@ -92,31 +92,49 @@
                     <div class="col-1" style="text-align: center; font-size:17px;">
                         No.
                     </div>
-                    <div class="col-4" style="text-align: left; font-size:17px;">
+                    <div class="col-2" style="text-align: left; font-size:17px;margin-right:5px;">
                         Name
                     </div>
-                    <div class="col-3" style="text-align: right; font-size:17px; padding-right: 30px;">
+                    <div class="col-3" style="text-align: left; font-size:17px;">
+                        ID Number
+                    </div>
+                    <div class="col-2" style="text-align: left; font-size:17px; padding-right: 30px;">
                         Ticket Number
                     </div>
-                    <div class="col-4" style="text-align: right; font-size:17px; padding-right: 30px;">
+                    <div class="col-2" style="text-align: left; font-size:17px; padding-right: 30px;">
+                        Seat Number
+                    </div>
+                    <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
                         Barcode
                     </div>
                 </div>
                 <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                 <t t-set="psg_index" t-value="0"/>
-                <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
+                <t t-foreach="provider_itin_id.journey_ids.seat_ids" t-as="psg">
+                    <t t-set="ticket" t-value=""/>
+                    <t t-foreach="provider_itin_id.ticket_ids" t-as="ticket">
+                        <t t-if="ticket.passenger_id.id == psg.passenger_id.id">
+                            <t t-set="ticket" t-value="ticket.ticket_number"/>
+                        </t>
+                    </t>
                     <div class="row" style="margin-left: 0px; margin-right: 0px">
                         <div class="col-1" style="text-align: center">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
                         </div>
-                        <div class="col-4" style="text-align: left">
+                        <div class="col-2" style="text-align: left;margin-right:5px;">
                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                         </div>
-                        <div class="col-3" style="text-align: right">
-                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.ticket_number"><span t-field="psg.ticket_number"/></t><t t-else="">-</t></label>
+                        <div class="col-3" style="text-align: left">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.identity_number"/></label>
                         </div>
-                        <div class="col-4" style="text-align: right">
-                            <t t-if="psg.ticket_number"><img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', psg.ticket_number, 100, 100)" style="margin: 5px;"/></t><t t-else="">-</t>
+                        <div class="col-2" style="text-align: left">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="ticket"><span t-esc="ticket"/></t><t t-else="">-</t></label>
+                        </div>
+                        <div class="col-2" style="text-align: left">
+                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.seat"><span t-field="psg.seat"/></t><t t-else="">-</t></label>
+                        </div>
+                        <div class="col-2" style="text-align: right">
+                            <t t-if="ticket"><img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', ticket, 100, 100)" style="margin: 5px;"/></t><t t-else="">-</t>
                         </div>
                     </div>
                 </t>
@@ -158,15 +176,56 @@
 
         <!-- Price & Addons Detail (if with price) -->
         <t t-if="with_price">
-            <t t-foreach="doc.provider_booking_ids" t-as="length">
+            <t t-foreach="doc.provider_booking_ids" t-as="provider">
                 <!--<t t-call="tt_report_common.price_ticket"/>-->
-                <t t-call="tt_report_common.price_detail"/>
+                <span style="font-size: 28px; font-weight: 730">Price </span><span style="font-size: 28px; font-weight: 730" t-field="provider.pnr"/><br/>
+                <t t-set="fare" t-value="0"/>
+                <t t-set="discount" t-value="0"/>
+                <t t-set="admin_agent" t-value="0"/>
+                <t t-set="total_sale" t-value="0"/>
+                <t t-foreach="provider.cost_service_charge_ids" t-as="price">
+                    <t t-if="price.charge_code">
+                        <t t-if="price.charge_code == 'fare'">
+                            <t t-set="total_sale" t-value="total_sale + price.total"/>
+                            <t t-set="fare" t-value="fare + price.total"/>
+                        </t>
+                        <t t-if="price.charge_type == 'ROC'">
+                            <t t-set="admin_agent" t-value="admin_agent + price.total"/>
+                            <t t-set="total_sale" t-value="total_sale + price.total"/>
+                        </t>
+                        <t t-if="price.charge_code == 'disc'">
+                            <t t-set="total_sale" t-value="total_sale - price.total"/>
+                            <t t-set="discount" t-value="discount + price.total"/>
+                        </t>
+                    </t>
+                </t>
+                <div class="row" style="padding-top: 15px;">
+                    <div class="col-3" style="max-width: 27.5%;"><span>Fare</span></div>
+                    <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                    <div class="col-8" style="padding: 0px; text-transform:uppercase;">
+                         <span t-esc="int(fare)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: -3px">
+                    <div class="col-3" style="max-width: 27.5%;"><span>Tax</span></div>
+                    <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                    <div class="col-8" style="padding: 0px; text-transform:uppercase;">
+                        <span t-esc="int(admin_agent)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: -3px">
+                    <div class="col-3" style="max-width: 27.5%;"><span>Grand Total</span></div>
+                    <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                    <div class="col-8" style="padding: 0px; text-transform:uppercase;">
+                        <span t-esc="int(total_sale)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    </div>
+                </div>
             </t>
         </t>
 
         <!-- Important Notes -->
-        <h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s)</h4>
-        <span t-raw="airline_ticket_footer"/>
-        <span t-raw="bus_footer"/>
+        <!--<h4 style="margin-top: 30px; margin-bottom: 10px;">Important Note(s)</h4>-->
+        <!--<span t-raw="airline_ticket_footer"/>-->
+        <!--<span t-raw="bus_footer"/>-->
     </template>
 </odoo>
