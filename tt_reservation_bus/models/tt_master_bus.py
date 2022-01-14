@@ -107,28 +107,28 @@ class BusStation(models.Model):
 
     def get_config_api(self):
         res = {
-            "station": []
+            "station": {}
         }
         data = self.sudo().search([])
         for rec in data:
-            res["station"].append(self.return_data_config(rec, True))
+            res["station"][rec['code']] = self.get_data_origin(rec)
             for destination in rec.bus_journey_ids:
-                res["station"][len(res["station"])-1]['destination'].append(self.return_data_config(destination))
+                res["station"][rec['code']]['destination'].append(self.get_data_destination(destination))
         return ERR.get_no_error(res)
 
-    def return_data_config(self, data, with_destination=False):
-        res = {
+    def get_data_origin(self, data):
+        return {
             "name": data.name,
             "address": data.address,
-            "code": data.code,
             "longitude": data.longitude,
             "latitude": data.latitude,
             "city": data.city_id.name,
-            "provider": data.provider_id.code
+            "provider": data.provider_id.code,
+            'destination': []
         }
-        if with_destination:
-            res['destination'] = []
-        return res
+
+    def get_data_destination(self, data):
+        return data.code
 
     def action_bus_sync_get_bus_journey_traveloka(self):
         data = self.search([])
