@@ -592,7 +592,7 @@ class ReservationAirline(models.Model):
                 # December 31, 2021 - SAM
                 # if 'error_code' not in provider or provider['error_code'] != 0:
                 if 'error_code' in provider and provider['error_code'] != 0:
-                    _logger.error('Update Info Skipped, pnr : %s' % (provider['pnr']))
+                    _logger.error('Update Info Skipped, pnr : %s' % (provider.get('pnr','NO_PNR')))
                     continue
                 # END
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
