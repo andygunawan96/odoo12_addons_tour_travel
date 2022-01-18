@@ -1,4 +1,7 @@
 import base64
+
+import pytz
+
 from .api import Response
 from datetime import datetime, timedelta
 import logging,traceback
@@ -273,3 +276,10 @@ def match_passenger_data(provider_passengers, passenger_objs):
 def generate_journey_key_name(journey_obj):
     res = '%s%s' % (journey_obj['origin'], journey_obj['destination'])
     return res
+
+def convert_timezone(str_date,origin_tz,dest_tz): ##str_date = '2022-01-18'
+    str_date_list = str_date.split('-')
+    date_object = datetime(year=int(str_date_list[0]),month=int(str_date_list[1])
+                                 ,day=int(str_date_list[2])) #don't construct datetime object with tzinfo, pytz normalize will be off by 7 seconds
+    date_aware_object = pytz.timezone(origin_tz).localize(date_object)
+    return pytz.timezone(dest_tz).normalize(date_aware_object)

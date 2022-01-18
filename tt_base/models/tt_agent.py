@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 import logging, traceback,pytz
 from ...tools import ERR,variables,util
 from odoo.exceptions import UserError
-from datetime import datetime
+from datetime import datetime,timedelta
 from ...tools.ERR import RequestException
 import uuid
 
@@ -639,8 +639,10 @@ class TtAgent(models.Model):
     def get_reconcile_data_api(self, data, context):
         try:
             provider_type = data['provider_type']
-            start_date = data['start_date']
-            end_date = data.get('end_date') and data['end_date'] or data['start_date']
+            start_date = util.convert_timezone(data['start_date'],origin_tz='Asia/Jakarta',dest_tz='UTC')
+            end_date = data.get('end_date') and util.convert_timezone(data['end_date'],origin_tz='Asia/Jakarta',dest_tz='UTC') or start_date
+            if start_date == end_date:## kalau request tanggal sama akan return list kosong karena <= A >= A timestamp yg sama
+                end_date = end_date + timedelta(days=1)
             resv_table = 'tt.reservation.{}'.format(provider_type, )
 
             resv_data = self.env[resv_table].search([('agent_id', '=', context['co_agent_id']), ('state', '=', 'issued'), ('issued_date', '>=', start_date), ('issued_date', '<=', end_date), ('reconcile_state', '=', 'reconciled')])
@@ -654,7 +656,7 @@ class TtAgent(models.Model):
                     'order_number': rec.name,
                     'pnr': rec.pnr,
                     'type': 'nta',
-                    'issued_time': rec.issued_date,
+                    'issued_time': pytz.timezone('Asia/Jakarta').normalize(pytz.utc.localize(rec.issued_date)),
                     'nta_price': rec.agent_nta,
                     'end_balance': end_balance,
                     'carrier_list': rec.carrier_name,
