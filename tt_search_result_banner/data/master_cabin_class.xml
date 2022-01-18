@@ -12,28 +12,28 @@
             <field name="code">W</field>
             <field name="active">1</field>
         </record>
-        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+        <record id="tt_master_cabin_class_airline_business" model="tt.master.cabin.class">
             <field name="name">Business Class (Airline)</field>
             <field name="code">C</field>
             <field name="active">1</field>
         </record>
-        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+        <record id="tt_master_cabin_class_airline_first_class" model="tt.master.cabin.class">
             <field name="name">First Class (Airline)</field>
             <field name="code">F</field>
             <field name="active">1</field>
         </record>
 
-        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+        <record id="tt_master_cabin_class_train_executive" model="tt.master.cabin.class">
             <field name="name">Executive Class (Train)</field>
             <field name="code">E</field>
             <field name="active">1</field>
         </record>
-        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+        <record id="tt_master_cabin_class_train_economy" model="tt.master.cabin.class">
             <field name="name">Economy Class (Train)</field>
             <field name="code">K</field>
             <field name="active">1</field>
         </record>
-        <record id="tt_master_cabin_class_airline_economy" model="tt.master.cabin.class">
+        <record id="tt_master_cabin_class_train_business" model="tt.master.cabin.class">
             <field name="name">Business Class (Train)</field>
             <field name="code">B</field>
             <field name="active">1</field>

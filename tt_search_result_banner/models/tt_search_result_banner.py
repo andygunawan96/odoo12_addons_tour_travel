@@ -89,7 +89,6 @@ class SearchResultBanner(models.Model):
 
 class MasterCabinClass(models.Model):
     _name = 'tt.master.cabin.class'
-    _inherit = 'tt.history'
     _description = 'Master Cabin Class'
 
     code = fields.Char('Code', required=True)
