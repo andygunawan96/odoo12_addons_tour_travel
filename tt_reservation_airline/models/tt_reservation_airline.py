@@ -592,7 +592,45 @@ class ReservationAirline(models.Model):
                 # December 31, 2021 - SAM
                 # if 'error_code' not in provider or provider['error_code'] != 0:
                 if 'error_code' in provider and provider['error_code'] != 0:
-                    _logger.error('Update Info Skipped, pnr : %s' % (provider['pnr']))
+                    # January 18, 2022 - SAM
+                    # Update mekanisme kalau fail saat commit booking
+                    provider_info = ''
+                    if provider.get('pnr'):
+                        provider_info = 'PNR : %s' % provider['pnr']
+                    elif provider.get('provider_id'):
+                        provider_info = 'Provider ID : %s' % provider['provider_id']
+                    elif provider.get('sequence'):
+                        provider_info = 'Sequence : %s' % provider['sequence']
+                    _logger.error('Update info skipped, %s' % (provider_info))
+
+                    if provider.get('provider_id'):
+                        provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
+                        # Sementara flow akan dibuat apabila status draft agar trigger perubahan status
+                        # Untuk else komen dulu karena setiap ada error saat sync booking akan tercatat pada historynya
+                        if provider.get('pnr') or provider.get('pnr2'):
+                            provider_obj.write({
+                                'pnr': provider.get('pnr', ''),
+                                'pnr2': provider.get('pnr2', ''),
+                                'reference': provider.get('reference', ''),
+                            })
+
+                        if provider_obj.state == 'draft':
+                            if provider['status'] == 'FAIL_BOOKED':
+                                provider_obj.action_failed_booked_api_airline(provider.get('error_code', -1), provider.get('error_msg', ''))
+                                any_provider_changed = True
+                            elif provider['status'] == 'FAIL_ISSUED':
+                                provider_obj.action_failed_issued_api_airline(provider.get('error_code', -1),provider.get('error_msg', ''))
+                                any_provider_changed = True
+                            # else:
+                            #     provider_obj.write({
+                            #         'error_history_ids': [(0, 0, {
+                            #             'res_model': provider_obj._name,
+                            #             'res_id': provider_obj.id,
+                            #             'error_code': provider['error_code'],
+                            #             'error_msg': provider['error_msg']
+                            #         })]
+                            #     })
+                    # END
                     continue
                 # END
                 provider_obj = self.env['tt.provider.airline'].browse(provider['provider_id'])
