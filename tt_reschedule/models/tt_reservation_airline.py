@@ -1084,36 +1084,50 @@ class ReservationAirline(models.Model):
                     'payment_acquirer_id': payment_acquirer_obj.id,
                     'created_by_api': True,
                 }
-                rsch_obj = self.env['tt.reschedule'].create(res_vals)
 
-                rsch_line_values = {
-                    'reschedule_type': 'reschedule',
-                    'reschedule_amount': total_amount,
-                    'reschedule_amount_ho': total_amount,
-                    'real_reschedule_amount': total_amount,
-                    'reschedule_id': rsch_obj.id,
-                    'provider_id': self.env['tt.provider.airline'].browse(commit_data['provider_id']).provider_id.id
-                }
-                if admin_fee_obj:
-                    rsch_line_values.update({
-                        'admin_fee_id': admin_fee_obj.id
-                    })
-                rsch_line_obj = self.env['tt.reschedule.line'].sudo().create(rsch_line_values)
-                # END
+                is_reschedule_created = False
+                if 'reschedule_id' in commit_data:
+                    is_reschedule_created = True
+                    rsch_obj = self.env['tt.reschedule'].browse(commit_data['reschedule_id'])
+                    res_vals.pop('service_type')
+                    rsch_obj.write(res_vals)
 
-                # VIN: 22/10/2020 Check klo book tetep di catet cman ledger agent tidak terpotong
-                if rsv_prov_obj.state == 'issued':
-                    # July 13, 2020 - SAM
-                    # Sementara diasumsikan untuk seluruh proses berhasil
-                    rsch_obj.confirm_reschedule_from_api(context.get('co_uid'))
-                    rsch_obj.send_reschedule_from_button()
-                    rsch_obj.validate_reschedule_from_button()
-                    rsch_obj.finalize_reschedule_from_button()
-                    # Klo dari API dia bypass PO
-                    rsch_obj.action_done(bypass_po=True)
-                    # END
+                    if rsv_prov_obj.state == 'issued':
+                        rsch_obj.finalize_reschedule_from_button()
+                        rsch_obj.action_done(bypass_po=True)
+                    else:
+                        rsch_obj.cancel_reschedule_from_button()
                 else:
-                    rsch_obj.cancel_reschedule_from_button()
+                    rsch_obj = self.env['tt.reschedule'].create(res_vals)
+
+                    rsch_line_values = {
+                        'reschedule_type': 'reschedule',
+                        'reschedule_amount': total_amount,
+                        'reschedule_amount_ho': total_amount,
+                        'real_reschedule_amount': total_amount,
+                        'reschedule_id': rsch_obj.id,
+                        'provider_id': self.env['tt.provider.airline'].browse(commit_data['provider_id']).provider_id.id
+                    }
+                    if admin_fee_obj:
+                        rsch_line_values.update({
+                            'admin_fee_id': admin_fee_obj.id
+                        })
+                    rsch_line_obj = self.env['tt.reschedule.line'].sudo().create(rsch_line_values)
+                    # END
+
+                    # VIN: 22/10/2020 Check klo book tetep di catet cman ledger agent tidak terpotong
+                    if rsv_prov_obj.state == 'issued':
+                        # July 13, 2020 - SAM
+                        # Sementara diasumsikan untuk seluruh proses berhasil
+                        rsch_obj.confirm_reschedule_from_api(context.get('co_uid'))
+                        rsch_obj.send_reschedule_from_button()
+                        rsch_obj.validate_reschedule_from_button()
+                        rsch_obj.finalize_reschedule_from_button()
+                        # Klo dari API dia bypass PO
+                        rsch_obj.action_done(bypass_po=True)
+                        # END
+                    else:
+                        rsch_obj.cancel_reschedule_from_button()
 
             # Remove passenger from list
             # Get New Data
@@ -1363,3 +1377,142 @@ class ReservationAirline(models.Model):
         }
         GatewayConnector().telegram_notif_api(data, {})
         return True
+
+    # January 4, 2021 - SAM
+    # Fungi update booking v2 after sales
+    def create_update_booking_payment_api(self, vals, context):
+        try:
+            if 'use_system_user' in vals and vals['use_system_user']:
+                context.update({
+                    'co_uid': self.env.uid
+                })
+            order_id = ''
+            airline_obj = None
+            if 'book_id' in vals and vals['book_id']:
+                order_id = vals['book_id']
+                airline_obj = self.env['tt.reservation.airline'].browse(vals['book_id'])
+            elif 'order_number' in vals['order_number']:
+                order_id = vals['order_number']
+                airline_obj = self.env['tt.reservation.airline'].search([('name', '=', vals['order_number'])], limit=1)
+
+            if not airline_obj:
+                raise RequestException(1001, additional_message="Airline reservation %s is not found in our system." % order_id)
+
+            resv_journey_dict = {}
+            resv_segment_dict = {}
+            for journey in airline_obj.journey_ids:
+                key = '%s%s' % (journey.origin_id.code if journey.origin_id else '', journey.destination_id.code if journey.destination_id else '')
+                resv_journey_dict[key] = journey
+                for seg in journey.segment_ids:
+                    origin = seg.origin_id.code if seg.origin_id else '-'
+                    destination = seg.destination_id.code if seg.destination_id else '-'
+                    seg_key = '%s%s' % (origin, destination)
+                    resv_segment_dict[seg_key] = seg
+
+            resv_passenger_number_dict = {}
+            for psg in airline_obj.passenger_ids:
+                key_number = psg.sequence
+                resv_passenger_number_dict[key_number] = psg
+
+            resv_provider_dict = {}
+            for prov in airline_obj.provider_booking_ids:
+                # key = prov.pnr
+                key = prov.id
+                resv_provider_dict[key] = prov
+
+            is_admin_charge = True
+            if 'is_admin_charge' in vals:
+                is_admin_charge = vals['is_admin_charge']
+
+            # July 9, 2020 - SAM
+            # Mengambil data dari gateway
+            # admin_fee_obj = None
+            # July 13, 2020 - SAM
+            # Sementara untuk payment acquirer id diambil dari default agent id
+            # payment_acquirer_obj = None
+            payment_acquirer_obj = airline_obj.agent_id.default_acquirer_id
+            # admin_fee_obj = self.env.ref('tt_accounting.admin_fee_reschedule')
+            admin_fee_obj = None
+            # END
+
+            if vals.get('seq_id'):
+                payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+            # if not payment_acquirer_obj: #BOOKED TIDAK KIRIM seq_id
+            #     return ERR.get_error(1017)
+            # if not admin_fee_obj:
+            #     raise Exception('Admin fee reschedule is not found, field required.')
+
+            new_resv_obj = None
+            new_provider_bookings = []
+            pax_type_dict = {}
+            for commit_data in vals['provider_bookings']:
+                if commit_data['status'] == 'FAILED':
+                    continue
+
+                # TODO HERE NEW
+                rsv_prov_obj = resv_provider_dict.get(commit_data['provider_id'], None)
+                if not rsv_prov_obj:
+                    raise Exception('Provider ID not found, %s' % commit_data['provider_id'])
+
+                total_amount = commit_data['total_price']
+                if total_amount < 0:
+                    total_amount = 0
+
+                admin_fee_obj = None
+
+                if is_admin_charge:
+                    admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(airline_obj.agent_id.id)
+
+                res_vals = {
+                    'agent_id': airline_obj.agent_id.id,
+                    'customer_parent_id': airline_obj.customer_parent_id.id,
+                    'booker_id': airline_obj.booker_id.id,
+                    'currency_id': airline_obj.currency_id.id,
+                    'service_type': str(airline_obj.provider_type_id.id),
+                    'referenced_pnr': airline_obj.pnr,
+                    'old_segment_ids': [],
+                    'new_segment_ids': [],
+                    'passenger_ids': [],
+                    'res_model': airline_obj._name,
+                    'res_id': airline_obj.id,
+                    'notes': vals.get('notes') and vals['notes'] or '',
+                    'old_fee_notes': '',
+                    'new_fee_notes': '',
+                    'payment_acquirer_id': payment_acquirer_obj.id,
+                    'created_by_api': True,
+                }
+                rsch_obj = self.env['tt.reschedule'].create(res_vals)
+
+                rsch_line_values = {
+                    'reschedule_type': 'reschedule',
+                    'reschedule_amount': total_amount,
+                    'reschedule_amount_ho': total_amount,
+                    'real_reschedule_amount': total_amount,
+                    'reschedule_id': rsch_obj.id,
+                    'provider_id': self.env['tt.provider.airline'].browse(commit_data['provider_id']).provider_id.id
+                }
+                if admin_fee_obj:
+                    rsch_line_values.update({
+                        'admin_fee_id': admin_fee_obj.id
+                    })
+                rsch_line_obj = self.env['tt.reschedule.line'].sudo().create(rsch_line_values)
+                # END
+
+                if rsv_prov_obj.state == 'issued':
+                    rsch_obj.confirm_reschedule_from_api(context.get('co_uid'))
+                    rsch_obj.send_reschedule_from_button()
+                    rsch_obj.validate_reschedule_from_button()
+
+                commit_data.update({
+                    'reschedule_id': rsch_obj.id
+                })
+
+            return ERR.get_no_error(vals)
+        except RequestException as e:
+            _logger.error('Error Create Update Booking Payment API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error('Error Create Update Booking Payment API, %s' % traceback.format_exc())
+            return ERR.get_error(1030)
+
+    # END
