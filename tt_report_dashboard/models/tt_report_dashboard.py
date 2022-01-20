@@ -347,6 +347,8 @@ class TtReportDashboard(models.Model):
             res = self.get_report_overall_labpintar(data, is_ho, context)
         elif type == 'overall_mitrakeluarga':
             res = self.get_report_overall_mitrakeluarga(data, is_ho, context)
+        elif type == 'overall_sentramedika':
+            res = self.get_report_overall_sentramedika(data, is_ho, context)
 
         # under this section is old or test function, left it there for future reference
         elif type == 'airline':
@@ -9190,6 +9192,361 @@ class TtReportDashboard(models.Model):
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
                 'first_overview': mitrakeluarga_summary
+            }
+
+            # update dependencies
+            data['mode'] = mode
+
+            # get book issued ratio
+            book_issued = self.get_book_issued_ratio(data)
+
+            # adding book_issued ratio graph
+            to_return.update(book_issued)
+
+            # We will populate third graph with agent
+            # fourth and fifth with customer and customer parent respectively
+
+            # get by chanel
+            chanel_data = self.get_report_group_by_chanel(data, issued_values['lines'], is_ho, context)
+
+            # adding chanel_data graph
+            to_return.update(chanel_data)
+
+            # if agent then we will populate with customer data (aka booker, and customer parent)
+            customer_data = self.get_report_group_by_customer(data, issued_values['lines'], is_ho, context)
+
+            # add customer to data
+            to_return.update(customer_data)
+
+            return to_return
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            raise e
+
+    def get_report_overall_sentramedika(self, data, is_ho, context={}):
+        try:
+            agent_name_context = None
+            if context:
+                agent_name_context = context['co_agent_name']
+            # process datetime to GMT
+            # convert string to datetime
+            start_date = self.convert_to_datetime(data['start_date'])
+            end_date = self.convert_to_datetime(data['end_date'])
+
+            temp_start_date = start_date - timedelta(days=1)
+            data['start_date'] = temp_start_date.strftime('%Y-%m-%d') + " 17:00:00"
+            data['end_date'] += " 16:59:59"
+
+            # first step of this function is to get reservation date, base on issued date
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': data['report_type'],
+                'provider': data['provider'],
+                'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
+                'addons': 'none'
+            }
+            issued_values = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            mode = 'days'
+            month = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]
+
+            delta = end_date - start_date
+
+            if delta.days > 35:
+                # group by month
+                mode = 'month'
+
+            total = 0
+            num_data = 0
+            profit_total = 0
+            profit_ho = 0
+            profit_agent = 0
+            invoice_total = 0
+            reservation_ids = []
+            for i in issued_values['lines']:
+                reservation_ids.append((i['reservation_id'], i['provider_type_name']))
+
+            temp_dict = {
+                'start_date': data['start_date'],
+                'end_date': data['end_date'],
+                'type': 'invoice',
+                'provider': data['provider'],
+                'reservation': reservation_ids,
+                'agent_seq_id': data['agent_seq_id'],
+                'agent_type': data['agent_type_seq_id'],
+                'addons': 'none'
+            }
+            invoice = self.env['report.tt_report_selling.report_selling']._get_reports(temp_dict)
+
+            # proceed invoice with the assumption of create date = issued date
+            summary_issued = []
+            sentramedika_summary = []
+
+            # declare current id
+            current_id = {}
+
+            for i in issued_values['lines']:
+                if not current_id.get(i['provider_type_name']):
+                    current_id[i['provider_type_name']] = []
+                if i['reservation_id'] not in current_id[i['provider_type_name']]:
+                    try:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+                                                                             'month': month[int(i['issued_month']) - 1]})
+
+                        if month_index == -1:
+                            # if year and month with details doens't exist yet
+                            # create a temp dict
+                            temp_dict = {
+                                'year': i['issued_year'],
+                                'month_index': int(i['issued_month']),
+                                'month': month[int(i['issued_month']) - 1],
+                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+                                'reservation': 0,
+                                'revenue': 0,
+                                'profit': 0
+                            }
+
+                            # add the first data
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            temp_dict['detail'][day_index]['reservation'] += 1
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
+                            num_data += 1
+                            if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
+                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
+
+                            # add to the big list
+                            summary_issued.append(temp_dict)
+                        else:
+                            # if "summary" already exist
+                            # update existing summary
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
+                            num_data += 1
+                            if i['ledger_transaction_type'] == 3:
+                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                                # if HQ guy asking then we'll count everything
+                                # if not HQ guy then we'll only count respected agent
+                                if is_ho or agent_name_context == i['ledger_agent_name']:
+                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                    profit_total += i['debit'] - i['credit']
+                                    profit_ho += i['debit'] - i['credit']
+                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_ho += i['debit'] - i['credit']
+                                # elif i['ledger_agent_type_name'] != 'HO':
+                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                #     profit_total += i['debit'] - i['credit']
+                                #     profit_agent += i['debit'] - i['credit']
+
+                        # populate sentramedika_summary
+                        sentramedika_index = self.check_index(sentramedika_summary, 'product', i['carrier_name'])
+                        if sentramedika_index == -1:
+                            temp_dict = {
+                                'product': i['carrier_name'],
+                                'counter': 1,
+                                'passenger_count': i['reservation_passenger'],
+                                'amount': i['amount']
+                            }
+                            sentramedika_summary.append(temp_dict)
+                        else:
+                            sentramedika_summary[sentramedika_index]['counter'] += 1
+                            sentramedika_summary[sentramedika_index]['amount'] += i['amount']
+                            sentramedika_summary[sentramedika_index]['passenger_count'] += i['reservation_passenger']
+                    except:
+                        pass
+                    current_id[i['provider_type_name']].append(i['reservation_id'])
+                else:
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+                                                                             'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                        # if HQ guy asking then we'll count everything
+                        # if not HQ guy then we'll only count respected agent
+                        if is_ho or agent_name_context == i['ledger_agent_name']:
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
+                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_ho += i['debit'] - i['credit']
+                        # elif i['ledger_agent_type_name'] != 'HO':
+                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                        #     profit_total += i['debit'] - i['credit']
+                        #     profit_agent += i['debit'] - i['credit']
+
+            # for every section in summary
+            for i in summary_issued:
+                # for every detail in section
+                for j in i['detail']:
+                    # built appropriate date
+                    if i['month_index'] < 10 and j['day'] < 10:
+                        today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                    elif i['month_index'] < 10 and j['day'] > 9:
+                        today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                    elif i['month_index'] > 9 and j['day'] < 10:
+                        today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                    else:
+                        today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                    # filter invoice data
+                    filtered_data = list(filter(lambda x: x['create_date'] == today, invoice['lines']))
+
+                    # add to summary
+                    j['invoice'] += len(filtered_data)
+
+                    # count average
+                    j['average'] = float(j['revenue']) / float(j['reservation']) if j['reservation'] > 0 else 0
+
+                    # adding invoice
+                    invoice_total += len(filtered_data)
+
+            # sort summary_by_date month in the correct order
+            summary_issued.sort(key=lambda x: (x['year'], x['month_index']))
+            sentramedika_summary.sort(key=lambda x: x['amount'])
+
+            # first graph data
+            main_data = {}
+            average_data = {}
+            revenue_data = {}
+            profit_data = {}
+
+            # shape the data for return
+            # a little reminder month and days mode determine by how many days in between requested report
+            # more than 35 days, automatically group by month
+            # less than 35 days, we'll return as is (divided by date)
+            if mode == 'month':
+                # if so happens to be in month mode, then we'll sum every data by month
+                # because if you follow the program, you'll know that summary_issued divide the data into
+                # year, month, with date details (date detail is list)
+                # we have to sum the date detail basically
+
+                # sum by month
+                try:
+                    # first counter is trying to find what month user requested date are
+                    # why it has - 1 because if you look at constant dependencies
+                    # index and month value will result in difference of 1 (since list index starts in 0 yada yada yada)
+                    first_counter = summary_issued[0]['month_index'] - 1
+                except:
+                    # if for whatever reason, above method doesn't work
+                    # then, we'll do the weird(?) way
+                    # by extracting from date
+                    splits = data['start_date'].split("-")
+                    month = splits[1]
+                    first_counter = int(month) - 1
+
+                # with that done, we'll now process the data
+                for i in summary_issued:
+                    # fill skipped month(s)
+                    # check if current month (year) with start
+                    if i['month_index'] - 1 < first_counter:
+                        # this is the condition for new year, where
+                        # counter month > than the earlier month of the year
+                        # we'll just gonna fill the gap
+                        while first_counter < 12:
+                            main_data[month[first_counter]] = 0
+                            average_data[month[first_counter]] = 0
+                            revenue_data[month[first_counter]] = 0
+                            profit_data[month[first_counter]] = 0
+                            first_counter += 1
+                        # resert counter after 12
+                        if first_counter == 12:
+                            first_counter = 0
+                    if i['month_index'] - 1 > first_counter:
+                        # this to catch up current month to present day ish
+                        # or present month for that matter
+                        while first_counter < i['month_index'] - 1:
+                            main_data[month[first_counter]] = 0
+                            average_data[month[first_counter]] = 0
+                            revenue_data[month[first_counter]] = 0
+                            profit_data[month[first_counter]] = 0
+                            first_counter += 1
+
+                    # so after first counter, which doen't make any sense since
+                    # first counter was use to keep up...
+                    # after first counter catch up present month/day
+                    # we're gonna count the data
+                    # declare variable with respected month
+                    main_data[i['month']] = 0
+                    average_data[i['month']] = 0
+                    revenue_data[i['month']] = 0
+                    profit_data[i['month']] = 0
+                    for j in i['detail']:
+                        # for detail in months
+                        main_data[i['month']] += j['invoice']
+                        average_data[i['month']] += j['average']
+                        revenue_data[i['month']] += j['revenue']
+                        profit_data[i['month']] += j['profit']
+                    first_counter += 1
+
+            else:
+                # seperate by date
+                for i in summary_issued:
+                    for j in i['detail']:
+
+                        # built appropriate date
+                        if i['month_index'] < 10 and j['day'] < 10:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-0" + str(j['day'])
+                        elif i['month_index'] < 10 and j['day'] > 9:
+                            today = str(i['year']) + "-0" + str(i['month_index']) + "-" + str(j['day'])
+                        elif i['month_index'] > 9 and j['day'] < 10:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-0" + str(j['day'])
+                        else:
+                            today = str(i['year']) + "-" + str(i['month_index']) + "-" + str(j['day'])
+
+                        # lets cut the data that is not needed
+                        if today >= data['start_date'] and today <= data['end_date']:
+                            main_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j['invoice']
+                            average_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['average']
+                            revenue_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(
+                                i['year'])] = j['revenue']
+                            profit_data[str(j['day']) + "-" + str(i['month_index']) + "-" + str(i['year'])] = j[
+                                'profit']
+
+            # build to return data
+            to_return = {
+                'first_graph': {
+                    'label': list(main_data.keys()),
+                    'data': list(main_data.values()),
+                    'data2': list(revenue_data.values()),
+                    'data3': list(average_data.values()),
+                    'data4': list(profit_data.values())
+                },
+                'total_rupiah': total,
+                'average_rupiah': float(total) / float(invoice_total) if invoice_total > 0 else 0,
+                'profit_total': profit_total,
+                'profit_ho': profit_ho,
+                'profit_agent': profit_agent,
+                'first_overview': sentramedika_summary
             }
 
             # update dependencies

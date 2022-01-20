@@ -33,6 +33,7 @@ from . import tt_medical_api
 from . import tt_swabexpress_api
 from . import tt_labpintar_api
 from . import tt_mitrakeluarga_api
+from . import tt_sentramedika_api
 from . import tt_bus_api
 from . import tt_insurance_api
 from . import tt_accounting_connector_api

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- Airline -->
+        <menuitem id="top_reservations_sentramedika"
+                  parent="tt_reservation.main_reservations"
+                  name="Sentra Medika"
+                  sequence="45"
+                  groups="base.group_user"/>
+        
+        <menuitem id="menu_reservations_sentramedika"
+                  parent="tt_reservation_sentramedika.top_reservations_sentramedika"
+                  name="Booking"
+                  sequence="1"/>
+
+        <menuitem id="menu_master_data_sentramedika"
+                  parent="tt_reservation_sentramedika.top_reservations_sentramedika"
+                  name="Master Data"
+                  groups="tt_base.group_master_data_sentramedika_level_2"
+                  sequence="2"/>
+    </data>
+</odoo>
