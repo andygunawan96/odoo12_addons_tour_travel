@@ -5,6 +5,7 @@ import logging,traceback
 import json
 from threading import Thread
 from ...tools.db_connector import GatewayConnector
+from datetime import datetime
 
 
 _logger = logging.getLogger(__name__)
@@ -409,6 +410,13 @@ class ReservationAirline(models.Model):
                     'co_uid': self.env.uid
                 })
             # END
+
+            # January 20, 2022 - SAM
+            is_webhook = vals['is_webhook'] if 'is_webhook' in vals else False
+            reschedule_date = datetime.now()
+            reschedule_uid = context['co_uid']
+            # END
+
             order_id = ''
             airline_obj = None
             if 'book_id' in vals and vals['book_id']:
@@ -1059,11 +1067,18 @@ class ReservationAirline(models.Model):
                 if not old_segment_list and not new_segment_list and not is_any_ssr_change:
                     continue
 
-                rsv_prov_obj.write({
+                write_vals = {
                     'total_price': commit_data['total_price'],
                     'balance_due': commit_data['balance_due'],
                     'balance_due_str': commit_data['balance_due_str'],
-                })
+                }
+                if not is_webhook:
+                    write_vals.update({
+                        'reschedule_uid': reschedule_uid,
+                        'reschedule_date': reschedule_date,
+                    })
+
+                rsv_prov_obj.write(write_vals)
 
                 res_vals = {
                     'agent_id': airline_obj.agent_id.id,
@@ -1356,7 +1371,20 @@ class ReservationAirline(models.Model):
                 'departure_date': airline_obj.journey_ids[0].departure_date,
             })
             airline_obj.calculate_service_charge()
-            airline_obj.check_provider_state(context)
+
+            # January 20, 2022 - SAM
+            # Buat fungsi manual untuk write data pada reservasi
+            # Karena kalau menggunakan fungsi dibawah akan trigger fungsi button
+            # Sehingga untuk status issued akan berubah tanggal issuednya
+            # airline_obj.check_provider_state(context)
+            airline_obj.set_provider_detail_info()
+            if not is_webhook:
+                rsv_vals = {
+                    'reschedule_uid': reschedule_uid,
+                    'reschedule_date': reschedule_date,
+                }
+                airline_obj.write(rsv_vals)
+            # END
 
             payload = {
                 'order_number': airline_obj.name if not new_resv_obj else new_resv_obj.name
