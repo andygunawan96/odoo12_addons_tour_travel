@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_price_list_sentramedika_antigen_1_person" model="tt.price.list.sentramedika">
+            <field name="name">Default Antigen 1 Person Surabaya</field>
+            <field name="min_pax">1</field>
+            <field name="commission">30000</field>
+            <field name="base_price">90000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_sentramedika_pcr_1_person" model="tt.price.list.sentramedika">
+            <field name="name">Default PCR 1 Person Surabaya</field>
+            <field name="min_pax">1</field>
+            <field name="commission">40000</field>
+            <field name="base_price">275000</field>
+            <field name="active">True</field>
+        </record>
+
+        <record id="tt_price_list_sentramedika_mcu_1_person" model="tt.price.list.sentramedika">
+            <field name="name">Default MCU 1 Person Surabaya</field>
+            <field name="min_pax">1</field>
+            <field name="commission">100000</field>
+            <field name="base_price">650000</field>
+            <field name="active">True</field>
+        </record>
+
+
+        <record id="tt_timeslot_sentramedika_default_data" model="tt.timeslot.sentramedika.default">
+            <field name="name">Default Timeslot Data Surabaya</field>
+            <!--DEFAULT DATA SBY-->
+            <field name="single_supplement">0</field>
+            <field name="overtime_surcharge">0</field>
+            <field name="cito_surcharge">0</field>
+            <field name="additional_price">0</field>
+            <field name="antigen_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_sentramedika.tt_price_list_sentramedika_antigen_1_person')
+                             ])]"/>
+            <field name="pcr_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_sentramedika.tt_price_list_sentramedika_pcr_1_person')
+                             ])]"/>
+            <field name="mcu_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_sentramedika.tt_price_list_sentramedika_mcu_1_person')
+                             ])]"/>
+        </record>
+
+
+    </data>
+</odoo>

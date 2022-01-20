@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="tt_provider_sentramedika_sentramedika" model="tt.provider">
+            <field name="name">Sentra Medika</field>
+            <field name="code">sentramedika</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_sentramedika"/>
+        </record>
+    </data>
+</odoo>

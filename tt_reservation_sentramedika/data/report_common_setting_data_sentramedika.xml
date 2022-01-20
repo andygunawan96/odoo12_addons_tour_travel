@@ -1,0 +1,42 @@
+<odoo>
+    <data noupdate="1">
+        <record id="sentramedika_antigen_information" model="tt.report.common.setting">
+            <field name="name">Sentra Medika Antigen Information</field>
+            <field name="code">sentramedika_antigen_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information Antigen
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="sentramedika_pcr_information" model="tt.report.common.setting">
+            <field name="name">Sentra Medika PCR Information</field>
+            <field name="code">sentramedika_pcr_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information PCR
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="sentramedika_mcu_information" model="tt.report.common.setting">
+            <field name="name">Sentra Medika MCU Information</field>
+            <field name="code">sentramedika_mcu_information</field>
+            <field name="sequence">99</field>
+            <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="html" type="html">
+                <div class="col-12" style="margin-top:20px;">
+                    Information MCU
+                </div>
+            </field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

@@ -31,6 +31,16 @@
     </record>
 
     <record id="able_to_ticketing_periksain" model="tt.frontend.security">
+        <field name="name">Ticketing Group Booking</field>
+        <field name="code">ticketing_group_booking</field>
+    </record>
+
+    <record id="able_to_ticketing_sentramedika" model="tt.frontend.security">
+        <field name="name">Ticketing Klinik Sentra Medika</field>
+        <field name="code">ticketing_sentramedika</field>
+    </record>
+
+    <record id="able_to_ticketing_periksain" model="tt.frontend.security">
         <field name="name">Ticketing Periksain</field>
         <field name="code">ticketing_periksain</field>
     </record>
