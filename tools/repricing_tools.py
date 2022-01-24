@@ -1727,7 +1727,32 @@ class AgentPricing(object):
     def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
         is_infant = True if pax_type == 'INF' else False
         total_amount = fare_amount + tax_amount
-        final_total_amount = total_amount
+        final_fare_amount = fare_amount
+        final_tax_amount = tax_amount
+        if 'fare' in price_data:
+            fare_data = price_data['fare']
+            if not is_infant or (is_infant and fare_data.get('is_infant', False)):
+                if fare_data['percentage']:
+                    final_fare_amount = final_fare_amount * (100 + fare_data['percentage']) / 100
+                if fare_data['amount']:
+                    final_fare_amount += fare_data['amount']
+        if 'tax' in price_data:
+            tax_data = price_data['tax']
+            if not is_infant or (is_infant and tax_data.get('is_infant', False)):
+                if tax_data['percentage']:
+                    final_tax_amount = final_tax_amount * (100 + tax_data['percentage']) / 100
+                if tax_data['amount']:
+                    final_tax_amount += tax_data['amount']
+
+        final_total_amount = final_fare_amount + final_tax_amount
+        if 'total' in price_data:
+            total_data = price_data['total']
+            if not is_infant or (is_infant and total_data.get('is_infant', False)):
+                if total_data['percentage']:
+                    final_total_amount = final_total_amount * (100 + total_data['percentage']) / 100
+                if total_data['amount']:
+                    final_total_amount += total_data['amount']
+
         if 'upsell_by_percentage' in price_data:
             upsell_data = price_data['upsell_by_percentage']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
