@@ -15,6 +15,7 @@ Key Features
     'depends': ['tt_base'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/tt_agent_commission_data.xml',
 
         'views/menu_item_base.xml',
