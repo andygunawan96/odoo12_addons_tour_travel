@@ -31,7 +31,7 @@ class VisaVendorLines(models.Model):
 
     def to_dict(self):
         res = {
-            'order_number': self.passenger_id.name,
+            'order_number': self.provider_id.pnr,
             'vendor': self.vendor_id.name,
             'reference_number': self.reference_number,
             'currency': self.currency_id.name,
