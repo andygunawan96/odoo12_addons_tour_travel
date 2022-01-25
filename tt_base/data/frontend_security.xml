@@ -30,7 +30,7 @@
         <field name="code">send_notification</field>
     </record>
 
-    <record id="able_to_ticketing_periksain" model="tt.frontend.security">
+    <record id="able_to_ticketing_groupbooking" model="tt.frontend.security">
         <field name="name">Ticketing Group Booking</field>
         <field name="code">ticketing_group_booking</field>
     </record>
