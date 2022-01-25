@@ -307,6 +307,15 @@ class AgentPricingLine(models.Model):
         ('agent', 'Agent'),
     ], 'Residual Amount To', default='ho')
 
+    tkt_sales_fare_percentage = fields.Float('Fare (%)', default=0)
+    tkt_sales_fare_amount = fields.Float('Fare Amount', default=0)
+    tkt_sales_fare_infant = fields.Boolean('Apply Fare Pricing to Infant', default=False)
+    tkt_sales_tax_percentage = fields.Float('Tax (%)', default=0)
+    tkt_sales_tax_amount = fields.Float('Tax Amount', default=0)
+    tkt_sales_tax_infant = fields.Boolean('Apply Tax Pricing to Infant', default=False)
+    tkt_sales_total_percentage = fields.Float('Total (%)', default=0)
+    tkt_sales_total_amount = fields.Float('Total Amount', default=0)
+    tkt_sales_total_infant = fields.Boolean('Apply Total Pricing to Infant', default=True)
     tkt_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
     tkt_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
     tkt_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
@@ -316,15 +325,53 @@ class AgentPricingLine(models.Model):
     tkt_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
     tkt_sales_upsell_route = fields.Boolean('Upsell per Route', default=False)
     tkt_sales_upsell_segment = fields.Boolean('Upsell per Segment', default=False)
-    # tkt_sales_upsell_pax = fields.Boolean('Upsell per Pax', default=False)
     tkt_sales_upsell_amount_infant = fields.Boolean('Apply Upsell Amount to Infant', default=False)
 
+    tkt_nta_agent_fare_percentage = fields.Float('Fare (%)', default=0)
+    tkt_nta_agent_fare_amount = fields.Float('Fare Amount', default=0)
+    tkt_nta_agent_fare_infant = fields.Boolean('Apply Fare Pricing to Infant', default=False)
+    tkt_nta_agent_tax_percentage = fields.Float('Tax (%)', default=0)
+    tkt_nta_agent_tax_amount = fields.Float('Tax Amount', default=0)
+    tkt_nta_agent_tax_infant = fields.Boolean('Apply Tax Pricing to Infant', default=False)
+    tkt_nta_agent_total_percentage = fields.Float('Total (%)', default=0)
+    tkt_nta_agent_total_amount = fields.Float('Total Amount', default=0)
+    tkt_nta_agent_total_infant = fields.Boolean('Apply Total Pricing to Infant', default=True)
+    tkt_nta_agent_upsell_percentage = fields.Float('Upsell (%)', default=0)
+    tkt_nta_agent_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    tkt_nta_agent_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
+    tkt_nta_agent_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    tkt_nta_agent_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
+    tkt_nta_agent_upsell_percentage_infant = fields.Boolean('Apply Upsell Percentage to Infant', default=False)
+    tkt_nta_agent_upsell_amount = fields.Float('Upsell Amount', default=0)
+    tkt_nta_agent_upsell_route = fields.Boolean('Upsell per Route', default=False)
+    tkt_nta_agent_upsell_segment = fields.Boolean('Upsell per Segment', default=False)
+    tkt_nta_agent_upsell_amount_infant = fields.Boolean('Apply Upsell Amount to Infant', default=False)
+
+    anc_sales_fare_percentage = fields.Float('Fare (%)', default=0)
+    anc_sales_fare_amount = fields.Float('Fare Amount', default=0)
+    anc_sales_tax_percentage = fields.Float('Tax (%)', default=0)
+    anc_sales_tax_amount = fields.Float('Tax Amount', default=0)
+    anc_sales_total_percentage = fields.Float('Total (%)', default=0)
+    anc_sales_total_amount = fields.Float('Total Amount', default=0)
     anc_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
     anc_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
     anc_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
     anc_sales_upsell_maximum = fields.Float('Maximum Amount', default=0)
     anc_sales_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
     anc_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
+
+    anc_nta_agent_fare_percentage = fields.Float('Fare (%)', default=0)
+    anc_nta_agent_fare_amount = fields.Float('Fare Amount', default=0)
+    anc_nta_agent_tax_percentage = fields.Float('Tax (%)', default=0)
+    anc_nta_agent_tax_amount = fields.Float('Tax Amount', default=0)
+    anc_nta_agent_total_percentage = fields.Float('Total (%)', default=0)
+    anc_nta_agent_total_amount = fields.Float('Total Amount', default=0)
+    anc_nta_agent_upsell_percentage = fields.Float('Upsell (%)', default=0)
+    anc_nta_agent_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    anc_nta_agent_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
+    anc_nta_agent_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    anc_nta_agent_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
+    anc_nta_agent_upsell_amount = fields.Float('Upsell Amount', default=0)
 
     rsv_sales_upsell_amount = fields.Float('Upsell Amount', default=0)
     rsv_sales_upsell_route = fields.Boolean('Upsell per Route', default=False)
@@ -334,6 +381,15 @@ class AgentPricingLine(models.Model):
     rsv_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=False)
     rsv_sales_upsell_maximum = fields.Float('Maximum Amount', default=0)
     rsv_sales_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
+
+    rsv_nta_agent_upsell_amount = fields.Float('Upsell Amount', default=0)
+    rsv_nta_agent_upsell_route = fields.Boolean('Upsell per Route', default=False)
+    rsv_nta_agent_upsell_segment = fields.Boolean('Upsell per Segment', default=False)
+    rsv_nta_agent_upsell_percentage = fields.Float('Upsell (%)', default=0)
+    rsv_nta_agent_upsell_minimum = fields.Float('Minimum Amount', default=0)
+    rsv_nta_agent_upsell_has_minimum = fields.Boolean('Has Minimum', default=False)
+    rsv_nta_agent_upsell_maximum = fields.Float('Maximum Amount', default=0)
+    rsv_nta_agent_upsell_has_maximum = fields.Boolean('Has Maximum', default=False)
 
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
@@ -440,6 +496,21 @@ class AgentPricingLine(models.Model):
             },
             'ticketing': {
                 'sales': {
+                    'fare': {
+                        'percentage': self.tkt_sales_fare_percentage,
+                        'amount': self.tkt_sales_fare_amount,
+                        'is_infant': self.tkt_sales_fare_infant
+                    },
+                    'tax': {
+                        'percentage': self.tkt_sales_tax_percentage,
+                        'amount': self.tkt_sales_tax_amount,
+                        'is_infant': self.tkt_sales_tax_infant
+                    },
+                    'total': {
+                        'percentage': self.tkt_sales_total_percentage,
+                        'amount': self.tkt_sales_total_amount,
+                        'is_infant': self.tkt_sales_total_infant
+                    },
                     'upsell_by_percentage': {
                         'percentage': self.tkt_sales_upsell_percentage,
                         'minimum': self.tkt_sales_upsell_minimum,
@@ -452,13 +523,55 @@ class AgentPricingLine(models.Model):
                         'amount': self.tkt_sales_upsell_amount,
                         'is_route': self.tkt_sales_upsell_route,
                         'is_segment': self.tkt_sales_upsell_segment,
-                        # 'is_pax': self.tkt_sales_upsell_pax,
                         'is_infant': self.tkt_sales_upsell_amount_infant
                     }
-                }
+                },
+                'nta_agent': {
+                    'fare': {
+                        'percentage': self.tkt_nta_agent_fare_percentage,
+                        'amount': self.tkt_nta_agent_fare_amount,
+                        'is_infant': self.tkt_nta_agent_fare_infant
+                    },
+                    'tax': {
+                        'percentage': self.tkt_nta_agent_tax_percentage,
+                        'amount': self.tkt_nta_agent_tax_amount,
+                        'is_infant': self.tkt_nta_agent_tax_infant
+                    },
+                    'total': {
+                        'percentage': self.tkt_nta_agent_total_percentage,
+                        'amount': self.tkt_nta_agent_total_amount,
+                        'is_infant': self.tkt_nta_agent_total_infant
+                    },
+                    'upsell_by_percentage': {
+                        'percentage': self.tkt_nta_agent_upsell_percentage,
+                        'minimum': self.tkt_nta_agent_upsell_minimum,
+                        'has_minimum': self.tkt_nta_agent_upsell_has_minimum,
+                        'maximum': self.tkt_nta_agent_upsell_maximum,
+                        'has_maximum': self.tkt_nta_agent_upsell_has_maximum,
+                        'is_infant': self.tkt_nta_agent_upsell_percentage_infant
+                    },
+                    'upsell_by_amount': {
+                        'amount': self.tkt_nta_agent_upsell_amount,
+                        'is_route': self.tkt_nta_agent_upsell_route,
+                        'is_segment': self.tkt_nta_agent_upsell_segment,
+                        'is_infant': self.tkt_nta_agent_upsell_amount_infant
+                    }
+                },
             },
             'ancillary': {
                 'sales': {
+                    'fare': {
+                        'percentage': self.anc_sales_fare_percentage,
+                        'amount': self.anc_sales_fare_amount,
+                    },
+                    'tax': {
+                        'percentage': self.anc_sales_tax_percentage,
+                        'amount': self.anc_sales_tax_amount,
+                    },
+                    'total': {
+                        'percentage': self.anc_sales_total_percentage,
+                        'amount': self.anc_sales_total_amount,
+                    },
                     'upsell_by_percentage': {
                         'percentage': self.anc_sales_upsell_percentage,
                         'minimum': self.anc_sales_upsell_minimum,
@@ -468,6 +581,30 @@ class AgentPricingLine(models.Model):
                     },
                     'upsell_by_amount': {
                         'amount': self.anc_sales_upsell_amount,
+                    }
+                },
+                'nta_agent': {
+                    'fare': {
+                        'percentage': self.anc_nta_agent_fare_percentage,
+                        'amount': self.anc_nta_agent_fare_amount,
+                    },
+                    'tax': {
+                        'percentage': self.anc_nta_agent_tax_percentage,
+                        'amount': self.anc_nta_agent_tax_amount,
+                    },
+                    'total': {
+                        'percentage': self.anc_nta_agent_total_percentage,
+                        'amount': self.anc_nta_agent_total_amount,
+                    },
+                    'upsell_by_percentage': {
+                        'percentage': self.anc_nta_agent_upsell_percentage,
+                        'minimum': self.anc_nta_agent_upsell_minimum,
+                        'has_minimum': self.anc_nta_agent_upsell_has_minimum,
+                        'maximum': self.anc_nta_agent_upsell_maximum,
+                        'has_maximum': self.anc_nta_agent_upsell_has_maximum,
+                    },
+                    'upsell_by_amount': {
+                        'amount': self.anc_nta_agent_upsell_amount,
                     }
                 }
             },
@@ -484,6 +621,20 @@ class AgentPricingLine(models.Model):
                         'has_minimum': self.rsv_sales_upsell_has_minimum,
                         'maximum': self.rsv_sales_upsell_maximum,
                         'has_maximum': self.rsv_sales_upsell_has_maximum,
+                    },
+                },
+                'nta_agent': {
+                    'upsell_by_amount': {
+                        'amount': self.rsv_nta_agent_upsell_amount,
+                        'is_route': self.rsv_nta_agent_upsell_route,
+                        'is_segment': self.rsv_nta_agent_upsell_segment,
+                    },
+                    'upsell_by_percentage': {
+                        'percentage': self.rsv_nta_agent_upsell_percentage,
+                        'minimum': self.rsv_nta_agent_upsell_minimum,
+                        'has_minimum': self.rsv_nta_agent_upsell_has_minimum,
+                        'maximum': self.rsv_nta_agent_upsell_maximum,
+                        'has_maximum': self.rsv_nta_agent_upsell_has_maximum,
                     },
                 }
             },

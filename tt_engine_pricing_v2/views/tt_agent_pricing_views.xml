@@ -8,7 +8,7 @@
                 <header>
                     <button string="Test Get Data" type="object" name="test_get_data" groups="base.group_no_one"/>
                     <button string="Action Compute All Name" type="object" name="action_compute_all_name" groups="base.group_no_one"/>
-                    <button string="Action Set All Agent Type Value to One2Many" type="object" name="action_set_all_agent_type" groups="base.group_no_one"/>
+<!--                    <button string="Action Set All Agent Type Value to One2Many" type="object" name="action_set_all_agent_type" groups="base.group_no_one"/>-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -26,7 +26,7 @@
                     <group>
                         <group>
                             <field name="sequence"/>
-                            <field name="agent_type_id"/>
+<!--                            <field name="agent_type_id"/>-->
                         </group>
                         <group>
                             <field name="state" widget="radio"/>
@@ -333,39 +333,120 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                         </page>
                         -->
                         <page string="Reservation" name="reservation">
-                            <group string="Reservation Upsell">
-                                <group string="By Percentage">
-                                    <field name="rsv_sales_upsell_percentage"/>
-                                    <field name="rsv_sales_upsell_has_minimum"/>
-                                    <field name="rsv_sales_upsell_minimum" attrs="{'invisible': [('rsv_sales_upsell_has_minimum', '=', False)]}"/>
-                                    <field name="rsv_sales_upsell_has_maximum"/>
-                                    <field name="rsv_sales_upsell_maximum" attrs="{'invisible': [('rsv_sales_upsell_has_maximum', '=', False)]}"/>
-                                </group>
-                                <group string="By Amount">
-                                    <field name="rsv_sales_upsell_amount"/>
-                                    <field name="rsv_sales_upsell_route"/>
-                                    <field name="rsv_sales_upsell_segment"/>
-                                </group>
-                            </group>
+                            <notebook>
+                                <page string="Sales" name="reservation_sales">
+                                    <group string="Reservation Sales Upsell">
+                                        <group string="By Percentage">
+                                            <field name="rsv_sales_upsell_percentage"/>
+                                            <field name="rsv_sales_upsell_has_minimum"/>
+                                            <field name="rsv_sales_upsell_minimum" attrs="{'invisible': [('rsv_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="rsv_sales_upsell_has_maximum"/>
+                                            <field name="rsv_sales_upsell_maximum" attrs="{'invisible': [('rsv_sales_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="rsv_sales_upsell_amount"/>
+                                            <field name="rsv_sales_upsell_route"/>
+                                            <field name="rsv_sales_upsell_segment"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="NTA Agent" name="reservation_nta_agent">
+                                    <group string="Reservation NTA Agent Upsell">
+                                        <group string="By Percentage">
+                                            <field name="rsv_nta_agent_upsell_percentage"/>
+                                            <field name="rsv_nta_agent_upsell_has_minimum"/>
+                                            <field name="rsv_nta_agent_upsell_minimum" attrs="{'invisible': [('rsv_nta_agent_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="rsv_nta_agent_upsell_has_maximum"/>
+                                            <field name="rsv_nta_agent_upsell_maximum" attrs="{'invisible': [('rsv_nta_agent_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="rsv_nta_agent_upsell_amount"/>
+                                            <field name="rsv_nta_agent_upsell_route"/>
+                                            <field name="rsv_nta_agent_upsell_segment"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
                         </page>
                         <page string="Ticketing" name="ticketing">
-                            <group string="Ticketing Advanced Upsell">
-                                <group string="By Percentage">
-                                    <field name="tkt_sales_upsell_percentage"/>
-                                    <field name="tkt_sales_upsell_has_minimum"/>
-                                    <field name="tkt_sales_upsell_minimum" attrs="{'invisible': [('tkt_sales_upsell_has_minimum', '=', False)]}"/>
-                                    <field name="tkt_sales_upsell_has_maximum"/>
-                                    <field name="tkt_sales_upsell_maximum" attrs="{'invisible': [('tkt_sales_upsell_has_maximum', '=', False)]}"/>
-                                    <field name="tkt_sales_upsell_percentage_infant"/>
-                                </group>
-                                <group string="By Amount">
-                                    <field name="tkt_sales_upsell_amount"/>
-                                    <field name="tkt_sales_upsell_route"/>
-                                    <field name="tkt_sales_upsell_segment"/>
-<!--                                    <field name="tkt_sales_upsell_pax"/>-->
-                                    <field name="tkt_sales_upsell_amount_infant"/>
-                                </group>
-                            </group>
+                            <notebook>
+                                <page string="Sales" name="ticketing_sales">
+                                    <group string="Ticketing Sales" col="3" colspan="3">
+                                        <!--
+                                        <group string="Basic Fare">
+                                            <field name="tkt_sales_fare_percentage"/>
+                                            <field name="tkt_sales_fare_amount"/>
+                                            <field name="tkt_sales_fare_infant"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="tkt_sales_tax_percentage"/>
+                                            <field name="tkt_sales_tax_amount"/>
+                                            <field name="tkt_sales_tax_infant"/>
+                                        </group>
+                                        -->
+                                        <group string="Total">
+                                            <field name="tkt_sales_total_percentage"/>
+                                            <field name="tkt_sales_total_amount"/>
+                                            <field name="tkt_sales_total_infant"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="tkt_sales_upsell_percentage"/>
+                                            <field name="tkt_sales_upsell_has_minimum"/>
+                                            <field name="tkt_sales_upsell_minimum" attrs="{'invisible': [('tkt_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="tkt_sales_upsell_has_maximum"/>
+                                            <field name="tkt_sales_upsell_maximum" attrs="{'invisible': [('tkt_sales_upsell_has_maximum', '=', False)]}"/>
+                                            <field name="tkt_sales_upsell_percentage_infant"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="tkt_sales_upsell_amount"/>
+                                            <field name="tkt_sales_upsell_route"/>
+                                            <field name="tkt_sales_upsell_segment"/>
+<!--                                            <field name="tkt_sales_upsell_pax"/>-->
+                                            <field name="tkt_sales_upsell_amount_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="NTA Agent" name="ticketing_nta_agent">
+                                    <group string="Ticketing NTA Agent" col="3" colspan="3">
+                                        <!--
+                                        <group string="Basic Fare">
+                                            <field name="tkt_nta_agent_fare_percentage"/>
+                                            <field name="tkt_nta_agent_fare_amount"/>
+                                            <field name="tkt_nta_agent_fare_infant"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="tkt_nta_agent_tax_percentage"/>
+                                            <field name="tkt_nta_agent_tax_amount"/>
+                                            <field name="tkt_nta_agent_tax_infant"/>
+                                        </group>
+                                        -->
+                                        <group string="Total">
+                                            <field name="tkt_nta_agent_total_percentage"/>
+                                            <field name="tkt_nta_agent_total_amount"/>
+                                            <field name="tkt_nta_agent_total_infant"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="tkt_nta_agent_upsell_percentage"/>
+                                            <field name="tkt_nta_agent_upsell_has_minimum"/>
+                                            <field name="tkt_nta_agent_upsell_minimum" attrs="{'invisible': [('tkt_nta_agent_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="tkt_nta_agent_upsell_has_maximum"/>
+                                            <field name="tkt_nta_agent_upsell_maximum" attrs="{'invisible': [('tkt_nta_agent_upsell_has_maximum', '=', False)]}"/>
+                                            <field name="tkt_nta_agent_upsell_percentage_infant"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="tkt_nta_agent_upsell_amount"/>
+                                            <field name="tkt_nta_agent_upsell_route"/>
+                                            <field name="tkt_nta_agent_upsell_segment"/>
+<!--                                            <field name="tkt_nta_agent_upsell_pax"/>-->
+                                            <field name="tkt_nta_agent_upsell_amount_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
                         </page>
                         <page string="Ancillary" name="ancillary">
                             <div>
@@ -374,18 +455,64 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                                 </center>
                             </div>
                             <!--
-                            <group string="Ancillary Advanced Upsell">
-                                <group string="By Percentage">
-                                    <field name="anc_sales_upsell_percentage"/>
-                                    <field name="anc_sales_upsell_has_minimum"/>
-                                    <field name="anc_sales_upsell_minimum" attrs="{'invisible': [('anc_sales_upsell_has_minimum', '=', False)]}"/>
-                                    <field name="anc_sales_upsell_has_maximum"/>
-                                    <field name="anc_sales_upsell_maximum" attrs="{'invisible': [('anc_sales_upsell_has_maximum', '=', False)]}"/>
-                                </group>
-                                <group string="By Amount">
-                                    <field name="anc_sales_upsell_amount"/>
-                                </group>
-                            </group>
+                            <notebook>
+                                <page string="Sales" name="ancillary_sales">
+                                    <group string="Ancillary Sales" col="3" colspan="3">
+                                        <group string="Basic Fare">
+                                            <field name="anc_sales_fare_percentage"/>
+                                            <field name="anc_sales_fare_amount"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="anc_sales_tax_percentage"/>
+                                            <field name="anc_sales_tax_amount"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="anc_sales_total_percentage"/>
+                                            <field name="anc_sales_total_amount"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="anc_sales_upsell_percentage"/>
+                                            <field name="anc_sales_upsell_has_minimum"/>
+                                            <field name="anc_sales_upsell_minimum" attrs="{'invisible': [('anc_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="anc_sales_upsell_has_maximum"/>
+                                            <field name="anc_sales_upsell_maximum" attrs="{'invisible': [('anc_sales_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="anc_sales_upsell_amount"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="NTA Agent" name="ancillary_nta_agent">
+                                    <group string="Ancillary NTA Agent" col="3" colspan="3">
+                                        <group string="Basic Fare">
+                                            <field name="anc_nta_agent_fare_percentage"/>
+                                            <field name="anc_nta_agent_fare_amount"/>
+                                        </group>
+                                        <group string="Tax">
+                                            <field name="anc_nta_agent_tax_percentage"/>
+                                            <field name="anc_nta_agent_tax_amount"/>
+                                        </group>
+                                        <group string="Total">
+                                            <field name="anc_nta_agent_total_percentage"/>
+                                            <field name="anc_nta_agent_total_amount"/>
+                                        </group>
+                                    </group>
+                                    <group string="Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="anc_nta_agent_upsell_percentage"/>
+                                            <field name="anc_nta_agent_upsell_has_minimum"/>
+                                            <field name="anc_nta_agent_upsell_minimum" attrs="{'invisible': [('anc_nta_agent_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="anc_nta_agent_upsell_has_maximum"/>
+                                            <field name="anc_nta_agent_upsell_maximum" attrs="{'invisible': [('anc_nta_agent_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="anc_nta_agent_upsell_amount"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
                             -->
                         </page>
                     </notebook>
