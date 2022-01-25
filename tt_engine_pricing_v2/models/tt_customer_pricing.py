@@ -43,17 +43,17 @@ class CustomerPricing(models.Model):
 
     provider_type_name = fields.Char('Provider Type Name', compute='_compute_provider_type_name', store=True)
     provider_type_access_type = fields.Selection(ACCESS_TYPE, 'Provider Type Access Type', default='all', required=True)
-    provider_type_ids = fields.Many2many('tt.provider.type', 'tt_agent_pricing_provider_type_rel', 'pricing_id', 'provider_type_id',
+    provider_type_ids = fields.Many2many('tt.provider.type', 'tt_customer_pricing_provider_type_rel', 'pricing_id', 'provider_type_id',
                                          string='Provider Types')
 
     provider_name = fields.Char('Provider Name', compute='_compute_provider_name', store=True)
     provider_access_type = fields.Selection(ACCESS_TYPE, 'Provider Access Type', default='all', required=True)
-    provider_ids = fields.Many2many('tt.provider', 'tt_agent_pricing_provider_rel', 'pricing_id', 'provider_id',
+    provider_ids = fields.Many2many('tt.provider', 'tt_customer_pricing_provider_rel', 'pricing_id', 'provider_id',
                                     string='Providers')
 
     carrier_name = fields.Char('Carrier Name', compute='_compute_carrier_name', store=True)
     carrier_access_type = fields.Selection(ACCESS_TYPE, 'Carrier Access Type', default='all', required=True)
-    carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_agent_pricing_carrier_rel', 'pricing_id', 'carrier_id',
+    carrier_ids = fields.Many2many('tt.transport.carrier', 'tt_customer_pricing_carrier_rel', 'pricing_id', 'carrier_id',
                                    string='Carriers')
 
     line_ids = fields.One2many('tt.customer.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
