@@ -1413,6 +1413,7 @@ class ProviderPricing(object):
             'segment_count': segment_count,
             'sales_amount': sales_total_amount,
             'nta_amount': nta_total_amount,
+            'nta_agent_amount': nta_agent_total_amount,
             'upsell_amount': total_upsell_amount,
             'commission_amount': total_commission_amount,
             'ho_commission_amount': ho_commission_amount,
@@ -1726,7 +1727,32 @@ class AgentPricing(object):
     def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
         is_infant = True if pax_type == 'INF' else False
         total_amount = fare_amount + tax_amount
-        final_total_amount = total_amount
+        final_fare_amount = fare_amount
+        final_tax_amount = tax_amount
+        if 'fare' in price_data:
+            fare_data = price_data['fare']
+            if not is_infant or (is_infant and fare_data.get('is_infant', False)):
+                if fare_data['percentage']:
+                    final_fare_amount = final_fare_amount * (100 + fare_data['percentage']) / 100
+                if fare_data['amount']:
+                    final_fare_amount += fare_data['amount']
+        if 'tax' in price_data:
+            tax_data = price_data['tax']
+            if not is_infant or (is_infant and tax_data.get('is_infant', False)):
+                if tax_data['percentage']:
+                    final_tax_amount = final_tax_amount * (100 + tax_data['percentage']) / 100
+                if tax_data['amount']:
+                    final_tax_amount += tax_data['amount']
+
+        final_total_amount = final_fare_amount + final_tax_amount
+        if 'total' in price_data:
+            total_data = price_data['total']
+            if not is_infant or (is_infant and total_data.get('is_infant', False)):
+                if total_data['percentage']:
+                    final_total_amount = final_total_amount * (100 + total_data['percentage']) / 100
+                if total_data['amount']:
+                    final_total_amount += total_data['amount']
+
         if 'upsell_by_percentage' in price_data:
             upsell_data = price_data['upsell_by_percentage']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
@@ -1831,7 +1857,12 @@ class AgentPricing(object):
 
         nta_total_amount = fare_amount + tax_amount
 
-        total_commission_amount = sales_total_amount - nta_total_amount
+        nta_agent_data = rule_obj['ticketing']['nta_agent']
+        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
+
+        total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
         payload = {
             'rule_id': rule_obj['id'],
             'section': 'ticketing',
@@ -1842,8 +1873,10 @@ class AgentPricing(object):
             'segment_count': segment_count,
             'sales_amount': sales_total_amount,
             'nta_amount': nta_total_amount,
+            'nta_agent_amount': nta_agent_total_amount,
             'upsell_amount': total_upsell_amount,
-            'commission_amount': total_commission_amount
+            'commission_amount': total_commission_amount,
+            'ho_commission_amount': ho_commission_amount,
         }
         return payload
 
@@ -1855,7 +1888,12 @@ class AgentPricing(object):
 
         nta_total_amount = fare_amount + tax_amount
 
-        total_commission_amount = sales_total_amount - nta_total_amount
+        nta_agent_data = rule_obj['ancillary']['nta_agent']
+        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount)
+        nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
+
+        total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
         payload = {
             'rule_id': rule_obj['id'],
             'section': 'ancillary',
@@ -1863,8 +1901,10 @@ class AgentPricing(object):
             'tax_amount': tax_amount,
             'sales_amount': sales_total_amount,
             'nta_amount': nta_total_amount,
+            'nta_agent_amount': nta_agent_total_amount,
             'upsell_amount': total_upsell_amount,
-            'commission_amount': total_commission_amount
+            'commission_amount': total_commission_amount,
+            'ho_commission_amount': ho_commission_amount,
         }
         return payload
 
@@ -1872,6 +1912,16 @@ class AgentPricing(object):
         sales_data = rule_obj['reservation']['sales']
         sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count)
         total_upsell_amount = sales_res['upsell_amount']
+        sales_total_amount = total_amount + total_upsell_amount
+
+        nta_total_amount = total_amount
+
+        nta_agent_data = rule_obj['reservation']['nta_agent']
+        nta_agent_res = self.calculate_price(nta_agent_data, total_amount, 0.0, '', route_count, segment_count)
+        nta_agent_total_amount = total_amount + nta_agent_res['upsell_amount']
+
+        total_commission_amount = sales_total_amount - nta_agent_total_amount
+        ho_commission_amount = nta_agent_total_amount - nta_total_amount
 
         payload = {
             'rule_id': rule_obj['id'],
@@ -1879,7 +1929,8 @@ class AgentPricing(object):
             'route_count': route_count,
             'segment_count': segment_count,
             'upsell_amount': total_upsell_amount,
-            'commission_amount': total_upsell_amount
+            'commission_amount': total_commission_amount,
+            'ho_commission_amount': ho_commission_amount,
         }
         return payload
 
@@ -3116,6 +3167,20 @@ class RepricingToolsV2(object):
                             })
                             fare_data['service_charges'].append(sc_values)
 
+                        if agent_tkt['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id and agent_tkt['ho_commission_amount'] > 0:
+                            sc_values = copy.deepcopy(sc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'racagtho',
+                                'pax_type': pax_type,
+                                'pax_count': pax_count,
+                                'amount': -agent_tkt['ho_commission_amount'],
+                                'foreign_amount': -agent_tkt['ho_commission_amount'],
+                                'total': -agent_tkt['ho_commission_amount'] * pax_count,
+                                'commission_agent_id': self.ho_agent_id,
+                            })
+                            fare_data['service_charges'].append(sc_values)
+
                         tax_amount += agent_tkt['upsell_amount']
 
                 if pricing_idx == 2:
@@ -3193,7 +3258,7 @@ class RepricingToolsV2(object):
                             fare['service_charges'].append(sc_values)
                             total_reservation_amount += tkt_anc_res['upsell_amount']
 
-                        if tkt_anc_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id:
+                        if tkt_anc_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id and tkt_anc_res['ho_commission_amount'] > 0:
                             sc_values = copy.deepcopy(sc_anc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
@@ -3236,6 +3301,18 @@ class RepricingToolsV2(object):
                                 'total': -agent_anc_tkt['commission_amount'],
                             })
                             fare_data['service_charges'].append(sc_values)
+
+                        if agent_anc_tkt['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id and agent_anc_tkt['ho_commission_amount'] > 0:
+                            sc_values = copy.deepcopy(sc_anc_temp)
+                            sc_values.update({
+                                'charge_type': 'RAC',
+                                'charge_code': 'racagtho',
+                                'amount': -agent_anc_tkt['ho_commission_amount'],
+                                'foreign_amount': -agent_anc_tkt['ho_commission_amount'],
+                                'total': -agent_anc_tkt['ho_commission_amount'],
+                                'commission_agent_id': self.ho_agent_id,
+                            })
+                            fare['service_charges'].append(sc_values)
 
                 if pricing_idx == 2:
                     if cust_obj:
@@ -3326,6 +3403,20 @@ class RepricingToolsV2(object):
                             'amount': -agent_rsv_res['commission_amount'],
                             'foreign_amount': -agent_rsv_res['commission_amount'],
                             'total': -agent_rsv_res['commission_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
+
+                    if agent_rsv_res['ho_commission_amount'] and show_commission and show_upline_commission and self.ho_agent_id and agent_rsv_res['ho_commission_amount'] > 0:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'RAC',
+                            'charge_code': 'racagthorsv',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -agent_rsv_res['ho_commission_amount'],
+                            'foreign_amount': -agent_rsv_res['ho_commission_amount'],
+                            'total': -agent_rsv_res['ho_commission_amount'],
+                            'commission_agent_id': self.ho_agent_id
                         })
                         fare_data['service_charges'].append(sc_values)
 
