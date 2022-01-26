@@ -70,6 +70,7 @@
                                     <field name="provider_pricing_line_id"/>
                                     <field name="provider_pricing_line_sequence"/>
                                     <field name="provider_pricing_line_index"/>
+                                    <field name="provider_pricing_type"/>
                                     <field name="provider_set_expiration_date"/>
                                     <field name="provider_date_from"/>
                                     <field name="provider_date_to"/>
@@ -333,9 +334,42 @@
                                 <group>
                                 </group>
                             </group>
+                            <group string="Reservation NTA Agent" col="3" colspan="3">
+                                <group>
+                                    <field name="agent_rsv_nta_agent_upsell_percentage"/>
+                                    <field name="agent_rsv_nta_agent_upsell_minimum"/>
+                                    <field name="agent_rsv_nta_agent_upsell_has_minimum"/>
+                                    <field name="agent_rsv_nta_agent_upsell_maximum"/>
+                                    <field name="agent_rsv_nta_agent_upsell_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="agent_rsv_nta_agent_upsell_amount"/>
+                                    <field name="agent_rsv_nta_agent_upsell_route"/>
+                                    <field name="agent_rsv_nta_agent_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
                             <hr/>
                             <h3>Ticketing</h3>
                             <group string="Ticketing Sales" col="3" colspan="3">
+                                <group>
+                                    <field name="agent_tkt_sales_fare_percentage"/>
+                                    <field name="agent_tkt_sales_fare_amount"/>
+                                    <field name="agent_tkt_sales_fare_infant"/>
+                                </group>
+                                <group>
+                                    <field name="agent_tkt_sales_tax_percentage"/>
+                                    <field name="agent_tkt_sales_tax_amount"/>
+                                    <field name="agent_tkt_sales_tax_infant"/>
+                                </group>
+                                <group>
+                                    <field name="agent_tkt_sales_total_percentage"/>
+                                    <field name="agent_tkt_sales_total_amount"/>
+                                    <field name="agent_tkt_sales_total_infant"/>
+                                </group>
+                            </group>
+                            <group col="3" colspan="3">
                                 <group>
                                     <field name="agent_tkt_sales_upsell_percentage"/>
                                     <field name="agent_tkt_sales_upsell_minimum"/>
@@ -349,6 +383,41 @@
                                     <field name="agent_tkt_sales_upsell_route"/>
                                     <field name="agent_tkt_sales_upsell_segment"/>
                                     <field name="agent_tkt_sales_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Ticketing NTA Agent" col="3" colspan="3">
+                                <group>
+                                    <field name="agent_tkt_nta_agent_fare_percentage"/>
+                                    <field name="agent_tkt_nta_agent_fare_amount"/>
+                                    <field name="agent_tkt_nta_agent_fare_infant"/>
+                                </group>
+                                <group>
+                                    <field name="agent_tkt_nta_agent_tax_percentage"/>
+                                    <field name="agent_tkt_nta_agent_tax_amount"/>
+                                    <field name="agent_tkt_nta_agent_tax_infant"/>
+                                </group>
+                                <group>
+                                    <field name="agent_tkt_nta_agent_total_percentage"/>
+                                    <field name="agent_tkt_nta_agent_total_amount"/>
+                                    <field name="agent_tkt_nta_agent_total_infant"/>
+                                </group>
+                            </group>
+                            <group col="3" colspan="3">
+                                <group>
+                                    <field name="agent_tkt_nta_agent_upsell_percentage"/>
+                                    <field name="agent_tkt_nta_agent_upsell_minimum"/>
+                                    <field name="agent_tkt_nta_agent_upsell_has_minimum"/>
+                                    <field name="agent_tkt_nta_agent_upsell_maximum"/>
+                                    <field name="agent_tkt_nta_agent_upsell_has_maximum"/>
+                                    <field name="agent_tkt_nta_agent_upsell_percentage_infant"/>
+                                </group>
+                                <group>
+                                    <field name="agent_tkt_nta_agent_upsell_amount"/>
+                                    <field name="agent_tkt_nta_agent_upsell_route"/>
+                                    <field name="agent_tkt_nta_agent_upsell_segment"/>
+                                    <field name="agent_tkt_nta_agent_upsell_amount_infant"/>
                                 </group>
                                 <group>
                                 </group>
