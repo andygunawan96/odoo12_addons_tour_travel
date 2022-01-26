@@ -995,6 +995,7 @@ class TtProviderAirlinePricing(models.Model):
     provider_pricing_line_id = fields.Many2one('tt.provider.pricing.line', 'Pricing Line ID', readonly=1, ondelete='set null')
     provider_pricing_line_sequence = fields.Char('Pricing Line Sequence', readonly=1)
     provider_pricing_line_index = fields.Char('Pricing Line Index', readonly=1)
+    provider_pricing_type = fields.Char('Pricing Type', readonly=1)
     provider_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     provider_date_from = fields.Datetime('Date From', readonly=1)
     provider_date_to = fields.Datetime('Date To', readonly=1)
@@ -1192,6 +1193,15 @@ class TtProviderAirlinePricing(models.Model):
     agent_commission_pax = fields.Char('Commission Pax', readonly=1)
     agent_commission_infant = fields.Char('Commission Include Infant', readonly=1)
     agent_residual_amount_to = fields.Char('Residual Amount To', readonly=1)
+    agent_tkt_sales_fare_percentage = fields.Char('Fare (%)', readonly=1)
+    agent_tkt_sales_fare_amount = fields.Char('Fare Amount', readonly=1)
+    agent_tkt_sales_tax_percentage = fields.Char('Tax (%)', readonly=1)
+    agent_tkt_sales_tax_amount = fields.Char('Tax Amount', readonly=1)
+    agent_tkt_sales_total_percentage = fields.Char('Total (%)', readonly=1)
+    agent_tkt_sales_total_amount = fields.Char('Total Amount', readonly=1)
+    agent_tkt_sales_fare_infant = fields.Char('Apply Fare Pricing to Infant', readonly=1)
+    agent_tkt_sales_tax_infant = fields.Char('Apply Tax Pricing to Infant', readonly=1)
+    agent_tkt_sales_total_infant = fields.Char('Apply Total Pricing to Infant', readonly=1)
     agent_tkt_sales_upsell_percentage = fields.Char('Upsell (%)', readonly=1)
     agent_tkt_sales_upsell_minimum = fields.Char('Minimum Amount', readonly=1)
     agent_tkt_sales_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -1202,6 +1212,11 @@ class TtProviderAirlinePricing(models.Model):
     agent_tkt_sales_upsell_route = fields.Char('Upsell per Route', readonly=1)
     agent_tkt_sales_upsell_segment = fields.Char('Upsell per Segment', readonly=1)
     agent_tkt_sales_upsell_amount_infant = fields.Char('Apply Upsell Amount to Infant', readonly=1)
+    agent_anc_sales_fare_amount = fields.Char('Fare Amount', readonly=1)
+    agent_anc_sales_tax_percentage = fields.Char('Tax (%)', readonly=1)
+    agent_anc_sales_tax_amount = fields.Char('Tax Amount', readonly=1)
+    agent_anc_sales_total_percentage = fields.Char('Total (%)', readonly=1)
+    agent_anc_sales_total_amount = fields.Char('Total Amount', readonly=1)
     agent_anc_sales_upsell_percentage = fields.Char('Upsell (%)', readonly=1)
     agent_anc_sales_upsell_minimum = fields.Char('Minimum Amount', readonly=1)
     agent_anc_sales_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -1216,6 +1231,45 @@ class TtProviderAirlinePricing(models.Model):
     agent_rsv_sales_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
     agent_rsv_sales_upsell_maximum = fields.Char('Maximum Amount', readonly=1)
     agent_rsv_sales_upsell_has_maximum = fields.Char('Has Maximum', readonly=1)
+
+    agent_tkt_nta_agent_fare_percentage = fields.Char('Fare (%)', readonly=1)
+    agent_tkt_nta_agent_fare_amount = fields.Char('Fare Amount', readonly=1)
+    agent_tkt_nta_agent_tax_percentage = fields.Char('Tax (%)', readonly=1)
+    agent_tkt_nta_agent_tax_amount = fields.Char('Tax Amount', readonly=1)
+    agent_tkt_nta_agent_total_percentage = fields.Char('Total (%)', readonly=1)
+    agent_tkt_nta_agent_total_amount = fields.Char('Total Amount', readonly=1)
+    agent_tkt_nta_agent_fare_infant = fields.Char('Apply Fare Pricing to Infant', readonly=1)
+    agent_tkt_nta_agent_tax_infant = fields.Char('Apply Tax Pricing to Infant', readonly=1)
+    agent_tkt_nta_agent_total_infant = fields.Char('Apply Total Pricing to Infant', readonly=1)
+    agent_tkt_nta_agent_upsell_percentage = fields.Char('Upsell (%)', readonly=1)
+    agent_tkt_nta_agent_upsell_minimum = fields.Char('Minimum Amount', readonly=1)
+    agent_tkt_nta_agent_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
+    agent_tkt_nta_agent_upsell_maximum = fields.Char('Maximum Amount', readonly=1)
+    agent_tkt_nta_agent_upsell_has_maximum = fields.Char('Has Maximum', readonly=1)
+    agent_tkt_nta_agent_upsell_percentage_infant = fields.Char('Apply Upsell Percentage to Infant', readonly=1)
+    agent_tkt_nta_agent_upsell_amount = fields.Char('Upsell Amount', readonly=1)
+    agent_tkt_nta_agent_upsell_route = fields.Char('Upsell per Route', readonly=1)
+    agent_tkt_nta_agent_upsell_segment = fields.Char('Upsell per Segment', readonly=1)
+    agent_tkt_nta_agent_upsell_amount_infant = fields.Char('Apply Upsell Amount to Infant', readonly=1)
+    agent_anc_nta_agent_fare_amount = fields.Char('Fare Amount', readonly=1)
+    agent_anc_nta_agent_tax_percentage = fields.Char('Tax (%)', readonly=1)
+    agent_anc_nta_agent_tax_amount = fields.Char('Tax Amount', readonly=1)
+    agent_anc_nta_agent_total_percentage = fields.Char('Total (%)', readonly=1)
+    agent_anc_nta_agent_total_amount = fields.Char('Total Amount', readonly=1)
+    agent_anc_nta_agent_upsell_percentage = fields.Char('Upsell (%)', readonly=1)
+    agent_anc_nta_agent_upsell_minimum = fields.Char('Minimum Amount', readonly=1)
+    agent_anc_nta_agent_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
+    agent_anc_nta_agent_upsell_maximum = fields.Char('Maximum Amount', readonly=1)
+    agent_anc_nta_agent_upsell_has_maximum = fields.Char('Has Maximum', readonly=1)
+    agent_anc_nta_agent_upsell_amount = fields.Char('Upsell Amount', readonly=1)
+    agent_rsv_nta_agent_upsell_amount = fields.Char('Upsell Amount', readonly=1)
+    agent_rsv_nta_agent_upsell_route = fields.Char('Upsell per Route', readonly=1)
+    agent_rsv_nta_agent_upsell_segment = fields.Char('Upsell per Segment', readonly=1)
+    agent_rsv_nta_agent_upsell_percentage = fields.Char('Upsell (%)', readonly=1)
+    agent_rsv_nta_agent_upsell_minimum = fields.Char('Minimum Amount', readonly=1)
+    agent_rsv_nta_agent_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
+    agent_rsv_nta_agent_upsell_maximum = fields.Char('Maximum Amount', readonly=1)
+    agent_rsv_nta_agent_upsell_has_maximum = fields.Char('Has Maximum', readonly=1)
 
     customer_pricing_id = fields.Many2one('tt.customer.pricing', 'Customer Pricing', readonly=1, ondelete='set null')
     customer_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1434,6 +1488,7 @@ class TtProviderAirlinePricing(models.Model):
                 'provider_pricing_line_id': provider_data['rule_id'],
                 'provider_pricing_line_sequence': provider_data['sequence'],
                 'provider_pricing_line_index': provider_data['rule_index'],
+                'provider_pricing_type': provider_data.get('pricing_type', 'standard'),
                 'provider_set_expiration_date': provider_data['set_expiration_date'],
                 'provider_date_from': provider_data['date_from'] if provider_data['date_from'] else None,
                 'provider_date_to': provider_data['date_to'] if provider_data['date_to'] else None,
@@ -1634,6 +1689,15 @@ class TtProviderAirlinePricing(models.Model):
                 # 'agent_commission_pax': '',
                 # 'agent_commission_infant': '',
                 # 'agent_residual_amount_to': '',
+                'agent_tkt_sales_fare_percentage': agent_data['ticketing']['sales']['fare']['percentage'],
+                'agent_tkt_sales_fare_amount': agent_data['ticketing']['sales']['fare']['amount'],
+                'agent_tkt_sales_tax_percentage': agent_data['ticketing']['sales']['tax']['percentage'],
+                'agent_tkt_sales_tax_amount': agent_data['ticketing']['sales']['tax']['amount'],
+                'agent_tkt_sales_total_percentage': agent_data['ticketing']['sales']['total']['percentage'],
+                'agent_tkt_sales_total_amount': agent_data['ticketing']['sales']['total']['amount'],
+                'agent_tkt_sales_fare_infant': agent_data['ticketing']['sales']['fare']['is_infant'],
+                'agent_tkt_sales_tax_infant': agent_data['ticketing']['sales']['tax']['is_infant'],
+                'agent_tkt_sales_total_infant': agent_data['ticketing']['sales']['total']['is_infant'],
                 'agent_tkt_sales_upsell_percentage': agent_data['ticketing']['sales']['upsell_by_percentage']['percentage'],
                 'agent_tkt_sales_upsell_minimum': agent_data['ticketing']['sales']['upsell_by_percentage']['minimum'],
                 'agent_tkt_sales_upsell_has_minimum': agent_data['ticketing']['sales']['upsell_by_percentage']['has_minimum'],
@@ -1644,6 +1708,12 @@ class TtProviderAirlinePricing(models.Model):
                 'agent_tkt_sales_upsell_route': agent_data['ticketing']['sales']['upsell_by_amount']['is_route'],
                 'agent_tkt_sales_upsell_segment': agent_data['ticketing']['sales']['upsell_by_amount']['is_segment'],
                 'agent_tkt_sales_upsell_amount_infant': agent_data['ticketing']['sales']['upsell_by_amount']['is_infant'],
+                'agent_anc_sales_fare_percentage': agent_data['ancillary']['sales']['fare']['percentage'],
+                'agent_anc_sales_fare_amount': agent_data['ancillary']['sales']['fare']['amount'],
+                'agent_anc_sales_tax_percentage': agent_data['ancillary']['sales']['tax']['percentage'],
+                'agent_anc_sales_tax_amount': agent_data['ancillary']['sales']['tax']['amount'],
+                'agent_anc_sales_total_percentage': agent_data['ancillary']['sales']['total']['percentage'],
+                'agent_anc_sales_total_amount': agent_data['ancillary']['sales']['total']['amount'],
                 'agent_anc_sales_upsell_percentage': agent_data['ancillary']['sales']['upsell_by_percentage']['percentage'],
                 'agent_anc_sales_upsell_minimum': agent_data['ancillary']['sales']['upsell_by_percentage']['minimum'],
                 'agent_anc_sales_upsell_has_minimum': agent_data['ancillary']['sales']['upsell_by_percentage']['has_minimum'],
@@ -1658,6 +1728,45 @@ class TtProviderAirlinePricing(models.Model):
                 'agent_rsv_sales_upsell_has_minimum': agent_data['reservation']['sales']['upsell_by_percentage']['has_minimum'],
                 'agent_rsv_sales_upsell_maximum': agent_data['reservation']['sales']['upsell_by_percentage']['maximum'],
                 'agent_rsv_sales_upsell_has_maximum': agent_data['reservation']['sales']['upsell_by_percentage']['has_maximum'],
+                'agent_tkt_nta_agent_fare_percentage': agent_data['ticketing']['nta_agent']['fare']['percentage'],
+                'agent_tkt_nta_agent_fare_amount': agent_data['ticketing']['nta_agent']['fare']['amount'],
+                'agent_tkt_nta_agent_tax_percentage': agent_data['ticketing']['nta_agent']['tax']['percentage'],
+                'agent_tkt_nta_agent_tax_amount': agent_data['ticketing']['nta_agent']['tax']['amount'],
+                'agent_tkt_nta_agent_total_percentage': agent_data['ticketing']['nta_agent']['total']['percentage'],
+                'agent_tkt_nta_agent_total_amount': agent_data['ticketing']['nta_agent']['total']['amount'],
+                'agent_tkt_nta_agent_fare_infant': agent_data['ticketing']['nta_agent']['fare']['is_infant'],
+                'agent_tkt_nta_agent_tax_infant': agent_data['ticketing']['nta_agent']['tax']['is_infant'],
+                'agent_tkt_nta_agent_total_infant': agent_data['ticketing']['nta_agent']['total']['is_infant'],
+                'agent_tkt_nta_agent_upsell_percentage': agent_data['ticketing']['nta_agent']['upsell_by_percentage']['percentage'],
+                'agent_tkt_nta_agent_upsell_minimum': agent_data['ticketing']['nta_agent']['upsell_by_percentage']['minimum'],
+                'agent_tkt_nta_agent_upsell_has_minimum': agent_data['ticketing']['nta_agent']['upsell_by_percentage']['has_minimum'],
+                'agent_tkt_nta_agent_upsell_maximum': agent_data['ticketing']['nta_agent']['upsell_by_percentage']['maximum'],
+                'agent_tkt_nta_agent_upsell_has_maximum': agent_data['ticketing']['nta_agent']['upsell_by_percentage']['has_maximum'],
+                'agent_tkt_nta_agent_upsell_percentage_infant': agent_data['ticketing']['nta_agent']['upsell_by_percentage']['is_infant'],
+                'agent_tkt_nta_agent_upsell_amount': agent_data['ticketing']['nta_agent']['upsell_by_amount']['amount'],
+                'agent_tkt_nta_agent_upsell_route': agent_data['ticketing']['nta_agent']['upsell_by_amount']['is_route'],
+                'agent_tkt_nta_agent_upsell_segment': agent_data['ticketing']['nta_agent']['upsell_by_amount']['is_segment'],
+                'agent_tkt_nta_agent_upsell_amount_infant': agent_data['ticketing']['nta_agent']['upsell_by_amount']['is_infant'],
+                'agent_anc_nta_agent_fare_percentage': agent_data['ancillary']['nta_agent']['fare']['percentage'],
+                'agent_anc_nta_agent_fare_amount': agent_data['ancillary']['nta_agent']['fare']['amount'],
+                'agent_anc_nta_agent_tax_percentage': agent_data['ancillary']['nta_agent']['tax']['percentage'],
+                'agent_anc_nta_agent_tax_amount': agent_data['ancillary']['nta_agent']['tax']['amount'],
+                'agent_anc_nta_agent_total_percentage': agent_data['ancillary']['nta_agent']['total']['percentage'],
+                'agent_anc_nta_agent_total_amount': agent_data['ancillary']['nta_agent']['total']['amount'],
+                'agent_anc_nta_agent_upsell_percentage': agent_data['ancillary']['nta_agent']['upsell_by_percentage']['percentage'],
+                'agent_anc_nta_agent_upsell_minimum': agent_data['ancillary']['nta_agent']['upsell_by_percentage']['minimum'],
+                'agent_anc_nta_agent_upsell_has_minimum': agent_data['ancillary']['nta_agent']['upsell_by_percentage']['has_minimum'],
+                'agent_anc_nta_agent_upsell_maximum': agent_data['ancillary']['nta_agent']['upsell_by_percentage']['maximum'],
+                'agent_anc_nta_agent_upsell_has_maximum': agent_data['ancillary']['nta_agent']['upsell_by_percentage']['has_maximum'],
+                'agent_anc_nta_agent_upsell_amount': agent_data['ancillary']['nta_agent']['upsell_by_amount']['amount'],
+                'agent_rsv_nta_agent_upsell_amount': agent_data['reservation']['nta_agent']['upsell_by_amount']['amount'],
+                'agent_rsv_nta_agent_upsell_route': agent_data['reservation']['nta_agent']['upsell_by_amount']['is_route'],
+                'agent_rsv_nta_agent_upsell_segment': agent_data['reservation']['nta_agent']['upsell_by_amount']['is_segment'],
+                'agent_rsv_nta_agent_upsell_percentage': agent_data['reservation']['nta_agent']['upsell_by_percentage']['percentage'],
+                'agent_rsv_nta_agent_upsell_minimum': agent_data['reservation']['nta_agent']['upsell_by_percentage']['minimum'],
+                'agent_rsv_nta_agent_upsell_has_minimum': agent_data['reservation']['nta_agent']['upsell_by_percentage']['has_minimum'],
+                'agent_rsv_nta_agent_upsell_maximum': agent_data['reservation']['nta_agent']['upsell_by_percentage']['maximum'],
+                'agent_rsv_nta_agent_upsell_has_maximum': agent_data['reservation']['nta_agent']['upsell_by_percentage']['has_maximum'],
             })
 
         if customer_data:

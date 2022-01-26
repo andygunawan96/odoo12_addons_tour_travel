@@ -2912,97 +2912,7 @@ class RepricingToolsV2(object):
         #         total_field_name = key
         #         break
 
-        ## 1
-        pax_count_dict = {
-            'ADT': 0
-        }
-        sc_summary_dict = {
-            'ADT': self._default_sc_summary_values()
-        }
-        class_of_service_list = class_of_service_list if class_of_service_list else []
-        charge_code_list = charge_code_list if charge_code_list else []
-        total_commission_amount = 0.0
-        total_reservation_amount = 0.0
-        sc_temp = None
-        for fare in self.ticket_fare_list:
-            if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
-                class_of_service_list.append(fare['class_of_service'])
-
-            if 'service_charges' not in fare:
-                continue
-                # raise Exception('Service Charges is not found')
-
-            del_sc_id_list = []
-            for idx, sc in enumerate(fare['service_charges']):
-                if not sc_temp:
-                    sc_temp = copy.deepcopy(sc)
-
-                charge_code = sc['charge_code']
-                if charge_code not in charge_code_list:
-                    charge_code_list.append(charge_code)
-
-                pax_type = sc['pax_type']
-
-                if pax_type not in sc_summary_dict:
-                    sc_summary_dict[pax_type] = self._default_sc_summary_values()
-                sc_data = sc_summary_dict[pax_type]
-
-                pax_count = sc['pax_count']
-                if pax_type not in pax_count_dict or pax_count_dict[pax_type] < pax_count:
-                    pax_count_dict[pax_type] = pax_count
-
-                amount = self.round(sc['amount'])
-                sc_total = amount * pax_count
-                sc.update({
-                    'amount': amount,
-                    # 'foreign_amount': amount,
-                    'total': sc_total
-                })
-                if sc['charge_type'] == 'FARE':
-                    sc_data['total_fare_amount'] += sc_total
-                    total_reservation_amount += sc_total
-                # elif sc['charge_type'] == 'ROC':
-                #     sc_data['total_upsell_amount'] += sc_total
-                elif sc['charge_type'] == 'RAC':
-                    sc_total = -sc_total
-                    sc_data['total_commission_amount'] += sc_total
-                    total_commission_amount += sc_total
-                    del_sc_id_list.append(idx)
-                else:
-                    sc_data['total_tax_amount'] += sc_total
-                    total_reservation_amount += sc_total
-
-            for idx in del_sc_id_list[::-1]:
-                fare['service_charges'].pop(idx)
-
-        if not sc_temp:
-            _logger.error('Service Charge detail is not found')
-            return False
-            # raise Exception('Service Charge detail is not found')
-
-        for fare in self.ancillary_fare_list:
-            if 'service_charges' not in fare:
-                continue
-                # raise Exception('Service Charges is not found')
-            elif not fare['service_charges']:
-                continue
-
-            del_sc_id_list = []
-            for idx, sc in enumerate(fare['service_charges']):
-                if sc['charge_type'] == 'FARE':
-                    total_reservation_amount += sc['amount']
-                # elif sc['charge_type'] == 'ROC':
-                #     continue
-                elif sc['charge_type'] == 'RAC':
-                    total_commission_amount += -sc['amount']
-                    del_sc_id_list.append(idx)
-                else:
-                    total_reservation_amount += sc['amount']
-
-            for idx in del_sc_id_list[::-1]:
-                fare['service_charge'].pop(idx)
-
-        ## 2
+        ## 2-1
 
         rule_param = {
             'provider_code': provider,
@@ -3042,6 +2952,133 @@ class RepricingToolsV2(object):
         else:
             agent_com_obj = self.agent_commission.get_pricing_data(self.provider_type, self.agent_id, **rule_param)
             self.agent_commission_data_dict[rule_key] = agent_com_obj
+
+        pricing_type = rule_obj.get('pricing_type', 'standard')
+        ## 1-2
+        pax_count_dict = {
+            'ADT': 0
+        }
+        sc_summary_dict = {
+            'ADT': self._default_sc_summary_values()
+        }
+        class_of_service_list = class_of_service_list if class_of_service_list else []
+        charge_code_list = charge_code_list if charge_code_list else []
+        total_commission_amount = 0.0
+        total_reservation_amount = 0.0
+        sc_temp = None
+        for fare in self.ticket_fare_list:
+            if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
+                class_of_service_list.append(fare['class_of_service'])
+
+            if 'service_charges' not in fare:
+                continue
+                # raise Exception('Service Charges is not found')
+
+            del_sc_id_list = []
+            rac_nta_list = []
+            for idx, sc in enumerate(fare['service_charges']):
+                if not sc_temp:
+                    sc_temp = copy.deepcopy(sc)
+
+                charge_code = sc['charge_code']
+                if charge_code not in charge_code_list:
+                    charge_code_list.append(charge_code)
+
+                pax_type = sc['pax_type']
+
+                if pax_type not in sc_summary_dict:
+                    sc_summary_dict[pax_type] = self._default_sc_summary_values()
+                sc_data = sc_summary_dict[pax_type]
+
+                pax_count = sc['pax_count']
+                if pax_type not in pax_count_dict or pax_count_dict[pax_type] < pax_count:
+                    pax_count_dict[pax_type] = pax_count
+
+                amount = self.round(sc['amount'])
+                sc_total = amount * pax_count
+                sc.update({
+                    'amount': amount,
+                    # 'foreign_amount': amount,
+                    'total': sc_total
+                })
+                if sc['charge_type'] == 'FARE':
+                    sc_data['total_fare_amount'] += sc_total
+                    total_reservation_amount += sc_total
+                # elif sc['charge_type'] == 'ROC':
+                #     sc_data['total_upsell_amount'] += sc_total
+                elif sc['charge_type'] == 'RAC':
+                    if pricing_type == 'from_nta':
+                        rac_nta_list.append(sc)
+                    elif pricing_type == 'from_sales':
+                        del_sc_id_list.append(idx)
+                    else:
+                        # standard
+                        sc_total = -sc_total
+                        sc_data['total_commission_amount'] += sc_total
+                        total_commission_amount += sc_total
+                        del_sc_id_list.append(idx)
+                else:
+                    sc_data['total_tax_amount'] += sc_total
+                    total_reservation_amount += sc_total
+                    sc.update({
+                        'charge_type': 'TAX',
+                    })
+
+            for sc in rac_nta_list:
+                pax_type = sc['pax_type']
+                if pax_type not in sc_summary_dict:
+                    sc_summary_dict[pax_type] = self._default_sc_summary_values()
+                sc_data = sc_summary_dict[pax_type]
+
+                total = sc['total']
+                if sc_data['total_tax_amount'] >= total:
+                    sc_data['total_tax_amount'] += total
+                    sc.update({
+                        'charge_type': 'TAX',
+                    })
+                else:
+                    sc_data['total_fare_amount'] += total,
+                    sc.update({
+                        'charge_type': 'FARE',
+                    })
+
+            for idx in del_sc_id_list[::-1]:
+                fare['service_charges'].pop(idx)
+
+        if not sc_temp:
+            _logger.error('Service Charge detail is not found')
+            return False
+            # raise Exception('Service Charge detail is not found')
+
+        for fare in self.ancillary_fare_list:
+            if 'service_charges' not in fare:
+                continue
+                # raise Exception('Service Charges is not found')
+            elif not fare['service_charges']:
+                continue
+
+            del_sc_id_list = []
+            for idx, sc in enumerate(fare['service_charges']):
+                if sc['charge_type'] == 'FARE':
+                    total_reservation_amount += sc['amount']
+                # elif sc['charge_type'] == 'ROC':
+                #     continue
+                elif sc['charge_type'] == 'RAC':
+                    if pricing_type == 'from_nta':
+                        total_reservation_amount += sc['amount']
+                        sc.update({
+                            'charge_type': 'TAX',
+                        })
+                    elif pricing_type == 'from_sales':
+                        del_sc_id_list.append(idx)
+                    else:
+                        total_commission_amount += -sc['amount']
+                        del_sc_id_list.append(idx)
+                else:
+                    total_reservation_amount += sc['amount']
+
+            for idx in del_sc_id_list[::-1]:
+                fare['service_charge'].pop(idx)
 
         fare_data = self.ticket_fare_list[-1]
 

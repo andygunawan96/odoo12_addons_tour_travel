@@ -207,6 +207,11 @@ class ProviderPricingLine(models.Model):
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
+    pricing_type = fields.Selection([
+        ('standard', 'Standard'),
+        ('from_nta', 'From NTA'),
+        ('from_sales', 'From Sales'),
+    ], 'Pricing Type', default='standard')
 
     origin_name = fields.Char('Origin Name')
     origin_access_type = fields.Selection(ACCESS_TYPE, 'Origin Access Type', default='all', required=True)
@@ -377,6 +382,7 @@ class ProviderPricingLine(models.Model):
             'id': self.id,
             'sequence': self.sequence,
             'name': self.name if self.name else '',
+            'pricing_type': self.pricing_type,
             'set_expiration_date': self.set_expiration_date,
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
             'date_to': self.date_to.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_to else '',
