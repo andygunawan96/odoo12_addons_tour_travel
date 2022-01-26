@@ -131,7 +131,13 @@ class TtCustomerParent(models.Model):
 
     def check_send_email_cc(self):
         if self.is_send_email_cc:
-            email_cc = self.parent_agent_id.email_cc
+            email_cc_list = []
+            if self.parent_agent_id.email:
+                email_cc_list.append(self.parent_agent_id.email)
+            if self.parent_agent_id.email_cc:
+                email_cc_list += self.parent_agent_id.email_cc.split(",")
+            email_cc_list = list(set(email_cc_list)) ## remove duplicate
+            email_cc = ",".join(email_cc_list)
         else:
             email_cc = False
         return email_cc
