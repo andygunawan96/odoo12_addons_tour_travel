@@ -114,7 +114,7 @@ class TtTimeslotSentraMedika(models.Model):
         current_wib_datetime = datetime.now(pytz.timezone('Asia/Jakarta'))
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         if '08:00' <= str(current_wib_datetime.time())[:5] < '17:00':
-            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=3))]
+            dom = ['|',('agent_id','=',False),('agent_id', '=', context['co_agent_id']),('datetimeslot', '>', datetime.now(pytz.utc) + timedelta(hours=6))]
         # else:
         #     min_datetime = current_datetime.replace(hour=8,minute=0, second=0, microsecond=0)
         #     if current_datetime > min_datetime and current_wib_datetime.strftime('%A') != 'Saturday':
