@@ -82,7 +82,7 @@ class HotelReservation(models.Model):
     # voucher_name = fields.Char('Voucher', store=True)
 
     def get_form_id(self):
-        return self.env.ref("tt_reservation_hotel.tt_hotel_reservation_form")
+        return self.env.ref("tt_reservation_hotel.tt_reservation_hotel_form_views")
 
     @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
