@@ -3496,6 +3496,9 @@ class HotelInformation(models.Model):
             base_url = base_cache_directory + master_provider + "/"
             for country in os.walk(base_url):
                 country_str = country[0][len(base_url):]
+                # if country_str != 'Indonesia':
+                #     _logger.info('Skiping Data For Country: ' + country_str + '. Not in Search range')
+                #     continue
                 city_ids = glob.glob(base_url + country_str + "/*.json")
                 for target_city in city_ids:
                     city_name = target_city[len(base_url) + len(country_str) + 1:-5]

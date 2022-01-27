@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_tt_hotel_reservation_filter" model="ir.ui.view">
-        <field name="name">tt.reservation.hotel.filter</field>
+    <record id="tt_reservation_hotel_filter_view" model="ir.ui.view">
+        <field name="name">tt.reservation.hotel.filter.view</field>
         <field name="model">tt.reservation.hotel</field>
         <field name="arch" type="xml">
             <search string="Search Hotel Reservation">
@@ -435,7 +435,6 @@
             </form>
         </field>
     </record>
-
     <record id="tt_reservation_hotel_form_views" model="ir.ui.view">
         <field name="name">tt.reservation.hotel.form.view</field>
         <field name="model">tt.reservation.hotel</field>
@@ -535,21 +534,24 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="tt_hotel_reservation_view_tree" >
-        <field name="name">tt.hotel.reservation.view.tree</field>
+    <record model="ir.ui.view" id="tt_reservation_hotel_tree_views" >
+        <field name="name">tt.reservation.hotel.tree.view</field>
         <field name="model">tt.reservation.hotel</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree create="false">
                 <field name="name"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
-                <field name="customer_parent_type_id"/>
-                <field name="pnr"/>
+                <field name="booker_id"/>
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
+                <field name="pnr"/>
                 <field name="checkin_date"/>
                 <field name="checkout_date"/>
                 <field name="room_count"/>
-                <!--<field name="nights"/>-->
+                <field name="booked_uid"/>
+                <field name="date"/>
+                <field name="issued_uid"/>
+                <field name="issued_date"/>
                 <field name="state"/>
                 <field name="reconcile_state" groups="tt_base.group_reconcile_level_3"/>
             </tree>
@@ -566,7 +568,7 @@
         <field name="context">
             {
             'form_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_form_views',
-            'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
+            'tree_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_tree_views',
             'search_default_all': 1
             }
         </field>
@@ -581,8 +583,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_form',
-            'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
+            'form_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_form_views',
+            'tree_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_tree_views',
             'search_default_new': 1
             }
         </field>
@@ -597,8 +599,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_form',
-            'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
+            'form_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_form_views',
+            'tree_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_tree_views',
             'search_default_book': 1
             }
         </field>
@@ -613,8 +615,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-            'form_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_form',
-            'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
+            'form_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_form_views',
+            'tree_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_tree_views',
             'search_default_issued': 1
             }
         </field>
@@ -629,8 +631,8 @@
         <field name="domain">[]</field>
         <field name="context">
             {
-                'form_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_form',
-                'tree_view_ref': 'tt_reservation_hotel.tt_hotel_reservation_view_tree',
+                'form_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_form_views',
+                'tree_view_ref': 'tt_reservation_hotel.tt_reservation_hotel_tree_views',
                 'search_default_cancel': 1
             }
         </field>
