@@ -132,7 +132,7 @@ class HotelInformationCompare(models.Model):
                 'params': param,
                 'value_1': getfield(self.hotel_id, param),
                 'value_2': getfield(self.comp_hotel_id, param),
-                'is_value_1': len(str(getfield(self.hotel_id, param))) > len(str(getfield(self.comp_hotel_id, param))),
+                'is_value_1': getfield(self.hotel_id, param) and len(str(getfield(self.hotel_id, param))) > len(str(getfield(self.comp_hotel_id, param))) if getfield(self.comp_hotel_id, param) else True or False
             })
 
     def empty_compare_line(self):
