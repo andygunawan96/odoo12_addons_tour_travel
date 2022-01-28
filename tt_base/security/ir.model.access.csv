@@ -466,10 +466,10 @@ access_tt_provider_type_for_tour_travel_operator,tt.provider.type.for.tour.trave
 access_tt_provider_type_for_tour_travel_supervisor,tt.provider.type.for.tour.travel.supervisor,model_tt_provider_type,tt_base.group_tt_tour_travel_operator,1,1,1,0
 access_tt_provider_type_for_tour_travel_manager,tt.provider.type.for.tour.travel.manager,model_tt_provider_type,tt_base.group_tt_tour_travel_operator,1,1,1,0
 
-access_tt_provider_type_for_provider_type_level_1,tt.provider.type.for.provider.type.level.1,model_tt_provider_type,tt_base.group_provider_type_level_1,1,0,0,0
-access_tt_provider_type_for_provider_type_level_2,tt.provider.type.for.provider.type.level.2,model_tt_provider_type,tt_base.group_provider_type_level_2,1,0,1,0
-access_tt_provider_type_for_provider_type_level_3,tt.provider.type.for.provider.type.level.3,model_tt_provider_type,tt_base.group_provider_type_level_3,1,1,1,0
-access_tt_provider_type_for_provider_type_level_4,tt.provider.type.for.provider.type.level.4,model_tt_provider_type,tt_base.group_provider_type_level_4,1,1,1,0
+access_tt_provider_type_for_provider_type_level_1,tt.provider.type.for.provider.type.level.1,model_tt_provider_type,tt_base.group_provider_type_level_1,1,0,1,1
+access_tt_provider_type_for_provider_type_level_2,tt.provider.type.for.provider.type.level.2,model_tt_provider_type,tt_base.group_provider_type_level_2,1,0,1,1
+access_tt_provider_type_for_provider_type_level_3,tt.provider.type.for.provider.type.level.3,model_tt_provider_type,tt_base.group_provider_type_level_3,1,1,1,1
+access_tt_provider_type_for_provider_type_level_4,tt.provider.type.for.provider.type.level.4,model_tt_provider_type,tt_base.group_provider_type_level_4,1,1,1,1
 access_tt_provider_type_for_provider_type_level_5,tt.provider.type.for.provider.type.level.5,model_tt_provider_type,tt_base.group_provider_type_level_5,1,1,1,1
 
 access_tt_access_activity_for_public,tt.access.activity.for.public,model_tt_access_activity,,1,0,0,0
@@ -490,9 +490,9 @@ access_tt_provider_for_tour_travel_manager,tt.provider.for.tour.travel.manager,m
 access_tt_provider_for_accounting_supervisor,tt.provider.for.accounting.supervisor,model_tt_provider,tt_base.group_tt_accounting_supervisor,1,1,1,0
 access_tt_provider_for_accounting_manager,tt.provider.for.accounting.manager,model_tt_provider,tt_base.group_tt_accounting_manager,1,1,1,1
 
-access_tt_provider_for_provider_level_1,tt.provider.for.provider.level.1,model_tt_provider,tt_base.group_provider_level_1,1,0,0,0
-access_tt_provider_for_provider_level_2,tt.provider.for.provider.level.2,model_tt_provider,tt_base.group_provider_level_2,1,0,1,0
-access_tt_provider_for_provider_level_3,tt.provider.for.provider.level.3,model_tt_provider,tt_base.group_provider_level_3,1,1,1,0
+access_tt_provider_for_provider_level_1,tt.provider.for.provider.level.1,model_tt_provider,tt_base.group_provider_level_1,1,0,1,1
+access_tt_provider_for_provider_level_2,tt.provider.for.provider.level.2,model_tt_provider,tt_base.group_provider_level_2,1,0,1,1
+access_tt_provider_for_provider_level_3,tt.provider.for.provider.level.3,model_tt_provider,tt_base.group_provider_level_3,1,1,1,1
 access_tt_provider_for_provider_level_4,tt.provider.for.provider.level.4,model_tt_provider,tt_base.group_provider_level_4,1,1,1,1
 access_tt_provider_for_provider_level_5,tt.provider.for.provider.level.5,model_tt_provider,tt_base.group_provider_level_5,1,1,1,1
 

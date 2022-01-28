@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 from ...tools import variables
 from ...tools.api import Response
 import logging, traceback
@@ -14,6 +15,12 @@ class ProviderType(models.Model):
     name = fields.Char(string='Name', required=True)
     code = fields.Char(string='Code', required=True)
     active = fields.Boolean(string='Active', default=True)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('tt_base.group_provider_level_5'):
+            raise UserError('Action failed due to security restriction. Required Provider Level 5 permission.')
+        return super(ProviderType, self).unlink()
 
     def get_provider_type(self):
         provider_type_obj = self.search([])
