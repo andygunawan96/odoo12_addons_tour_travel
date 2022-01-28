@@ -8,7 +8,7 @@
                   parent="tt_reservation.main_reservations"
                   name="Airline"
                   sequence="20"
-                  groups="base.group_user"/>
+                  groups="base.group_user"/>`
         
         <menuitem id="menu_reservations_airline"
                   parent="tt_reservation_airline.top_reservations_airline"

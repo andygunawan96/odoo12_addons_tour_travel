@@ -3,7 +3,7 @@
     <menuitem id="top_reservations_passport"
               parent="tt_reservation.main_reservations"
               name="Passport"
-              sequence="20"
+              sequence="450"
               groups="base.group_user"/>
 
         <menuitem id="menu_passport_order"

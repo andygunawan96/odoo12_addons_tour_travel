@@ -5,7 +5,7 @@
         <menuitem id="top_reservations_event"
                   parent="tt_reservation.main_reservations"
                   name="Event"
-                  sequence="33"
+                  sequence="400"
                   groups="base.group_user"
         />
 

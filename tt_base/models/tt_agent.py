@@ -618,23 +618,23 @@ class TtAgent(models.Model):
             return ERR.get_error(1012,additional_message="PNR Price List")
 
 
-    def generate_rodexshop_key(self):
-        if not self.env.user.agent_id.id == self.id:
-            raise UserError("Can only generate for own agent.")
-        if not self.third_party_key_ids.filtered(lambda x: x.name == 'RodexShop External Key'):
-            key_exist =True
-            key = ''
-            while(key_exist):
-                key = uuid.uuid4().hex
-                exist_key_list = self.env['tt.agent.third.party.key'].sudo().search([('key','=',key)])
-                if not exist_key_list:
-                    key_exist = False
-
-            self.env['tt.agent.third.party.key'].sudo().create({
-                'name': 'RodexShop External Key',
-                'key': key,
-                'agent_id': self.id,
-            })
+    # def generate_rodexshop_key(self): #Rodexshop deprecated
+    #     if not self.env.user.agent_id.id == self.id:
+    #         raise UserError("Can only generate for own agent.")
+    #     if not self.third_party_key_ids.filtered(lambda x: x.name == 'RodexShop External Key'):
+    #         key_exist =True
+    #         key = ''
+    #         while(key_exist):
+    #             key = uuid.uuid4().hex
+    #             exist_key_list = self.env['tt.agent.third.party.key'].sudo().search([('key','=',key)])
+    #             if not exist_key_list:
+    #                 key_exist = False
+    #
+    #         self.env['tt.agent.third.party.key'].sudo().create({
+    #             'name': 'RodexShop External Key',
+    #             'key': key,
+    #             'agent_id': self.id,
+    #         })
 
     def get_reconcile_data_api(self, data, context):
         try:
