@@ -122,7 +122,7 @@ class TtProvider(models.Model):
                     "code": code_name.capitalize(),
                     "provider_type": rec.provider_type_id.code,
                     "balance": rec.balance,
-                    "currency": rec.currency_id and rec.currendy_id.name or ''
+                    "currency": rec.currency_id and rec.currency_id.name or ''
                 }
                 res.append(provider_values)
             return ERR.get_no_error(res)
