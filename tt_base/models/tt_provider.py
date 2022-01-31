@@ -60,13 +60,16 @@ class TtProvider(models.Model):
 
     def create_provider_ledger(self,balance):
         self.env['tt.provider.ledger'].sudo().create({
-                'balance': balance,
-                'provider_id': self.id
-            })
+            'balance': balance,
+            'provider_id': self.id
+        })
 
     def create_provider_ledger_api(self,data,context):
         try:
-            provider_obj = self.search([('code','=',data['provider_code'])], limit=1)
+            if 'rodextrip' in data['provider_code']: #asumsi hard code kalau provider rodextrip_x maka di masukkan rodextrip airline semua biar 1 saldo
+                provider_obj = self.search([('code', '=', 'rodextrip_airline')], limit=1)
+            else:
+                provider_obj = self.search([('code','=',data['provider_code'])], limit=1)
             if provider_obj:
                 provider_obj.create_provider_ledger(data['balance'])
             else:
@@ -114,12 +117,14 @@ class TtProvider(models.Model):
             provider_obj = self.search([('track_balance', '=', True)])
             res = []
             for rec in provider_obj:
-                res.append({
-                    "code": rec.code,
+                code_name = 'rodextrip' if 'rodextrip' in rec.code else rec.code
+                provider_values = {
+                    "code": code_name.capitalize(),
                     "provider_type": rec.provider_type_id.code,
                     "balance": rec.balance,
-                    "currency": rec.currency_id.name
-                })
+                    "currency": rec.currency_id and rec.currendy_id.name or ''
+                }
+                res.append(provider_values)
             return ERR.get_no_error(res)
         else:
             raise RequestException(500)

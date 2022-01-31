@@ -11,7 +11,7 @@ class TtProviderApiCon(models.Model):
     table_name = 'tt.provider'
 
     def action_call(self, table_obj, action, data, context):
-        if action == 'sync_balance_provider':
+        if action == 'create_provider_ledger':
             res = table_obj.create_provider_ledger_api(data, context)
         else:
             raise RequestException(999)
