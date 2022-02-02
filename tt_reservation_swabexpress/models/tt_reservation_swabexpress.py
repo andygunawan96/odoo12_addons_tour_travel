@@ -263,7 +263,7 @@ class ReservationSwabExpress(models.Model):
                         overtime_price = timeslot_objs.overtime_surcharge
                         single_suplement_price = timeslot_objs.single_supplement
                         cito_suplement_price = timeslot_objs.cito_surcharge
-                        if rec.destination_id.id != self.env.ref('tt_destination_swabexpress_sub').id: #antigen bukan surabaya tetap bayar
+                        if rec.destination_id.id != self.env.ref('tt_reservation_swabexpress.tt_destination_swabexpress_sub').id: #antigen bukan surabaya tetap bayar
                             address_surcharge = timeslot_objs.address_surcharge #ANTIGEN TIDAK BAYAR PER BOOKING 5 NOV 2021 | Per 5 Jan 2021 juga bayar | Per 2 Feb 2022 Antigen non surabaya bayar address Surcharge
                         else:
                             address_surcharge = 0 # antigen surabaya 0 address surcharge
