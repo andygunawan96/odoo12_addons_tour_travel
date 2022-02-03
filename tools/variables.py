@@ -281,7 +281,8 @@ PROVIDER_TYPE_PREFIX = {
     'LP': 'labpintar',
     'SE': 'swabexpress',
     'IR': 'insurance',
-    'BU': 'bus'
+    'BU': 'bus',
+    'SM': 'sentramedika'
 }
 
 PRODUCT_STATE = [

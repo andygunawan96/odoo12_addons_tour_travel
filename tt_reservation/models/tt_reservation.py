@@ -28,7 +28,8 @@ PROVIDER_TYPE_SELECTION = {
     'LP': 'labpintar',
     'SE': 'swabexpress',
     'IR': 'insurance',
-    'BU': 'bus'
+    'BU': 'bus',
+    'SM': 'sentramedika'
 }
 
 class TtReservation(models.Model):
