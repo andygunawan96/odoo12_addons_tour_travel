@@ -48,3 +48,13 @@ class TtPeriksainApiCon(models.Model):
             "provider": 'periksain'
         }
         return self.send_request_to_gateway('%s/booking/periksain' % (self.url), data, 'get_config_cron',timeout=60)
+
+    def send_cancel_order_notification(self,document_number,confirm_name,timeslot,address):
+        request = {
+            'code': 9915,
+            'message': '{} has been cancel by {}\n{}\n{}'.format(document_number,confirm_name,timeslot,address),
+            "title": 'CANCEL <b>%s</b>' % (document_number)
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url),
+                                            request
+                                            ,'notification_code')

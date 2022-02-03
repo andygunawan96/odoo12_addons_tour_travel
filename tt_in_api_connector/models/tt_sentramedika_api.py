@@ -41,3 +41,13 @@ class TtSwabExpressApiCon(models.Model):
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
                                             ,'notification_code')
+
+    def send_cancel_order_notification(self,document_number,confirm_name,timeslot,address):
+        request = {
+            'code': 9940,
+            'message': '{} has been cancel by {}\n{}\n{}'.format(document_number,confirm_name,timeslot,address),
+            "title": 'CANCEL <b>%s</b>' % (document_number)
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url),
+                                            request
+                                            ,'notification_code')
