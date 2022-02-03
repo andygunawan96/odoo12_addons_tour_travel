@@ -6,8 +6,8 @@
                 <ul class="list-inline">
                     <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/></li>
 
-<!--                    <li t-if="agent.fax and agent.phone">&amp;bull;</li>-->
-<!--                    <li t-if="agent.fax">Fax: <span t-field="agent.fax"/></li>-->
+                    <!--                    <li t-if="agent.fax and agent.phone">&amp;bull;</li>-->
+                    <!--                    <li t-if="agent.fax">Fax: <span t-field="agent.fax"/></li>-->
 
                     <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email or doc.agent_id.email and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
                     <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/></li>
@@ -16,9 +16,9 @@
                     <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/></li>
 
                     <li class="pull-right">Page:
-                    <span class="page"/>
-                    /
-                    <span class="topage"/>
+                        <span class="page"/>
+                        /
+                        <span class="topage"/>
                     </li>
                 </ul>
             </div>
@@ -62,9 +62,14 @@
                         <t t-if="doc.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']">
                             <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (24 hours)</i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
                         </t>
+                        <!--                        mitra keluarga ada minggu sampai jam 17.00 saja-->
+                        <t t-elif="doc.provider_booking_ids[0].provider_id.code == 'mitrakeluarga'">
+                            <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SAT: 08.00 - 20.00 WIB | SUN: 08.00 - 17.00 WIB)</i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
+                        </t>
                         <t t-else="">
                             <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SUN: 08.00 - 20.00 WIB)</i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
                         </t>
+
                     </t>
                     <t t-else="">
                         <span style="font-size: 18px; font-weight: 600">Test Date: <i><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></i><br/><i t-field="doc.provider_booking_ids[0].carrier_id.name"/> </span><br/>
@@ -111,11 +116,11 @@
             </t>
         </t>
         <div class="row">
-<!--            <div class="col-3"/>-->
-<!--            <div class="col-9">-->
-                <!--<img src="https://www.citypng.com/public/uploads/preview/-11597357952iuog7ymewt.png" style="width: 160px; height : 160px;"/>-->
+            <!--            <div class="col-3"/>-->
+            <!--            <div class="col-9">-->
+            <!--<img src="https://www.citypng.com/public/uploads/preview/-11597357952iuog7ymewt.png" style="width: 160px; height : 160px;"/>-->
             <t t-call="tt_report_common.print_qr_code"/>
-<!--            </div>-->
+            <!--            </div>-->
         </div>
 
         <!-- Important Notes -->
