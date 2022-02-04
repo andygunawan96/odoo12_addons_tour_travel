@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="top_reservations_reports" parent="tt_reservation.main_reservations"
-                  name="Reports" sequence='200'
+                  name="Reports" sequence='999'
                   groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
 
 </odoo>

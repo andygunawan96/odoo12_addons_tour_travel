@@ -7,7 +7,7 @@
         <menuitem id="top_reservations_activity"
                   parent="tt_reservation.main_reservations"
                   name="Activity"
-                  sequence="22"
+                  sequence="350"
                   groups="base.group_user"/>
 
         <menuitem id="menu_reservations_activity"

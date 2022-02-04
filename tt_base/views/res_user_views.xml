@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <field name="name" position="after">
                 <field name="agent_id" string="Agent"/>
+                <field name="agent_type_related_id" string="Agent Type Related"/>
                 <filter name="is_banned" string="Banned" domain="[('is_banned','=',True)]"/>
             </field>
         </field>
@@ -30,6 +31,7 @@
                 <field name="is_user_template"/>
                 <field name="agent_type_id" attrs="{'invisible': [('is_user_template','=',False)]}"/>
                 <field name='agent_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
+                <field name='agent_type_related_id' groups="base.group_user" attrs="{'invisible': [('is_user_template','=',True)]}"/>
                 <field name='customer_parent_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
                 <field name='customer_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)],'required':[('customer_parent_id','!=',False)]}"/>
                 <field name='vendor_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>

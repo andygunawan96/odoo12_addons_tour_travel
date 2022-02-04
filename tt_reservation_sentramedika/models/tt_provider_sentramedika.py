@@ -275,6 +275,12 @@ class TtProviderSentraMedika(models.Model):
         else:
             self.cancel_uid = self.env.user.id
         self.state = 'cancel'
+        self.env['tt.sentramedika.api.con'].send_cancel_order_notification(self.booking_id.name,
+                                                                        self.env.user.name,
+                                                                        self.booking_id.test_datetime.astimezone(
+                                                                            pytz.timezone('Asia/Jakarta')).strftime(
+                                                                            "%d-%m-%Y %H:%M"),
+                                                                        self.booking_id.test_address)
 
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'

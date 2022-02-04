@@ -1231,8 +1231,11 @@
                                     <t t-if="doc.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']">
                                         <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (24 hours)</td>
                                     </t>
+                                    <t t-elif="doc.provider_booking_ids[0].provider_id.code == 'mitrakeluarga'">
+                                        <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SAT: 08.00 - 20.00 WIB / SUN: 08.00 - 17.00 WIB)</td>
+                                    </t>
                                     <t t-else="">
-                                        <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)</td>
+                                        <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (MON-SAT: 08.00 - 20.00 WIB / SUN: 08.00 - 17.00 WIB)</td>
                                     </t>
                                 </t>
                                 <t t-else="">

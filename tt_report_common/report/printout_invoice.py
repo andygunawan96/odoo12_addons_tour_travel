@@ -232,8 +232,10 @@ class PrintoutTicketForm(models.AbstractModel):
                 if data['context']['active_model'] == 'tt.reservation.medical':
                     if booking_obj.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']:
                         test_date = '%s (24 hours)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                    elif booking_obj.provider_booking_ids[0].provider_id.code == 'mitrakeluarga':
+                        test_date = '%s (MON-SAT: 08.00 - 20.00 WIB / SUN: 08.00 - 17.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
                     else:
-                        test_date = '%s (MON-SAT: 08.00 - 15.00 WIB / SUN: 08.00 - 12.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
+                        test_date = '%s (MON-SUN: 08.00 - 20.00 WIB' % booking_obj.test_datetime.strftime('%d %B %Y')
                 else:
                     test_date = '%s (MON-SAT: 08.00 - 20.00 WIB)' % booking_obj.test_datetime.strftime('%d %B %Y')
             else:
@@ -950,72 +952,72 @@ class PrintoutInvoiceHO(models.AbstractModel):
         pax_dict = {}
         for cost_charge in provider.cost_service_charge_ids:
             # if cost_charge.charge_type != 'RAC':
-                if rec._name == 'tt.reservation.airline':
-                    for psg in cost_charge.passenger_airline_ids:
-                        if psg.name not in pax_dict:
-                            pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = '%s, %s' % (
+            if rec._name == 'tt.reservation.airline':
+                for psg in cost_charge.passenger_airline_ids:
+                    if psg.name not in pax_dict:
+                        pax_dict[psg.name] = {}
+                        pax_dict[psg.name]['name'] = '%s, %s' % (
                             ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-                            pax_dict[psg.name]['total'] = cost_charge.amount
-                        else:
-                            pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec._name == 'tt.reservation.train':
-                    for psg in cost_charge.passenger_train_ids:
-                        if psg.name not in pax_dict:
-                            pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                        pax_dict[psg.name]['total'] = cost_charge.amount
+                    else:
+                        pax_dict[psg.name]['total'] += cost_charge.amount
+            elif rec._name == 'tt.reservation.train':
+                for psg in cost_charge.passenger_train_ids:
+                    if psg.name not in pax_dict:
+                        pax_dict[psg.name] = {}
+                        pax_dict[psg.name]['name'] = '%s, %s' % (
                             ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-                            pax_dict[psg.name]['total'] = cost_charge.amount
-                        else:
-                            pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec._name == 'tt.reservation.activity':
-                    for psg in cost_charge.passenger_activity_ids:
-                        if psg.name not in pax_dict:
-                            pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                        pax_dict[psg.name]['total'] = cost_charge.amount
+                    else:
+                        pax_dict[psg.name]['total'] += cost_charge.amount
+            elif rec._name == 'tt.reservation.activity':
+                for psg in cost_charge.passenger_activity_ids:
+                    if psg.name not in pax_dict:
+                        pax_dict[psg.name] = {}
+                        pax_dict[psg.name]['name'] = '%s, %s' % (
                             ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-                            pax_dict[psg.name]['total'] = cost_charge.amount
-                        else:
-                            pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec._name == 'tt.reservation.tour':
-                    for psg in cost_charge.passenger_tour_ids:
-                        if psg.name not in pax_dict:
-                            pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = '%s, %s' % (
+                        pax_dict[psg.name]['total'] = cost_charge.amount
+                    else:
+                        pax_dict[psg.name]['total'] += cost_charge.amount
+            elif rec._name == 'tt.reservation.tour':
+                for psg in cost_charge.passenger_tour_ids:
+                    if psg.name not in pax_dict:
+                        pax_dict[psg.name] = {}
+                        pax_dict[psg.name]['name'] = '%s, %s' % (
                             ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
-                            pax_dict[psg.name]['total'] = cost_charge.amount
-                        else:
-                            pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec._name == 'tt.reservation.visa':
-                    for psg in cost_charge.passenger_visa_ids:
-                        if psg.name not in pax_dict:
-                            name = ''
-                            name += (psg.first_name or '') + ' ' + (psg.last_name or '') + ', ' + (psg.title or '') + \
-                                    ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
-                                    (psg.pricelist_id.entry_type.capitalize() if psg.pricelist_id.entry_type else '') + ' ' + \
-                                    (psg.pricelist_id.visa_type.capitalize() if psg.pricelist_id.visa_type else '') + ' ' + \
-                                    (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
-                                    ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
-                            pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = name
-                            pax_dict[psg.name]['total'] = cost_charge.amount
-                        else:
-                            pax_dict[psg.name]['total'] += cost_charge.amount
-                elif rec._name == 'tt.reservation.passport':
-                    for psg in cost_charge.passenger_passport_ids:
-                        if psg.name not in pax_dict:
-                            name = ''
-                            name += (psg.first_name or '') + ' ' + (psg.last_name or '') + ', ' + (psg.title or '') + \
-                                    ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
-                                    (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
-                                    (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
-                                    (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
-                                    ' (' + str((psg.pricelist_id.duration if psg.pricelist_id.duration else '-')) + ' days)'
-                            pax_dict[psg.name] = {}
-                            pax_dict[psg.name]['name'] = name
-                            pax_dict[psg.name]['total'] = cost_charge.amount
-                        else:
-                            pax_dict[psg.name]['total'] += cost_charge.amount
+                        pax_dict[psg.name]['total'] = cost_charge.amount
+                    else:
+                        pax_dict[psg.name]['total'] += cost_charge.amount
+            elif rec._name == 'tt.reservation.visa':
+                for psg in cost_charge.passenger_visa_ids:
+                    if psg.name not in pax_dict:
+                        name = ''
+                        name += (psg.first_name or '') + ' ' + (psg.last_name or '') + ', ' + (psg.title or '') + \
+                                ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
+                                (psg.pricelist_id.entry_type.capitalize() if psg.pricelist_id.entry_type else '') + ' ' + \
+                                (psg.pricelist_id.visa_type.capitalize() if psg.pricelist_id.visa_type else '') + ' ' + \
+                                (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                                ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
+                        pax_dict[psg.name] = {}
+                        pax_dict[psg.name]['name'] = name
+                        pax_dict[psg.name]['total'] = cost_charge.amount
+                    else:
+                        pax_dict[psg.name]['total'] += cost_charge.amount
+            elif rec._name == 'tt.reservation.passport':
+                for psg in cost_charge.passenger_passport_ids:
+                    if psg.name not in pax_dict:
+                        name = ''
+                        name += (psg.first_name or '') + ' ' + (psg.last_name or '') + ', ' + (psg.title or '') + \
+                                ' (' + (psg.passenger_type if psg.passenger_type else '') + ') ' + \
+                                (psg.pricelist_id.apply_type.capitalize() if psg.pricelist_id.apply_type else '') + ' ' + \
+                                (psg.pricelist_id.passport_type.capitalize() if psg.pricelist_id.passport_type else '') + ' ' + \
+                                (psg.pricelist_id.process_type.capitalize() if psg.pricelist_id.process_type else '') + \
+                                ' (' + str((psg.pricelist_id.duration if psg.pricelist_id.duration else '-')) + ' days)'
+                        pax_dict[psg.name] = {}
+                        pax_dict[psg.name]['name'] = name
+                        pax_dict[psg.name]['total'] = cost_charge.amount
+                    else:
+                        pax_dict[psg.name]['total'] += cost_charge.amount
         if rec._name == 'tt.reservation.ppob':
             ppob_carrier = provider.carrier_id
             if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
@@ -1298,30 +1300,30 @@ class PrintoutInvoice(models.AbstractModel):
                     'amount': line_detail.price_subtotal
                 })
             # if rec.room_detail_ids:
-                # for rec2 in rec.room_detail_ids:
-                #     issued_name = rec2.issued_name if rec2.issued_name else '-'
-                #     if not a.get(issued_name):
-                #         a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                #                           'provider_type': ''}
-                #     a[issued_name]['descs'].append(line.desc if line.desc else '')
-                #     a[issued_name]['provider_type'] = rec.provider_type_id.name
-                #     for line_detail in line.invoice_line_detail_ids:
-                #         a[issued_name]['pax_data'].append({
-                #             'name': (line_detail.desc if line_detail.desc else ''),
-                #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                #         })
+            # for rec2 in rec.room_detail_ids:
+            #     issued_name = rec2.issued_name if rec2.issued_name else '-'
+            #     if not a.get(issued_name):
+            #         a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                           'provider_type': ''}
+            #     a[issued_name]['descs'].append(line.desc if line.desc else '')
+            #     a[issued_name]['provider_type'] = rec.provider_type_id.name
+            #     for line_detail in line.invoice_line_detail_ids:
+            #         a[issued_name]['pax_data'].append({
+            #             'name': (line_detail.desc if line_detail.desc else ''),
+            #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #         })
             # else:
-                # issued_name = '-'
-                # if not a.get(issued_name):
-                #     a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                #                       'provider_type': ''}
-                # a[issued_name]['descs'].append(line.desc if line.desc else '')
-                # a[issued_name]['provider_type'] = rec.provider_type_id.name
-                # for line_detail in line.invoice_line_detail_ids:
-                #     a[issued_name]['pax_data'].append({
-                #         'name': (line_detail.desc if line_detail.desc else ''),
-                #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                #     })
+            # issued_name = '-'
+            # if not a.get(issued_name):
+            #     a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                       'provider_type': ''}
+            # a[issued_name]['descs'].append(line.desc if line.desc else '')
+            # a[issued_name]['provider_type'] = rec.provider_type_id.name
+            # for line_detail in line.invoice_line_detail_ids:
+            #     a[issued_name]['pax_data'].append({
+            #         'name': (line_detail.desc if line_detail.desc else ''),
+            #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #     })
         elif rec._name == 'tt.reschedule':
             a = {'descs': self.format_description(line.desc), 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
             a['pnr'].append(rec.pnr or '-')
@@ -1455,13 +1457,13 @@ class PrintoutInvoice(models.AbstractModel):
                     a[rec2.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'visa', 'total': rec.total}
                 for pax in rec2.passenger_ids:
                     a[rec2.pnr]['descs'].append('Visa : ' + (pax.passenger_id.first_name if pax.passenger_id.first_name else '') + ' ' +
-                                               (pax.passenger_id.last_name if pax.passenger_id.last_name else '') + ', ' +
-                                               (pax.passenger_id.title if pax.passenger_id.title else '') + ' ' +
-                                               '( ' + (pax.pax_type if pax.pax_type else '') + ' ) ' +
-                                               (pax.pricelist_id.entry_type if pax.pricelist_id.entry_type else '') + ' ' +
-                                               (pax.pricelist_id.visa_type if pax.pricelist_id.visa_type else '') + ' ' +
-                                               (pax.pricelist_id.process_type if pax.pricelist_id.process_type else '') + ' ' +
-                                               '(' + (str(pax.pricelist_id.duration) if pax.pricelist_id.duration else '') + ' days)')
+                                                (pax.passenger_id.last_name if pax.passenger_id.last_name else '') + ', ' +
+                                                (pax.passenger_id.title if pax.passenger_id.title else '') + ' ' +
+                                                '( ' + (pax.pax_type if pax.pax_type else '') + ' ) ' +
+                                                (pax.pricelist_id.entry_type if pax.pricelist_id.entry_type else '') + ' ' +
+                                                (pax.pricelist_id.visa_type if pax.pricelist_id.visa_type else '') + ' ' +
+                                                (pax.pricelist_id.process_type if pax.pricelist_id.process_type else '') + ' ' +
+                                                '(' + (str(pax.pricelist_id.duration) if pax.pricelist_id.duration else '') + ' days)')
                 for psg in rec.passenger_ids:
                     a[rec2.pnr]['pax_data'].append({
                         'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),
@@ -1678,30 +1680,30 @@ class PrintoutKwintasi(models.AbstractModel):
                     'amount': line_detail.price_subtotal
                 })
             # if rec.room_detail_ids:
-                # for rec2 in rec.room_detail_ids:
-                #     issued_name = rec2.issued_name if rec2.issued_name else '-'
-                #     if not a.get(issued_name):
-                #         a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                #                           'provider_type': ''}
-                #     a[issued_name]['descs'].append(line.desc if line.desc else '')
-                #     a[issued_name]['provider_type'] = rec.provider_type_id.name
-                #     for line_detail in line.invoice_line_detail_ids:
-                #         a[issued_name]['pax_data'].append({
-                #             'name': (line_detail.desc if line_detail.desc else ''),
-                #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                #         })
+            # for rec2 in rec.room_detail_ids:
+            #     issued_name = rec2.issued_name if rec2.issued_name else '-'
+            #     if not a.get(issued_name):
+            #         a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                           'provider_type': ''}
+            #     a[issued_name]['descs'].append(line.desc if line.desc else '')
+            #     a[issued_name]['provider_type'] = rec.provider_type_id.name
+            #     for line_detail in line.invoice_line_detail_ids:
+            #         a[issued_name]['pax_data'].append({
+            #             'name': (line_detail.desc if line_detail.desc else ''),
+            #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #         })
             # else:
-                # issued_name = '-'
-                # if not a.get(issued_name):
-                #     a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
-                #                       'provider_type': ''}
-                # a[issued_name]['descs'].append(line.desc if line.desc else '')
-                # a[issued_name]['provider_type'] = rec.provider_type_id.name
-                # for line_detail in line.invoice_line_detail_ids:
-                #     a[issued_name]['pax_data'].append({
-                #         'name': (line_detail.desc if line_detail.desc else ''),
-                #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
-                #     })
+            # issued_name = '-'
+            # if not a.get(issued_name):
+            #     a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                       'provider_type': ''}
+            # a[issued_name]['descs'].append(line.desc if line.desc else '')
+            # a[issued_name]['provider_type'] = rec.provider_type_id.name
+            # for line_detail in line.invoice_line_detail_ids:
+            #     a[issued_name]['pax_data'].append({
+            #         'name': (line_detail.desc if line_detail.desc else ''),
+            #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #     })
         elif rec._name == 'tt.reschedule':
             a = {'descs': self.format_description(line.desc), 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
             a['pnr'].append(rec.pnr or '-')
@@ -1835,13 +1837,13 @@ class PrintoutKwintasi(models.AbstractModel):
                     a[rec2.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'visa', 'total': rec.total}
                 for pax in rec2.passenger_ids:
                     a[rec2.pnr]['descs'].append('Visa : ' + (pax.passenger_id.first_name if pax.passenger_id.first_name else '') + ' ' +
-                                               (pax.passenger_id.last_name if pax.passenger_id.last_name else '') + ', ' +
-                                               (pax.passenger_id.title if pax.passenger_id.title else '') + ' ' +
-                                               '( ' + (pax.pax_type if pax.pax_type else '') + ' ) ' +
-                                               (pax.pricelist_id.entry_type if pax.pricelist_id.entry_type else '') + ' ' +
-                                               (pax.pricelist_id.visa_type if pax.pricelist_id.visa_type else '') + ' ' +
-                                               (pax.pricelist_id.process_type if pax.pricelist_id.process_type else '') + ' ' +
-                                               '(' + (str(pax.pricelist_id.duration) if pax.pricelist_id.duration else '') + ' days)')
+                                                (pax.passenger_id.last_name if pax.passenger_id.last_name else '') + ', ' +
+                                                (pax.passenger_id.title if pax.passenger_id.title else '') + ' ' +
+                                                '( ' + (pax.pax_type if pax.pax_type else '') + ' ) ' +
+                                                (pax.pricelist_id.entry_type if pax.pricelist_id.entry_type else '') + ' ' +
+                                                (pax.pricelist_id.visa_type if pax.pricelist_id.visa_type else '') + ' ' +
+                                                (pax.pricelist_id.process_type if pax.pricelist_id.process_type else '') + ' ' +
+                                                '(' + (str(pax.pricelist_id.duration) if pax.pricelist_id.duration else '') + ' days)')
                 for psg in rec.passenger_ids:
                     a[rec2.pnr]['pax_data'].append({
                         'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),

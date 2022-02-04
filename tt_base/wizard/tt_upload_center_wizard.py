@@ -1,3 +1,6 @@
+import pytz
+from datetime import datetime
+
 from odoo import api, fields, models, _
 import base64,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
@@ -98,9 +101,9 @@ class SplitInvoice(models.TransientModel):
         while (not valid_path):
             hash = hashlib.md5(('%s%s' % (filename,time.time())).encode()).hexdigest()
             depth = 3
-            length = 3
-            hash_only_path = self.make_list_dir(hash,depth,length)
-            hashed_path = '%s%s/' % (base_dir,hash_only_path)
+            length = 4
+            hash_only_path = '%s/%s/' % (datetime.now(pytz.timezone('Asia/Jakarta')).strftime('%Y/%m/%d'),self.make_list_dir(hash,depth,length))
+            hashed_path = '%s%s' % (base_dir,hash_only_path)
             full_path = '%s%s' % (hashed_path,filename)
 
 
@@ -109,11 +112,11 @@ class SplitInvoice(models.TransientModel):
                     os.makedirs(hashed_path)
                 valid_path = True
 
-        return full_path,'%s%s/%s' % (base_url,hash_only_path,filename)
+        return full_path,'%s%s%s' % (base_url,hash_only_path,filename)
 
     def make_list_dir(self,hash,depth,length):
         result = []
-        for n  in range (1,depth+1):
+        for n in range (1,depth+1):
             curr_n = -n*length
             if n>1:
                 result.append(hash[curr_n:curr_n+length])

@@ -114,6 +114,7 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
             overtime_surcharge = default_data.overtime_surcharge
             cito_surcharge = default_data.cito_surcharge
         else:
+
             if self.antigen_price_ids:
                 antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
             if self.pcr_price_ids:
@@ -133,6 +134,8 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
         for this_date_counter in range(date_delta):
             for idx, this_time in enumerate(time_objs):
                 this_date = self.start_date + timedelta(days=this_date_counter)
+                if this_date.weekday == 6 and this_time.strftime("%H:%M:%S") == "12:00:00": ##skipping sunday 19.00GMT+7 time
+                    continue
                 datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
                 max_book_datetime = datetimeslot.replace(hour=8, minute=0, second=0, microsecond=0)
                 if str(datetimeslot) not in db_list:
@@ -166,27 +169,28 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
             if not db:
                 default_data_obj = self.env['tt.timeslot.mitrakeluarga.default'].search([('id','=', self.env.ref('tt_reservation_mitrakeluarga.tt_timeslot_mitrakeluarga_default_data_drivethru_sub').id)], limit=1)
 
-                if datetimeslot.strftime('%A') != 'Sunday': # DRIVE THRU TIDAK ADA HARI MINGGU
-                    antigen_list = [(6, 0, [x.id for x in default_data_obj.antigen_price_ids])]
-                    pcr_list = [(6, 0, [x.id for x in default_data_obj.pcr_price_ids])]
-                    srbd_list = [(6, 0, [x.id for x in default_data_obj.srbd_price_ids])]
-                    single_supplement = default_data_obj.single_supplement
-                    overtime_surcharge = default_data_obj.overtime_surcharge
-                    cito_surcharge = default_data_obj.cito_surcharge
-                    max_book_datetime = datetimeslot.replace(hour=8, minute=30, second=0, microsecond=0)
-                    self.env['tt.timeslot.mitrakeluarga'].create({
-                        'dateslot': date,
-                        'datetimeslot': datetimeslot,
-                        'destination_id': rec.id,
-                        'max_book_datetime': max_book_datetime,
-                        'total_timeslot': pcr_timeslot,
-                        'currency_id': self.env.user.company_id.currency_id.id,
-                        'timeslot_type': 'drive_thru',
-                        'antigen_price_ids': antigen_list,
-                        'pcr_price_ids': pcr_list,
-                        'srbd_price_ids': srbd_list,
-                        'single_supplement': single_supplement,
-                        'overtime_surcharge': overtime_surcharge,
-                        'cito_surcharge': cito_surcharge,
-                        'agent_id': False,
-                    })
+                # if datetimeslot.strftime('%A') != 'Sunday': # DRIVE THRU TIDAK ADA HARI MINGGU
+                ## 02 Feb 2022 Eline Request bisa hari minggu juga sampai jam 17.00
+                antigen_list = [(6, 0, [x.id for x in default_data_obj.antigen_price_ids])]
+                pcr_list = [(6, 0, [x.id for x in default_data_obj.pcr_price_ids])]
+                srbd_list = [(6, 0, [x.id for x in default_data_obj.srbd_price_ids])]
+                single_supplement = default_data_obj.single_supplement
+                overtime_surcharge = default_data_obj.overtime_surcharge
+                cito_surcharge = default_data_obj.cito_surcharge
+                max_book_datetime = datetimeslot.replace(hour=8, minute=30, second=0, microsecond=0)
+                self.env['tt.timeslot.mitrakeluarga'].create({
+                    'dateslot': date,
+                    'datetimeslot': datetimeslot,
+                    'destination_id': rec.id,
+                    'max_book_datetime': max_book_datetime,
+                    'total_timeslot': pcr_timeslot,
+                    'currency_id': self.env.user.company_id.currency_id.id,
+                    'timeslot_type': 'drive_thru',
+                    'antigen_price_ids': antigen_list,
+                    'pcr_price_ids': pcr_list,
+                    'srbd_price_ids': srbd_list,
+                    'single_supplement': single_supplement,
+                    'overtime_surcharge': overtime_surcharge,
+                    'cito_surcharge': cito_surcharge,
+                    'agent_id': False,
+                })

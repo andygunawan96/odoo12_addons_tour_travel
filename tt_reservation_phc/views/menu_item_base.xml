@@ -5,9 +5,9 @@
         <!-- Top Menu -->
         <!-- Airline -->
         <menuitem id="top_reservations_phc"
-                  parent="tt_reservation.main_reservations"
+                  parent="tt_reservation.top_reservations_medical_placeholder"
                   name="PHC"
-                  sequence="45"
+                  sequence="10"
                   groups="base.group_user"/>
         
         <menuitem id="menu_reservations_phc"

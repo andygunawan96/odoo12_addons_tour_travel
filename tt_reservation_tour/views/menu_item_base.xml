@@ -4,7 +4,7 @@
         <menuitem id="top_reservations_tour"
                   parent="tt_reservation.main_reservations"
                   name="Tour"
-                  sequence="23"
+                  sequence="200"
                   groups="base.group_user"/>
 
         <menuitem id="menu_reservations_tour"

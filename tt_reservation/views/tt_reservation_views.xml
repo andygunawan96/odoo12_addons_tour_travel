@@ -209,4 +209,12 @@
               web_icon="hr,static/description/icon.png"
               sequence="2"
               groups="tt_base.group_reservation_level_1"/>
+
+    <!-- Top Menu -->
+    <!-- Medical Placeholder -->
+    <menuitem id="top_reservations_medical_placeholder"
+              parent="tt_reservation.main_reservations"
+              name="Medical"
+              sequence="750"
+              groups="base.group_user"/>
 </odoo>

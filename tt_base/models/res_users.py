@@ -59,8 +59,9 @@ class ResUsers(models.Model):
     _inherit = 'res.users'
 
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
+    agent_type_related_id = fields.Many2one('tt.agent.type','Agent Related Type', related='agent_id.agent_type_id')
     transaction_limit = fields.Monetary('Transaction Limit')
-    agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
+    agent_type_id = fields.Many2one('tt.agent.type', 'Template For Agent Type', help="Agent Type Template")
     is_user_template = fields.Boolean('Is User Template', default=False)
 
     customer_id = fields.Many2one('tt.customer', 'Customer')
@@ -77,6 +78,12 @@ class ResUsers(models.Model):
     ####security utk django
     frontend_security_ids = fields.Many2many('tt.frontend.security','res_users_frontend_rel','res_users_id','frontend_security_id','Frontend Securities')
     is_banned = fields.Boolean('Banned')
+
+    # @api.depends('agent_id','agent_id.agent_type_id')
+    # @api.onchange('agent_id','agent_id.agent_type_id')
+    # def _compute_agent_type_related_id(self):
+    #     for rec in self:
+    #         rec.agent_type_related_id = rec.agent_id.agent_type_id
 
     # Fungsi ini perlu di lengkapi/disempurnakan
     # Tujuan : kalau res_pertner.parent_agent_id berubah maka user.agent_id ikut berubah
