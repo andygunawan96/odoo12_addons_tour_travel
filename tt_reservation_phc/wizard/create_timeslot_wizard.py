@@ -164,7 +164,7 @@ class CreateTimeslotphcWizard(models.TransientModel):
                 'dateslot': date,
                 'datetimeslot': datetimeslot,
                 'datetimeslot_end': datetimeslot_end,
-                'max_book_datetime': datetimeslot.replace(hour=9,minute=0,second=0,microsecond=0),
+                'max_book_datetime': datetimeslot.replace(hour=9,minute=55,second=0,microsecond=0),
                 'destination_id': destination.id,
                 'destination_area': 'surabaya_all',
                 'total_timeslot': max_timeslot,

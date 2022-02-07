@@ -118,8 +118,19 @@ class PhoneDetail(models.Model):
             raise UserError(_("You have already registered a VA account"))
 
     def delete_va_number(self):
+
+        agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
+        ho_obj = self.env.ref('tt_base.rodex_ho')
+        bank_code_list = []
+        existing_payment_acquirer_open = self.env['payment.acquirer'].search(
+            [('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
+        for rec in existing_payment_acquirer_open:
+            bank_code_list.append(rec.bank_id.code)
         data = {
-            "number": self.calling_number[-8:]
+            "number": self.calling_number[-8:],
+            'email': agent.email,
+            'name': agent.name,
+            'bank_code_list': bank_code_list
         }
         self.va_create = False
         self.env.cr.commit()

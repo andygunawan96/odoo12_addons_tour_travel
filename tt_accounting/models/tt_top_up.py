@@ -97,7 +97,7 @@ class TtTopUp(models.Model):
                self.cancel_uid and self.cancel_uid.name or ''
 
     def action_set_back_to_request(self):
-        if self.state in ["expired","cancel"]:
+        if self.state not in ["expired","cancel"]:
             raise UserError("Can only set to request [Expired] state top up.")
         self.write({
             'state': 'request'

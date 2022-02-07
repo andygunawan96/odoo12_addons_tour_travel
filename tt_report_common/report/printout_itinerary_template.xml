@@ -1156,7 +1156,7 @@
                             <tr>
                                 <td><span t-field="doc.name"/></td>
                                 <t t-if="line.timeslot_type == 'drive_thru'">
-                                    <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (DRIVE THRU 08.00 - 16.00 WIB)</td>
+                                    <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (DRIVE THRU 08.00 - 17.00 WIB)</td>
                                 </t>
                                 <t t-else="">
                                     <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M')"/></td>
