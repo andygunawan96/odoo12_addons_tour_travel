@@ -906,7 +906,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             descs = []
             for timeslot_obj in rec.timeslot_ids:
                 if timeslot_obj.timeslot_type == 'drive_thru':
-                    descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 16.00 WIB)')
+                    descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')) + ' (DRIVE THRU 08.00 - 17.00 WIB)')
                 else:
                     descs.append('Est Date: ' + str(timeslot_obj.datetimeslot.astimezone(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M')))
             descs.append(' ')
