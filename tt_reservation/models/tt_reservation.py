@@ -106,6 +106,7 @@ class TtReservation(models.Model):
     adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True,domain=_get_res_model_domain)  # domain=[('res_model','=',lambda self: self._name)]
     # adjustment_ids = fields.One2many('tt.adjustment','res_id','Adjustment',readonly=True)  # domain=[('res_model','=',lambda self: self._name)]
     refund_ids = fields.One2many('tt.refund','res_id','Refund',readonly=True,domain=_get_res_model_domain)  # domain=[('res_model','=',lambda self: self._name)]
+    issued_request_ids = fields.One2many('tt.reservation.request', 'res_id', 'Issued Requests', readonly=True,domain=_get_res_model_domain)
     error_msg = fields.Char('Error Message')
     notes = fields.Text('Notes for IT',default='')
     refundable = fields.Boolean('Refundable', default=True, readonly=True, compute='_compute_refundable')
@@ -739,6 +740,16 @@ class TtReservation(models.Model):
             if context['co_agent_id'] == self.agent_id.id:
                 is_agent = True
 
+        if len(self.issued_request_ids.ids) <= 0:
+            issued_request_status = 'none'
+        else:
+            if any(rec.state == 'approved' for rec in self.issued_request_ids):
+                issued_request_status = 'approved'
+            elif any(rec.state in ['draft', 'on_process'] for rec in self.issued_request_ids):
+                issued_request_status = 'on_process'
+            else:
+                issued_request_status = 'none'
+
         res = {
             'order_number': self.name,
             'book_id': self.id,
@@ -764,6 +775,7 @@ class TtReservation(models.Model):
             'arrival_date': self.arrival_date and self.arrival_date or '',
             'provider_type': self.provider_type_id.code,
             'payment_acquirer_number': payment_acquirer_number,
+            'issued_request_status': issued_request_status,
             # May 19, 2020 - SAM
             'is_force_issued': self.is_force_issued,
             'is_halt_process': self.is_halt_process,
@@ -948,6 +960,44 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(500)
 
+    def create_reservation_issued_request_api(self, req, context):
+        if req.get('book_id'):
+            book_obj = self.env['tt.reservation.%s' % (req['table_name'])].browse(req['book_id'])
+        else:
+            book_obj = self.env['tt.reservation.%s' % (req['table_name'])].search(
+                [('name', '=', req['order_number'])], limit=1)
+        if not book_obj:
+            return ERR.get_error(1001)
+
+        try:
+            if context.get('co_customer_seq_id'):
+                booker_obj = self.env['tt.customer'].search([('seq_id', '=', context['co_customer_seq_id'])], limit=1)
+            else:
+                booker_obj = book_obj.booker_id
+            booking_booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', context.get('co_customer_parent_id', book_obj.customer_parent_id.id)), ('customer_id', '=', booker_obj.id)], limit=1)
+            if booking_booker_obj:
+                booker_hierarchy = booking_booker_obj.job_position_id and booking_booker_obj.job_position_id.hierarchy_id.sequence or 10
+            else:
+                booker_hierarchy = 10
+            request_obj = self.env['tt.reservation.request'].create({
+                'res_model': book_obj._name,
+                'res_id': book_obj.id,
+                'booker_id': booker_obj.id,
+                'agent_id': context.get('co_agent_id', book_obj.agent_id.id),
+                'customer_parent_id': context.get('co_customer_parent_id', book_obj.customer_parent_id.id),
+                'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy)
+            })
+            response = {
+                'request_id': request_obj.id,
+                'request_number': request_obj.name
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return ERR.get_error(1005)
 
     ##ini potong ledger
     def payment_reservation_api(self,table_name,req,context):
@@ -957,6 +1007,13 @@ class TtReservation(models.Model):
                 book_obj = self.env['tt.reservation.%s' % (table_name)].browse(req.get('book_id'))
             else:
                 book_obj = self.env['tt.reservation.%s' % (table_name)].search([('name','=',req.get('order_number'))],limit=1)
+
+            if context.get('co_job_position_is_request_required'):
+                resv_req_obj = self.env['tt.reservation.request'].search([
+                    ('res_model', '=', book_obj._name), ('res_id', '=', book_obj.id), ('state', '=', 'approved')])
+                if not resv_req_obj:
+                    raise RequestException(1038)
+
             voucher = None
             discount = {'error_code': -1}
             total_discount = 0
