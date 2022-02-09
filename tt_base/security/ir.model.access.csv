@@ -51,6 +51,18 @@ access_tt_agent_third_party_key_for_agent_user_operator,access.tt.agent.third.pa
 access_tt_agent_third_party_key_for_tour_travel_operator,access.tt.agent.third.party.key.for.tour.travel.operator,model_tt_agent_third_party_key,group_tt_tour_travel_operator,1,0,0,0
 access_tt_agent_third_party_key_for_admin,access.tt.agent.third.party.key.for.admin,model_tt_agent_third_party_key,base.group_system,1,1,1,0
 
+access_tt_customer_job_position_for_customer_level_1,tt.customer.job.position.for.customer.level.1,model_tt_customer_job_position,tt_base.group_customer_level_1,1,0,0,0
+access_tt_customer_job_position_for_customer_level_2,tt.customer.job.position.for.customer.level.2,model_tt_customer_job_position,tt_base.group_customer_level_2,1,0,1,0
+access_tt_customer_job_position_for_customer_level_3,tt.customer.job.position.for.customer.level.3,model_tt_customer_job_position,tt_base.group_customer_level_3,1,1,1,1
+access_tt_customer_job_position_for_customer_level_4,tt.customer.job.position.for.customer.level.4,model_tt_customer_job_position,tt_base.group_customer_level_4,1,1,1,1
+access_tt_customer_job_position_for_customer_level_5,tt.customer.job.position.for.customer.level.5,model_tt_customer_job_position,tt_base.group_customer_level_5,1,1,1,1
+
+access_tt_customer_job_hierarchy_for_customer_level_1,tt.customer.job.hierarchy.for.customer.level.1,model_tt_customer_job_hierarchy,tt_base.group_customer_level_1,1,0,0,0
+access_tt_customer_job_hierarchy_for_customer_level_2,tt.customer.job.hierarchy.for.customer.level.2,model_tt_customer_job_hierarchy,tt_base.group_customer_level_2,1,0,1,0
+access_tt_customer_job_hierarchy_for_customer_level_3,tt.customer.job.hierarchy.for.customer.level.3,model_tt_customer_job_hierarchy,tt_base.group_customer_level_3,1,1,1,1
+access_tt_customer_job_hierarchy_for_customer_level_4,tt.customer.job.hierarchy.for.customer.level.4,model_tt_customer_job_hierarchy,tt_base.group_customer_level_4,1,1,1,1
+access_tt_customer_job_hierarchy_for_customer_level_5,tt.customer.job.hierarchy.for.customer.level.5,model_tt_customer_job_hierarchy,tt_base.group_customer_level_5,1,1,1,1
+
 access_tt_customer_for_public,tt.customer.for.public,model_tt_customer,,1,0,0,0
 access_tt_customer_for_agent_user_operator,tt_customer.for.agent.user.operator,model_tt_customer,tt_base.group_tt_agent_user_operator,1,1,1,0
 access_tt_customer_for_agent_management_operator,tt_customer.for.agent.management.operator,model_tt_customer,tt_base.group_tt_agent_management_operator,1,1,0,0
@@ -540,6 +552,12 @@ access_tt_ssr_list_line_for_ssr_level_2,tt.ssr.list.line.for.ssr.level.2,model_t
 access_tt_ssr_list_line_for_ssr_level_3,tt.ssr.list.line.for.ssr.level.3,model_tt_ssr_list,tt_base.group_ssr_level_3,1,1,1,0
 access_tt_ssr_list_line_for_ssr_level_4,tt.ssr.list.line.for.ssr.level.4,model_tt_ssr_list,tt_base.group_ssr_level_4,1,1,1,0
 access_tt_ssr_list_line_for_ssr_level_5,tt.ssr.list.line.for.ssr.level.5,model_tt_ssr_list,tt_base.group_ssr_level_5,1,1,1,1
+
+access_tt_customer_parent_booker_rel_for_customer_parent_level_1,tt.customer.parent.booker.rel.for.customer.parent.level.1,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_1,1,0,0,0
+access_tt_customer_parent_booker_rel_for_customer_parent_level_2,tt.customer.parent.booker.rel.for.customer.parent.level.2,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_2,1,0,1,0
+access_tt_customer_parent_booker_rel_for_customer_parent_level_3,tt.customer.parent.booker.rel.for.customer.parent.level.3,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_3,1,1,1,1
+access_tt_customer_parent_booker_rel_for_customer_parent_level_4,tt.customer.parent.booker.rel.for.customer.parent.level.4,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_4,1,1,1,0
+access_tt_customer_parent_booker_rel_for_customer_parent_level_5,tt.customer.parent.booker.rel.for.customer.parent.level.5,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_5,1,1,1,1
 
 access_tt_customer_parent_for_public,tt.customer.parent.for.public,model_tt_customer_parent,,1,0,0,0
 access_tt_customer_parent_for_agent_management_manager,tt.customer.parent.for.agent.management.manager,model_tt_customer_parent,group_tt_agent_management_manager,1,1,1,1

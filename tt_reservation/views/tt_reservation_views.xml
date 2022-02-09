@@ -178,6 +178,9 @@
                         <page string="Refund" name="refund_page" attrs="{'invisible':[('refund_ids','=', [])]}">
                             <field name="refund_ids"/>
                         </page>
+                        <page string="Issued Request" name="issued_request_page" attrs="{'invisible':[('issued_request_ids','=', [])]}">
+                            <field name="issued_request_ids"/>
+                        </page>
                     </notebook>
                     <footer>
                         <group string="Total Information" class="oe_subtotal_footer oe_right">
