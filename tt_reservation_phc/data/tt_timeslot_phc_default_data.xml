@@ -7,7 +7,7 @@
             <field name="commission_pcr">75000</field>
             <field name="commission_pcr_dt">24000</field>
             <field name="commission_pcr_priority">60000</field>
-            <field name="commission_pcr_express">250000</field>
+            <field name="commission_pcr_express">300000</field>
             <field name="commission_srbd">18000</field>
             <field name="base_price_antigen">99000</field>
             <field name="base_price_pcr">750000</field>

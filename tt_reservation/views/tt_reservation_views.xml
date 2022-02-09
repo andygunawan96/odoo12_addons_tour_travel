@@ -96,6 +96,7 @@
                             <field name="unique_amount_id" groups="base.group_system"/>
                             <field name="is_force_issued" groups="base.group_system"/>
                             <field name="is_halt_process" groups="base.group_system"/>
+                            <field name="is_invoice_created" groups="base.group_system"/>
                         </group>
                         <group>
                             <field name="date"/>

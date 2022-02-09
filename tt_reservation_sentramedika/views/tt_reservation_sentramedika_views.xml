@@ -14,6 +14,7 @@
                 <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
                 <field name="contact_id"/>
+                <field name="passenger_ids"/>
                 <group>
                     <filter string="All" name="all"/>
                     <filter string="Booked" name="booked" domain="[('state','=','booked')]"/>
