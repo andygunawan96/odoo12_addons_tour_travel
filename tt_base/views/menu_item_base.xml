@@ -142,7 +142,7 @@
         <menuitem id="top_transaction_configuration"
                   parent="tt_base.main_transaction"
                   name="Configuration"
-                  sequence="35"
+                  sequence="85"
                   groups="base.group_user"/>
 
         <!--External Vendor Login-->

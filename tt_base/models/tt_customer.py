@@ -45,6 +45,7 @@ class TtCustomer(models.Model):
     customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer Parent')
     booker_parent_ids = fields.Many2many('tt.customer.parent', 'tt_customer_booker_customer_parent_rel', 'customer_id',
                                          'customer_parent_id', 'Booker Parent')
+    customer_parent_booker_ids = fields.One2many('tt.customer.parent.booker.rel', 'customer_id', 'Booker Parent')
 
     active = fields.Boolean('Active', default=True)
 

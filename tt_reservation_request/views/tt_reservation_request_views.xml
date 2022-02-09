@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_reservation_request_filter_views" model="ir.ui.view">
+            <field name="name">tt.reservation.request.filter.view</field>
+            <field name="model">tt.reservation.request</field>
+            <field name="arch" type="xml">
+                <search string="Search Reservation Request">
+                    <field name="name"/>
+                    <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <field name="booker_id"/>
+                    <group>
+                        <filter string="All" name="all"/>
+                        <filter string="On Process" name="on_process" domain="[('state','=','on_process')]"/>
+                        <filter string="Approved" name="approved" domain="[('state','=','approved')]"/>
+                        <filter string="Rejected" name="rejected" domain="[('state','=','rejected')]"/>
+                        <filter string="Cancelled" name="cancel" domain="[('state','=','cancel')]"/>
+                    </group>
+                    <separator/>
+                    <filter name="today" string="Today" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                    <filter name="yesterday" string="Yesterday"
+                            domain="[
+                                ('create_date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('create_date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                    <filter name="week" string="This Week"
+                            domain="[
+                                '&amp;',
+                                ('create_date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('create_date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                    <filter string="This Month" name="thismonth" domain="[('create_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                    <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                        <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
+                        <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="tt_reservation_request_form_view" model="ir.ui.view">
+            <field name="name">tt.reservation.request.form.view</field>
+            <field name="model">tt.reservation.request</field>
+            <field name="arch" type="xml">
+                <form create="false">
+                    <header>
+                        <button name="action_set_to_draft" string="Set to Draft" type="object" groups="tt_base.group_reservation_level_4" attrs="{'invisible':[('state','in', ['draft', 'approved'])]}"/>
+                        <button name="action_cancel" string="Set to Cancel" type="object" groups="tt_base.group_reservation_level_4" attrs="{'invisible':[('state','not in', ['draft', 'on_process'])]}"/>
+                        <button name="action_reject" string="Set to Rejected" type="object" groups="tt_base.group_reservation_level_4" attrs="{'invisible':[('state','not in', ['draft', 'on_process'])]}"/>
+                        <button name="action_set_to_approved" string="Set to Approved" type="object" groups="tt_base.group_reservation_level_4" attrs="{'invisible':[('state','=','approved')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,on_process,approved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" required="True"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="booker_id"/>
+                                <field name="agent_id"/>
+                                <field name="agent_type_id"/>
+                                <field name="customer_parent_id"/>
+                                <field name="customer_parent_type_id"/>
+                                <field name="res_model"/>
+                                <field name="res_id" groups="base.group_system"/>
+                                <button name="open_reference" string="Go to reference" type="object"
+                                        attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
+                            </group>
+                            <group>
+                                <label for="cancel_uid" string="Cancelled by"/>
+                                <div>
+                                    <field name="cancel_uid" readonly="1" class="oe_inline"/> /
+                                    <field name="cancel_date" readonly="1" class="oe_inline"/>
+                                </div>
+                                <label for="reject_uid" string="Rejected by"/>
+                                <div>
+                                    <field name="reject_uid" readonly="1" class="oe_inline"/> /
+                                    <field name="reject_date" readonly="1" class="oe_inline"/>
+                                </div>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="booker_job_position_id"/>
+                            <field name="cur_approval_seq"/>
+                            <field name="approval_ids">
+                                <tree>
+                                    <field name="approved_uid"/>
+                                    <field name="approved_job_position_id"/>
+                                    <field name="approved_date"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="approved_uid"/>
+                                            <field name="approved_job_position_id"/>
+                                        </group>
+                                        <group>
+                                            <field name="approved_date"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_reservation_request_tree_view" model="ir.ui.view">
+            <field name="name">tt.reservation.request.tree.view</field>
+            <field name="model">tt.reservation.request</field>
+            <field name="arch" type="xml">
+                <tree create="false">
+                    <field name="booker_id"/>
+                    <field name="agent_id"/>
+                    <field name="agent_type_id"/>
+                    <field name="customer_parent_id"/>
+                    <field name="customer_parent_type_id"/>
+                    <field name="booker_job_position_id"/>
+                    <field name="res_model"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_reservation_request_action_view" model="ir.actions.act_window">
+            <field name="name">Reservation Request</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.reservation.request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_base.tt_reservation_request_form_view',
+                'tree_view_ref': 'tt_base.tt_reservation_request_tree_view'
+                }
+            </field>
+        </record>
+
+        <menuitem id="menu_transaction_reservation_request"
+              parent="tt_reservation_request.top_transaction_reservation_request"
+              action="tt_reservation_request.tt_reservation_request_action_view"
+              name="Requests"
+              sequence="1"
+              groups="base.group_user"/>
+    </data>
+</odoo>

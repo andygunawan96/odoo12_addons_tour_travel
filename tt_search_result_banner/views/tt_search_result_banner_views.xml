@@ -48,12 +48,12 @@
                         <field name="minimum_days"/>
                         <field name="provider_type_id"/>
                         <field name="sector_type"/>
+                        <field name = "origin_country"/>
                         <field name="sequence"/>
                     </group>
 
-                    <separator string="Origin Country"/>
+
                     <group>
-                        <field name = "origin_country"/>
                         <field name = "cabin_class_access_type"/>
                     </group>
                     <separator string="Cabin Class(es)"/>

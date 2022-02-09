@@ -181,7 +181,10 @@ class TtPaymentApiCon(models.Model):
     def delete_VA(self, req):
         data = {
             'phone_number': req['number'],
-            'provider': 'espay'
+            'provider': 'espay',
+            'email': req['email'],
+            'name': req['name'],
+            'bank_code_list': req['bank_code_list']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'delete_va')
 

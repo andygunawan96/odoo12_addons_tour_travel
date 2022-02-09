@@ -1918,7 +1918,7 @@ class IssuedOffline(models.Model):
 
     param_payment = {
         "member": False,
-        "seq_id": "PQR.2211082",
+        "acquirer_seq_id": "PQR.2211082",
         # "member": False,
         # "seq_id": "PQR.0429001"
     }
@@ -2084,12 +2084,12 @@ class IssuedOffline(models.Model):
 
             # COR / POR
             if payment.get('member'):
-                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['seq_id'])],limit=1).id
+                customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', payment['acquirer_seq_id'])],limit=1).id
             # cash / transfer
             else:
                 # get payment acquirer
-                if payment['seq_id']:
-                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['seq_id'])], limit=1)
+                if payment['acquirer_seq_id']:
+                    acquirer_id = self.env['payment.acquirer'].search([('seq_id', '=', payment['acquirer_seq_id'])], limit=1)
                     if not acquirer_id:
                         raise RequestException(1017)
                 else:

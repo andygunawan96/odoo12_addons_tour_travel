@@ -60,10 +60,13 @@
                                         </tree>
                                     </field>
                                 </page>
-                                <page string="Booker Parent">
+                                <page string="Booker Parent (Old)">
                                     <field name="booker_parent_ids"
                                            domain="[('parent_agent_id', '=', agent_id)]"
                                            context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view_customer'}"/>
+                                </page>
+                                <page string="Booker Parent">
+                                    <field name="customer_parent_booker_ids"/>
                                 </page>
                                 <page string="Customer Parent">
                                     <field name="customer_parent_ids"

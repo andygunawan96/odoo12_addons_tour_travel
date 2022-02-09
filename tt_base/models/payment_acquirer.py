@@ -105,7 +105,7 @@ class PaymentAcquirer(models.Model):
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         loss_or_profit,fee, uniq = self.compute_fee(amount,unique)
         return {
-            'seq_id': self.seq_id,
+            'acquirer_seq_id': self.seq_id,
             'name': self.name,
             'account_name': self.account_name or '-',
             'account_number': self.account_number or '',
@@ -137,7 +137,7 @@ class PaymentAcquirer(models.Model):
         payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id.id)
         loss_or_profit, fee, uniq = acq.payment_acquirer_id.compute_fee(unique)
         return {
-            'seq_id': payment_acq.seq_id,
+            'acquirer_seq_id': payment_acq.seq_id,
             'name': payment_acq.name,
             'account_name': acq.payment_acquirer_id.name or '-',
             'account_number': acq.number or '',
@@ -174,7 +174,7 @@ class PaymentAcquirer(models.Model):
         values = []
         for acq in existing_payment_acquirer:
             values.append({
-                "seq_id": acq.seq_id,
+                "acquirer_seq_id": acq.seq_id,
                 "name": acq.name,
                 "type": acq.type
             })
@@ -356,7 +356,7 @@ class PaymentAcquirer(models.Model):
                     'actual_balance': rec.actual_balance,
                     'credit_limit': rec.credit_limit,
                     'currency': rec.currency_id.name,
-                    'seq_id': rec.seq_id,
+                    'acquirer_seq_id': rec.seq_id,
                     'price_component': {
                         'amount': amount,
                         'fee': 0,
@@ -434,7 +434,7 @@ class PaymentAcquirerNumber(models.Model):
 
 
 
-        payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])])
+        payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['acquirer_seq_id'])])
         if payment_acq_obj.account_number: ## Transfer mutasi
             unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'], False)
                                                                              # booking_obj.agent_id.agent_type_id.id == self.env.ref(
@@ -480,7 +480,7 @@ class PaymentAcquirerNumber(models.Model):
                     'va_number': payment_acq_number.va_number,
                     'url': payment_acq_number.url,
                     'bank_name': payment_acq_number.bank_name,
-                    'seq_id': payment_acq_number.payment_acquirer_id.seq_id
+                    'acquirer_seq_id': payment_acq_number.payment_acquirer_id.seq_id
                 }
                 return ERR.get_no_error(res)
             else:
