@@ -617,7 +617,7 @@ class TestSearch(models.Model):
                                        context['agent_id'], cancellation_policy, context.get('hold_date', False))
         # Set Customer Type by Payment
         if req['payment_id']:
-            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', req['payment_id']['seq_id'])])
+            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', req['payment_id']['acquirer_seq_id'])])
         else:
             acq_obj = False
 
