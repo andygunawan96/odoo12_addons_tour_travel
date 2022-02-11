@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-    
+
         <record id="tt_destination_airline_rjs" model="tt.destinations">
             <field name="name">Rejosari</field>
             <field name="code">RJS</field>
@@ -4769,6 +4769,21 @@
             <field name="active">1</field>
         </record>
 
+
+        <record id="tt_destination_airline_ckr" model="tt.destinations">
+            <field name="name">Cikarang</field>
+            <field name="code">CKR</field>
+            <field name="icao">CKR</field>
+            <field name="city">Cikarang</field>
+            <field name="country_id" ref="base.id"/>
+            <field name="provider_type_id" ref="tt_reservation_train.tt_provider_type_train"/>
+            <field name="latitude">0</field>
+            <field name="longitude">0</field>
+            <field name="altitude">0</field>
+            <field name="timezone_hour">7</field>
+            <field name="tz">Asia/Jakarta</field>
+            <field name="active">1</field>
+        </record>
     </data>
 </odoo>
     
