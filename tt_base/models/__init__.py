@@ -18,6 +18,7 @@ from . import res_rate
 from . import res_social_media_type
 from . import tt_employee
 from . import tt_provider
+from . import tt_customer_job_position
 from . import tt_customer
 from . import tt_agent_type
 from . import tt_agent
@@ -29,6 +30,7 @@ from . import tt_routes
 from . import tt_provider_type
 from . import tt_customer_parent
 from . import tt_customer_parent_type
+from . import tt_customer_parent_booker_rel
 from . import error_api
 from . import tt_ssr
 from . import tt_cabin_class

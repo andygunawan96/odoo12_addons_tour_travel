@@ -33,6 +33,9 @@ class TtCustomerParent(models.Model):
     social_media_ids = fields.One2many('social.media.detail', 'customer_parent_id', 'Social Media')
     customer_ids = fields.Many2many('tt.customer', 'tt_customer_customer_parent_rel','customer_parent_id','customer_id','Customer')
     booker_ids = fields.Many2many('tt.customer', 'tt_customer_booker_customer_parent_rel', 'customer_parent_id','customer_id', 'Booker')
+    booker_customer_ids = fields.One2many('tt.customer.parent.booker.rel', 'customer_parent_id', 'Booker')
+    job_hierarchy_ids = fields.One2many('tt.customer.job.hierarchy', 'customer_parent_id', 'Job Hierarchy')
+    job_position_ids = fields.One2many('tt.customer.job.position', 'customer_parent_id', 'Job Positions')
     user_ids = fields.One2many('res.users', 'customer_parent_id', 'User')
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
@@ -166,6 +169,26 @@ class TtCustomerParent(models.Model):
                 'customer_parent_type_name': cor_data[0].customer_parent_type_id.name,
                 'customer_parent_type_code': cor_data[0].customer_parent_type_id.code
             }
+            booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', cor_data[0].id), ('customer_id', '=', cust_data[0].id)], limit=1)
+            if booker_obj:
+                if booker_obj.job_position_id:
+                    booker_job = booker_obj.job_position_id
+                    res.update({
+                        'job_position_name': booker_job.name,
+                        'job_position_sequence': booker_job.sequence,
+                        'job_position_is_request_required': booker_job.is_request_required,
+                        'job_position_carrier_access_type': booker_job.carrier_access_type,
+                        'job_position_carrier_list': booker_job.get_carrier_code_list(),
+                        'job_position_currency_code': booker_job.currency_id.name,
+                        'job_position_max_price': booker_job.max_price,
+                        'job_position_max_hotel_stars': booker_job.max_hotel_stars,
+                        'job_position_max_cabin_class': booker_job.max_cabin_class
+                    })
+                    if booker_job.hierarchy_id:
+                        res.update({
+                            'hierarchy_sequence': booker_job.hierarchy_id.sequence,
+                            'hierarchy_min_approve_amt': booker_job.hierarchy_id.min_approve_amt,
+                        })
             return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())

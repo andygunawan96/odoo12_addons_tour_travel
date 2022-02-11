@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Top Menu -->
+        <!-- Airline -->
+        <menuitem id="top_transaction_reservation_request"
+                  parent="tt_base.main_transaction"
+                  name="Reservation Requests"
+                  sequence="35"
+                  groups="base.group_user"/>
+    </data>
+</odoo>

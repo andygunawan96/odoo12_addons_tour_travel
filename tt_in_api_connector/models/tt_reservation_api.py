@@ -13,6 +13,8 @@ class TtReservationApiCon(models.Model):
             res = table_obj.get_booking_b2c_api(data,context)
         elif action == 'cancel_payment_method_api':
             res = table_obj.cancel_payment(data,context)
+        elif action == 'create_reservation_issued_request_api':
+            res = table_obj.create_reservation_issued_request_api(data,context)
         else:
             raise RequestException(999)
 
