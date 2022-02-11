@@ -1000,7 +1000,7 @@ class HotelReservation(models.Model):
                                        context['agent_id'], cancellation_policy, context.get('hold_date', False))
         # Set Customer Type by Payment
         if data['payment_id']:
-            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_id']['seq_id'])])
+            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_id']['acquirer_seq_id'])])
         else:
             acq_obj = False
 
@@ -1015,7 +1015,7 @@ class HotelReservation(models.Model):
                 customer_parent_id = False
         else:
             customer_parent_id = self.env['tt.customer.parent'].search(
-                [('seq_id', '=', data['payment_id']['seq_id'])], limit=1).id
+                [('seq_id', '=', data['payment_id']['acquirer_seq_id'])], limit=1).id
 
         vals.update({
             'customer_parent_id': customer_parent_id,
