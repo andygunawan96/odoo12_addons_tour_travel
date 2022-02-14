@@ -354,6 +354,7 @@
                 <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
                 <field name="carrier_name"/>
                 <field name="test_datetime"/>
+                <field name="adult"/>
                 <field name="booked_uid"/>
                 <field name="date"/>
                 <field name="hold_date"/>
