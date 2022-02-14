@@ -200,6 +200,7 @@ class TtReconcileTransactionLines(models.Model):
                              ('admin_bank','Admin Fee Bank'),
                              ('refund','Refund'),
                              ('reissue','ReIssue'),
+                             ('reissue_ssr','ReIssue SSR'),
                              ('reversal','Reversal'),
                              ('other','Other')],'Type', readonly=True)
     booking_time = fields.Datetime('Booking Time',readonly=True)
@@ -236,6 +237,7 @@ class TtReconcileTransactionLines(models.Model):
         # except:
         form_id = self.env['ir.ui.view'].search([('type', '=', 'form'), ('model', '=', self.res_model)], limit=1)
         form_id = form_id[0] if form_id else False
+
 
         return {
             'type': 'ir.actions.act_window',
