@@ -1155,7 +1155,7 @@
                         <t t-foreach="doc.timeslot_ids" t-as="line">
                             <tr>
                                 <td><span t-field="doc.name"/></td>
-                                <td><span t-field="doc.provider_id[0].carrier_id.name"/></td>
+                                <td><span t-field="doc.provider_booking_ids[0].carrier_id.name"/></td>
                                 <t t-if="line.timeslot_type == 'drive_thru'">
                                     <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (DRIVE THRU 08.00 - 17.00 WIB)</td>
                                 </t>
@@ -1228,7 +1228,7 @@
                         <t t-foreach="doc.timeslot_ids" t-as="line">
                             <tr>
                                 <td><span t-field="doc.name"/></td>
-                                <td></td>
+                                <td><span t-field="doc.provider_booking_ids[0].carrier_id.name"/></td>
                                 <t t-if="line.timeslot_type == 'drive_thru'">
                                     <t t-if="doc.provider_booking_ids[0].carrier_id.code in ['NHDTKPCRR', 'NHDTSPCRR', 'NHDTMPCRR']">
                                         <td><span t-esc="line.datetimeslot.astimezone(printout_tz).strftime('%Y-%m-%d')"/> (24 hours)</td>
