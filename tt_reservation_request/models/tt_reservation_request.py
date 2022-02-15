@@ -83,6 +83,7 @@ class TtReservationRequest(models.Model):
         final_dict = {
             'request_number': self.name,
             'reservation_order_number': resv_obj and resv_obj.name or '',
+            'reservation_data': resv_obj and resv_obj.to_dict() or {},
             'provider_type': resv_obj and resv_obj.provider_type_id.name or '',
             'provider_type_code': resv_obj and resv_obj.provider_type_id.code or '',
             'booker': self.booker_id.to_dict(),
