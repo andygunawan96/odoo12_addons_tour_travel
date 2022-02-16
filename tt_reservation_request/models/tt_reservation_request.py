@@ -160,6 +160,9 @@ class TtReservationRequest(models.Model):
                 return ERR.get_error(1003)
 
             if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_hierarchy_sequence'):
+                for rec in request_obj.approval_ids:
+                    if rec.approved_uid.id == int(context['co_uid']):
+                        return ERR.get_error(1023, additional_message='You have already approved this request.')
                 request_obj.action_approve_issued_request(context)
             else:
                 return ERR.get_error(1023)
