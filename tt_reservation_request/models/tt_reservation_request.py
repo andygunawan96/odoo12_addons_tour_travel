@@ -104,15 +104,18 @@ class TtReservationRequest(models.Model):
 
     def get_issued_request_api(self,req,context):
         try:
-            if req.get('request_id'):
-                request_obj = self.browse(int(req['request_id']))
-            else:
-                request_obj = self.search([('name', '=', req['request_number'])], limit=1)
-            if not request_obj:
-                return ERR.get_error(1003)
+            if context.get('co_customer_parent_id') and context.get('co_hierarchy_sequence'):
+                if req.get('request_id'):
+                    request_obj = self.browse(int(req['request_id']))
+                else:
+                    request_obj = self.search([('name', '=', req['request_number'])], limit=1)
+                if not request_obj:
+                    return ERR.get_error(1003)
 
-            res = request_obj.to_dict()
-            return ERR.get_no_error(res)
+                res = request_obj.to_dict()
+                return ERR.get_no_error(res)
+            else:
+                return ERR.get_error(1023)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
