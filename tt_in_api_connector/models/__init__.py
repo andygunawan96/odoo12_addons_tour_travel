@@ -7,6 +7,7 @@ from . import tt_top_up_quota
 from . import tt_upload_center_api
 from . import tt_frontend_banner_api
 from . import tt_issued_offline
+from . import tt_group_booking
 from . import tt_visa_api
 from . import tt_passport_api
 from . import tt_agent_registration

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_split_reservation_wizard_form_view" model="ir.ui.view">
+            <field name="name">tt.split.reservation.wizard.form.view</field>
+            <field name="model">tt.split.reservation.groupbooking.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Split Reservation Wizard">
+                    <group>
+                        <field name="res_id"/>
+                        <field name="referenced_document"/>
+                        <field name="total_price"/>
+                        <field name="new_commission"/>
+                        <field name="vendor_amount"/>
+                        <field name="new_pnr"/>
+                        <field name="new_pnr_text"/>
+                        <field name="provider_ids"/>
+                        <field name="passenger_ids"/>
+                    </group>
+                    <footer>
+                        <button name="submit_split_reservation" string="Split" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_split_reservation_groupbooking_wizard_action_view" model="ir.actions.act_window">
+            <field name="name">tt.split.reservation.wizard.action.view</field>
+            <field name="res_model">tt.split.reservation.groupbooking.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

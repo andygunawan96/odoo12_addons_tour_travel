@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout">
+<!--        <t t-if="not o and doc">-->
+<!--            <t t-set="o" t-value="doc"/>-->
+<!--        </t>-->
+<!--        <t t-if="o and 'company_id' in o">-->
+<!--            <t t-set="company" t-value="o.company_id"/>-->
+<!--        </t>-->
+<!--        <t t-if="not o or not 'company_id' in o">-->
+<!--            <t t-set="company" t-value="res_company"/>-->
+<!--        </t>-->
+
+        <t call="tt_reservation_groupbooking.external_layout_header"/>
+        <t raw="0"/>
+    </template>
+
+    <template id="external_layout_header">
+        <div class="header">
+            <p>test</p>
+            <div class="row">
+                <div class="col-xs-2">
+                    <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo" style="max-height: 85px;"/>
+                </div>
+                <div class="col-xs-10">
+                    <ul class="list-inline" style="margin-bottom:2px; font-size:12px;">
+                        <li style="vertical-align: bottom;">
+                            <br/>
+                            <strong><span t-esc="company.name"/></strong>
+                            <br/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!--RODEX AIRLINE INVOICE-->
+    <template id="printout_invoice_template">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="web.html_container">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-2">
+                            <img t-if="o.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(o.agent_id.logo)" height="120" border="1" width="120" style="max-height:85px; max_width:110px"/>
+                        </div>
+                        <div class="col-10">
+                            <strong><span t-field="o.agent_id.name"/></strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="article" style="margin-top:15px">
+                    <div class="row">
+                        <div class="col-7">
+                            <strong>
+                                <span t-if="o.state == 'draft'">Draft Invoice :</span>  <!--Jika state invoice = draft-->
+                                <span t-if="o.state not in ('draft', 'cancel')">Invoice :</span>
+                                <span t-field="o.name"/>
+                            </strong>
+                        </div>
+                        <div class="col-5">
+                            <div t-field="o.agent_id.name"/>
+                            <t t-if="o.agent_id.address_ids">
+                                <div t-field="o.agent_id.address_ids[0].address"/>
+                                <div t-field="o.agent_id.address_ids[0].city_id.name"/>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:20px">
+                        <div class="col-2">
+                            <strong>Invoice Date:</strong>
+                           <t t-if="o.confirm_date">
+                               <p t-field="o.confirm_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
+                           </t>
+                           <t t-if="not o.confirm_date">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-2">
+                           <strong>Issued Date:</strong>
+                           <t t-if="o.validate_date">
+                               <p t-field="o.validate_date" t-field-options="{&quot;format&quot;: &quot;dd-MM-yyyy&quot;}"/>
+                           </t>
+                           <t t-if="not o.validate_date">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-2">
+                           <strong>Issued by:</strong>
+                           <t t-if="o.sudo().issued_uid">
+                               <p t-field="o.sudo().issued_uid.name"/>
+                           </t>
+                           <t t-if="not o.sudo().issued_uid">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-2">
+                           <strong>Customer:</strong>
+                           <t t-if="o.customer_parent_id.name">
+                               <p t-field="o.customer_parent_id.name"/>
+                           </t>
+                           <t t-if="not o.customer_parent_id.name">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                        <div class="col-2">
+                           <strong>Booker:</strong>
+                           <t t-if="o.booker_id">
+                               <p t-field="o.booker_id.sudo().name"/>
+                           </t>
+                           <t t-if="not o.booker_id">
+                               <p style="color: white;">...</p>
+                           </t>
+                        </div>
+                    </div>
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Service Type</th>
+                                <th>Service Description</th>
+                                <th class="text-right">Unit Price</th>
+                                <th class="text-right">Qty</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr foreach="o.sale_service_charge_ids" t-as="rec">
+                                <td/>
+                                <td>
+                                    <t t-raw="rec.description"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="rec.total" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="footer">
+                    <p>This is footer</p>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_invoice">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="22"/>
+        <t t-call="tt_reservation_groupbooking.printout_invoice_template"/>
+    </template>
+</odoo>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_ticket_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.ticket.groupbooking.view.form</field>
+            <field name="model">tt.ticket.groupbooking</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="booking_id" invisible="1"/>
+                            <field name="departure_date" readonly="1"/>
+                            <field name="arrival_date" readonly="1"/>
+                            <field name="type"/>
+                            <field name="provider_id"/>
+                            <field name="segment_ids"/>
+                            <field name="fare_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_ticket_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.ticket.groupbooking.view.tree</field>
+            <field name="model">tt.ticket.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="booking_id" invisible="1"/>
+                    <field name="departure_date"/>
+                    <field name="arrival_date"/>
+                    <field name="type"/>
+                    <field name="amount_list"/>
+                    <!--<field name="list_of_amount"/>-->
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_segment_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.segment.groupbooking.view.form</field>
+            <field name="model">tt.segment.groupbooking</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="ticket_id" invisible="1"/>
+                            <field name="origin_id" readonly="1"/>
+                            <field name="destination_id" readonly="1"/>
+                            <field name="departure_date" readonly="1"/>
+                            <field name="arrival_date" readonly="1"/>
+                            <field name="carrier_code_id"/>
+                            <field name="carrier_number"/>
+                            <field name="leg_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_segment_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.segment.groupbooking.view.tree</field>
+            <field name="model">tt.segment.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ticket_id" invisible="1"/>
+                    <field name="origin_id"/>
+                    <field name="destination_id"/>
+                    <field name="departure_date"/>
+                    <field name="arrival_date"/>
+                    <field name="carrier_code_id"/>
+                    <field name="carrier_number"/>
+                    <!--<field name="list_of_amount"/>-->
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_leg_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.leg.groupbooking.view.form</field>
+            <field name="model">tt.leg.groupbooking</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="segment_id" invisible="1"/>
+                            <field name="origin_id"/>
+                            <field name="destination_id"/>
+                            <field name="departure_date"/>
+                            <field name="arrival_date"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_leg_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.leg.groupbooking.view.tree</field>
+            <field name="model">tt.leg.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="segment_id" invisible="1"/>
+                    <field name="origin_id"/>
+                    <field name="destination_id"/>
+                    <field name="departure_date"/>
+                    <field name="arrival_date"/>
+                    <!--<field name="list_of_amount"/>-->
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_fare_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.fare.groupbooking.view.form</field>
+            <field name="model">tt.fare.groupbooking</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="ticket_id" invisible="1"/>
+                            <field name="seq_id"/>
+                            <field name="pax_price_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_fare_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.fare.groupbooking.view.tree</field>
+            <field name="model">tt.fare.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ticket_id" invisible="1"/>
+                    <field name="seq_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_paxprice_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.paxprice.groupbooking.view.form</field>
+            <field name="model">tt.paxprice.groupbooking</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <group string="Prices">
+                                <field name="fare_id" invisible="1"/>
+                                <field name="pax_type"/>
+                                <field name="currency_id"/>
+                                <field name="amount"/>
+                                <field name="commission"/>
+                            </group>
+
+                            <group string="Service Charges">
+                                <field name="cost_service_charge_ids" readonly="1">
+                                    <tree>
+                                        <field name="charge_code"/>
+                                        <field name="charge_type"/>
+                                        <field name="pax_type"/>
+                                        <field name="pax_count"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="amount"/>
+                                        <field name="total"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_paxprice_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.paxprice.groupbooking.view.tree</field>
+            <field name="model">tt.paxprice.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="fare_id" invisible="1"/>
+                    <field name="pax_type"/>
+                    <field name="currency_id"/>
+                    <field name="amount"/>
+                    <field name="commission"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>
