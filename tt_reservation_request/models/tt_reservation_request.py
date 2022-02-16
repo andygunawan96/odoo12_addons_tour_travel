@@ -82,7 +82,7 @@ class TtReservationRequest(models.Model):
         }
         final_dict = {
             'request_number': self.name,
-            'reservation_order_number': resv_obj and resv_obj.name or '',
+            'reservation_data': resv_obj and resv_obj.to_dict() or {},
             'provider_type': resv_obj and resv_obj.provider_type_id.name or '',
             'provider_type_code': resv_obj and resv_obj.provider_type_id.code or '',
             'booker': self.booker_id.to_dict(),
@@ -104,15 +104,18 @@ class TtReservationRequest(models.Model):
 
     def get_issued_request_api(self,req,context):
         try:
-            if req.get('request_id'):
-                request_obj = self.browse(int(req['request_id']))
-            else:
-                request_obj = self.search([('name', '=', req['request_number'])], limit=1)
-            if not request_obj:
-                return ERR.get_error(1003)
+            if context.get('co_customer_parent_id') and context.get('co_hierarchy_sequence'):
+                if req.get('request_id'):
+                    request_obj = self.browse(int(req['request_id']))
+                else:
+                    request_obj = self.search([('name', '=', req['request_number'])], limit=1)
+                if not request_obj:
+                    return ERR.get_error(1003)
 
-            res = request_obj.to_dict()
-            return ERR.get_no_error(res)
+                res = request_obj.to_dict()
+                return ERR.get_no_error(res)
+            else:
+                return ERR.get_error(1023)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
@@ -157,6 +160,9 @@ class TtReservationRequest(models.Model):
                 return ERR.get_error(1003)
 
             if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_hierarchy_sequence'):
+                for rec in request_obj.approval_ids:
+                    if rec.approved_uid.id == int(context['co_uid']):
+                        return ERR.get_error(1023, additional_message='You have already approved this request.')
                 request_obj.action_approve_issued_request(context)
             else:
                 return ERR.get_error(1023)
