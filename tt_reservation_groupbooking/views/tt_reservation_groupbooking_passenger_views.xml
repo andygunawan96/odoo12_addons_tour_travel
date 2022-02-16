@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_passenger_groupbooking_inherit_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.passenger.groupbooking.inherit.form.view</field>
+        <field name="model">tt.reservation.passenger.groupbooking</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="tt_reservation.tt_reservation_passenger_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='basic_info']" position="after">
+                <separator string="Service Charges"/>
+                <field name="cost_service_charge_ids"
+                context="{
+                    'form_view_ref': 'tt_reservation_groupbooking.tt_service_charge_groupbooking_inherit_form_view'
+                }"/>
+                <separator string="Channel Repricing"/>
+                <field name="channel_service_charge_ids"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
