@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_reservation_groupbooking_sales_form_view" model="ir.ui.view">
+        <field name="name">tt.reservation.groupbooking.sales.form.view</field>
+        <field name="model">tt.reservation.groupbooking</field>
+        <field name="inherit_id" ref="tt_reservation_groupbooking.tt_reservation_groupbooking_form_view"/>
+        <field name="arch" type="xml">
+
+<!--            <field name="display_mobile" position="after">-->
+<!--                <field name="state_invoice"/>-->
+<!--            </field>-->
+            <xpath expr="//page[@name='prices']" position="after">
+                <page string="Agent Invoice" name="agent_invoice">
+                    <field name="invoice_line_ids" readonly="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="invoice_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
