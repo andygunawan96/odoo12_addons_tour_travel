@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="issued_groupbooking_view_search" model="ir.ui.view">
+            <field name="name">tt.reservation.groupbooking.view.search</field>
+            <field name="model">tt.reservation.groupbooking</field>
+            <field name="arch" type="xml">
+                <search string="Search Issued Group Booking">
+                    <!--                   <field name="name" string="string" domain="[()]"/>-->
+                    <field name="name"/>
+                    <field name="pnr"/>
+                    <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <!--                    <field name="provider"/>-->
+                    <field name="contact_id"/>
+                    <field name="passenger_ids"/>
+                    <group>
+                        <filter string="All" name="all"/>
+                        <filter string="Draft" name="draft" domain="[('state_groupbooking','=','draft')]"/>
+                        <filter string="Confirm" name="confirm" domain="[('state_groupbooking','=','confirm')]"/>
+                        <filter string="Sent" name="sent" domain="[('state_groupbooking','=','sent')]"/>
+                        <filter string="Validate" name="validate" domain="[('state_groupbooking','=','validate')]"/>
+                        <filter string="Done" name="done" domain="[('state_groupbooking','=','done')]"/>
+                        <filter string="Canceled/Expired/Refund" name="canceled_expired_refund" domain="['|', '|', ('state_groupbooking','=','cancel'),('state_groupbooking','=','expired'),('state_groupbooking','=','refund')]"/>
+                    </group>
+                    <separator/>
+                    <group>
+                        <filter string="Not Reconciled" name="reconciled" domain="[('reconcile_state','=','not_reconciled')]"/>
+                        <filter string="Partial Reconciled" name="reconciled" domain="[('reconcile_state','=','partial')]"/>
+                        <filter string="Reconciled" name="reconciled" domain="[('reconcile_state','=','reconciled')]"/>
+                    </group>
+                    <separator/>
+                    <filter string="Today" name="today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                    <filter string="Yesterday" name="yesterday"
+                            domain="[
+                                ('date', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                            ]"/>
+                    <filter name="week" string="This Week"
+                            domain="[
+                                '&amp;',
+                                ('date', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                    <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                    <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                        <filter string="Agent Type" name="agent_type_id" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
+                        <filter string="Customer Parent" name="customer_parent_id" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                        <filter string="State Group Booking" name="state_groupbooking" domain="[]" context="{'group_by':'state_groupbooking'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="tt_reservation_groupbooking_form_view" model="ir.ui.view">
+            <field name="name">tt.reservation.groupbooking.view.form</field>
+            <field name="model">tt.reservation.groupbooking</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="tt_reservation.tt_reservation_form_views"/>
+            <field name="arch" type="xml">
+                <header>
+                    <button string="Set to Sent" name="action_sent_groupbooking" groups="tt_base.group_tt_tour_travel" type="object"/>
+                    <button string="Set to Issued Installment" name="action_issued_installment_groupbooking" groups="tt_base.group_tt_tour_travel" type="object"/>
+                    <button string="Set to Done" name="action_done_groupbooking" groups="tt_base.group_tt_tour_travel" type="object"/>
+                    <field name="state_groupbooking" widget="statusbar" statusbar_visible="draft,confirm,booked,sent,issued,issued_installment,done"/>
+                    <!--<field name="state" invisible="1"/>-->
+                </header>
+                <xpath expr="//group[@name='paxgroup']" position="before">
+                    <separator string="Information"/>
+                    <group>
+                        <field name="groupbooking_provider_type" required="1" domain="[('code', 'not in', ['tour','visa','passport','groupbooking','cruise'])]" attrs="{'readonly': [('state', 'not in', ['draft'])]}"/>
+                        <field name="groupbooking_provider_type_name" attrs="{'invisible': [('groupbooking_provider_type', 'not in', ['other'])]}"/>
+                        <field name="carrier_code_id" />
+                        <field name="origin_id" />
+                        <field name="destination_id" />
+                        <field name="journey_type" />
+                        <field name="cabin_class" />
+
+                        <field name="departure_date" />
+                        <field name="return_date" attrs="{'invisible': [('journey_type', '!=', 'rt')]}"/>
+                        <field name="price_pick_departure_id" />
+                        <field name="price_pick_return_id" attrs="{'invisible': [('journey_type', '!=', 'rt')]}"/>
+                    </group>
+                    <group>
+                        <field name="payment_rules_id" />
+                    </group>
+                </xpath>
+                <xpath expr="//page[@name='anchor']" position="before">
+                    <page string="Ticket List Selection">
+                        <field name="ticket_list_ids" attrs="{'readonly': [('state', 'not in', ['draft', 'booked'])]}"/>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='anchor']" position="before">
+                    <page string="Passengers">
+                        <field name="passenger_ids">
+                            <tree>
+                                <field name="title"/>
+                                <field name="first_name"/>
+                                <field name="last_name"/>
+                                <field name="gender"/>
+                                <field name="birth_date"/>
+                                <field name="nationality_id"/>
+                                <field name="identity_type"/>
+                                <field name="identity_number"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+                <xpath expr="//page[@name='anchor']" position="before">
+                    <page string="Prices" name="prices">
+                        <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
+                        <!--                    <button name="test_error" type="object" string="test_error"/>-->
+                        <field name="sale_service_charge_ids" context="{'form_view_ref':'tt_reservation_bus.tt_service_charge_bus_inherit_form_view'}">
+                            <tree>
+                                <field name="charge_code"/>
+                                <field name="charge_type"/>
+                                <field name="pax_type"/>
+                                <field name="pax_count"/>
+                                <field name="amount"/>
+                                <field name="total"/>
+                                <field name="description"/>
+                                <field name="currency_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+                <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Installments" name="installment_invoice" attrs="{'invisible': [('state_groupbooking', 'not in', ['issued','issued_installment','done'])]}">
+                    <!--                    <button name="calculate_service_charge" type="object" string="calc"/>-->
+                    <!--                    <button name="test_error" type="object" string="test_error"/>-->
+                    <field name="installment_invoice_ids">
+                        <tree create="false">
+                            <field name="currency_id"/>
+                            <field name="amount"/>
+                            <field name="due_date"/>
+                            <field name="description"/>
+                            <field name="agent_invoice_id"/>
+                            <field name="state_invoice"/>
+                        </tree>
+                        <form create="false">
+                            <header>
+                                <button string="Pay Now" name="action_pay_now" type="object" attrs="{'invisible': [('state_invoice', 'not in', ['open', 'trouble'])]}"/>
+                                <button string="Set to Open" name="action_open" type="object" attrs="{'invisible': [('state_invoice', '=', 'open')]}"/>
+                                <button string="Set to Done" name="action_done" type="object" attrs="{'invisible': [('state_invoice', 'in', ['done', 'cancel'])]}"/>
+                                <button string="Cancel" name="action_cancel" type="object" attrs="{'invisible': [('state_invoice', '=', 'cancel')]}"/>
+                            </header>
+                            <group>
+                                <group>
+                                    <field name="agent_invoice_id"/>
+                                    <field name="description"/>
+                                    <field name="currency_id"/>
+                                    <field name="amount"/>
+                                    <field name="due_date"/>
+                                    <field name="state_invoice"/>
+                                </group>
+                                <group>
+                                    <field name="booking_id"/>
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+
+                <xpath expr="//page[@name='anchor']" position="before">
+                    <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
+                        <field name="provider_booking_ids"/>
+                        <!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;<field name="provider" groups="tt_base.group_tt_tour_travel_operator"/>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;<field name="origin"/>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;<field name="destination"/>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;<field name="departure_date"/>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;<field name="arrival_date"/>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;&lt;!&ndash;<field name="total"/>&ndash;&gt;&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;<field name="state"/>&ndash;&gt;-->
+                        <!--                        &lt;!&ndash;</tree>&ndash;&gt;-->
+                        <!--                    </field>-->
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="tt_reservation_groupbooking_view_tree">
+            <field name="name">tt.reservation.groupbooking.view.tree</field>
+            <field name="model">tt.reservation.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <!--                    <button type="object" string="Create Issued Group Booking" name="create_booking_reservation_groupbooking_api"/>-->
+                    <field name="name"/>
+                    <field name="groupbooking_provider_type"/>
+                    <field name="agent_id"/>
+                    <field name="pnr"/>
+                    <field name="carrier_name"/>
+                    <field name="confirm_uid"/>
+                    <field name="confirm_date"/>
+                    <field name="create_date"/>
+                    <field name="hold_date" string="Time Limit"/>
+                    <!--                    <field name="expired_date"/>-->
+                    <field name="state_groupbooking" string="State Group Booking"/>
+                    <field name="state" invisible="1"/>
+                    <field name="reconcile_state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_groupbooking_all_action">
+            <field name="name">Reservation Group Booking All</field>
+            <field name="res_model">tt.reservation.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_form_view',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_view_tree',
+                'search_default_all':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_groupbooking_draft_action">
+            <field name="name">Reservation Group Booking Draft</field>
+            <field name="res_model">tt.reservation.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_form_view',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_view_tree',
+                'search_default_draft':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_groupbooking_confirm_action">
+            <field name="name">Reservation Group Booking Confirm</field>
+            <field name="res_model">tt.reservation.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_form_view',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_view_tree',
+                'search_default_confirm':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_groupbooking_sent_action">
+            <field name="name">Reservation Group Booking Sent</field>
+            <field name="res_model">tt.reservation.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_form_view',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_view_tree',
+                'search_default_sent':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_groupbooking_validate_action">
+            <field name="name">Reservation Group Booking Validate</field>
+            <field name="res_model">tt.reservation.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_form_view',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_view_tree',
+                'search_default_validate':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_groupbooking_done_action">
+            <field name="name">Reservation Group Booking Done</field>
+            <field name="res_model">tt.reservation.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_form_view',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_view_tree',
+                'search_default_done':1
+                }
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="issued_groupbooking_cancel_expired_refund_action">
+            <field name="name">Reservation Group Booking Cancel Expired Refund</field>
+            <field name="res_model">tt.reservation.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="issued_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_form_view',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_reservation_groupbooking_view_tree',
+                'search_default_canceled_expired_refund':1
+                }
+            </field>
+        </record>
+
+        <menuitem id="submenu_issued_groupbooking_side_menu_all" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="ALL" sequence='1' action="issued_groupbooking_all_action"/>
+
+        <menuitem id="submenu_issued_groupbooking_side_menu_draft" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="Draft" sequence='2' action="issued_groupbooking_draft_action"/>
+
+        <menuitem id="submenu_issued_groupbooking_side_menu_confirm" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="Confirm" sequence='3' action="issued_groupbooking_confirm_action"/>
+
+        <menuitem id="submenu_issued_groupbooking_side_menu_sent" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="Sent" sequence='4' action="issued_groupbooking_sent_action"/>
+
+        <menuitem id="submenu_issued_groupbooking_side_menu_validate" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="Paid" sequence='5' action="issued_groupbooking_validate_action"/>
+
+        <menuitem id="submenu_issued_groupbooking_side_menu_done" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="Done" sequence='6' action="issued_groupbooking_done_action"/>
+
+        <menuitem id="submenu_issued_groupbooking_side_menu_cancel_expired_refund" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="Cancel/Expired/Refund" sequence='7' action="issued_groupbooking_cancel_expired_refund_action"/>
+
+    </data>
+</odoo>

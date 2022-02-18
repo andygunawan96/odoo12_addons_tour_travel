@@ -349,6 +349,8 @@ class TtReportDashboard(models.Model):
             res = self.get_report_overall_mitrakeluarga(data, is_ho, context)
         elif type == 'overall_sentramedika':
             res = self.get_report_overall_sentramedika(data, is_ho, context)
+        elif type == 'overall_groupbooking':
+            res = self.get_report_overall_groupbooking(data, is_ho, context)
 
         # under this section is old or test function, left it there for future reference
         elif type == 'airline':

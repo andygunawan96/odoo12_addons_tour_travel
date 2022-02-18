@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_provider_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.provider.groupbooking.view.form></field>
+            <field name="model">tt.provider.groupbooking</field>
+            <field name="arch" type="xml">
+                <form edit="false" create="false">
+                    <header>
+                        <field name="state_groupbooking" invisible="1"/>
+                        <button string="Set to PNR" name="%(tt_reservation_groupbooking.action_set_pnr_wizard_action_view)d" groups="tt_base.group_tt_tour_travel" type="action"
+                            context="{
+                                'default_res_id': id,
+                            }"
+                            attrs="{'invisible': [('pnr', 'not in', ['departure','return'])]}"
+                        />
+                        <button string="Generate Letter of Guarantee" class="oe_highlight" name="generate_lg" type="object" attrs="{'invisible': ['|', ('is_lg_required', '!=', True), ('state_groupbooking', 'not in', ['validate', 'done'])]}" groups="base.group_system,tt_base.group_lg_po_level_4"/>
+                        <button string="Generate Purchase Order" class="oe_highlight" name="generate_po" type="object" attrs="{'invisible': ['|', ('is_po_required', '!=', True), ('state_groupbooking', 'not in', ['validate', 'done'])]}" groups="base.group_system,tt_base.group_lg_po_level_4"/>
+                        <field name="state" readonly="1" widget="statusbar" statusbar_visible="draft,booked,issued"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="is_ledger_created" readonly="1"/>
+                                <field name="booking_id" readonly="1"/>
+                                <field name="pnr" readonly="1"/>
+                                <field name="provider_id" readonly="1"/>
+                                <field name="total_price" readonly="1"/>
+                                <field name="reconcile_line_id" readonly="1"/>
+                                <field name="reconcile_time" readonly="1"/>
+                                <field name="fare_id" readonly="1"/>
+                                <field name="rule_ids" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="confirm_uid" readonly="1"/>
+                                <field name="confirm_date" readonly="1"/>
+                                <field name="sent_uid" readonly="1"/>
+                                <field name="sent_date" readonly="1"/>
+                                <field name="issued_uid" readonly="1"/>
+                                <field name="issued_date" readonly="1"/>
+                                <field name="hold_date" readonly="1"/>
+                                <field name="expired_date" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Service Charges">
+                            <field name="cost_service_charge_ids" readonly="1" context="{'form_view_ref':'tt_reservation_groupbooking.tt_service_charge_groupbooking_inherit_form_view'}">
+                                <tree>
+                                    <field name="charge_code"/>
+                                    <field name="charge_type"/>
+                                    <field name="pax_type"/>
+                                    <field name="pax_count"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="amount"/>
+                                    <field name="total"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <field name="is_lg_required" invisible="1"/>
+                        <field name="is_po_required" invisible="1"/>
+                        <group string="Letter of Guarantee(s) / Purchase Order(s)" attrs="{'invisible': [('is_lg_required', '!=', True), ('is_po_required', '!=', True)]}">
+                            <field name="letter_of_guarantee_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_provider_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.provider.groupbooking.view.tree</field>
+            <field name="model">tt.provider.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="pnr"/>
+                    <field name="state" string="Status"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

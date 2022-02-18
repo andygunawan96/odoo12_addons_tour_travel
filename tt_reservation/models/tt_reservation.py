@@ -891,6 +891,8 @@ class TtReservation(models.Model):
         try:
             for rec in self.provider_booking_ids.filtered(lambda x: x.state != 'cancel2'):
                 rec.action_expired()
+            for rec in self.issued_request_ids:
+                rec.action_cancel()
         except:
             _logger.error("provider type %s failed to expire vendor" % (self._name))
 

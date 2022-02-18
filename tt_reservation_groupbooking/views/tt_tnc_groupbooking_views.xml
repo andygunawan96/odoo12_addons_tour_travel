@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tnc_groupbooking_view_search" model="ir.ui.view">
+            <field name="name">tt.tnc.groupbooking.view.search</field>
+            <field name="model">tt.tnc.groupbooking</field>
+            <field name="arch" type="xml">
+                <search string="Search Term n Condition Group Booking">
+
+                </search>
+            </field>
+        </record>
+
+        <record id="tt_tnc_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.tnc.groupbooking.view.form</field>
+            <field name="model">tt.tnc.groupbooking</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="title"/>
+                            <field name="provider_type_id"/>
+                            <field name="carrier_access_type"/>
+                            <field name="carrier_ids"/>
+                            <field name="cabin_class_access_type"/>
+                            <field name="cabin_class_ids"/>
+                            <field name="description_ids"/>
+                            <field name="active"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_tnc_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.tnc.groupbooking.view.tree</field>
+            <field name="model">tt.tnc.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="title"/>
+                    <field name="provider_type_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_tnc_description_groupbooking_view_form" model="ir.ui.view">
+            <field name="name">tt.tnc.description.groupbooking.view.form</field>
+            <field name="model">tt.tnc.description.groupbooking</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <group>
+                            <field name="tnc_id" invisible="1"/>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_tnc_description_groupbooking_view_tree" model="ir.ui.view">
+            <field name="name">tt.tnc.description.groupbooking.view.tree</field>
+            <field name="model">tt.tnc.description.groupbooking</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="groupbooking_tnc_action">
+            <field name="name">Term n Condition Group Booking</field>
+            <field name="res_model">tt.tnc.groupbooking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="tnc_groupbooking_view_search"/>
+            <field name="context">
+                {
+                'form_view_ref': 'tt_reservation_groupbooking.tt_tnc_groupbooking_view_form',
+                'tree_view_ref': 'tt_reservation_groupbooking.tt_tnc_groupbooking_view_tree',
+                }
+            </field>
+        </record>
+
+        <menuitem id="submenu_term_n_conditions_groupbooking_menu_all" parent="tt_reservation_groupbooking.menu_groupbooking_order"
+                  name="Term n Condition" sequence='12' action="groupbooking_tnc_action"/>
+
+    </data>
+</odoo>

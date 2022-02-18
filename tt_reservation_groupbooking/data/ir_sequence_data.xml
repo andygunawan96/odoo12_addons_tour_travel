@@ -1,0 +1,33 @@
+<odoo>
+    <data noupdate="1">
+        <record id="request_groupbooking_seq" model="ir.sequence">
+            <field name="name">Reservation Group Booking</field>
+            <field name="code">tt.reservation.groupbooking</field>
+            <field name="prefix">GB.%(range_year)s%(range_month)s%(range_day)s</field>
+            <field eval="3" name="padding"/>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+        </record>
+
+        <record id="request_groupbooking_fare_seq" model="ir.sequence">
+            <field name="name">Fare Group Booking</field>
+            <field name="code">tt.fare.groupbooking</field>
+            <field name="prefix">FGB.%(range_year)s%(range_month)s%(range_day)s</field>
+            <field eval="3" name="padding"/>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+        </record>
+
+        <record id="groupbooking_payment_rules" model="ir.sequence">
+            <field name="name">Payment Rules Group Booking</field>
+            <field name="code">tt.payment.rules.groupbooking</field>
+            <field name="prefix">PRG.%(range_year)s%(range_month)s%(range_day)s</field>
+            <field eval="3" name="padding"/>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,22 @@
+<odoo>
+    <record id="tt_reservation_groupbooking_rule" model="ir.rule">
+        <field name="name">Issued Group Booking - Rodex</field>
+        <field name="model_id" ref="model_tt_reservation_groupbooking"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--,('sub_agent_id.id','=',user.agent_id.id)-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--Record rule biasanya 4-->
+    </record>
+
+    <record id="tt_reservation_groupbooking_for_agent_user" model="ir.rule">
+        <field name="name">Reservation Group Booking for Agent User</field>
+        <field name="model_id" ref="model_tt_reservation_groupbooking"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--,('sub_agent_id.id','=',user.agent_id.id)-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--Record rule biasanya 4-->
+    </record>
+
+    <record id="tt_reservation_groupbooking_for_corpor_user" model="ir.rule">
+        <field name="name">Reservation Group Booking For Corporate User</field>
+        <field name="model_id" ref="model_tt_reservation_groupbooking"/>
+        <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+</odoo>

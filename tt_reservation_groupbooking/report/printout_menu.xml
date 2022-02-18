@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        <report-->
+<!--            string="Invoice"-->
+<!--            id="action_report_printout_invoice"-->
+<!--            model="tt.reservation.groupbooking"-->
+<!--            report_type="qweb-html"-->
+<!--            name="tt_reservation_groupbooking.printout_invoice"-->
+<!--            file="tt_reservation_groupbooking.printout_invoice"-->
+<!--            paperformat="tt_report_common.paperformat_A4"-->
+<!--        />-->
+
+<!--        <report-->
+<!--            string="Ticket"-->
+<!--            id="action_report_printout_invoice_ticket"-->
+<!--            model="tt.reservation.groupbooking"-->
+<!--            report_type="qweb-html"-->
+<!--            name="tt_reservation_groupbooking.printout_invoice_ticket"-->
+<!--            file="tt_reservation_groupbooking.printout_invoice_ticket"-->
+<!--            paperformat="tt_report_common.paperformat_A4_no_margin"-->
+<!--        />-->
+
+<!--        <report-->
+<!--            string="Ticket Airline"-->
+<!--            id="action_report_printout_invoice_ticket_airline"-->
+<!--            model="tt.reservation.groupbooking"-->
+<!--            report_type="qweb-html"-->
+<!--            name="tt_reservation_groupbooking.printout_invoice_ticket"-->
+<!--            file="tt_reservation_groupbooking.printout_invoice_ticket"-->
+<!--            paperformat="tt_report_common.paperformat_A4_no_margin"-->
+<!--        />-->
+    </data>
+</odoo>

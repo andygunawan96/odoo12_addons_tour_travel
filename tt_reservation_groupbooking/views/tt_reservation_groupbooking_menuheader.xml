@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="top_reservations_groupbooking" parent="tt_reservation.main_reservations"
+                  name="Issued Group Booking" sequence='80'
+                  groups="tt_base.group_reservation_level_1"/>
+
+        <menuitem id="menu_groupbooking_order"
+                  parent="top_reservations_groupbooking"
+                  name="Order"
+                  sequence="1"/>
+
+        <menuitem id="menu_groupbooking_report"
+                  parent="top_reservations_groupbooking"
+                  name="Report"
+                  sequence="2"/>
+</odoo>

@@ -479,10 +479,6 @@ class Reservationmedical(models.Model):
                     provider_obj.create_date
                 except:
                     raise RequestException(1002)
-                if provider.get('extra_action') == 'save_result_url':
-                    for idx, ticket_obj in enumerate(provider['tickets']):
-                        provider_obj.update_result_url_per_pax_api(idx, ticket_obj['result_url'])
-                    continue
                 if provider.get('messages') and provider['status'] == 'FAIL_ISSUED':
                     provider_obj.action_failed_issued_api_medical(provider.get('error_code', -1),provider.get('error_msg', ''))
                 if provider['status'] == 'ISSUED':
