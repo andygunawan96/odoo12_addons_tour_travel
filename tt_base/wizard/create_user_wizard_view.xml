@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="create_user_wizard_form_view" model="ir.ui.view">
-        <field name="name">create.user.wizard.form.view</field>
+        <field name="name">Create User Wizard</field>
         <field name="model">create.user.wizard</field>
         <field name="arch" type="xml">
             <form string="Create User Wizard">
@@ -18,31 +18,39 @@
         </field>
     </record>
 
-<!--        <record id="create_user_wizard_corp_form_view" model="ir.ui.view">-->
-<!--        <field name="name">create.user.wizard.corp.form.view</field>-->
-<!--        <field name="model">create.user.wizard.corp</field>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <form string="Create User Wizard">-->
-<!--                <group>-->
-<!--                    <field name="name"/>-->
-<!--                    <field name="login"/>-->
-<!--                </group>-->
-<!--                <footer>-->
-<!--                    <button name="create_user_corp" string="Create User" type="object" default_focus="1" class="oe_highlight"/>-->
-<!--                    or-->
-<!--                    <button string="Cancel" class="oe_link" special="cancel" />-->
-<!--                </footer>-->
-<!--            </form>-->
-<!--        </field>-->
-<!--    </record>-->
+    <record id="create_corporate_user_wizard_form_view" model="ir.ui.view">
+        <field name="name">Create Corporate User Wizard</field>
+        <field name="model">create.corporate.user.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Corporate User Wizard">
+                <group>
+                    <field name="agent_id"/>
+                    <field name="customer_parent_id"/>
+                    <field name="customer_id"/>
+                </group>
+                <footer>
+                    <button name="create_cor_user" string="Create COR User" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
 
 
     <record id="create_user_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">create.user.wizard.action.view</field>
+        <field name="name">Create User Wizard</field>
         <field name="res_model">create.user.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
+    <record id="create_corporate_user_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Create Corporate User Wizard</field>
+        <field name="res_model">create.corporate.user.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 </odoo>

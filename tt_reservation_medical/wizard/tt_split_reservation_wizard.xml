@@ -26,7 +26,7 @@
     </record>
 
     <record id="tt_split_reservation_medical_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.split.reservation.medical.wizard.action.view</field>
+        <field name="name">Split Reservation Medical Wizard Action</field>
         <field name="res_model">tt.split.reservation.medical.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

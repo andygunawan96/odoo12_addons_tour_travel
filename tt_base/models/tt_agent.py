@@ -142,7 +142,6 @@ class TtAgent(models.Model):
         }
 
     def action_create_user(self):
-        print(self.agent_type_id.code)
         vals = {
             'name': 'Create User Wizard',
             'res_model': 'create.user.wizard',

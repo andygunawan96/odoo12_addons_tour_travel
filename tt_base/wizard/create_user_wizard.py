@@ -31,6 +31,41 @@ class CreateUserWizard(models.TransientModel):
             'default_frontend_security_ids': [(6, 0, default_frontend_security_ids.ids)]
         })
         return vals
+
+class CreateCorporateUserWizard(models.TransientModel):
+    _name = "create.corporate.user.wizard"
+    _description = 'Create Corporate User Wizard'
+
+    agent_id = fields.Many2one('tt.agent','Agent',readonly=True)
+    customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent',readonly=True)
+    customer_id = fields.Many2one('tt.customer','Customer',domain="[('booker_parent_ids', '=', customer_parent_id)]")
+
+
+    def create_cor_user(self):
+        form_view_ref = self.env.ref('base.view_users_form', False)
+        user_template = self.env['res.users'].browse(self.env.ref("tt_base.template_corpor_user_manager").id) # asumsi yg di buat corpor manager
+
+        default_groups_id = user_template.groups_id
+        default_frontend_security_ids = user_template.frontend_security_ids
+        vals = {
+            'name': 'Create User',
+            'res_model': 'res.users',
+            'type': 'ir.actions.act_window',
+            'views': [(form_view_ref.id, 'form')],
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': '_blank',
+            'context': {
+                'default_agent_id': self.agent_id.id,
+                'default_customer_parent_id': self.customer_parent_id.id,
+                'default_customer_id': self.customer_id.id,
+            },
+        }
+        vals['context'].update({
+            'default_groups_id': [(6, 0, default_groups_id.ids)],
+            'default_frontend_security_ids': [(6, 0, default_frontend_security_ids.ids)]
+        })
+        return vals
     #
     # def create_user_corp(self):
     #     new_user = self.env.ref('template_corpor_user_manager').copy()

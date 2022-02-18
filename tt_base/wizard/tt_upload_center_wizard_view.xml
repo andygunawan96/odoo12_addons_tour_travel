@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="tt_upload_center_wizard_form_view" model="ir.ui.view">
-        <field name="name">tt.upload.center.wizard.form.view</field>
+        <field name="name">Upload Center Wizard</field>
         <field name="model">tt.upload.center.wizard</field>
         <field name="arch" type="xml">
             <form string="Upload Center Wizard">
@@ -24,7 +24,7 @@
         </field>
     </record>
     <record id="tt_upload_center_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.upload.center.wizard.action.view</field>
+        <field name="name">Upload Center Wizard Action</field>
         <field name="res_model">tt.upload.center.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

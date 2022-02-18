@@ -23,7 +23,7 @@
     </record>
 
     <record id="tt_change_admin_fee_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.change.admin.fee.wizard.action.view</field>
+        <field name="name">Change Admin Fee Wizard</field>
         <field name="res_model">tt.change.admin.fee.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

@@ -63,7 +63,11 @@
                         <h3>
                             <field name="seq_id"/>
                         </h3>
+                        <button name="action_create_corporate_user" type="object" string="Create Corporate User" icon="fa-user"
+                                class="oe_stat_button" groups="tt_base.group_user_data_level_3">
+                        </button>
                     </div>
+
                     <group>
                         <group name="ctp_info">
                             <field name="customer_parent_type_id" readonly="1"/>
