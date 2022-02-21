@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="frontend_security_assign_wizard_form_view" model="ir.ui.view">
-        <field name="name">frontend.security.assign.wizard.form.view</field>
+        <field name="name">Assign Frontend Security Wizard</field>
         <field name="model">frontend.security.assign.wizard</field>
         <field name="arch" type="xml">
             <form string="Frontend Security Assign Wizard">
@@ -19,7 +19,7 @@
         </field>
     </record>
     <record id="frontend_security_assign_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">frontend.security.assign.wizard.action.view</field>
+        <field name="name">Assign Frontend Security Wizard Action</field>
         <field name="res_model">frontend.security.assign.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

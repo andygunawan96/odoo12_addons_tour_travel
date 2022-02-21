@@ -1399,7 +1399,7 @@ class IssuedOffline(models.Model):
 
     def generate_sc_repricing_v2(self):
         context = self.env['tt.api.credential'].get_userid_credential({
-            'user_id': self.user_id.id
+            'user_id': self.user_id.id or self.agent_id.user_ids[0].id ## kalau di import EXCEL user_id.id nya FALSE jd di akalin. 21 FEB 2022 belum ad pricing per user jd tidak masalah
         })
         if not context.get('error_code'):
             context = context['response']

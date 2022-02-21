@@ -45,12 +45,13 @@ class TtReservationRequest(models.Model):
     @api.depends('booker_id', 'customer_parent_id')
     @api.onchange('booker_id', 'customer_parent_id')
     def _compute_booker_job_position(self):
-        booker_obj = self.env['tt.customer.parent.booker.rel'].search(
-            [('customer_parent_id', '=', self.customer_parent_id.id), ('customer_id', '=', self.booker_id.id)], limit=1)
-        if booker_obj:
-            self.booker_job_position_id = booker_obj.job_position_id.id
-        else:
-            self.booker_job_position_id = False
+        for rec in self:
+            booker_obj = self.env['tt.customer.parent.booker.rel'].search(
+                [('customer_parent_id', '=', rec.customer_parent_id.id), ('customer_id', '=', rec.booker_id.id)], limit=1)
+            if booker_obj:
+                rec.booker_job_position_id = booker_obj.job_position_id.id
+            else:
+                rec.booker_job_position_id = False
 
     def open_reference(self):
         try:
@@ -90,16 +91,32 @@ class TtReservationRequest(models.Model):
             'agent': self.agent_id.name,
             'customer_parent_id': self.customer_parent_id.id,
             'customer_parent': self.customer_parent_id.name,
+            'booker_job_position': self.booker_job_position_id and self.booker_job_position_id.name or '',
             'current_approval_sequence': self.cur_approval_seq,
             'state': self.state,
             'state_description': request_state_str[self.state],
             'created_date': self.create_date,
-            'created_by': self.create_uid.name
         }
+        if final_dict.get('reservation_data'):
+            final_dict['reservation_data'].update({
+                'total_price': resv_obj.total
+            })
         if with_approval:
             final_dict.update({
                 'approvals': [rec.to_dict() for rec in self.approval_ids]
             })
+            if self.state == 'rejected':
+                if self.reject_uid and self.reject_uid.customer_id:
+                    reject_booker_obj = self.env['tt.customer.parent.booker.rel'].search(
+                        [('customer_parent_id', '=', self.customer_parent_id.id), ('customer_id', '=', self.reject_uid.customer_id.id)],
+                        limit=1)
+                    final_dict['approvals'].append({
+                        'request_number': self.name,
+                        'approved_date': self.reject_date and self.reject_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+                        'approved_by': self.reject_uid and self.reject_uid.name or '',
+                        'approved_job_position': reject_booker_obj and reject_booker_obj.job_position_id.name or '',
+                        'action': 'Rejected'
+                    })
         return final_dict
 
     def get_issued_request_api(self,req,context):
@@ -214,7 +231,7 @@ class TtReservationRequest(models.Model):
             if not request_obj:
                 return ERR.get_error(1003)
 
-            if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and (request_obj.cur_approval_seq > context.get('co_hierarchy_sequence') or request_obj.create_uid.id == context.get('co_uid')):
+            if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and (request_obj.cur_approval_seq > context.get('co_hierarchy_sequence') or request_obj.booker_id.seq_id == context.get('co_customer_seq_id')):
                 request_obj.action_cancel(context)
             else:
                 return ERR.get_error(1023)
@@ -277,6 +294,7 @@ class TtReservationRequest(models.Model):
 class TtReservationRequestApproval(models.Model):
     _name = 'tt.reservation.request.approval'
     _description = 'Reservation Request Approval Model'
+    _order = 'approved_date'
 
     request_id = fields.Many2one('tt.reservation.request', 'Reservation Request', readonly=1)
     approved_date = fields.Datetime('Approved Date', readonly=1)
@@ -287,6 +305,7 @@ class TtReservationRequestApproval(models.Model):
         return {
             'request_number': self.request_id.name,
             'approved_date': self.approved_date and self.approved_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-            'approved_uid': self.approved_uid and self.approved_uid.name or '',
+            'approved_by': self.approved_uid and self.approved_uid.name or '',
             'approved_job_position': self.approved_job_position_id and self.approved_job_position_id.name or '',
+            'action': 'Approved'
         }

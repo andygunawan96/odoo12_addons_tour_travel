@@ -20,7 +20,7 @@
     </record>
 
     <record id="tt_refund_extend_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.refund.extend.wizard.action.view</field>
+        <field name="name">Refund Extend Wizard</field>
         <field name="res_model">tt.refund.extend.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

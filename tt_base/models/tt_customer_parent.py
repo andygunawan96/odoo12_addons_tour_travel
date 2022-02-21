@@ -88,6 +88,21 @@ class TtCustomerParent(models.Model):
             raise UserError('Action failed due to security restriction. Required Customer Parent Level 5 permission.')
         return super(TtCustomerParent, self).unlink()
 
+    def action_create_corporate_user(self):
+        vals = {
+            'name': 'Create Corporate User Wizard',
+            'res_model': 'create.corporate.user.wizard',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_agent_id': self.parent_agent_id.id,
+                'default_customer_parent_id': self.id
+            },
+        }
+        return vals
+
     @api.model
     def customer_parent_action_view_customer(self):
         action = self.env.ref('tt_base.tt_customer_parent_action_view').read()[0]

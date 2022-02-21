@@ -20,7 +20,7 @@
     </record>
 
     <record id="phc_set_real_amount_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">phc.set.real.amount.wizard.action.view</field>
+        <field name="name">PHC Seat Real Amount Wizard Action</field>
         <field name="res_model">phc.reschedule.set.real.amount.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

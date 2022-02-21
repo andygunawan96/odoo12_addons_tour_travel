@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="tt_split_reservation_phc_wizard_form_view" model="ir.ui.view">
-        <field name="name">Split Reservation Wizard</field>
+        <field name="name">Split Reservation PHC Wizard</field>
         <field name="model">tt.split.reservation.phc.wizard</field>
         <field name="arch" type="xml">
             <form string="Split Reservation Wizard">
@@ -26,7 +26,7 @@
     </record>
 
     <record id="tt_split_reservation_phc_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.split.reservation.phc.wizard.action.view</field>
+        <field name="name">Split Reservation PHC Wizard Action</field>
         <field name="res_model">tt.split.reservation.phc.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

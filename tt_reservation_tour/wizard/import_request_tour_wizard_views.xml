@@ -28,7 +28,7 @@
     </record>
 
     <record id="tt_import_request_tour_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">tt.import.request.tour.wizard.action.view</field>
+        <field name="name">Import Request Tour Wizard Action</field>
         <field name="res_model">tt.import.request.tour.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

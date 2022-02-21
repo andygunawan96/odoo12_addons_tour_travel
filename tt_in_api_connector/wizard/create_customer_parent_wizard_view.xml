@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="get_merchant_info_payment_acquirer_wizard_form_view" model="ir.ui.view">
-        <field name="name">Sync Merchant Info</field>
+        <field name="name">Get Merchant Info Payment Acuirer Wizard</field>
         <field name="model">get.merchant.info.payment.acquirer</field>
         <field name="arch" type="xml">
             <form string="Create Customer Parent Wizard">
@@ -18,7 +18,7 @@
     </record>
 
     <record id="get_merchant_info_payment_acquirer_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">get.merchant.info.payment.acquirer.wizard.action.view</field>
+        <field name="name">Get Merchant Info Payment Acuirer Wizard Action</field>
         <field name="res_model">get.merchant.info.payment.acquirer</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="res_users_duplicate_permissions_wizard_form_view" model="ir.ui.view">
-        <field name="name">res.users.duplicate.permissions.wizard.form.view</field>
+        <field name="name">Duplicate Permissions Wizard</field>
         <field name="model">res.users.duplicate.permissions.wizard</field>
         <field name="arch" type="xml">
             <form string="User Duplicate Permissions Wizard">
@@ -19,7 +19,7 @@
         </field>
     </record>
     <record id="res_users_duplicate_permissions_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">res.users.duplicate.permissions.wizard.action.view</field>
+        <field name="name">Duplicate Permissions Wizard Action</field>
         <field name="res_model">res.users.duplicate.permissions.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>

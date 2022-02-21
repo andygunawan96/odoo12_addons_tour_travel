@@ -20,7 +20,7 @@
     </record>
 
     <record id="set_new_segment_pnr_wizard_action_view" model="ir.actions.act_window">
-        <field name="name">set.new.segment.pnr.wizard.action.view</field>
+        <field name="name">Set New Segment PNR Wizard Action</field>
         <field name="res_model">reschedule.set.new.segment.pnr.wizard</field>
         <field name="view_type">form</field>
         <field name="view_mode">form</field>
