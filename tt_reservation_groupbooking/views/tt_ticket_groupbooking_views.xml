@@ -15,7 +15,7 @@
                             <field name="type"/>
                             <field name="provider_id"/>
                             <field name="segment_ids"/>
-                            <field name="fare_ids"/>
+                            <field name="fare_ids" context="{'form_view_ref': 'tt_reservation_groupbooking.tt_fare_groupbooking_view_form'}"/>
                         </group>
                     </sheet>
                 </form>
@@ -114,11 +114,12 @@
             <field name="arch" type="xml">
                 <form string="">
                     <sheet>
-                        <group>
-                            <field name="ticket_id" invisible="1"/>
+                        <group name="fare">
                             <field name="seq_id"/>
                             <field name="pax_price_ids"/>
                         </group>
+
+
                     </sheet>
                 </form>
             </field>
@@ -132,6 +133,21 @@
                     <field name="ticket_id" invisible="1"/>
                     <field name="seq_id"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="tt_fare_groupbooking_pick_view_form" model="ir.ui.view">
+            <field name="name">tt.fare.groupbooking.view.form</field>
+            <field name="model">tt.fare.groupbooking</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="tt_reservation_groupbooking.tt_fare_groupbooking_view_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//group[@name='fare']" position="after">
+                    <separator string="Ticket Choose"/>
+                    <field name="ticket_id"/>
+                </xpath>
+
             </field>
         </record>
 

@@ -9,7 +9,9 @@ class TtTicketGroupBooking(models.Model):
     _name = 'tt.ticket.groupbooking'
     _description = 'Ticket Group Booking'
     _order = "type asc"
+    _rec_name = 'seq_id'
 
+    seq_id = fields.Char('Sequence ID', readonly=True)
     booking_id = fields.Many2one('tt.reservation.groupbooking', 'Group Booking')
     type = fields.Selection([('departure', 'Departure'), ('return', 'Return')], string='Type')
     departure_date = fields.Datetime('Departure Date')
@@ -21,6 +23,7 @@ class TtTicketGroupBooking(models.Model):
 
     @api.model
     def create(self, vals_list):
+        vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('tt.ticket.groupbooking')
         if vals_list['segment_ids']:
             if vals_list['segment_ids'][0][2]['leg_ids']:
                 vals_list.update({
@@ -153,8 +156,6 @@ class TtFareGroupBooking(models.Model):
     pax_price_ids = fields.One2many('tt.paxprice.groupbooking', 'fare_id', string='Pax')
     seq_id = fields.Char('Sequence ID', readonly=True)
     type = fields.Char('Type', readonly=True)
-    price_pick_departure_ids = fields.One2many('tt.reservation.groupbooking', 'price_pick_departure_id','Confirmed Departure Booking(s)')
-    price_pick_return_ids = fields.One2many('tt.reservation.groupbooking', 'price_pick_return_id','Confirmed Return Booking(s)')
 
     @api.model
     def create(self, vals_list):

@@ -24,6 +24,8 @@ class TtJourneyAirline(models.Model):
 
     segment_ids = fields.One2many('tt.segment.airline', 'journey_id', 'Segments')
 
+    banner_ids = fields.One2many('tt.banner.airline', 'journey_id', 'Segments')
+
     def _compute_journey_code(self):
         for rec in self:
             if not rec.journey_code:
@@ -38,9 +40,11 @@ class TtJourneyAirline(models.Model):
 
     def to_dict(self):
         segment_list = []
+        search_banner_list = []
         for rec in self.segment_ids:
             segment_list.append(rec.to_dict())
-
+        for rec in self.banner_ids:
+            search_banner_list.append(rec.to_dict())
         res ={
             'sequence': self.sequence,
             'origin': self.origin_id.code,
@@ -48,6 +52,7 @@ class TtJourneyAirline(models.Model):
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'segments': segment_list,
+            'search_banner': search_banner_list,
             'journey_code': self.journey_code if self.journey_code else ''
         }
 

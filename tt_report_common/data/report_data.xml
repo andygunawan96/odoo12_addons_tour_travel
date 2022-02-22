@@ -35,6 +35,17 @@
             menu="False"
         />
         <report
+            string="HO Invoice Group Booking"
+            id="action_report_printout_invoice_ho_groupbooking"
+            model="tt.reservation.groupbooking"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_ho"
+            file="tt_report_common.printout_invoice_ho"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+        <report
             string="HO Invoice Train"
             id="action_report_printout_invoice_ho_train"
             model="tt.reservation.train"
@@ -357,6 +368,17 @@
             string="Airlines Itinerary Form"
             id="action_printout_itinerary_airline"
             model="tt.reservation.airline"
+            report_type="qweb-html"
+            name="tt_report_common.printout_itinerary"
+            file="tt_report_common.printout_itinerary"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'Itinerary - %s' % (object.name)"
+            menu="False"
+        />
+        <report
+            string="Group Booking Itinerary Form"
+            id="action_printout_itinerary_groupbooking"
+            model="tt.reservation.groupbooking"
             report_type="qweb-html"
             name="tt_report_common.printout_itinerary"
             file="tt_report_common.printout_itinerary"

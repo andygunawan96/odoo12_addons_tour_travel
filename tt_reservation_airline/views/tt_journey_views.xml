@@ -22,6 +22,9 @@
                     </group>
                     <separator string="Segments"/>
                     <field name="segment_ids"/>
+
+                    <separator string="Banners"/>
+                    <field name="banner_ids"/>
                 </sheet>
             </form>
         </field>
