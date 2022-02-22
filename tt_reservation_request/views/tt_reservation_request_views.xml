@@ -82,11 +82,13 @@
                                 <label for="cancel_uid" string="Cancelled by"/>
                                 <div>
                                     <field name="cancel_uid" readonly="1" class="oe_inline"/> /
+                                    <field name="cancel_cuid" readonly="1" class="oe_inline"/> /
                                     <field name="cancel_date" readonly="1" class="oe_inline"/>
                                 </div>
                                 <label for="reject_uid" string="Rejected by"/>
                                 <div>
                                     <field name="reject_uid" readonly="1" class="oe_inline"/> /
+                                    <field name="reject_cuid" readonly="1" class="oe_inline"/> /
                                     <field name="reject_date" readonly="1" class="oe_inline"/>
                                 </div>
                             </group>
@@ -97,6 +99,7 @@
                             <field name="approval_ids">
                                 <tree>
                                     <field name="approved_uid"/>
+                                    <field name="approved_cuid"/>
                                     <field name="approved_job_position_id"/>
                                     <field name="approved_date"/>
                                 </tree>
@@ -104,6 +107,7 @@
                                     <group>
                                         <group>
                                             <field name="approved_uid"/>
+                                            <field name="approved_cuid"/>
                                             <field name="approved_job_position_id"/>
                                         </group>
                                         <group>

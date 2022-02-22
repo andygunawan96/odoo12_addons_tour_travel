@@ -15,6 +15,7 @@ class TtReservationRequest(models.Model):
     _name = 'tt.reservation.request'
     _inherit = 'tt.history'
     _description = 'Reservation Request Model'
+    _order = 'id DESC'
 
     name = fields.Char('Request Number', index=True, default='New', readonly=True)
     res_model = fields.Char('Reservation Name', index=True, readonly=True)
@@ -30,8 +31,10 @@ class TtReservationRequest(models.Model):
     state = fields.Selection([('draft', 'Draft'), ('on_process', 'On Process'), ('approved', 'Approved'),
                               ('rejected', 'Rejected'), ('cancel', 'Cancelled')], 'State', default='draft')
     cancel_uid = fields.Many2one('res.users', 'Cancelled By', readonly=True)
+    cancel_cuid = fields.Many2one('tt.customer', 'Cancelled By Customer', readonly=True)
     cancel_date = fields.Datetime('Cancelled Date', readonly=True)
     reject_uid = fields.Many2one('res.users', 'Rejected By', readonly=True)
+    reject_cuid = fields.Many2one('tt.customer', 'Rejected By Customer', readonly=True)
     reject_date = fields.Datetime('Rejected Date', readonly=True)
 
     @api.model
@@ -114,6 +117,7 @@ class TtReservationRequest(models.Model):
                         'request_number': self.name,
                         'approved_date': self.reject_date and self.reject_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'approved_by': self.reject_uid and self.reject_uid.name or '',
+                        'approved_by_customer': self.reject_cuid and self.reject_cuid.name or '',
                         'approved_job_position': reject_booker_obj and reject_booker_obj.job_position_id.name or '',
                         'action': 'Rejected'
                     })
@@ -176,9 +180,9 @@ class TtReservationRequest(models.Model):
             if not request_obj:
                 return ERR.get_error(1003)
 
-            if context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_hierarchy_sequence'):
+            if context.get('co_customer_seq_id') and context.get('co_agent_id') == request_obj.agent_id.id and context.get('co_customer_parent_id') == request_obj.customer_parent_id.id and request_obj.cur_approval_seq > context.get('co_hierarchy_sequence'):
                 for rec in request_obj.approval_ids:
-                    if rec.approved_uid.id == int(context['co_uid']):
+                    if rec.approved_cuid.seq_id == context['co_customer_seq_id']:
                         return ERR.get_error(1023, additional_message='You have already approved this request.')
                 request_obj.action_approve_issued_request(context)
             else:
@@ -195,17 +199,19 @@ class TtReservationRequest(models.Model):
 
     def action_approve_issued_request(self, context):
         co_uid = self.env['res.users'].browse(context['co_uid'])
+        co_cuid = self.env['tt.customer'].search([('seq_id', '=', context['co_customer_seq_id'])], limit=1)
         booker_objs = self.env['tt.customer.parent.booker.rel'].search([
-            ('customer_parent_id', '=', context['co_customer_parent_id']), ('customer_id', '=', co_uid.customer_id.id)])
+            ('customer_parent_id', '=', context['co_customer_parent_id']), ('customer_id', '=', co_cuid.id)])
         job_pos_obj = False
         for book in booker_objs:
             if book.job_position_id.sequence == context['co_job_position_sequence']:
-                job_pos_obj = book.jos_position_id
+                job_pos_obj = book.job_position_id
 
         self.env['tt.reservation.request.approval'].create({
             'request_id': self.id,
             'approved_date': datetime.now(),
             'approved_uid': co_uid.id,
+            'approved_cuid': co_cuid.id,
             'approved_job_position_id': job_pos_obj and job_pos_obj.id or False,
         })
 
@@ -213,7 +219,7 @@ class TtReservationRequest(models.Model):
         for rec in self.approval_ids:
             if rec.approved_job_position_id.hierarchy_id == context['co_hierarchy_sequence']:
                 min_approval -= 1
-        if min_approval <= 0:
+        if min_approval <= 1:
             self.cur_approval_seq = context['co_hierarchy_sequence']
         next_hierarchy = self.env['tt.customer.job.hierarchy'].search([
             ('sequence', '<', self.cur_approval_seq)], order='sequence desc', limit=1)
@@ -275,6 +281,9 @@ class TtReservationRequest(models.Model):
             self.state = 'cancel'
             self.cancel_uid = context['co_uid']
             self.cancel_date = datetime.now()
+            if context.get('co_customer_seq_id'):
+                cancel_cust = self.env['tt.customer'].search([('seq_id', '=', context['co_customer_seq_id'])], limit=1)
+                self.cancel_cuid = cancel_cust.id
 
     def action_set_to_approved(self):
         self.state = 'approved'
@@ -286,6 +295,9 @@ class TtReservationRequest(models.Model):
             self.state = 'rejected'
             self.reject_uid = context['co_uid']
             self.reject_date = datetime.now()
+            if context.get('co_customer_seq_id'):
+                reject_cust = self.env['tt.customer'].search([('seq_id', '=', context['co_customer_seq_id'])], limit=1)
+                self.reject_cuid = reject_cust.id
 
     def action_set_to_draft(self):
         self.state = 'draft'
@@ -299,6 +311,7 @@ class TtReservationRequestApproval(models.Model):
     request_id = fields.Many2one('tt.reservation.request', 'Reservation Request', readonly=1)
     approved_date = fields.Datetime('Approved Date', readonly=1)
     approved_uid = fields.Many2one('res.users', 'Approved By', readonly=1)
+    approved_cuid = fields.Many2one('tt.customer', 'Approved By Cust', readonly=1)
     approved_job_position_id = fields.Many2one('tt.customer.job.position', 'Job Position', readonly=1)
 
     def to_dict(self):
@@ -306,6 +319,7 @@ class TtReservationRequestApproval(models.Model):
             'request_number': self.request_id.name,
             'approved_date': self.approved_date and self.approved_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'approved_by': self.approved_uid and self.approved_uid.name or '',
+            'approved_by_customer': self.approved_cuid and self.approved_cuid.name or '',
             'approved_job_position': self.approved_job_position_id and self.approved_job_position_id.name or '',
             'action': 'Approved'
         }
