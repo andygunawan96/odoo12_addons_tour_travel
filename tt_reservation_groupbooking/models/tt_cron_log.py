@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools import variables
 import logging,traceback
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 _logger = logging.getLogger(__name__)
 
 

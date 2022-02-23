@@ -45,7 +45,7 @@ class SearchResultBanner(models.Model):
 
     def get_search_banner_api(self):
         try:
-            _objs = self.search([])
+            _objs = self.search([('active','=', True)])
             # response = [rec.get_ssr_data() for rec in _objs]
             ssrs = [rec.get_search_banner_data() for rec in _objs]
             response = {

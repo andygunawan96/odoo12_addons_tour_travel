@@ -964,7 +964,7 @@ class ReservationSentraMedika(models.Model):
         datas['is_with_price'] = True
         sentramedika_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_sentramedika')
 
-        if not book_obj.printout_ho_invoice_id:
+        if not book_obj.printout_itinerary_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -994,12 +994,12 @@ class ReservationSentraMedika(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_ho_invoice_id = upc_id.id
+            book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_ho_invoice_id.url,
+            'url': book_obj.printout_itinerary_id.url,
         }
         return url
 

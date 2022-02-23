@@ -1,7 +1,8 @@
 from odoo import api, fields, models, _
-import logging
-from datetime import datetime
+import base64,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
+from ...tools import ERR
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -10,15 +11,12 @@ class TtSplitReservationWizard(models.TransientModel):
     _name = "tt.split.reservation.groupbooking.wizard"
     _description = 'Group Booking Split Reservation Wizard'
 
+    is_split_provider = fields.Boolean('Split Provider (PNR)', default=False)
+    is_split_passenger = fields.Boolean('Split Passenger', default=False)
     res_id = fields.Integer('Related Reservation ID', index=True, help='Id of the followed resource', readonly=True)
     referenced_document = fields.Char('Ref. Document', required=True, readonly=True)
-    total_price = fields.Monetary('Total Price', default=0)
-    new_commission = fields.Monetary('Total Commission', default=0)
     new_pnr = fields.Char('New PNR(s) separated by comma')
     new_pnr_text = fields.Text('Information', readonly=True)
-    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
-                                  default=lambda self: self.env.user.company_id.currency_id)
-    vendor_amount = fields.Monetary('New Vendor Amount', default=0)
 
     def get_split_provider_domain(self):
         return [('booking_id', '=', self.res_id)]
@@ -26,11 +24,13 @@ class TtSplitReservationWizard(models.TransientModel):
     def get_split_passenger_domain(self):
         return [('booking_id', '=', self.res_id)]
 
-    provider_ids = fields.Many2many('tt.provider.groupbooking', 'groupbooking_provider_split_rel', 'split_wizard_id',
-                                    'provider_id', 'PNR', domain=get_split_provider_domain)
-    passenger_ids = fields.Many2many('tt.reservation.passenger.groupbooking', 'groupbooking_passenger_split_rel',
-                                     'split_wizard_id', 'passenger_id', 'Passenger',
-                                     domain=get_split_passenger_domain)
+    def get_split_journey_domain(self):
+        return [('booking_id', '=', self.res_id)]
+
+    provider_ids = fields.Many2many('tt.provider.groupbooking', 'groupbooking_provider_split_rel', 'split_wizard_id', 'provider_id', 'PNR',
+                           domain=get_split_provider_domain)
+    passenger_ids = fields.Many2many('tt.reservation.passenger.groupbooking', 'groupbooking_passengers_split_rel', 'split_wizard_id', 'passenger_id', 'Passenger',
+                           domain=get_split_passenger_domain)
 
     @api.onchange('res_id')
     def _onchange_domain_provider(self):
@@ -44,449 +44,25 @@ class TtSplitReservationWizard(models.TransientModel):
             'passenger_ids': self.get_split_passenger_domain()
         }}
 
-    def input_new_line(self, lines, new_pnr, provider_type, new_book_obj):
-        line_env = self.env['tt.reservation.groupbooking.lines']
-        for line in lines:
-            line_obj = line_env.search([('id', '=', line.id)])
-            if provider_type in ['airline', 'train']:
-                line_vals = {
-                    'booking_id': new_book_obj.id,
-                    'pnr': new_pnr,
-                    'origin_id': line_obj.origin_id.id,
-                    'destination_id': line_obj.destination_id.id,
-                    "provider_id": line_obj.provider_id.id,
-                    "departure_date": line_obj.departure_date,
-                    "departure_hour": line_obj.departure_hour,
-                    "departure_minute": line_obj.departure_minute,
-                    "arrival_date": line_obj.arrival_date,
-                    "return_hour": line_obj.return_hour,
-                    "return_minute": line_obj.return_minute,
-                    "carrier_id": line_obj.carrier_id.id,
-                    "carrier_code": line_obj.carrier_code,
-                    "carrier_number": line_obj.carrier_number,
-                    "subclass": line_obj.subclass,
-                    "class_of_service": line_obj.class_of_service,
-                }
-            elif provider_type == 'activity':
-                line_vals = {
-                    'booking_id': new_book_obj.id,
-                    'pnr': new_pnr,
-                    "provider_id": line_obj.provider_id.id,
-                    "activity_name": line_obj.activity_name,
-                    "activity_package": line_obj.activity_package,
-                    "qty": int(line_obj.qty),
-                    "description": line_obj.description,
-                    "visit_date": line_obj.visit_time,
-                }
-            elif provider_type == 'hotel':
-                line_vals = {
-                    'booking_id': new_book_obj.id,
-                    'pnr': new_pnr,
-                    "provider_id": line_obj.provider_id.id,
-                    "hotel_name": line_obj.hotel_name,
-                    "room": line_obj.room,
-                    "meal_type": line_obj.meal_type,
-                    "qty": int(line_obj.qty),
-                    "description": line_obj.description,
-                    "check_in": line_obj.check_in,
-                    "check_out": line_obj.check_out,
-                }
-            elif provider_type == 'cruise':
-                line_vals = {
-                    'booking_id': new_book_obj.id,
-                    'pnr': new_pnr,
-                    "provider_id": line_obj.provider_id.id,
-                    "cruise_package": line_obj.cruise_package,
-                    "carrier_id": line_obj.carrier_id.id,
-                    "departure_location": line_obj.departure_location,
-                    "arrival_location": line_obj.arrival_location,
-                    "room": line_obj.room,
-                    "check_in": line_obj.check_in,
-                    "check_out": line_obj.check_out,
-                    "description": line_obj.description
-                }
-            else:
-                line_vals = {
-                    'booking_id': new_book_obj.id,
-                    'pnr': new_pnr,
-                    "provider_id": line_obj.provider_id.id,
-                    "description": line_obj.description
-                }
-            line_env.sudo().create(line_vals)
+    @api.onchange('res_id')
+    def _onchange_domain_journey(self):
+        return {'domain': {
+            'journey_ids': self.get_split_journey_domain()
+        }}
 
-    def round_service_charge(self, book_obj, new_book_obj):
-        # hitung total dari pricing, lalu bandingkan dg total sale price
-        total_pricing = 0
-        for provider in book_obj.provider_booking_ids:
-            for scs in provider.cost_service_charge_ids:
-                if scs.charge_type == 'FARE':
-                    print(scs.to_dict())
-                    total_pricing += scs.total
-        if total_pricing < book_obj.total:
-            pricing_diff = book_obj.total - total_pricing
-            for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                if scs.charge_type == 'FARE':
-                    scs.amount += pricing_diff
-                    scs.total += pricing_diff
-                    break
-        elif total_pricing > book_obj.total:
-            pricing_diff = total_pricing - book_obj.total
-            for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                if scs.charge_type == 'FARE':
-                    scs.amount -= pricing_diff
-                    scs.total -= pricing_diff
-
-        total_commission = []
-        for provider in book_obj.provider_booking_ids:
-            for scs in provider.cost_service_charge_ids:
-                if scs.charge_type == 'RAC':
-                    if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                        # if scs.commission_agent_id.id not in total_commission:
-                        total_commission.append({
-                            'id': scs.commission_agent_id.id,
-                            'amount': scs.amount
-                        })
-                    else:
-                        comm_dict = next(
-                            (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                        comm_dict['amount'] += scs.amount
-
-        book_obj._get_agent_commission()
-        book_obj._get_agent_price()
-
-        for comm in total_commission:
-            if comm['id'] == book_obj.agent_id.id:
-                # Bandingkan amount komisi agent dg agent commission yang ada di book obj
-                agent_diff = book_obj.agent_commission - comm['amount']
-                for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == comm['id']:
-                        if agent_diff > 0:
-                            scs.amount -= agent_diff
-                            scs.total -= agent_diff
-                            book_obj.agent_commission = comm['amount']
-                        elif agent_diff < 0:
-                            scs.amount += agent_diff
-                            scs.total += agent_diff
-                            book_obj.agent_commission = comm['amount']
-                        break
-            elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                # Bandingkan amount komisi HO dg HO commission yang ada di book obj
-                ho_diff = book_obj.ho_commission - comm['amount']
-                for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == comm['id']:
-                        if scs.charge_code != 'hoc' and scs.amount != 0:
-                            if ho_diff > 0:
-                                scs.amount -= ho_diff
-                                scs.total -= ho_diff
-                                book_obj.ho_commission = comm['amount']
-                            elif ho_diff < 0:
-                                scs.amount += ho_diff
-                                scs.total += ho_diff
-                                book_obj.ho_commission = comm['amount']
-                            break
-            else:
-                # Bandingkan amount komisi parent dg parent commission yang ada di book obj
-                parent_diff = book_obj.parent_agent_commission - comm['amount']
-                for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == comm['id']:
-                        if parent_diff > 0:
-                            scs.amount -= parent_diff
-                            scs.total -= parent_diff
-                            book_obj.parent_agent_commission = comm['amount']
-                        elif parent_diff < 0:
-                            scs.amount += parent_diff
-                            scs.total += parent_diff
-                            book_obj.parent_agent_commission = comm['amount']
-                        break
-
-        for provider in book_obj.provider_booking_ids:
-            for scs in provider.cost_service_charge_ids:
-                if scs.charge_type == 'FARE':
-                    print(scs.to_dict())
-
-        total_pricing_new = 0
-        for provider in new_book_obj.provider_booking_ids:
-            for scs in provider.cost_service_charge_ids:
-                if scs.charge_type != 'RAC':
-                    total_pricing_new += scs.total
-        if total_pricing_new > new_book_obj.total:
-            pricing_diff = new_book_obj.total - total_pricing
-            for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                if scs.charge_type == 'FARE':
-                    scs.amount += pricing_diff
-                    scs.total += pricing_diff
-                    break
-        elif total_pricing_new < new_book_obj.total:
-            pricing_diff = total_pricing_new - new_book_obj.total
-            for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                if scs.charge_type == 'FARE':
-                    scs.amount -= pricing_diff
-                    scs.total -= pricing_diff
-                    break
-
-        total_commission = []
-        for provider in new_book_obj.provider_booking_ids:
-            for scs in provider.cost_service_charge_ids:
-                if scs.charge_type == 'RAC':
-                    if not any(d['id'] == scs.commission_agent_id.id for d in total_commission):
-                        # if scs.commission_agent_id.id not in total_commission:
-                        total_commission.append({
-                            'id': scs.commission_agent_id.id,
-                            'amount': scs.amount
-                        })
-                    else:
-                        comm_dict = next(
-                            (item for item in total_commission if item['id'] == scs.commission_agent_id.id), None)
-                        comm_dict['amount'] += scs.amount
-
-        new_book_obj._get_agent_commission()
-        new_book_obj._get_agent_price()
-
-        for comm in total_commission:
-            if comm['id'] == new_book_obj.agent_id.id:
-                agent_diff = new_book_obj.agent_commission - comm['amount']
-                for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == comm['id']:
-                        if agent_diff > 0:
-                            scs.amount += agent_diff
-                            scs.total += agent_diff
-                            new_book_obj.agent_commission = comm['amount']
-                        elif agent_diff < 0:
-                            scs.amount -= agent_diff
-                            scs.total -= agent_diff
-                            new_book_obj.agent_commission = comm['amount']
-                        break
-            elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
-                ho_diff = new_book_obj.ho_commission - comm['amount']
-                for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == comm['id']:
-                        if scs.charge_code != 'hoc' and scs.amount != 0:
-                            if ho_diff > 0:
-                                scs.amount += ho_diff
-                                scs.total += ho_diff
-                                new_book_obj.ho_commission = comm['amount']
-                            elif ho_diff < 0:
-                                scs.amount -= ho_diff
-                                scs.total -= ho_diff
-                                new_book_obj.ho_commission = comm['amount']
-                            break
-            else:
-                parent_diff = new_book_obj.parent_agent_commission - comm['amount']
-                for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == comm['id']:
-                        if parent_diff > 0:
-                            scs.amount -= parent_diff
-                            scs.total -= parent_diff
-                            new_book_obj.parent_agent_commission = comm['amount']
-                        elif parent_diff < 0:
-                            scs.amount += parent_diff
-                            scs.total += parent_diff
-                            new_book_obj.parent_agent_commission = comm['amount']
-                        break
-
-    def get_service_charge_value(self, charge_code, charge_type, pax_type, currency_id, amount, total, provider_id,
-                                 sequence, foreign_amount, description, pax_count, passenger_ids,
-                                 commission_agent_id=False):
-        vals = {
-            'charge_code': charge_code,
-            'charge_type': charge_type,
-            'pax_type': pax_type,
-            'currency_id': currency_id,
-            'amount': amount,
-            'provider_groupbooking_booking_id': provider_id,
-            'sequence': sequence,
-            'description': description,
-            'pax_count': pax_count,
-            'total': total,
-            'passenger_groupbooking_ids': passenger_ids,
-        }
-        if commission_agent_id:
-            vals.update({
-                'commission_agent_id': commission_agent_id
-            })
-        return vals
-
-    def create_service_charge_split_groupbooking(self, provider, pax_list, provider_list, passengers, book_obj, type):
-        if book_obj.groupbooking_provider_type != 'other':
-            provider_type_id = self.env['tt.provider.type'].search(
-                [('code', '=', book_obj.groupbooking_provider_type)], limit=1)
+    @api.onchange("is_split_provider")
+    def _compute_split_by_provider(self):
+        if self.is_split_provider:
+            self.is_split_journey = False
         else:
-            provider_type_id = self.env['tt.provider.type'].search(
-                [('code', '=', self.env.ref('tt_reservation_groupbooking.tt_provider_type_groupbooking').code)], limit=1)
-        scs_list = []
-        pricing_obj = self.env['tt.pricing.agent'].sudo()
+            self.provider_ids = [(5,0,0)]
 
-        div = 0
-        for prov in book_obj.provider_booking_ids:
-            for psg in book_obj.passenger_ids:
-                if type == 'old':
-                    if prov in self.provider_ids and psg in self.passenger_ids:
-                        pass
-                    else:
-                        div += 1
-                elif type == 'new':
-                    div += 1
-
-        real_comm = book_obj.total_commission_amount
-        fee_amount_val = book_obj.get_fee_amount(book_obj.agent_id, provider_type_id, book_obj.total_commission_amount)
-
-        """ Hitung fee amount """
-        if book_obj.groupbooking_provider_type in ['airline', 'train']:
-            """ airline, train """
-            real_comm -= fee_amount_val['amount'] * (len(book_obj.provider_booking_ids) * len(book_obj.passenger_ids))
-            if type == 'old':
-                real_comm += fee_amount_val['amount'] * (len(self.provider_ids) * len(self.passenger_ids))
-
-            for line in book_obj.line_ids:
-                if line.pnr == provider.pnr:
-                    """ get fee amount per pax """
-                    for psg in book_obj.passenger_ids:
-                        if type == 'old':
-                            if psg in self.passenger_ids and provider in self.provider_ids:
-                                pass
-                            else:
-                                fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                                                 book_obj.total_commission_amount, psg)
-                                fee_amount_vals['provider_groupbooking_booking_id'] = provider.id
-                                scs_list.append(fee_amount_vals)
-                        else:
-                            fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                                             book_obj.total_commission_amount, psg)
-                            fee_amount_vals['provider_groupbooking_booking_id'] = provider.id
-                            scs_list.append(fee_amount_vals)
-                    break
-        elif book_obj.groupbooking_provider_type == 'hotel':
-            """ hotel """
-            real_comm -= fee_amount_val['amount'] * len(book_obj.provider_booking_ids)
-
-            fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                             book_obj.total_commission_amount)
-            fee_amount_vals['provider_groupbooking_booking_id'] = provider.id
-            scs_list.append(fee_amount_vals)
+    @api.onchange("is_split_passenger")
+    def _compute_split_by_passenger(self):
+        if self.is_split_passenger:
+            self.is_split_journey = False
         else:
-            """ else """
-            real_comm -= fee_amount_val['amount'] * (len(book_obj.provider_booking_ids) * len(book_obj.passenger_ids))
-
-            """ get fee amount per pax """
-            for psg in book_obj.passenger_ids:
-                fee_amount_vals = book_obj.sudo().get_fee_amount(book_obj.agent_id, provider_type_id,
-                                                                 book_obj.total_commission_amount, psg)
-                fee_amount_vals['provider_groupbooking_booking_id'] = provider.id
-                scs_list.append(fee_amount_vals)
-
-        if book_obj.groupbooking_provider_type != 'hotel':
-            for psg in book_obj.passenger_ids:
-                if type == 'old':
-                    if provider in self.provider_ids and psg in self.passenger_ids:
-                        pass
-                    else:
-                        vals = self.get_service_charge_value('fare', 'FARE', psg.pax_type, provider.currency_id.id,
-                                                             book_obj.total/div, book_obj.total/div, provider.id,
-                                                             provider.sequence, 0, book_obj.name, 1, [], False)
-                        vals['passenger_groupbooking_ids'].append(psg.id)
-                        scs_list.append(vals)
-                elif type == 'new':
-                    vals = self.get_service_charge_value('fare', 'FARE', psg.pax_type, provider.currency_id.id,
-                                                         book_obj.total/div, book_obj.total/div, provider.id,
-                                                         provider.sequence, 0, book_obj.name, 1, [], False)
-                    vals['passenger_groupbooking_ids'].append(psg.id)
-                    scs_list.append(vals)
-        else:
-            for line in book_obj.line_ids:
-                vals = self.get_service_charge_value('fare', 'FARE', 'ADT', provider.currency_id.id,
-                                                     book_obj.total / div, book_obj.total / div, provider.id,
-                                                     provider.sequence, 0, book_obj.name, 1, [], False)
-                for psg in book_obj.passenger_ids:
-                    vals['passenger_groupbooking_ids'].append(psg.id)
-                scs_list.append(vals)
-        commission_list = pricing_obj.get_commission(real_comm / div, book_obj.agent_id, provider_type_id)
-
-        # HOC / Hidden Commission
-        # for comm in commission_list:
-        #     if comm['code'] == 'hoc':
-        #         vals = self.get_service_charge_value(comm['code'], comm['type'], 'ADT', provider.currency_id.id,
-        #                                              comm['amount'], comm['amount'], provider.id, provider.sequence, 0,
-        #                                              book_obj.name, 1, [], comm['commission_agent_id'])
-        #         scs_list.append(vals)
-
-        for psg in book_obj.passenger_ids:
-            for comm in commission_list:
-                if comm['code'] != 'hoc':
-                    if type == 'old':
-                        if provider in self.provider_ids and psg in self.passenger_ids:
-                            pass
-                        else:
-                            vals = self.get_service_charge_value(comm['code'], comm['type'], psg.pax_type,
-                                                                 provider.currency_id.id, comm['amount'],
-                                                                 comm['amount'], provider.id, provider.sequence, 0,
-                                                                 book_obj.name, 1, [], comm['commission_agent_id'])
-                            # vals = {
-                            #     'commission_agent_id': comm['commission_agent_id'],
-                            #     'charge_code': comm['code'],
-                            #     'charge_type': comm['type'],
-                            #     'pax_type': psg.pax_type,
-                            #     'currency_id': provider.currency_id.id,
-                            #     'amount': comm['amount']/len(book_obj.passenger_ids),
-                            #     'provider_groupbooking_booking_id': provider.id,
-                            #     'sequence': provider.sequence,
-                            #     'description': book_obj.name,
-                            #     'pax_count': 1,
-                            #     'total': comm['amount']/len(book_obj.passenger_ids),
-                            #     'passenger_groupbooking_ids': [],
-                            # }
-                            # /len(book_obj.passenger_ids)
-                            vals['passenger_groupbooking_ids'].append(psg.id)
-                            scs_list.append(vals)
-                    elif type == 'new':
-                        vals = self.get_service_charge_value(comm['code'], comm['type'], psg.pax_type,
-                                                             provider.currency_id.id, comm['amount'], comm['amount'],
-                                                             provider.id, provider.sequence, 0, book_obj.name, 1, [],
-                                                             comm['commission_agent_id'])
-                        vals['passenger_groupbooking_ids'].append(psg.id)
-                        scs_list.append(vals)
-
-        # for pax in passengers:
-        #     if pax.id not in pax_list or provider.id not in provider_list:
-        #         cost_val_fare = {
-        #             'charge_code': 'fare',
-        #             'charge_type': 'FARE',
-        #             'pax_type': pax.pax_type,
-        #             'currency_id': provider.currency_id.id,
-        #             'amount': book_obj.total/div,
-        #             # 'foreign_currency_id': provider.foreign_currency_id and provider.foreign_currency_id.id or False,
-        #             'provider_groupbooking_booking_id': provider.id,
-        #             'foreign_amount': 0,
-        #             'sequence': provider.sequence,
-        #             'description': book_obj.name,
-        #             'pax_count': 1,
-        #             'total': book_obj.total/div,
-        #             'passenger_groupbooking_ids': [],
-        #         }
-        #         cost_val_fare['passenger_groupbooking_ids'].append(pax.id)
-        #         scs_list.append(cost_val_fare)
-        #
-        #         commission_list = pricing_obj.get_commission(
-        #             book_obj.total_commission_amount / div,
-        #             book_obj.agent_id, provider_type_id)
-        #
-        #         for comm in commission_list:
-        #             if comm['amount'] > 0:
-        #                 vals2 = cost_val_fare.copy()
-        #                 vals2.update({
-        #                     'commission_agent_id': comm['commission_agent_id'],
-        #                     'total': comm['amount'] * -1,
-        #                     'amount': comm['amount'] * -1,
-        #                     'charge_code': comm['code'],
-        #                     'charge_type': 'RAC',
-        #                     'passenger_groupbooking_ids': [],
-        #                 })
-        #                 vals2['passenger_groupbooking_ids'].append(pax.id)
-        #                 scs_list.append(vals2)
-
-        service_chg_obj = provider.env['tt.service.charge']
-        for scs in scs_list:
-            scs['passenger_groupbooking_ids'] = [(6, 0, scs['passenger_groupbooking_ids'])]
-            scs_obj = service_chg_obj.create(scs)
+            self.passenger_ids = [(5,0,0)]
 
     @api.onchange('new_pnr')
     def _onchange_new_pnr(self):
@@ -494,31 +70,36 @@ class TtSplitReservationWizard(models.TransientModel):
             new_pnr_list = self.new_pnr and self.new_pnr.strip().split(',') or []
             def_txt = ''
             book_obj = self.env['tt.reservation.groupbooking'].sudo().browse(int(self.res_id))
-            for idx, rec in enumerate(self.provider_ids):
+            for idx, rec in enumerate(book_obj.provider_booking_ids):
                 if idx < len(new_pnr_list):
-                    def_txt += str(rec.pnr) + ' will be converted to ' + str(
-                        new_pnr_list[idx]) + ' in the new reservation. \n'
+                    def_txt += str(rec.pnr) + ' will be converted to ' + str(new_pnr_list[idx]) + ' in the new reservation. \n'
             self.new_pnr_text = def_txt
 
     def submit_split_reservation(self):
         book_obj = self.env['tt.reservation.groupbooking'].sudo().browse(int(self.res_id))
         provider_list = []
         pax_list = []
+        journey_list = []
+        journey_provider_list = []
         is_provider_full = True
         is_pax_full = True
-        provider_len = 0
+        provider_len = len(book_obj.provider_booking_ids.ids)
+        passenger_len = len(book_obj.passenger_ids.ids)
+        journey_len = 0
 
         for rec in self.provider_ids:
             provider_list.append(rec.id)
         for rec in self.passenger_ids:
             pax_list.append(rec.id)
-        for rec in book_obj.provider_booking_ids:
-            if rec.id not in provider_list:
-                is_provider_full = False
-            provider_len += 1
-        for rec in book_obj.passenger_ids:
-            if rec.id not in pax_list:
-                is_pax_full = False
+
+        if len(journey_provider_list) > 1:
+            raise UserError(_('You can only split Journey(s) from one provider at a time.'))
+
+
+        if len(provider_list) != provider_len:
+            is_provider_full = False
+        if len(pax_list) != passenger_len:
+            is_pax_full = False
 
         new_pnr_list = self.new_pnr and self.new_pnr.strip().split(',') or []
         new_pnr_dict = {}
@@ -535,256 +116,173 @@ class TtSplitReservationWizard(models.TransientModel):
                         str(rec.pnr): str(new_pnr_list[idx])
                     })
 
-        # Error checking
-        if self.total_price > book_obj.total:
-            raise UserError(_('Total price for split cannot be larger than total sale price.'))
-        if self.new_commission > book_obj.total_commission_amount:
-            raise UserError(_('Total commission for split cannot be larger than total commission amount.'))
-        if is_provider_full:
-            raise UserError(_('You cannot split all Provider(s). Please remove 1 or more provider(s)'))
+        if not self.is_split_provider and not self.is_split_passenger:
+            raise UserError(_('Please select what split you want to perform (Provider/Passenger).'))
+        if is_provider_full and is_pax_full:
+            raise UserError(_('You cannot split all Provider(s) and Passenger(s) in this reservation. Please leave at least 1 Provider or 1 Passenger!'))
+        if is_provider_full and len(pax_list) <= 0:
+            raise UserError(_('You cannot split all Provider(s) in this reservation without any Passenger(s).'))
         if len(provider_list) <= 0 and is_pax_full:
             raise UserError(_('You cannot split all Passenger(s) in this reservation without any Provider(s).'))
-        if len(provider_list) <= 0 and len(pax_list) <= 0:
-            raise UserError(_('You need to input at least 1 Provider or 1 Passenger to split this reservation.'))
-        if len(pax_list) > 0 and len(provider_list) <= 0 and len(new_pnr_list) < provider_len:
-            raise UserError(_('You need to input New PNR for the split Passenger(s) in the new reservation, need {} more.'.format(provider_len - len(new_pnr_list))))
-        if len(pax_list) > 0 and len(provider_list) > 0 and len(new_pnr_list) < len(provider_list):
-            raise UserError(_('You need to input New PNR for the split Passenger(s) in the new reservation, need {} more.'.format(len(provider_list) - len(new_pnr_list))))
+        if self.is_split_provider and len(provider_list) <= 0:
+            raise UserError(_('You need to input at least 1 Provider to perform split provider in this reservation.'))
+        if self.is_split_passenger and len(pax_list) <= 0:
+            raise UserError(_('You need to input at least 1 Passenger to perform split passenger in this reservation.'))
+        if self.is_split_provider and self.is_split_passenger and (len(provider_list) <= 0 or len(pax_list) <= 0):
+            raise UserError(_('You need to input at least 1 Provider and 1 Passenger to perform split provider-passenger in this reservation.'))
+        if self.is_split_provider and provider_len <= 1:
+            raise UserError(_('You cannot split Provider as there is only 1 Provider in this reservation.'))
+        if self.is_split_passenger and passenger_len <= 1:
+            raise UserError(_('You cannot split Passenger as there is only 1 Passenger in this reservation.'))
+        if self.is_split_passenger and not self.is_split_provider and len(new_pnr_list) < provider_len:
+            raise UserError(_('You need to input New PNR for the splitted Passenger(s) in the new reservation, need {} more.'.format(provider_len - len(new_pnr_list))))
+        if self.is_split_passenger and self.is_split_provider and len(new_pnr_list) < len(provider_list):
+            raise UserError(_('You need to input New PNR for the splitted Passenger(s) in the new reservation, need {} more.'.format(len(provider_list) - len(new_pnr_list))))
 
-        # Prepare new booking vals
+        book_obj.write({
+            'split_uid': self.env.user.id,
+            'split_date': fields.Datetime.now(),
+        })
+
         new_vals = {
+            'split_from_resv_id': book_obj.id,
+            'split_uid': self.env.user.id,
+            'split_date': fields.Datetime.now(),
             'pnr': book_obj.pnr,
             'agent_id': book_obj.agent_id and book_obj.agent_id.id or False,
             'customer_parent_id': book_obj.customer_parent_id and book_obj.customer_parent_id.id or False,
-            'groupbooking_provider_type': book_obj.groupbooking_provider_type,
+            'provider_type_id': book_obj.provider_type_id.id,
+            'provider_name': book_obj.provider_name,
+            'carrier_name': book_obj.carrier_name,
+            'date': book_obj.date,
             'hold_date': book_obj.hold_date,
-            # 'expired_date': book_obj.expired_date,
             'user_id': book_obj.user_id and book_obj.user_id.id or False,
             'create_date': book_obj.create_date,
-            'incentive_amount': book_obj.incentive_amount,
-            'description': book_obj.description,
-            'sector_type': book_obj.sector_type,
-            'total_commission_amount': book_obj.total_commission_amount,
-            'vendor_amount': self.vendor_amount,
-            'resv_code': book_obj.resv_code,
-            'social_media_type': book_obj.social_media_type.id,
             'booked_uid': book_obj.booked_uid and book_obj.booked_uid.id or False,
             'booked_date': book_obj.booked_date,
-            'confirm_uid': book_obj.confirm_uid and book_obj.confirm_uid.id or False,
-            'confirm_date': book_obj.confirm_date,
-            'sent_uid': book_obj.sent_uid and book_obj.sent_uid.id or False,
-            'sent_date': book_obj.sent_date,
             'issued_uid': book_obj.issued_uid and book_obj.issued_uid.id or False,
-            'issued_date': book_obj.issued_date,
-            'done_uid': book_obj.done_uid and book_obj.done_uid.id or False,
-            'done_date': book_obj.done_date,
-            'cancel_uid': book_obj.cancel_uid and book_obj.cancel_uid.id or False,
-            'cancel_date': book_obj.cancel_date,
-            'refund_uid': book_obj.refund_uid and book_obj.refund_uid.id or False,
-            'refund_date': book_obj.refund_date,
+            'issued_date': datetime.now(),
+            'origin_id': book_obj.origin_id and book_obj.origin_id.id or False,
+            'destination_id': book_obj.destination_id and book_obj.destination_id.id or False,
+            'departure_date': str(book_obj.departure_date),
+            'arrival_date': book_obj.arrival_date,
             'booker_id': book_obj.booker_id and book_obj.booker_id.id or False,
             'contact_id': book_obj.contact_id and book_obj.contact_id.id or False,
             'contact_title': book_obj.contact_title,
             'contact_email': book_obj.contact_email,
             'contact_phone': book_obj.contact_phone,
+            'is_invoice_created': book_obj.is_invoice_created,
             'state': book_obj.state,
-            'state_groupbooking': book_obj.state_groupbooking
+
+            'journey_type': book_obj.journey_type,
+            'cabin_class': book_obj.cabin_class,
+            'carrier_code_id': book_obj.carrier_code_id.id,
+            'groupbooking_provider_type': book_obj.groupbooking_provider_type,
+            'state_groupbooking': book_obj.state_groupbooking,
+            'return_date': str(book_obj.return_date) if book_obj.return_date else False
         }
-        new_book_obj = self.env['tt.reservation.groupbooking'].sudo().create(new_vals)
-        print(book_obj.split_to_resv_ids)
-        new_book_obj.update({
-            'total': self.total_price,
-            'total_commission_amount': self.new_commission
-        })
-        new_book_obj.update({
-            'split_from_resv_id': book_obj.id
-        })
-        book_obj.update({
-            'vendor_amount': book_obj.vendor_amount - self.vendor_amount,
-            'total': book_obj.total - self.total_price,
-            'total_commission_amount': book_obj.total_commission_amount - self.new_commission
-        })
 
-        # jika provider only
-        if len(pax_list) <= 0:
-            for rec in self.provider_ids:
-                for rec2 in book_obj.provider_booking_ids:
-                    if rec2.pnr == rec.pnr:
-                        rec2.booking_id = new_book_obj.id
+        new_book_obj = self.env['tt.reservation.groupbooking'].create(new_vals)
+        if self.is_split_provider and self.is_split_passenger:
+            aff_pnr_list = []
+            aff_prov_list = []
+            new_aff_prov_list = []
 
-            for rec in self.provider_ids:
-                for rec2 in book_obj.line_ids:
-                    if rec2.pnr == rec.pnr:
-                        rec2.booking_id = new_book_obj.id
-
-            for prov_pax in book_obj.passenger_ids:
-                self.env['tt.reservation.passenger.groupbooking'].sudo().create({
-                    'booking_id': new_book_obj.id,
-                    'first_name': prov_pax.first_name,
-                    'last_name': prov_pax.last_name,
-                    'name': prov_pax.name,
-                    'title': prov_pax.title,
-                    'pax_type': prov_pax.pax_type,
-                    'agent_id': prov_pax.agent_id.id,
-                    'gender': prov_pax.gender,
-                    'birth_date': prov_pax.birth_date,
-                    'sequence': prov_pax.sequence,
-                    'passenger_id': prov_pax.passenger_id and prov_pax.passenger_id.id or False,
-                })
-
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    scs.unlink()
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    scs.unlink()
-
-            for provider in book_obj.provider_booking_ids:
-                # provider.create_service_charge()
-                self.create_service_charge_split_groupbooking(provider, pax_list, provider_list, book_obj.passenger_ids,
-                                                         book_obj, 'old')
-            for provider in new_book_obj.provider_booking_ids:
-                # provider.create_service_charge()
-                self.create_service_charge_split_groupbooking(provider, pax_list, provider_list, new_book_obj.passenger_ids,
-                                                         new_book_obj, 'new')
-
-            self.round_service_charge(book_obj, new_book_obj)
-
-            book_obj.calculate_service_charge()
-            new_book_obj.calculate_service_charge()
-
-            book_obj.get_provider_name_from_provider()
-            book_obj.get_pnr_list_from_provider()
-            book_obj.get_carrier_name()
-            new_book_obj.get_provider_name_from_provider()
-            new_book_obj.get_pnr_list_from_provider()
-            new_book_obj.get_carrier_name()
-
-            book_obj._get_agent_commission()
-            new_book_obj._get_agent_commission()
-
-            if book_obj.ledger_ids:
-                for led in book_obj.ledger_ids:
-                    if not led.is_reversed:
-                        led.reverse_ledger()
-                for prov in book_obj.provider_booking_ids:
-                    prov.action_create_ledger(book_obj.issued_uid.id)
-                for prov in new_book_obj.provider_booking_ids:
-                    prov.action_create_ledger(new_book_obj.issued_uid.id)
-
-        # jika pax only
-        elif len(provider_list) <= 0:
-            old_pnr_list = []
+            tot_adult = 0
+            tot_child = 0
+            tot_infant = 0
+            moved_pax_list = []
             old_provider_list = []
-            provider_dict = {}
-            line_list = []
-
-            for line in book_obj.line_ids:
-                if line.pnr in old_pnr_list:
-                    old_pnr_list.append(line.pnr)
-
-            for rec2 in book_obj.line_ids:
-                line_list.append(rec2)
-
-            for line in line_list:
-                for old_pnr in old_pnr_list:
-                    for new_pnr in new_pnr_list:
-                        if old_pnr_list.index(old_pnr) == new_pnr_list.index(new_pnr):
-                            line.pnr = new_pnr
-
-            if line_list:
-                if book_obj.groupbooking_provider_type in ['airline', 'train']:
-                    last_pnr = ''
-                    for idx, line in enumerate(line_list):
-                        if last_pnr == line.pnr:
-                            self.input_new_line(line, last_pnr, new_book_obj.groupbooking_provider_type, new_book_obj)
-                        else:
-                            self.input_new_line(line, new_pnr_list[idx], new_book_obj.groupbooking_provider_type, new_book_obj)
-                            last_pnr = line.pnr
-                else:
-                    for idx, line in enumerate(line_list):
-                        self.input_new_line(line, new_pnr_list[idx], new_book_obj.groupbooking_provider_type, new_book_obj)
-
-            # Pindahkan pax yang dipilih dari wizard ke booking baru
-            for prov_pax in book_obj.passenger_ids:
-                # Jika pax ada di dalam self.passenger_ids
-                if prov_pax.id in self.passenger_ids.ids:
-                    prov_pax.booking_id = new_book_obj.id
-
-            # Buat provider baru di booking baru, sesuai dg urutan PNR yang diinput di wizard
-            for rec in book_obj.provider_booking_ids:
-                if rec.id not in old_provider_list:
-                    old_provider_list.append(rec.id)
-                    prov_val = {
-                        'sequence': rec.sequence,
-                        'booking_id': new_book_obj.id,
-                        'state': rec.state,
-                        'pnr': new_pnr_dict[rec.pnr],
-                        'pnr2': new_pnr_dict[rec.pnr],
-                        'provider_id': rec.provider_id and rec.provider_id.id or False,
-                        'hold_date': rec.hold_date,
-                        # 'expired_date': rec.expired_date,
-                        'issued_uid': rec.issued_uid and rec.issued_uid.id or False,
-                        'issued_date': rec.issued_date,
-                        'confirm_uid': rec.confirm_uid and rec.confirm_uid.id or False,
-                        'confirm_date': rec.confirm_date,
-                        'sent_uid': rec.sent_uid and rec.sent_uid.id or False,
-                        'sent_date': rec.sent_date,
-                        'currency_id': rec.currency_id and rec.currency_id.id or False,
-                    }
-                    new_prov_obj = self.env['tt.provider.groupbooking'].sudo().create(prov_val)
-                    provider_dict.update({
-                        str(rec.id): new_prov_obj.id
-                    })
-
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    scs.unlink()
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    scs.unlink()
-
-            for provider in book_obj.provider_booking_ids:
-                # provider.create_service_charge()
-                self.create_service_charge_split_groupbooking(provider, pax_list, provider_list, book_obj.passenger_ids,
-                                                         book_obj, 'old')
-            for provider in new_book_obj.provider_booking_ids:
-                # provider.create_service_charge()
-                self.create_service_charge_split_groupbooking(provider, pax_list, provider_list, new_book_obj.passenger_ids,
-                                                         new_book_obj, 'new')
-
-            self.round_service_charge(book_obj, new_book_obj)
-
-            book_obj.calculate_service_charge()
-            new_book_obj.calculate_service_charge()
-
-            book_obj.get_provider_name_from_provider()
-            book_obj.get_pnr_list_from_provider()
-            book_obj.get_carrier_name()
-            new_book_obj.get_provider_name_from_provider()
-            new_book_obj.get_pnr_list_from_provider()
-            new_book_obj.get_carrier_name()
-
-            if book_obj.ledger_ids:
-                for led in book_obj.ledger_ids:
-                    if not led.is_reversed:
-                        led.reverse_ledger()
-                for prov in book_obj.provider_booking_ids:
-                    prov.action_create_ledger(book_obj.issued_uid.id)
-                for prov in new_book_obj.provider_booking_ids:
-                    prov.action_create_ledger(new_book_obj.issued_uid.id)
-
-        # jika both provider dan pax
-        else:
-            line_list = []
-            old_provider_list = []
-            old_pnr_list = []
             provider_dict = {}
             temp_pax_list = []
             temp_pax_dict = {}
 
+            unlink_provider_booking_ids = []
+            exists_passenger_ids = []
+            exists_passenger_type = {'ADT': 0, 'CHD': 0, 'INF': 0}
             for rec in book_obj.provider_booking_ids:
                 if rec.id in self.provider_ids.ids:
+                    if rec.pnr:
+                        if rec.pnr not in aff_pnr_list:
+                            aff_pnr_list.append(rec.pnr)
+                    else:
+                        if rec.sequence not in aff_pnr_list:
+                            aff_pnr_list.append(rec.sequence)
+                    aff_prov_list.append(rec)
+
+                    old_cost_list = []
+                    old_cost_dict = {}
+                    for rec2 in rec.cost_service_charge_ids:
+                        rec2.is_ledger_created = False
+                        for prov_pax in rec2.passenger_groupbooking_ids:
+                            if prov_pax.id in self.passenger_ids.ids:
+                                if prov_pax.id not in temp_pax_list:
+                                    new_pax_obj = self.env['tt.reservation.passenger.groupbooking'].sudo().create({
+                                        'booking_id': new_book_obj.id,
+                                        'first_name': prov_pax.first_name,
+                                        'last_name': prov_pax.last_name,
+                                        'name': prov_pax.name,
+                                        'title': prov_pax.title,
+                                        'gender': prov_pax.gender,
+                                        'birth_date': prov_pax.birth_date,
+                                        'sequence': prov_pax.sequence,
+                                        'nationality_id': prov_pax.nationality_id and prov_pax.nationality_id.id or False,
+                                        'customer_id': prov_pax.customer_id and prov_pax.customer_id.id or False,
+                                        'identity_type': prov_pax.identity_type,
+                                        'identity_number': prov_pax.identity_number,
+                                        'identity_expdate': prov_pax.identity_expdate,
+                                        'identity_country_of_issued_id': prov_pax.identity_country_of_issued_id and prov_pax.identity_country_of_issued_id.id or False,
+                                    })
+                                    temp_pax_list.append(prov_pax.id)
+                                    temp_pax_dict.update({
+                                        str(prov_pax.id): new_pax_obj.id
+                                    })
+                                else:
+                                    new_pax_obj = self.env['tt.reservation.passenger.groupbooking'].sudo().browse(
+                                        int(temp_pax_dict[str(prov_pax.id)]))
+
+                                if rec2.id not in old_cost_list:
+                                    cost_val = {
+                                        'charge_code': rec2.charge_code,
+                                        'charge_type': rec2.charge_type,
+                                        'pax_type': rec2.pax_type,
+                                        'currency_id': rec2.currency_id and rec2.currency_id.id or False,
+                                        'amount': rec2.amount,
+                                        'foreign_currency_id': rec2.foreign_currency_id and rec2.foreign_currency_id.id or False,
+                                        'foreign_amount': rec2.foreign_amount,
+                                        'sequence': rec2.sequence,
+                                        'pax_count': 1,
+                                        'total': rec2.amount * 1,
+                                        'commission_agent_id': rec2.commission_agent_id and rec2.commission_agent_id.id or False,
+                                        'passenger_groupbooking_ids': [(4, new_pax_obj.id)]
+                                    }
+                                    new_cost_obj = self.env['tt.service.charge'].sudo().create(cost_val)
+                                    old_cost_list.append(rec2.id)
+                                    old_cost_dict.update({
+                                        str(rec2.id): new_cost_obj.id
+                                    })
+                                else:
+                                    new_cost_obj = self.env['tt.service.charge'].sudo().browse(
+                                        int(old_cost_dict[str(rec2.id)]))
+                                    new_cost_obj.sudo().write({
+                                        'passenger_groupbooking_ids': [(4, new_pax_obj.id)],
+                                        'pax_count': new_cost_obj.pax_count + 1,
+                                        'total': new_cost_obj.amount * (new_cost_obj.pax_count + 1),
+                                    })
+
+                                cost_write_vals = {
+                                    'passenger_groupbooking_ids': [(3, prov_pax.id)],
+                                    'pax_count': rec2.pax_count - 1,
+                                    'total': rec2.amount * (rec2.pax_count - 1),
+                                }
+
+                                if (rec2.pax_count - 1) <= 0:
+                                    cost_write_vals.update({
+                                        'provider_groupbooking_booking_id': False
+                                    })
+
+                                rec2.sudo().write(cost_write_vals)
+
                     if rec.id not in old_provider_list:
                         old_provider_list.append(rec.id)
                         prov_val = {
@@ -795,94 +293,356 @@ class TtSplitReservationWizard(models.TransientModel):
                             'pnr2': new_pnr_dict[rec.pnr],
                             'provider_id': rec.provider_id and rec.provider_id.id or False,
                             'hold_date': rec.hold_date,
-                            # 'expired_date': rec.expired_date,
+                            'expired_date': rec.expired_date,
+                            'booked_uid': rec.booked_uid and rec.booked_uid.id or False,
+                            'booked_date': rec.booked_date,
                             'issued_uid': rec.issued_uid and rec.issued_uid.id or False,
-                            'issued_date': rec.issued_date,
-                            'confirm_uid': rec.confirm_uid and rec.confirm_uid.id or False,
-                            'confirm_date': rec.confirm_date,
-                            'sent_uid': rec.sent_uid and rec.sent_uid.id or False,
-                            'sent_date': rec.sent_date,
+                            'issued_date': datetime.now(),
+                            'refund_uid': rec.refund_uid and rec.refund_uid.id or False,
+                            'refund_date': rec.refund_date,
+                            'origin_id': rec.origin_id and rec.origin_id.id or False,
+                            'destination_id': rec.destination_id and rec.destination_id.id or False,
+                            'departure_date': rec.departure_date,
+                            'arrival_date': rec.arrival_date,
+                            'sid_issued': rec.sid_issued,
+                            'promotion_code': rec.promotion_code,
                             'currency_id': rec.currency_id and rec.currency_id.id or False,
                         }
                         new_prov_obj = self.env['tt.provider.groupbooking'].sudo().create(prov_val)
+                        new_aff_prov_list.append(new_prov_obj)
                         provider_dict.update({
                             str(rec.id): new_prov_obj.id
                         })
+                        for rec3 in rec.journey_ids:
+                            journey_val = {
+                                'booking_id': new_book_obj.id,
+                                'provider_booking_id': new_prov_obj.id,
+                                'sequence': rec3.sequence,
+                                'provider_id': rec3.provider_id and rec3.provider_id.id or False,
+                                'origin_id': rec3.origin_id and rec3.origin_id.id or False,
+                                'destination_id': rec3.destination_id and rec3.destination_id.id or False,
+                                'departure_date': rec3.departure_date,
+                                'arrival_date': rec3.arrival_date,
+                            }
+                            new_journey_obj = self.env['tt.journey.groupbooking'].sudo().create(journey_val)
+                            for rec4 in rec3.segment_ids:
+                                segment_val = {
+                                    'booking_id': new_book_obj.id,
+                                    'journey_id': new_journey_obj.id,
+                                    'segment_code': rec4.segment_code,
+                                    'fare_code': rec4.fare_code,
+                                    'sequence': rec4.sequence,
+                                    'name': rec4.name,
+                                    'carrier_id': rec4.carrier_id and rec4.carrier_id.id or False,
+                                    'carrier_code': rec4.carrier_code,
+                                    'carrier_number': rec4.carrier_number,
+                                    'provider_id': rec4.provider_id and rec4.provider_id.id or False,
+                                    'origin_id': rec4.origin_id and rec4.origin_id.id or False,
+                                    'destination_id': rec4.destination_id and rec4.destination_id.id or False,
+                                    'departure_date': rec4.departure_date,
+                                    'arrival_date': rec4.arrival_date,
+                                    'cabin_class': rec4.cabin_class,
+                                    'class_of_service': rec4.class_of_service,
+                                }
+                                new_segment_obj = self.env['tt.segment.groupbooking'].sudo().create(segment_val)
+                                for rec5 in rec4.leg_ids:
+                                    leg_val = {
+                                        'segment_id': new_segment_obj.id,
+                                        'leg_code': rec5.leg_code,
+                                        'provider_id': rec5.provider_id and rec5.provider_id.id or False,
+                                        'origin_id': rec5.origin_id and rec5.origin_id.id or False,
+                                        'destination_id': rec5.destination_id and rec5.destination_id.id or False,
+                                        'departure_date': rec5.departure_date,
+                                        'arrival_date': rec5.arrival_date,
+                                    }
+                                    new_leg_obj = self.env['tt.leg.groupbooking'].sudo().create(leg_val)
+                                for rec6 in rec4.seat_ids:
+                                    if rec6.passenger_id.id == rec.id:
+                                        rec6.segment_id = new_segment_obj.id
+                                for rec7 in rec4.segment_addons_ids:
+                                    addons_val = {
+                                        'segment_id': new_segment_obj.id,
+                                        'detail_code': rec7.detail_code,
+                                        'detail_type': rec7.detail_type,
+                                        'detail_name': rec7.detail_name,
+                                        'amount': rec7.amount,
+                                        'unit': rec7.unit,
+                                    }
+                                    new_addons_obj = self.env['tt.segment.addons.groupbooking'].sudo().create(addons_val)
 
+                        for val in old_cost_dict.values():
+                            dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
+                            dict_cost_obj.sudo().write({
+                                'provider_groupbooking_booking_id': new_prov_obj.id,
+                                'description': new_prov_obj.pnr
+                            })
+                    else:
+                        new_prov_obj = self.env['tt.provider.groupbooking'].sudo().browse(int(provider_dict[str(rec.id)]))
+                        new_aff_prov_list.append(new_prov_obj)
+                        for val in old_cost_dict.values():
+                            dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
+                            dict_cost_obj.sudo().write({
+                                'provider_groupbooking_booking_id': new_prov_obj.id,
+                                'description': new_prov_obj.pnr
+                            })
+
+                    for rec3 in rec.ticket_ids:
+                        if rec3.passenger_id.id in self.passenger_ids.ids:
+                            if rec3.passenger_id.id not in moved_pax_list:
+                                moved_pax_list.append(rec3.passenger_id.id)
+                                if rec3.pax_type == 'ADT':
+                                    tot_adult += 1
+                                elif rec3.pax_type == 'CHD':
+                                    tot_child += 1
+                                elif rec3.pax_type == 'INF':
+                                    tot_infant += 1
+                            rec3.provider_id = new_prov_obj.id
+                    if len(rec.ticket_ids) == 0:
+                        unlink_provider_booking_ids.append(rec.id)
+
+                for tkt in rec.ticket_ids:
+                    if tkt.passenger_id.id not in exists_passenger_ids:
+                        exists_passenger_ids.append(tkt.passenger_id.id)
+                        exists_passenger_type[tkt.pax_type] += 1
+            for x in unlink_provider_booking_ids:
+                book_obj.provider_booking_ids = [(3, x)]  # use 2 / 3
+
+            if len(book_obj.passenger_ids) != len(exists_passenger_ids):
+                for x in book_obj.passenger_ids:
+                    if x.id not in exists_passenger_ids:
+                        x.booking_id = False
+                        # x.unlink() # Pertimbangkan untuk remove object
+                book_obj.sudo().write({
+                    'adult': exists_passenger_type['ADT'],
+                    'child': exists_passenger_type['CHD'],
+                    'infant': exists_passenger_type['INF'],
+                })
+
+            new_book_obj.sudo().write({
+                'adult': int(tot_adult),
+                'child': int(tot_child),
+                'infant': int(tot_infant)
+            })
+
+            for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                led.reverse_ledger()
+            for aff_prov in aff_prov_list:
+                aff_prov.action_create_ledger(book_obj.issued_uid.id)
+            for aff_prov in new_aff_prov_list:
+                aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
+
+        elif self.is_split_provider:
+            aff_pnr_list = []
+            aff_prov_list = []
+            new_aff_prov_list = []
+            new_book_obj.sudo().write({
+                'adult': book_obj.adult,
+                'child': book_obj.child,
+                'infant': book_obj.infant
+            })
+            old_pax_id_list = []
+            old_pax_dict = {}
             for rec in self.provider_ids:
-                for rec2 in book_obj.line_ids:
+                for rec2 in book_obj.segment_ids:
                     if rec2.pnr == rec.pnr:
-                        # buat line baru
-                        line_list.append(rec2)
+                        rec2.booking_id = new_book_obj.id
+                for rec2 in book_obj.provider_booking_ids:
+                    if rec2.pnr == rec.pnr:
+                        rec2.booking_id = new_book_obj.id
+                        if rec2.pnr:
+                            if rec2.pnr not in aff_pnr_list:
+                                aff_pnr_list.append(rec2.pnr)
+                        else:
+                            if rec2.sequence not in aff_pnr_list:
+                                aff_pnr_list.append(rec2.sequence)
+                        new_aff_prov_list.append(rec2)
+                for rec2 in rec.cost_service_charge_ids:
+                    new_pax_id_list = []
+                    for rec3 in rec2.passenger_groupbooking_ids:
+                        if rec3.id not in old_pax_id_list:
+                            old_pax_id_list.append(rec3.id)
+                            pax_val = {
+                                'booking_id': new_book_obj.id,
+                                'name': rec3.name,
+                                'last_name': rec3.last_name,
+                                'title': rec3.title,
+                                'nationality_id': rec3.nationality_id and rec3.nationality_id.id or False,
+                                'identity_number': rec3.identity_number,
+                                'identity_country_of_issued_id': rec3.identity_country_of_issued_id and rec3.identity_country_of_issued_id.id or False,
+                                'sequence': rec3.sequence,
+                                'is_ticketed': rec3.is_ticketed,
+                                'first_name': rec3.first_name,
+                                'gender': rec3.gender,
+                                'birth_date': rec3.birth_date,
+                                'identity_type': rec3.identity_type,
+                                'identity_expdate': rec3.identity_expdate,
+                                'customer_id': rec3.customer_id and rec3.customer_id.id or False,
+                            }
+                            new_pax_obj = self.env['tt.reservation.passenger.groupbooking'].sudo().create(pax_val)
+                            old_pax_dict.update({
+                                str(rec3.id): new_pax_obj.id
+                            })
+                            new_pax_id_list.append(new_pax_obj.id)
+                            for rec4 in rec.ticket_ids:
+                                if rec4.passenger_id.id == rec3.id:
+                                    rec4.sudo().write({
+                                        'passenger_id': new_pax_obj.id
+                                    })
+                        else:
+                            new_pax_id_list.append(int(old_pax_dict[str(rec3.id)]))
+                    rec2.sudo().write({
+                        'passenger_groupbooking_ids': [(6,0,new_pax_id_list)]
+                    })
 
-            if line_list:
-                if book_obj.groupbooking_provider_type in ['airline', 'train']:
-                    last_pnr = ''
-                    idx = -1
-                    for line in line_list:
-                        if last_pnr != line.pnr:
-                            last_pnr = line.pnr
-                            idx += 1
-                        self.input_new_line(line, new_pnr_list[idx], new_book_obj.groupbooking_provider_type, new_book_obj)
+            for rec in new_book_obj.provider_booking_ids:
+                for rec2 in rec.cost_service_charge_ids:
+                    rec2.is_ledger_created = False
+
+            for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                led.reverse_ledger()
+            for aff_prov in aff_prov_list:
+                aff_prov.action_create_ledger(book_obj.issued_uid.id)
+            for aff_prov in new_aff_prov_list:
+                aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
+
+        elif self.is_split_passenger:
+            aff_pnr_list = []
+            aff_prov_list = []
+            new_aff_prov_list = []
+
+            tot_adult = 0
+            tot_child = 0
+            tot_infant = 0
+            moved_pax_list = []
+            old_provider_list = []
+            provider_dict = {}
+            for rec in book_obj.provider_booking_ids:
+                if rec.pnr:
+                    if rec.pnr not in aff_pnr_list:
+                        aff_pnr_list.append(rec.pnr)
                 else:
-                    for idx, line in enumerate(line_list):
-                        self.input_new_line(line, new_pnr_list[idx], new_book_obj.groupbooking_provider_type, new_book_obj)
+                    if rec.sequence not in aff_pnr_list:
+                        aff_pnr_list.append(rec.sequence)
+                aff_prov_list.append(rec)
 
-            for prov_pax in book_obj.passenger_ids:
-                if prov_pax.id in self.passenger_ids.ids:
-                    # Catat data pax. jika pax belum ada, buat pax baru di new res.
-                    if prov_pax.id not in temp_pax_list:
-                        new_pax_obj = self.env['tt.reservation.passenger.groupbooking'].sudo().create({
-                            'booking_id': new_book_obj.id,
-                            'first_name': prov_pax.first_name,
-                            'last_name': prov_pax.last_name,
-                            'name': prov_pax.name,
-                            'title': prov_pax.title,
-                            'pax_type': prov_pax.pax_type,
-                            'agent_id': prov_pax.agent_id.id,
-                            'gender': prov_pax.gender,
-                            'birth_date': prov_pax.birth_date,
-                            'sequence': prov_pax.sequence,
-                            'passenger_id': prov_pax.passenger_id and prov_pax.passenger_id.id or False,
+                old_cost_list = []
+                old_cost_dict = {}
+                for rec2 in rec.cost_service_charge_ids:
+                    rec2.is_ledger_created = False
+                    for prov_pax in rec2.passenger_groupbooking_ids:
+                        if prov_pax.id in self.passenger_ids.ids:
+                            prov_pax.booking_id = new_book_obj.id
+                            if rec2.id not in old_cost_list:
+                                cost_val = {
+                                    'charge_code': rec2.charge_code,
+                                    'charge_type': rec2.charge_type,
+                                    'pax_type': rec2.pax_type,
+                                    'currency_id': rec2.currency_id and rec2.currency_id.id or False,
+                                    'amount': rec2.amount,
+                                    'foreign_currency_id': rec2.foreign_currency_id and rec2.foreign_currency_id.id or False,
+                                    'foreign_amount': rec2.foreign_amount,
+                                    'sequence': rec2.sequence,
+                                    'pax_count': 1,
+                                    'total': rec2.amount * 1,
+                                    'commission_agent_id': rec2.commission_agent_id and rec2.commission_agent_id.id or False,
+                                    'passenger_groupbooking_ids': [(4, prov_pax.id)]
+                                }
+                                new_cost_obj = self.env['tt.service.charge'].sudo().create(cost_val)
+                                old_cost_list.append(rec2.id)
+                                old_cost_dict.update({
+                                    str(rec2.id): new_cost_obj.id
+                                })
+                            else:
+                                new_cost_obj = self.env['tt.service.charge'].sudo().browse(int(old_cost_dict[str(rec2.id)]))
+                                new_cost_obj.sudo().write({
+                                    'passenger_groupbooking_ids': [(4, prov_pax.id)],
+                                    'pax_count': new_cost_obj.pax_count + 1,
+                                    'total': new_cost_obj.amount * (new_cost_obj.pax_count + 1),
+                                })
+
+                            cost_write_vals = {
+                                'passenger_groupbooking_ids': [(3, prov_pax.id)],
+                                'pax_count': rec2.pax_count - 1,
+                                'total': rec2.amount * (rec2.pax_count - 1),
+                            }
+
+                            if (rec2.pax_count - 1) <= 0:
+                                cost_write_vals.update({
+                                    'provider_groupbooking_booking_id': False
+                                })
+
+                            rec2.sudo().write(cost_write_vals)
+
+                if rec.id not in old_provider_list:
+                    old_provider_list.append(rec.id)
+                    prov_val = {
+                        'sequence': rec.sequence,
+                        'booking_id': new_book_obj.id,
+                        'state': rec.state,
+                        'pnr': new_pnr_dict[rec.pnr],
+                        'pnr2': new_pnr_dict[rec.pnr],
+                        'provider_id': rec.provider_id and rec.provider_id.id or False,
+                        'hold_date': rec.hold_date,
+                        'expired_date': rec.expired_date,
+                        'confirm_uid': rec.confirm_uid and rec.confirm_uid.id or False,
+                        'confirm_date': datetime.now(),
+                        'sent_uid': rec.sent_uid and rec.sent_uid.id or False,
+                        'sent_date': datetime.now(),
+                        'issued_uid': rec.issued_uid and rec.issued_uid.id or False,
+                        'issued_date': datetime.now(),
+                        'refund_uid': rec.refund_uid and rec.refund_uid.id or False,
+                        'refund_date': rec.refund_date,
+                        'sid_issued': rec.sid_issued,
+                        'promotion_code': rec.promotion_code,
+                        'currency_id': rec.currency_id and rec.currency_id.id or False,
+                    }
+                    new_prov_obj = self.env['tt.provider.groupbooking'].sudo().create(prov_val)
+                    new_aff_prov_list.append(new_prov_obj)
+                    provider_dict.update({
+                        str(rec.id): new_prov_obj.id
+                    })
+
+                    for val in old_cost_dict.values():
+                        dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
+                        dict_cost_obj.sudo().write({
+                            'provider_groupbooking_booking_id': new_prov_obj.id,
+                            'description': new_prov_obj.pnr
                         })
-                        temp_pax_list.append(prov_pax.id)
-                        temp_pax_dict.update({
-                            str(prov_pax.id): new_pax_obj.id
+                else:
+                    new_prov_obj = self.env['tt.provider.groupbooking'].sudo().browse(int(provider_dict[str(rec.id)]))
+                    new_aff_prov_list.append(new_prov_obj)
+                    for val in old_cost_dict.values():
+                        dict_cost_obj = self.env['tt.service.charge'].sudo().browse(int(val))
+                        dict_cost_obj.sudo().write({
+                            'provider_groupbooking_booking_id': new_prov_obj.id,
+                            'description': new_prov_obj.pnr
                         })
 
-            for provider in book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    scs.unlink()
-            for provider in new_book_obj.provider_booking_ids:
-                for scs in provider.cost_service_charge_ids:
-                    scs.unlink()
+            new_book_obj.sudo().write({
+                'adult': int(tot_adult),
+                'child': int(tot_child),
+                'infant': int(tot_infant)
+            })
+            book_obj.sudo().write({
+                'adult': int(book_obj.adult) - int(tot_adult),
+                'child': int(book_obj.child) - int(tot_child),
+                'infant': int(book_obj.infant) - int(tot_infant)
+            })
 
-            for provider in book_obj.provider_booking_ids:
-                # provider.create_service_charge()
-                self.create_service_charge_split_groupbooking(provider, pax_list, provider_list, book_obj.passenger_ids,
-                                                         book_obj, 'old')
-            for provider in new_book_obj.provider_booking_ids:
-                # provider.create_service_charge()
-                self.create_service_charge_split_groupbooking(provider, pax_list, provider_list, new_book_obj.passenger_ids,
-                                                         new_book_obj, 'new')
+            for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                led.reverse_ledger()
+            for aff_prov in aff_prov_list:
+                aff_prov.action_create_ledger(book_obj.issued_uid.id)
+            for aff_prov in new_aff_prov_list:
+                aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
 
-            self.round_service_charge(book_obj, new_book_obj)
+        book_obj.calculate_service_charge()
+        new_book_obj.calculate_service_charge()
 
-            book_obj.calculate_service_charge()
-            new_book_obj.calculate_service_charge()
+        provider_state_context = {
+            'co_uid': self.env.user.id,
+            'co_agent_id': self.env.user.agent_id.id,
+        }
 
-            book_obj.get_provider_name_from_provider()
-            book_obj.get_pnr_list_from_provider()
-            book_obj.get_carrier_name()
-            new_book_obj.get_provider_name_from_provider()
-            new_book_obj.get_pnr_list_from_provider()
-            new_book_obj.get_carrier_name()
-
-            if book_obj.ledger_ids:
-                for led in book_obj.ledger_ids:
-                    if not led.is_reversed:
-                        led.reverse_ledger()
-                for prov in book_obj.provider_booking_ids:
-                    prov.action_create_ledger(book_obj.issued_uid.id)
-                for prov in new_book_obj.provider_booking_ids:
-                    prov.action_create_ledger(new_book_obj.issued_uid.id)
+        book_obj.check_provider_state(context=provider_state_context)
+        new_book_obj.check_provider_state(context=provider_state_context)

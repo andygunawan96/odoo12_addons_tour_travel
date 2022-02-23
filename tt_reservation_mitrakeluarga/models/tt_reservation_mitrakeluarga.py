@@ -922,8 +922,8 @@ class ReservationMitraKeluarga(models.Model):
             pdf_report_bytes = mitrakeluarga_ho_invoice_id.render_qweb_pdf(data=pdf_report)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Swab Express HO Invoice %s.pdf' % self.name,
-                    'file_reference': 'Swab Express HO Invoice',
+                    'filename': 'Mitra Keluarga HO Invoice %s.pdf' % self.name,
+                    'file_reference': 'Mitra Keluarga HO Invoice',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)
                 },
@@ -961,7 +961,7 @@ class ReservationMitraKeluarga(models.Model):
         datas['is_with_price'] = True
         mitrakeluarga_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_medical')
 
-        if not book_obj.printout_ho_invoice_id:
+        if not book_obj.printout_itinerary_id:
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -991,12 +991,12 @@ class ReservationMitraKeluarga(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_ho_invoice_id = upc_id.id
+            book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_ho_invoice_id.url,
+            'url': book_obj.printout_itinerary_id.url,
         }
         return url
 
