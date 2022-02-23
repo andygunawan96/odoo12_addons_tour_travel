@@ -24,6 +24,7 @@ Key Features
         'data/ir_sequence_data.xml',
         'data/tt_provider_type_data.xml',
         'data/ir_send_email.xml',
+        'data/ir_cron_data.xml',
         'views/tt_reservation_groupbooking_menuheader.xml',
         'views/group_booking_views.xml',
         'views/tt_reservation_groupbooking_passenger_views.xml',

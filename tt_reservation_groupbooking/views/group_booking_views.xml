@@ -71,9 +71,31 @@
                     <button string="Set to Sent" name="action_sent_groupbooking" groups="tt_base.group_tt_tour_travel" type="object"/>
                     <button string="Set to Issued Installment" name="action_issued_installment_groupbooking" groups="tt_base.group_tt_tour_travel" type="object"/>
                     <button string="Set to Done" name="action_done_groupbooking" groups="tt_base.group_tt_tour_travel" type="object"/>
+                    <button string="Split Reservation" name="%(tt_reservation_groupbooking.tt_split_reservation_groupbooking_wizard_action_view)d" type="action" groups="tt_base.group_reservation_level_4"
+                        context="{
+                        'default_res_id': id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                   }"/>
                     <field name="state_groupbooking" widget="statusbar" statusbar_visible="draft,confirm,booked,sent,issued,issued_installment,done"/>
                     <!--<field name="state" invisible="1"/>-->
                 </header>
+                <xpath expr="//field[@name='state']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+
+                    <button name="print_eticket_original"
+                            class="oe_stat_button" states="issued,done"
+                            string="Get Original Ticket" type="object" icon="fa-print"/>
+                    <button name="print_ho_invoice"
+                            class="oe_stat_button" states="issued,done"
+                            string="Print Invoice (HO)" type="object" icon="fa-print"
+                            groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                    <button name="print_itinerary"
+                            class="oe_stat_button" states="booked,issued,done"
+                            string="Print Itinerary" type="object" icon="fa-print"/>
+                </xpath>
                 <xpath expr="//group[@name='paxgroup']" position="before">
                     <separator string="Information"/>
                     <group>
@@ -87,8 +109,8 @@
 
                         <field name="departure_date" />
                         <field name="return_date" attrs="{'invisible': [('journey_type', '!=', 'rt')]}"/>
-                        <field name="price_pick_departure_id" />
-                        <field name="price_pick_return_id" attrs="{'invisible': [('journey_type', '!=', 'rt')]}"/>
+                        <field name="price_pick_departure_id"  context="{'form_view_ref': 'tt_reservation_groupbooking.tt_fare_groupbooking_pick_view_form'}"/>
+                        <field name="price_pick_return_id" attrs="{'invisible': [('journey_type', '!=', 'rt')]}" context="{'form_view_ref': 'tt_reservation_groupbooking.tt_fare_groupbooking_pick_view_form'}"/>
                     </group>
                     <group>
                         <field name="payment_rules_id" />

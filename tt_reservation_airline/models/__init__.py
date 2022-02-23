@@ -13,4 +13,5 @@ from . import tt_fee_airline
 from . import tt_promo_code_airline
 from . import tt_frequent_flyer_airline
 from . import tt_ff_passenger_airline
+from . import tt_banner_airline
 from . import tt_cron_log

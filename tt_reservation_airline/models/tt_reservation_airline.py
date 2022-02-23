@@ -1352,6 +1352,7 @@ class ReservationAirline(models.Model):
             pricing_data = None
             for journey in schedule['journeys']:
                 ##create journey
+                this_journey_banner = []
                 this_journey_seg = []
                 this_journey_seg_sequence = 0
                 for segment in journey['segments']:
@@ -1458,6 +1459,16 @@ class ReservationAirline(models.Model):
                     }
                     segment_values.update(fare_data)
                     this_journey_seg.append((0, 0, segment_values))
+
+                for banner in journey['search_banner']:
+                    this_journey_banner.append((0,0,{
+                        "name": banner['name'],
+                        "banner_color": banner['banner_color'],
+                        "description": banner['description'],
+                        "text_color": banner['text_color'],
+                        "minimum_days": banner['minimum_days']
+                    }))
+
                 journey_sequence+=1
 
                 dest_idx = self.pick_destination(this_journey_seg)
@@ -1471,6 +1482,7 @@ class ReservationAirline(models.Model):
                     'arrival_date': this_journey_seg[-1][2]['arrival_date'],
                     'segment_ids': this_journey_seg,
                     'journey_code': journey.get('journey_code',''),
+                    'banner_ids': this_journey_banner
                 }))
 
             JRN_len = len(this_pnr_journey)

@@ -48,6 +48,7 @@ Key Features
         'views/tt_journey_views.xml',
         'views/tt_segment_views.xml',
         'views/tt_leg_views.xml',
+        'views/tt_banner_views.xml',
         'views/tt_service_charge_views.xml',
         'views/tt_segment_addons_views.xml',
         'views/tt_fee_airline_views.xml',

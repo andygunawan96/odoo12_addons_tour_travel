@@ -50,13 +50,12 @@ class InstallmentInvoice(models.Model):
         })
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            action_num = self.env.ref('tt_reservation_tour.tt_reservation_tour_view_action_all').id
-            menu_num = self.env.ref('tt_reservation_tour.submenu_reservation_tour_all').id
+            action_num = self.env.ref('tt_reservation_groupbooking.issued_groupbooking_all_action').id
+            menu_num = self.env.ref('tt_reservation_groupbooking.submenu_issued_groupbooking_side_menu_all').id
 
             data = {
-                'url': base_url + "/web#id=" + str(self.booking_id.id) + "&action=" + str(action_num) + "&model=tt.reservation.tour&view_type=form&menu_id=" + str(menu_num),
+                'url': base_url + "/web#id=" + str(self.booking_id.id) + "&action=" + str(action_num) + "&model=tt.reservation.groupbooking&view_type=form&menu_id=" + str(menu_num),
                 'order_number': self.booking_id.name,
-                'tour_name': self.booking_id.tour_id.name,
                 'due_date': self.due_date
             }
 
@@ -64,7 +63,7 @@ class InstallmentInvoice(models.Model):
                 'co_uid': self.env.user.id,
                 'co_user_name': self.env.user.name,
             }
-            self.env['tt.tour.api.con'].send_tour_payment_expired_notification(data, context)
+            self.env['tt.groupbooking.api.con'].send_groupbooking_payment_expired_notification(data, context)
         except Exception as e:
             _logger.error("Send Tour Payment Expired Notification Telegram Error\n" + traceback.format_exc())
 
@@ -102,10 +101,13 @@ class InstallmentInvoice(models.Model):
                     if rec.due_date < self.due_date:
                         raise UserError(_('Please pay the previous installment first!'))
             for rec in self.booking_id.provider_booking_ids:
-                rec.action_create_installment_ledger(self.booking_id.issued_uid.id, self.payment_rules_id.id, commission_ledger)
+                #bug index kalau di issued state kembali lalu issued lagi karena installment ke buat 2x mungkin installment harus di hapus bikin lagi, dan ledger di reverse kalau state kembali ke sent
+                rec.action_create_installment_ledger(self.booking_id.issued_uid.id, self.payment_rules_id.id, (len(not_paid_installments)*-1) -1, self.amount, commission_ledger)
             self.sudo().write({
                 'state_invoice': 'done'
             })
+            if commission_ledger: #payment installment terakhir
+                self.booking_id.state_groupbooking = 'done'
         else:
             raise UserError(
                 _('This installment cannot be paid.'))

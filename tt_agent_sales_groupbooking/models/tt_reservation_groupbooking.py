@@ -1,5 +1,5 @@
 from odoo import models,api,fields
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 
 class ReservationGroupBooking(models.Model):
@@ -101,7 +101,7 @@ class ReservationGroupBooking(models.Model):
                 'agent_invoice_id': invoice_id.id,
                 'booking_id': self.id,
                 'amount': inv_line_obj.total,
-                'due_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'due_date': (datetime.now() + timedelta(days=rec.due_date)).strftime('%Y-%m-%d %H:%M:%S'),
                 'description': rec.name,
                 'state_invoice': state_invoice,
                 'payment_rules_id': payment_rules.id,

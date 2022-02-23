@@ -49,3 +49,11 @@ class TtOfflineApiCon(models.Model):
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
                                             ,'notification_code')
+
+    def send_groupbooking_payment_expired_notification(self,data,context):
+        request = {
+            'code': 9901,
+            'message': 'Group Booking Payment Expired: {}\n\nOrder Number : {}\nDue Date : {}'.format(data['url'], data['order_number'],data['due_date']),
+            "title": 'GROUPBOOKING PAYMENT EXPIRED'
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
