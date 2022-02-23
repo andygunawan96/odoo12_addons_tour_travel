@@ -147,10 +147,12 @@ class TtReservationRequest(models.Model):
     def get_issued_request_list_api(self, req, context):
         try:
             if context.get('co_customer_parent_id') and context.get('co_hierarchy_sequence'):
-                request_list = self.search([('agent_id', '=', context['co_agent_id']),
-                                            ('customer_parent_id', '=', context['co_customer_parent_id']),
-                                            ('state', 'in', ['draft', 'on_process']),
-                                            ('cur_approval_seq', '>', context['co_hierarchy_sequence'])])
+                search_params = [('agent_id', '=', context['co_agent_id']),
+                                ('customer_parent_id', '=', context['co_customer_parent_id'])]
+                if req.get('is_open'):
+                    search_params += [('state', 'in', ['draft', 'on_process']),
+                                      ('cur_approval_seq', '>', context['co_hierarchy_sequence'])]
+                request_list = self.search(search_params)
                 prev_hierarchy = self.env['tt.customer.job.hierarchy'].search([
                     ('sequence', '>', context['co_hierarchy_sequence'])], order='sequence', limit=1)
                 prev_hi_seq = prev_hierarchy and prev_hierarchy[0].sequence or context['co_hierarchy_sequence'] + 1
@@ -159,8 +161,12 @@ class TtReservationRequest(models.Model):
             res = []
             for rec in request_list:
                 temp_dict = rec.to_dict(False)
+                if rec.state in ['draft', 'on_process'] and rec.cur_approval_seq == prev_hi_seq:
+                    dir_approval = True
+                else:
+                    dir_approval = False
                 temp_dict.update({
-                    'direct_approval': rec.cur_approval_seq == prev_hi_seq and True or False
+                    'direct_approval': dir_approval
                 })
                 res.append(temp_dict)
             return ERR.get_no_error(res)
