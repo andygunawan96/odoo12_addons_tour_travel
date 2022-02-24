@@ -485,7 +485,8 @@ class TtVoucherDetail(models.Model):
     voucher_period_reference = fields.Char("Voucher Period Reference", required=True)
     voucher_start_date = fields.Datetime("Voucher valid from")
     voucher_expire_date = fields.Datetime("Voucher valid until")
-    voucher_used = fields.Integer("Voucher use")
+    voucher_apply = fields.Integer("Voucher apply", help="Reservation booked")
+    voucher_used = fields.Integer("Voucher use", help="Reservation Issued")
     voucher_quota = fields.Integer("Voucher quota")
     voucher_blackout_ids = fields.One2many("tt.voucher.detail.blackout", 'voucher_detail_id')
     voucher_used_ids = fields.One2many("tt.voucher.detail.used", "voucher_detail_id")
@@ -1190,14 +1191,15 @@ class TtVoucherDetail(models.Model):
                 _logger.error("%s Voucher has no value left :(" % data['voucher_reference'])
                 # return error
                 return ERR.get_error(additional_message="Voucher has no value left")
-        else:
-            # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
-            if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
-                # o no the voucher is up
-                # write to logger
-                _logger.error("%s No More Voucher :(" % data['voucher_reference'])
-                # return error
-                return ERR.get_error(additional_message="Voucher sold out")
+        ### VOUCHER DAPAT DI APPLY BANYAK RESERVASI HANYA YG USE MENGIKUTI VOUCHER QUOTA
+        # else:
+        #     # okay okay so the voucher is there, the date is within the voucher date, then we should look f there's voucher left
+        #     if voucher_detail.voucher_apply >= voucher_detail.voucher_quota:
+        #         # o no the voucher is up
+        #         # write to logger
+        #         _logger.error("%s No More Voucher :(" % data['voucher_reference'])
+        #         # return error
+        #         return ERR.get_error(additional_message="Voucher sold out")
 
         # check agent
         agent_to_validate = {
@@ -1322,6 +1324,11 @@ class TtVoucherDetail(models.Model):
             'is_agent': voucher_detail.is_agent
         }
 
+        ##KALAU ADA ORDER NUMBER PASANG VOUCHER DI RESERVASI
+        if data.get('order_number'):
+            book_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name','=',data['order_number'])],limit=1)
+            if book_obj:
+                book_obj.add_voucher(data['voucher_reference'], context)
         return ERR.get_no_error(result)
 
     def create_voucher_detail(self, data):
@@ -1389,7 +1396,7 @@ class TtVoucherDetail(models.Model):
     # Main function that's being called for voucher
     # well other than simulate_voucher_api, that's being called before order being booked
     ###############################################
-    def use_voucher_new(self, data, context):
+    def use_voucher_new(self, data, context, type):
         try:
             # check if there's data being pass from frontend/gateway
             if data == None:
@@ -1442,7 +1449,8 @@ class TtVoucherDetail(models.Model):
                     'voucher_provider': provider.id,
                     'currency': voucher.currency_id.id,
                     'voucher_usage': discount_total,
-                    'order_number': data['order_number']
+                    'order_number': data['order_number'],
+                    'type': type
                 }
 
                 # create used voucher data
@@ -1467,9 +1475,11 @@ class TtVoucherDetail(models.Model):
                     else:
                         # assuming other voucher are normal boring voucher
                         # then we'll add number of usage for that particular voucher
-                        number_of_use = voucher_detail.voucher_used + 1
+                        # number_of_use = voucher_detail.voucher_used + 1
+
                         voucher_detail.write({
-                            'voucher_used': number_of_use
+                            'voucher_apply': len(voucher_detail.voucher_used_ids),
+                            'voucher_used': len(voucher_detail.voucher_used_ids.filtered(lambda x: x.type == 'use'))
                         })
                         if voucher_detail.voucher_used >= voucher_detail.voucher_quota:
                             voucher_detail.state = 'done'
@@ -1549,6 +1559,7 @@ class TtVoucherusedDetail(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency')
     voucher_usage = fields.Monetary('Voucher Usage', readonly=True)
     voucher_remainder = fields.Monetary('Voucher Remainder', readonly=True)
+    type = fields.Selection([('use', 'Use'), ('apply', 'Apply')])
 
     def add_voucher_used_detail(self, data):
         result = self.env['tt.voucher.detail.used'].create({
@@ -1560,7 +1571,8 @@ class TtVoucherusedDetail(models.Model):
             'voucher_provider_id': int(data['voucher_provider']),
             'currency_id': int(data['currency']),
             'voucher_usage': data['voucher_usage'],
-            'order_number': data['order_number']
+            'order_number': data['order_number'],
+            'type': data['type']
         })
 
         return result

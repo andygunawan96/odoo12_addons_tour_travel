@@ -27,6 +27,7 @@
                 <field name="voucher_period_reference"/>
                 <field name="voucher_start_date"/>
                 <field name="voucher_expire_date"/>
+                <field name="voucher_apply"/>
                 <field name="voucher_used"/>
                 <field name="voucher_quota"/>
                 <field name="state"/>
@@ -57,6 +58,7 @@
                         <field name="voucher_period_reference"/>
                         <field name="voucher_start_date"/>
                         <field name="voucher_expire_date"/>
+                        <field name="voucher_apply"/>
                         <field name="voucher_used"/>
                         <field name="voucher_quota"/>
                     </group>
