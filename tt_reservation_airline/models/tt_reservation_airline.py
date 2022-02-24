@@ -1460,7 +1460,7 @@ class ReservationAirline(models.Model):
                     segment_values.update(fare_data)
                     this_journey_seg.append((0, 0, segment_values))
 
-                for banner in journey['search_banner']:
+                for banner in journey.get('search_banner'):
                     this_journey_banner.append((0,0,{
                         "name": banner['name'],
                         "banner_color": banner['banner_color'],
