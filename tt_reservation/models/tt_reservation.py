@@ -736,7 +736,7 @@ class TtReservation(models.Model):
                     self.payment_acquirer_number_id.state = 'cancel'
                     self.payment_acquirer_number_id = False
         if self.voucher_code and self.state in ['booked']: ##SETIAP GETBOOKING STATUS BOOKED CHECK VOUCHER VALID/TIDAK, YG EXPIRED DI LEPAS LEWAT CRON
-            self.add_voucher(self.voucher_code, context, 'apply')
+            self.check_voucher(self.voucher_code, context)
         is_agent = False
         if context:
             if context['co_agent_id'] == self.agent_id.id:
@@ -1004,6 +1004,19 @@ class TtReservation(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1005)
+
+    def check_voucher(self, voucher_reference, context={}):
+        if voucher_reference:
+            voucher = {
+                'order_number': self.name,
+                'voucher_reference': voucher_reference,
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'provider_type': self._name.split('.')[len(self._name.split('.'))-1],
+                'provider': self.provider_name.split(',')
+            }
+            discount = self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
+            if discount['error_code'] != 0:
+                self.delete_voucher()
 
     def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
         self.delete_voucher()
