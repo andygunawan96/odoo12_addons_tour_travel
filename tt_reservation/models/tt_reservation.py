@@ -1021,7 +1021,7 @@ class TtReservation(models.Model):
                 self.voucher_code = voucher['voucher_reference']
                 for idx, rec in enumerate(discount['response']):
                     service_charge = [{
-                        "charge_code": "disc",
+                        "charge_code": "disc_voucher",
                         "charge_type": "DISC",
                         "currency": "IDR",
                         "pax_type": "ADT",
