@@ -238,7 +238,7 @@ class PaymentAcquirer(models.Model):
 
             if util.get_without_empty(req, 'order_number'):
                 book_obj = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1)
-                amount = book_obj.total
+                amount = book_obj.total - book_obj.total_discount
                 co_agent_id = book_obj.agent_id.id ## untuk kalau HO issuedkan channel, supaya payment acquirerny tetap punya agentnya
             else:
                 amount = req.get('amount', 0)
@@ -397,11 +397,16 @@ class PaymentAcquirerNumber(models.Model):
             rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
 
     def create_payment_acq_api(self, data):
+        ### BAYAR PAKAI PAYMENT GATEWAY
         provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
 
         if not booking_obj:
             raise RequestException(1001)
+
+        ###MASUKKAN VOUCHER
+        if data.get('voucher_reference'):
+            booking_obj.voucher_code = data['voucher_reference']
 
         payment_acq_number = self.search([('number', 'ilike', data['order_number'])])
         if payment_acq_number:
