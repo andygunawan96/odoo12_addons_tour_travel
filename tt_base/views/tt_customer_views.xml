@@ -25,6 +25,9 @@
         <field name="model">tt.customer</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+                    <button string="Convert ALL Cust Parent Booker Format" name="convert_all_cust_booker_to_new_format" type="object" groups="base.user_admin"/>
+                </header>
                 <!--                <header>-->
                 <!--                        <button string="Add Identity" name="add_identity_button" type="object"-->
                 <!--                                groups="base.group_user"/>-->
