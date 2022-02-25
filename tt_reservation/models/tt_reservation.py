@@ -1046,6 +1046,7 @@ class TtReservation(models.Model):
                         "sequence": idx,
                         "res_voucher_model": self._name,
                         "res_voucher_id": self.id,
+                        "description": self.provider_bookings_ids[idx].pnr if len(self.provider_bookings_ids) > idx else '',
                         "is_voucher": True
                     }]
                     self.provider_booking_ids[idx].create_service_charge(service_charge)
