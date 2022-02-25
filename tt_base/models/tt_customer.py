@@ -285,9 +285,16 @@ class TtCustomer(models.Model):
             if req.get('cust_code'):
                 dom.append(('seq_id','=',req['cust_code']))
             if util.get_without_empty(context,'co_customer_parent_id'):
+                cust_booker_objs = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', context['co_customer_parent_id'])])
+                cust_dom_ids = []
+                for rec_book in cust_booker_objs:
+                    if rec_book.customer_id.id not in cust_dom_ids:
+                        cust_dom_ids.append(rec_book.customer_id.id)
+                dom.append('|')
                 dom.append('|')
                 dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
                 dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
+                dom.append(('id','in',cust_dom_ids))
             customer_list_obj = self.search(dom,limit=100)
 
             customer_list = []
