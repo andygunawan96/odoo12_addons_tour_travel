@@ -277,6 +277,18 @@ class AgentCommissionLine(models.Model):
     commission_segment = fields.Boolean('Commission Segment', default=False)
     commission_pax = fields.Boolean('Commission Pax', default=False)
     commission_infant = fields.Boolean('Commission Include Infant', default=False)
+
+    discount_percentage = fields.Float('Discount (%)', default=0)
+    discount_minimum = fields.Float('Discount Minimum', default=0)
+    discount_has_minimum = fields.Boolean('Has Minimum', default=True)
+    discount_maximum = fields.Float('Maximum Amount', default=0)
+    discount_has_maximum = fields.Boolean('Has Maximum', default=False)
+    discount_amount = fields.Float('Discount Amount', default=0)
+    discount_route = fields.Boolean('Discount Route', default=False)
+    discount_segment = fields.Boolean('Discount Segment', default=False)
+    discount_pax = fields.Boolean('Discount Pax', default=False)
+    discount_infant = fields.Boolean('Discount Include Infant', default=False)
+
     upline_name = fields.Char('Upline Name') # , compute='_compute_upline_name'
     upline_ids = fields.One2many('tt.agent.commission.upline', 'pricing_line_id', string='Uplines', context={'active_test': False}, copy=True)
     residual_amount_to = fields.Selection([
@@ -351,6 +363,20 @@ class AgentCommissionLine(models.Model):
                         'is_segment': self.commission_segment,
                         'is_pax': self.commission_pax,
                         'is_infant': self.commission_infant,
+                    },
+                    'discount_by_percentage': {
+                        'percentage': self.discount_percentage,
+                        'minimum': self.discount_minimum,
+                        'has_minimum': self.discount_has_minimum,
+                        'maximum': self.discount_maximum,
+                        'has_maximum': self.discount_has_maximum,
+                    },
+                    'discount_by_amount': {
+                        'amount': self.discount_amount,
+                        'is_route': self.discount_route,
+                        'is_segment': self.discount_segment,
+                        'is_pax': self.discount_pax,
+                        'is_infant': self.discount_infant,
                     },
                 },
                 'parent': {
