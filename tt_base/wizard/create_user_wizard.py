@@ -38,8 +38,16 @@ class CreateCorporateUserWizard(models.TransientModel):
 
     agent_id = fields.Many2one('tt.agent','Agent',readonly=True)
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent',readonly=True)
-    customer_id = fields.Many2one('tt.customer','Customer',domain="[('booker_parent_ids', '=', customer_parent_id)]")
 
+    def get_customer_domain(self):
+        cust_booker_objs = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', self.customer_parent_id.id)])
+        cust_dom_ids = []
+        for rec_book in cust_booker_objs:
+            if rec_book.customer_id.id not in cust_dom_ids:
+                cust_dom_ids.append(rec_book.customer_id.id)
+        return [('id','in',cust_dom_ids)]
+
+    customer_id = fields.Many2one('tt.customer','Customer',domain=get_customer_domain)
 
     def create_cor_user(self):
         form_view_ref = self.env.ref('base.view_users_form', False)
