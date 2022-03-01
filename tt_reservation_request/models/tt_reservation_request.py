@@ -109,9 +109,9 @@ class TtReservationRequest(models.Model):
                 'approvals': [rec.to_dict() for rec in self.approval_ids]
             })
             if self.state == 'rejected':
-                if self.reject_uid and self.reject_uid.customer_id:
+                if self.reject_cuid:
                     reject_booker_obj = self.env['tt.customer.parent.booker.rel'].search(
-                        [('customer_parent_id', '=', self.customer_parent_id.id), ('customer_id', '=', self.reject_uid.customer_id.id)],
+                        [('customer_parent_id', '=', self.customer_parent_id.id), ('customer_id', '=', self.reject_cuid.id)],
                         limit=1)
                     final_dict['approvals'].append({
                         'request_number': self.name,
