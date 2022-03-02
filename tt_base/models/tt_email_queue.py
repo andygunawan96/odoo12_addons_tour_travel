@@ -25,7 +25,7 @@ class TtEmailQueue(models.Model):
 
     def create_email_queue(self, data, context=None):
         # Data {'provider_type':'', 'url_booking':'', 'order_number':'', 'type':''}
-        if data.get('provider_type') in ['airline', 'train', 'hotel', 'visa', 'passport', 'activity', 'tour', 'ppob', 'periksain', 'phc']:
+        if data.get('provider_type') in ['airline', 'train', 'hotel', 'visa', 'passport', 'activity', 'tour', 'ppob', 'bus', 'periksain', 'phc', 'medical', 'swabexpress', 'labpintar', 'sentramedika']:
             try:
                 self.env.get('tt.reservation.{}'.format(data['provider_type']))._name
             except:
@@ -355,7 +355,7 @@ class TtEmailQueue(models.Model):
 
     def action_send_email(self):
         try:
-            if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob', 'issued_periksain', 'issued_phc']:
+            if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob', 'issued_bus', 'issued_periksain', 'issued_phc', 'issued_medical', 'issued_swabexpress', 'issued_labpintar', 'issued_sentramedika']:
                 self.prepare_attachment_reservation_issued()
             elif self.type == 'billing_statement':
                 self.prepare_attachment_billing_statement()
