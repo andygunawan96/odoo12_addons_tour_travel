@@ -135,21 +135,44 @@ class TtCustomer(models.Model):
         }
         if get_customer_parent:
             customer_parent_list = []
-            for rec in self.booker_parent_ids:
-                if rec.credit_limit != 0 and rec.state == 'done':
+            # for rec in self.booker_parent_ids:
+            #     if rec.credit_limit != 0 and rec.state == 'done':
+            #         customer_parent_list.append({
+            #             'name': rec.name,
+            #             'actual_balance': rec.actual_balance,
+            #             'credit_limit': rec.credit_limit,
+            #             'currency': rec.currency_id.name,
+            #             'seq_id': rec.seq_id,
+            #             'type': rec.customer_parent_type_id and rec.customer_parent_type_id.name or ''
+            #         })
+
+            for rec in self.customer_parent_booker_ids:
+                cp_obj = rec.customer_parent_id
+                if cp_obj.credit_limit != 0 and cp_obj.state == 'done':
                     customer_parent_list.append({
-                        'name': rec.name,
-                        'actual_balance': rec.actual_balance,
-                        'credit_limit': rec.credit_limit,
-                        'currency': rec.currency_id.name,
-                        'seq_id': rec.seq_id,
-                        'type': rec.customer_parent_type_id and rec.customer_parent_type_id.name or ''
+                        'name': cp_obj.name,
+                        'actual_balance': cp_obj.actual_balance,
+                        'credit_limit': cp_obj.credit_limit,
+                        'currency': cp_obj.currency_id.name,
+                        'seq_id': cp_obj.seq_id,
+                        'type': cp_obj.customer_parent_type_id and cp_obj.customer_parent_type_id.name or ''
                     })
             res.update({
                 'customer_parents': customer_parent_list
             })
 
         return res
+
+    def convert_all_cust_booker_to_new_format(self):
+        all_customers = self.env['tt.customer'].search([])
+        for rec in all_customers:
+            for rec2 in rec.booker_parent_ids:
+                booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', rec2.id), ('customer_id', '=', rec.id)], limit=1)
+                if not booker_obj:
+                    self.env['tt.customer.parent.booker.rel'].create({
+                        'customer_parent_id': rec2.id,
+                        'customer_id': rec.id
+                    })
 
     def copy_to_passenger(self):
         res = {
@@ -262,9 +285,16 @@ class TtCustomer(models.Model):
             if req.get('cust_code'):
                 dom.append(('seq_id','=',req['cust_code']))
             if util.get_without_empty(context,'co_customer_parent_id'):
+                cust_booker_objs = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', context['co_customer_parent_id'])])
+                cust_dom_ids = []
+                for rec_book in cust_booker_objs:
+                    if rec_book.customer_id.id not in cust_dom_ids:
+                        cust_dom_ids.append(rec_book.customer_id.id)
+                dom.append('|')
                 dom.append('|')
                 dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
                 dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
+                dom.append(('id','in',cust_dom_ids))
             customer_list_obj = self.search(dom,limit=100)
 
             customer_list = []

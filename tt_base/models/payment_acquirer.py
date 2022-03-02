@@ -346,8 +346,10 @@ class PaymentAcquirer(models.Model):
             booker_obj = self.env['tt.customer'].search([('seq_id','=',booker_seq_id)])
             if not booker_obj:
                 raise Exception('Booker Not Found')
-            parent_obj_list = booker_obj.booker_parent_ids
-
+            # parent_obj_list = booker_obj.booker_parent_ids
+            parent_obj_list = []
+            for par in booker_obj.customer_parent_booker_ids:
+                parent_obj_list.append(par.customer_parent_id)
         values = []
         for rec in parent_obj_list:
             if rec.credit_limit != 0 and rec.state == 'done':
