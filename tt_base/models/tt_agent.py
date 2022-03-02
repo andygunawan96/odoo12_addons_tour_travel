@@ -532,6 +532,7 @@ class TtAgent(models.Model):
                         'state_description': variables.BOOKING_STATE_STR[rec.state],
                         'issued_date': rec.issued_date and rec.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'issued_uid': rec.issued_uid and rec.issued_uid.name or '',
+                        'transaction_addtional_info': rec.get_transaction_additional_info()
                     })
 
             # _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))

@@ -931,6 +931,9 @@ class TtReservation(models.Model):
     def get_balance_due(self):
         return self.agent_nta - self.get_ledger_amount()
 
+    def get_transaction_additional_info(self): #placholder function
+        return ''
+
     def get_ledger_amount(self):
         total_debit = 0.0
         total_credit = 0.0
