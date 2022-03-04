@@ -163,17 +163,6 @@ class TtCustomer(models.Model):
 
         return res
 
-    def convert_all_cust_booker_to_new_format(self):
-        all_customers = self.env['tt.customer'].search([])
-        for rec in all_customers:
-            for rec2 in rec.booker_parent_ids:
-                booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', rec2.id), ('customer_id', '=', rec.id)], limit=1)
-                if not booker_obj:
-                    self.env['tt.customer.parent.booker.rel'].create({
-                        'customer_parent_id': rec2.id,
-                        'customer_id': rec.id
-                    })
-
     def copy_to_passenger(self):
         res = {
             'name': self.name,

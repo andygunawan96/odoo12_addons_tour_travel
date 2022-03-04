@@ -88,6 +88,17 @@ class TtCustomerParent(models.Model):
             raise UserError('Action failed due to security restriction. Required Customer Parent Level 5 permission.')
         return super(TtCustomerParent, self).unlink()
 
+    def convert_all_cust_booker_to_new_format(self):
+        all_cus_par = self.env['tt.customer.parent'].search([('customer_parent_type_id', '!=', self.env.ref('tt_base.customer_type_fpo').id)])
+        for rec in all_cus_par:
+            for rec2 in rec.booker_ids:
+                booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', rec.id), ('customer_id', '=', rec2.id)], limit=1)
+                if not booker_obj:
+                    self.env['tt.customer.parent.booker.rel'].create({
+                        'customer_parent_id': rec.id,
+                        'customer_id': rec2.id
+                    })
+
     def action_create_corporate_user(self):
         vals = {
             'name': 'Create Corporate User Wizard',
