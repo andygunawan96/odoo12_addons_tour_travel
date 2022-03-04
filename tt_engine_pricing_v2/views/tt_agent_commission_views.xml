@@ -327,6 +327,28 @@ YR,D5,G7</pre>
 Uplines sequence order from parent to HO (Up to Down)</pre>
                             </div>
                         </page>
+                        <page string="Discount" name="discount">
+                            <notebook>
+                                <page string="Agent" name="agent">
+                                    <group string="Agent Discount For Customer">
+                                        <group string="By Percentage">
+                                            <field name="discount_percentage"/>
+                                            <field name="discount_has_minimum"/>
+                                            <field name="discount_minimum" attrs="{'invisible': [('discount_has_minimum', '=', False)]}"/>
+                                            <field name="discount_has_maximum"/>
+                                            <field name="discount_maximum" attrs="{'invisible': [('discount_has_maximum', '=', False)]}"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="discount_amount"/>
+                                            <field name="discount_route"/>
+                                            <field name="discount_segment"/>
+                                            <field name="discount_pax"/>
+                                            <field name="discount_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

@@ -25,6 +25,12 @@ class TbServiceCharge(models.Model):
     is_ledger_created = fields.Boolean('Ledger Created')
     is_extra_fees = fields.Boolean('Extra Fees')
 
+    ####BUAT VOUCHER
+    res_voucher_model = fields.Char('Related Voucher Reservation Name', index=True)
+    res_voucher_id = fields.Integer('Related Reservation ID', index=True, help='ID of the followed resource')
+    is_voucher = fields.Boolean('is Voucher')
+    ################
+
     # @api.one
     # @api.depends('pax_count', 'amount')
     # def _compute_total(self):

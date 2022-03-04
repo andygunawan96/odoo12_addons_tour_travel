@@ -114,7 +114,7 @@ class TtPaymentInvoiceRel(models.Model):
 
     def quick_approve(self):
         if not self.payment_id.reference:
-            self.payment_id.reference = "Quick Approve by %s on %s" % (self.env.user.id,datetime.now(pytz.utc))
+            self.payment_id.reference = "Quick Approve by %s on %s" % (self.env.user.name,datetime.now(pytz.utc))
         self.payment_id.action_validate_from_button()
         self.payment_id.action_approve_from_button()
 

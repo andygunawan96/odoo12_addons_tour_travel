@@ -735,6 +735,8 @@ class TtReservation(models.Model):
                 else:
                     self.payment_acquirer_number_id.state = 'cancel'
                     self.payment_acquirer_number_id = False
+        if self.voucher_code and self.state in ['booked']: ##SETIAP GETBOOKING STATUS BOOKED CHECK VOUCHER VALID/TIDAK, YG EXPIRED DI LEPAS LEWAT CRON
+            self.add_voucher(self.voucher_code, context, 'apply')
         is_agent = False
         if context:
             if context['co_agent_id'] == self.agent_id.id:
@@ -769,6 +771,7 @@ class TtReservation(models.Model):
                 'email': self.contact_email,
                 'phone': self.contact_phone
             },
+            'voucher_reference': self.voucher_code,
             'contact_id': self.contact_id.to_dict(),
             'booker': self.booker_id.to_dict(),
             'departure_date': self.departure_date and self.departure_date or '',
@@ -893,6 +896,7 @@ class TtReservation(models.Model):
                 rec.action_expired()
             for rec in self.issued_request_ids:
                 rec.action_cancel()
+            self.delete_voucher()
         except:
             _logger.error("provider type %s failed to expire vendor" % (self._name))
 
@@ -930,6 +934,9 @@ class TtReservation(models.Model):
     # May 28, 2020 - SAM
     def get_balance_due(self):
         return self.agent_nta - self.get_ledger_amount()
+
+    def get_transaction_additional_info(self): #placholder function
+        return ''
 
     def get_ledger_amount(self):
         total_debit = 0.0
@@ -1001,6 +1008,45 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1005)
 
+    def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
+        self.delete_voucher()
+        if voucher_reference:
+            voucher = {
+                'order_number': self.name,
+                'voucher_reference': voucher_reference,
+                'date': datetime.now().strftime('%Y-%m-%d'),
+                'provider_type': self._name.split('.')[len(self._name.split('.'))-1],
+                'provider': self.provider_name.split(',')
+            }
+            discount = self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
+            if discount['error_code'] == 0:
+                discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context, type)
+                self.voucher_code = voucher['voucher_reference']
+                for idx, rec in enumerate(discount['response']):
+                    service_charge = [{
+                        "charge_code": "disc_voucher",
+                        "charge_type": "DISC",
+                        "currency": "IDR",
+                        "pax_type": "ADT",
+                        "pax_count": len(self.passenger_ids),
+                        "amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
+                        "foreign_currency": "IDR",
+                        "foreign_amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
+                        "total": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
+                        "sequence": idx,
+                        "res_voucher_model": self._name,
+                        "res_voucher_id": self.id,
+                        "is_voucher": True
+                    }]
+                    self.provider_booking_ids[idx].create_service_charge(service_charge)
+                self.calculate_service_charge()
+
+    def delete_voucher(self):
+        for svc_discount in self.env['tt.service.charge'].search([('res_voucher_model','=',self._name), ('res_voucher_id','=',self.id), ('is_voucher','=',True)]):
+            svc_discount.unlink() ##unlink service charge
+        for voucher_use in self.env['tt.voucher.detail.used'].search([('order_number','=',self.name)]):
+            voucher_use.unlink() ##unlink voucher use
+
     ##ini potong ledger
     def payment_reservation_api(self,table_name,req,context):
         _logger.info("Payment\n" + json.dumps(req))
@@ -1058,29 +1104,15 @@ class TtReservation(models.Model):
                 if book_obj.get_nta_amount(payment_method) <= 0:
                     raise Exception("Cannot Payment 0 or lower.")
                 # END
-
-                voucher = ''
+                voucher_reference = ''
                 ### voucher agent here##
-                if req.get('voucher'):
-                    voucher = req['voucher']
-                if voucher == '' and book_obj.voucher_code:
-                    voucher = {
-                        'voucher_reference': book_obj.voucher_code,
-                        'date': datetime.now().strftime('%Y-%m-%d'),
-                        'provider_type': book_obj._name.split('.')[len(book_obj._name.split('.'))-1],
-                        'provider': book_obj.provider_name.split(','),
-                    }
-
-                if voucher:
-                    voucher.update({
-                        'order_number': book_obj.name
-                    })
-                    discount = self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
-                    if discount['error_code'] == 0:
-                        for rec in discount['response']:
-                            total_discount = total_discount + rec['provider_total_discount']
-                    agent_check_amount-=total_discount
-
+                if req.get('voucher'): ## WAKTU ISSUED INPUT VOUCHER
+                    voucher_reference = req['voucher']['voucher_reference']
+                elif book_obj.voucher_code: ## INPUT VOUCHER TAPI TIDAK LANGSUNG ISSUED
+                    voucher_reference = book_obj.voucher_code
+                if voucher_reference: ##USE VOUCHER
+                    book_obj.add_voucher(voucher_reference, context, 'use')
+                    agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
                 balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount)
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
@@ -1099,26 +1131,6 @@ class TtReservation(models.Model):
                             raise RequestException(1007,additional_message="customer credit limit")
                     else:
                         raise RequestException(1017,additional_message=", Customer.")
-
-                if discount['error_code'] == 0:
-                    discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context)
-                    if discount['error_code'] == 0:
-                        book_obj.voucher_code = voucher['voucher_reference']
-                        for idx, rec in enumerate(discount['response']):
-                            service_charge = [{
-                                "charge_code": "disc",
-                                "charge_type": "DISC",
-                                "currency": "IDR",
-                                "pax_type": "ADT",
-                                "pax_count": len(book_obj.passenger_ids),
-                                "amount": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,
-                                "foreign_currency": "IDR",
-                                "foreign_amount": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,
-                                "total": rec['provider_total_discount'] / len(book_obj.passenger_ids) * -1,
-                                "sequence": idx
-                            }]
-                            book_obj.provider_booking_ids[idx].create_service_charge(service_charge)
-                    book_obj.calculate_service_charge()
 
                 for provider in book_obj.provider_booking_ids:
                     _logger.info('create quota pnr')

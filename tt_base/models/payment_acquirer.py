@@ -238,7 +238,7 @@ class PaymentAcquirer(models.Model):
 
             if util.get_without_empty(req, 'order_number'):
                 book_obj = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1)
-                amount = book_obj.total
+                amount = book_obj.total - book_obj.total_discount
                 co_agent_id = book_obj.agent_id.id ## untuk kalau HO issuedkan channel, supaya payment acquirerny tetap punya agentnya
             else:
                 amount = req.get('amount', 0)
@@ -346,8 +346,10 @@ class PaymentAcquirer(models.Model):
             booker_obj = self.env['tt.customer'].search([('seq_id','=',booker_seq_id)])
             if not booker_obj:
                 raise Exception('Booker Not Found')
-            parent_obj_list = booker_obj.booker_parent_ids
-
+            # parent_obj_list = booker_obj.booker_parent_ids
+            parent_obj_list = []
+            for par in booker_obj.customer_parent_booker_ids:
+                parent_obj_list.append(par.customer_parent_id)
         values = []
         for rec in parent_obj_list:
             if rec.credit_limit != 0 and rec.state == 'done':
@@ -397,11 +399,16 @@ class PaymentAcquirerNumber(models.Model):
             rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
 
     def create_payment_acq_api(self, data):
+        ### BAYAR PAKAI PAYMENT GATEWAY
         provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
 
         if not booking_obj:
             raise RequestException(1001)
+
+        ###MASUKKAN VOUCHER
+        if data.get('voucher_reference'):
+            booking_obj.voucher_code = data['voucher_reference']
 
         payment_acq_number = self.search([('number', 'ilike', data['order_number'])])
         if payment_acq_number:
