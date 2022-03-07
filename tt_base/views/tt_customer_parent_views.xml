@@ -41,6 +41,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
+                    <button string="Convert ALL Cust Parent Booker Format" name="convert_all_cust_booker_to_new_format" type="object" groups="base.user_admin"/>
                     <button name="action_confirm" string="Confirm" type="object" groups="base.group_system,tt_base.group_tt_agent_finance,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=', 'draft')]}"/>
                     <button name="action_request" string="Submit Request" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'confirm')]}"/>
                     <button name="action_validate" string="Validate" type="object" groups="base.group_system,tt_base.group_tt_agent_finance" attrs="{'invisible':[('state','!=', 'request')]}"/>

@@ -1,6 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-import time
+import time,re
 
 LANGUAGE = [
     ('ID', 'Bahasa Indonesia'),
@@ -108,19 +108,54 @@ class ResUsers(models.Model):
         new_user.partner_id.parent_agent_id = False
         return new_user
 
+    @api.multi
     def write(self, vals):
         admin_obj_id = self.env.ref('base.user_admin').id
         if vals.get('sel_groups_2_3') == 3 and self.env.user.id != admin_obj_id:
             vals.pop('sel_groups_2_3')
-        if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id:
+        if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id: #tidak boleh ganti pwd admin kalau bukan admin settings
             vals.pop('password')
+        if vals.get('password'):
+            self._check_password(vals['password'])
         return super(ResUsers, self).write(vals)
-    
+
+    @api.multi
     def unlink(self):
         for rec in self:
             if rec.id == self.env.ref('base.user_admin').id:
                 raise UserError('Cannot delete superadmin.')
         super(ResUsers, self).unlink()
+
+    ##password_security OCA
+    @api.multi
+    def _check_password(self, password):
+        self._check_password_rules(password)
+        return True
+
+    @api.multi
+    def _check_password_rules(self, password):
+        self.ensure_one()
+        if not password:
+            return True
+        password_regex = [
+            '^',
+            '(?=.*?[a-z]){1,}',
+            '(?=.*?[A-Z]){1,}',
+            '(?=.*?\\d){1,}',
+            r'(?=.*?[\W_]){1,}',
+            '.{%d,}$' % 12,
+        ]
+        if not re.search(''.join(password_regex), password):
+            raise UserError(self.password_match_message())
+
+        return True
+
+    @api.multi
+    def password_match_message(self):
+        self.ensure_one()
+        message = 'Password must be 12 characters or more. Must also contain Lowercase letter, Uppercase letter, Numeric digit, Special character'
+        return message
+    ## OCA
 
     # 28 OKT 2020, comment IP log karena isinya 127.0.0.1
     # @api.model
@@ -132,3 +167,5 @@ class ResUsers(models.Model):
     #         # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
     #         'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
     #     })
+
+

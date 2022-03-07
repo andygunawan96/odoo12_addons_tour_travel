@@ -172,7 +172,7 @@ class AgentInvoice(models.Model):
         if self.state != 'paid' and (paid_amount >= self.grand_total and self.grand_total != 0):
             self.state = 'paid'
         elif self.state not in ['confirm','bill','bill2'] and (paid_amount < self.grand_total and self.grand_total != 0):
-            self.state = 'bill2'
+            self.state = 'confirm'
 
         # return
 

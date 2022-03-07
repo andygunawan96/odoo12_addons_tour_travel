@@ -182,6 +182,12 @@ class Reservationphc(models.Model):
     def create_refund(self):
         self.state = 'refund'
 
+    def get_transaction_additional_info(self):
+        add_info = ''
+        for rec in self.passenger_ids:
+            add_info += '%s - %s\n' % (rec.name,rec.identity_number)
+        return add_info
+
     def get_price_phc_api(self, req, context):
         #parameter
         #timeslot_list
