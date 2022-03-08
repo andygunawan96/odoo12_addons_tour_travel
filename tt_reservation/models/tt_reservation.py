@@ -736,7 +736,7 @@ class TtReservation(models.Model):
                     self.payment_acquirer_number_id.state = 'cancel'
                     self.payment_acquirer_number_id = False
         if self.voucher_code and self.state in ['booked']: ##SETIAP GETBOOKING STATUS BOOKED CHECK VOUCHER VALID/TIDAK, YG EXPIRED DI LEPAS LEWAT CRON
-            self.add_voucher(self.voucher_code, context, 'apply')
+            self.check_voucher(self.voucher_code, context)
         is_agent = False
         if context:
             if context['co_agent_id'] == self.agent_id.id:
@@ -935,9 +935,6 @@ class TtReservation(models.Model):
     def get_balance_due(self):
         return self.agent_nta - self.get_ledger_amount()
 
-    def get_transaction_additional_info(self): #placholder function
-        return ''
-
     def get_ledger_amount(self):
         total_debit = 0.0
         total_credit = 0.0
@@ -1008,38 +1005,49 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1005)
 
-    def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
-        self.delete_voucher()
+    def get_discount(self, voucher_reference):
+        voucher = {
+            'order_number': self.name,
+            'voucher_reference': voucher_reference,
+            'date': datetime.now().strftime('%Y-%m-%d'),
+            'provider_type': self._name.split('.')[len(self._name.split('.')) - 1],
+            'provider': self.provider_name.split(',')
+        }
+        return self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
+
+    def check_voucher(self, voucher_reference, context={}):
         if voucher_reference:
-            voucher = {
-                'order_number': self.name,
-                'voucher_reference': voucher_reference,
-                'date': datetime.now().strftime('%Y-%m-%d'),
-                'provider_type': self._name.split('.')[len(self._name.split('.'))-1],
-                'provider': self.provider_name.split(',')
-            }
-            discount = self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
-            if discount['error_code'] == 0:
-                discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context, type)
-                self.voucher_code = voucher['voucher_reference']
-                for idx, rec in enumerate(discount['response']):
-                    service_charge = [{
-                        "charge_code": "disc_voucher",
-                        "charge_type": "DISC",
-                        "currency": "IDR",
-                        "pax_type": "ADT",
-                        "pax_count": len(self.passenger_ids),
-                        "amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
-                        "foreign_currency": "IDR",
-                        "foreign_amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
-                        "total": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
-                        "sequence": idx,
-                        "res_voucher_model": self._name,
-                        "res_voucher_id": self.id,
-                        "is_voucher": True
-                    }]
-                    self.provider_booking_ids[idx].create_service_charge(service_charge)
-                self.calculate_service_charge()
+            discount = self.get_discount(voucher_reference)
+            if discount['error_code'] != 0:
+                self.delete_voucher()
+
+    def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
+        if self.state in ['booked', 'issued']:
+            self.delete_voucher()
+            if voucher_reference:
+                discount = self.get_discount(voucher_reference)
+                if discount['error_code'] == 0:
+                    discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context, type)
+                    self.voucher_code = voucher['voucher_reference']
+                    for idx, rec in enumerate(discount['response']): ##DISKON PER PROVIDER
+                        service_charge = [{
+                            "charge_code": "disc_voucher",
+                            "charge_type": "DISC",
+                            "currency": "IDR",
+                            "pax_type": "ADT",
+                            "pax_count": len(self.passenger_ids),
+                            "amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
+                            "foreign_currency": "IDR",
+                            "foreign_amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
+                            "total": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
+                            "sequence": idx,
+                            "res_voucher_model": self._name,
+                            "res_voucher_id": self.id,
+                            "description": self.provider_booking_ids[idx].pnr if len(self.provider_booking_ids) > idx else '',
+                            "is_voucher": True
+                        }]
+                        self.provider_booking_ids[idx].create_service_charge(service_charge)
+                    self.calculate_service_charge()
 
     def delete_voucher(self):
         for svc_discount in self.env['tt.service.charge'].search([('res_voucher_model','=',self._name), ('res_voucher_id','=',self.id), ('is_voucher','=',True)]):
