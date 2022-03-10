@@ -809,6 +809,9 @@ class TtReservation(models.Model):
     def get_aftersales_desc(self):
         return ''
 
+    def get_transaction_additional_info(self): #placeholder function please don't delete
+        return ''
+
     def get_acquirer_n_c_parent_id(self,req):
         acquirer_id = False
         #credit limit

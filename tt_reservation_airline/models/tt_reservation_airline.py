@@ -1483,7 +1483,8 @@ class ReservationAirline(models.Model):
                     'arrival_date': this_journey_seg[-1][2]['arrival_date'],
                     'segment_ids': this_journey_seg,
                     'journey_code': journey.get('journey_code',''),
-                    'banner_ids': this_journey_banner
+                    'banner_ids': this_journey_banner,
+                    'is_vtl_flight': journey.get('is_vtl_flight', False),
                 }))
 
             JRN_len = len(this_pnr_journey)
