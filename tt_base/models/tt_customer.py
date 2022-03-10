@@ -50,6 +50,7 @@ class TtCustomer(models.Model):
     active = fields.Boolean('Active', default=True)
 
     identity_ids = fields.One2many('tt.customer.identity','customer_id','Identity List')
+    behavior_ids = fields.One2many('tt.customer.behavior', 'customer_id', 'Behavior List')
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     is_search_allowed = fields.Boolean("Search Allowed", default=True)
 
@@ -548,6 +549,32 @@ class TtCustomer(models.Model):
     def create_or_update_customer_bitrix(self, data, context):
         return ERR.get_no_error()
 
+    def add_behavior(self, provider_type, behavior_type, behavior_value):
+        check_behavior = True
+        if behavior_type == 'Baggage':
+            behavior_value = behavior_value.replace('kg', 'kilogram').replace('kilograms', 'kilogram').replace('kilograms', 'kilogram(s)').replace('kilograms', 'Kilogram').replace('kilograms', 'Kilogram(s)').replace('kilograms', 'Kg').replace('kilograms', 'KG')
+        for behavior_obj in self.behavior_ids:
+            if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code:
+                # compare name
+                similarity = 0
+                for data_db in behavior_obj.behavior_value.split(' '):
+                    for new_data in behavior_value.split(' '):
+                        if data_db == new_data:
+                            similarity += 1
+                            break
+                total_similarity = len(behavior_obj.behavior_value.split(' ')) if len(behavior_obj.behavior_value.split(' ')) > len(behavior_value.split(' ')) else len(behavior_value.split(' '))
+                if similarity == total_similarity: #FOUND
+                    behavior_obj.counter += 1
+                    check_behavior = False
+                    break
+        if check_behavior:
+            self.env['tt.customer.behavior'].create({
+                "customer_id": self.id,
+                "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
+                "behavior_type": behavior_type,
+                "behavior_value": behavior_value,
+                "counter": 1
+            })
 
 class TtCustomerIdentityNumber(models.Model):
     _name = "tt.customer.identity"
@@ -589,3 +616,14 @@ class TtCustomerIdentityNumber(models.Model):
                 'identity_images': image_list
             }
         }
+
+class TtCustomerBehavior(models.Model):
+    _name = "tt.customer.behavior"
+    _description = "Customer Behavior"
+    _rec_name = "behavior_type"
+
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+    behavior_type = fields.Char('Type') #Baggage / meal / hotel dkk
+    behavior_value = fields.Char('Name')
+    counter = fields.Integer('Count')
+    customer_id = fields.Many2one('tt.customer', 'Owner', required=True)
