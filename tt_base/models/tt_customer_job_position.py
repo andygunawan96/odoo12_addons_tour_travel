@@ -18,6 +18,7 @@ class TtCustomerJobHierarchy(models.Model):
     _order = 'sequence'
 
     sequence = fields.Integer('Group Sequence', default=1)
+    name = fields.Integer('Name', related='sequence')
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent')
     min_approve_amt = fields.Integer('Min Approve Amount', default=1)
     job_position_ids = fields.One2many('tt.customer.job.position', 'hierarchy_id', 'Job Positions')
