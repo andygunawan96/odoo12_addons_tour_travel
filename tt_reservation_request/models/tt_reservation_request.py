@@ -223,9 +223,9 @@ class TtReservationRequest(models.Model):
 
         min_approval = context.get('co_hierarchy_min_approve_amt', 1)
         for rec in self.approval_ids:
-            if rec.approved_job_position_id.hierarchy_id == context['co_hierarchy_sequence']:
+            if rec.approved_job_position_id.hierarchy_id.sequence <= context['co_hierarchy_sequence']:
                 min_approval -= 1
-        if min_approval <= 1:
+        if min_approval < 1:
             self.cur_approval_seq = context['co_hierarchy_sequence']
         next_hierarchy = self.env['tt.customer.job.hierarchy'].search([
             ('sequence', '<', self.cur_approval_seq)], order='sequence desc', limit=1)
