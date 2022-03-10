@@ -427,6 +427,8 @@ class TtProviderAirline(models.Model):
             if provider_values:
                 values.update(provider_values)
             rec.write(values)
+            for fee in rec.fee_ids:
+                fee.passenger_id.customer_id.add_behavior('airline', fee.category, fee.name)
     # END
 
     def action_cancel_api_airline(self,context):

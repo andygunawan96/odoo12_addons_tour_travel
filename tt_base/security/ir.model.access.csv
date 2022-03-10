@@ -84,6 +84,14 @@ access_tt_customer_identity_for_customer_level_3,tt.customer.identity.for.custom
 access_tt_customer_identity_for_customer_level_4,tt.customer.identity.for.customer.level.4,model_tt_customer_identity,tt_base.group_customer_level_4,1,1,1,0
 access_tt_customer_identity_for_customer_level_5,tt.customer.identity.for.customer.level.5,model_tt_customer_identity,tt_base.group_customer_level_5,1,1,1,1
 
+access_tt_customer_behavior_for_public,tt.customer.behavior.for.public,model_tt_customer_behavior,,1,1,1,1
+
+access_tt_customer_behavior_for_customer_level_1,tt.customer.behavior.for.customer.level.1,model_tt_customer_behavior,tt_base.group_customer_level_1,1,0,0,0
+access_tt_customer_behavior_for_customer_level_2,tt.customer.behavior.for.customer.level.2,model_tt_customer_behavior,tt_base.group_customer_level_2,1,0,1,0
+access_tt_customer_behavior_for_customer_level_3,tt.customer.behavior.for.customer.level.3,model_tt_customer_behavior,tt_base.group_customer_level_3,1,1,1,0
+access_tt_customer_behavior_for_customer_level_4,tt.customer.behavior.for.customer.level.4,model_tt_customer_behavior,tt_base.group_customer_level_4,1,1,1,0
+access_tt_customer_behavior_for_customer_level_5,tt.customer.behavior.for.customer.level.5,model_tt_customer_behavior,tt_base.group_customer_level_5,1,1,1,1
+
 access_tt_employee_for_public,tt_employee_for_public,model_tt_employee,,1,0,0,0
 access_tt_employee_for_agent_management_operator,tt_employee_for_agent_management_operator,model_tt_employee,group_tt_agent_management_operator,1,1,1,0
 access_tt_employee_for_tour_travel_operator,tt_employee_for_tour_travel_operator,model_tt_employee,tt_base.group_tt_tour_travel_operator,1,0,0,0
