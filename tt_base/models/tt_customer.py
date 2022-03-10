@@ -118,6 +118,23 @@ class TtCustomer(models.Model):
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
 
+        behavior_dict = {}
+        for rec in self.behavior_ids:
+            rec_dict = rec.to_dict()
+            if not behavior_dict.get(rec_dict['provider_type']):
+                behavior_dict[rec_dict['provider_type']] = {}
+            if not behavior_dict[rec_dict['provider_type']].get(rec_dict['behavior_type']):
+                behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']] = {
+                    "value": rec_dict['behavior_value'],
+                    "counter": rec_dict['counter']
+                }
+            else:
+                if rec_dict['counter'] > behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']]['counter']:
+                    behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']].update({
+                        "value": rec_dict['behavior_value'],
+                        "counter": rec_dict['counter']
+                    })
+
 
         res = {
             'name': self.name,
@@ -132,7 +149,8 @@ class TtCustomer(models.Model):
             'phones': phone_list,
             'email': self.email and self.email or '',
             'seq_id': self.seq_id,
-            'identities': identity_dict
+            'identities': identity_dict,
+            'behaviors': behavior_dict
         }
         if get_customer_parent:
             customer_parent_list = []
@@ -627,3 +645,11 @@ class TtCustomerBehavior(models.Model):
     behavior_value = fields.Char('Name')
     counter = fields.Integer('Count')
     customer_id = fields.Many2one('tt.customer', 'Owner', required=True)
+
+    def to_dict(self):
+        return {
+            "provider_type": self.provider_type_id.code,
+            "behavior_type": self.behavior_type,
+            "behavior_value": self.behavior_value,
+            "counter": self.counter,
+        }
