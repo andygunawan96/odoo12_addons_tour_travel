@@ -152,6 +152,10 @@ class TtReservationTrain(models.Model):
             'issued_uid': co_uid,
             'customer_parent_id': customer_parent_id
         })
+        for provider_obj in self.provider_booking_ids:
+            for journey in provider_obj.journey_ids:
+                for seat_obj in journey.seat_ids:
+                    seat_obj.passenger_id.customer_id.add_behavior('train', 'seat', seat_obj.seat.split(',')[1] if len(seat_obj.seat.split(',')) > 1 else '', seat_obj.seat.split(',')[0].split('-')[0]) ##kalau seat kosong tetap kirim ''
 
         try:
             if self.agent_type_id.is_send_email_issued:

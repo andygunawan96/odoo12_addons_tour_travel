@@ -26,6 +26,8 @@ class TtJourneyAirline(models.Model):
 
     banner_ids = fields.One2many('tt.banner.airline', 'journey_id', 'Segments')
 
+    is_vtl_flight = fields.Boolean('VTL Flight', default=False)
+
     def _compute_journey_code(self):
         for rec in self:
             if not rec.journey_code:
@@ -53,6 +55,7 @@ class TtJourneyAirline(models.Model):
             'arrival_date': self.arrival_date,
             'segments': segment_list,
             'search_banner': search_banner_list,
+            'is_vtl_flight': self.is_vtl_flight,
             'journey_code': self.journey_code if self.journey_code else ''
         }
 

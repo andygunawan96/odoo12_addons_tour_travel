@@ -847,6 +847,11 @@ class ReservationAirline(models.Model):
                         #     'journey_id': None
                         # })
                         # old_segment_list.append(prov_segment_data.id)
+
+                    if journey_prov_data.is_vtl_flight != journey.get('is_vtl_flight', False):
+                        journey_prov_data.write({
+                            'is_vtl_flight': journey['is_vtl_flight']
+                        })
                 # New End
 
                 # # TODO CEK DATA SSR DAN SEAT

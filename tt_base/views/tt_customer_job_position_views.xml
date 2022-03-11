@@ -104,6 +104,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="sequence" widget="handle"/>
+                    <field name="name"/>
                     <field name="min_approve_amt"/>
                     <field name="customer_parent_id" readonly="1"/>
                 </tree>

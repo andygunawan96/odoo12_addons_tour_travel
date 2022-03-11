@@ -1785,15 +1785,25 @@ class AgentPricing(object):
         return payload
 
     def calculate_commission(self, price_data, commission_amount, agent_id, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
+        original_commission = commission_amount
         total_charge = 0.0
         total_commission = 0.0
+        total_discount = 0.0
         if 'charge_by_percentage' in price_data:
             charge_data = price_data['charge_by_percentage']
             if charge_data['percentage']:
                 add_amount = commission_amount * charge_data['percentage'] / 100
-                if add_amount < charge_data['minimum']:
+                has_minimum = charge_data.get('has_minimum', True)
+                has_maximum = charge_data.get('has_maximum', False)
+
+                if has_minimum and add_amount < charge_data['minimum']:
                     add_amount = charge_data['minimum']
-                total_charge += add_amount
+                if has_maximum and add_amount > charge_data['maximum']:
+                    add_amount = charge_data['maximum']
+
+                if add_amount <= original_commission:
+                    total_charge += add_amount
+                    original_commission -= add_amount
         if 'charge_by_amount' in price_data:
             charge_data = price_data['charge_by_amount']
             if charge_data['amount']:
@@ -1813,14 +1823,25 @@ class AgentPricing(object):
                     multiplier *= total_pax
 
                 add_amount = charge_data['amount'] * multiplier
-                total_charge += add_amount
+                if add_amount <= original_commission:
+                    total_charge += add_amount
+                    original_commission -= add_amount
         if 'commission_by_percentage' in price_data:
             com_data = price_data['commission_by_percentage']
             if com_data['percentage']:
                 add_amount = commission_amount * com_data['percentage'] / 100
-                if add_amount < com_data['minimum']:
+
+                has_minimum = com_data.get('has_minimum', True)
+                has_maximum = com_data.get('has_maximum', False)
+
+                if has_minimum and add_amount < com_data['minimum']:
                     add_amount = com_data['minimum']
-                total_commission += add_amount
+                if has_maximum and add_amount > com_data['maximum']:
+                    add_amount = com_data['maximum']
+
+                if add_amount <= original_commission:
+                    total_commission += add_amount
+                    original_commission -= add_amount
         if 'commission_by_amount' in price_data:
             com_data = price_data['commission_by_amount']
             if com_data['amount']:
@@ -1840,7 +1861,45 @@ class AgentPricing(object):
                     multiplier *= total_pax
 
                 add_amount = com_data['amount'] * multiplier
-                total_commission += add_amount
+                if add_amount <= original_commission:
+                    total_commission += add_amount
+                    original_commission -= add_amount
+        if 'discount_by_percentage' in price_data:
+            com_data = price_data['discount_by_percentage']
+            if com_data['percentage']:
+                add_amount = total_commission * com_data['percentage'] / 100
+                has_minimum = com_data.get('has_minimum', True)
+                has_maximum = com_data.get('has_maximum', False)
+                if has_minimum and add_amount < com_data['minimum']:
+                    add_amount = com_data['minimum']
+                if has_maximum and add_amount > com_data['maximum']:
+                    add_amount = com_data['maximum']
+
+                if total_commission >= add_amount:
+                    total_discount += add_amount
+                    total_commission -= add_amount
+        if 'discount_by_amount' in price_data:
+            com_data = price_data['discount_by_amount']
+            if com_data['amount']:
+                multiplier = 1
+                if 'is_route' in com_data and com_data['is_route']:
+                    multiplier *= route_count
+                if 'is_segment' in com_data and com_data['is_segment']:
+                    multiplier *= segment_count
+
+                total_pax = 0
+                if 'is_pax' in com_data and com_data['is_pax']:
+                    total_pax += pax_count
+                if 'is_infant' in com_data and com_data['is_infant']:
+                    total_pax += infant_count
+
+                if total_pax:
+                    multiplier *= total_pax
+
+                add_amount = com_data['amount'] * multiplier
+                if total_commission >= add_amount:
+                    total_discount += add_amount
+                    total_commission -= add_amount
 
         payload = {
             'agent_id': agent_id,
@@ -1857,7 +1916,7 @@ class AgentPricing(object):
 
         nta_total_amount = fare_amount + tax_amount
 
-        nta_agent_data = rule_obj['ticketing']['nta_agent']
+        nta_agent_data = rule_obj['ticketing'].get('nta_agent', {})
         nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
         nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
 
@@ -1888,7 +1947,7 @@ class AgentPricing(object):
 
         nta_total_amount = fare_amount + tax_amount
 
-        nta_agent_data = rule_obj['ancillary']['nta_agent']
+        nta_agent_data = rule_obj['ancillary'].get('nta_agent', {})
         nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount)
         nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
 
@@ -1916,7 +1975,7 @@ class AgentPricing(object):
 
         nta_total_amount = total_amount
 
-        nta_agent_data = rule_obj['reservation']['nta_agent']
+        nta_agent_data = rule_obj['reservation'].get('nta_agent', {})
         nta_agent_res = self.calculate_price(nta_agent_data, total_amount, 0.0, '', route_count, segment_count)
         nta_agent_total_amount = total_amount + nta_agent_res['upsell_amount']
 
@@ -2584,15 +2643,25 @@ class AgentCommission(object):
         return {}
 
     def calculate_commission(self, price_data, commission_amount, agent_id, pax_count, infant_count=0, route_count=0, segment_count=0, **kwargs):
+        original_commission = commission_amount
         total_charge = 0.0
         total_commission = 0.0
+        total_discount = 0.0
         if 'charge_by_percentage' in price_data:
             charge_data = price_data['charge_by_percentage']
             if charge_data['percentage']:
                 add_amount = commission_amount * charge_data['percentage'] / 100
-                if add_amount < charge_data['minimum']:
+                has_minimum = charge_data.get('has_minimum', True)
+                has_maximum = charge_data.get('has_maximum', False)
+
+                if has_minimum and add_amount < charge_data['minimum']:
                     add_amount = charge_data['minimum']
-                total_charge += add_amount
+                if has_maximum and add_amount > charge_data['maximum']:
+                    add_amount = charge_data['maximum']
+
+                if add_amount <= original_commission:
+                    total_charge += add_amount
+                    original_commission -= add_amount
         if 'charge_by_amount' in price_data:
             charge_data = price_data['charge_by_amount']
             if charge_data['amount']:
@@ -2612,14 +2681,25 @@ class AgentCommission(object):
                     multiplier *= total_pax
 
                 add_amount = charge_data['amount'] * multiplier
-                total_charge += add_amount
+                if add_amount <= original_commission:
+                    total_charge += add_amount
+                    original_commission -= add_amount
         if 'commission_by_percentage' in price_data:
             com_data = price_data['commission_by_percentage']
             if com_data['percentage']:
                 add_amount = commission_amount * com_data['percentage'] / 100
-                if add_amount < com_data['minimum']:
+
+                has_minimum = com_data.get('has_minimum', True)
+                has_maximum = com_data.get('has_maximum', False)
+
+                if has_minimum and add_amount < com_data['minimum']:
                     add_amount = com_data['minimum']
-                total_commission += add_amount
+                if has_maximum and add_amount > com_data['maximum']:
+                    add_amount = com_data['maximum']
+
+                if add_amount <= original_commission:
+                    total_commission += add_amount
+                    original_commission -= add_amount
         if 'commission_by_amount' in price_data:
             com_data = price_data['commission_by_amount']
             if com_data['amount']:
@@ -2639,12 +2719,51 @@ class AgentCommission(object):
                     multiplier *= total_pax
 
                 add_amount = com_data['amount'] * multiplier
-                total_commission += add_amount
+                if add_amount <= original_commission:
+                    total_commission += add_amount
+                    original_commission -= add_amount
+        if 'discount_by_percentage' in price_data:
+            com_data = price_data['discount_by_percentage']
+            if com_data['percentage']:
+                add_amount = total_commission * com_data['percentage'] / 100
+                has_minimum = com_data.get('has_minimum', True)
+                has_maximum = com_data.get('has_maximum', False)
+                if has_minimum and add_amount < com_data['minimum']:
+                    add_amount = com_data['minimum']
+                if has_maximum and add_amount > com_data['maximum']:
+                    add_amount = com_data['maximum']
+
+                if total_commission >= add_amount:
+                    total_discount += add_amount
+                    total_commission -= add_amount
+        if 'discount_by_amount' in price_data:
+            com_data = price_data['discount_by_amount']
+            if com_data['amount']:
+                multiplier = 1
+                if 'is_route' in com_data and com_data['is_route']:
+                    multiplier *= route_count
+                if 'is_segment' in com_data and com_data['is_segment']:
+                    multiplier *= segment_count
+
+                total_pax = 0
+                if 'is_pax' in com_data and com_data['is_pax']:
+                    total_pax += pax_count
+                if 'is_infant' in com_data and com_data['is_infant']:
+                    total_pax += infant_count
+
+                if total_pax:
+                    multiplier *= total_pax
+
+                add_amount = com_data['amount'] * multiplier
+                if total_commission >= add_amount:
+                    total_discount += add_amount
+                    total_commission -= add_amount
 
         payload = {
             'agent_id': agent_id,
             'commission_amount': round(total_commission),
             'charge_amount': round(total_charge),
+            'discount_amount': round(total_discount),
         }
         return payload
 
@@ -2693,6 +2812,12 @@ class AgentCommission(object):
                     upline_res_list.append(upline_res)
                     break
 
+        agent_discount_amount = agent_res['discount_amount']
+        if agent_discount_amount > commission_amount:
+            agent_discount_amount = 0
+        else:
+            commission_amount -= agent_discount_amount
+
         agent_commission_amount = agent_res['commission_amount']
         if agent_commission_amount > commission_amount:
             agent_commission_amount = 0.0
@@ -2732,6 +2857,7 @@ class AgentCommission(object):
             'ho_charge_amount': ho_charge_amount,
             'ho_agent_id': ho_agent_id,
             'agent_commission_amount': agent_commission_amount,
+            'agent_discount_amount': agent_discount_amount,
             'upline_commission_list': upline_res_list,
             'residual_amount': commission_amount,
             'residual_agent_id': residual_agent_id
@@ -3479,6 +3605,19 @@ class RepricingToolsV2(object):
                     }
                     # agent_com_res = self.agent_pricing.get_commission_calculation(**com_param)
                     agent_com_res = self.agent_commission.get_commission_calculation(**com_param)
+                    if agent_com_res['agent_discount_amount'] and agent_com_res['agent_discount_amount'] > 0:
+                        sc_values = copy.deepcopy(sc_temp)
+                        sc_values.update({
+                            'charge_type': 'DISC',
+                            'charge_code': 'disc',
+                            'pax_type': 'ADT',
+                            'pax_count': 1,
+                            'amount': -agent_com_res['agent_discount_amount'],
+                            'foreign_amount': -agent_com_res['agent_discount_amount'],
+                            'total': -agent_com_res['agent_discount_amount'],
+                        })
+                        fare_data['service_charges'].append(sc_values)
+
                     if agent_com_res['agent_commission_amount'] and show_commission and agent_com_res['agent_commission_amount'] > 0:
                         sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
