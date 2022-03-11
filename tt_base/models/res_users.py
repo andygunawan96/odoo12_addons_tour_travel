@@ -143,7 +143,7 @@ class ResUsers(models.Model):
             '(?=.*?[A-Z]){1,}',
             '(?=.*?\\d){1,}',
             r'(?=.*?[\W_]){1,}',
-            '.{%d,}$' % 12,
+            '.{%d,}$' % 6,
         ]
         if not re.search(''.join(password_regex), password):
             raise UserError(self.password_match_message())
@@ -153,7 +153,7 @@ class ResUsers(models.Model):
     @api.multi
     def password_match_message(self):
         self.ensure_one()
-        message = 'Password must be 12 characters or more. Must also contain Lowercase letter, Uppercase letter, Numeric digit, Special character'
+        message = 'Password must be 6 characters or more. Must also contain Lowercase letter, Uppercase letter, Numeric digit, Special character'
         return message
     ## OCA
 
