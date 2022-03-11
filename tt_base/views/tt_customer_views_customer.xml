@@ -60,6 +60,16 @@
                                         </tree>
                                     </field>
                                 </page>
+                                <page string="Behavior">
+                                    <field name="behavior_ids">
+                                        <tree>
+                                            <field name="provider_type_id"/>
+                                            <field name="behavior_type"/>
+                                            <field name="behavior_value"/>
+                                            <field name="counter"/>
+                                        </tree>
+                                    </field>
+                                </page>
                                 <page string="Booker Parent (Old)">
                                     <field name="booker_parent_ids"
                                            domain="[('parent_agent_id', '=', agent_id)]"

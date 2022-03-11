@@ -50,9 +50,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Job Positions">
-                            <field name="job_position_ids" context="{'default_customer_parent_id': id}"/>
-                        </page>
                         <page string="Customer">
                             <field name="customer_ids"
                                    domain="[('agent_id', '=', parent_agent_id)]"
@@ -71,6 +68,9 @@
                                     <field name="job_position_id"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Job Positions">
+                            <field name="job_position_ids" context="{'default_customer_parent_id': id}"/>
                         </page>
                         <page string="Addresses">
                             <field name="address_ids"/>
