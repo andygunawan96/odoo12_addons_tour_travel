@@ -330,5 +330,6 @@ class TtReservationRequestApproval(models.Model):
             'approved_by': self.approved_uid and self.approved_uid.name or '',
             'approved_by_customer': self.approved_cuid and self.approved_cuid.name or '',
             'approved_job_position': self.approved_job_position_id and self.approved_job_position_id.name or '',
+            'approved_cust_seq_id': self.approved_cuid and self.approved_cuid.seq_id or '',
             'action': 'Approved'
         }
