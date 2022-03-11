@@ -20,7 +20,8 @@ class TtReservationCustomer(models.Model):
         res = super(TtReservationCustomer, self).to_dict()
         res.update({
             'sale_service_charges': self.get_service_charges(),
-            'temporary_field': json.loads(self.temporary_field) if self.temporary_field else []
+            'temporary_field': json.loads(self.temporary_field) if self.temporary_field else [],
+            'behaviors': self.customer_id.get_most_behavior()
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
