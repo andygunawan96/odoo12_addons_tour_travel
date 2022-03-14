@@ -49,6 +49,12 @@ class CreateCorporateUserWizard(models.TransientModel):
 
     customer_id = fields.Many2one('tt.customer','Customer',domain=get_customer_domain)
 
+    @api.onchange('customer_parent_id')
+    def _onchange_domain_customer(self):
+        return {'domain': {
+            'customer_id': self.get_customer_domain()
+        }}
+
     def create_cor_user(self):
         form_view_ref = self.env.ref('base.view_users_form', False)
         user_template = self.env['res.users'].browse(self.env.ref("tt_base.template_corpor_user_manager").id) # asumsi yg di buat corpor manager

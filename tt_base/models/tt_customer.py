@@ -9,6 +9,7 @@ from ...tools.ERR import RequestException
 import json,time
 import logging,traceback
 import random, string
+import re
 
 _logger = logging.getLogger(__name__)
 
@@ -118,23 +119,7 @@ class TtCustomer(models.Model):
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
 
-        behavior_dict = {}
-        for rec in self.behavior_ids:
-            rec_dict = rec.to_dict()
-            if not behavior_dict.get(rec_dict['provider_type']):
-                behavior_dict[rec_dict['provider_type']] = {}
-            if not behavior_dict[rec_dict['provider_type']].get(rec_dict['behavior_type']):
-                behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']] = {
-                    "value": rec_dict['behavior_value'],
-                    "counter": rec_dict['counter']
-                }
-            else:
-                if rec_dict['counter'] > behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']]['counter']:
-                    behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']].update({
-                        "value": rec_dict['behavior_value'],
-                        "counter": rec_dict['counter']
-                    })
-
+        behavior_dict = self.get_most_behavior()
 
         res = {
             'name': self.name,
@@ -181,6 +166,27 @@ class TtCustomer(models.Model):
             })
 
         return res
+
+    def get_most_behavior(self):
+        behavior_dict = {}
+        for rec in self.behavior_ids:
+            rec_dict = rec.to_dict()
+            if not behavior_dict.get(rec_dict['provider_type']):
+                behavior_dict[rec_dict['provider_type']] = {}
+            if not behavior_dict[rec_dict['provider_type']].get(rec_dict['behavior_type']):
+                behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']] = {
+                    "value": rec_dict['behavior_value'],
+                    "counter": rec_dict['counter'],
+                    "remark": rec_dict['remark']
+                }
+            else:
+                ## check terbanyak
+                if rec_dict['counter'] > behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']]['counter']:
+                    behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']].update({
+                        "value": rec_dict['behavior_value'],
+                        "counter": rec_dict['counter']
+                    })
+        return behavior_dict
 
     def copy_to_passenger(self):
         res = {
@@ -567,32 +573,38 @@ class TtCustomer(models.Model):
     def create_or_update_customer_bitrix(self, data, context):
         return ERR.get_no_error()
 
-    def add_behavior(self, provider_type, behavior_type, behavior_value):
+    def add_behavior(self, provider_type, behavior_type, behavior_value, remark=''):
         check_behavior = True
-        if behavior_type == 'Baggage':
-            behavior_value = behavior_value.replace('kg', 'kilogram').replace('kilograms', 'kilogram').replace('kilograms', 'kilogram(s)').replace('kilograms', 'Kilogram').replace('kilograms', 'Kilogram(s)').replace('kilograms', 'Kg').replace('kilograms', 'KG')
-        for behavior_obj in self.behavior_ids:
-            if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code:
-                # compare name
-                similarity = 0
-                for data_db in behavior_obj.behavior_value.split(' '):
-                    for new_data in behavior_value.split(' '):
-                        if data_db == new_data:
-                            similarity += 1
-                            break
-                total_similarity = len(behavior_obj.behavior_value.split(' ')) if len(behavior_obj.behavior_value.split(' ')) > len(behavior_value.split(' ')) else len(behavior_value.split(' '))
-                if similarity == total_similarity: #FOUND
-                    behavior_obj.counter += 1
-                    check_behavior = False
-                    break
-        if check_behavior:
-            self.env['tt.customer.behavior'].create({
-                "customer_id": self.id,
-                "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
-                "behavior_type": behavior_type,
-                "behavior_value": behavior_value,
-                "counter": 1
-            })
+        if behavior_type == 'baggage':
+            number = re.findall(r'\d+', behavior_value)
+            if number:
+                behavior_value = "%s KG" % str(int(number[0]))
+            else:
+                behavior_value = ''
+        if behavior_value != '':
+            for behavior_obj in self.behavior_ids:
+                if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code and remark == behavior_obj.provider_type_id.remark:
+                    # compare name
+                    similarity = 0
+                    for data_db in behavior_obj.behavior_value.split(' '):
+                        for new_data in behavior_value.split(' '):
+                            if data_db == new_data:
+                                similarity += 1
+                                break
+                    total_similarity = len(behavior_obj.behavior_value.split(' ')) if len(behavior_obj.behavior_value.split(' ')) > len(behavior_value.split(' ')) else len(behavior_value.split(' '))
+                    if similarity == total_similarity: #FOUND
+                        behavior_obj.counter += 1
+                        check_behavior = False
+                        break
+            if check_behavior:
+                self.env['tt.customer.behavior'].create({
+                    "customer_id": self.id,
+                    "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
+                    "behavior_type": behavior_type,
+                    "behavior_value": behavior_value,
+                    "counter": 1,
+                    "remark": remark
+                })
 
 class TtCustomerIdentityNumber(models.Model):
     _name = "tt.customer.identity"
@@ -645,11 +657,13 @@ class TtCustomerBehavior(models.Model):
     behavior_value = fields.Char('Name')
     counter = fields.Integer('Count')
     customer_id = fields.Many2one('tt.customer', 'Owner', required=True)
+    remark = fields.Char('Additional Information')
 
     def to_dict(self):
         return {
-            "provider_type": self.provider_type_id.code,
-            "behavior_type": self.behavior_type,
-            "behavior_value": self.behavior_value,
+            "provider_type": self.provider_type_id.name,
+            "behavior_type": self.behavior_type.capitalize(),
+            "behavior_value": self.behavior_value.capitalize(),
             "counter": self.counter,
+            "remark": self.remark
         }

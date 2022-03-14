@@ -2,6 +2,8 @@ from odoo import http
 import odoo, datetime
 import werkzeug
 import logging
+from odoo.http import request
+from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 from werkzeug import urls
 
 _logger = logging.getLogger(__name__)
@@ -29,3 +31,12 @@ class Database(http.Controller):
             _logger.exception('Database.backup')
             error = "Database backup error: %s" % (str(e) or repr(e))
             return self._render_template(error=error)
+
+class AuthSignupHomeInherit(AuthSignupHome):
+
+    def get_auth_signup_config(self):
+        original_values = super(AuthSignupHomeInherit,self).get_auth_signup_config()
+        original_values.update({
+            'redirectrodex': request.env['ir.config_parameter'].sudo().get_param('tt_base.redirect_url_signup_rodex')
+        })
+        return original_values

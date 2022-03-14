@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Employee -->
-<!--    <record id="hr.menu_hr_root" model="ir.ui.menu">-->
-<!--        <field name="active" eval="False"></field>-->
-<!--    </record>-->
+    <!--    <record id="hr.menu_hr_root" model="ir.ui.menu">-->
+    <!--        <field name="active" eval="False"></field>-->
+    <!--    </record>-->
 
     <!-- TODO buat mekanisme yg lbih bagus untuk hide and show manage by ... -->
     <template id="ms_disable_manage_db" name="Login Layout" inherit_id="web.login_layout">
@@ -19,13 +19,42 @@
     <record id="base.lang_id" model="res.lang">
         <field name="date_format">%Y-%m-%d</field>
     </record>
+
+    <template id="auth_signup_fields_inherit" name="Auth Signup Inherit"
+              inherit_id="auth_signup.fields">
+        <xpath expr="//div[@class='form-group field-confirm_password']" position="after">
+            <h6>Password Must Contain:</h6>
+            <ul>
+                <li>8 Characters or more.</li>
+                <li>1 Lowercase letter</li>
+                <li>1 Uppercase letter</li>
+                <li>1 Numeric digit</li>
+                <li>1 Special character</li>
+            </ul>
+        </xpath>
+    </template>
+
+    <template id="auth_signup_reset_password_inherit" name="Auth Signup Reset Password Inherit"
+              inherit_id="auth_signup.reset_password">
+        <xpath expr="//input[@name='redirect']" position="attributes">
+            <attribute name="t-att-value">redirectrodex</attribute>
+        </xpath>
+    </template>
+
+    <template id="auth_signup_signup_inherit" name="Auth Signup Signup Inherit"
+              inherit_id="auth_signup.signup">
+        <xpath expr="//input[@name='redirect']" position="attributes">
+            <attribute name="t-att-value">redirectrodex</attribute>
+        </xpath>
+    </template>
+
     <!-- Survey -->
-<!--    <record id="survey.menu_surveys" model="ir.ui.menu">-->
-<!--        <field name="active" eval="False"></field>-->
-<!--    </record>-->
+    <!--    <record id="survey.menu_surveys" model="ir.ui.menu">-->
+    <!--        <field name="active" eval="False"></field>-->
+    <!--    </record>-->
 
     <!-- Invoicing -->
-<!--    <record id="account.menu_finance" model="ir.ui.menu">-->
-<!--        <field name="active" eval="False"></field>-->
-<!--    </record>-->
+    <!--    <record id="account.menu_finance" model="ir.ui.menu">-->
+    <!--        <field name="active" eval="False"></field>-->
+    <!--    </record>-->
 </odoo>
