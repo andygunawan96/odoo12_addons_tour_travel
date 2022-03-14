@@ -9,5 +9,9 @@
             <field name="key">tt_base.website_default_email_address</field>
             <field name="value">cs@rodextrip.com</field>
         </record>
+        <record id="redirectrodex" model="ir.config_parameter">
+            <field name="key">tt_base.redirectrodex</field>
+            <field name="value">/</field>
+        </record>
     </data>
 </odoo>
