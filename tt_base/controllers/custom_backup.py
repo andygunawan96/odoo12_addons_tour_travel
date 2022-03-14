@@ -37,6 +37,6 @@ class AuthSignupHomeInherit(AuthSignupHome):
     def get_auth_signup_config(self):
         original_values = super(AuthSignupHomeInherit,self).get_auth_signup_config()
         original_values.update({
-            'redirectrodex': request.env['ir.config_parameter'].sudo().get_param('tt_base.redirect_url_rodex')
+            'redirectrodex': request.env['ir.config_parameter'].sudo().get_param('tt_base.redirect_url_signup_rodex')
         })
         return original_values
