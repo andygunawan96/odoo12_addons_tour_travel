@@ -182,6 +182,10 @@ class ReservationAirline(models.Model):
             })
         self.write(values)
 
+        ## ADD CUSTOMER BEHAVIOR
+        for rec in self.provider_booking_ids:
+            for fee in rec.fee_ids:
+                fee.passenger_id.customer_id.add_behavior('airline', fee.category, fee.name)
         try:
             if self.agent_type_id.is_send_email_issued:
                 mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_airline')], limit=1)
