@@ -583,7 +583,7 @@ class TtCustomer(models.Model):
                 behavior_value = ''
         if behavior_value != '':
             for behavior_obj in self.behavior_ids:
-                if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code and remark == behavior_obj.provider_type_id.remark:
+                if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code and remark == behavior_obj.remark:
                     # compare name
                     similarity = 0
                     for data_db in behavior_obj.behavior_value.split(' '):
