@@ -1008,7 +1008,7 @@ class TtReservation(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1005)
 
-    def get_discount(self, voucher_reference):
+    def get_discount(self, voucher_reference, context):
         voucher = {
             'order_number': self.name,
             'voucher_reference': voucher_reference,
@@ -1016,11 +1016,11 @@ class TtReservation(models.Model):
             'provider_type': self._name.split('.')[len(self._name.split('.')) - 1],
             'provider': self.provider_name.split(',')
         }
-        return self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
+        return voucher, self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
 
     def check_voucher(self, voucher_reference, context={}):
         if voucher_reference:
-            discount = self.get_discount(voucher_reference)
+            voucher_dict, discount = self.get_discount(voucher_reference, context)
             if discount['error_code'] != 0:
                 self.delete_voucher()
 
@@ -1028,10 +1028,10 @@ class TtReservation(models.Model):
         if self.state in ['booked', 'issued']:
             self.delete_voucher()
             if voucher_reference:
-                discount = self.get_discount(voucher_reference)
+                voucher_dict, discount = self.get_discount(voucher_reference, context)
                 if discount['error_code'] == 0:
-                    discount = self.env['tt.voucher.detail'].use_voucher_new(voucher, context, type)
-                    self.voucher_code = voucher['voucher_reference']
+                    discount = self.env['tt.voucher.detail'].use_voucher_new(voucher_dict, context, type)
+                    self.voucher_code = voucher_reference
                     for idx, rec in enumerate(discount['response']): ##DISKON PER PROVIDER
                         service_charge = [{
                             "charge_code": "disc_voucher",
