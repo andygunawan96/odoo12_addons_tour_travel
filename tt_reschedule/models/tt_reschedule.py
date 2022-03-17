@@ -32,12 +32,12 @@ class TtReconcileTransaction(models.Model):
 
     def compare_reissue_recon_data(self, vals):
         found_rec = self.env['tt.reschedule'].search([('pnr', '=', vals['pnr']),
-                                                      ('state', '=', 'final'),
+                                                      ('state', 'in', ['final', 'done']),
                                                       ('real_reschedule_amount', '=', vals['total']),
                                                       ('reconcile_line_id', '=', False)], limit=1)
         if not found_rec:
             found_rec = self.env['tt.reschedule'].search([('referenced_pnr', '=', vals['pnr']),
-                                                          ('state', '=', 'final'),
+                                                          ('state', 'in', ['final', 'done']),
                                                           ('real_reschedule_amount', '=', vals['total']),
                                                           ('reconcile_line_id', '=', False)], limit=1)
         return found_rec
