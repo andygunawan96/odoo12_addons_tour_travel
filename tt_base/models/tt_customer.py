@@ -583,6 +583,7 @@ class TtCustomer(models.Model):
                 behavior_value = ''
         if behavior_value != '':
             for behavior_obj in self.behavior_ids:
+                ## CHECK KALAU TYPE SAMA & PROVIDER SAMA & REMARK SAMA SAMA BARU DATA DI COMPARE KALAU TIDAK MASUK DATA BARU
                 if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code and remark == behavior_obj.remark:
                     # compare name
                     similarity = 0
