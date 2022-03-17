@@ -17,9 +17,8 @@ class TtRefundInherit(models.Model):
 
     reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State', default='not_reconciled',
                                        compute='_compute_reconcile_state', store=True)
-    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines', 'Reconciled', readonly=True,
-                                        states={'draft': [('readonly', False)]})
-    reconcile_time = fields.Datetime('Reconcile Time', readonly=True, states={'draft': [('readonly', False)]})
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines', 'Reconciled', readonly=True)
+    reconcile_time = fields.Datetime('Reconcile Time', readonly=True)
 
     def _compute_reconcile_state(self):
         for rec in self:
