@@ -110,6 +110,12 @@ class TtReconcileTransaction(models.Model):
                     'reconcile_line_id': rec.id,
                     'reconcile_time': datetime.now()
                 })
+                if found_rec[0]._name == 'tt.refund' and abs(rec.total) < found_rec[0].real_refund_amount:
+                    divided_total = abs(rec.total) / len(found_rec[0].refund_line_ids)
+                    for rec2 in found_rec[0].refund_line_ids:
+                        rec2.write({
+                            'real_refund_amount': divided_total
+                        })
             else:
                 if notif_to_telegram:
                     not_match_str += "{:03d}. {} Total Price: Rp {:,}\n\n".format(idx,rec['pnr'],rec['total'])
