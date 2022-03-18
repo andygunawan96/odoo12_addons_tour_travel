@@ -108,7 +108,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     else:
                         write_data.append((1,trans_lines[0].id,transaction))
                 else:
-                    if transaction['type'] == 'nta':
+                    if transaction['type'] in ['nta', 'refund', 'reissue']:
                         transaction['state'] = 'not_match'
                     else:
                         transaction['state'] = 'done'
@@ -129,7 +129,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
                             line_write_dict['res_model'] = ''
                             line_write_dict['res_id'] = 0
                 elif rec_line.state != 'match':
-                    if rec_line.type == 'nta':
+                    if rec_line.type in ['nta', 'refund', 'reissue']:
                         line_write_dict['state'] = 'not_match'
                     else:
                         line_write_dict['state'] = 'done'
