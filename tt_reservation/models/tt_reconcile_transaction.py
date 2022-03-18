@@ -89,11 +89,11 @@ class TtReconcileTransaction(models.Model):
                                                                           ('total_price', '=', abs(rec.total)),
                                                                           ('reconcile_line_id', '=',False)], limit=1)
                 ##kalau tidak ketemu juga, cari di reschedule
-                if not found_rec:
-                    found_rec = self.compare_reissue_recon_data({
-                        'pnr': rec.pnr,
-                        'total': abs(rec.total)
-                    })
+                # if not found_rec:
+                #     found_rec = self.compare_reissue_recon_data({
+                #         'pnr': rec.pnr,
+                #         'total': abs(rec.total)
+                #     })
 
             elif rec.type == 'refund':  # kata mba desi: kalo real amount lebih dari yang sebenarnya, dkurangi. Kalo real amount kurang, sisanya masuk pendapatan kantor
                 found_rec = self.env['tt.refund'].search([('referenced_pnr', '=', rec.pnr),
