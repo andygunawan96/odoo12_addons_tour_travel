@@ -44,8 +44,8 @@ class TtCustomer(models.Model):
     agent_as_staff_id = fields.Many2one('tt.agent', 'Agent as Staff')  # , default=lambda self: self.env.user.agent_id
     # user_agent_id = fields.Many2one('tt.agent', 'Agent User', default=lambda self: self.env.user.agent_id)
     customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer Parent')
-    booker_parent_ids = fields.Many2many('tt.customer.parent', 'tt_customer_booker_customer_parent_rel', 'customer_id',
-                                         'customer_parent_id', 'Booker Parent')
+    # booker_parent_ids = fields.Many2many('tt.customer.parent', 'tt_customer_booker_customer_parent_rel', 'customer_id',
+    #                                      'customer_parent_id', 'Booker Parent')
     customer_parent_booker_ids = fields.One2many('tt.customer.parent.booker.rel', 'customer_id', 'Booker Parent')
 
     active = fields.Boolean('Active', default=True)
