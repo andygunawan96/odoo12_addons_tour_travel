@@ -91,9 +91,9 @@
                                     </field>
                                 </page>
 
-                                <page string="Booker Parent (Old)">
-                                    <field name="booker_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}"/>
-                                </page>
+<!--                                <page string="Booker Parent (Old)">-->
+<!--                                    <field name="booker_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}"/>-->
+<!--                                </page>-->
                                 <page string="Booker Parent">
                                     <field name="customer_parent_booker_ids"/>
                                 </page>

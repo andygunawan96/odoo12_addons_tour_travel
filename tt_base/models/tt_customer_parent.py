@@ -32,7 +32,7 @@ class TtCustomerParent(models.Model):
     phone_ids = fields.One2many('phone.detail', 'customer_parent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'customer_parent_id', 'Social Media')
     customer_ids = fields.Many2many('tt.customer', 'tt_customer_customer_parent_rel','customer_parent_id','customer_id','Customer')
-    booker_ids = fields.Many2many('tt.customer', 'tt_customer_booker_customer_parent_rel', 'customer_parent_id','customer_id', 'Booker')
+    # booker_ids = fields.Many2many('tt.customer', 'tt_customer_booker_customer_parent_rel', 'customer_parent_id','customer_id', 'Booker')
     booker_customer_ids = fields.One2many('tt.customer.parent.booker.rel', 'customer_parent_id', 'Booker')
     job_hierarchy_ids = fields.One2many('tt.customer.job.hierarchy', 'customer_parent_id', 'Job Hierarchy')
     job_position_ids = fields.One2many('tt.customer.job.position', 'customer_parent_id', 'Job Positions')
@@ -88,16 +88,16 @@ class TtCustomerParent(models.Model):
             raise UserError('Action failed due to security restriction. Required Customer Parent Level 5 permission.')
         return super(TtCustomerParent, self).unlink()
 
-    def convert_all_cust_booker_to_new_format(self):
-        all_cus_par = self.env['tt.customer.parent'].search([('customer_parent_type_id', '!=', self.env.ref('tt_base.customer_type_fpo').id)])
-        for rec in all_cus_par:
-            for rec2 in rec.booker_ids:
-                booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', rec.id), ('customer_id', '=', rec2.id)], limit=1)
-                if not booker_obj:
-                    self.env['tt.customer.parent.booker.rel'].create({
-                        'customer_parent_id': rec.id,
-                        'customer_id': rec2.id
-                    })
+    # def convert_all_cust_booker_to_new_format(self):
+    #     all_cus_par = self.env['tt.customer.parent'].search([('customer_parent_type_id', '!=', self.env.ref('tt_base.customer_type_fpo').id)])
+    #     for rec in all_cus_par:
+    #         for rec2 in rec.booker_ids:
+    #             booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', rec.id), ('customer_id', '=', rec2.id)], limit=1)
+    #             if not booker_obj:
+    #                 self.env['tt.customer.parent.booker.rel'].create({
+    #                     'customer_parent_id': rec.id,
+    #                     'customer_id': rec2.id
+    #                 })
 
     def action_create_corporate_user(self):
         vals = {

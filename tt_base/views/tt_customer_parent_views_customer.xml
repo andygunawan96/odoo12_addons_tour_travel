@@ -55,11 +55,11 @@
                                    domain="[('agent_id', '=', parent_agent_id)]"
                                    context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view', 'default_agent_id': parent_agent_id}"/>
                         </page>
-                        <page string="Booker (Old)">
-                            <field name="booker_ids"
-                                   domain="[('agent_id', '=', parent_agent_id)]"
-                                   context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view', 'default_agent_id': parent_agent_id}"/>
-                        </page>
+<!--                        <page string="Booker (Old)">-->
+<!--                            <field name="booker_ids"-->
+<!--                                   domain="[('agent_id', '=', parent_agent_id)]"-->
+<!--                                   context="{'tree_view_ref': 'tt_base.tt_customer_customer_tree_view', 'default_agent_id': parent_agent_id}"/>-->
+<!--                        </page>-->
                         <page string="Booker">
                             <field name="booker_customer_ids" context="{'default_customer_parent_id': id}">
                                 <tree editable="bottom">
