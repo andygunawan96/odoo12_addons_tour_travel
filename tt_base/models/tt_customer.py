@@ -305,9 +305,8 @@ class TtCustomer(models.Model):
                     if rec_book.customer_id.id not in cust_dom_ids:
                         cust_dom_ids.append(rec_book.customer_id.id)
                 dom.append('|')
-                dom.append('|')
                 dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
-                dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
+                # dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
                 dom.append(('id','in',cust_dom_ids))
             customer_list_obj = self.search(dom,limit=100)
 
