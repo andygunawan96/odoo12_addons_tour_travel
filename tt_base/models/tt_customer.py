@@ -44,8 +44,8 @@ class TtCustomer(models.Model):
     agent_as_staff_id = fields.Many2one('tt.agent', 'Agent as Staff')  # , default=lambda self: self.env.user.agent_id
     # user_agent_id = fields.Many2one('tt.agent', 'Agent User', default=lambda self: self.env.user.agent_id)
     customer_parent_ids = fields.Many2many('tt.customer.parent','tt_customer_customer_parent_rel','customer_id','customer_parent_id','Customer Parent')
-    booker_parent_ids = fields.Many2many('tt.customer.parent', 'tt_customer_booker_customer_parent_rel', 'customer_id',
-                                         'customer_parent_id', 'Booker Parent')
+    # booker_parent_ids = fields.Many2many('tt.customer.parent', 'tt_customer_booker_customer_parent_rel', 'customer_id',
+    #                                      'customer_parent_id', 'Booker Parent')
     customer_parent_booker_ids = fields.One2many('tt.customer.parent.booker.rel', 'customer_id', 'Booker Parent')
 
     active = fields.Boolean('Active', default=True)
@@ -583,6 +583,7 @@ class TtCustomer(models.Model):
                 behavior_value = ''
         if behavior_value != '':
             for behavior_obj in self.behavior_ids:
+                ## CHECK KALAU TYPE SAMA & PROVIDER SAMA & REMARK SAMA SAMA BARU DATA DI COMPARE KALAU TIDAK MASUK DATA BARU
                 if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code and remark == behavior_obj.remark:
                     # compare name
                     similarity = 0

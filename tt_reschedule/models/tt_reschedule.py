@@ -27,6 +27,21 @@ class TtLedger(models.Model):
         return res
 
 
+class TtReconcileTransaction(models.Model):
+    _inherit = 'tt.reconcile.transaction'
+
+    def compare_reissue_recon_data(self, vals):
+        found_rec = self.env['tt.reschedule'].search([('pnr', '=', vals['pnr']),
+                                                      ('state', 'in', ['final', 'done']),
+                                                      ('real_reschedule_amount', '=', vals['total']),
+                                                      ('reconcile_line_id', '=', False)], limit=1)
+        if not found_rec:
+            found_rec = self.env['tt.reschedule'].search([('referenced_pnr', '=', vals['pnr']),
+                                                          ('state', 'in', ['final', 'done']),
+                                                          ('real_reschedule_amount', '=', vals['total']),
+                                                          ('reconcile_line_id', '=', False)], limit=1)
+        return found_rec
+
 class TtRescheduleChanges(models.Model):
     _name = "tt.reschedule.changes"
     _description = "After Sales Model"

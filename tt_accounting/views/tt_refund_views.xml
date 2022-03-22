@@ -120,7 +120,7 @@
                     </div>
                     <div class="oe_title">
                         <label for="Name" class="oe_edit_only" string="Name"/>
-                        <h1>
+                        <h1 name="name_title">
                             <field name="name"/>
                         </h1>
                     </div>

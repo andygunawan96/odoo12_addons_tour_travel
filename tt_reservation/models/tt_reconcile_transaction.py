@@ -6,9 +6,30 @@ import xlsxwriter
 import base64
 import pytz
 import logging,traceback
+from ...tools import variables, util, ERR
 from ...tools import tools_excel
 
 _logger = logging.getLogger()
+
+
+class TtRefundInherit(models.Model):
+    _inherit = 'tt.refund'
+
+    reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State', default='not_reconciled',
+                                       compute='_compute_reconcile_state', store=True)
+    reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines', 'Reconciled', readonly=True)
+    reconcile_time = fields.Datetime('Reconcile Time', readonly=True)
+
+    @api.depends('reconcile_line_id')
+    def _compute_reconcile_state(self):
+        for rec in self:
+            if rec.reconcile_line_id and rec.reconcile_line_id.state == 'match':
+                rec.reconcile_state = 'reconciled'
+            elif rec.reconcile_line_id and rec.reconcile_line_id.state == 'cancel':
+                rec.reconcile_state = 'cancel'
+            else:
+                rec.reconcile_state = 'not_reconciled'
+
 
 class TtReconcileTransaction(models.Model):
     _inherit = ['tt.history']
@@ -44,30 +65,57 @@ class TtReconcileTransaction(models.Model):
         for rec in self:
             rec.total_lines = len(rec.reconcile_lines_ids)
 
+    def compare_reissue_recon_data(self, vals):
+        return []
+
     def compare_reconcile_data(self,ctx=False,notif_to_telegram=False):
         not_match_str = ''
         idx = 1
         for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
-            found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
-                                                                                 ('total_price','=',abs(rec.total)),
-                                                                                ('reconcile_line_id','=',False)],limit=1)
+            found_rec = []
+            if rec.type == 'reissue':
+                found_rec = self.compare_reissue_recon_data({
+                    'pnr': rec.pnr,
+                    'total': abs(rec.total)
+                })
+            elif rec.type == 'nta':
+                found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
+                                                                                     ('total_price','=',abs(rec.total)),
+                                                                                    ('reconcile_line_id','=',False)],limit=1)
 
-            ##kalau tidak ketemu di provider masing masing cari di offline
-            if not found_rec:
-                found_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
-                                                                      ('total_price', '=', abs(rec.total)),
-                                                                      ('reconcile_line_id', '=',False)], limit=1)
+                ##kalau tidak ketemu di provider masing masing cari di offline
+                if not found_rec:
+                    found_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
+                                                                          ('total_price', '=', abs(rec.total)),
+                                                                          ('reconcile_line_id', '=',False)], limit=1)
+                ##kalau tidak ketemu juga, cari di reschedule
+                # if not found_rec:
+                #     found_rec = self.compare_reissue_recon_data({
+                #         'pnr': rec.pnr,
+                #         'total': abs(rec.total)
+                #     })
+
+            elif rec.type == 'refund':  # kata mba desi: kalo real amount lebih dari yang sebenarnya, dkurangi. Kalo real amount kurang, sisanya masuk pendapatan kantor
+                found_rec = self.env['tt.refund'].search([('referenced_pnr', '=', rec.pnr),
+                                                          ('state', '=', 'final'),
+                                                          ('reconcile_line_id', '=', False)], limit=1)
 
             if found_rec:
                 rec.write({
-                    'res_model': found_rec._name,
-                    'res_id': found_rec.id,
+                    'res_model': found_rec[0]._name,
+                    'res_id': found_rec[0].id,
                     'state': 'match'
                 })
-                found_rec.write({
+                found_rec[0].write({
                     'reconcile_line_id': rec.id,
                     'reconcile_time': datetime.now()
                 })
+                if found_rec[0]._name == 'tt.refund' and abs(rec.total) < found_rec[0].real_refund_amount:
+                    divided_total = abs(rec.total) / len(found_rec[0].refund_line_ids)
+                    for rec2 in found_rec[0].refund_line_ids:
+                        rec2.write({
+                            'real_refund_amount': divided_total
+                        })
             else:
                 if notif_to_telegram:
                     not_match_str += "{:03d}. {} Total Price: Rp {:,}\n\n".format(idx,rec['pnr'],rec['total'])
@@ -107,7 +155,7 @@ class TtReconcileTransaction(models.Model):
 
     def find_exist_in_vendor_only_reservation(self, start_date=False, end_date=False):
         need_to_check = {'in_range': {}, 'out_range': {}}
-        for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
+        for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match' and x.type == 'nta'):
             resv_date = rec.issued_time
             # Filter apakah provider_booking diatas masuk dalam range tanggal yg mau kita proses?
             if start_date <= resv_date.date() <= end_date:
@@ -252,7 +300,7 @@ class TtReconcileTransactionLines(models.Model):
         }
 
     def get_default_state(self):
-        if self.type == 'nta':
+        if self.type in ['nta', 'refund', 'reissue']:
             self.state = 'not_match'
         else:
             self.state = 'done'
