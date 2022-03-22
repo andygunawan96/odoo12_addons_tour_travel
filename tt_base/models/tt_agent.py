@@ -650,19 +650,20 @@ class TtAgent(models.Model):
             for rec in resv_data:
                 latest_ledger = self.env['tt.ledger'].search([('res_id', '=', rec.id), ('res_model', '=', resv_table), ('transaction_type', '=', 2), ('is_reversed', '=', False)], limit=1)
                 end_balance = latest_ledger and latest_ledger[0].balance or 0
-                str_issued_date = rec.issued_date.strftime('%Y-%m-%d')
+                issued_time = pytz.timezone('Asia/Jakarta').normalize(pytz.utc.localize(rec.issued_date))
 
                 rec_data = {
                     'order_number': rec.name,
                     'pnr': rec.pnr,
                     'type': 'nta',
-                    'issued_time': pytz.timezone('Asia/Jakarta').normalize(pytz.utc.localize(rec.issued_date)),
+                    'issued_time': issued_time,
                     'nta_price': rec.agent_nta,
                     'end_balance': end_balance,
                     'carrier_list': rec.carrier_name,
                     'currency': rec.currency_id.name
                 }
 
+                str_issued_date = issued_time.strftime('%Y-%m-%d')
                 not_found = True
                 for rec_res in res:
                     if rec_res['transaction_date'] == str_issued_date:
