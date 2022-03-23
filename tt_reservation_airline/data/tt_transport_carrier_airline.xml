@@ -580,10 +580,30 @@
 
 
         <record id="tt_transport_carrier_airline_3k" model="tt.transport.carrier">
-            <field name="name">Jet Star</field>
+            <field name="name">Jetstar Asia Airways</field>
             <field name="code">3K</field>
+            <field name="icao">JSA</field>
+            <field name="call_sign">JETSTAR ASIA</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_jq" model="tt.transport.carrier">
+            <field name="name">Jetstar</field>
+            <field name="code">JQ</field>
             <field name="icao">JST</field>
             <field name="call_sign">JETSTAR</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
+        <record id="tt_transport_carrier_airline_gk" model="tt.transport.carrier">
+            <field name="name">Jetstar Japan</field>
+            <field name="code">GK</field>
+            <field name="icao">JJP</field>
+            <field name="call_sign">ORANGE LINER</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
@@ -636,16 +656,6 @@
             <field name="code">A3</field>
             <field name="icao">AEE</field>
             <field name="call_sign">AEGEAN</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
-        </record>
-
-
-        <record id="tt_transport_carrier_airline_jq" model="tt.transport.carrier">
-            <field name="name">Jet Star</field>
-            <field name="code">JQ</field>
-            <field name="icao">JST</field>
-            <field name="call_sign">JETSTAR</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
