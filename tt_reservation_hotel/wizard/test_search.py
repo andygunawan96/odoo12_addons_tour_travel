@@ -555,6 +555,7 @@ class TestSearch(models.Model):
             'contact_id': contact_obj.id, #
             'contact_name': contact_obj.name, #
             'contact_email': contact_obj.email, #
+            'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number),
             'display_mobile': False, #
             'adult': len(list(filter(lambda i: i['pax_type'] == 'ADT', guest_list))),
             'provider_data': provider_data,
