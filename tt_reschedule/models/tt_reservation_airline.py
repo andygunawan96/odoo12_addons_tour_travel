@@ -447,12 +447,12 @@ class ReservationAirline(models.Model):
             resv_journey_dict = {}
             resv_segment_dict = {}
             for journey in airline_obj.journey_ids:
-                key = '%s%s' % (journey.origin_id.code if journey.origin_id else '', journey.destination_id.code if journey.destination_id else '')
+                key = '%s-%s' % (journey.origin_id.code if journey.origin_id else '', journey.destination_id.code if journey.destination_id else '')
                 resv_journey_dict[key] = journey
                 for seg in journey.segment_ids:
                     origin = seg.origin_id.code if seg.origin_id else '-'
                     destination = seg.destination_id.code if seg.destination_id else '-'
-                    seg_key = '%s%s' % (origin, destination)
+                    seg_key = '%s-%s' % (origin, destination)
                     resv_segment_dict[seg_key] = seg
 
             resv_passenger_number_dict = {}
@@ -736,7 +736,9 @@ class ReservationAirline(models.Model):
                 for journey in commit_data['journeys']:
                     orig_segment = journey['segments'][0]
                     dest_segment = journey['segments'][-1]
-                    journey_key = '%s%s' % (orig_segment['origin'], dest_segment['destination'])
+                    journey_key = '%s-%s' % (orig_segment['origin'], dest_segment['destination'])
+                    if 'journey_key' in journey and journey['journey_key']:
+                        journey_key = journey['journey_key']
                     if journey_key not in resv_journey_dict:
                         _logger.error('Journey not found %s, journey list in data %s' % (journey_key, resv_segment_str))
                         continue
@@ -754,7 +756,7 @@ class ReservationAirline(models.Model):
                         old_segment_list.append(seg_obj.id)
 
                     for seg in journey['segments']:
-                        # seg_key = '{origin}{destination}'.format(**seg)
+                        # seg_key = '{origin}-{destination}'.format(**seg)
                         # if seg_key not in resv_segment_dict:
                         #     _logger.error('Segment not found %s, segment list in data %s' % (seg_key, resv_segment_str))
                         #     continue

@@ -47,10 +47,24 @@ class TtJourneyAirline(models.Model):
             segment_list.append(rec.to_dict())
         for rec in self.banner_ids:
             search_banner_list.append(rec.to_dict())
-        res ={
+
+        # March 18, 2022 - SAM
+        # Menambahkan journey key untuk digunakan reroute
+        journey_key_list = []
+        origin_code = self.origin_id.code if self.origin_id else ''
+        destination_code = self.destination_id.code if self.destination_id else ''
+        if origin_code:
+            journey_key_list.append(origin_code)
+        if destination_code:
+            journey_key_list.append(destination_code)
+        journey_key = '-'.join(journey_key_list)
+        # END
+
+        res = {
             'sequence': self.sequence,
-            'origin': self.origin_id.code,
-            'destination': self.destination_id.code,
+            'origin': origin_code,
+            'destination': destination_code,
+            'journey_key': journey_key,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'segments': segment_list,
