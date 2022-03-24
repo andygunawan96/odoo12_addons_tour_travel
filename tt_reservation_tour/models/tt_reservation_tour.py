@@ -507,7 +507,7 @@ class ReservationTour(models.Model):
                 provider_booking_list = []
                 for prov in booking_obj.provider_booking_ids:
                     provider_booking_list.append(prov.to_dict())
-                response = booking_obj.to_dict()
+                response = booking_obj.to_dict(context)
                 response.update({
                     'provider_booking': provider_booking_list
                 })
