@@ -545,6 +545,7 @@ class TestSearch(models.Model):
             'hotel_id': backend_hotel_obj and backend_hotel_obj.id or False,
             'hotel_name': backend_hotel_obj and backend_hotel_obj.sudo().name or hotel_obj['name'],
             'hotel_address': backend_hotel_obj and backend_hotel_obj.sudo().street or hotel_obj['address'],
+            'hotel_rating': backend_hotel_obj and backend_hotel_obj.sudo().rating or hotel_obj['rating'],
             'hotel_city': backend_hotel_obj and backend_hotel_obj.sudo().hotel_partner_city_id.name or hotel_obj['city'],
             'hotel_phone': backend_hotel_obj and backend_hotel_obj.sudo().phone or hotel_obj['phone'],
             'checkin_date': check_in,
@@ -606,55 +607,48 @@ class TestSearch(models.Model):
 
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
 
+        for idx,pax in enumerate(req['passengers']):
+            pax.update({
+                'sequence': idx,
+                'gender': 'male' if pax['title'] in ['MR', 'MSTR'] else 'female'
+            })
+
         booker_obj = self.env['tt.reservation.hotel'].create_booker_api(req['booker'], context)
-        contact_objs = []
-        for con in req['contact']:
-            contact_objs.append(self.env['tt.reservation.hotel'].create_contact_api(con, booker_obj, context))
-        contact_obj = contact_objs[0]
+        contact_obj = self.env['tt.reservation.hotel'].create_contact_api(req['contact'][0],booker_obj,context)
+        list_passenger_value = self.env['tt.reservation.hotel'].create_passenger_value_api(req['passengers'])
+        list_customer_id = self.env['tt.reservation.hotel'].create_customer_api(req['passengers'], context, booker_obj.seq_id, contact_obj.seq_id)
+
+        # fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
+        for idx, rec in enumerate(list_passenger_value):
+            rec[2].update({
+                'customer_id': list_customer_id[idx].id
+            })
+
+        for psg in list_passenger_value:
+            util.pop_empty_key(psg[2])
 
         backend_hotel_obj = self.get_backend_object(req['price_codes'][0]['provider'], req['hotel_obj']['id'])
         vals = self.prepare_resv_value(backend_hotel_obj, req['hotel_obj'], req['checkin_date'], req['checkout_date'], req['price_codes'],
                                        booker_obj, contact_obj, provider_data, special_req, req['passengers'],
                                        context['agent_id'], cancellation_policy, context.get('hold_date', False))
-        # Set Customer Type by Payment
-        if req['payment_id']:
-            acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', req['payment_id']['acquirer_seq_id'])])
-        else:
-            acq_obj = False
-
-        if acq_obj:
-            customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id  ##fpo
-        elif not req['payment_id']:
-            if context['hold_date']:
-                customer_parent_id = self.env['tt.agent'].sudo().browse(context['agent_id']).customer_parent_walkin_id.id
-            else:
-                customer_parent_id = False
-        else:
-            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['payment_id']['acquirer_seq_id'])], limit=1).id
 
         vals.update({
-            'customer_parent_id': customer_parent_id,
+            'user_id': context['co_uid'],
             'sid_booked': context['signature'],
-            'user_id': context.get('co_uid') or self.env.user.id,
+            'booker_id': booker_obj.id,
+            'contact_title': req['contact'][0]['title'],
+            'contact_id': contact_obj.id,
+            'contact_name': contact_obj.name,
+            'contact_email': contact_obj.email,
+            'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code, contact_obj.phone_ids[0].calling_number) or '-',
+            'passenger_ids': list_passenger_value,
+            'customer_parent_id': context.get('co_customer_parent_id',False),
+            'customer_parent_type_id': context.get('co_customer_parent_type_id',False),
         })
-        passenger_objs = self.env['tt.reservation.hotel'].create_customer_api(req['passengers'], context, booker_obj.id, contact_obj.id)  # create passenger
 
         resv_id = self.env['tt.reservation.hotel'].create(vals)
         resv_id.hold_date = context.get('hold_date', False)
         # resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
-        for idx, rec in enumerate(passenger_objs):
-            self.env['tt.reservation.passenger.hotel'].create({
-                'booking_id': resv_id.id,
-                'customer_id': rec.id,
-                'tittle': req['passengers'][idx]['title'],
-                'first_name': rec.first_name,
-                'last_name': rec.last_name,
-                'gender': rec.gender,
-                'birth_date': rec.birth_date,
-                'nationality_id': rec.nationality_id.id,
-                'identity_type': rec.identity_ids and rec.identity_ids[0].identity_type or '',
-                'identity_number': rec.identity_ids and rec.identity_ids[0].identity_number or '',
-            })
 
         for price_obj in req['price_codes']:
             for room_rate in price_obj['rooms']:
@@ -1086,6 +1080,14 @@ class TestSearch(models.Model):
         resv_obj = self.env['tt.reservation.hotel'].search([('name','=',book_id)], limit=1)[0]
         resv_obj.sid_issued = context['signature']
         resv_obj.issued_uid = context['co_uid']
+
+        if acq_id:
+            self.payment_hotel({
+                'book_id': resv_obj.id,
+                'member': acq_id['member'],
+                'acquirer_seq_id': acq_id['acquirer_seq_id'],
+            }, context)
+
         for pax in resv_obj.passenger_ids:
             for csc in pax.channel_service_charge_ids:
                 csc.resv_hotel_id = resv_obj.id

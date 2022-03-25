@@ -2382,6 +2382,8 @@ class HotelInformation(models.Model):
     def advance_find_similar_name_from_database(self, hotel_name, city_name, city_ids, destination_id, new_hotel_id, limit=20):
         fmt_hotel_name = self.formatting_hotel_name(hotel_name, city_name)
         temp = []
+
+        # TYPE 1: cek by city dulu klo masih kurang => destination
         if city_ids:
             # Todo Find City
             # for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids), ('state', 'not in', ['merged',])]):
@@ -2390,13 +2392,29 @@ class HotelInformation(models.Model):
                     return temp
                 if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
                     temp.append(rec)
-        if destination_id:
+        if destination_id and len(temp) < limit:
             for rec in self.env['tt.hotel.master'].search([('destination_id', '=', destination_id)]):
                 if len(temp) > limit:
                     return temp
                 if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
                     if rec not in temp:
                         temp.append(rec)
+        # TYPE 1: End
+
+        # TYPE 2: Start cek smua barengan
+        # params = [('name', '=ilike', hotel_name)]
+
+        # if city_ids:
+        #     params.append(('city_id', 'in', city_ids))
+        # if destination_id:
+        #     params.append(('destination_id', '=', destination_id))
+        #
+        # new_params = ['|' for x in range(len(params)-1)]
+        # new_params += params
+        # for rec in self.env['tt.hotel.master'].search(new_params):
+        #     if rec not in temp:
+        #         temp.append(rec)
+        # TYPE 2: End
         return temp
 
     def advance_find_similar_name_from_database_2(self):
@@ -3813,7 +3831,7 @@ class HotelInformation(models.Model):
     def v2_receive_data_from_gateway(self):
         render_city = 'Surabaya'
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        city_file_url = base_cache_directory + '/from_cache/'+ render_city +'.json'
+        city_file_url = base_cache_directory + 'from_cache/'+ render_city +'.json'
         f2 = open(city_file_url, 'r')
         f2 = f2.read()
         catalog = json.loads(f2)

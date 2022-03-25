@@ -451,7 +451,12 @@
                 <!--<button string="Check Booking Status" name="check_booking_status" type="object" states="confirm,issued,fail_issued,cancel" />-->
                 <!--<button string="Cancel Booking (Policy Applied)" groups="base.group_no_one" name="cancel_booking" states="issued" type="object"/>-->
             </xpath>
-
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="print_eticket" class="oe_stat_button" states="issued,done" string="Print E-Ticket" type="object" icon="fa-print"/>
+                <button name="print_eticket_with_price" class="oe_stat_button" states="issued,done" string="Print E-Ticket (Price)" type="object" icon="fa-print"/>
+                <button name="print_ho_invoice" class="oe_stat_button" states="issued,done" string="Print Invoice (HO)" type="object" icon="fa-print" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <button name="print_itinerary" class="oe_stat_button" states="booked,issued,done" string="Print Itinerary" type="object" icon="fa-print"/>
+            </xpath>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Trip Information"/>
                 <group>
@@ -460,7 +465,8 @@
                         <field name="hotel_id"/>
                         <field name="hotel_name" required="1" attrs="{'invisible':[('hotel_id','!=',False)] }"/>
                         <field name="hotel_address"/>
-                        <field name="hotel_city_id" attrs="{'invisible':[('hotel_city_id','!=',False)] }"/>
+                        <field name="hotel_rating"/>
+                        <field name="hotel_city_id" invisible="1"/>
                         <field name="hotel_city" attrs="{'invisible':[('hotel_city_id','!=',False)] }"/>
                         <field name="hotel_phone"/>
                     </group>

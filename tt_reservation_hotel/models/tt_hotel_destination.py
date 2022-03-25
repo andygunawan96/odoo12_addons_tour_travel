@@ -74,14 +74,9 @@ class HotelDestination(models.Model):
         state_exist = new_dict['state_str']
         city_exist = new_dict['city_str']
 
-        if new_dict['country_str']:
-            params.append(('country_str','=ilike',new_dict['country_str']))
-
-        if new_dict['city_str']:
-            params.append(('city_str', '=ilike',new_dict['city_str']))
-
-        if new_dict['state_str']:
-            params.append(('state_str','=ilike',new_dict['state_str']))
+        for param in ['name', 'country_str', 'state_str', 'city_str']:
+            if new_dict.get(param):
+                params.append((param, '=ilike', new_dict[param]))
 
         similar_rec = self.env['tt.hotel.destination'].search(params, limit=1)
 
