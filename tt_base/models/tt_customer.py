@@ -135,7 +135,8 @@ class TtCustomer(models.Model):
             'email': self.email and self.email or '',
             'seq_id': self.seq_id,
             'identities': identity_dict,
-            'behaviors': behavior_dict
+            'behaviors': behavior_dict,
+            'original_agent': self.agent_id and self.agent_id.name or ''
         }
         if get_customer_parent:
             customer_parent_list = []
@@ -289,8 +290,10 @@ class TtCustomer(models.Model):
 
     def get_customer_list_api(self,req,context):
         try:
-            dom = [('agent_id','=',context['co_agent_id']),
-                   ('is_search_allowed','=',True)]
+            agent_id_list = [context['co_agent_id']]
+            if context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id:
+                agent_id_list += self.env['tt.agent'].search([('is_share_cust_ho', '=', True)]).ids
+            dom = [('agent_id','in',agent_id_list), ('is_search_allowed','=',True)]
 
             if util.get_without_empty(req,'name'):
                 dom.append(('name','ilike',req['name']))

@@ -63,6 +63,7 @@ class TtAgent(models.Model):
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
     is_send_email_cust = fields.Boolean('Send Notification Email to Customer', default=False)
+    is_share_cust_ho = fields.Boolean('Share Customers with HO', default=False)
 
     third_party_key_ids = fields.One2many('tt.agent.third.party.key','agent_id','Third Party Key')
 
