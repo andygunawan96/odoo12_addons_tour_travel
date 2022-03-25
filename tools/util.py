@@ -236,15 +236,24 @@ def generate_passenger_key_name_2(first_name, **kwargs):
     return res
 
 
+def generate_passenger_key_name_3(first_name, last_name, **kwargs):
+    key_name = '%s%s' % (last_name, first_name)
+    res = key_name.lower().replace(' ', '')
+    return res
+
+
+
 def match_passenger_data(provider_passengers, passenger_objs):
     psg_obj_data = []
     for psg_obj in passenger_objs:
         psg_val = psg_obj.to_dict()
         key_name_1 = generate_passenger_key_name_1(**psg_val)
         key_name_2 = generate_passenger_key_name_2(**psg_val)
+        key_name_3 = generate_passenger_key_name_3(**psg_val)
         psg_val.update({
             'key_name_1': key_name_1,
             'key_name_2': key_name_2,
+            'key_name_3': key_name_3,
             'passenger_number': psg_obj.sequence,
             'passenger_id': psg_obj.id,
         })
@@ -254,9 +263,10 @@ def match_passenger_data(provider_passengers, passenger_objs):
     for psg in provider_passengers:
         key_name_1 = generate_passenger_key_name_1(**psg)
         key_name_2 = generate_passenger_key_name_2(**psg)
+        key_name_3 = generate_passenger_key_name_3(**psg)
         del_idx = -1
         for idx, psg_data in enumerate(psg_obj_data):
-            if key_name_1 == psg_data['key_name_1'] or key_name_2 == psg_data['key_name_2']:
+            if key_name_1 == psg_data['key_name_1'] or key_name_3 in psg_data['key_name_3'] or key_name_2 == psg_data['key_name_2']:
                 del_idx = idx
                 psg.update({
                     'passenger_id': psg_data['passenger_id'],
@@ -270,6 +280,21 @@ def match_passenger_data(provider_passengers, passenger_objs):
 
     if provider_passenger_temp:
         _logger.error('Found unmatch passenger data, total %s' % len(provider_passenger_temp))
+        _logger.info('Auto assign passenger id to the unmatch passengers')
+        # March 24, 2022 - SAM
+        # Membuat mekanisme auto match pax untuk sementara agar tetap terproses
+        for psg_idx, psg in enumerate(provider_passenger_temp):
+            del_idx = -1
+            for psg_data_idx, psg_data in enumerate(psg_obj_data):
+                del_idx = psg_data_idx
+                psg.update({
+                    'passenger_id': psg_data['passenger_id'],
+                    'passenger_number': psg_data['passenger_number'],
+                })
+                break
+            if del_idx > -1:
+                del psg_obj_data[del_idx]
+        # END
     return provider_passengers
 
 
