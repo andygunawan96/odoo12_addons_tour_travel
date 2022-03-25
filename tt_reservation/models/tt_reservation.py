@@ -736,7 +736,7 @@ class TtReservation(models.Model):
                     self.payment_acquirer_number_id.state = 'cancel'
                     self.payment_acquirer_number_id = False
         if self.voucher_code and self.state in ['booked']: ##SETIAP GETBOOKING STATUS BOOKED CHECK VOUCHER VALID/TIDAK, YG EXPIRED DI LEPAS LEWAT CRON
-            self.check_voucher(self.voucher_code, context)
+            self.check_voucher_valid(self.voucher_code, context)
         is_agent = False
         if context:
             if context['co_agent_id'] == self.agent_id.id:
@@ -1018,21 +1018,36 @@ class TtReservation(models.Model):
         }
         return voucher, self.env['tt.voucher.detail'].new_simulate_voucher(voucher, context)
 
-    def check_voucher(self, voucher_reference, context={}):
+    def check_voucher_valid(self, voucher_reference, context={}):
         if voucher_reference:
             voucher_dict, discount = self.get_discount(voucher_reference, context)
-            if discount['error_code'] != 0:
+            is_same_voucher_value = self.is_same_total_discount_voucher(discount)
+            if discount['error_code'] != 0 or not is_same_voucher_value:
                 self.delete_voucher()
+
+    def is_same_total_discount_voucher(self, discount_list):
+        total_discount_voucher = 0
+        total_discount_in_reservation = 0
+        for rec_discount in discount_list['response']:
+            total_discount_voucher += rec_discount['provider_total_discount'] * -1
+        for svc_discount in self.env['tt.service.charge'].search([('res_voucher_model', '=', self._name), ('res_voucher_id', '=', self.id), ('is_voucher', '=', True)]):
+            total_discount_in_reservation += svc_discount.total
+        if total_discount_in_reservation == total_discount_voucher:
+            return True
+        return False
 
     def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
         if self.state in ['booked', 'issued']:
-            self.delete_voucher()
             if voucher_reference:
                 voucher_dict, discount = self.get_discount(voucher_reference, context)
-                if discount['error_code'] == 0:
-                    discount = self.env['tt.voucher.detail'].use_voucher_new(voucher_dict, context, type)
+                is_same_voucher_value = True
+                if discount['error_code'] == 0: ##kalau voucher bisa di pakai baru di check
                     self.voucher_code = voucher_reference
-                    for idx, rec in enumerate(discount['response']): ##DISKON PER PROVIDER
+                    is_same_voucher_value = self.is_same_total_discount_voucher(discount)
+
+                if not is_same_voucher_value and discount['error_code'] == 0: ## kalau ada beda discount
+                    self.delete_voucher()
+                    for idx, rec in enumerate(discount['response']):  ##DISKON PER PROVIDER
                         service_charge = [{
                             "charge_code": "disc_voucher",
                             "charge_type": "DISC",
@@ -1051,6 +1066,9 @@ class TtReservation(models.Model):
                         }]
                         self.provider_booking_ids[idx].create_service_charge(service_charge)
                     self.calculate_service_charge()
+
+                if type == 'use':  ##CATAT DI VOUCHER DETAIL
+                    discount = self.env['tt.voucher.detail'].use_voucher_new(voucher_dict, context, type)
 
     def delete_voucher(self):
         for svc_discount in self.env['tt.service.charge'].search([('res_voucher_model','=',self._name), ('res_voucher_id','=',self.id), ('is_voucher','=',True)]):
