@@ -85,6 +85,9 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Comparing Process">
+                            <field name="compare_ids"/>
+                        </page>
                         <page string="Room Information" groups="base.group_no_one">
                             <field name="room_info_ids">
                                 <tree>
@@ -613,6 +616,7 @@
         <field name="arch" type="xml">
             <search string="member Type">
                 <field name="name" string="Name"/>
+                <field name="address" string="Address"/>
                 <field name="city_id" string="City"/>
                 <field name="country_id" string="Country"/>
                 <field name="destination_id" string="Destination"/>
@@ -817,6 +821,16 @@
         <field name="code">
             if records:
                 action = records.mass_re_mapp()
+        </field>
+    </record>
+    <record model="ir.actions.server" id="action_mass_recalc_state">
+        <field name="name">Mass ReCalc State</field>
+        <field name="model_id" ref="tt_reservation_hotel.model_tt_hotel"/>
+        <field name="binding_model_id" ref="tt_reservation_hotel.model_tt_hotel"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.mass_recalc_state()
         </field>
     </record>
 </odoo>

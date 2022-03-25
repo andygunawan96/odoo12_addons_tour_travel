@@ -257,6 +257,15 @@ class HotelInformation(models.Model):
         return new_hotel
 
     def fill_country_city(self):
+        if not self.destination_id:
+            is_exact, destination_obj = self.env['tt.hotel.destination'].find_similar_obj({
+                'id': False,
+                'name': self.address3,
+                'city_str': False,
+                'state_str': False,
+                'country_str': False,
+            })
+            self.destination_id = destination_obj
         if not self.city_id and self.destination_id.city_id:
             self.city_id = self.destination_id.city_id.id
         if not self.country_id:
@@ -276,9 +285,9 @@ class HotelInformation(models.Model):
             rec.fill_country_city()
 
     def mass_re_mapp(self):
-        for rec in self:
+        for idx, rec in enumerate(self):
             rec.advance_find_similar_name_from_database_2()
-            comparer = self.env['tt.hotel.compare'].search([('hotel_id', '=', rec.id)])
+            comparer = self.env['tt.hotel.compare'].search([('hotel_id', '=', rec.id),('state', 'in', ['draft', 'tobe_merged', 'confirm', 'merged'])])
 
             if comparer:
                 for rec in comparer:
@@ -289,7 +298,20 @@ class HotelInformation(models.Model):
                     'hotel_id': rec.id,
                     'comp_hotel_id': False
                 })
-                comparing_id.merge_hotel()
+                # comparing_id.merge_hotel()
+
+            if idx % 50 == 0:
+                self.env.cr.commit()
+
+    def mass_recalc_state(self):
+        for rec in self:
+            for line_obj in rec.compare_ids:
+                if line_obj.state == 'merge':
+                    rec.state = 'merged'
+                    break
+                elif line_obj.state == 'tobe_merge':
+                    rec.state = 'tobe_merge'
+                    break
 
     # Temporary Function digunakan untuk feeling mass empty data
     def set_country_by_destination_and_city(self):

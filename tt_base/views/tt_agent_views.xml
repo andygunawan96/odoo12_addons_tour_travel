@@ -76,6 +76,7 @@
                             <field name="is_using_pnr_quota" groups="tt_base.group_agent_level_4"
                                    invisible="1"/>
                             <field name="is_send_email_cust" groups="tt_base.group_agent_level_4"/>
+                            <field name="is_share_cust_ho" groups="tt_base.group_agent_level_4"/>
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->

@@ -21,7 +21,8 @@ class TtReservationCustomer(models.Model):
         res.update({
             'sale_service_charges': self.get_service_charges(),
             'temporary_field': json.loads(self.temporary_field) if self.temporary_field else [],
-            'behaviors': self.customer_id.get_most_behavior()
+            'behaviors': self.customer_id.get_most_behavior(),
+            'seq_id': self.customer_id.seq_id
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()

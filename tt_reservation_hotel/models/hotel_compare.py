@@ -171,14 +171,14 @@ class HotelInformationCompare(models.Model):
         const = 5
 
         if record.params in ['name']:
-            rmv_param += ['-','"',"'",'!','@']
+            rmv_param += ['-','"',"'",'!','@',':']
             rmv_str += ['hotel', 'motel', 'cottage', '&', 'and', '@', 'at']
             if record.compare_id.hotel_id.city_id.name == record.compare_id.comp_hotel_id.city_id.name and record.compare_id.comp_hotel_id.city_id.name != False:
                 rmv_str += [record.compare_id.hotel_id.city_id.name.lower()]
             if record.compare_id.hotel_id.destination_id.name == record.compare_id.comp_hotel_id.destination_id.name and record.compare_id.comp_hotel_id.destination_id.name != False:
                 rmv_str += [record.compare_id.hotel_id.destination_id.name.lower()]
         elif record.params in ['address']:
-            rmv_param += ['-', '+', '.', ',', '/', '(', ')'] # Pertimbangkan pengunaan '(' , ')'
+            rmv_param += ['-', '+', '.', ',', '/', '(', ')',';'] # Pertimbangkan pengunaan '(' , ')'
             # Contoh: Jl. P. Mangkubumi 57/59 vs Jl. Margoutomo (P. Mangkubumi)
             rmv_str = ['jalan', 'jl', 'jln', 'no', 'street']
             if record.compare_id.hotel_id.city_id.name == record.compare_id.comp_hotel_id.city_id.name and record.compare_id.comp_hotel_id.city_id.name != False:
@@ -364,8 +364,8 @@ class HotelInformationCompare(models.Model):
             self.similar_id.info_ids = [(3, self.hotel_id.id)]
 
             hotel_state = 'draft'
-            for rec in self.env['tt.hotel.compare'].search([('hotel_id', '=', self.hotel_id.id)]):
-                if rec['state'] == 'merged':
+            for rec in self.hotel_id.compare_ids:
+                if rec['state'] == 'merge':
                     hotel_state = 'merged'
                     break
                 elif rec['state'] == 'tobe_merge':
@@ -448,6 +448,8 @@ class HotelInformationCompareLine(models.Model):
 
 class HotelInformation(models.Model):
     _inherit = 'tt.hotel'
+
+    compare_ids = fields.One2many('tt.hotel.compare', 'hotel_id', 'Compared')
 
     def compare_hotel(self):
         compare_id = self.env['tt.hotel.compare'].create({'hotel_id': self.id,})

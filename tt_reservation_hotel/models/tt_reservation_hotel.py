@@ -54,6 +54,10 @@ class HotelReservation(models.Model):
     hotel_id = fields.Many2one('tt.hotel', 'Hotel Information', readonly=True, states={'draft': [('readonly', False)]})
     hotel_name = fields.Char('Hotel Name', readonly=True, states={'draft': [('readonly', False)]})
     hotel_address = fields.Char('Address', readonly=True, states={'draft': [('readonly', False)]})
+    hotel_rating = fields.Selection([
+        (0, 'No Star'), (1, 'One Star'), (2, 'Two Star'), (3, 'Three Star'),
+        (4, 'Four Star'), (5, 'Five Star'), (6, 'Six Star'), (7, 'Seven Star'),
+    ], 'Star', default=0, readonly=True, states={'draft': [('readonly', False)]})
     hotel_city = fields.Char('City', readonly=True, states={'draft': [('readonly', False)]})
     hotel_city_id = fields.Many2one('res.city', 'City', readonly=True, states={'draft': [('readonly', False)]})
     hotel_phone = fields.Char('Phone', readonly=True, states={'draft': [('readonly', False)]})
@@ -310,6 +314,117 @@ class HotelReservation(models.Model):
         }
         return url
 
+    @api.multi
+    def print_eticket(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_hotel')
+
+        if not book_obj.printout_ticket_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report_bytes = airline_ticket_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Hotel Ticket %s.pdf' % book_obj.name,
+                    'file_reference': 'Hotel Ticket',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_ticket_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': book_obj.printout_ticket_id.url,
+        }
+        return url
+
+    @api.multi
+    def print_eticket_with_price(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        datas['is_with_price'] = True
+        airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_hotel')
+
+        if not book_obj.printout_ticket_price_id:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = airline_ticket_id.report_action(book_obj, data=datas)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report_bytes = airline_ticket_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Hotel Ticket (Price) %s.pdf' % book_obj.name,
+                    'file_reference': 'Hotel Ticket with Price',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_ticket_price_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': book_obj.printout_ticket_price_id.url,
+        }
+        return url
+
     # @api.depends('room_detail_ids.commission_amount', 'room_detail_ids.qty')
     # def _compute_total_commission_amount(self):
     #     total = 0
@@ -535,7 +650,7 @@ class HotelReservation(models.Model):
         # if state == 'done':
         #     self.action_create_invoice()
         for prov in self.provider_booking_ids:
-            if prov.state != 'issued' and issued_response.get(prov.provider_id.code) and issued_response[prov.provider_id.code]['status'] == 'issued':
+            if prov.state != 'issued' and issued_response.get(prov.provider_id.code) and issued_response[prov.provider_id.code]['status'].lower() == 'issued':
                 prov.action_issued_api_hotel({
                     'pnr': self.get_pnr_list(),
                     'pnr2': prov.provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id and issued_response[room_detail.provider_id.code]['booking_code'] or '', #isi PNR 2 untuk BTBO2
