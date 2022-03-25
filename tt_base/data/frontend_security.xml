@@ -250,4 +250,9 @@
         <field name="code">process_channel_booking</field>
     </record>
 
+    <record id="able_to_rebooking" model="tt.frontend.security">
+        <field name="name">Process Rebooking</field>
+        <field name="code">process_rebooking</field>
+    </record>
+
 </odoo>
