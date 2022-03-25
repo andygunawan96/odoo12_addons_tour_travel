@@ -11,28 +11,28 @@
         <!-- Add Hotel Provider -->
         <record id="tt_hotel_provider_mg" model="tt.provider">
             <field name="name">MG Bedbank</field>
-            <field name="alias">A6</field>
-            <field name="code">mg</field>
+            <field name="alias">A1</field>
+            <field name="code">mgjarvis</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
         <record id="tt_hotel_provider_hotelspro" model="tt.provider">
             <field name="name">Hotels Pro</field>
-            <field name="alias">A8</field>
+            <field name="alias">A2</field>
             <field name="code">hotelspro</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
-        <record id="tt_hotel_provider_miki" model="tt.provider">
-            <field name="name">Miki Travel</field>
-            <field name="alias">A4</field>
-            <field name="code">miki</field>
+        <record id="tt_hotel_provider_knb" model="tt.provider">
+            <field name="name">Klik and Books</field>
+            <field name="alias">A3</field>
+            <field name="code">knb</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
         <record id="tt_hotel_provider_itank" model="tt.provider">
             <field name="name">Itank</field>
-            <field name="alias">A12</field>
+            <field name="alias">A4</field>
             <field name="code">itank</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
@@ -46,7 +46,7 @@
         </record>
         <record id="tt_hotel_provider_webbeds" model="tt.provider">
             <field name="name">Webbeds / Fitruums</field>
-            <field name="alias">A1</field>
+            <field name="alias">A6</field>
             <field name="code">webbeds</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
@@ -60,7 +60,7 @@
         </record>
         <record id="tt_hotel_provider_dida" model="tt.provider">
             <field name="name">Dida Hotel Vendor</field>
-            <field name="alias">A2</field>
+            <field name="alias">A8</field>
             <field name="code">dida</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
@@ -86,13 +86,28 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
-        <record id="tt_hotel_provider_knb" model="tt.provider">
-            <field name="name">Klik and Books</field>
-            <field name="alias">A3</field>
-            <field name="code">knb</field>
+        <record id="tt_hotel_provider_miki" model="tt.provider">
+            <field name="name">Miki Travel</field>
+            <field name="alias">A12</field>
+            <field name="code">miki</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
+        <record id="tt_hotel_provider_rodextrip_hotel" model="tt.provider">
+            <field name="name">Rodextrip Hotel</field>
+            <field name="alias">A13</field>
+            <field name="code">rodextrip_hotel</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+        <record id="tt_hotel_provider_traveloka" model="tt.provider">
+            <field name="name">Traveloka Hotel</field>
+            <field name="alias">A14</field>
+            <field name="code">traveloka_hotel</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
+        </record>
+
         <record id="tt_hotel_provider_mandira" model="tt.provider">
             <field name="name">Mandira</field>
             <field name="alias"></field>
@@ -109,7 +124,7 @@
         </record>
         <record id="tt_hotel_provider_welcomebeds" model="tt.provider">
             <field name="name">WelcomeBeds</field>
-            <field name="alias">A10</field>
+            <field name="alias"></field>
             <field name="code">welcomebeds</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
@@ -118,20 +133,6 @@
             <field name="name">RTS</field>
             <field name="alias"></field>
             <field name="code">rts</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
-        </record>
-        <record id="tt_hotel_provider_rodextrip_hotel" model="tt.provider">
-            <field name="name">Rodextrip Hotel</field>
-            <field name="alias">A13</field>
-            <field name="code">rodextrip_hotel</field>
-            <field name="active" eval="True"/>
-            <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
-        </record>
-        <record id="tt_hotel_provider_traveloka" model="tt.provider">
-            <field name="name">Traveloka Hotel</field>
-            <field name="alias">A14</field>
-            <field name="code">traveloka_hotel</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>

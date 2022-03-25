@@ -168,6 +168,9 @@ class HotelInformation(models.Model):
     def v2_collect_by_human_csv_dida(self):
         return True
 
+    def v2_collect_by_human_xls_dida(self):
+        return True
+
     # 1c. Get Country Code
     def v2_get_country_code_dida(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')

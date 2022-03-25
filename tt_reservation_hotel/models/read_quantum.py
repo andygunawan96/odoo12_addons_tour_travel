@@ -32,11 +32,11 @@ class HotelInformation(models.Model):
         api_context = {
             'co_uid': self.env.user.id
         }
-        with open(base_cache_directory + 'quantum/master/city_code.csv', 'r') as f:
+        with open(base_cache_directory + 'quantum/00_master/city_code.csv', 'r') as f:
             city_ids = csv.reader(f, delimiter=';')
             for idx, rec in enumerate(city_ids):
                 # if idx == 0:
-                if idx < 1003:
+                if idx < 4131:
                     continue
                 search_req = {
                     'provider': 'quantum',
@@ -48,7 +48,7 @@ class HotelInformation(models.Model):
 
                 res = API_CN_HOTEL.get_record_by_api(search_req, api_context)
                 if res['error_code'] != 0:
-                    raise ('Error')
+                    self.file_log_write("Skip for error " + rec[2])
                 else:
                     hotel_fmt_objs = []
                     for obj in res['response'].get('hotels'):
@@ -67,11 +67,18 @@ class HotelInformation(models.Model):
                         obj.pop('prices')
                         obj.pop('location')
                         hotel_fmt_objs.append(obj)
+
+                    # Ada tidak ada tetep ku tulis buat tanda progress
+                    country_name = self.env['res.country'].search([('code', '=', rec[1])]).name or rec[1]
+                    filename = base_cache_directory + 'quantum/' + country_name
+                    if not os.path.exists(filename):
+                        os.mkdir(filename)
+
                     if hotel_fmt_objs:
                         self.file_log_write(str(idx) + '. Hotel found for ' + rec[2] + ': ' + str(len(hotel_fmt_objs)))
                         try:
-                            # Langsung Compare
-                            with open(base_cache_directory + 'quantum/' + rec[2].replace('/', ' ') + '.json',
+                            # Jika sblum nya kot tsb sdah pernah di buat maka kita append
+                            with open(filename + '/'  + rec[2].replace('/', ' ') + '.json',
                                       'r') as f2:
                                 file = f2.read()
                                 hotel_in_file = json.loads(file)
@@ -90,19 +97,20 @@ class HotelInformation(models.Model):
                             f2.close()
                         except:
                             # Simpan di Folder sendiri
-                            self.file_log_write('Creating new Folder')
-                            with open(base_cache_directory + 'quantum/' + rec[2].replace('/', ' ') + '.json',
-                                      'w+') as f:
-                                self.file_log_write(
-                                    str(idx) + '. Hotel found for ' + rec[2] + ': ' + str(len(hotel_fmt_objs)))
+                            _logger.info('Creating new Folder')
+                            with open(filename +  '/'  + rec[2].replace('/', ' ') + '.json', 'w+') as f:
+                                self.file_log_write(str(idx) + '. Hotel found for ' + rec[2] + ': ' + str(len(hotel_fmt_objs)))
                                 f.write(json.dumps(hotel_fmt_objs))
                             hotel_in_file = hotel_fmt_objs
 
-                        self.file_log_write('Total hotel for ' + rec[2] + ': ' + str(len(hotel_in_file)))
-                        with open(base_cache_directory + 'quantum/' + rec[2].replace('/', ' ') + '.json', 'w+') as f:
+                        _logger.info('Total hotel for ' + rec[2] + ': ' + str(len(hotel_in_file)))
+                        with open(filename + '/' + rec[2].replace('/', ' ') + '.json', 'w+') as f:
                             f.write(json.dumps(hotel_in_file))
 
                     else:
+                        # Create Empty File
+                        with open(filename + '/' + rec[2].replace('/', ' ') + '.json', 'w+') as f:
+                            f.write(json.dumps(hotel_fmt_objs))
                         self.file_log_write(str(idx) + '. No Hotel Found for ' + rec[2])
         f.close()
         _logger.info("===== Done =====")
@@ -116,7 +124,7 @@ class HotelInformation(models.Model):
     def v2_collect_by_human_quantum(self):
         hotel_fmt_list = {}
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        with open(base_cache_directory + 'quantum_pool/master/Hotels20200728.csv', 'r') as f:
+        with open(base_cache_directory + 'quantum_pool/00_master/Hotels20200728.csv', 'r') as f:
             hotel_ids = csv.reader(f, delimiter=';')
             for obj in hotel_ids:
                 add = obj[2]
@@ -143,23 +151,29 @@ class HotelInformation(models.Model):
                     'street2': 'City: ' + obj[25] + '; Country: ' + obj[7] or '',
                     'city': obj[25].capitalize(),
                 }
-                if not hotel_fmt_list.get(obj[25].capitalize()):
-                    hotel_fmt_list[obj[25].capitalize()] = []
+                if not hotel_fmt_list.get(obj[7]):
+                    hotel_fmt_list[obj[7]] = {}
+                if not hotel_fmt_list[obj[7]].get(obj[25].capitalize()):
+                    hotel_fmt_list[obj[7]][obj[25].capitalize()] = []
                 # Add Hotel ke Dict
-                hotel_fmt_list[obj[25].capitalize()].append(hotel_fmt_obj)
+                hotel_fmt_list[obj[7]][obj[25].capitalize()].append(hotel_fmt_obj)
         f.close()
         need_to_add_list = [['No', 'Name', 'Hotel QTY']]
         self.file_log_write('###### Render Start ######')
         # Untuk setiap Key Loop
-        for idx, city in enumerate(hotel_fmt_list.keys()):
-            self.file_log_write("Write File " + city + " found : " + str(len(hotel_fmt_list[city])) + ' Hotel(s)')
-            need_to_add_list.append([idx + 1, city, len(hotel_fmt_list[city])])
-            filename = base_cache_directory + "quantum_pool/" + city.split('/')[0] + ".json"
-            file = open(filename, 'w')
-            file.write(json.dumps(hotel_fmt_list[city]))
-            file.close()
+        for country in hotel_fmt_list.keys():
+            country_name = self.env['res.country'].search([('code', '=', country)]).name or country
+            filename = base_cache_directory + "quantum_pool/" + country_name
+            if not os.path.exists(filename):
+                os.mkdir(filename)
+            for idx, city in enumerate(hotel_fmt_list[country].keys()):
+                self.file_log_write("Write File " + city + " found : " + str(len(hotel_fmt_list[country][city])) + ' Hotel(s)')
+                need_to_add_list.append([idx + 1, city, len(hotel_fmt_list[country][city])])
+                file = open(filename + '/' + city.split('/')[0] + ".json", 'w')
+                file.write(json.dumps(hotel_fmt_list[country][city]))
+                file.close()
         self.file_log_write('###### Render END ######')
-        with open(base_cache_directory + 'quantum_pool/master/result_data.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'quantum_pool/00_master/result_data.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add_list)
         csvFile.close()
