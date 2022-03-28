@@ -642,8 +642,8 @@ class TestSearch(models.Model):
             'contact_email': contact_obj.email,
             'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code, contact_obj.phone_ids[0].calling_number) or '-',
             'passenger_ids': list_passenger_value,
-            'customer_parent_id': context.get('co_customer_parent_id',False),
-            'customer_parent_type_id': context.get('co_customer_parent_type_id',False),
+            'customer_parent_id': context.get('co_customer_parent_id',False) or booker_obj.customer_parent_ids.ids[0],
+            'customer_parent_type_id': context.get('co_customer_parent_type_id',False) or booker_obj.customer_parent_ids[0].customer_parent_type_id.id,
         })
 
         resv_id = self.env['tt.reservation.hotel'].create(vals)

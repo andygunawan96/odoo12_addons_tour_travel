@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tt_accounting_setup_for_public,access_tt_accounting_setup_for_public,model_tt_accounting_setup,,1,0,0,0
+access_tt_accounting_setup_for_admin,access_tt_accounting_setup_for_admin,model_tt_accounting_setup,base.group_system,1,1,1,1
