@@ -410,6 +410,10 @@ class IssuedOffline(models.Model):
             """ Cek format tanggal di lines """
             for line in vals['line_ids']:
                 self.date_format_check(vals['offline_provider_type'], line[2])
+        if not 'user_id' in vals:
+            vals.update({
+                'user_id': self.env.user.id
+            })
         new_book = super(IssuedOffline, self).create(vals)
         for line in new_book.line_ids:
             new_book.date_validator(line)
@@ -1399,7 +1403,7 @@ class IssuedOffline(models.Model):
 
     def generate_sc_repricing_v2(self):
         context = self.env['tt.api.credential'].get_userid_credential({
-            'user_id': self.user_id.id or self.agent_id.user_ids[0].id ## kalau di import EXCEL user_id.id nya FALSE jd di akalin. 21 FEB 2022 belum ad pricing per user jd tidak masalah
+            'user_id': self.user_id and self.user_id.id or self.agent_id.user_ids[0].id ## kalau di import EXCEL user_id.id nya FALSE jd di akalin. 21 FEB 2022 belum ad pricing per user jd tidak masalah
         })
         if not context.get('error_code'):
             context = context['response']
