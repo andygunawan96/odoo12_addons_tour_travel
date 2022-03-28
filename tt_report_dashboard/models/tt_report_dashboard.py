@@ -401,6 +401,7 @@ class TtReportDashboard(models.Model):
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'form_data': data
             }
+        _logger.info('#########HASIL REPORT###############\n%s\n#############################' % json.dumps(res))
         ## save file for log purpose
         # folder_path = '/var/log/tour_travel/report_dashboard'
         # if not os.path.exists(folder_path):
