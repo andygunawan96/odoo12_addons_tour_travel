@@ -412,7 +412,7 @@ class ProviderOffline(models.Model):
 
     def generate_sc_repricing_v2(self):
         context = self.env['tt.api.credential'].get_userid_credential({
-            'user_id': self.booking_id.user_id.id
+            'user_id': self.booking_id.user_id and self.booking_id.user_id.id or self.booking_id.agent_id.user_ids[0].id
         })
         if not context.get('error_code'):
             context = context['response']
@@ -804,7 +804,7 @@ class ProviderOffline(models.Model):
 
     def generate_sc_repricing_hotel_v2(self, index):
         context = self.env['tt.api.credential'].get_userid_credential({
-            'user_id': self.booking_id.user_id.id
+            'user_id': self.booking_id.user_id and self.booking_id.user_id.id or self.booking_id.agent_id.user_ids[0].id
         })
         if not context.get('error_code'):
             context = context['response']
