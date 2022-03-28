@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import json, logging
 from ...tools.db_connector import GatewayConnector
 import traceback
+from dateutil.relativedelta import relativedelta
 
 
 _logger = logging.getLogger(__name__)
@@ -493,7 +494,7 @@ class TtProviderAirline(models.Model):
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
-    def create_ticket_api(self,passengers,pnr=""):
+    def create_ticket_api(self,passengers,pnr="", departure_date=''):
         ticket_list = []
         ticket_not_found = []
 
@@ -563,6 +564,33 @@ class TtProviderAirline(models.Model):
                 }))
                 psg_with_no_ticket[idx].is_ticketed = True
                 psg_with_no_ticket[idx].create_ssr(psg['fees'],pnr,self.id)
+
+        # March 28, 2022 - SAM
+        # Antisipasi struktur gateway yang miss
+        if psg_with_no_ticket:
+            date_now = datetime.now()
+            if departure_date:
+                date_now = datetime.strptime(departure_date, '%Y-%m-%d %H:%M:%S')
+
+            for psg_obj in psg_with_no_ticket:
+                if psg_obj.is_ticketed:
+                    continue
+
+                pax_type = 'ADT'
+                if psg_obj.birth_date:
+                    difference = relativedelta(date_now, psg_obj.birth_date).years
+                    if difference < 2:
+                        pax_type = 'INF'
+                    elif difference < 12:
+                        pax_type = 'CHD'
+
+                ticket_list.append((0, 0, {
+                    'pax_type': pax_type,
+                    'ticket_number': '',
+                    'passenger_id': psg_obj.id
+                }))
+                psg_obj.is_ticketed = True
+        # END
 
         self.write({
             'ticket_ids': ticket_list
