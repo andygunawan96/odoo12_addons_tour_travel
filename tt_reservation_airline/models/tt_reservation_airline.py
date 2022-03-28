@@ -1557,7 +1557,7 @@ class ReservationAirline(models.Model):
 
             vendor_obj = provider_airline_obj.create(values)
             # April 27, 2020 - SAM
-            vendor_obj.create_ticket_api(schedule['passengers'], vendor_obj.pnr and vendor_obj.pnr or str(vendor_obj.sequence))
+            vendor_obj.create_ticket_api(schedule['passengers'], vendor_obj.pnr and vendor_obj.pnr or str(vendor_obj.sequence), schedule['journeys'][0]['departure_date'] if schedule.get('journeys') else '')
             vendor_obj.create_service_charge(this_service_charges)
             # END
             res.append(vendor_obj)
