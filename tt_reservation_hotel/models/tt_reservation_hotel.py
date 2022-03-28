@@ -532,6 +532,7 @@ class HotelReservation(models.Model):
         self.state = 'booked'
         self.booked_date = fields.Datetime.today()
         self.booked_uid = context.get('co_uid') or self.env.user.id,
+        self.provider_name = self.get_provider_list()
         return True
 
     @api.multi
@@ -646,7 +647,6 @@ class HotelReservation(models.Model):
         pnr_list = ','.join([rec.get('issued_code') or '' for rec in issued_response.values()])
         self.update_ledger_pnr(pnr_list)
         self.pnr = self.get_pnr_list()
-        self.provider_name = self.get_provider_list()
         # if state == 'done':
         #     self.action_create_invoice()
         for prov in self.provider_booking_ids:
