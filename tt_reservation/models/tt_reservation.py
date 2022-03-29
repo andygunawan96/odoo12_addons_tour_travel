@@ -793,6 +793,24 @@ class TtReservation(models.Model):
             res['booker_insentif'] = self.booker_insentif
         if include_total_nta:
             res['total_nta'] = self.total_nta
+
+        # March 28, 2022 - SAM
+        # Menambahkan data info user context (user yang booking)
+        user_context = {}
+        if self.user_id:
+            user_context = self.user_id.get_credential(prefix='co_')
+            co_user_info = self.env['tt.agent'].sudo().get_agent_level(user_context['co_agent_id'])
+            co_customer_parent_type_code = self.customer_parent_type_id.code if self.customer_parent_type_id else ''
+            co_customer_parent_id = self.customer_parent_id.id if self.customer_parent_id else ''
+            user_context.update({
+                'co_customer_parent_type_code': co_customer_parent_type_code,
+                'co_customer_parent_id': co_customer_parent_id,
+                'co_user_info': co_user_info,
+            })
+        res.update({
+            'user_context': user_context,
+        })
+        # END
         return res
 
     def get_book_obj(self, book_id, order_number):
