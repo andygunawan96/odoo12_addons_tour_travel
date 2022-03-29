@@ -93,6 +93,23 @@ class TtAirlineApiCon(models.Model):
                                             timeout=120)
     # END
 
+    # March 28, 2022 - SAM
+    def send_void_booking_vendor(self, req):
+        request = {
+            'proxy_co_uid': req.get('user_id',False),
+            'pnr': req.get('pnr', ''),
+            'pnr2': req.get('pnr2', ''),
+            'reference': req.get('reference', ''),
+            'provider': req.get('provider'),
+            'is_retrieved': req.get('is_retrieved',False),
+            'pricing_date': req.get('pricing_date',False)
+        }
+        return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
+                                            request,
+                                            'void_booking',
+                                            timeout=120)
+    # END
+
     def send_sync_refund_status(self, req):
         request = {
             'proxy_co_uid': req.get('user_id',False),
