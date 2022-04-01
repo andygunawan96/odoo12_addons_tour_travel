@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="tt_accounting_setup_form_view_reschedule_phc" model="ir.ui.view">
+            <field name="name">tt.accounting.setup.form.view.reschedule_phc</field>
+            <field name="model">tt.accounting.setup</field>
+            <field name="inherit_id" ref="tt_accounting_setup.tt_accounting_setup_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='is_send_refund']" position="after">
+                    <field name="is_send_reschedule_phc"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

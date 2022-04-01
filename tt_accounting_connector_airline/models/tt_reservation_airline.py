@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class TtReservationAirline(models.Model):
     _inherit = 'tt.reservation.airline'
 
-    def send_ledgers_to_accounting(self, func_action):
+    def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)], limit=1)
@@ -61,15 +61,18 @@ class TtReservationAirline(models.Model):
                         if rec.ref not in ref_num_list:
                             ref_num_list.append(rec.ref and rec.ref or '')
             if ledger_list:
-                new_obj = self.env['tt.accounting.queue'].create({
-                    'request': json.dumps(ledger_list),
-                    'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                    'action': func_action,
-                    'res_model': self._name
-                })
-                res = new_obj.to_dict()
+                res = []
+                for ven in vendor_list:
+                    new_obj = self.env['tt.accounting.queue'].create({
+                        'accounting_provider': ven,
+                        'request': json.dumps(ledger_list),
+                        'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                        'action': func_action,
+                        'res_model': self._name
+                    })
+                    res.append(new_obj.to_dict())
                 if func_action in ['reverse', 'split_reservation']:
-                    self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), ", ".join(ref_num_list))
+                    self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), ", ".join(ref_num_list), ", ".join(vendor_list))
             else:
                 res = {}
             return ERR.get_no_error(res)
@@ -80,18 +83,46 @@ class TtReservationAirline(models.Model):
 
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
         super(TtReservationAirline, self).action_issued_airline(co_uid,customer_parent_id,acquirer_id)
-        self.send_ledgers_to_accounting('issued')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('issued', vendor_list)
 
     def action_reverse_airline(self,context):
         super(TtReservationAirline, self).action_reverse_airline(context)
-        self.send_ledgers_to_accounting('reverse')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('reverse', vendor_list)
 
     def update_cost_service_charge_airline_api(self, req, context):
         res = super(TtReservationAirline, self).update_cost_service_charge_airline_api(req, context)
-        self.send_ledgers_to_accounting('update_service_charge')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('update_service_charge', vendor_list)
         return res
 
     def split_reservation_airline_api_1(self, data, context):
         res = super(TtReservationAirline, self).split_reservation_airline_api_1(data, context)
-        self.send_ledgers_to_accounting('split_reservation')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('split_reservation', vendor_list)
         return res
