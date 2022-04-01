@@ -40,7 +40,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="action_send_to_jasaweb" states="new,failed"
+                    <button name="action_send_to_vendor" states="new,failed"
                             groups="tt_base.group_after_sales_master_level_4"
                             string="Send Manually to Jasaweb" type="object" class="oe_highlight"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,success"/>
@@ -48,6 +48,7 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="accounting_provider"/>
                             <field name="request"/>
                             <field name="transport_type"/>
                             <field name="action"/>
@@ -82,6 +83,7 @@
         <field name="arch" type="xml">
             <tree create="false">
                 <field name="create_date"/>
+                <field name="accounting_provider"/>
                 <field name="transport_type"/>
                 <field name="action"/>
                 <field name="res_model"/>
@@ -91,7 +93,7 @@
     </record>
 
     <record id="tt_accounting_queue_action" model="ir.actions.act_window">
-        <field name="name">Accounting (JasaWeb Sync Log)</field>
+        <field name="name">Accounting (Vendor Sync Log)</field>
         <field name="res_model">tt.accounting.queue</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
@@ -108,7 +110,7 @@
               name="Accounting" sequence="490"
               groups="tt_base.group_after_sales_master_level_4"/>
 
-    <menuitem id="submenu_tour_travel_accounting_log" name="JasaWeb Sync Log" sequence="1"
+    <menuitem id="submenu_tour_travel_accounting_log" name="Vendor Sync Log" sequence="1"
               parent="tt_accounting_connector.menu_tour_travel_accounting" action="tt_accounting_queue_action"
               groups="tt_base.group_after_sales_master_level_4"/>
 

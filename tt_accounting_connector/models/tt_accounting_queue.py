@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 import logging, traceback
 import requests
 import json
+from ...tools import ERR,variables,util
 from ...tools.db_connector import GatewayConnector
 
 _logger = logging.getLogger(__name__)
@@ -12,6 +13,7 @@ class TtAccountingQueue(models.Model):
     _description = 'Accounting Queue'
     _order = 'id DESC'
 
+    accounting_provider = fields.Selection(variables.ACCOUNTING_VENDOR, 'Accounting Provider')
     request = fields.Text('Request', readonly=True)
     response = fields.Text('Response', readonly=True)
     transport_type = fields.Char('Transport Type', readonly=True)
@@ -23,6 +25,7 @@ class TtAccountingQueue(models.Model):
 
     def to_dict(self):
         return {
+            'accounting_provider': self.accounting_provider,
             'request': self.request,
             'transport_type': self.transport_type,
             'action': self.action,
@@ -30,11 +33,11 @@ class TtAccountingQueue(models.Model):
             'state': self.state
         }
 
-    def action_send_to_jasaweb(self):
+    def action_send_to_vendor(self):
         try:
             self.send_uid = self.env.user.id
             self.send_date = fields.Datetime.now()
-            res = self.env['tt.accounting.connector'].add_sales_order(self.request)
+            res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_sales_order(self.request)
             if res.get('status_code') == 200:
                 self.state = 'success'
             else:
