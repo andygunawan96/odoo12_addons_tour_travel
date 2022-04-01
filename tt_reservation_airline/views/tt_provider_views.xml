@@ -17,7 +17,9 @@
                             type="object" groups="tt_base.group_reservation_provider_level_4"/>
                     <button string="Sync Refund Status" name="action_sync_refund_status" states="refund_pending" type="object"/>
                     <button string="Reprice" name='action_reprice_provider' states="booked" type="object"
-                            groups="tt_base.group_reservation_provider_level_4" style="margin-left: 200px !important;"/>
+                            groups="tt_base.group_reservation_provider_level_4" style="margin-left: 100px !important;"/>
+                    <button string="Void" name="action_void_provider" states="booked,issued"
+                            type="object" groups="tt_base.group_reservation_provider_level_4" style="margin-left: 100px !important;"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>

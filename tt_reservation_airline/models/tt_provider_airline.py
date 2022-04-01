@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import json, logging
 from ...tools.db_connector import GatewayConnector
 import traceback
+from dateutil.relativedelta import relativedelta
 
 
 _logger = logging.getLogger(__name__)
@@ -493,7 +494,7 @@ class TtProviderAirline(models.Model):
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 
-    def create_ticket_api(self,passengers,pnr=""):
+    def create_ticket_api(self,passengers,pnr="", departure_date=''):
         ticket_list = []
         ticket_not_found = []
 
@@ -563,6 +564,33 @@ class TtProviderAirline(models.Model):
                 }))
                 psg_with_no_ticket[idx].is_ticketed = True
                 psg_with_no_ticket[idx].create_ssr(psg['fees'],pnr,self.id)
+
+        # March 28, 2022 - SAM
+        # Antisipasi struktur gateway yang miss
+        if psg_with_no_ticket:
+            date_now = datetime.now()
+            if departure_date:
+                date_now = datetime.strptime(departure_date, '%Y-%m-%d %H:%M:%S')
+
+            for psg_obj in psg_with_no_ticket:
+                if psg_obj.is_ticketed:
+                    continue
+
+                pax_type = 'ADT'
+                if psg_obj.birth_date:
+                    difference = relativedelta(date_now, psg_obj.birth_date).years
+                    if difference < 2:
+                        pax_type = 'INF'
+                    elif difference < 12:
+                        pax_type = 'CHD'
+
+                ticket_list.append((0, 0, {
+                    'pax_type': pax_type,
+                    'ticket_number': '',
+                    'passenger_id': psg_obj.id
+                }))
+                psg_obj.is_ticketed = True
+        # END
 
         self.write({
             'ticket_ids': ticket_list
@@ -894,6 +922,84 @@ class TtProviderAirline(models.Model):
             _logger.error('Action reprice provider, error notif telegram, %s, %s' % (self.pnr, traceback.format_exc()))
 
         return True
+    # END
+
+    # March 28, 2022 - SAM
+    def action_void_provider(self):
+        if not self.provider_id:
+            raise Exception('Provider is not set')
+        req = {
+            "provider": self.provider_id.code,
+            "pnr": self.pnr,
+            "pnr2": self.pnr2,
+            "reference": self.reference
+        }
+        res = self.env['tt.airline.api.con'].send_void_booking_vendor(req)
+        _logger.info('Action Void Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
+
+        try:
+            if res['error_code'] != 0:
+                order_number = self.booking_id.name if self.booking_id else ''
+                msg = [
+                    'Void Provider - ERROR',
+                    '',
+                    'Order Number: %s' % order_number,
+                    'PNR: %s' % self.pnr,
+                    'Error: %s' % res['error_msg'],
+                ]
+                data = {
+                    'code': 9903,
+                    'message': '\n'.join(msg),
+                    'provider': self.provider_id.code,
+                }
+                GatewayConnector().telegram_notif_api(data, {})
+                raise UserError('Error void, %s' % res['error_msg'])
+
+            order_number = self.booking_id.name if self.booking_id else ''
+            msg = [
+                'Void Provider - SUCCESS',
+                '',
+                'Order Number: %s' % order_number,
+                'PNR: %s' % self.pnr,
+            ]
+            data = {
+                'code': 9901,
+                'message': '\n'.join(msg),
+                'provider': self.provider_id.code,
+            }
+            GatewayConnector().telegram_notif_api(data, {})
+        except UserError as e:
+            raise UserError(str(e))
+        except:
+            _logger.error('Action void provider, error notif telegram, %s, %s' % (self.pnr, traceback.format_exc()))
+
+        try:
+            response = res['response']
+            if response['status'] in ['VOID', 'REFUND']:
+                self.write({
+                    'cancel_uid': self.env.uid,
+                    'cancel_date': datetime.now(),
+                    'state': 'void',
+                })
+
+                for rec in self.booking_id.ledger_ids:
+                    if rec.pnr in [self.pnr, str(self.sequence)] and not rec.is_reversed:
+                        rec.reverse_ledger()
+
+                for rec in self.cost_service_charge_ids:
+                    rec.is_ledger_created = False
+
+            ctx = {
+                'co_uid': self.env.uid
+            }
+            self.booking_id.check_provider_state(ctx)
+        except:
+            _logger.error('Action void provider, error update provider state, %s, %s' % (self.pnr, traceback.format_exc()))
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
     # END
 
     def update_pricing_details(self, fare_data):
