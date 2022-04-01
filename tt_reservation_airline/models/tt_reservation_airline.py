@@ -514,59 +514,78 @@ class ReservationAirline(models.Model):
 
             if rule:
                 limit = rule.rebooking_limit
+                rule_check_type = rule.passenger_check_type
             else:
                 continue
 
-            for name in segment.booking_id.passenger_ids:
-                if name.identity_number:
-                    search_query = [('segment_code','=',segment.segment_code),
-                                    '|',
-                                    ('booking_id.passenger_ids.identity_number','=ilike',name.identity_number),
-                                    ('booking_id.passenger_ids.name','=ilike',name.name)]
-                else:
-                    search_query = [('segment_code','=',segment.segment_code),
-                                    ('booking_id.passenger_ids.name','=ilike',name.name)]
+            if rule_check_type == 'passenger':
+                for name in segment.booking_id.passenger_ids:
+                    if name.identity_number:
+                        search_query = [('segment_code','=',segment.segment_code),
+                                        '|',
+                                        ('booking_id.passenger_ids.identity_number','=ilike',name.identity_number),
+                                        ('booking_id.passenger_ids.name','=ilike',name.name)]
+                    else:
+                        search_query = [('segment_code','=',segment.segment_code),
+                                        ('booking_id.passenger_ids.name','=ilike',name.name)]
 
-                found_segments = self.env['tt.segment.airline'].search(search_query,order='id DESC')
+                    found_segments = self.env['tt.segment.airline'].search(search_query,order='id DESC')
 
-                valid_segments = found_segments.filtered(lambda x: x.booking_id.state in ['booked', 'issued', 'cancel2', 'fail_issue'])
-                # for seg in found_segments:
-                #     try:
-                #         curr_state = seg.state
-                #     except:
-                #         curr_state = 'booked'
-                #         _logger.error("Passenger Validator Cache Miss Error")
-                #
-                #     if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
-                #         valid_segments.append(seg)
+                    valid_segments = found_segments.filtered(lambda x: x.booking_id.state in ['booked', 'issued', 'cancel2', 'fail_issue'])
+                    # for seg in found_segments:
+                    #     try:
+                    #         curr_state = seg.state
+                    #     except:
+                    #         curr_state = 'booked'
+                    #         _logger.error("Passenger Validator Cache Miss Error")
+                    #
+                    #     if curr_state in ['booked', 'issued', 'cancel2', 'fail_issue']:
+                    #         valid_segments.append(seg)
 
-                safe = False
+                    safe = False
 
-                if len(valid_segments) < limit:
-                    safe = True
-                else:
-                    for idx,valid_segment in enumerate(valid_segments[:limit]):
-                        if valid_segment.booking_id.state == 'issued':
-                            safe=True
-                            break
+                    if len(valid_segments) < limit:
+                        safe = True
+                    else:
+                        for idx,valid_segment in enumerate(valid_segments[:limit]):
+                            if valid_segment.booking_id.state == 'issued':
+                                safe=True
+                                break
 
-                if not safe:
-                    # whitelist di sini
-                    whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
-                        [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
+                    if not safe:
+                        # whitelist di sini
+                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
+                            [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
 
-                    if whitelist_name:
-                        whitelist_name.chances_left -= 1
-                        return True
+                        if whitelist_name:
+                            whitelist_name.chances_left -= 1
+                            return True
 
-                    whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
-                        [('passport','=',name.identity_number),('chances_left','>',0)],limit=1)
+                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
+                            [('passport','=',name.identity_number),('chances_left','>',0)],limit=1)
 
-                    if whitelist_passport:
-                        whitelist_passport.chances_left -= 1
-                        return True
+                        if whitelist_passport:
+                            whitelist_passport.chances_left -= 1
+                            return True
 
-                    raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route." % (name.name))
+                        raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route." % (name.name))
+            elif rule_check_type == 'contact':
+                search_query = [('segment_code', '=', segment.segment_code),
+                                ('booking_id.contact_id', '=', book_obj.contact_id.id),
+                                ('booking_id.state', '=', 'booked')]
+                valid_segments = self.env['tt.segment.airline'].search(search_query, order='id DESC')
+
+                total_pax_count = 0
+                for valid_segment in valid_segments:
+                    total_pax_count += valid_segment.booking_id.elder
+                    total_pax_count += valid_segment.booking_id.adult
+                    total_pax_count += valid_segment.booking_id.child
+                    total_pax_count += valid_segment.booking_id.infant
+
+                if total_pax_count >= limit:
+                    raise RequestException(1026,additional_message="Contact Validator failed because of rebooking with the same contact info.")
+
+
 
     def update_pnr_provider_airline_api(self, req, context):
         ### dapatkan PNR dan ubah ke booked
