@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class TtTopUp(models.Model):
     _inherit = 'tt.top.up'
 
-    def send_ledgers_to_accounting(self):
+    def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             if self.acquirer_id:
@@ -49,12 +49,16 @@ class TtTopUp(models.Model):
                     ledger_obj.sudo().write({
                         'is_sent_to_acc': True
                     })
-            new_obj = self.env['tt.accounting.queue'].create({
-                'request': json.dumps(ledger_list),
-                'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                'res_model': self._name
-            })
-            res = new_obj.to_dict()
+            res = []
+            for ven in vendor_list:
+                new_obj = self.env['tt.accounting.queue'].create({
+                    'accounting_provider': ven,
+                    'request': json.dumps(ledger_list),
+                    'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                    'action': func_action,
+                    'res_model': self._name
+                })
+                res.append(new_obj.to_dict())
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.info("Failed to send ledgers to accounting software. Ignore this message if tt_accounting_connector is currently not installed.")
@@ -63,4 +67,8 @@ class TtTopUp(models.Model):
 
     def action_approve_top_up(self):
         super(TtTopUp, self).action_approve_top_up()
-        self.send_ledgers_to_accounting()
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_topup', '=', True)])
+        if setup_list:
+            vendor_list = [rec.accounting_provider for rec in setup_list]
+            self.send_ledgers_to_accounting('', vendor_list)

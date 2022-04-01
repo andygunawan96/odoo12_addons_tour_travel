@@ -8,8 +8,8 @@ url = 'http://accounting.rodextrip.com'
 
 
 class AccountingConnector(models.Model):
-    _name = 'tt.accounting.connector'
-    _description = 'Accounting Connector'
+    _name = 'tt.accounting.connector.jasaweb'
+    _description = 'Accounting Connector Jasaweb'
 
     def acc_login(self):
         auth = {'usr': 'rodexapi', 'pwd': 'rodexapi'}

@@ -13,12 +13,14 @@ class TtAccountingSetup(models.Model):
     _name = 'tt.accounting.setup'
     _description = 'Tour & Travel - Accounting Setup'
 
-    accounting_provider = fields.Selection([('jasaweb', 'Jasa Web')], 'Accounting Provider', required=True)
+    accounting_provider = fields.Selection(variables.ACCOUNTING_VENDOR, 'Accounting Provider', required=True)
     display_name = fields.Char(compute='_compute_display_name', store=True)
     cycle = fields.Selection([('real_time', 'Real Time'), ('per_batch', 'Per Batch')], 'Send Cycle', default='real_time', required=True)
     is_recon_only = fields.Boolean('Only Send Reconciled Records', default=False)
     sequence = fields.Integer('Sequence', default=20)
     active = fields.Boolean('Active', default='True')
+    is_send_topup = fields.Boolean('Send Top Up Transaction', default=False)
+    is_send_refund = fields.Boolean('Send Refund Transaction', default=False)
 
     @api.depends('accounting_provider')
     @api.onchange('accounting_provider')

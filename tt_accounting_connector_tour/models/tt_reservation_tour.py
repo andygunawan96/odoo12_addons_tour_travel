@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class TtReservationTour(models.Model):
     _inherit = 'tt.reservation.tour'
 
-    def send_ledgers_to_accounting(self, func_action):
+    def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)], limit=1)
@@ -61,15 +61,18 @@ class TtReservationTour(models.Model):
                         if rec.ref not in ref_num_list:
                             ref_num_list.append(rec.ref and rec.ref or '')
             if ledger_list:
-                new_obj = self.env['tt.accounting.queue'].create({
-                    'request': json.dumps(ledger_list),
-                    'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                    'action': func_action,
-                    'res_model': self._name
-                })
-                res = new_obj.to_dict()
+                res = []
+                for ven in vendor_list:
+                    new_obj = self.env['tt.accounting.queue'].create({
+                        'accounting_provider': ven,
+                        'request': json.dumps(ledger_list),
+                        'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                        'action': func_action,
+                        'res_model': self._name
+                    })
+                    res.append(new_obj.to_dict())
                 if func_action in ['reverse', 'split_reservation']:
-                    self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), ", ".join(ref_num_list))
+                    self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), ", ".join(ref_num_list), ", ".join(vendor_list))
             else:
                 res = {}
             return ERR.get_no_error(res)
@@ -80,8 +83,22 @@ class TtReservationTour(models.Model):
 
     def action_issued_tour(self, co_uid, customer_parent_id, acquirer_id=False):
         super(TtReservationTour, self).action_issued_tour(co_uid, customer_parent_id, acquirer_id)
-        self.send_ledgers_to_accounting('issued')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_tour', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('issued', vendor_list)
 
     def action_reverse_tour(self,context):
         super(TtReservationTour, self).action_reverse_tour(context)
-        self.send_ledgers_to_accounting('reverse')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_tour', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('reverse', vendor_list)
