@@ -42,7 +42,16 @@
                             <group>
                                 <field name="create_date"/>
                                 <field name="cycle"/>
-                                <field name="is_recon_only"/>
+                                <field name="is_recon_only" attrs="{'invisible':[('cycle','!=', 'per_batch')]}"/>
+                            </group>
+                        </group>
+                        <separator string="Send Transactions"/>
+                        <group>
+                            <group>
+                                <field name="is_send_topup"/>
+                            </group>
+                            <group>
+                                <field name="is_send_refund"/>
                             </group>
                         </group>
                     </sheet>
@@ -83,10 +92,10 @@
         </record>
 
         <menuitem id="menu_administration_accounting_setup"
-              parent="tt_base.top_tour_travel_administration"
-              groups="base.user_admin"
-              name="Accounting Setup"
-              sequence="6"
-              action="tt_accounting_setup.tt_accounting_setup_action_view"/>
+                  parent="tt_base.top_tour_travel_administration"
+                  groups="base.user_admin"
+                  name="Accounting Setup"
+                  sequence="6"
+                  action="tt_accounting_setup.tt_accounting_setup_action_view"/>
     </data>
 </odoo>

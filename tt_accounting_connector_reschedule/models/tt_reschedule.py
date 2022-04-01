@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class TtReschedule(models.Model):
     _inherit = 'tt.reschedule'
 
-    def send_ledgers_to_accounting(self, func_action):
+    def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             ledger_list = []
@@ -52,13 +52,16 @@ class TtReschedule(models.Model):
                         'is_sent_to_acc': True
                     })
             if ledger_list:
-                new_obj = self.env['tt.accounting.queue'].create({
-                    'request': json.dumps(ledger_list),
-                    'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                    'action': func_action,
-                    'res_model': self._name
-                })
-                res = new_obj.to_dict()
+                res = []
+                for ven in vendor_list:
+                    new_obj = self.env['tt.accounting.queue'].create({
+                        'accounting_provider': ven,
+                        'request': json.dumps(ledger_list),
+                        'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                        'action': func_action,
+                        'res_model': self._name
+                    })
+                    res.append(new_obj.to_dict())
             else:
                 res = {}
             return ERR.get_no_error(res)
@@ -69,8 +72,22 @@ class TtReschedule(models.Model):
 
     def validate_reschedule_from_button(self):
         super(TtReschedule, self).validate_reschedule_from_button()
-        self.send_ledgers_to_accounting('validate')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_reschedule', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('validate', vendor_list)
 
     def cancel_reschedule_from_button(self):
         super(TtReschedule, self).cancel_reschedule_from_button()
-        self.send_ledgers_to_accounting('cancel')
+        setup_list = self.env['tt.accounting.setup'].search(
+            [('cycle', '=', 'real_time'), ('is_send_reschedule', '=', True)])
+        if setup_list:
+            vendor_list = []
+            for rec in setup_list:
+                if rec.accounting_provider not in vendor_list:
+                    vendor_list.append(rec.accounting_provider)
+            self.send_ledgers_to_accounting('cancel', vendor_list)
