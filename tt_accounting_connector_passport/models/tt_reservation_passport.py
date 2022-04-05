@@ -11,6 +11,8 @@ _logger = logging.getLogger(__name__)
 class TtReservationPassport(models.Model):
     _inherit = 'tt.reservation.passport'
 
+    posted_acc_actions = fields.Char('Posted to Accounting after Recon', default='')
+
     def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')

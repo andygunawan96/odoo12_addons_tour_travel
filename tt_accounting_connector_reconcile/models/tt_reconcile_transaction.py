@@ -38,12 +38,22 @@ class TtReservationPassport(models.Model):
                 found_rec = self.env['tt.refund'].search([('referenced_pnr', '=', rec.pnr),
                                                           ('state', '=', 'final'),
                                                           ('reconcile_line_id', '=', False)], limit=1)
-            setup_list = self.env['tt.accounting.setup'].search(
-                [('cycle', '=', 'per_batch'), ('is_recon_only', '=', True),
-                 ('is_send_%s' % (rec.reconcile_transaction_id.provider_type_id.code), '=', True)])
-            if setup_list and found_rec:
-                vendor_list = []
-                for rec2 in setup_list:
-                    if rec2.accounting_provider not in vendor_list:
-                        vendor_list.append(rec2.accounting_provider)
-                found_rec[0].send_ledgers_to_accounting('reconcile', vendor_list)
+            if found_rec:
+                temp_post = found_rec[0].posted_acc_actions or ''
+                if 'reconcile' not in temp_post.split(','):
+                    setup_list = self.env['tt.accounting.setup'].search(
+                        [('cycle', '=', 'per_batch'), ('is_recon_only', '=', True),
+                         ('is_send_%s' % (rec.reconcile_transaction_id.provider_type_id.code), '=', True)])
+                    if setup_list:
+                        vendor_list = []
+                        for rec2 in setup_list:
+                            if rec2.accounting_provider not in vendor_list:
+                                vendor_list.append(rec2.accounting_provider)
+                        found_rec[0].send_ledgers_to_accounting('reconcile', vendor_list)
+                        if temp_post:
+                            temp_post += ',reconcile'
+                        else:
+                            temp_post += 'reconcile'
+                        found_rec[0].write({
+                            'posted_acc_actions': temp_post
+                        })
