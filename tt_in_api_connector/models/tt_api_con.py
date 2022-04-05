@@ -40,7 +40,7 @@ class TtApiCon(models.Model):
             if res['error_code'] != 0:
                 raise RequestException(997,additional_message=res['error_msg'])
             res = res['response']['result']
-            if res['error_code'] != 0:
+            if res['error_code'] != 0 and res['error_code'] != 4006: ##4006 price change biar ke detect klo issued pakai bca
                 raise RequestException(998,additional_message=res['error_msg'])
             return res
         except RequestException as e:

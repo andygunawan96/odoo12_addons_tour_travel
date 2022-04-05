@@ -4,6 +4,7 @@ import logging,traceback
 import re
 import json,pytz
 from datetime import datetime, timedelta
+from ...tools.db_connector import GatewayConnector
 _logger = logging.getLogger(__name__)
 
 class ttCronTopUpValidator(models.Model):
@@ -125,6 +126,58 @@ class ttCronTopUpValidator(models.Model):
                                                 payment_acq_obj.state = 'done'
                                             else:
                                                 payment_acq_obj.state = 'waiting'
+                                                if book_obj.agent_type_id.code == 'btc':
+                                                    different_price = res['response']['agent_nta'] - payment_acq_obj.amount
+                                                    if different_price > 0:
+                                                        ##b2c beda harga top up selisih harga
+                                                        context = {
+                                                            'co_agent_id': resv_obj.agent_id.id,
+                                                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                                                        }
+                                                        request = {
+                                                            'amount': different_price,
+                                                            'currency_code': result.currency_id.name,
+                                                            'payment_ref': '%s_autotopup' % reference_code,
+                                                            'payment_seq_id': payment_acq_obj.payment_acquirer_id.seq_id,
+                                                            'subsidy': 0,
+                                                            'fee': 0
+                                                        }
+
+                                                        res = self.env['tt.top.up'].create_top_up_api(request, context,True)
+                                                        if res['error_code'] == 0:
+                                                            request = {
+                                                                'virtual_account': '',
+                                                                'name': res['response']['name'],
+                                                                'payment_ref': '%s_autotopup' % reference_code,
+                                                            ##jangan di ubah nanti ngebug top up approved dobule dengan case, 2 payment acq number status closed dari agent yg sama kemudian di trf 2 2nya, confurrent update
+                                                                'fee': 0
+                                                            }
+                                                            _logger.info("###5")
+                                                            res = self.env['tt.top.up'].action_va_top_up(request,context,payment_acq_obj.id)
+                                                            result.top_up_validated(res['response']['top_up_id'])
+                                                            self._cr.commit()
+                                                    res = self.env['tt.payment.api.con'].send_payment(req)
+                                                    if res['error_code'] == 0:
+                                                        # tutup payment acq number
+                                                        payment_acq_obj.state = 'done'
+                                                    else:
+                                                        ## NOTIF TELE
+                                                        data = {
+                                                            'code': 9903,
+                                                            'title': 'ERROR ISSUED using BCA',
+                                                            'message': 'Error issued espay order number %s\n%s' % (book_obj.name, res['error_msg']),
+                                                        }
+                                                        GatewayConnector().telegram_notif_api(data, {})
+
+                                                else:
+                                                    ## NOTIF TELE
+                                                    data = {
+                                                        'code': 9903,
+                                                        'title': 'ERROR ISSUED',
+                                                        'message': 'Error issued bca mutation, order number %s\n%s' % (
+                                                        book_obj.name, res['error_msg']),
+                                                    }
+                                                    GatewayConnector().telegram_notif_api(data, {})
                                         elif book_obj.state == 'issued':
                                             payment_acq_obj.state = 'done'
                                             _logger.info('Cron Top Up Validator Already issued for order number %s.%s change payment acquirer number status' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))
