@@ -96,6 +96,7 @@ class TtPaymentApiCon(models.Model):
                                 "amount": book_obj.total - book_obj.total_discount,
                                 "currency": book_obj.currency_id.name,
                                 "co_uid": book_obj.user_id.id,
+                                "is_btc": True if book_obj.agent_type_id.code == 'btc' else False,
                                 'member': False, # KALAU BAYAR PAKE ESPAY PASTI MEMBER FALSE
                                 'acquirer_seq_id': seq_id,
                                 'force_issued': True,
@@ -143,6 +144,37 @@ class TtPaymentApiCon(models.Model):
                 res = ERR.get_no_error(values)
             else:
                 res = ERR.get_error(additional_message='Reservation Not Found')
+        elif action == 'top_up': ##b2c auto top up different price
+            _logger.info("##############STARTING AUTO TOP UP B2C CLOSED PAYMENT##############")
+            pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close','done'])])
+            agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
+            if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]) and pay_acq_num and agent_id:
+                # topup
+                context = {
+                    'co_agent_id': agent_id.id,
+                    'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                }
+                request = {
+                    'amount': data['amount'],
+                    'currency_code': data['ccy'],
+                    'payment_ref': data['payment_ref'],
+                    'payment_seq_id': pay_acq_num[len(pay_acq_num) - 1].payment_acquirer_id.seq_id,
+                    'fee': data['fee']
+                }
+
+                res = self.env['tt.top.up'].create_top_up_api(request, context, True)
+                if res['error_code'] == 0:
+                    request = {
+                        'virtual_account': data['virtual_account'],
+                        'name': res['response']['name'],
+                        'payment_ref': data['payment_ref'],
+                        'fee': data['fee']
+                    }
+                    res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num) - 1].id)
+                _logger.info("##############DONE AUTO TOP UP B2C CLOSED PAYMENT##############")
+                return ERR.get_no_error(res)
+            _logger.info("##############ERROR AUTO TOP UP B2C CLOSED PAYMENT##############")
+            return ERR.get_error(500)
         elif action == 'get_payment_acquirer_payment_gateway':
             res = self.env['payment.acquirer.number'].create_payment_acq_api(data)
         elif action == 'get_payment_acquirer_payment_gateway_frontend':

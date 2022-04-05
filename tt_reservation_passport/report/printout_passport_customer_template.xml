@@ -33,14 +33,14 @@
 
     <template id="printout_passport_notes_signature_cust">
         <div style="top:50px;">  <!--position: absolute; z-index:1; -->
-            <div class="row" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+            <div class="row" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                 <p><strong><span>Notes: </span></strong>
                     <t t-if="p.notes">
                         <span t-field="p.notes"/>
                     </t>
                 </p>
             </div>
-            <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+            <div class="row mt8" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                 <strong><span>Terms and Conditions</span></strong>
                 <br/>
                 <span style="color: white;">..</span><span>1. Passport handling process is done in weekdays.</span><br/>
@@ -50,10 +50,10 @@
                 <span style="color: white;">......</span><span>will be bore by the applicant</span><br/>
                 <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
             </div>
-            <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+            <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                 <p>With this statement, I have given my documents for passport handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
             </div>
-            <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+            <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                 <div class="col-6 text-center">
                     <span><strong>Applicant</strong></span>
                     <br/>
@@ -85,7 +85,7 @@
         <t t-foreach="docs" t-as="o">
             <t t-foreach="o.passenger_ids" t-as="p">
                 <t t-call="web.html_container">
-                    <div class="article" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                         <div class="oe_structure"/>
                         <div id="header" class="row" style="">
                             <div class="col-2">
