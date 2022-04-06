@@ -109,6 +109,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write('%s9' % incr.generate_ascii(), 'PNR', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Ledger Reference', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Booking State', style.table_head_center)
+        sheet.write('%s9' % incr.generate_ascii(), 'Ticket Numbers', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Currency', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Agent NTA Amount', style.table_head_center)
         sheet.write('%s9' % incr.generate_ascii(), 'Agent Commission', style.table_head_center)
@@ -145,9 +146,9 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.set_column('J:J', 12)
         sheet.set_column('K:V', 15)
         if values['data_form']['is_ho']:
-            sheet.set_column('AF:AF', 30)
+            sheet.set_column('AG:AG', 30)
         else:
-            sheet.set_column('AD:AD', 30)
+            sheet.set_column('AE:AE', 30)
 
         # ============ void start() ======================
         # declare some constant dependencies
@@ -244,6 +245,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                     sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
                     sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
@@ -302,58 +304,56 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 airline_recaps[data_index]['pax_non_GDS'] += i['child']
                                 airline_recaps[data_index]['pax_non_GDS'] += i['infant']
 
-                # else condition if pnr is not yet change
-                row_data += 1
-                sty_table_data_center = style.table_data_center
-                sty_table_data = style.table_data
-                sty_datetime = style.table_data_datetime
-                sty_date = style.table_data_date
-                sty_amount = style.table_data_amount
-                if row_data % 2 == 0:
-                    sty_table_data_center = style.table_data_center_even
-                    sty_table_data = style.table_data_even
-                    sty_datetime = style.table_data_datetime_even
-                    sty_date = style.table_data_date_even
-                    sty_amount = style.table_data_amount_even
-
-                incr.reset()
-                sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_date)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), i['provider_name'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                if values['data_form']['is_ho']:
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), i['ledger_agent_name'], sty_table_data)
                 if i['ledger_transaction_type'] == 3:
+                    row_data += 1
+                    sty_table_data_center = style.table_data_center
+                    sty_table_data = style.table_data
+                    sty_datetime = style.table_data_datetime
+                    sty_date = style.table_data_date
+                    sty_amount = style.table_data_amount
+                    if row_data % 2 == 0:
+                        sty_table_data_center = style.table_data_center_even
+                        sty_table_data = style.table_data_even
+                        sty_datetime = style.table_data_datetime_even
+                        sty_date = style.table_data_date_even
+                        sty_amount = style.table_data_amount_even
+
+                    incr.reset()
+                    # add ledger info 1 row below (from the same line of data)
+                    sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_date)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['provider_name'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    if values['data_form']['is_ho']:
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_agent_name'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['debit'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                else:
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                    sheet.write(row_data, incr.generate_number(), i['debit'], sty_amount)
-                sheet.write(row_data, incr.generate_number(), i['ledger_description'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_description'], sty_table_data)
 
             else:
             # current_number != iterate order number
@@ -437,6 +437,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, incr.generate_number(), i['pnr'], sty_table_data)
                 sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                 sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                 sheet.write(row_data, incr.generate_number(), this_resv_agent_nta_total, sty_amount)
                 sheet.write(row_data, incr.generate_number(), this_resv_agent_commission, sty_amount)
@@ -486,6 +487,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
                 sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i.get('ticket_numbers', ''), sty_table_data)
                 sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                 sheet.write(row_data, incr.generate_number(), this_pnr_agent_nta_total, sty_amount)
                 sheet.write(row_data, incr.generate_number(), this_pnr_agent_commission, sty_amount)
@@ -500,58 +502,56 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, incr.generate_number(), '', sty_amount)
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
 
-                row_data += 1
-                sty_table_data_center = style.table_data_center
-                sty_table_data = style.table_data
-                sty_datetime = style.table_data_datetime
-                sty_date = style.table_data_date
-                sty_amount = style.table_data_amount
-                if row_data % 2 == 0:
-                    sty_table_data_center = style.table_data_center_even
-                    sty_table_data = style.table_data_even
-                    sty_datetime = style.table_data_datetime_even
-                    sty_date = style.table_data_date_even
-                    sty_amount = style.table_data_amount_even
-
-                incr.reset()
-                # add ledger info 1 row below (from the same line of data)
-                sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_date)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), i['provider_name'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                if values['data_form']['is_ho']:
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                sheet.write(row_data, incr.generate_number(), i['ledger_agent_name'], sty_table_data)
                 if i['ledger_transaction_type'] == 3:
+                    row_data += 1
+                    sty_table_data_center = style.table_data_center
+                    sty_table_data = style.table_data
+                    sty_datetime = style.table_data_datetime
+                    sty_date = style.table_data_date
+                    sty_amount = style.table_data_amount
+                    if row_data % 2 == 0:
+                        sty_table_data_center = style.table_data_center_even
+                        sty_table_data = style.table_data_even
+                        sty_datetime = style.table_data_datetime_even
+                        sty_date = style.table_data_date_even
+                        sty_amount = style.table_data_amount_even
+
+                    incr.reset()
+                    # add ledger info 1 row below (from the same line of data)
+                    sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_date)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['provider_name'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_pnr'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_name'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    if values['data_form']['is_ho']:
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_agent_name'], sty_table_data)
                     sheet.write(row_data, incr.generate_number(), i['debit'], sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                else:
-                    sheet.write(row_data, incr.generate_number(), '', sty_amount)
-                    sheet.write(row_data, incr.generate_number(), i['debit'], sty_amount)
-                sheet.write(row_data, incr.generate_number(), i['ledger_description'], sty_table_data)
+                    sheet.write(row_data, incr.generate_number(), i['ledger_description'], sty_table_data)
 
             # lets recap
                 # see line 189 for code explanation of this if provider airline
@@ -693,6 +693,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
 

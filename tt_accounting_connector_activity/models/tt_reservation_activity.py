@@ -85,6 +85,7 @@ class TtReservationActivity(models.Model):
 
     def action_issued_activity(self, co_uid, customer_parent_id, acquirer_id=False):
         super(TtReservationActivity, self).action_issued_activity(co_uid, customer_parent_id, acquirer_id)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search([('cycle', '=', 'real_time'), ('is_send_activity', '=', True)])
         if setup_list:
             vendor_list = []
@@ -92,9 +93,17 @@ class TtReservationActivity(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('issued', vendor_list)
+            if temp_post:
+                temp_post += ',issued'
+            else:
+                temp_post += 'issued'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
 
     def action_reverse_activity(self,context):
         super(TtReservationActivity, self).action_reverse_activity(context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search([('cycle', '=', 'real_time'), ('is_send_activity', '=', True)])
         if setup_list:
             vendor_list = []
@@ -102,3 +111,10 @@ class TtReservationActivity(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('reverse', vendor_list)
+            if temp_post:
+                temp_post += ',reverse'
+            else:
+                temp_post += 'reverse'
+            self.write({
+                'posted_acc_actions': temp_post
+            })

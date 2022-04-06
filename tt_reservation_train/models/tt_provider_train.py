@@ -52,7 +52,7 @@ class TtProviderTrain(models.Model):
     refund_date = fields.Datetime('Refund Date')
 
     ticket_ids = fields.One2many('tt.ticket.train', 'provider_id', 'Ticket Number')
-
+    ticket_numbers = fields.Text('Ticket Number(s)', compute="_compute_ticket_numbers", store=True)
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.train')])
@@ -63,6 +63,15 @@ class TtProviderTrain(models.Model):
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines','Reconciled')
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
+
+    @api.depends('ticket_ids', 'ticket_ids.ticket_number')
+    def _compute_ticket_numbers(self):
+        for rec in self:
+            ticket_number_list = []
+            for ticket_obj in rec.ticket_ids:
+                if ticket_obj.ticket_number:
+                    ticket_number_list.append(ticket_obj.ticket_number)
+            rec.ticket_numbers = ','.join(ticket_number_list)
 
     ##button function
     def action_set_to_issued_from_button(self, payment_data={}):
