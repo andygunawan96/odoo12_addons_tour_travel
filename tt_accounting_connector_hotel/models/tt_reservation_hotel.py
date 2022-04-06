@@ -85,6 +85,7 @@ class TtReservationHotel(models.Model):
 
     def action_issued(self, acquirer_id, co_uid, kwargs=False):
         res = super(TtReservationHotel, self).action_issued(acquirer_id, co_uid, kwargs)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_hotel', '=', True)])
         if setup_list:
@@ -93,10 +94,18 @@ class TtReservationHotel(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('issued', vendor_list)
+            if temp_post:
+                temp_post += ',issued'
+            else:
+                temp_post += 'issued'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
         return res
 
     def action_reverse_ledger_from_button(self):
         res = super(TtReservationHotel, self).action_reverse_ledger_from_button()
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_hotel', '=', True)])
         if setup_list:
@@ -105,4 +114,11 @@ class TtReservationHotel(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('reverse', vendor_list)
+            if temp_post:
+                temp_post += ',reverse'
+            else:
+                temp_post += 'reverse'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
         return res
