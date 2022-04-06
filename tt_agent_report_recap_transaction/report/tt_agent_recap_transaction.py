@@ -30,6 +30,12 @@ class AgentReportRecapTransacion(models.Model):
             """
 
     @staticmethod
+    def _sel_ticket_numbers():
+        return """
+            ,provider_booking.ticket_numbers as ticket_numbers
+            """
+
+    @staticmethod
     def _offline():
         return """
         ,rsv.offline_provider_type as offline_provider
@@ -62,6 +68,7 @@ class AgentReportRecapTransacion(models.Model):
         # query = """tt_ledger """
         query = """tt_reservation_""" + provider_type + """ rsv """
         query += """LEFT JOIN tt_agent agent ON rsv.agent_id = agent.id
+        LEFT JOIN tt_provider_""" + provider_type + """ provider_booking ON provider_booking.booking_id = rsv.id
         LEFT JOIN tt_customer_parent customer_parent ON rsv.customer_parent_id = customer_parent.id
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = rsv.provider_type_id
         LEFT JOIN tt_customer_parent_type customer_parent_type ON customer_parent_type.id = rsv.customer_parent_type_id
@@ -196,6 +203,8 @@ class AgentReportRecapTransacion(models.Model):
     def _lines(self, date_from, date_to, agent_id, provider_type, state):
         # SELECT
         query = 'SELECT ' + self._select()
+        if provider_type in ['airline', 'train']:
+            query += self._sel_ticket_numbers()
         if provider_type == 'offline':
             query += self._offline()
 

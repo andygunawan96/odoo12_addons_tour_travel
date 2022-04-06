@@ -52,8 +52,7 @@ class TtProviderTrain(models.Model):
     refund_date = fields.Datetime('Refund Date')
 
     ticket_ids = fields.One2many('tt.ticket.train', 'provider_id', 'Ticket Number')
-    ticket_numbers = fields.Text('Ticket Number(s)', compute="_compute_ticket_numbers",store=True)
-
+    ticket_numbers = fields.Text('Ticket Number(s)', compute="_compute_ticket_numbers", store=True)
     # is_ledger_created = fields.Boolean('Ledger Created', default=False, readonly=True, states={'draft': [('readonly', False)]})
 
     error_history_ids = fields.One2many('tt.reservation.err.history','res_id','Error History', domain=[('res_model','=','tt.provider.train')])
