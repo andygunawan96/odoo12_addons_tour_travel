@@ -582,7 +582,7 @@ class ReservationAirline(models.Model):
                     total_pax_count += valid_segment.booking_id.child
                     total_pax_count += valid_segment.booking_id.infant
 
-                if total_pax_count >= limit:
+                if total_pax_count > limit:
                     raise RequestException(1026,additional_message="Contact Validator failed because of rebooking with the same contact info.")
 
 

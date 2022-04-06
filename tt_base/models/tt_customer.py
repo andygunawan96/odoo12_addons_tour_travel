@@ -60,7 +60,14 @@ class TtCustomer(models.Model):
     @api.depends('first_name', 'last_name')
     def _compute_name(self):
         for rec in self:
-            rec.name = "%s %s" % (rec.first_name and rec.first_name or '', rec.last_name and rec.last_name or '')
+            ## 2 apr 2022 IVAN KALAU LAST NAME KOSONG TIDAK TERISI FIRSTNAME dengan space
+            rec_name_result = ''
+            if rec.first_name:
+                rec_name_result += rec.first_name
+            if rec.last_name: ##ASUMSI FIRST NAME REQUIRED LASTNAME BOLEH KOSONG
+                rec_name_result += " %s" % rec.last_name
+            rec.name = rec_name_result
+            # rec.name = "%s %s" % (rec.first_name and rec.first_name or '', rec.last_name and rec.last_name or '')
 
     @api.depends('logo')
     def _get_logo_image(self):

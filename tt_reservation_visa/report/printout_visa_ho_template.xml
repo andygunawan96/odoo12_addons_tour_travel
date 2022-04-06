@@ -33,7 +33,7 @@
 
     <template id="printout_visa_notes_signature_ho">
         <div style="position: absolute; z-index:1; top:2090px;">
-            <div class="row" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+            <div class="row" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                 <p><strong><span>Notes: </span></strong>
                     <t t-if="p.notes">
                         <span t-field="p.notes"/>
@@ -41,7 +41,7 @@
                 </p>
             </div>
             <span t-raw="visa_ho_footer"/>
-            <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+            <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                 <div class="col-6 text-center">
                     <span><strong>Applicant</strong></span>
                     <br/>
@@ -76,7 +76,7 @@
         <t t-foreach="docs" t-as="o">
             <t t-foreach="o.passenger_ids" t-as="p">
                 <t t-call="web.html_container">
-                    <div class="article" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                         <div class="oe_structure"/>
                         <div id="header" class="row" style="">
                             <div class="col-2">

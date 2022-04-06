@@ -11,6 +11,8 @@ _logger = logging.getLogger(__name__)
 class TtTopUp(models.Model):
     _inherit = 'tt.top.up'
 
+    posted_acc_actions = fields.Char('Posted to Accounting after Recon', default='')
+
     def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
@@ -67,8 +69,17 @@ class TtTopUp(models.Model):
 
     def action_approve_top_up(self):
         super(TtTopUp, self).action_approve_top_up()
-        setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_topup', '=', True)])
-        if setup_list:
-            vendor_list = [rec.accounting_provider for rec in setup_list]
-            self.send_ledgers_to_accounting('', vendor_list)
+        temp_post = self.posted_acc_actions or ''
+        if 'approve' not in temp_post.split(','):
+            setup_list = self.env['tt.accounting.setup'].search(
+                [('cycle', '=', 'real_time'), ('is_send_topup', '=', True)])
+            if setup_list:
+                vendor_list = [rec.accounting_provider for rec in setup_list]
+                self.send_ledgers_to_accounting('', vendor_list)
+                if temp_post:
+                    temp_post += ',approve'
+                else:
+                    temp_post += 'approve'
+                self.write({
+                    'posted_acc_actions': temp_post
+                })

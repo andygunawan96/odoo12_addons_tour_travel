@@ -157,7 +157,7 @@
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">50</field>
             <field name="html" type="html">
-                <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <div class="row mt8" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                     <span class="bold">Terms and Conditions</span>
                     <br/>
                     <span style="color: white;">..</span><span>1. Visa handling process is done in weekdays.</span><br/>
@@ -166,7 +166,7 @@
                     <span style="color: white;">......</span><span>will not be responsible as it will be the consulate full authorities.</span><br/>
                     <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
                 </div>
-                <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                     <p>With this statement, I have given my documents for visa handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
                 </div>
             </field>
@@ -179,7 +179,7 @@
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">51</field>
             <field name="html" type="html">
-                <div class="row mt8" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <div class="row mt8" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                     <span class="bold">Terms and Conditions</span>
                     <br/>
                     <span style="color: white;">..</span><span>1. Visa handling process is done in weekdays.</span><br/>
@@ -188,7 +188,7 @@
                     <span style="color: white;">......</span><span>will not be responsible as it will be the consulate full authorities.</span><br/>
                     <span style="color: white;">..</span><span>4. When needed, consulate will ask for additional documents, the applicant must full fill the in quiries.</span>
                 </div>
-                <div class="row mt16" style="font-family: Times New Roman, Georgia, Serif; font-size: 16px;">
+                <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 16px;">
                     <p>With this statement, I have given my documents for visa handling and correspond to my true ID's and agree with terms and conditions stated above.</p>
                 </div>
             </field>
