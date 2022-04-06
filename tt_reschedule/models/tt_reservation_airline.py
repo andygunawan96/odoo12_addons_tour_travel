@@ -500,6 +500,18 @@ class ReservationAirline(models.Model):
                 if not rsv_prov_obj:
                     raise Exception('Provider ID not found, %s' % commit_data['provider_id'])
 
+                rsv_prov_pax_count_dict = {
+                    'ADT': 0,
+                    'CHD': 0,
+                    'INF': 0,
+                    'YCD': 0,
+                }
+                for tkt_obj in rsv_prov_obj.ticket_ids:
+                    pax_type = tkt_obj.pax_type
+                    if pax_type not in rsv_prov_pax_count_dict:
+                        rsv_prov_pax_count_dict[pax_type] = 0
+                    rsv_prov_pax_count_dict[pax_type] += 1
+
                 commit_data['passengers'] = util.match_passenger_data(commit_data['passengers'], airline_obj.passenger_ids)
 
                 # Mendeteksi split booking
@@ -508,6 +520,14 @@ class ReservationAirline(models.Model):
                     balance_due = float(rsv_prov_obj.balance_due)
                     total_price -= float(commit_data['total_price'])
                     balance_due -= float(commit_data['balance_due'])
+
+                    # April 6, 2022 - SAM
+                    # Untuk trigger update harga apabila split booking BOOKED
+                    if commit_data['status'] == "BOOKED":
+                        total_price += 1
+                        commit_data['total_price'] = float(commit_data['total_price']) + 1
+                    # END
+
                     # is_same_journeys = True if len(rsv_prov_obj.journey_ids) == len(commit_data['journeys']) else False
                     # is_same_passengers = True if len(rsv_prov_obj.ticket_ids) == len(commit_data['passengers']) else False
                     new_provider_bookings.append(commit_data)
@@ -516,14 +536,77 @@ class ReservationAirline(models.Model):
                         is_ledger_created = True
                         rsv_prov_obj.action_reverse_ledger()
 
+                    # April 5, 2022 - SAM
+                    # Menghitung jumlah pax count pada pax type yang ada
+                    pax_count_dict = {
+                        'ADT': 0,
+                        'CHD': 0,
+                        'INF': 0,
+                        'YCD': 0,
+                    }
+                    prov_psg_id_list = []
+                    prov_psg_number_list = []
+                    for pax in commit_data['passengers']:
+                        psg_id = pax.get('passenger_id', '')
+                        psg_number = pax['passenger_number']
+                        prov_psg_id_list.append(psg_id)
+                        prov_psg_number_list.append(psg_number)
+                        pax_type = pax['pax_type']
+                        if pax_type not in pax_count_dict:
+                            pax_count_dict[pax_type] = 0
+                        pax_count_dict[pax_type] += 1
+                    # END
+
                     # Service Charges
                     for sc_obj in rsv_prov_obj.cost_service_charge_ids:
-                        total_pax = len(commit_data['passengers'])
+                        # April 5, 2022 - SAM
+                        # total_pax = len(commit_data['passengers'])
+                        sc_pax_type = sc_obj.pax_type
+                        if sc_pax_type not in pax_count_dict:
+                            continue
+                        total_pax = pax_count_dict[sc_pax_type]
+                        if total_pax < 1:
+                            continue
+                        # END
                         for psg in commit_data['passengers']:
                             psg_obj = resv_passenger_number_dict[psg['passenger_number']]
                             psg_obj.write({
                                 'cost_service_charge_ids': [(3, sc_obj.id)]
                             })
+                        # April 5, 2022 - SAM
+                        try:
+                            if sc_obj.charge_type in ['ROC', 'RAC', 'DISC']:
+                                # Memindahkan service charge ke pax lain dalam 1 rerservasi
+                                # Apabila tidak ada yang bisa dipindahkan, baru akan di pindah ke reservasi yang baru
+                                is_assigned = False
+                                if sc_obj.pax_count == 1:
+                                    for tkt_obj in rsv_prov_obj.ticket_ids:
+                                        if sc_obj.pax_type != tkt_obj.pax_type:
+                                            continue
+                                        if not tkt_obj.passenger_id:
+                                            continue
+                                        if tkt_obj.passenger_id.id in prov_psg_id_list:
+                                            continue
+
+                                        tkt_obj.passenger_id.write({
+                                            'cost_service_charge_ids': [(4, sc_obj.id)]
+                                        })
+                                        is_assigned = True
+                                        break
+
+                                if is_assigned:
+                                    continue
+
+                                sc_values = sc_obj.to_dict()
+                                sc_total = sc_values['amount']
+                                sc_values.update({
+                                    'pax_count': 1,
+                                    'total': sc_total
+                                })
+                                commit_data['journeys'][-1]['segments'][-1]['fares'][-1]['service_charges'].append(sc_values)
+                        except:
+                            _logger.error('Failed to append service charges, %s' % traceback.format_exc())
+                        # END
 
                         pax_count = sc_obj.pax_count - total_pax
                         if pax_count < 1:
