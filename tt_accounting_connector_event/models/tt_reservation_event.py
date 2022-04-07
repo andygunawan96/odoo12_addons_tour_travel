@@ -85,6 +85,7 @@ class TtReservationEvent(models.Model):
 
     def action_issued_event(self, context):
         super(TtReservationEvent, self).action_issued_event(context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_event', '=', True)])
         if setup_list:
@@ -93,9 +94,17 @@ class TtReservationEvent(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('issued', vendor_list)
+            if temp_post:
+                temp_post += ',issued'
+            else:
+                temp_post += 'issued'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
 
     def action_fail_refund(self,context):
         super(TtReservationEvent, self).action_fail_refund(context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_event', '=', True)])
         if setup_list:
@@ -104,3 +113,10 @@ class TtReservationEvent(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('refunded', vendor_list)
+            if temp_post:
+                temp_post += ',refunded'
+            else:
+                temp_post += 'refunded'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
