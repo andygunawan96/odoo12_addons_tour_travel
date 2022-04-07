@@ -85,6 +85,7 @@ class TtReservationAirline(models.Model):
 
     def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
         super(TtReservationAirline, self).action_issued_airline(co_uid,customer_parent_id,acquirer_id)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
         if setup_list:
@@ -93,9 +94,17 @@ class TtReservationAirline(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('issued', vendor_list)
+            if temp_post:
+                temp_post += ',issued'
+            else:
+                temp_post += 'issued'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
 
     def action_reverse_airline(self,context):
         super(TtReservationAirline, self).action_reverse_airline(context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
         if setup_list:
@@ -104,9 +113,17 @@ class TtReservationAirline(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('reverse', vendor_list)
+            if temp_post:
+                temp_post += ',reverse'
+            else:
+                temp_post += 'reverse'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
 
     def update_cost_service_charge_airline_api(self, req, context):
         res = super(TtReservationAirline, self).update_cost_service_charge_airline_api(req, context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
         if setup_list:
@@ -115,10 +132,18 @@ class TtReservationAirline(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('update_service_charge', vendor_list)
+            if temp_post:
+                temp_post += ',update_service_charge'
+            else:
+                temp_post += 'update_service_charge'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
         return res
 
     def split_reservation_airline_api_1(self, data, context):
         res = super(TtReservationAirline, self).split_reservation_airline_api_1(data, context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
         if setup_list:
@@ -127,4 +152,11 @@ class TtReservationAirline(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('split_reservation', vendor_list)
+            if temp_post:
+                temp_post += ',split_reservation'
+            else:
+                temp_post += 'split_reservation'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
         return res

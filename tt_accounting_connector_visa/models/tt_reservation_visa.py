@@ -85,6 +85,7 @@ class TtReservationVisa(models.Model):
 
     def action_issued_visa_api(self, data, context):
         res = super(TtReservationVisa, self).action_issued_visa_api(data, context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_visa', '=', True)])
         if setup_list:
@@ -93,10 +94,18 @@ class TtReservationVisa(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('issued', vendor_list)
+            if temp_post:
+                temp_post += ',issued'
+            else:
+                temp_post += 'issued'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
         return res
 
     def action_reverse_visa(self,context):
         super(TtReservationVisa, self).action_reverse_visa(context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_visa', '=', True)])
         if setup_list:
@@ -105,3 +114,10 @@ class TtReservationVisa(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('reverse', vendor_list)
+            if temp_post:
+                temp_post += ',reverse'
+            else:
+                temp_post += 'reverse'
+            self.write({
+                'posted_acc_actions': temp_post
+            })

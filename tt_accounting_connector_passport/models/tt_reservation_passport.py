@@ -85,6 +85,7 @@ class TtReservationPassport(models.Model):
 
     def action_issued_passport_api(self, data, context):
         super(TtReservationPassport, self).action_issued_passport_api(data, context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_passport', '=', True)])
         if setup_list:
@@ -93,9 +94,17 @@ class TtReservationPassport(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('issued', vendor_list)
+            if temp_post:
+                temp_post += ',issued'
+            else:
+                temp_post += 'issued'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
 
     def action_reverse_passport(self,context):
         super(TtReservationPassport, self).action_reverse_passport(context)
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_passport', '=', True)])
         if setup_list:
@@ -104,3 +113,10 @@ class TtReservationPassport(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('reverse', vendor_list)
+            if temp_post:
+                temp_post += ',reverse'
+            else:
+                temp_post += 'reverse'
+            self.write({
+                'posted_acc_actions': temp_post
+            })

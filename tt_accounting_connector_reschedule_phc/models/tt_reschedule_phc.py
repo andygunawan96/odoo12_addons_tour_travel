@@ -74,6 +74,7 @@ class TtReschedulePHC(models.Model):
 
     def validate_reschedule_from_button(self):
         super(TtReschedulePHC, self).validate_reschedule_from_button()
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_reschedule_phc', '=', True)])
         if setup_list:
@@ -82,9 +83,17 @@ class TtReschedulePHC(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('validate', vendor_list)
+            if temp_post:
+                temp_post += ',validate'
+            else:
+                temp_post += 'validate'
+            self.write({
+                'posted_acc_actions': temp_post
+            })
 
     def cancel_reschedule_from_button(self):
         super(TtReschedulePHC, self).cancel_reschedule_from_button()
+        temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_reschedule_phc', '=', True)])
         if setup_list:
@@ -93,3 +102,10 @@ class TtReschedulePHC(models.Model):
                 if rec.accounting_provider not in vendor_list:
                     vendor_list.append(rec.accounting_provider)
             self.send_ledgers_to_accounting('cancel', vendor_list)
+            if temp_post:
+                temp_post += ',cancel'
+            else:
+                temp_post += 'cancel'
+            self.write({
+                'posted_acc_actions': temp_post
+            })

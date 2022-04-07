@@ -1,7 +1,7 @@
 from odoo import api,models,fields,_
 from ...tools import util,ERR
 import logging,traceback
-from datetime import datetime
+from datetime import date, timedelta
 import json
 from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 
@@ -12,7 +12,8 @@ class TtReservationPassport(models.Model):
     _inherit = 'tt.reconcile.transaction'
 
     def send_recon_batches_to_accounting(self, days):
-        recon_list = self.env['tt.reconcile.transaction.lines'].search([('state', '=', 'match')])
+        start_date = date.today() - timedelta(days=days)
+        recon_list = self.env['tt.reconcile.transaction.lines'].search([('state', '=', 'match'), ('reconcile_transaction_id.transaction_date', '>=', start_date)])
         for rec in recon_list:
             found_rec = []
             if rec.type == 'reissue':
