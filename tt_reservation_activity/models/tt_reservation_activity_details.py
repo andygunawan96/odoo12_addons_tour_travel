@@ -18,9 +18,11 @@ class ReservationActivityDetails(models.Model):
     booking_id = fields.Many2one('tt.reservation.activity', related='provider_booking_id.booking_id', string='Order Number', store=True)
 
     def cleanhtml(self, raw_html):
-        cleanr = re.compile('<.*?>')
-        cleantext = re.sub(cleanr, '', raw_html)
-        return cleantext
+        if raw_html:
+            cleanr = re.compile('<.*?>')
+            cleantext = re.sub(cleanr, '', raw_html)
+            return cleantext
+        return ''
 
     def to_dict(self):
         image_urls = []
