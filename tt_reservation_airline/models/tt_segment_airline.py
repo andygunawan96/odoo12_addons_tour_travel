@@ -19,6 +19,7 @@ class TtSegmentAirline(models.Model):
 
     carrier_id = fields.Many2one('tt.transport.carrier','Plane')
     carrier_code = fields.Char('Flight Code')
+    operating_airline_id = fields.Many2one('tt.transport.carrier', 'Operating Airline')
     operating_airline_code = fields.Char('Operating Airline Code', default='')
     carrier_number = fields.Char('Flight Number')
     provider_id = fields.Many2one('tt.provider','Provider')

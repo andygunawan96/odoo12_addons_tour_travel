@@ -19,6 +19,7 @@
                             <field name="carrier_id"/>
                             <field name="carrier_code"/>
                             <field name="carrier_number"/>
+                            <field name="operating_airline_id"/>
                             <field name="operating_airline_code"/>
                         </group>
                     </group>
