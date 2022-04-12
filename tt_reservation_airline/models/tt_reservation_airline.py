@@ -1481,7 +1481,7 @@ class ReservationAirline(models.Model):
                         'seat_ids': this_segment_seats,
                         # END
                         # April 12, 2022 - SAM
-                        'operating_airline_id': operating_id,
+                        'operating_airline_id': operating_id and operating_id.id or False,
                         'operating_airline_code': segment.get('operating_airline_code', ''),
                         # END
                     }
