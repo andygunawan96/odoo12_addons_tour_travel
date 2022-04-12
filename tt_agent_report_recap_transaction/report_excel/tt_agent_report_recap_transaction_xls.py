@@ -441,7 +441,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
                     sheet.write(row_data, incr.generate_number(), this_resv_agent_nta_total, sty_amount)
                     sheet.write(row_data, incr.generate_number(), this_resv_agent_commission, sty_amount)
-                    sheet.write(row_data, incr.generate_number(), i['commission_booker'], sty_amount)
+                    sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
                     sheet.write(row_data, incr.generate_number(), upsell, sty_amount)
                     if values['data_form']['is_ho']:
                         sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)

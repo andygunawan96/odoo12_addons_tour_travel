@@ -41,7 +41,7 @@ class TtReservationPassport(models.Model):
                                                           ('reconcile_line_id', '=', False)], limit=1)
             if found_rec:
                 temp_post = found_rec[0].posted_acc_actions or ''
-                if 'reconcile' not in temp_post.split(','):
+                if 'reconcile' not in temp_post.split(',') and 'transaction_batch' not in temp_post.split(','):
                     setup_list = self.env['tt.accounting.setup'].search(
                         [('cycle', '=', 'per_batch'), ('is_recon_only', '=', True),
                          ('is_send_%s' % (rec.reconcile_transaction_id.provider_type_id.code), '=', True)])
