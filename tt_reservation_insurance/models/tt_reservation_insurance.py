@@ -369,8 +369,12 @@ class ReservationInsurance(models.Model):
                 # book_status.append(provider['status'])
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
-                    self.update_pnr_booked(provider_obj,provider,context)
-                    provider_obj.update_ticket_api(provider['passengers'])
+                    # self.update_pnr_booked(provider_obj,provider,context)
+                    provider_obj.update_ticket_api(provider['tickets'])
+                    provider_obj.update({
+                        "hold_date": provider['hold_date']
+                    })
+
                     any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if 'tickets' in provider:
@@ -428,6 +432,7 @@ class ReservationInsurance(models.Model):
             #         pnr_list.append(rec.pnr)
 
             if any_provider_changed:
+                book_obj.calculate_service_charge()
                 book_obj.check_provider_state(context, req=req)
 
             # if any_pnr_changed:
@@ -694,14 +699,16 @@ class ReservationInsurance(models.Model):
         res = []
         name = {'provider': [], 'carrier': []}
         name['provider'].append(book_data['provider'])
-        name['carrier'].append(carrier_id.name)
+        if carrier_id:
+            name['carrier'].append(carrier_id.name)
         sequence = 0
         values = {
             'pnr': self.name,
             'provider_id': provider_id,
-            'carrier_id': carrier_id.id,
+            'carrier_id': carrier_id.id if carrier_id else False,
             'booking_id': self.id,
             'sequence': sequence,
+            'additional_information': book_data['info'],
             'origin': book_data['origin'],
             'destination': book_data['destination'],
             'start_date': book_data['date_start'],
@@ -720,7 +727,7 @@ class ReservationInsurance(models.Model):
         }
         res.append(provider_insurance_obj.create(values))
         name['provider'] = list(set(name['provider']))
-        name['carrier'] = list(set(name['carrier']))
+        name['carrier'] = list(set([book_data['carrier_name']]))
         return res, name
 
     #to generate sale service charge
@@ -956,12 +963,12 @@ class ReservationInsurance(models.Model):
         else:
             co_uid = self.env.user.id
         attachments = []
-        for base64 in data['response']:
+        for response in data['response']:
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Insurance Ticket Original %s.pdf' % book_obj.name,
+                    'filename': 'Insurance Ticket Original %s %s.pdf' % (book_obj.name, response['name']),
                     'file_reference': 'Insurance Ticket Original',
-                    'file': base64['base64'],
+                    'file': response['base64'],
                     'delete_date': datetime.strptime(book_obj.end_date,'%Y-%m-%d') + timedelta(days=7)
                 },
                 {
@@ -981,25 +988,23 @@ class ReservationInsurance(models.Model):
             data['provider_type'] = self.provider_type_id.name
 
         book_obj = self.env['tt.reservation.insurance'].search([('name', '=', data['order_number'])], limit=1)
-        datas = {'ids': book_obj.env.context.get('active_ids', [])}
-        # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
-        res = book_obj.read()
-        res = res and res[0] or {}
-        datas['form'] = res
-        datas['is_with_price'] = True
-        insurance_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_insurance')
+
 
 
         if not book_obj.printout_ticket_original_ids:
             # gateway get ticket
-            req = {"data": []}
+            req = {"data": [], "provider": ''}
             for provider_booking_obj in book_obj.provider_booking_ids:
-                req['data'].append({
-                    'pnr': provider_booking_obj.pnr,
-                    'provider': provider_booking_obj.provider_id.code,
-                    'last_name': book_obj.passenger_ids[0].last_name,
-                    'pnr2': provider_booking_obj.pnr2
+                req.update({
+                    'provider': provider_booking_obj.provider_id.code
                 })
+                for ticket_obj in provider_booking_obj.ticket_ids:
+                    if ticket_obj.ticket_url:
+                        req['data'].append({
+                            'pnr': ticket_obj.ticket_number,
+                            'ticket_url': ticket_obj.ticket_url,
+                            'name': ticket_obj.passenger_id.name
+                        })
             res = self.env['tt.insurance.api.con'].send_get_original_ticket(req)
             if res['error_code'] == 0:
                 data.update({

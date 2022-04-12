@@ -79,6 +79,9 @@
                     <button name="print_itinerary"
                             class="oe_stat_button" states="booked,issued,done"
                             string="Print Itinerary" type="object" icon="fa-print"/>
+                    <button name="print_eticket_original"
+                            class="oe_stat_button" states="issued,done"
+                            string="Get Original Ticket" type="object" icon="fa-print"/>
             </xpath>
 
             <xpath expr="//group[@name='paxgroup']" position="before">
@@ -108,6 +111,18 @@
                             <field name="identity_type"/>
                             <field name="identity_number"/>
                             <field name="passport_number"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+            <xpath expr="//page[@name='anchor']" position="before">
+                <page string="Original Tickets">
+                    <field name="printout_ticket_original_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="url"/>
+                            <field name="active"/>
                         </tree>
                     </field>
                 </page>
