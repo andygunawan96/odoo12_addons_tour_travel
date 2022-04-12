@@ -43,6 +43,7 @@ class TtProviderInsurance(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True, states={'draft': [('readonly', False)]},
                                   default=lambda self: self.env.user.company_id.currency_id)
     additional_vendor_pricing_info = fields.Text('Additional Vendor Pricing Info', readonly=True)
+    additional_information = fields.Text('Additional Info', readonly=True)
     promotion_code = fields.Char(string='Promotion Code', readonly=True, states={'draft': [('readonly', False)]})
 
 
@@ -511,10 +512,13 @@ class TtProviderInsurance(models.Model):
                 psg_name = ticket.passenger_id.name.replace(' ', '').lower()
                 if (psg['passenger']).replace(' ', '').lower() in [psg_name, psg_name * 2] and not ticket.ticket_number:
                     ticket.write({
-                        'ticket_number': psg.get('ticket_number', '')
+                        'ticket_number': psg.get('ticket_number', ''),
+                        'ticket_url': psg.get('ticket_url', '')
                     })
                     ticket_found = True
                     ticket.passenger_id.is_ticketed = True
+                    if psg.get('fees'):
+                        ticket.passenger_id.create_ssr(psg['fees'], self.pnr,self.id)
                     break
             if not ticket_found:
                 ticket_not_found.append(psg)
@@ -623,7 +627,7 @@ class TtProviderInsurance(models.Model):
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
-            'provider': self.provider_id.code,
+            'provider': self.provider_id.code if self.provider_id else '',
             'provider_id': self.id,
             'state': self.state,
             'state_description': variables.BOOKING_STATE_STR[self.state],
@@ -631,19 +635,20 @@ class TtProviderInsurance(models.Model):
             'balance_due': self.balance_due,
             'total_price': self.total_price,
             'origin': self.origin,
+            'additional_information': self.additional_information,
             'destination': self.destination,
             'start_date': self.start_date,
             'end_date': self.end_date,
             'carrier_code': self.carrier_id.code,
             'carrier_name': self.carrier_id.name,
             'master_area': self.master_area,
-            'master_area_str': dict(self._fields['master_area'].selection).get(self.master_area),
+            'master_area_str': dict(self._fields['master_area'].selection).get(self.master_area) if self.master_area else '',
             'plan_trip': self.plan_trip,
-            'plan_trip_str': dict(self._fields['plan_trip'].selection).get(self.plan_trip),
+            'plan_trip_str': dict(self._fields['plan_trip'].selection).get(self.plan_trip) if self.plan_trip else '',
             'master_trip': self.master_trip,
-            'master_trip_str': dict(self._fields['master_trip'].selection).get(self.master_trip),
+            'master_trip_str': dict(self._fields['master_trip'].selection).get(self.master_trip) if self.master_trip else '',
             'product_type': self.product_type,
-            'product_type_str': dict(self._fields['product_type'].selection).get(self.product_type),
+            'product_type_str': dict(self._fields['product_type'].selection).get(self.product_type) if self.product_type else '',
             'currency': self.currency_id.name,
             'hold_date': self.hold_date and self.hold_date or '',
             'tickets': ticket_list,

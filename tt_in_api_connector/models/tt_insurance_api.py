@@ -30,14 +30,12 @@ class TtInsuranceApiCon(models.Model):
                                             request
                                             ,'notification_code')
 
-    def sync_status_with_phc(self, req):
-        request = {
-            'ticket_number': req.get('ticket_number'),
-            'carrier_code': req.get('carrier_code'),
-            'provider': req.get('provider')
-        }
-        action = 'sync_status_with_phc'
-        return self.send_request_to_gateway('%s/booking/phc/private' % (self.url),
+    def send_get_original_ticket(self, req):
+        request = req
+        request.update({
+            'proxy_co_uid': req.get('user_id', False)
+        })
+        return self.send_request_to_gateway('%s/booking/insurance/private' % (self.url),
                                             request,
-                                            action,
+                                            'get_original_ticket',
                                             timeout=180)
