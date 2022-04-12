@@ -1479,6 +1479,9 @@ class ReservationAirline(models.Model):
                         'segment_addons_ids': this_segment_fare_details,
                         'seat_ids': this_segment_seats,
                         # END
+                        # April 12, 2022 - SAM
+                        'operating_airline_code': segment.get('operating_airline_code', ''),
+                        # END
                     }
                     segment_values.update(fare_data)
                     this_journey_seg.append((0, 0, segment_values))

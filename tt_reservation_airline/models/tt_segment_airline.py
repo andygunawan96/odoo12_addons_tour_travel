@@ -19,6 +19,7 @@ class TtSegmentAirline(models.Model):
 
     carrier_id = fields.Many2one('tt.transport.carrier','Plane')
     carrier_code = fields.Char('Flight Code')
+    operating_airline_code = fields.Char('Operating Airline Code', default='')
     carrier_number = fields.Char('Flight Number')
     provider_id = fields.Many2one('tt.provider','Provider')
 
@@ -88,6 +89,7 @@ class TtSegmentAirline(models.Model):
         segment_addons_list = []
         for rec in self.segment_addons_ids:
             segment_addons_list.append(rec.to_dict())
+
         res = {
             'segment_code': self.segment_code,
             'fare_code': self.fare_code,
@@ -114,6 +116,8 @@ class TtSegmentAirline(models.Model):
             'fare_class': self.fare_class and self.fare_class or '',
             'fare_name': self.fare_name and self.fare_name or '',
             # END
+            # April 12, 2022 - SAM
+            'operating_airline_code': self.operating_airline_code and self.operating_airline_code or '',
+            # END
         }
-
         return res
