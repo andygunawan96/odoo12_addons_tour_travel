@@ -251,18 +251,18 @@ class PaymentAcquirer(models.Model):
                     ('type', '!=', 'va'),  ## search yg bukan espay
                     ('type', '!=', 'payment_gateway')  ## search yg bukan mutasi bca
                 ]
-                cant_use_cash = False #TIDAK BOLEH BAYAR PAKAI CASH
+                can_use_payment_gateway_only = False #HANYA BOLEH PAYMENT GATEWAY
                 if book_obj: #ASUMSI SELAMA BELUM BOOKING AGENT BOOK & YANG BAYAR SAMA
                     #BEDA AGENT & TIDAK PUNYA PROCESS CHANNEL BOOKING
                     if context['co_agent_id'] != book_obj.agent_id.id and self.env.ref('tt_base.group_tt_process_channel_bookings').id not in user_obj.groups_id.ids:
                         # CHECK PRODUCT PHC/PERIKSAIN & PUNYA PROCESS CHANNEL BOOKING MEDICAL
                         if req['provider_type'] in ['phc', 'periksain'] and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids:
-                            cant_use_cash = False
+                            can_use_payment_gateway_only = False
                         else:
-                            cant_use_cash = True
+                            can_use_payment_gateway_only = True
 
-                    if cant_use_cash:
-                        dom.append(('type', '!=', 'cash'))
+                    if can_use_payment_gateway_only: ##YANG BAYAR BEDA AGAR SEMUA PAYMENT METHOD TIDAK DAPAT
+                        dom.append(('type', '=', 'payment_gateway'))
                 unique = 0
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO
