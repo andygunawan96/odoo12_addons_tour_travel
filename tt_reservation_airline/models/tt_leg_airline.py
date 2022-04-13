@@ -1,6 +1,5 @@
 from odoo import api, fields, models, _
 from ...tools import variables
-import odoo.addons.decimal_precision as dp
 import json
 from datetime import datetime
 
