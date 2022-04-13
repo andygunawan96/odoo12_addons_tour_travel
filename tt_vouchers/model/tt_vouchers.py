@@ -814,7 +814,7 @@ class TtVoucherDetail(models.Model):
                     # let the data pass
                     for j in i.cost_service_charge_ids:
                         # adding value to provider total
-                        if j.charge_type != 'RAC' and j.charge_code != 'disc_voucher':##DI TAMBAH CHARGE_CODE disc_voucher karena service charge minus nanti discount jadi hilang
+                        if j.charge_type != 'RAC' and j.charge_type != 'DISC':##DI TAMBAH CHARGE_TYPE DISC karena service charge minus nanti discount jadi hilang
                             provider_total_price += float(j.total)
 
                         # create result temp dict
@@ -841,7 +841,7 @@ class TtVoucherDetail(models.Model):
                         if voucher_detail.voucher_id.voucher_effect_all:
 
                             # make sure charge type is not comission
-                            if j.charge_type != 'RAC' and j.charge_code != 'disc_voucher': ##DI TAMBAH CHARGE_CODE disc_voucher karena service charge minus nanti discount jadi hilang
+                            if j.charge_type != 'RAC' and j.charge_type != 'DISC': ##DI TAMBAH CHARGE_TYPE DISC karena service charge minus nanti discount jadi hilang
                                 _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                 # charge_type is not RAC
                                 # count the discount
@@ -914,7 +914,7 @@ class TtVoucherDetail(models.Model):
                                 # RAC will not be affected by voucher
 
                                 # adding value to provider total
-                                if j.charge_type != 'RAC' and j.charge_code != 'disc_voucher': ##DI TAMBAH CHARGE_CODE disc_voucher karena service charge minus nanti discount jadi hilang
+                                if j.charge_type != 'RAC' and j.charge_type != 'DISC': ##DI TAMBAH CHARGE_TYPE DISC karena service charge minus nanti discount jadi hilang
                                     provider_total_price += float(j.total)
 
                                 # create result temp dict
@@ -943,7 +943,7 @@ class TtVoucherDetail(models.Model):
                             # check if voucher check all
                             if voucher_detail.voucher_id.voucher_effect_all:
                                 # check if price sector or voucher value is bigger
-                                if j.charge_type != 'RAC' and j.charge_code != 'disc_voucher': ##DI TAMBAH CHARGE_CODE disc_voucher karena service charge minus nanti discount jadi hilang
+                                if j.charge_type != 'RAC' and j.charge_type != 'DISC': ##DI TAMBAH CHARGE_TYPE DISC karena service charge minus nanti discount jadi hilang
                                     _logger.info("Will be discount: %s, %s" % (j.charge_code, j.charge_type))
                                     # check if voucher value is bigger than fare
                                     if float(j.total) - voucher_remainder < 0:
@@ -1030,7 +1030,7 @@ class TtVoucherDetail(models.Model):
                                 else:
                                     # no error just let the data pass
                                     # add to SUM variable
-                                    if j.charge_type != 'RAC' and j.charge_code != 'disc_voucher': ##DI TAMBAH CHARGE_CODE disc_voucher karena service charge minus nanti discount jadi hilang
+                                    if j.charge_type != 'RAC' and j.charge_type != 'DISC': ##DI TAMBAH CHARGE_TYPE DISC karena service charge minus nanti discount jadi hilang
                                         provider_total_price += float(j.total)
 
                                     # create result_temp
@@ -1051,7 +1051,7 @@ class TtVoucherDetail(models.Model):
                         # let the data slide
                         for j in i.cost_service_charge_ids:
                             # adding value to provider total
-                            if j.charge_type != 'RAC' and j.charge_code != 'disc_voucher': ##DI TAMBAH CHARGE_CODE disc_voucher karena service charge minus nanti discount jadi hilang
+                            if j.charge_type != 'RAC' and j.charge_type != 'DISC': ##DI TAMBAH CHARGE_TYPE DISC karena service charge minus nanti discount jadi hilang
                                 provider_total_price += float(j.total)
 
                             # create result temp dict
@@ -1071,7 +1071,7 @@ class TtVoucherDetail(models.Model):
                 # let the data slide
                 for j in i.cost_service_charge_ids:
                     # adding value to provider total
-                    if j.charge_type != 'RAC' and j.charge_code != 'disc_voucher': ##DI TAMBAH CHARGE_CODE disc_voucher karena service charge minus nanti discount jadi hilang
+                    if j.charge_type != 'RAC' and j.charge_type != 'DISC': ##DI TAMBAH CHARGE_TYPE DISC karena service charge minus nanti discount jadi hilang
                         provider_total_price += float(j.total)
 
                     # create result temp dict
