@@ -598,9 +598,9 @@ class ReservationAirline(models.Model):
                                     continue
 
                                 sc_values = sc_obj.to_dict()
-                                sc_total = sc_values['amount']
+                                sc_total = sc_values['amount'] * total_pax
                                 sc_values.update({
-                                    'pax_count': 1,
+                                    'pax_count': total_pax,
                                     'total': sc_total
                                 })
                                 commit_data['journeys'][-1]['segments'][-1]['fares'][-1]['service_charges'].append(sc_values)
