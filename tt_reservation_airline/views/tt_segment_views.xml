@@ -19,6 +19,8 @@
                             <field name="carrier_id"/>
                             <field name="carrier_code"/>
                             <field name="carrier_number"/>
+                            <field name="operating_airline_id"/>
+                            <field name="operating_airline_code"/>
                         </group>
                     </group>
                     <group>
@@ -90,6 +92,7 @@
                 <field name="destination_id"/>
                 <field name="departure_date"/>
                 <field name="arrival_date"/>
+                <field name="operating_airline_code"/>
             </tree>
         </field>
     </record>

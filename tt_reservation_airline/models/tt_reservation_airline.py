@@ -1383,6 +1383,7 @@ class ReservationAirline(models.Model):
                     carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
                     org_id = dest_obj.get_id(segment['origin'],_destination_type)
                     dest_id = dest_obj.get_id(segment['destination'],_destination_type)
+                    operating_id = carrier_obj.get_id(segment['operating_airline_code'],_destination_type) if segment.get('operating_airline_code') else None
 
                     name['carrier'].append(carrier_id and carrier_id.name or '{} Not Found'.format(segment['carrier_code']))
 
@@ -1478,6 +1479,10 @@ class ReservationAirline(models.Model):
                         'leg_ids': this_segment_legs,
                         'segment_addons_ids': this_segment_fare_details,
                         'seat_ids': this_segment_seats,
+                        # END
+                        # April 12, 2022 - SAM
+                        'operating_airline_id': operating_id and operating_id.id or False,
+                        'operating_airline_code': segment.get('operating_airline_code', ''),
                         # END
                     }
                     segment_values.update(fare_data)

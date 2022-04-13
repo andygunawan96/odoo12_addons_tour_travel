@@ -17,7 +17,8 @@ Key Features
 
     # always loaded
     'data': [
-        'views/tt_reservation_setup_views.xml',
+        'data/ir_cron_data.xml',
+        'views/tt_reservation_setup_views.xml'
     ],
     'demo': [],
     'qweb': [],

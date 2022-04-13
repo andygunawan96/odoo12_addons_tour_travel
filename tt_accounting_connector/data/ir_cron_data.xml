@@ -13,5 +13,31 @@
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_send_accounting_to_vendor()</field>
         </record>
+
+        <record model="ir.cron" id="cron_send_refund_transactions_to_vendor">
+            <field name='name'>Auto-Send Refund Transactions to Vendor</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(datetime.now().isoformat())"/>
+            <field name="active">True</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_send_refund_transactions_to_vendor()</field>
+        </record>
+
+        <record model="ir.cron" id="cron_send_top_up_transactions_to_vendor">
+            <field name='name'>Auto-Send Top Up Transactions to Vendor</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name='interval_number'>1</field>
+            <field name='interval_type'>days</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(datetime.now().isoformat())"/>
+            <field name="active">True</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_send_top_up_transactions_to_vendor()</field>
+        </record>
     </data>
 </odoo>

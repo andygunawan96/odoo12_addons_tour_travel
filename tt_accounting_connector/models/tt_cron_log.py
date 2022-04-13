@@ -17,3 +17,17 @@ class TtCronLogInhAccConn(models.Model):
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-send accounting data to vendor')
+
+    def cron_send_refund_transactions_to_vendor(self):
+        try:
+            self.env['tt.refund'].send_transaction_batches_to_accounting(1)
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-send refund transactions to vendor')
+
+    def cron_send_top_up_transactions_to_vendor(self):
+        try:
+            self.env['tt.top.up'].send_transaction_batches_to_accounting(1)
+        except:
+            self.create_cron_log_folder()
+            self.write_cron_log('auto-send top up transactions to vendor')

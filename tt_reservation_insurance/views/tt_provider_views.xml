@@ -66,6 +66,7 @@
                         <tree>
                             <field name="passenger_id"/>
                             <field name="ticket_number"/>
+                            <field name="ticket_url"/>
                         </tree>
                     </field>
                     <separator string="Service Charges"/>

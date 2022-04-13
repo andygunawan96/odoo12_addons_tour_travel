@@ -772,6 +772,7 @@ class TtReservation(models.Model):
                 'phone': self.contact_phone
             },
             'voucher_reference': self.voucher_code,
+            'voucher_discount': self.get_total_voucher() if self.voucher_code else 0,
             'contact_id': self.contact_id.to_dict(),
             'booker': self.booker_id.to_dict(),
             'departure_date': self.departure_date and self.departure_date or '',
@@ -1053,6 +1054,12 @@ class TtReservation(models.Model):
         if total_discount_in_reservation == total_discount_voucher:
             return True
         return False
+
+    def get_total_voucher(self):
+        total_discount_in_reservation = 0
+        for svc_discount in self.env['tt.service.charge'].search([('res_voucher_model', '=', self._name), ('res_voucher_id', '=', self.id), ('is_voucher', '=', True)]):
+            total_discount_in_reservation += svc_discount.total * -1
+        return total_discount_in_reservation
 
     def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
         if self.state in ['booked', 'issued']:
