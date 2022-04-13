@@ -9,11 +9,13 @@ class TtTicketInsurance(models.Model):
     passenger_id = fields.Many2one('tt.reservation.passenger.insurance', 'Passenger')
     pax_type = fields.Selection(variables.PAX_TYPE, 'Pax Type')
     ticket_number = fields.Char('Ticket Number', default='')
+    ticket_url = fields.Char('Ticket URL', default='')
 
     def to_dict(self):
         res = {
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
-            'ticket_number': self.ticket_number
+            'ticket_number': self.ticket_number,
+            'ticket_url': self.ticket_url
         }
         return res

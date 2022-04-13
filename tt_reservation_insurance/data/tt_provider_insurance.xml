@@ -7,5 +7,12 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_insurance"/>
         </record>
+
+        <record id="tt_provider_insurance_zurich" model="tt.provider">
+            <field name="name">Zurich</field>
+            <field name="code">zurich</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_insurance"/>
+        </record>
     </data>
 </odoo>

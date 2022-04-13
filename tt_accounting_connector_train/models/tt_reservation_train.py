@@ -1,7 +1,7 @@
 from odoo import api,models,fields,_
 from ...tools import util,ERR
 import logging,traceback
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import json
 from ...tools.variables import ACC_TRANSPORT_TYPE, ACC_TRANSPORT_TYPE_REVERSE
 
@@ -120,3 +120,25 @@ class TtReservationTrain(models.Model):
             self.write({
                 'posted_acc_actions': temp_post
             })
+
+    def send_transaction_batches_to_accounting(self, days):
+        start_datetime = datetime.strptime((date.today() - timedelta(days=days)).strftime('%Y-%m-%d') + ' 00:00:00', "%Y-%m-%d %H:%M:%S")
+        transaction_list = self.env['tt.reservation.train'].search([('state', '=', 'issued'), ('issued_date', '>=', start_datetime)])
+        for rec in transaction_list:
+            temp_post = rec.posted_acc_actions or ''
+            if 'reconcile' not in temp_post.split(',') and 'transaction_batch' not in temp_post.split(','):
+                setup_list = self.env['tt.accounting.setup'].search(
+                    [('cycle', '=', 'per_batch'), ('is_recon_only', '=', False), ('is_send_train', '=', True)])
+                if setup_list:
+                    vendor_list = []
+                    for rec2 in setup_list:
+                        if rec2.accounting_provider not in vendor_list:
+                            vendor_list.append(rec2.accounting_provider)
+                    rec.send_ledgers_to_accounting('transaction_batch', vendor_list)
+                    if temp_post:
+                        temp_post += ',transaction_batch'
+                    else:
+                        temp_post += 'transaction_batch'
+                    rec.write({
+                        'posted_acc_actions': temp_post
+                    })
