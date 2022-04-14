@@ -24,7 +24,7 @@ class TtReservationPassport(models.Model):
             elif rec.type == 'nta':
                 prov_rec = self.env['tt.provider.%s' % (rec.reconcile_transaction_id.provider_type_id.code)].search(
                     [('pnr', '=', rec.pnr),
-                     ('total_price', '=', abs(rec.total)), ('reconcile_line_id', '=', True)],
+                     ('total_price', '=', abs(rec.total)), ('reconcile_line_id', '!=', False)],
                     limit=1)
                 if prov_rec:
                     found_rec = prov_rec.booking_id
@@ -32,13 +32,13 @@ class TtReservationPassport(models.Model):
                     prov_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
                                                                        ('total_price', '=',
                                                                         abs(rec.total)),
-                                                                       ('reconcile_line_id', '=', True)], limit=1)
+                                                                       ('reconcile_line_id', '!=', False)], limit=1)
                     if prov_rec:
                         found_rec = prov_rec.booking_id
             elif rec.type == 'refund':
                 found_rec = self.env['tt.refund'].search([('referenced_pnr', '=', rec.pnr),
                                                           ('state', '=', 'final'),
-                                                          ('reconcile_line_id', '=', True)], limit=1)
+                                                          ('reconcile_line_id', '!=', False)], limit=1)
             if found_rec:
                 temp_post = found_rec[0].posted_acc_actions or ''
                 if 'reconcile' not in temp_post.split(',') and 'transaction_batch' not in temp_post.split(','):
