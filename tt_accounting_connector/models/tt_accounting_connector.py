@@ -4,7 +4,7 @@ import requests
 import json
 
 _logger = logging.getLogger(__name__)
-url = 'http://accounting.rodextrip.com'
+url = 'https://accounting.rodextrip.com'
 
 
 class AccountingConnector(models.Model):
