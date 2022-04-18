@@ -255,4 +255,9 @@
         <field name="code">process_rebooking</field>
     </record>
 
+    <record id="able_to_see_commission" model="tt.frontend.security">
+        <field name="name">See Commission</field>
+        <field name="code">see_commission</field>
+    </record>
+
 </odoo>
