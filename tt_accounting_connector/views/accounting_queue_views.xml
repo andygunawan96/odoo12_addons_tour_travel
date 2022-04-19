@@ -42,7 +42,7 @@
                 <header>
                     <button name="action_send_to_vendor" states="new,failed"
                             groups="tt_base.group_after_sales_master_level_4"
-                            string="Send Manually to Jasaweb" type="object" class="oe_highlight"/>
+                            string="Send Manually to Vendor" type="object" class="oe_highlight"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,success"/>
                 </header>
                 <sheet>
