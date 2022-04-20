@@ -520,6 +520,9 @@ class TtProviderInsurance(models.Model):
                     if psg.get('fees'):
                         ticket.passenger_id.create_ssr(psg['fees'], self.pnr,self.id)
                     break
+                elif (psg['passenger']).replace(' ', '').lower() in [psg_name, psg_name * 2] and ticket.ticket_number == psg.get('ticket_number', ''): ##zurich sudah ada ticket_number waktu booked agar tidak create passenger ticket dengan nama kosong
+                    ticket_found = True
+                    break
             if not ticket_found:
                 ticket_not_found.append(psg)
 
