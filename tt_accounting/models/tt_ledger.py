@@ -438,10 +438,18 @@ class Ledger(models.Model):
 
     def history_transaction_ledger_api(self, data, context):
         page = data['page'] - 1
+        dom = []
+        dom.append(('agent_id','=',context['co_agent_id']))
+        dom.append(('date','>=', data['start_date']))
+        dom.append(('date','<=', data['end_date']))
 
-        ledger_obj = self.search([(['agent_id','=',context['co_agent_id']])],offset=page * data['limit'],limit=(page+1) * data['limit'])
+        ledger_obj = self.search(dom, offset=page * data['limit'],limit=(page+1) * data['limit'])
         res = []
         for rec_ledger in ledger_obj:
+            try:
+                info = self.env[rec_ledger.res_model].browse(rec_ledger.res_id).get_transaction_additional_info()
+            except:
+                info = ''
             res.append({
                 "name": rec_ledger.name if rec_ledger.name else '',
                 "debit": rec_ledger.debit,
@@ -450,7 +458,9 @@ class Ledger(models.Model):
                 "ref": rec_ledger.ref if rec_ledger.ref else '',
                 "transaction_type": rec_ledger.transaction_type if rec_ledger.transaction_type else '',
                 "description": rec_ledger.description if rec_ledger.description else '',
-                "pnr": rec_ledger.pnr if rec_ledger.pnr else ''
+                "pnr": rec_ledger.pnr if rec_ledger.pnr else '',
+                "info": info,
+                "date": rec_ledger.date.strftime('%Y-%m-%d') if rec_ledger.date else ''
             })
 
         return ERR.get_no_error(res)
