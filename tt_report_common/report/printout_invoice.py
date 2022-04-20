@@ -154,7 +154,7 @@ class PrintoutTicketForm(models.AbstractModel):
                         ssr_obj['ssr'].append({
                             'name': rec2.name,
                             'amount': rec2.amount,
-                            'category_icon': rec2.category_icon,
+                            'category_icon': rec2.category_icon if hasattr(rec2, 'category_icon') else '',
                             'currency': rec2.currency_id.name,
                             'description': rec2.convert_json_to_str(rec2.description),
                             'pnr': rec2.provider_id.pnr
