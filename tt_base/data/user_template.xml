@@ -85,6 +85,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -174,6 +177,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -263,6 +269,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -353,6 +362,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -443,6 +455,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -533,6 +548,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -629,6 +647,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -725,6 +746,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -821,6 +845,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -916,6 +943,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1011,6 +1041,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1106,6 +1139,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1201,6 +1237,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1296,6 +1335,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1391,6 +1433,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1486,6 +1531,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1581,6 +1629,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1676,6 +1727,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1773,6 +1827,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1870,6 +1927,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -1967,6 +2027,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2062,6 +2125,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2157,6 +2223,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2251,6 +2320,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2346,6 +2418,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2441,6 +2516,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2535,6 +2613,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2630,6 +2711,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2725,6 +2809,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2819,6 +2906,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -2914,6 +3004,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3009,6 +3102,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3103,6 +3199,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3198,6 +3297,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3293,6 +3395,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3387,6 +3492,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3482,6 +3590,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3577,6 +3688,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3671,6 +3785,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3766,6 +3883,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3861,6 +3981,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -3955,6 +4078,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4050,6 +4176,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4145,6 +4274,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4239,6 +4371,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4334,6 +4469,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4429,6 +4567,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4523,6 +4664,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4618,6 +4762,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4713,6 +4860,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -4807,6 +4957,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -5272,6 +5425,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -5359,6 +5515,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -5446,6 +5605,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -5541,6 +5703,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -5637,6 +5802,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -5733,6 +5901,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
@@ -5830,6 +6001,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -5926,6 +6100,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -6022,6 +6199,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -6118,6 +6298,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -6214,6 +6397,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -6310,6 +6496,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
@@ -6407,6 +6596,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -6503,6 +6695,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -6600,6 +6795,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -7199,6 +7397,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -7297,6 +7498,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -7395,6 +7599,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
@@ -7492,6 +7699,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -7589,6 +7799,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
@@ -7686,6 +7899,9 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
                                 ref('tt_base.report')])]"
             />
@@ -7775,6 +7991,8 @@
                                 ref('tt_base.able_to_ticketing_visa'),
                                 ref('tt_base.able_to_ticketing_periksain'),
                                 ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
                                 ref('tt_base.report'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
