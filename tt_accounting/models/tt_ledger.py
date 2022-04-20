@@ -436,6 +436,25 @@ class Ledger(models.Model):
             rec.description = '%s%s' % (rec.description,rec.adjustment_id.description and '\nReason : %s' % (rec.adjustment_id.description) or '')
             _logger.info(rec.name)
 
+    def history_transaction_ledger_api(self, data, context):
+        page = data['page'] - 1
+
+        ledger_obj = self.search([(['agent_id','=',context['co_agent_id']])],offset=page * data['limit'],limit=(page+1) * data['limit'])
+        res = []
+        for rec_ledger in ledger_obj:
+            res.append({
+                "name": rec_ledger.name if rec_ledger.name else '',
+                "debit": rec_ledger.debit,
+                "credit": rec_ledger.credit,
+                "currency": rec_ledger.currency_id.name if rec_ledger.currency_id else '',
+                "ref": rec_ledger.ref if rec_ledger.ref else '',
+                "transaction_type": rec_ledger.transaction_type if rec_ledger.transaction_type else '',
+                "description": rec_ledger.description if rec_ledger.description else '',
+                "pnr": rec_ledger.pnr if rec_ledger.pnr else ''
+            })
+
+        return ERR.get_no_error(res)
+
 class TtLedgerWaitingList(models.Model):
     _name = 'tt.ledger.waiting.list'
     _description = 'Ledger Waiting List'

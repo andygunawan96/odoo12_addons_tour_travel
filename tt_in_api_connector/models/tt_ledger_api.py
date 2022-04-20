@@ -27,6 +27,8 @@ class TtLedgerApi(models.Model):
                                                   credit=0,
                                                   description='TESTING LEDGER FOR CONCURRENT UPDATE'
                                                   )
+        elif action == 'history_transaction_ledger':
+            res = table_obj.history_transaction_ledger_api(data, context)
         else:
             raise RequestException(999)
         return res

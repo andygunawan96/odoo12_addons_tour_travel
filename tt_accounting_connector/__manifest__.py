@@ -4,7 +4,7 @@
     'name' : 'Tour & Travel - Accounting Connector',
     'version' : '2.0',
     'category': 'Connector',
-    'summary': 'Jasaweb Accounting Connector',
+    'summary': 'Accounting Connector',
     'sequence': 99,
     'description': """
 Tour & Travel - Accounting Connector
