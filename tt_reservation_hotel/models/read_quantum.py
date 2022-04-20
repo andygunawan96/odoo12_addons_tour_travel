@@ -78,7 +78,7 @@ class HotelInformation(models.Model):
                         self.file_log_write(str(idx) + '. Hotel found for ' + rec[2] + ': ' + str(len(hotel_fmt_objs)))
                         try:
                             # Jika sblum nya kot tsb sdah pernah di buat maka kita append
-                            with open(filename + '/'  + rec[2].replace('/', ' ') + '.json',
+                            with open(filename + '/' + rec[2].replace('/', ' ') + '.json',
                                       'r') as f2:
                                 file = f2.read()
                                 hotel_in_file = json.loads(file)
@@ -98,7 +98,7 @@ class HotelInformation(models.Model):
                         except:
                             # Simpan di Folder sendiri
                             _logger.info('Creating new Folder')
-                            with open(filename +  '/'  + rec[2].replace('/', ' ') + '.json', 'w+') as f:
+                            with open(filename + '/' + rec[2].replace('/', ' ') + '.json', 'w+') as f:
                                 self.file_log_write(str(idx) + '. Hotel found for ' + rec[2] + ': ' + str(len(hotel_fmt_objs)))
                                 f.write(json.dumps(hotel_fmt_objs))
                             hotel_in_file = hotel_fmt_objs
@@ -121,7 +121,7 @@ class HotelInformation(models.Model):
     # Notes: Mesti bantuan human untuk upload file location serta formating
     # Notes: Bagian ini bakal sering berubah
     # CSV data Adrian Quantum
-    def v2_collect_by_human_quantum(self):
+    def v2_collect_by_human_quantum_1(self):
         hotel_fmt_list = {}
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         with open(base_cache_directory + 'quantum_pool/00_master/Hotels20200728.csv', 'r') as f:
@@ -178,6 +178,119 @@ class HotelInformation(models.Model):
             writer.writerows(need_to_add_list)
         csvFile.close()
         _logger.info("===== Done =====")
+
+    def v2_collect_by_human_quantum_2(self):
+        hotel_fmt_list = {}
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+        workbook = xlrd.open_workbook(base_cache_directory + 'quantum_pool2/00_master/HotelInfoDerby20220308 (Live New).xls')
+        # worksheet = workbook.sheet_by_name('Name of the Sheet')
+        worksheet = workbook.sheet_by_index(0)
+
+        for row in range(1, worksheet.nrows):
+            # Row 7 isi ne 1,2..9 mesti di combine sma country [9] dan search City by Code
+            city_name = worksheet.cell(row, 25).value or str(worksheet.cell(row, 8).value) + '~' + str(int(worksheet.cell(row, 6).value))
+            # Formatting Hotel
+            hotel_fmt_obj = {
+                'id': worksheet.cell(row, 1).value,
+                'name': worksheet.cell(row, 2).value,
+                'street': worksheet.cell(row, 3).value,
+                'street2': worksheet.cell(row, 4).value,
+                'street3': worksheet.cell(row, 5).value,
+                'description': '',
+                'email': worksheet.cell(row, 12).value,
+                'images': [],
+                'facilities': [],
+                'phone': worksheet.cell(row, 10).value,
+                'fax': worksheet.cell(row, 11).value,
+                'zip': worksheet.cell(row, 9).value,
+                'website': '',
+                'lat': worksheet.cell(row, 23).value.split(',')[0] if len(worksheet.cell(row, 23).value.split(',')) == 2 else '',
+                'long': worksheet.cell(row, 23).value.split(',')[1] if len(worksheet.cell(row, 23).value.split(',')) == 2 else '',
+                'rating': worksheet.cell(row, 22).value,
+                'city': city_name
+            }
+            if not hotel_fmt_list.get(worksheet.cell(row, 8).value):
+                hotel_fmt_list[worksheet.cell(row, 8).value] = {}
+            if not hotel_fmt_list[worksheet.cell(row, 8).value].get(city_name.capitalize()):
+                hotel_fmt_list[worksheet.cell(row, 8).value][city_name.capitalize()] = []
+            # Add Hotel ke Dict
+            hotel_fmt_list[worksheet.cell(row, 8).value][city_name.capitalize()].append(hotel_fmt_obj)
+
+        need_to_add_list = [['No', 'Name', 'Hotel QTY']]
+        self.file_log_write('###### Render Start ######')
+        # Untuk setiap Key Loop
+        for country in hotel_fmt_list.keys():
+            country_name = self.env['res.country'].search([('code', '=', country)]).name or country
+            filename = base_cache_directory + "quantum_pool2/" + country_name
+            if not os.path.exists(filename):
+                os.mkdir(filename)
+            for idx, city in enumerate(hotel_fmt_list[country].keys()):
+                self.file_log_write("Write File " + city + " found : " + str(len(hotel_fmt_list[country][city])) + ' Hotel(s)')
+                need_to_add_list.append([idx + 1, city, len(hotel_fmt_list[country][city])])
+                file = open(filename + '/' + city.split('/')[0] + ".json", 'w')
+                file.write(json.dumps(hotel_fmt_list[country][city]))
+                file.close()
+        self.file_log_write('###### Render END ######')
+        with open(base_cache_directory + 'quantum_pool2/00_master/result_data.csv', 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(need_to_add_list)
+        csvFile.close()
+        _logger.info("===== Done =====")
+
+    def quantum_send_spcrequest(self, data):
+        try:
+            # emails = ['adrian@quantumreservation.com']
+            emails = ['kejuswiss@gmail.com']
+            subject = _("Adding special request for: %s" % data['pnr'])
+            body = _("""Dear Mr Adrian,
+
+                        We want to add this special request "%s"
+                        to our booking with code: %s (Check-in Date: %s)
+
+                        Thank you."""
+                     % (data['special_request'], data['pnr'], data['checkin_date']))
+            email = self.env['ir.mail_server'].build_email(
+                email_from='it@rodextravel.tours',
+                email_to=emails,
+                subject=subject, body=body,
+            )
+            self.env['ir.mail_server'].send_email(email)
+        except Exception as e:
+            _logger.error("Exception while sending traceback by email: %s.\n", e)
+            pass
+
+    def quantum_send_spcrequest2(self):
+        sender = 'it@rodextravel.tours'
+        # receivers = ['adrian@quantumreservation.com']
+        receivers = ['kejuswiss@gmail.com']
+
+        message = """From: IT Rodextravel <it@rodextravel.tours>
+                To: Adrian Khoo <adrian@quantumreservation.com>
+                Subject: Adding special request for {}
+        Dear Mr Adrian,
+
+        We want to add this special request "{}" to our booking with code: {} (Check-in Date: {})
+        Thank you""".format('10969-28', 'Room 1: NON SMOKING ROOM, TWIN BED;', '10969-28', '2022-04-19')
+
+        try:
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            server.ehlo()
+            server.login('cs@rodextrip.com', 'R4y4D4rm0177b')
+            server.sendmail(sender, receivers, message)
+            server.close()
+            _logger.info(msg="Successfully sent email Quantum Spec. Request")
+        except smtplib.SMTPException:
+            _logger.error(msg="Error: unable to send email Quantum Spec. Request")
+
+    def v2_collect_by_human_quantum(self):
+        # self.v2_collect_by_human_quantum_1()
+        # self.v2_collect_by_human_quantum_2()
+        # self.quantum_send_spcrequest({
+        #     'special_request': 'Testing',
+        #     'pnr': '12345-67',
+        #     'checkin_date': '2022-01-01',
+        # })
+        self.quantum_send_spcrequest2()
 
     # 1c. Get Country Code
     def v2_get_country_code_quantum(self):

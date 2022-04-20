@@ -96,6 +96,7 @@
                             <field name="lot_id" attrs="{'invisible': [('voucher_id', '=', False)]}"/>
                         </group>
                         <group>
+                            <field name="supplements"/>
                             <field name="special_request"/>
                         </group>
                     </group>

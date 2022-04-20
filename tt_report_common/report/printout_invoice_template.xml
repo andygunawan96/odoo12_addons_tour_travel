@@ -289,10 +289,10 @@
                     </div>
                 </t>
             </t>
-            <div class="col-2">
+            <div class="col-1">
 
             </div>
-            <div class="col-5 text-center">
+            <div class="col-6 text-center">
                 <t t-if="qr_code_data and doc_model != 'tt.reservation.medical'">
                     <!--<t t-call="tt_report_common.print_qr_code"/>-->
                 </t>
