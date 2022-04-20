@@ -36,6 +36,7 @@ class HotelReservationDetails(models.Model):
     commission_amount = fields.Monetary('Commission')
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self: self.env.user.company_id.currency_id)
     special_request = fields.Text('Special request')
+    supplements = fields.Text('Supplements')
     room_info_id = fields.Many2one('tt.room.info', 'Room Info')
     room_rate_id = fields.Many2one('tt.room.rate', 'Room Rate')
     room_name = fields.Char('Room Name')

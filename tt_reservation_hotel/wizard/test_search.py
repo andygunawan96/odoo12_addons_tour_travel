@@ -444,9 +444,12 @@ class TestSearch(models.Model):
 
     def get_backend_object(self, provider_name, hotel_id):
         try:
-            provider_id = self.env['tt.provider'].sudo().search([('code', '=', self.unmasking_provider(provider_name))])
-            code_ids = self.env['tt.provider.code'].sudo().search([('provider_id', '=', provider_id.id), ('code', 'ilike', hotel_id.split('~')[0])])
-            return code_ids and code_ids[0].hotel_id or False
+            if hotel_id:
+                provider_id = self.env['tt.provider'].sudo().search([('code', '=', self.unmasking_provider(provider_name))])
+                code_ids = self.env['tt.provider.code'].sudo().search([('provider_id', '=', provider_id.id), ('code', 'ilike', hotel_id.split('~')[0])])
+                return code_ids and code_ids[0].hotel_id or False
+            else:
+                return False
         except:
             return False
 
@@ -544,9 +547,9 @@ class TestSearch(models.Model):
             # 'provider_id': provider_id,
             'hotel_id': backend_hotel_obj and backend_hotel_obj.id or False,
             'hotel_name': backend_hotel_obj and backend_hotel_obj.sudo().name or hotel_obj['name'],
-            'hotel_address': backend_hotel_obj and backend_hotel_obj.sudo().street or hotel_obj['address'],
+            'hotel_address': backend_hotel_obj and backend_hotel_obj.sudo().address or hotel_obj['address'],
             'hotel_rating': backend_hotel_obj and backend_hotel_obj.sudo().rating or hotel_obj['rating'],
-            'hotel_city': backend_hotel_obj and backend_hotel_obj.sudo().hotel_partner_city_id.name or hotel_obj['city'],
+            'hotel_city': backend_hotel_obj and backend_hotel_obj.sudo().city_id.name or hotel_obj['city'],
             'hotel_phone': backend_hotel_obj and backend_hotel_obj.sudo().phone or hotel_obj['phone'],
             'checkin_date': check_in,
             'checkout_date': check_out,
@@ -598,12 +601,10 @@ class TestSearch(models.Model):
     # def create_reservation(self, hotel_obj, provider_name, cust_names, check_in, check_out, room_rates,
     #                        booker_detail, acquirer_id, provider_data='', special_req='', cancellation_policy='', context={}):
     def create_reservation(self, req, context={}):
-        total_rate = 0
-        total_commision = 0
-
         provider_data = req.get('provider_data', '')
         special_req = req.get('special_request', 'No Special Request')
         cancellation_policy = req.get('cancellation_policy', '')
+        norm_str = req.get('norm_str', '')
 
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
 
@@ -667,13 +668,20 @@ class TestSearch(models.Model):
                     'room_type': room_rate['type'],
                     'meal_type': price_obj['meal_type'],
                     'commission_amount': float(room_rate.get('commission', 0)),
+                    # 'supplements': ';; '.join([json.dumps(x) for x in room_rate['supplements']]),
+                    'supplements': ';; '.join([x['name'] for x in room_rate['supplements']]),
                 })
                 self.env.cr.commit()
+                total_price = 0
                 for charge_id in room_rate['nightly_prices']:
+                    charge_id_price = 0
+                    for sc_per_night in charge_id['service_charges']:
+                        charge_id_price += sc_per_night['total'] if sc_per_night['charge_type'] in ['FARE', 'TAX', 'ROC'] else 0
+                    total_price += charge_id_price
                     self.env['tt.room.date'].sudo().create({
                         'detail_id': detail.id,
                         'date': charge_id['date'],
-                        'sale_price': charge_id['price'], #charge_id['price_currency'],
+                        'sale_price': charge_id_price, #charge_id['price_currency'],
                         'commission_amount': charge_id['commission'],
                         'meal_type': '',
                     })
@@ -685,10 +693,8 @@ class TestSearch(models.Model):
                         })
                         self.env['tt.service.charge'].create(price)
 
-                # todo Room Info IDS
-                total_rate += float(room_rate['price_total'])
-                total_commision += float(room_rate['commission'])
-        resv_id.total = total_rate
+                detail.sale_price = total_price
+        # resv_id.total = total_rate
 
         # Create provider_booking_ids
         vend_hotel = self.env['tt.provider.hotel'].create({

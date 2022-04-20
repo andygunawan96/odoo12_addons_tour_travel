@@ -2399,6 +2399,10 @@ class HotelInformation(models.Model):
                 if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
                     if rec not in temp:
                         temp.append(rec)
+        # Klo Blum nemu dri nama tpi cmn cari 1 aja
+        if len(temp) == 0:
+            for rec in self.env['tt.hotel.master'].search([('name', '=', hotel_name)], limit=1):
+                temp.append(rec)
         # TYPE 1: End
 
         # TYPE 2: Start cek smua barengan
@@ -3776,9 +3780,16 @@ class HotelInformation(models.Model):
                 content = []
                 # Search all Mapped Data from hotel.master
 
-                for hotel in self.env['tt.hotel.master'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])]):
+                render_idx = 0
+                for hotel in self.env['tt.hotel.master'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])])[1801:3600]:
                 # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
                     content.append(hotel.fmt_read(city_idx=city['index']))
+                    _logger.info(msg='Adding Hotel ' + hotel.name)
+
+                    render_idx += 1
+                    if render_idx % 300 == 0:
+                        _logger.info(msg='============ Save Cache ============')
+                        self.env.cr.commit()
                 try:
                     file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
                     file.write(json.dumps(content))

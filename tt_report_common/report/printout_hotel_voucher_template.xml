@@ -148,11 +148,11 @@
                 <table style="table-layout: fixed; width: 100%">
                     <tr style="vertical-align: top;">
                         <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">Resv</span>
+                            <span style="padding-left: 20px; font-weight: 700;">Provider</span>
                         </td>
                         <td style="width: 5%;"> : </td>
                         <td style="width: 55%; word-wrap: break-word">
-                            <span t-field="doc.name"/>
+                            <span t-field="doc.provider_name"/>
                         </td>
                     </tr>
                     <tr style="vertical-align: top;">
@@ -224,15 +224,21 @@
                                 <span> Room Only </span>,
                             </t>
 
-                            <t t-if="doc.special_req">
-                                <span t-field="doc.special_req"/>
-                            </t>
-                            <t t-else="">
-                                <span> No Special Request </span>
+                            <t t-if="room.supplements">
+                                <span t-field="room.supplements"/>
                             </t>
                         </label><br/>
                         <t t-set="idx" t-value="idx + 1"/>
                     </t>
+                    <br/>
+                    <span>Special Request:
+                        <t t-if="doc.special_req">
+                                <span t-field="doc.special_req"/>
+                            </t>
+                            <t t-else="">
+                                No Special Request
+                            </t>
+                    </span>
                 </div>
             </div>
             <div style="margin-bottom: 5px"/>
