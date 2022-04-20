@@ -1206,7 +1206,7 @@ class ReservationAirline(models.Model):
                     rsch_obj = self.env['tt.reschedule'].create(res_vals)
 
                     rsch_line_values = {
-                        'reschedule_type': 'reschedule' if new_segment_list else 'addons',
+                        'reschedule_type': 'reschedule',
                         'reschedule_amount': total_amount,
                         'reschedule_amount_ho': total_amount,
                         'real_reschedule_amount': total_amount,
