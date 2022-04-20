@@ -76,6 +76,7 @@ class HotelReservation(models.Model):
     # Booker Information
     # Todo: Email perlu disimpen?
     contact_email = fields.Char('Contact Email', states={'draft': [('readonly', False)]})
+    norm_str = fields.Text('Hotel Norms + Booking Info')
 
     # Cancellation
     cancellation_policy_str = fields.Text('Cancellation Policy')
@@ -525,7 +526,6 @@ class HotelReservation(models.Model):
                     raise Exception('Booked email for {} is already created!'.format(self.name))
         except Exception as e:
             _logger.info('Error Create Email Queue')
-
 
     @api.one
     def action_booked(self, context):
@@ -1198,7 +1198,7 @@ class HotelReservation(models.Model):
                 # todo Room Info IDS
                 total_rate += float(room_rate['price_total'])
                 total_commision += float(room_rate['commission'])
-        resv_id.total = total_rate
+        # resv_id.total = total_rate
 
         # Create provider_booking_ids
         vend_hotel = self.env['tt.provider.hotel'].create({

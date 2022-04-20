@@ -1856,6 +1856,15 @@ class ReservationAirline(models.Model):
         }
         return url
 
+    def get_transaction_additional_info(self):
+        text = ''
+        if self.origin_id:
+            text = self.origin_id.code
+            if self.destination_id:
+                if text != '':
+                    text += ' - %s' % self.destination_id.code
+        return text
+
     @api.multi
     def print_eticket_with_price(self, data, ctx=None):
         # jika panggil dari backend

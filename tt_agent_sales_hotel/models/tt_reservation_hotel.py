@@ -56,7 +56,7 @@ class ReservationHotel(models.Model):
             'reference': self.name,
             'desc': self.get_segment_description(),
             'admin_fee': self.payment_acquirer_number_id.fee_amount,
-            'discount': 0,
+            'discount': self.total_discount,
         })
 
         for room_obj in self.room_detail_ids:

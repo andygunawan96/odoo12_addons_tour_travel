@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+import random, string
 
 
 class HotelInformation(models.Model):
@@ -373,6 +374,8 @@ class HotelMaster(models.Model):
         rec = super(HotelMaster, self).fmt_read(hotel_obj, city_idx)
         find_obj = self.browse(int(rec['id']))
         if find_obj:
+            if not find_obj.internal_code:
+                find_obj.internal_code = str(rec['id']) + '_' + ''.join(random.choices(string.ascii_letters + string.digits, k=5))
             rec.update({'id': find_obj.internal_code,})
         return rec
 
