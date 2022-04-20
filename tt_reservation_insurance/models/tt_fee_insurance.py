@@ -23,3 +23,6 @@ class TtFeeInsurance(models.Model):
             'currency': self.currency_id.name,
             'pnr': self.provider_id and self.provider_id.pnr or '',
         }
+
+    def convert_json_to_str(self, json_data):
+        return json_data

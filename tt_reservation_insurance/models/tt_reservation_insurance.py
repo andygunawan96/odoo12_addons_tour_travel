@@ -723,6 +723,7 @@ class ReservationInsurance(models.Model):
             'state': 'booked',
             'booked_uid': api_context['co_uid'],
             'booked_date': datetime.now(),
+            'carrier_name': book_data['carrier_name'],
             'additional_vendor_pricing_info': json.dumps(def_service_charges)
         }
         res.append(provider_insurance_obj.create(values))
