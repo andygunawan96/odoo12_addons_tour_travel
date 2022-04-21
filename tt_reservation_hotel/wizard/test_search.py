@@ -568,7 +568,8 @@ class TestSearch(models.Model):
             # 'sub_agent_id': cust_partner_obj.agent_id.id,
             'child': len(list(filter(lambda i: i['pax_type'] == 'CHD', guest_list))),
             'infant': len(list(filter(lambda i: i['pax_type'] == 'INF', guest_list))),
-            'cancellation_policy_str': cancellation_policy,
+            'cancellation_policy_str': ';; '.join([x['cancellation_string'] for x in cancellation_policy]) if isinstance(cancellation_policy, list) else cancellation_policy,
+            # 'norm_str': ';; '.join(norm_str) if isinstance(norm_str, list) else norm_str,
             'hold_date': hold_date,
         }
         return vals
@@ -633,6 +634,14 @@ class TestSearch(models.Model):
                                        booker_obj, contact_obj, provider_data, special_req, req['passengers'],
                                        context['agent_id'], cancellation_policy, context.get('hold_date', False))
 
+        if req.get('member'):
+            customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)[0]
+        else:
+            customer_parent_id = booker_obj.customer_parent_ids[0]
+
+        customer_parent_type_id = customer_parent_id.customer_parent_type_id.id
+        customer_parent_id = customer_parent_id.id
+
         vals.update({
             'user_id': context['co_uid'],
             'sid_booked': context['signature'],
@@ -643,8 +652,8 @@ class TestSearch(models.Model):
             'contact_email': contact_obj.email,
             'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code, contact_obj.phone_ids[0].calling_number) or '-',
             'passenger_ids': list_passenger_value,
-            'customer_parent_id': context.get('co_customer_parent_id',False) or booker_obj.customer_parent_ids.ids[0],
-            'customer_parent_type_id': context.get('co_customer_parent_type_id',False) or booker_obj.customer_parent_ids[0].customer_parent_type_id.id,
+            'customer_parent_id': context.get('co_customer_parent_id',False) or customer_parent_id,
+            'customer_parent_type_id': context.get('co_customer_parent_type_id',False) or customer_parent_type_id,
         })
 
         resv_id = self.env['tt.reservation.hotel'].create(vals)
