@@ -2767,3 +2767,54 @@ class ReservationAirline(models.Model):
         except:
             _logger.error('Error Get Booking Number Airline API, %s' % traceback.format_exc())
             return ERR.get_error(1013)
+
+    def update_pax_identity_airline_api(self, req, context, **kwargs):
+        try:
+            # _logger.info("Get req\n" + json.dumps(context))
+            book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            if not any(rec['status'] == 'SUCCEED' for rec in req['provider_bookings']):
+                raise Exception('No Pax Identity Changed detected')
+
+            country_obj = self.env['res.country'].sudo()
+            for psg in req['passengers']:
+                psg_number = psg['passenger_number']
+                psg_obj = book_obj.passenger_ids[psg_number]
+                if psg.get('identity'):
+                    identity = psg['identity']
+                    if psg_obj.customer_id:
+                        psg_obj.customer_id.add_or_update_identity(identity)
+                    psg_vals = {
+                        'identity_type': identity and identity['identity_type'] or '',
+                        'identity_number': identity and identity['identity_number'] or '',
+                        'identity_expdate': identity and identity['identity_expdate'] or False,
+                        'identity_country_of_issued_id': identity and country_obj.search([('code', '=ilike', identity['identity_country_of_issued_code'])], limit=1).id or False,
+                    }
+                    identity_passport = psg.get('identity_passport')
+                    if identity_passport:
+                        psg_vals.update({
+                            'passport_type': identity_passport['identity_type'],
+                            'passport_number': identity_passport['identity_number'],
+                            'passport_expdate': identity_passport['identity_expdate'],
+                            'passport_country_of_issued_id': country_obj.search([('code', '=ilike', identity_passport['identity_country_of_issued_code'])], limit=1).id,
+                        })
+                    psg_obj.write(psg_vals)
+
+            response = {}
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error('Error Update Pax Identity Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except:
+            _logger.error('Error Update Pax Identity Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(1013)
