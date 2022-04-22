@@ -447,9 +447,16 @@ class Ledger(models.Model):
         res = []
         for rec_ledger in ledger_obj:
             try:
-                info = self.env[rec_ledger.res_model].browse(rec_ledger.res_id).get_transaction_additional_info()
+                book_obj = self.env[rec_ledger.res_model].browse(rec_ledger.res_id)
+                if book_obj:
+                    info = book_obj.get_transaction_additional_info()
+                    booker = book_obj.booker_id.to_dict()
+                else:
+                    info = ''
+                    booker = {}
             except:
                 info = ''
+                booker = {}
             res.append({
                 "name": rec_ledger.name if rec_ledger.name else '',
                 "debit": rec_ledger.debit,
@@ -460,7 +467,8 @@ class Ledger(models.Model):
                 "description": rec_ledger.description if rec_ledger.description else '',
                 "pnr": rec_ledger.pnr if rec_ledger.pnr else '',
                 "info": info,
-                "date": rec_ledger.date.strftime('%Y-%m-%d') if rec_ledger.date else ''
+                "date": rec_ledger.date.strftime('%Y-%m-%d') if rec_ledger.date else '',
+                "booker": booker
             })
 
         return ERR.get_no_error(res)
