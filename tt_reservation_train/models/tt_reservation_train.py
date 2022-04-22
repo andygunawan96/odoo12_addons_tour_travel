@@ -994,3 +994,18 @@ class TtReservationTrain(models.Model):
         }
         return url
         # return self.env.ref('tt_report_common.action_printout_itinerary_airline').report_action(self, data=datas)
+
+    def get_transaction_additional_info(self):
+        text = ''
+        if self.origin_id:
+            text = self.origin_id.code
+            if self.destination_id:
+                if text != '':
+                    text += ' - %s' % self.destination_id.code
+        if self.departure_date:
+            if text != '':
+                text += '<br/>'
+            text += self.departure_date.split(' ')[0]
+            if self.arrival_date and self.direction != 'OW':
+                text += ' - %s' % self.arrival_date.split(' ')[0]
+        return text
