@@ -534,6 +534,14 @@ class TtProviderInsurance(models.Model):
                 })]
             })
 
+    def update_pnr(self, pnr):
+        ## kalau pnr masih sesuai order number update sini
+        if self.pnr != pnr:
+            self.pnr = pnr
+            self.booking_id.pnr = pnr
+            for svc_obj in self.cost_service_charge_ids:
+                svc_obj.description = pnr
+
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
         currency_obj = self.env['res.currency']
