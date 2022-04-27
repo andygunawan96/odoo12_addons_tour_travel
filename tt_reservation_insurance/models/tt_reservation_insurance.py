@@ -374,12 +374,12 @@ class ReservationInsurance(models.Model):
                     provider_obj.update({
                         "hold_date": provider['hold_date']
                     })
-
+                    provider_obj.update_pnr(provider['pnr'])
                     any_provider_changed = True
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     if 'tickets' in provider:
                         provider_obj.update_ticket_api(provider['tickets'])
-
+                    provider_obj.update_pnr(provider['pnr'])
                     if provider_obj.state == 'issued':
                         continue
                     provider_obj.action_issued_api_insurance(provider, context)
