@@ -6,6 +6,7 @@ import base64,hashlib,time,os,traceback,logging,re
 from odoo.exceptions import UserError
 from ...tools import ERR
 import odoo.tools as tools
+from PIL import Image
 
 _logger = logging.getLogger(__name__)
 
@@ -70,6 +71,15 @@ class SplitInvoice(models.TransientModel):
             new_file = open(path,'wb')
             new_file.write(base64.b64decode(file))
             new_file.close()
+
+            #compressing image
+            try:
+                file_type = filename.split('.')[1]
+                if file_type in ['jpg','jpeg','png','svg']:
+                    raw_image = Image.open(path)
+                    raw_image.save(path,optimize=True,quality=30)
+            except:
+                _logger.error(traceback.format_exc())
 
             new_uploaded_data = self.env['tt.upload.center'].sudo().create({
                 'filename': filename,
