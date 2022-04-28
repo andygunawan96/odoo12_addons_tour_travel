@@ -493,7 +493,7 @@ class TtCustomer(models.Model):
             agent_id = self.env['tt.agent'].create(vals_list)
 
             # Load Template User B2C
-            user_dict = self.env.ref('tt_base.agent_b2c_user').read()
+            user_dict = self.env.ref('tt_base.template_btc_agent_user').read()
             # user id vals
             vals = {
                 'name': name,
