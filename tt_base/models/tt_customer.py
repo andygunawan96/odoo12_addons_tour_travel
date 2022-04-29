@@ -655,7 +655,7 @@ class TtCustomerIdentityNumber(models.Model):
         return new_identity
 
     def to_dict(self):
-        image_list = [(rec.url,rec.seq_id) for rec in self.identity_image_ids]
+        image_list = [(rec.url,rec.seq_id,rec.file_reference) for rec in self.identity_image_ids]
         return {
             self.identity_type:{
                 'identity_number': self.identity_number,
