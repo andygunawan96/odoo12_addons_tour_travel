@@ -288,6 +288,16 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="tt_reservation_activity_vouchers_form_view">
+        <field name="name">tt.reservation.activity.vouchers.form.view</field>
+        <field name="model">tt.reservation.activity.vouchers</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="name" widget="url"/>
+            </form>
+        </field>
+    </record>
+
     <menuitem id="submenu_reservation_activity_all" parent="tt_reservation_activity.menu_reservations_activity"
               name="ALL" action="tt_reservation_activity.tt_reservation_activity_view_action_all" sequence="1"/>
 

@@ -101,7 +101,7 @@ class TtCustomer(models.Model):
     @api.multi
     def write(self, vals):
         util.pop_empty_key(vals,whitelist=[
-            'is_search_allowed','is_get_booking_from_vendor','active'
+            'is_search_allowed','is_get_booking_from_vendor','active','agent_as_staff_id'
         ])
         if 'first_name' in vals:
             vals['first_name'] = vals['first_name'].strip()
@@ -493,7 +493,7 @@ class TtCustomer(models.Model):
             agent_id = self.env['tt.agent'].create(vals_list)
 
             # Load Template User B2C
-            user_dict = self.env.ref('tt_base.agent_b2c_user').read()
+            user_dict = self.env.ref('tt_base.template_btc_agent_user').read()
             # user id vals
             vals = {
                 'name': name,
@@ -655,7 +655,7 @@ class TtCustomerIdentityNumber(models.Model):
         return new_identity
 
     def to_dict(self):
-        image_list = [(rec.url,rec.seq_id) for rec in self.identity_image_ids]
+        image_list = [(rec.url,rec.seq_id,rec.file_reference) for rec in self.identity_image_ids]
         return {
             self.identity_type:{
                 'identity_number': self.identity_number,
