@@ -101,7 +101,7 @@ class TtCustomer(models.Model):
     @api.multi
     def write(self, vals):
         util.pop_empty_key(vals,whitelist=[
-            'is_search_allowed','is_get_booking_from_vendor','active'
+            'is_search_allowed','is_get_booking_from_vendor','active','agent_as_staff_id'
         ])
         if 'first_name' in vals:
             vals['first_name'] = vals['first_name'].strip()
