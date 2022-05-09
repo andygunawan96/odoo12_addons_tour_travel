@@ -256,6 +256,26 @@ class TtRefund(models.Model):
 
         return super(TtRefund, self).create(vals_list)
 
+    def to_dict(self):
+        return {
+            'order_number': self.name,
+            'refund_type': self.refund_type_id.name if self.refund_type_id else '',
+            'agent_id': self.agent_id.id if self.agent_id else '',
+            'referenced_pnr': self.referenced_pnr,
+            'referenced_document': self.referenced_document,
+            'state': self.state,
+            'booker': self.booker_id.to_dict(),
+            'currency': self.currency_id.name if self.currency_id else '',
+            'refund_amount': self.reschedule_amount or 0,
+            'real_refund_amount': self.real_reschedule_amount or 0,
+            'admin_fee_type': self.admin_fee_id.name if self.admin_fee_id else '',
+            'admin_fee': self.admin_fee or 0,
+            'total_amount': self.total_amount or 0,
+            'refund_date': self.refund_date and self.refund_date.strftime('%Y-%m-%d') or '',
+            'real_refund_date': self.real_refund_date and self.real_refund_date.strftime('%Y-%m-%d') or '',
+            'refund_lines': [line.to_dict() for line in self.refund_line_ids],
+        }
+
     @api.depends('refund_line_ids')
     @api.onchange('refund_line_ids')
     def _compute_refund_amount(self):

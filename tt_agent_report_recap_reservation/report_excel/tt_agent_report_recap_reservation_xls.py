@@ -138,7 +138,7 @@ class AgentReportRecapReservationXls(models.TransientModel):
                 sheet.write(row_data, 14, i['currency_name'], sty_table_data_center)
                 sheet.write(row_data, 15, i['total_nta'], sty_amount)
                 sheet.write(row_data, 16, i['total_commission'], sty_amount)
-                sheet.write(row_data, 17, i['commission_booker'], sty_amount)
+                sheet.write(row_data, 17, i.get('commission_booker', 0), sty_amount)
                 sheet.write(row_data, 18, upsell, sty_amount)
                 sheet.write(row_data, 19, i['grand_total'], sty_amount)
                 sheet.write(row_data, 20, '', sty_table_data)
