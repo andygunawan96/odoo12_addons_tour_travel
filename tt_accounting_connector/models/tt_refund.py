@@ -15,54 +15,17 @@ class TtRefund(models.Model):
 
     def send_ledgers_to_accounting(self, func_action, vendor_list):
         try:
-            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            ledger_list = []
-            for rec in self.ledger_ids:
-                if not rec.is_sent_to_acc:
-                    if rec.transaction_type == 4:
-                        trans_type = 'Refund'
-                    elif rec.transaction_type == 6:
-                        trans_type = 'Refund Admin Fee'
-                    else:
-                        trans_type = ''
-
-                    ledger_list.append({
-                        'reference_number': rec.ref and rec.ref or '',
-                        'name': rec.name and rec.name or '',
-                        'debit': rec.debit and rec.debit or 0,
-                        'credit': rec.credit and rec.credit or 0,
-                        'currency_id': rec.currency_id and rec.currency_id.name or '',
-                        'create_date': rec.create_date and datetime.strftime(rec.create_date, '%Y-%m-%d %H:%M:%S') or '',
-                        'date': rec.date and datetime.strftime(rec.date, '%Y-%m-%d') or '',
-                        'create_uid': rec.create_uid and rec.create_uid.name or '',
-                        'commission': 0.0,
-                        'description': rec.description and rec.description or '',
-                        'agent_id': rec.agent_id and rec.agent_id.name,
-                        'company_sender': rec.agent_id and rec.agent_id.name,
-                        'company_receiver': self.env.ref('tt_base.rodex_ho').name,
-                        'state': 'Done',
-                        'display_provider_name': '',
-                        'pnr': '',
-                        'url_legacy': base_url + '/web#id=' + str(rec.id) + '&model=tt.ledger&view_type=form',
-                        'transaction_type': trans_type,
-                        'transport_type': 'Refund',
-                        'payment_method': '',
-                        'NTA_amount_real': self.total_amount and self.total_amount or 0,
-                        'payment_acquirer': 'CASH'
-                    })
-                    rec.sudo().write({
-                        'is_sent_to_acc': True
-                    })
             res = []
-            for ven in vendor_list:
-                new_obj = self.env['tt.accounting.queue'].create({
-                    'accounting_provider': ven,
-                    'request': json.dumps(ledger_list),
-                    'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                    'action': func_action,
-                    'res_model': self._name
-                })
-                res.append(new_obj.to_dict())
+            if self.agent_id.is_sync_to_acc:
+                for ven in vendor_list:
+                    new_obj = self.env['tt.accounting.queue'].create({
+                        'accounting_provider': ven,
+                        'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                        'action': func_action,
+                        'res_model': self._name,
+                        'res_id': self.id
+                    })
+                    res.append(new_obj.to_dict())
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.info("Failed to send ledgers to accounting software. Ignore this message if tt_accounting_connector is currently not installed.")

@@ -1,5 +1,5 @@
 from . import tt_payment_acquirer
-from . import tt_accounting_connector
+from . import tt_accounting_connector_jasaweb
 from . import tt_accounting_connector_accurate
 from . import tt_accounting_queue
 from . import tt_agent
