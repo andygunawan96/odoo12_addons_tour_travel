@@ -193,10 +193,28 @@ class TtTopUp(models.Model):
             'currency_code': self.currency_id and self.currency_id.name or '',
             'date': self.request_date and self.request_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'due_date': self.due_date and self.due_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-            'total': self.total or '',
+            'total': self.total or 0,
             'state': self.state,
             'state_description': TOP_UP_STATE_STR[self.state],
             'payment_method': self.payment_id.acquirer_id.name,
+            'help_by': self.get_help_by()
+        }
+        return res
+
+    def to_dict_acc(self):
+        res = {
+            'name': self.name,
+            'agent_id': self.agent_id and self.agent_id.id or '',
+            'currency_id': self.currency_id and self.currency_id.name or '',
+            'date': self.request_date and self.request_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'due_date': self.due_date and self.due_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'amount': self.amount or 0,
+            'unique_amount': self.unique_amount or 0,
+            'fees': self.fees or 0,
+            'total': self.total or 0,
+            'total_with_fees': self.total_with_fees or 0,
+            'state': self.state,
+            'payment_acquirer': self.payment_id.acquirer_id.jasaweb_name,
             'help_by': self.get_help_by()
         }
         return res

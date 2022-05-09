@@ -49,10 +49,12 @@
                     <group>
                         <group>
                             <field name="accounting_provider"/>
-                            <field name="request"/>
                             <field name="transport_type"/>
                             <field name="action"/>
                             <field name="res_model"/>
+                            <field name="res_id"/>
+                            <button name="open_reference" string="Go to reference" type="object"
+                                    attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
                         </group>
                         <group>
                             <field name="response"/>
@@ -87,6 +89,7 @@
                 <field name="transport_type"/>
                 <field name="action"/>
                 <field name="res_model"/>
+                <field name="res_id"/>
                 <field name="state"/>
             </tree>
         </field>

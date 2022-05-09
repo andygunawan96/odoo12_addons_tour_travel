@@ -52,6 +52,14 @@ class TtRescheduleChanges(models.Model):
     new_value = fields.Html('New Value', readonly=True)
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'segment_sequence': self.seg_sequence,
+            'old_value': self.old_value,
+            'new_value': self.new_value
+        }
+
 
 class TtRescheduleLine(models.Model):
     _name = "tt.reschedule.line"
@@ -100,6 +108,18 @@ class TtRescheduleLine(models.Model):
         if vals.get('admin_fee_dummy'):
             vals.pop('admin_fee_dummy')
         return super(TtRescheduleLine, self).write(vals)
+
+    def to_dict(self):
+        return {
+            'reschedule_type': self.reschedule_type,
+            'reschedule_amount': self.reschedule_amount or 0,
+            'real_reschedule_amount': self.real_reschedule_amount or 0,
+            'admin_fee_type': self.admin_fee_id.name if self.admin_fee_id else '',
+            'admin_fee': self.admin_fee or 0,
+            'total_amount': self.total_amount or 0,
+            'currency': self.currency_id.name if self.currency_id else '',
+            'state': self.state
+        }
 
     @api.depends('admin_fee_id', 'reschedule_amount', 'reschedule_id')
     @api.onchange('admin_fee_id', 'reschedule_amount', 'reschedule_id')
@@ -271,6 +291,25 @@ class TtReschedule(models.Model):
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
     old_fee_notes = fields.Text('Old Fee Notes', readonly=True, default='')
     new_fee_notes = fields.Text('New Fee Notes', readonly=True, default='')
+
+    def to_dict(self):
+        return {
+            'order_number': self.name,
+            'agent_id': self.agent_id.id if self.agent_id else '',
+            'referenced_pnr': self.referenced_pnr,
+            'new_pnr': self.pnr,
+            'state': self.state,
+            'booker': self.booker_id.to_dict(),
+            'currency': self.currency_id.name if self.currency_id else '',
+            'payment_acquirer': self.payment_acquirer_id.jasaweb_name if self.payment_acquirer_id else '',
+            'reschedule_amount': self.reschedule_amount or 0,
+            'real_reschedule_amount': self.real_reschedule_amount or 0,
+            'admin_fee': self.admin_fee or 0,
+            'total_amount': self.total_amount or 0,
+            'reschedule_lines': [line.to_dict() for line in self.reschedule_line_ids],
+            'changes': [change.to_dict() for change in self.change_ids],
+            'passengers': [pax.to_dict() for pax in self.passenger_ids],
+        }
 
     def get_reschedule_admin_fee_rule(self, agent_id):
         reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')], order='sequence, id desc')

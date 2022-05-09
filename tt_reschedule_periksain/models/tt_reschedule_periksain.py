@@ -41,6 +41,14 @@ class TtReschedulePeriksain(models.Model):
                                      'passenger_id',
                                      readonly=True)
 
+    def to_dict(self):
+        res = super(TtReschedulePeriksain, self).to_dict()
+        res.update({
+            'old_picked_timeslot': self.old_picked_timeslot_id.timeslot_display_name,
+            'new_picked_timeslot': self.new_picked_timeslot_id.timeslot_display_name
+        })
+        return res
+
     def generate_changes(self):
         for rec in self.change_ids:
             rec.sudo().unlink()
