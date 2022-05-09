@@ -339,7 +339,7 @@ class TtCustomer(models.Model):
                     if not (upper <= cust.birth_date <= lower):
                         continue
                 else:
-                    if req.get('type') == 'psg' and req['upper']<12:
+                    if req.get('type') == 'psg' and req['upper']<=12:
                         continue
                 values = cust.to_dict(get_customer_parent=True)
 
