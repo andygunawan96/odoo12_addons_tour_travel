@@ -904,9 +904,9 @@ class TestSearch(models.Model):
                 'charge_code': p_sc.charge_code,
                 'currency': p_sc.currency_id.name,
                 'foreign_currency': p_sc.foreign_currency_id.name,
-                'amount': sc_value[pnr][p_charge_type]['amount'] + p_sc.amount,
+                'amount': sc_value[pnr][p_charge_type]['amount'] + (p_sc.amount * p_sc.pax_count),
                 # 'amount': p_sc.amount,
-                'foreign_amount': sc_value[pnr][p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+                'foreign_amount': sc_value[pnr][p_charge_type]['foreign_amount'] + (p_sc.foreign_amount * p_sc.pax_count),
                 # 'foreign_amount': p_sc.foreign_amount,
             })
 
