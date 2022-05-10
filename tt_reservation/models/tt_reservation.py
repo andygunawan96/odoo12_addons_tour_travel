@@ -132,7 +132,7 @@ class TtReservation(models.Model):
     total_discount = fields.Monetary(string='Total Discount', default=0, compute='_compute_total_discount', store=True)
     total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission',store=True)
     total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta',store=True)
-    agent_nta = fields.Monetary(string='NTA Amount',compute='_compute_agent_nta',store=True)
+    agent_nta = fields.Monetary(string='Agent NTA Amount',compute='_compute_agent_nta',store=True)
 
     # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
@@ -653,7 +653,7 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_code == 'rac':
+                if sale.charge_code == 'rac' and sale.charge_type == 'RAC':
                     agent_nta_total += sale.total
             rec.agent_nta = agent_nta_total + rec.total
 
