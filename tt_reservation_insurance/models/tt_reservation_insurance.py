@@ -370,6 +370,7 @@ class ReservationInsurance(models.Model):
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
                     # self.update_pnr_booked(provider_obj,provider,context)
+                    provider_obj.action_booked_api_insurance(provider, context)
                     provider_obj.update_ticket_api(provider['tickets'])
                     provider_obj.update({
                         "hold_date": provider['hold_date']
