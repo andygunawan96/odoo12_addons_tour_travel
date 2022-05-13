@@ -750,6 +750,25 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
+
+        <record id="tt_transport_carrier_airline_sv" model="tt.transport.carrier">
+            <field name="name">Saudia</field>
+            <field name="code">SV</field>
+            <field name="icao">SVA</field>
+            <field name="call_sign">SAUDIA</field>
+            <field name="active">0</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_wy" model="tt.transport.carrier">
+            <field name="name">Oman Air</field>
+            <field name="code">WY</field>
+            <field name="icao">OMA</field>
+            <field name="call_sign">OMAN AIR</field>
+            <field name="active">0</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
     </data>
 </odoo>
     
