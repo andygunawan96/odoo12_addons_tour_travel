@@ -3781,7 +3781,7 @@ class HotelInformation(models.Model):
                 # Search all Mapped Data from hotel.master
 
                 render_idx = 0
-                for hotel in self.env['tt.hotel.master'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])])[1801:3600]:
+                for hotel in self.env['tt.hotel.master'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])]):
                 # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
                     content.append(hotel.fmt_read(city_idx=city['index']))
                     _logger.info(msg='Adding Hotel ' + hotel.name)
@@ -3791,6 +3791,11 @@ class HotelInformation(models.Model):
                         _logger.info(msg='============ Save Cache ============')
                         self.env.cr.commit()
                 try:
+                    # with open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'r') as f2:
+                    #     record = f2.read()
+                    #     old_rec = json.loads(record)
+                    # content += old_rec
+
                     file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
                     file.write(json.dumps(content))
                     file.close()
@@ -3840,7 +3845,7 @@ class HotelInformation(models.Model):
     # Todo: Pertimbangkan saat new hotel pnya meal type code & facility code yg tidak terdaftar
     # Notes: Control datane disini biar next search dia tidak kosongan / gagal di tampilin
     def v2_receive_data_from_gateway(self):
-        render_city = 'Surabaya'
+        render_city = 'Singapore'
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         city_file_url = base_cache_directory + 'from_cache/'+ render_city +'.json'
         f2 = open(city_file_url, 'r')

@@ -15,6 +15,7 @@ class TtPaymentApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
         if action == 'payment':
             if data['va_type'] == 'open':
+                _logger.info("##############STARTING ESPAY OPEN TOP UP##############")
                 if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
                     payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0]
                     payment_acq_number_obj.fee = data['fee']
@@ -44,10 +45,14 @@ class TtPaymentApiCon(models.Model):
                                 'fee': data['fee']
                             }
                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_number_obj.id)
+                            _logger.info("##############SUCCESS ESPAY OPEN TOP UP##############")
                     else:
                         res = ERR.get_error(500, additional_message="double payment")
+                        _logger.info("##############ERROR ESPAY OPEN TOP UP##############")
                 else:
                     res = ERR.get_error(500, additional_message="VA Not Found")
+                    _logger.info("##############ERROR ESPAY OPEN TOP UP##############")
+                _logger.info("##############END ESPAY OPEN TOP UP##############")
             elif data['va_type'] == 'close':
                 try:
                     res = ''
