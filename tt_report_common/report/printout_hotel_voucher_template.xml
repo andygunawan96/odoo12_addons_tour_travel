@@ -148,7 +148,7 @@
                 <table style="table-layout: fixed; width: 100%">
                     <tr style="vertical-align: top;">
                         <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">Provider</span>
+                            <span style="padding-left: 20px; font-weight: 700;">Issued Through</span>
                         </td>
                         <td style="width: 5%;"> : </td>
                         <td style="width: 55%; word-wrap: break-word">
