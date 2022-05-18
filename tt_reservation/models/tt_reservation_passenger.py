@@ -57,17 +57,20 @@ class TtReservationCustomer(models.Model):
         for p_sc in self.cost_service_charge_ids:
             p_charge_type = p_sc.charge_type
             pnr = p_sc.description
-            if not sc_value.get(pnr):
-                sc_value[pnr] = {}
-            if not sc_value[pnr].get(p_charge_type):
-                sc_value[pnr][p_charge_type] = {}
-                sc_value[pnr][p_charge_type].update({
-                    'amount': 0,
-                    'foreign_amount': 0,
-                })
 
             if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
                 continue
+
+            if not sc_value.get(pnr):
+                sc_value[pnr] = {}
+            if not sc_value[pnr].get(p_charge_type):
+                sc_value[pnr][p_charge_type] = {
+                    'amount': 0,
+                    'foreign_amount': 0,
+                    'charge_code': '',
+                    'currency': '',
+                    'foreign_currency': '',
+                }
 
             sc_value[pnr][p_charge_type].update({
                 'charge_code': p_sc.charge_code,

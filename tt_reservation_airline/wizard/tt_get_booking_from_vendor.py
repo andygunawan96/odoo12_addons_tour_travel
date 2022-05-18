@@ -19,7 +19,8 @@ provider_selection = [
         ('sriwijaya', 'Sriwijaya'),
         ('sia', 'Singapore Airline NDC'),
         ('scoot', 'Scoot'),
-        ('jetstar', 'Jetstar')
+        ('jetstar', 'Jetstar'),
+        ('rodextrip_airline', 'Rodextrip Airline'),
         # ('sabre', 'Sabre'),
     ]
 

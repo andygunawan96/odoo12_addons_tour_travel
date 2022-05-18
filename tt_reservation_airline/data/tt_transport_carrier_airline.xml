@@ -769,6 +769,24 @@
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
+
+        <record id="tt_transport_carrier_airline_b6" model="tt.transport.carrier">
+            <field name="name">JetBlue Airways</field>
+            <field name="code">B6</field>
+            <field name="icao">JBU</field>
+            <field name="call_sign">JETBLUE</field>
+            <field name="active">0</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_ua" model="tt.transport.carrier">
+            <field name="name">United Airlines, Inc.</field>
+            <field name="code">UA</field>
+            <field name="icao">UAL</field>
+            <field name="call_sign">UNITED</field>
+            <field name="active">0</field>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
     </data>
 </odoo>
     
