@@ -21,7 +21,8 @@ Key Features
         'views/ledger_views.xml',
         'views/tt_payment_acquirer_views.xml',
         'views/accounting_queue_views.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
+        'wizard/generate_csv_wizard_views.xml'
     ],
     'demo': [],
     'qweb': [],
