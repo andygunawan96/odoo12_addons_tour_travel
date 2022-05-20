@@ -674,20 +674,15 @@ class TtReservationTrain(models.Model):
                 book_obj.create_date
             except:
                 raise RequestException(1001)
-            if book_obj.agent_id.id == context.get('co_agent_id',-1):
-                for provider in req['provider_bookings']:
-                    if provider['status'] == 'SUCCESS':
-                        for journey in provider['journeys']:
-                            provider_obj = book_obj.provider_booking_ids.filtered(lambda x: x.sequence == provider['sequence'])
-                            journey_obj = provider_obj.journey_ids.filtered(lambda x: x.sequence == journey['sequence'])
-                            journey_obj.update_ticket(
-                                journey['seats']
-                            )
-
-
-                return ERR.get_no_error()
-            else:
-                raise RequestException(1001)
+            for provider in req['provider_bookings']:
+                if provider['status'] == 'SUCCESS':
+                    for journey in provider['journeys']:
+                        provider_obj = book_obj.provider_booking_ids.filtered(lambda x: x.sequence == provider['sequence'])
+                        journey_obj = provider_obj.journey_ids.filtered(lambda x: x.sequence == journey['sequence'])
+                        journey_obj.update_ticket(
+                            journey['seats']
+                        )
+            return ERR.get_no_error()
 
         except RequestException as e:
             _logger.error(traceback.format_exc())
