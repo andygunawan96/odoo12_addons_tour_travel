@@ -96,6 +96,7 @@ class AccGenerateCSVWizard(models.TransientModel):
                     'issued_by': '',
                     'issued_date': '',
                     'departure_date': '',
+                    'origin': '',
                     'destination': '',
                     'agent_email': data_dict['agent_email'],
                     'provider': '',
