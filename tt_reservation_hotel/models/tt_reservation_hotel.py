@@ -1234,21 +1234,15 @@ class HotelReservation(models.Model):
 
     def get_passenger_pricing_breakdown(self):
         pax_list = []
-        for rec in self.passenger_ids:
+        for rec in self.room_detail_ids:
             pax_data = {
-                'passenger_name': '%s %s' % (rec.title, rec.name),
+                'passenger_name': rec.room_name,
                 'pnr_list': []
             }
-            for rec2 in self.provider_booking_ids:
-                pax_ticketed = False
-                ticket_num = ''
-                for rec3 in rec2.ticket_ids.filtered(lambda x: x.passenger_id.id == rec.id):
-                    pax_ticketed = True
-                    if rec3.ticket_number:
-                        ticket_num = rec3.ticket_number
+            for rec2 in self.provider_booking_ids.filtered(lambda x: x.pnr == rec.issued_name):
                 pax_pnr_data = {
                     'pnr': rec2.pnr,
-                    'ticket_number': ticket_num,
+                    'ticket_number': '',
                     'currency_code': rec2.currency_id and rec2.currency_id.name or '',
                     'provider': rec2.provider_id and rec2.provider_id.name or '',
                     'carrier_name': self.carrier_name or '',
@@ -1274,8 +1268,7 @@ class HotelReservation(models.Model):
                         pax_pnr_data['tax'] += rec3.amount
                     if rec3.charge_type == 'ROC':
                         pax_pnr_data['upsell'] += rec3.amount
-                if pax_ticketed:
-                    pax_data['pnr_list'].append(pax_pnr_data)
+                pax_data['pnr_list'].append(pax_pnr_data)
             pax_list.append(pax_data)
         return pax_list
 
