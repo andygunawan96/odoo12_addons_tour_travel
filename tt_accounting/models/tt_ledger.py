@@ -446,6 +446,7 @@ class Ledger(models.Model):
         ledger_obj = self.search(dom, offset=page * data['limit'],limit=(page+1) * data['limit'])
         res = []
         for rec_ledger in ledger_obj:
+            book_obj = None
             try:
                 book_obj = self.env[rec_ledger.res_model].browse(rec_ledger.res_id)
                 if book_obj:
@@ -457,6 +458,10 @@ class Ledger(models.Model):
             except:
                 info = ''
                 booker = {}
+            provider_type = ''
+            if book_obj:
+                if hasattr(book_obj, 'provider_type_id'):
+                    provider_type = book_obj.provider_type_id.name
             res.append({
                 "name": rec_ledger.name if rec_ledger.name else '',
                 "debit": rec_ledger.debit,
@@ -468,7 +473,10 @@ class Ledger(models.Model):
                 "pnr": rec_ledger.pnr if rec_ledger.pnr else '',
                 "info": info,
                 "date": rec_ledger.date.strftime('%Y-%m-%d') if rec_ledger.date else '',
-                "booker": booker
+                "booker": booker,
+                "create_date": rec_ledger.create_date.strftime('%Y-%m-%d %H:%M:%S'),
+                "provider_type_name": provider_type
+
             })
 
         return ERR.get_no_error(res)
