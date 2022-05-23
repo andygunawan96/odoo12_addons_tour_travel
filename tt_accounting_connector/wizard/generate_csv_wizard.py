@@ -111,7 +111,6 @@ class AccGenerateCSVWizard(models.TransientModel):
                     'vendor': '',
                     'ticket_number': '',
                     'pax_name': '',
-                    'route': '',
                     'currency': data_dict['currency'],
                     'agent_nta_amount': data_dict.get('agent_nta', 0),
                     'agent_commission': data_dict.get('agent_commission', 0),
