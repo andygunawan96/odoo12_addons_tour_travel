@@ -124,7 +124,7 @@ class AccGenerateCSVWizard(models.TransientModel):
 
         def generate():
             data = StringIO()
-            w = csv.writer(data)
+            w = csv.writer(data, delimiter=';')
 
             # write header
             if final_list:
