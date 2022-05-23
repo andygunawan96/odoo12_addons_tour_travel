@@ -205,7 +205,7 @@ class TtTopUp(models.Model):
         res = {
             'name': self.name,
             'agent_id': self.agent_id and self.agent_id.id or '',
-            'currency_id': self.currency_id and self.currency_id.name or '',
+            'currency': self.currency_id and self.currency_id.name or '',
             'date': self.request_date and self.request_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'due_date': self.due_date and self.due_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'amount': self.amount or 0,

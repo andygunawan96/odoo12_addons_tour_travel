@@ -266,8 +266,8 @@ class TtRefund(models.Model):
             'state': self.state,
             'booker': self.booker_id.to_dict(),
             'currency': self.currency_id.name if self.currency_id else '',
-            'refund_amount': self.reschedule_amount or 0,
-            'real_refund_amount': self.real_reschedule_amount or 0,
+            'refund_amount': self.refund_amount or 0,
+            'real_refund_amount': self.real_refund_amount or 0,
             'admin_fee_type': self.admin_fee_id.name if self.admin_fee_id else '',
             'admin_fee': self.admin_fee or 0,
             'total_amount': self.total_amount or 0,
@@ -1415,7 +1415,7 @@ class TtRefund(models.Model):
             refund_line_customers.append(cust_values)
 
         new_vals = {
-            'reschedule_number': self.name,
+            'refund_number': self.name,
             'agent': self.agent_id.name,
             'agent_type': self.agent_type_id.name,
             'customer_parent': self.customer_parent_id.name,

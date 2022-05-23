@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="accounting_generate_csv_wizard_form">
+            <field name="name">Accounting Generate CSV Wizard Form</field>
+            <field name="model">tt.accounting.generate.csv.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Accounting Generate Report CSV">
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="is_all_models"/>
+                            <field name="is_all_reservations"/>
+                            <field name="specific_product" attrs="{'invisible':['|', ('is_all_models','=', True), ('is_all_reservations','=', True)]}"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="generate_report_csv" string="Generate CSV" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_accounting_generate_csv_wizard" model="ir.actions.act_window">
+            <field name="name">Accounting Generate CSV Wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.accounting.generate.csv.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="accounting_generate_csv_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+                id="menu_tour_travel_accounting_report"
+                name="Report"
+                parent="tt_accounting_connector.menu_tour_travel_accounting"
+                sequence="2"
+                groups="tt_base.group_after_sales_master_level_4"
+        />
+
+        <menuitem id="submenu_tour_travel_accounting_report_wizard" name="Generate Report CSV" sequence="1"
+                  parent="tt_accounting_connector.menu_tour_travel_accounting_report" action="action_accounting_generate_csv_wizard"
+                  groups="tt_base.group_after_sales_master_level_4"/>
+
+    </data>
+</odoo>
