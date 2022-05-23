@@ -34,7 +34,7 @@ class AccGenerateCSVWizard(models.TransientModel):
             self.is_all_models = False
 
     def generate_report_csv(self):
-        search_crit = [('create_date', '>', self.date_from.strftime('%Y-%m-%d')), ('create_date', '<', self.date_to.strftime('%Y-%m-%d')),
+        search_crit = [('create_date', '>', self.date_from.strftime('%Y-%m-%d')), ('create_date', '<', (self.date_to + timedelta(days=1)).strftime('%Y-%m-%d')),
                        ('res_model', '!=', ''), ('res_id', '!=', 0)]
         if self.is_all_reservations:
             search_crit.append(('res_model', 'not in', ['tt.refund', 'tt.reschedule', 'tt.reschedule.periksain', 'tt.reschedule.phc', 'tt.top.up']))
@@ -50,7 +50,7 @@ class AccGenerateCSVWizard(models.TransientModel):
                     for pax_pnr in pax['pnr_list']:
                         final_list.append({
                             'booking_type': '%s %s' % (data_dict['category'], data_dict['provider_type_name']),
-                            'carrier_name': data_dict['carrier_name'],
+                            'carrier_name': pax_pnr.get('carrier_name', ''),
                             'agent_type': data_dict['agent_type'],
                             'agent_name': data_dict['agent_name'],
                             'customer_parent_type': data_dict['customer_parent_type'],

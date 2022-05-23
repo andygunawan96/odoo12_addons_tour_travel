@@ -220,7 +220,6 @@ class TtAccountingQueue(models.Model):
                     'commission_booker': trans_obj.booker_insentif or 0,
                     'payment_acquirer': pay_acq and pay_acq.jasaweb_name or '',
                     'provider_type_name': trans_obj.provider_type_id and trans_obj.provider_type_id.name or '',
-                    'carrier_name': trans_obj.carrier_name or '',
                     'ledgers': ledger_list,
                     'passenger_pricings': trans_obj.get_passenger_pricing_breakdown(),
                     'category': 'reservation'

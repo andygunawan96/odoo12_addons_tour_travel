@@ -2839,11 +2839,18 @@ class ReservationAirline(models.Model):
                     pax_ticketed = True
                     if rec3.ticket_number:
                         ticket_num = rec3.ticket_number
+
+                pnr_carrier_list = []
+                for seg in self.segment_ids:
+                    if rec2.pnr == seg.pnr and seg.carrier_id.name not in pnr_carrier_list:
+                        pnr_carrier_list.append(seg.carrier_id.name)
+
                 pax_pnr_data = {
                     'pnr': rec2.pnr,
                     'ticket_number': ticket_num,
                     'currency_code': rec2.currency_id and rec2.currency_id.name or '',
                     'provider': rec2.provider_id and rec2.provider_id.name or '',
+                    'carrier_name': ','.join(pnr_carrier_list),
                     'departure_date': rec2.departure_date or '',
                     'origin': rec2.origin_id and rec2.origin_id.display_name or '',
                     'destination': rec2.destination_id and rec2.destination_id.display_name or '',

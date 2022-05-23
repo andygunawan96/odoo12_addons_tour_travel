@@ -1405,6 +1405,7 @@ class Reservationphc(models.Model):
                     'ticket_number': ticket_num,
                     'currency_code': rec2.currency_id and rec2.currency_id.name or '',
                     'provider': rec2.provider_id and rec2.provider_id.name or '',
+                    'carrier_name': self.carrier_name or '',
                     'agent_nta': 0,
                     'agent_commission': 0,
                     'ho_nta': 0,

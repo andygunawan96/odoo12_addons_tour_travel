@@ -1029,6 +1029,7 @@ class TtReservationTrain(models.Model):
                     'ticket_number': ticket_num,
                     'currency_code': rec2.currency_id and rec2.currency_id.name or '',
                     'provider': rec2.provider_id and rec2.provider_id.name or '',
+                    'carrier_name': self.carrier_name or '',
                     'departure_date': rec2.departure_date or '',
                     'origin': rec2.origin_id and rec2.origin_id.display_name or '',
                     'destination': rec2.destination_id and rec2.destination_id.display_name or '',
