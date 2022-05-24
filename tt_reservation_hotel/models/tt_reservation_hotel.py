@@ -1254,7 +1254,7 @@ class HotelReservation(models.Model):
                     'tax': 0,
                     'grand_total': 0
                 }
-                for rec3 in rec2.cost_service_charge_ids.filtered(lambda y: y.id in rec.cost_service_charge_ids.ids):
+                for rec3 in rec2.cost_service_charge_ids:
                     pax_pnr_data['ho_nta'] += rec3.amount
                     if rec3.charge_code != 'rac':
                         pax_pnr_data['agent_nta'] += rec3.amount
