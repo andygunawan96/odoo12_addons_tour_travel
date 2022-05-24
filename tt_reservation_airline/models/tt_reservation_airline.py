@@ -1,4 +1,5 @@
 from odoo import api,models,fields, _
+from odoo.exceptions import UserError
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 from ...tools.api import Response
@@ -1853,6 +1854,7 @@ class ReservationAirline(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
+            'path': book_obj.printout_ticket_id.path
         }
         return url
 
@@ -1924,6 +1926,7 @@ class ReservationAirline(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_price_id.url,
+            'path': book_obj.printout_ticket_price_id.path
         }
         return url
 

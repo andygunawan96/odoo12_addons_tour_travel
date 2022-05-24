@@ -465,6 +465,7 @@ class AgentInvoice(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': self.printout_invoice_id.url,
+            'path': self.printout_invoice_id.path
         }
         return url
         # return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)

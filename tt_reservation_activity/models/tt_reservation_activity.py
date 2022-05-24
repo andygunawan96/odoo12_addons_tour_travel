@@ -78,6 +78,7 @@ class TtReservationActivityVouchers(models.Model):
 
     name = fields.Char('URL')
     booking_id = fields.Many2one('tt.reservation.activity', 'Reservation')
+    upload_center_seq_id = fields.Char('Seq ID')
 
 
 class ReservationActivity(models.Model):
@@ -750,11 +751,13 @@ class ReservationActivity(models.Model):
             for rec in attachment_objs:
                 temp_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
                     'name': rec['url'],
-                    'booking_id': obj.id
+                    'booking_id': obj.id,
+                    'upload_center_seq_id': rec['seq_id']
                 })
                 new_vouch_objs.append({
                     'name': temp_vouch_obj.name,
-                    'booking_id': temp_vouch_obj.booking_id.id
+                    'booking_id': temp_vouch_obj.booking_id.id,
+                    'upload_center_seq_id': temp_vouch_obj.upload_center_seq_id
                 })
             return ERR.get_no_error(new_vouch_objs)
         except RequestException as e:
@@ -788,7 +791,8 @@ class ReservationActivity(models.Model):
             for rec in vouch_objs:
                 vouch_arr.append({
                     'name': rec.name,
-                    'booking_id': rec.booking_id.id
+                    'booking_id': rec.booking_id.id,
+                    'upload_center_seq_id': rec.upload_center_seq_id
                 })
             temp = ERR.get_no_error(vouch_arr)
         else:
@@ -800,12 +804,14 @@ class ReservationActivity(models.Model):
             temp = self.get_vouchers_button_api(self[0]['id'], ctx)
         if temp:
             try:
+                upload_center_obj = self.env['tt.upload.center'].search([('seq_id','=',temp['response'][0]['upload_center_seq_id'])],limit=1)
                 return {
                     'name': 'Activity Voucher',
                     'res_model': 'ir.actions.act_url',
                     'type': 'ir.actions.act_url',
                     'target': 'current',
-                    'url': temp['response'][0]['name']
+                    'url': temp['response'][0]['name'],
+                    'path': upload_center_obj.path
                 }
             except Exception as e:
                 _logger.error(traceback.format_exc())
