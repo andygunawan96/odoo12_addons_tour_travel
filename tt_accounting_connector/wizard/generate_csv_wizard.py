@@ -75,6 +75,8 @@ class AccGenerateCSVWizard(models.TransientModel):
                             'ticket_number': pax_pnr['ticket_number'],
                             'pax_name': pax['passenger_name'],
                             'currency': pax_pnr['currency_code'],
+                            'fare': pax_pnr['fare'],
+                            'tax': pax_pnr['tax'],
                             'agent_nta_amount': pax_pnr['agent_nta'],
                             'agent_commission': pax_pnr['agent_commission'],
                             'commission_booker': data_dict['commission_booker'],
@@ -84,7 +86,6 @@ class AccGenerateCSVWizard(models.TransientModel):
                             'ho_nta_amount': pax_pnr['ho_nta'],
                             'ho_commission': pax_pnr['ho_commission'],
                             'total_commission': pax_pnr['total_commission'],
-                            'ppn': pax_pnr['tax'],
                             'grand_total': pax_pnr['grand_total'],
                         })
             else:
@@ -115,6 +116,8 @@ class AccGenerateCSVWizard(models.TransientModel):
                     'ticket_number': '',
                     'pax_name': '',
                     'currency': data_dict['currency'],
+                    'fare': data_dict.get('fare', 0),
+                    'tax': data_dict.get('tax', 0),
                     'agent_nta_amount': data_dict.get('agent_nta', 0),
                     'agent_commission': data_dict.get('agent_commission', 0),
                     'commission_booker': 0,
@@ -124,7 +127,6 @@ class AccGenerateCSVWizard(models.TransientModel):
                     'ho_nta_amount': data_dict.get('ho_nta', 0),
                     'ho_commission': data_dict.get('ho_commission', 0),
                     'total_commission': data_dict.get('total_commission', 0),
-                    'ppn': data_dict.get('tax', 0),
                     'grand_total': data_dict.get('grand_total', 0),
                 })
 

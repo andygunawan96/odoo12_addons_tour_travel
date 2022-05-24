@@ -1254,6 +1254,7 @@ class HotelReservation(models.Model):
                     'total_commission': 0,
                     'upsell': 0,
                     'discount': 0,
+                    'fare': 0,
                     'tax': 0,
                     'grand_total': 0
                 }
