@@ -1084,6 +1084,7 @@ class ReservationPpob(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
+            'path': book_obj.printout_ticket_id.path
         }
         if book_obj.is_ticket_printed < 2:
             book_obj.is_ticket_printed += 1

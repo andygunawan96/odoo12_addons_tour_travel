@@ -34,6 +34,29 @@
         </xpath>
     </template>
 
+    <!--Outgoing Mail Server-->
+    <menuitem id="menu_email_outgoing"
+              parent="tt_base.top_tour_travel_administration"
+              groups="base.user_admin,tt_base.group_email_queue_level_1"
+              name="Outgoing Mail Server"
+              sequence="6"
+              action="base.action_ir_mail_server_list"/>
+
+
+
+    <record id="ir_mail_server_form_inh" model="ir.ui.view">
+        <field name="name">ir.mail.server.form.inh</field>
+        <field name="model">ir.mail_server</field>
+        <field name="inherit_id" ref="base.ir_mail_server_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <button name="test_smtp_connection" position="after">
+                <button name="test_smtp_oauth2_connection" type="object" string="Test Connection2" icon="fa-television"/>
+            </button>
+        </field>
+    </record>
+
+
     <template id="auth_signup_reset_password_inherit" name="Auth Signup Reset Password Inherit"
               inherit_id="auth_signup.reset_password">
         <xpath expr="//input[@name='redirect']" position="attributes">

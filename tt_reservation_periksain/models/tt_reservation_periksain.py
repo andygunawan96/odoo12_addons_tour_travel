@@ -775,6 +775,7 @@ class ReservationPeriksain(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
+            'path': book_obj.printout_ticket_id.path
         }
         return url
 
@@ -832,6 +833,7 @@ class ReservationPeriksain(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_price_id.url,
+            'path': book_obj.printout_ticket_price_id.path
         }
         return url
 

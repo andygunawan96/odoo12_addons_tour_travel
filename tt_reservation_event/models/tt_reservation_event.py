@@ -797,6 +797,7 @@ class ReservationEvent(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': self.printout_ticket_id.url,
+            'path': self.printout_ticket_id.path
         }
         return url
 
@@ -846,6 +847,7 @@ class ReservationEvent(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': self.printout_ticket_price_id.url,
+            'path': self.printout_ticket_price_id.path
         }
         return url
 
