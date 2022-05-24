@@ -850,8 +850,8 @@ class TtReschedule(models.Model):
             else:
                 co_agent_id = self.env.user.agent_id.id
 
-            if rs_obj.user_id:
-                co_uid = rs_obj.user_id.id
+            if rs_obj.confirm_uid:
+                co_uid = rs_obj.confirm_uid.id
             else:
                 co_uid = self.env.user.id
 
