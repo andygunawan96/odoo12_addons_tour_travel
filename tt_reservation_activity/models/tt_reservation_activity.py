@@ -78,6 +78,7 @@ class TtReservationActivityVouchers(models.Model):
 
     name = fields.Char('URL')
     booking_id = fields.Many2one('tt.reservation.activity', 'Reservation')
+    upload_center_seq_id = fields.Char('Seq ID')
 
 
 class ReservationActivity(models.Model):
@@ -750,11 +751,13 @@ class ReservationActivity(models.Model):
             for rec in attachment_objs:
                 temp_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
                     'name': rec['url'],
-                    'booking_id': obj.id
+                    'booking_id': obj.id,
+                    'upload_center_seq_id': rec['seq_id']
                 })
                 new_vouch_objs.append({
                     'name': temp_vouch_obj.name,
-                    'booking_id': temp_vouch_obj.booking_id.id
+                    'booking_id': temp_vouch_obj.booking_id.id,
+                    'upload_center_seq_id': temp_vouch_obj.upload_center_seq_id
                 })
             return ERR.get_no_error(new_vouch_objs)
         except RequestException as e:
@@ -788,7 +791,8 @@ class ReservationActivity(models.Model):
             for rec in vouch_objs:
                 vouch_arr.append({
                     'name': rec.name,
-                    'booking_id': rec.booking_id.id
+                    'booking_id': rec.booking_id.id,
+                    'upload_center_seq_id': rec.upload_center_seq_id
                 })
             temp = ERR.get_no_error(vouch_arr)
         else:
@@ -800,12 +804,14 @@ class ReservationActivity(models.Model):
             temp = self.get_vouchers_button_api(self[0]['id'], ctx)
         if temp:
             try:
+                upload_center_obj = self.env['tt.upload.center'].search([('seq_id','=',temp['response'][0]['upload_center_seq_id'])],limit=1)
                 return {
                     'name': 'Activity Voucher',
                     'res_model': 'ir.actions.act_url',
                     'type': 'ir.actions.act_url',
                     'target': 'current',
-                    'url': temp['response'][0]['name']
+                    'url': temp['response'][0]['name'],
+                    'path': upload_center_obj.path
                 }
             except Exception as e:
                 _logger.error(traceback.format_exc())
@@ -1247,6 +1253,53 @@ class ReservationActivity(models.Model):
         if self.timeslot:
             desc_txt += ' (' + self.timeslot + ')'
         return desc_txt
+
+    def get_passenger_pricing_breakdown(self):
+        pax_list = []
+        for rec in self.passenger_ids:
+            pax_data = {
+                'passenger_name': '%s %s' % (rec.title, rec.name),
+                'pnr_list': []
+            }
+            for rec2 in self.provider_booking_ids:
+                pax_ticketed = False
+                ticket_num = ''
+                for rec3 in rec2.ticket_ids.filtered(lambda x: x.passenger_id.id == rec.id):
+                    pax_ticketed = True
+                    if rec3.ticket_number:
+                        ticket_num = rec3.ticket_number
+                pax_pnr_data = {
+                    'pnr': rec2.pnr,
+                    'ticket_number': ticket_num,
+                    'currency_code': rec2.currency_id and rec2.currency_id.name or '',
+                    'provider': rec2.provider_id and rec2.provider_id.name or '',
+                    'carrier_name': self.carrier_name or '',
+                    'agent_nta': 0,
+                    'agent_commission': 0,
+                    'ho_nta': 0,
+                    'total_commission': 0,
+                    'upsell': 0,
+                    'tax': 0,
+                    'grand_total': 0
+                }
+                for rec3 in rec2.cost_service_charge_ids.filtered(lambda y: rec.id in y.passenger_activity_ids.ids):
+                    pax_pnr_data['ho_nta'] += rec3.amount
+                    if rec3.charge_code != 'rac':
+                        pax_pnr_data['agent_nta'] += rec3.amount
+                    if rec3.charge_type == 'RAC' and rec3.charge_code == 'rac':
+                        pax_pnr_data['agent_commission'] -= rec3.amount
+                    if rec3.charge_type == 'RAC':
+                        pax_pnr_data['total_commission'] -= rec3.amount
+                    if rec3.charge_type != 'RAC':
+                        pax_pnr_data['grand_total'] += rec3.amount
+                    if rec3.charge_type == 'TAX':
+                        pax_pnr_data['tax'] += rec3.amount
+                    if rec3.charge_type == 'ROC':
+                        pax_pnr_data['upsell'] += rec3.amount
+                if pax_ticketed:
+                    pax_data['pnr_list'].append(pax_pnr_data)
+            pax_list.append(pax_data)
+        return pax_list
 
 
 class PrintoutActivityInvoice(models.AbstractModel):

@@ -196,6 +196,7 @@ class HotelReservation(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_voucher_id.url,
+            'path': book_obj.printout_voucher_id.path
         }
         return url
         # return self.env.ref('tt_report_common.action_report_printout_reservation_hotel').report_action([], data=datas)
@@ -368,6 +369,7 @@ class HotelReservation(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_id.url,
+            'path': book_obj.printout_ticket_id.path
         }
         return url
 
@@ -424,6 +426,7 @@ class HotelReservation(models.Model):
             'name': "Printout",
             'target': 'new',
             'url': book_obj.printout_ticket_price_id.url,
+            'path': book_obj.printout_ticket_price_id.path
         }
         return url
 
@@ -1231,6 +1234,46 @@ class HotelReservation(models.Model):
     #
     def update_cost_service_charge_hotel_api(self, data, context):
         return data
+
+    def get_passenger_pricing_breakdown(self):
+        pax_list = []
+        for rec in self.room_detail_ids:
+            pax_data = {
+                'passenger_name': rec.room_name,
+                'pnr_list': []
+            }
+            for rec2 in self.provider_booking_ids.filtered(lambda x: x.pnr == rec.issued_name):
+                pax_pnr_data = {
+                    'pnr': rec2.pnr,
+                    'ticket_number': '',
+                    'currency_code': rec2.currency_id and rec2.currency_id.name or '',
+                    'provider': rec2.provider_id and rec2.provider_id.name or '',
+                    'carrier_name': self.carrier_name or '',
+                    'agent_nta': 0,
+                    'agent_commission': 0,
+                    'ho_nta': 0,
+                    'total_commission': 0,
+                    'upsell': 0,
+                    'tax': 0,
+                    'grand_total': 0
+                }
+                for rec3 in rec2.cost_service_charge_ids:
+                    pax_pnr_data['ho_nta'] += rec3.amount
+                    if rec3.charge_code != 'rac':
+                        pax_pnr_data['agent_nta'] += rec3.amount
+                    if rec3.charge_type == 'RAC' and rec3.charge_code == 'rac':
+                        pax_pnr_data['agent_commission'] -= rec3.amount
+                    if rec3.charge_type == 'RAC':
+                        pax_pnr_data['total_commission'] -= rec3.amount
+                    if rec3.charge_type != 'RAC':
+                        pax_pnr_data['grand_total'] += rec3.amount
+                    if rec3.charge_type == 'TAX':
+                        pax_pnr_data['tax'] += rec3.amount
+                    if rec3.charge_type == 'ROC':
+                        pax_pnr_data['upsell'] += rec3.amount
+                pax_data['pnr_list'].append(pax_pnr_data)
+            pax_list.append(pax_data)
+        return pax_list
 
 
 class ServiceCharge(models.Model):

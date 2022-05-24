@@ -53,7 +53,7 @@ class TtAirlineApiCon(models.Model):
         return res
 
     def get_balance(self,provider):
-        return self.send_request_to_gateway('%s/account/airline' % (self.url),{'provider': provider},'get_vendor_balance')
+        return self.send_request_to_gateway('%s/account/airline' % (self.url),{'provider': provider},'get_vendor_balance',timeout=60)
 
     def send_force_issued_not_enough_balance_notification(self,order_number,context):
         request = {

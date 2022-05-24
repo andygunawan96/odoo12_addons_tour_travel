@@ -10,7 +10,7 @@ class TtCronLogInhAccConn(models.Model):
 
     def cron_send_accounting_to_vendor(self):
         try:
-            queue_obj = self.env['tt.accounting.queue'].search([('state', '=', 'new')])
+            queue_obj = self.env['tt.accounting.queue'].search([('state', '=', 'new'), ('res_model', '!=', ''), ('res_id', '!=', 0)])
             for rec in queue_obj:
                 rec.action_send_to_vendor()
                 self.env.cr.commit()
