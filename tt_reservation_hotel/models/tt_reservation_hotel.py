@@ -1251,9 +1251,12 @@ class HotelReservation(models.Model):
                     'carrier_name': self.carrier_name or '',
                     'agent_nta': 0,
                     'agent_commission': 0,
+                    'parent_agent_commission': 0,
                     'ho_nta': 0,
+                    'ho_commission': 0,
                     'total_commission': 0,
                     'upsell': 0,
+                    'discount': 0,
                     'tax': 0,
                     'grand_total': 0
                 }

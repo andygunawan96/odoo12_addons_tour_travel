@@ -138,25 +138,25 @@ class TtAccountingQueue(models.Model):
             elif self.res_model == 'tt.top.up':
                 request = trans_obj.to_dict_acc()
                 ledger_list = []
-                if not self.ledger_id.is_sent_to_acc:
+                if not trans_obj.ledger_id.is_sent_to_acc:
                     ledger_list.append({
-                        'id': self.ledger_id.id,
-                        'ref': self.ledger_id.ref or '',
-                        'name': self.ledger_id.name or '',
-                        'debit': self.ledger_id.debit or 0,
-                        'credit': self.ledger_id.credit or 0,
-                        'currency_id': self.ledger_id.currency_id and self.ledger_id.currency_id.name or '',
-                        'create_date': self.ledger_id.create_date and datetime.strftime(self.ledger_id.create_date, '%Y-%m-%d %H:%M:%S') or '',
-                        'date': self.ledger_id.date and datetime.strftime(self.ledger_id.date, '%Y-%m-%d') or '',
-                        'create_uid': self.ledger_id.create_uid and self.ledger_id.create_uid.name or '',
-                        'description': self.ledger_id.description or '',
-                        'agent_id': self.ledger_id.agent_id and self.ledger_id.agent_id.id or 0,
-                        'agent_name': self.ledger_id.agent_id and self.ledger_id.agent_id.name or '',
-                        'display_provider_name': self.ledger_id.display_provider_name or '',
-                        'pnr': self.ledger_id.pnr or '',
-                        'transaction_type': self.ledger_id.transaction_type
+                        'id': trans_obj.ledger_id.id,
+                        'ref': trans_obj.ledger_id.ref or '',
+                        'name': trans_obj.ledger_id.name or '',
+                        'debit': trans_obj.ledger_id.debit or 0,
+                        'credit': trans_obj.ledger_id.credit or 0,
+                        'currency_id': trans_obj.ledger_id.currency_id and trans_obj.ledger_id.currency_id.name or '',
+                        'create_date': trans_obj.ledger_id.create_date and datetime.strftime(trans_obj.ledger_id.create_date, '%Y-%m-%d %H:%M:%S') or '',
+                        'date': trans_obj.ledger_id.date and datetime.strftime(trans_obj.ledger_id.date, '%Y-%m-%d') or '',
+                        'create_uid': trans_obj.ledger_id.create_uid and trans_obj.ledger_id.create_uid.name or '',
+                        'description': trans_obj.ledger_id.description or '',
+                        'agent_id': trans_obj.ledger_id.agent_id and trans_obj.ledger_id.agent_id.id or 0,
+                        'agent_name': trans_obj.ledger_id.agent_id and trans_obj.ledger_id.agent_id.name or '',
+                        'display_provider_name': trans_obj.ledger_id.display_provider_name or '',
+                        'pnr': trans_obj.ledger_id.pnr or '',
+                        'transaction_type': trans_obj.ledger_id.transaction_type
                     })
-                    self.ledger_id.sudo().write({
+                    trans_obj.ledger_id.sudo().write({
                         'is_sent_to_acc': True
                     })
                 request.update({
@@ -187,28 +187,24 @@ class TtAccountingQueue(models.Model):
                 request = trans_obj.to_dict()
                 ledger_list = []
                 for led in trans_obj.ledger_ids:
-                    if not led.is_sent_to_acc:
-                        ledger_list.append({
-                            'id': led.id,
-                            'ref': led.ref or '',
-                            'name': led.name or '',
-                            'debit': led.debit or 0,
-                            'credit': led.credit or 0,
-                            'currency_id': led.currency_id and led.currency_id.name or '',
-                            'create_date': led.create_date and datetime.strftime(led.create_date,
-                                                                                 '%Y-%m-%d %H:%M:%S') or '',
-                            'date': led.date and datetime.strftime(led.date, '%Y-%m-%d') or '',
-                            'create_uid': led.create_uid and led.create_uid.name or '',
-                            'description': led.description or '',
-                            'agent_id': led.agent_id and led.agent_id.id or 0,
-                            'agent_name': led.agent_id and led.agent_id.name or '',
-                            'display_provider_name': led.display_provider_name or '',
-                            'pnr': led.pnr or '',
-                            'transaction_type': led.transaction_type
-                        })
-                        led.sudo().write({
-                            'is_sent_to_acc': True
-                        })
+                    ledger_list.append({
+                        'id': led.id,
+                        'ref': led.ref or '',
+                        'name': led.name or '',
+                        'debit': led.debit or 0,
+                        'credit': led.credit or 0,
+                        'currency_id': led.currency_id and led.currency_id.name or '',
+                        'create_date': led.create_date and datetime.strftime(led.create_date,
+                                                                             '%Y-%m-%d %H:%M:%S') or '',
+                        'date': led.date and datetime.strftime(led.date, '%Y-%m-%d') or '',
+                        'create_uid': led.create_uid and led.create_uid.name or '',
+                        'description': led.description or '',
+                        'agent_id': led.agent_id and led.agent_id.id or 0,
+                        'agent_name': led.agent_id and led.agent_id.name or '',
+                        'display_provider_name': led.display_provider_name or '',
+                        'pnr': led.pnr or '',
+                        'transaction_type': led.transaction_type
+                    })
                 request.update({
                     'create_by': trans_obj.create_uid and trans_obj.create_uid.name or '',
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
@@ -247,28 +243,24 @@ class TtAccountingQueue(models.Model):
                     agent_adm = 0
                 ledger_list = []
                 for led in trans_obj.ledger_ids:
-                    if not led.is_sent_to_acc:
-                        ledger_list.append({
-                            'id': led.id,
-                            'ref': led.ref or '',
-                            'name': led.name or '',
-                            'debit': led.debit or 0,
-                            'credit': led.credit or 0,
-                            'currency_id': led.currency_id and led.currency_id.name or '',
-                            'create_date': led.create_date and datetime.strftime(led.create_date,
-                                                                                 '%Y-%m-%d %H:%M:%S') or '',
-                            'date': led.date and datetime.strftime(led.date, '%Y-%m-%d') or '',
-                            'create_uid': led.create_uid and led.create_uid.name or '',
-                            'description': led.description or '',
-                            'agent_id': led.agent_id and led.agent_id.id or 0,
-                            'agent_name': led.agent_id and led.agent_id.name or '',
-                            'display_provider_name': led.display_provider_name or '',
-                            'pnr': led.pnr or '',
-                            'transaction_type': led.transaction_type
-                        })
-                        led.sudo().write({
-                            'is_sent_to_acc': True
-                        })
+                    ledger_list.append({
+                        'id': led.id,
+                        'ref': led.ref or '',
+                        'name': led.name or '',
+                        'debit': led.debit or 0,
+                        'credit': led.credit or 0,
+                        'currency_id': led.currency_id and led.currency_id.name or '',
+                        'create_date': led.create_date and datetime.strftime(led.create_date,
+                                                                             '%Y-%m-%d %H:%M:%S') or '',
+                        'date': led.date and datetime.strftime(led.date, '%Y-%m-%d') or '',
+                        'create_uid': led.create_uid and led.create_uid.name or '',
+                        'description': led.description or '',
+                        'agent_id': led.agent_id and led.agent_id.id or 0,
+                        'agent_name': led.agent_id and led.agent_id.name or '',
+                        'display_provider_name': led.display_provider_name or '',
+                        'pnr': led.pnr or '',
+                        'transaction_type': led.transaction_type
+                    })
                 request.update({
                     'create_by': trans_obj.create_uid and trans_obj.create_uid.name or '',
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
@@ -280,8 +272,11 @@ class TtAccountingQueue(models.Model):
                     'ledgers': ledger_list,
                     'agent_nta': amt,
                     'agent_commission': agent_adm,
+                    'parent_agent_commission': 0,
                     'upsell': 0,
+                    'discount': 0,
                     'ho_nta': real_amt,
+                    'ho_commission': ho_adm,
                     'total_commission': agent_adm + ho_adm,
                     'tax': 0,
                     'grand_total': trans_obj.total_amount or 0,
@@ -289,37 +284,35 @@ class TtAccountingQueue(models.Model):
                 })
             elif self.res_model == 'tt.top.up':
                 request = trans_obj.to_dict_acc()
-                ledger_list = []
-                if not self.ledger_id.is_sent_to_acc:
-                    ledger_list.append({
-                        'id': self.ledger_id.id,
-                        'ref': self.ledger_id.ref or '',
-                        'name': self.ledger_id.name or '',
-                        'debit': self.ledger_id.debit or 0,
-                        'credit': self.ledger_id.credit or 0,
-                        'currency_id': self.ledger_id.currency_id and self.ledger_id.currency_id.name or '',
-                        'create_date': self.ledger_id.create_date and datetime.strftime(self.ledger_id.create_date,
-                                                                                        '%Y-%m-%d %H:%M:%S') or '',
-                        'date': self.ledger_id.date and datetime.strftime(self.ledger_id.date, '%Y-%m-%d') or '',
-                        'create_uid': self.ledger_id.create_uid and self.ledger_id.create_uid.name or '',
-                        'description': self.ledger_id.description or '',
-                        'agent_id': self.ledger_id.agent_id and self.ledger_id.agent_id.id or 0,
-                        'agent_name': self.ledger_id.agent_id and self.ledger_id.agent_id.name or '',
-                        'display_provider_name': self.ledger_id.display_provider_name or '',
-                        'pnr': self.ledger_id.pnr or '',
-                        'transaction_type': self.ledger_id.transaction_type
-                    })
-                    self.ledger_id.sudo().write({
-                        'is_sent_to_acc': True
-                    })
+                ledger_list = [{
+                    'id': trans_obj.ledger_id.id,
+                    'ref': trans_obj.ledger_id.ref or '',
+                    'name': trans_obj.ledger_id.name or '',
+                    'debit': trans_obj.ledger_id.debit or 0,
+                    'credit': trans_obj.ledger_id.credit or 0,
+                    'currency_id': trans_obj.ledger_id.currency_id and trans_obj.ledger_id.currency_id.name or '',
+                    'create_date': trans_obj.ledger_id.create_date and datetime.strftime(trans_obj.ledger_id.create_date,
+                                                                                    '%Y-%m-%d %H:%M:%S') or '',
+                    'date': trans_obj.ledger_id.date and datetime.strftime(trans_obj.ledger_id.date, '%Y-%m-%d') or '',
+                    'create_uid': trans_obj.ledger_id.create_uid and trans_obj.ledger_id.create_uid.name or '',
+                    'description': trans_obj.ledger_id.description or '',
+                    'agent_id': trans_obj.ledger_id.agent_id and trans_obj.ledger_id.agent_id.id or 0,
+                    'agent_name': trans_obj.ledger_id.agent_id and trans_obj.ledger_id.agent_id.name or '',
+                    'display_provider_name': trans_obj.ledger_id.display_provider_name or '',
+                    'pnr': trans_obj.ledger_id.pnr or '',
+                    'transaction_type': trans_obj.ledger_id.transaction_type
+                }]
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'acquirer_type': trans_obj.acquirer_id and trans_obj.acquirer_id.type or '',
                     'ledgers': ledger_list,
                     'agent_nta': trans_obj.amount,
                     'agent_commission': 0,
+                    'parent_agent_commission': 0,
                     'upsell': 0,
+                    'discount': 0,
                     'ho_nta': 0,
+                    'ho_commission': 0,
                     'total_commission': 0,
                     'tax': trans_obj.unique_amount,
                     'grand_total': trans_obj.total,
