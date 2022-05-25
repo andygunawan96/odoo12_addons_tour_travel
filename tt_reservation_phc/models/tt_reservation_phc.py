@@ -1416,6 +1416,7 @@ class Reservationphc(models.Model):
                     'total_commission': 0,
                     'upsell': 0,
                     'discount': 0,
+                    'fare': 0,
                     'tax': 0,
                     'grand_total': 0
                 }
@@ -1431,6 +1432,8 @@ class Reservationphc(models.Model):
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount
                         pax_pnr_data['agent_nta'] += rec3.amount
+                    if rec3.charge_type == 'FARE':
+                        pax_pnr_data['fare'] += rec3.amount
                     if rec3.charge_type == 'TAX':
                         pax_pnr_data['tax'] += rec3.amount
                     if rec3.charge_type == 'ROC':

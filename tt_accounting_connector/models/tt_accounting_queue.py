@@ -270,6 +270,8 @@ class TtAccountingQueue(models.Model):
                     'customer_parent_type': trans_obj.customer_parent_type_id and trans_obj.customer_parent_type_id.name or '',
                     'pnr': pnr,
                     'ledgers': ledger_list,
+                    'fare': 0,
+                    'tax': 0,
                     'agent_nta': amt,
                     'agent_commission': agent_adm,
                     'parent_agent_commission': 0,
@@ -278,7 +280,6 @@ class TtAccountingQueue(models.Model):
                     'ho_nta': real_amt,
                     'ho_commission': ho_adm,
                     'total_commission': agent_adm + ho_adm,
-                    'tax': 0,
                     'grand_total': trans_obj.total_amount or 0,
                     'category': cat
                 })
@@ -306,7 +307,9 @@ class TtAccountingQueue(models.Model):
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'acquirer_type': trans_obj.acquirer_id and trans_obj.acquirer_id.type or '',
                     'ledgers': ledger_list,
-                    'agent_nta': trans_obj.amount,
+                    'fare': trans_obj.amount,
+                    'tax': trans_obj.unique_amount,
+                    'agent_nta': 0,
                     'agent_commission': 0,
                     'parent_agent_commission': 0,
                     'upsell': 0,
@@ -314,7 +317,6 @@ class TtAccountingQueue(models.Model):
                     'ho_nta': 0,
                     'ho_commission': 0,
                     'total_commission': 0,
-                    'tax': trans_obj.unique_amount,
                     'grand_total': trans_obj.total,
                     'category': 'top_up'
                 })
