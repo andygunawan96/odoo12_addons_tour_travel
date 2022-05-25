@@ -47,6 +47,8 @@ class TtAirlineApiCon(models.Model):
             res = table_obj.get_booking_number_airline_api(data, context)
         elif action == 'update_pax_identity_booking':
             res = table_obj.update_pax_identity_airline_api(data, context)
+        elif action == 'update_pax_name_booking':
+            res = table_obj.update_pax_name_airline_api(data, context)
         else:
             raise RequestException(999)
 
