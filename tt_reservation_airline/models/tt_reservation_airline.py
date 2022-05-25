@@ -2828,6 +2828,44 @@ class ReservationAirline(models.Model):
             _logger.error('Error Update Pax Identity Airline API, %s' % traceback.format_exc())
             return ERR.get_error(1013)
 
+    def update_pax_name_airline_api(self, req, context, **kwargs):
+        try:
+            # _logger.info("Get req\n" + json.dumps(context))
+            book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            if not any(rec['status'] == 'SUCCEED' for rec in req['provider_bookings']):
+                raise Exception('No Pax Identity Changed detected')
+
+            country_obj = self.env['res.country'].sudo()
+            for psg in req['passengers']:
+                psg_number = psg['passenger_number']
+                psg_obj = book_obj.passenger_ids[psg_number]
+
+                psg_vals = {
+                    'first_name': psg.get('first_name', ''),
+                    'last_name': psg.get('last_name', ''),
+                }
+                psg_obj.write(psg_vals)
+
+            response = {}
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error('Error Update Pax Name Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except:
+            _logger.error('Error Update Pax Name Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(1013)
+
     def get_passenger_pricing_breakdown(self):
         pax_list = []
         for rec in self.passenger_ids:
