@@ -18,13 +18,19 @@ class TtReschedulePHC(models.Model):
             res = []
             if self.agent_id.is_sync_to_acc:
                 for ven in vendor_list:
-                    new_obj = self.env['tt.accounting.queue'].create({
-                        'accounting_provider': ven,
-                        'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
-                        'action': func_action,
-                        'res_model': self._name,
-                        'res_id': self.id
-                    })
+                    data_exist = self.env['tt.accounting.queue'].search([('res_model', '=', self._name),
+                                                                         ('res_id', '=', self.id),
+                                                                         ('accounting_provider', '=', ven)])
+                    if data_exist:
+                        new_obj = data_exist[0]
+                    else:
+                        new_obj = self.env['tt.accounting.queue'].create({
+                            'accounting_provider': ven,
+                            'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
+                            'action': func_action,
+                            'res_model': self._name,
+                            'res_id': self.id
+                        })
                     res.append(new_obj.to_dict())
             return ERR.get_no_error(res)
         except Exception as e:
