@@ -256,11 +256,11 @@ class TransportBookingProvider(models.Model):
 
     def to_dict(self):
         journey_list = []
-        for rec in self.journey_ids:
-            journey_list.append(rec.to_dict())
+        # for rec in self.journey_ids:
+        #     journey_list.append(rec.to_dict())
         ticket_list = []
-        for rec in self.ticket_ids:
-            ticket_list.append(rec.to_dict())
+        # for rec in self.ticket_ids:
+        #     ticket_list.append(rec.to_dict())
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',

@@ -31,35 +31,6 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Customer Parents" name="customer_parent_types">
-                            <group>
-                                <group>
-                                    <field name="customer_parent_type_access_type" widget="radio"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
-                            <group string="Customer Parent Type List">
-                                <field name="customer_parent_type_ids" nolabel="1"/>
-                            </group>
-                            <group>
-                                <group>
-                                    <field name="customer_parent_access_type" widget="radio"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
-                            <group string="Customer Parent List">
-                                <field name="customer_parent_ids" nolabel="1">
-                                    <tree>
-                                        <field name="name"/>
-                                        <field name="customer_parent_type_id"/>
-                                        <field name="parent_agent_id"/>
-                                        <field name="state"/>
-                                    </tree>
-                                </field>
-                            </group>
-                        </page>
                         <page string="Providers and Carriers" name="provider_types">
                             <group>
                                 <group>
@@ -90,6 +61,35 @@
                             </group>
                             <group string="Carrier List">
                                 <field name="carrier_ids" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Customer Parents" name="customer_parent_types">
+                            <group>
+                                <group>
+                                    <field name="customer_parent_type_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Customer Parent Type List">
+                                <field name="customer_parent_type_ids" nolabel="1"/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="customer_parent_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Customer Parent List">
+                                <field name="customer_parent_ids" nolabel="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="customer_parent_type_id"/>
+                                        <field name="parent_agent_id"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
                             </group>
                         </page>
                     </notebook>

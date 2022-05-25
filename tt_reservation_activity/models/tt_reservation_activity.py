@@ -1276,26 +1276,38 @@ class ReservationActivity(models.Model):
                     'carrier_name': self.carrier_name or '',
                     'agent_nta': 0,
                     'agent_commission': 0,
+                    'parent_agent_commission': 0,
                     'ho_nta': 0,
+                    'ho_commission': 0,
                     'total_commission': 0,
                     'upsell': 0,
+                    'discount': 0,
+                    'fare': 0,
                     'tax': 0,
                     'grand_total': 0
                 }
                 for rec3 in rec2.cost_service_charge_ids.filtered(lambda y: rec.id in y.passenger_activity_ids.ids):
                     pax_pnr_data['ho_nta'] += rec3.amount
-                    if rec3.charge_code != 'rac':
-                        pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC' and rec3.charge_code == 'rac':
                         pax_pnr_data['agent_commission'] -= rec3.amount
+                        pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
+                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                            pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount
+                        pax_pnr_data['agent_nta'] += rec3.amount
+                    if rec3.charge_type == 'FARE':
+                        pax_pnr_data['fare'] += rec3.amount
                     if rec3.charge_type == 'TAX':
                         pax_pnr_data['tax'] += rec3.amount
                     if rec3.charge_type == 'ROC':
                         pax_pnr_data['upsell'] += rec3.amount
+                    if rec3.charge_type == 'DISC':
+                        pax_pnr_data['discount'] -= rec3.amount
+                pax_pnr_data['parent_agent_commission'] = pax_pnr_data['total_commission'] - pax_pnr_data[
+                    'agent_commission'] - pax_pnr_data['ho_commission']
                 if pax_ticketed:
                     pax_data['pnr_list'].append(pax_pnr_data)
             pax_list.append(pax_data)
