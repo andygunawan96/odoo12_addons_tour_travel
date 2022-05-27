@@ -2183,10 +2183,16 @@ class MasterActivity(models.Model):
         if not provider_id:
             raise RequestException(1002)
         provider_id = provider_id[0]
-        activity_id = self.env['tt.master.activity'].sudo().search(
-            [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
-        product_id = activity_id[0].id
-        activity_type_exist = self.env['tt.master.activity.lines'].search([('activity_id', '=', product_id), ('uuid', '=', provider_id[0].alias + '~' + req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+        if req.get('productUuid'):
+            activity_id = self.env['tt.master.activity'].sudo().search(
+                [('uuid', '=', provider_id[0].alias + '~' + req['productUuid']), ('provider_id', '=', provider_id.id)], limit=1)
+            product_id = activity_id[0].id
+        else:
+            activity_id = product_id = False
+        act_type_search_list = [('uuid', '=', provider_id[0].alias + '~' + req['data']['uuid']), '|', ('active', '=', False), ('active', '=', True)]
+        if activity_id:
+            act_type_search_list.insert(0, ('activity_id', '=', product_id))
+        activity_type_exist = self.env['tt.master.activity.lines'].search(act_type_search_list, limit=1)
         cancellationPolicies = ''
         if req['data']['cancellationPolicies']:
             for cancel in req['data']['cancellationPolicies']:
@@ -2194,7 +2200,6 @@ class MasterActivity(models.Model):
                     cancel['numberOfDays']) + ' days before the stated visit date to accept ' + str(
                     cancel['refundPercentage']) + '% cashback.\n'
         vals = {
-            'activity_id': product_id,
             'uuid': provider_id[0].alias + '~' + req['data']['uuid'],
             'name': req['data']['title'],
             'description': req['data']['description'],
@@ -2219,6 +2224,10 @@ class MasterActivity(models.Model):
             'minimumSellingPrice': 0,
             'active': True
         }
+        if activity_id:
+            vals.update({
+                'activity_id': product_id
+            })
         if activity_type_exist:
             activity_obj = activity_type_exist[0]
             activity_obj.sudo().write(vals)
