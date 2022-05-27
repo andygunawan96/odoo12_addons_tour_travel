@@ -24,21 +24,23 @@ SCOPES = ['https://mail.google.com/']
 ##AUTH
 def_folder = '/var/log/tour_travel/gmailcredentials'
 def gmail_authenticate(creds):
-    is_change_credential = False
     if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-            is_change_credential = True
-        # save the credentials for the next run
-        with open("%s/token.pickle" % def_folder, "wb") as token:
-            pickle.dump(creds, token)
-    if creds:
-        if is_change_credential:
-            return build('gmail', 'v1', credentials=creds)
+        if creds and creds.expired:
+            if creds.refresh_token:
+                try:
+                    creds.refresh(Request())
+                    with open("%s/token.pickle" % def_folder, "wb") as token:
+                        pickle.dump(creds, token)
+                    return build('gmail', 'v1', credentials=creds)
+                except Exception as e:
+                    _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+                    return False
+            else:
+                return False
         else:
             return build('gmail', 'v1', credentials=creds)
     else:
-        return False, ''
+        return False
 
 ##SEARCH EMAIL
 def search_messages(service, query, limit_message=100):

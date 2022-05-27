@@ -61,6 +61,7 @@
                             </div>
                             <group>
                                 <group>
+                                    <field name="is_whitelist_ticket"/>
                                     <field name="agent_id" readonly="0"/>
                                     <field name="agent_as_staff_id"/>
                                     <field name="name" readonly="1"/>
