@@ -884,23 +884,26 @@
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
-                <td style="width:400px; vertical-align: top;" rowspan="4">
+                <td style="width:400px;">
                     <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
                     <!--<t t-call="tt_report_common.address_layout"/>-->
                     <t t-call="tt_report_common.address_layout_bill_to"/>
                 </td>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Invoice Date</td>
+                <td style="width:20px;"/>
+                <td style="width:230px;">Invoice Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Booker</td>
+                <td style="width:50px;">Remarks</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <span t-field="doc.additional_information"/>
+                </td>
+                <td style="width:20px"/>
+                <td style="width:230px;">Booker</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.sudo().booker_id.name"/>
@@ -909,8 +912,9 @@
             <tr>
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Operator</td>
+                <td style="width:400px;"/>
+                <td style="width:20px;"/>
+                <td style="width:230px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.confirmed_uid.sudo().name"/>
@@ -976,11 +980,6 @@
                         <td style="width:20px;">:</td>
                         <td style=""><t t-esc="terbilang[doc.name]"/></td>
                     </tr>
-                    <tr>
-                        <td>Remarks</td>
-                        <td>:</td>
-                        <td><span t-field="doc.additional_information" /></td>
-                    </tr>
                 </table>
             </div>
             <div style="width:35%;">
@@ -1029,23 +1028,26 @@
             <tr>
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
-                <td style="width:400px; vertical-align: top;" rowspan="4">
+                <td style="width:400px;">
                     <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
                     <!--<t t-call="tt_report_common.address_layout"/>-->
                     <t t-call="tt_report_common.address_layout_bill_to"/>
                 </td>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Created Date</td>
+                <td style="width:20px;"/>
+                <td style="width:230px;">Invoice Date</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <span t-field="doc.date_invoice" t-options ='{"format": "dd/MM/yyyy"}'/>
                 </td>
             </tr>
             <tr>
-                <td style="width:50px;"/>
-                <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Booker</td>
+                <td style="width:50px;">Remarks</td>
+                <td style="width:10px;">:</td>
+                <td style="width:400px;">
+                    <span t-field="doc.additional_information"/>
+                </td>
+                <td style="width:20px"/>
+                <td style="width:230px;">Booker</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.sudo().booker_id.name"/>
@@ -1054,8 +1056,9 @@
             <tr>
                 <td style="width:50px;"/>
                 <td style="width:10px;"/>
-                <td style="width:100px;"/>
-                <td style="width:150px;">Operator</td>
+                <td style="width:400px;"/>
+                <td style="width:20px;"/>
+                <td style="width:230px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
                     <i t-field="doc.confirmed_uid.sudo().name"/>
