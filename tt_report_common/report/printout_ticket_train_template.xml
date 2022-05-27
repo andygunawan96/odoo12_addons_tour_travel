@@ -10,24 +10,26 @@
     <template id="train_footer">
         <div class="footer" style="position: absolute; left: 0; right: 0;">
             <div class="text-center" style="border-top: 1px solid black; font-size: 10px; font-weight: 300">
-                <ul class="list-inline">
-                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/></li>
+                <t t-if="not doc.booker_id.is_whitelist_ticket">
+                    <ul class="list-inline">
+                        <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/></li>
 
-<!--                    <li t-if="agent.fax and agent.phone">&amp;bull;</li>-->
-<!--                    <li t-if="agent.fax">Fax: <span t-field="agent.fax"/></li>-->
+                        <!--                    <li t-if="agent.fax and agent.phone">&amp;bull;</li>-->
+                        <!--                    <li t-if="agent.fax">Fax: <span t-field="agent.fax"/></li>-->
 
-                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email or doc.agent_id.email and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
-                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/></li>
+                        <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email or doc.agent_id.email and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                        <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.email">Email: <span t-field="doc.agent_id.email"/></li>
 
-                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website and doc.agent_id.email or doc.agent_id.website or doc.agent_id.website and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
-                    <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/></li>
+                        <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website and doc.agent_id.email or doc.agent_id.website or doc.agent_id.website and doc.agent_id.phone_ids">&amp;bull;</li>  <!-- and agent.fax-->
+                        <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.website">Website: <span t-field="doc.agent_id.website"/></li>
 
-                    <li class="pull-right">Page:
-                    <span class="page"/>
-                    /
-                    <span class="topage"/>
-                    </li>
-                </ul>
+                        <li class="pull-right">Page:
+                            <span class="page"/>
+                            /
+                            <span class="topage"/>
+                        </li>
+                    </ul>
+                </t>
             </div>
         </div>
     </template>
@@ -46,7 +48,14 @@
                         <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
                     </div>
                     <div class="col-2">
-                      <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" style="max-height: 80px; margin-top: 9px;"/>
+                        <t t-if="not doc.booker_id.is_whitelist_ticket">
+                            <t t-if="doc.agent_id.logo">
+                                <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" style="max-height: 80px; margin-top: 9px;"/>
+                            </t>
+                            <t t-else="">
+                                <span t-field="doc.agent_id.name" style="margin-top: 9px; font-size: 28px;"/>
+                            </t>
+                        </t>
                     </div>
                 </div>
                 <t t-set="provider_total" t-value="0"/>
@@ -249,7 +258,7 @@
                                     <div class="col-3" style="max-width: 27.5%;"><span>Harga Tiket</span></div>
                                     <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
                                     <div class="col-8" style="padding: 0px; text-transform:uppercase;">
-                                         <span t-esc="int(fare)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        <span t-esc="int(fare)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: -3px">

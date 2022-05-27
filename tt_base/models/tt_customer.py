@@ -54,6 +54,7 @@ class TtCustomer(models.Model):
     behavior_ids = fields.One2many('tt.customer.behavior', 'customer_id', 'Behavior List')
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     is_search_allowed = fields.Boolean("Search Allowed", default=True)
+    is_whitelist_ticket = fields.Boolean("Whitelist Ticket No Rodex Logo")
 
     register_uid = fields.Many2one('res.users', 'Register UID', default=lambda self: self.env.user)
 
