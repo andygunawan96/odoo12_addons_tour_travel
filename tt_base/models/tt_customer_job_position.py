@@ -18,10 +18,16 @@ class TtCustomerJobHierarchy(models.Model):
     _order = 'sequence'
 
     sequence = fields.Integer('Group Sequence', default=1)
-    name = fields.Integer('Name', related='sequence')
+    name = fields.Integer('Name', compute='compute_name', store=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent')
     min_approve_amt = fields.Integer('Min Approve Amount', default=1)
     job_position_ids = fields.One2many('tt.customer.job.position', 'hierarchy_id', 'Job Positions')
+
+    @api.onchange('sequence')
+    @api.depends('sequence')
+    def compute_name(self):
+        for rec in self:
+            rec.name = rec.sequence or 0
 
 
 class TtCustomerJobPosition(models.Model):
@@ -32,7 +38,12 @@ class TtCustomerJobPosition(models.Model):
 
     name = fields.Char('Name', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent')
-    hierarchy_id = fields.Many2one('tt.customer.job.hierarchy', 'Hierarchy Group', required=True)
+
+    def _get_job_hierarchy_domain(self):
+        cus_par_id = self.customer_parent_id and self.customer_parent_id.id or self._context.get('default_customer_parent_id')
+        return [('customer_parent_id', '=', cus_par_id)]
+
+    hierarchy_id = fields.Many2one('tt.customer.job.hierarchy', 'Hierarchy Group', required=True, domain=_get_job_hierarchy_domain)
     sequence = fields.Integer('Sequence', default=20)
     is_request_required = fields.Boolean('Issued Request Required', default=True)
     carrier_access_type = fields.Selection(ACCESS_TYPE, 'Carrier Access Type', default='all', required=True, help='Only for Airline products.')
