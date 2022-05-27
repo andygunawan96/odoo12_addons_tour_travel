@@ -812,820 +812,6 @@ class TtVisa(models.Model):
                     provider_type_id=rec.provider_type_id.id
                 )
 
-    ######################################################################################################
-    # CREATE
-    ######################################################################################################
-
-    param_sell_visa = {
-        "search_data": [
-            {
-                "sequence": 0,
-                "pax_type": "ADT",
-                "entry_type": "single",
-                "visa_type": "tourist",
-                "type": {
-                    "process_type": "regular",
-                    "duration": 5
-                },
-                "consulate": {
-                    "city": "Surabaya",
-                    "address": "Jl. Sumatera No.93, Gubeng"
-                },
-                "requirements": [
-                    {
-                        "name": "Formulir Aplikasi",
-                        "description": "** Harus ditandatangani oleh pemohon",
-                        "required": False,
-                        "id": 2
-                    },
-                    {
-                        "name": "Pasport",
-                        "description": "-",
-                        "required": False,
-                        "id": 3
-                    },
-                    {
-                        "name": "Paspor Lama",
-                        "description": "Jika Ada",
-                        "required": False,
-                        "id": 4
-                    },
-                    {
-                        "name": "Foto",
-                        "description": "-",
-                        "required": False,
-                        "id": 5
-                    },
-                    {
-                        "name": "KTP",
-                        "description": "-",
-                        "required": False,
-                        "id": 6
-                    },
-                    {
-                        "name": "Kartu Keluarga",
-                        "description": "-",
-                        "required": False,
-                        "id": 7
-                    },
-                    {
-                        "name": "Surat Ganti nama",
-                        "description": "** Jika pernah ganti nama",
-                        "required": False,
-                        "id": 8
-                    },
-                    {
-                        "name": "Surat Keterangan WNI",
-                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
-                        "required": False,
-                        "id": 9
-                    },
-                    {
-                        "name": "Akta Lahir",
-                        "description": "-",
-                        "required": False,
-                        "id": 10
-                    },
-                    {
-                        "name": "Akta Nikah",
-                        "description": "-",
-                        "required": False,
-                        "id": 11
-                    },
-                    {
-                        "name": "Surat Sponsor",
-                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
-                        "required": False,
-                        "id": 12
-                    },
-                    {
-                        "name": "Surat Keterangan Kerja",
-                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
-                        "required": False,
-                        "id": 13
-                    },
-                    {
-                        "name": "Tanda Daftar Perusahaan (TDP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 14
-                    },
-                    {
-                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 15
-                    },
-                    {
-                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
-                        "description": "-",
-                        "required": False,
-                        "id": 16
-                    },
-                    {
-                        "name": "Laporan Keuangan 3 Bulan Terakhir",
-                        "description": "-",
-                        "required": False,
-                        "id": 17
-                    },
-                    {
-                        "name": "Tiket pesawat",
-                        "description": "-",
-                        "required": False,
-                        "id": 18
-                    },
-                    {
-                        "name": "Voucher Hotel",
-                        "description": "-",
-                        "required": False,
-                        "id": 19
-                    },
-                    {
-                        "name": "Itinerary",
-                        "description": "-",
-                        "required": False,
-                        "id": 20
-                    },
-                    {
-                        "name": "Surat Kuasa",
-                        "description": "Harus di tanda tangan oleh pemohon",
-                        "required": False,
-                        "id": 21
-                    }
-                ],
-                "attachments": [],
-                "sale_price": {
-                    "commission": 65000,
-                    "total_price": 485000,
-                    "currency": "IDR"
-                },
-                "id": "visa_internal_Japan_1",
-                "notes": [],
-                "commission": [
-                    {
-                        "charge_type": "RAC",
-                        "charge_code": "rac",
-                        "amount": -65000,
-                        "currency": "IDR",
-                        "commission_agent_id": 2
-                    }
-                ]
-            },
-            {
-                "sequence": 1,
-                "pax_type": "CHD",
-                "entry_type": "single",
-                "visa_type": "tourist",
-                "type": {
-                    "process_type": "regular",
-                    "duration": 5
-                },
-                "consulate": {
-                    "city": "Surabaya",
-                    "address": "Jl. Sumatera No.93, Gubeng"
-                },
-                "requirements": [
-                    {
-                        "name": "Formulir Aplikasi",
-                        "description": "** Harus ditandatangani oleh pemohon",
-                        "required": False,
-                        "id": 22
-                    },
-                    {
-                        "name": "Pasport",
-                        "description": "-",
-                        "required": False,
-                        "id": 23
-                    },
-                    {
-                        "name": "Paspor Lama",
-                        "description": "Jika Ada",
-                        "required": False,
-                        "id": 24
-                    },
-                    {
-                        "name": "Foto",
-                        "description": "-",
-                        "required": False,
-                        "id": 25
-                    },
-                    {
-                        "name": "KTP Ibu",
-                        "description": "**Jika pemohon berusia di bawah 18 tahun",
-                        "required": False,
-                        "id": 26
-                    },
-                    {
-                        "name": "KTP Ayah",
-                        "description": "**Jika pemohon berusia di bawah 18 tahun",
-                        "required": False,
-                        "id": 27
-                    },
-                    {
-                        "name": "Kartu Keluarga",
-                        "description": "-",
-                        "required": False,
-                        "id": 28
-                    },
-                    {
-                        "name": "Surat Ganti nama",
-                        "description": "** Jika pernah ganti nama",
-                        "required": False,
-                        "id": 29
-                    },
-                    {
-                        "name": "Surat Keterangan WNI",
-                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
-                        "required": False,
-                        "id": 30
-                    },
-                    {
-                        "name": "Akta Lahir",
-                        "description": "-",
-                        "required": False,
-                        "id": 31
-                    },
-                    {
-                        "name": "Akta Nikah",
-                        "description": "-",
-                        "required": False,
-                        "id": 32
-                    },
-                    {
-                        "name": "Surat Keterangan Sekolah",
-                        "description": "** Jika pemohon adalah murid dan harus berbahasa inggris",
-                        "required": False,
-                        "id": 33
-                    },
-                    {
-                        "name": "Surat Sponsor",
-                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
-                        "required": False,
-                        "id": 34
-                    },
-                    {
-                        "name": "Surat Keterangan Kerja",
-                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
-                        "required": False,
-                        "id": 35
-                    },
-                    {
-                        "name": "Tanda Daftar Perusahaan (TDP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 36
-                    },
-                    {
-                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 37
-                    },
-                    {
-                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
-                        "description": "-",
-                        "required": False,
-                        "id": 38
-                    },
-                    {
-                        "name": "Laporan Keuangan 3 Bulan Terakhir",
-                        "description": "-",
-                        "required": False,
-                        "id": 39
-                    },
-                    {
-                        "name": "Tiket pesawat",
-                        "description": "-",
-                        "required": False,
-                        "id": 40
-                    },
-                    {
-                        "name": "Voucher Hotel",
-                        "description": "-",
-                        "required": False,
-                        "id": 41
-                    },
-                    {
-                        "name": "Itinerary",
-                        "description": "-",
-                        "required": False,
-                        "id": 42
-                    },
-                    {
-                        "name": "Surat Ijin Suami/Orang Tua",
-                        "description": "-",
-                        "required": False,
-                        "id": 43
-                    },
-                    {
-                        "name": "Surat Kuasa",
-                        "description": "Harus di tanda tangan oleh pemohon",
-                        "required": False,
-                        "id": 44
-                    }
-                ],
-                "attachments": [],
-                "sale_price": {
-                    "commission": 65000,
-                    "total_price": 485000,
-                    "currency": "IDR"
-                },
-                "id": 24,
-                "notes": [],
-                "commission": [
-                    {
-                        "charge_type": "RAC",
-                        "charge_code": "rac",
-                        "amount": -65000,
-                        "currency": "IDR",
-                        "commission_agent_id": 2
-                    }
-                ]
-            },
-            {
-                "sequence": 2,
-                "pax_type": "ADT",
-                "entry_type": "multiple",
-                "visa_type": "tourist",
-                "type": {
-                    "process_type": "regular",
-                    "duration": 5
-                },
-                "consulate": {
-                    "city": "Surabaya",
-                    "address": "Jl. Sumatera No.93, Gubeng"
-                },
-                "requirements": [
-                    {
-                        "name": "Formulir Aplikasi",
-                        "description": "** Harus ditandatangani oleh pemohon",
-                        "required": False,
-                        "id": 45
-                    },
-                    {
-                        "name": "Pasport",
-                        "description": "-",
-                        "required": False,
-                        "id": 46
-                    },
-                    {
-                        "name": "Paspor Lama",
-                        "description": "Jika Ada",
-                        "required": False,
-                        "id": 47
-                    },
-                    {
-                        "name": "Foto",
-                        "description": "-",
-                        "required": False,
-                        "id": 48
-                    },
-                    {
-                        "name": "KTP",
-                        "description": "-",
-                        "required": False,
-                        "id": 49
-                    },
-                    {
-                        "name": "Kartu Keluarga",
-                        "description": "-",
-                        "required": False,
-                        "id": 50
-                    },
-                    {
-                        "name": "Surat Ganti nama",
-                        "description": "** Jika pernah ganti nama",
-                        "required": False,
-                        "id": 51
-                    },
-                    {
-                        "name": "Surat Keterangan WNI",
-                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
-                        "required": False,
-                        "id": 52
-                    },
-                    {
-                        "name": "Akta Lahir",
-                        "description": "-",
-                        "required": False,
-                        "id": 53
-                    },
-                    {
-                        "name": "Akta Nikah",
-                        "description": "-",
-                        "required": False,
-                        "id": 54
-                    },
-                    {
-                        "name": "Surat Sponsor",
-                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
-                        "required": False,
-                        "id": 55
-                    },
-                    {
-                        "name": "Surat Keterangan Kerja",
-                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
-                        "required": False,
-                        "id": 56
-                    },
-                    {
-                        "name": "Tanda Daftar Perusahaan (TDP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 57
-                    },
-                    {
-                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 58
-                    },
-                    {
-                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
-                        "description": "-",
-                        "required": False,
-                        "id": 59
-                    },
-                    {
-                        "name": "Laporan Keuangan 3 Bulan Terakhir",
-                        "description": "-",
-                        "required": False,
-                        "id": 60
-                    },
-                    {
-                        "name": "Tiket pesawat",
-                        "description": "-",
-                        "required": False,
-                        "id": 61
-                    },
-                    {
-                        "name": "Voucher Hotel",
-                        "description": "-",
-                        "required": False,
-                        "id": 62
-                    },
-                    {
-                        "name": "Itinerary",
-                        "description": "-",
-                        "required": False,
-                        "id": 63
-                    },
-                    {
-                        "name": "Surat Kuasa",
-                        "description": "Harus di tanda tangan oleh pemohon",
-                        "required": False,
-                        "id": 64
-                    },
-                    {
-                        "name": "Itinerary perjalanan",
-                        "description": "Tuliskan detail perjalanan selama dinegara tujuan",
-                        "required": False,
-                        "id": 65
-                    },
-                    {
-                        "name": "Surat Ijin Orang Tua",
-                        "description": "** Jika pemohon berusia di bawah 18 tahun dan jika salah satu orang tua tidak dapat hadir selama wawancara",
-                        "required": False,
-                        "id": 66
-                    },
-                    {
-                        "name": "Surat Ganti nama",
-                        "description": "** Jika pernah ganti nama",
-                        "required": False,
-                        "id": 96
-                    },
-                    {
-                        "name": "Akta Nikah",
-                        "description": "-",
-                        "required": False,
-                        "id": 99
-                    }
-                ],
-                "attachments": [],
-                "sale_price": {
-                    "commission": 70000,
-                    "total_price": 865000,
-                    "currency": "IDR"
-                },
-                "id": 25,
-                "notes": [],
-                "commission": [
-                    {
-                        "charge_type": "RAC",
-                        "charge_code": "rac",
-                        "amount": -70000,
-                        "currency": "IDR",
-                        "commission_agent_id": 2
-                    }
-                ]
-            },
-            {
-                "sequence": 3,
-                "pax_type": "CHD",
-                "entry_type": "multiple",
-                "visa_type": "tourist",
-                "type": {
-                    "process_type": "regular",
-                    "duration": 5
-                },
-                "consulate": {
-                    "city": "Surabaya",
-                    "address": "Jl. Sumatera No.93, Gubeng"
-                },
-                "requirements": [
-                    {
-                        "name": "Formulir Aplikasi",
-                        "description": "** Harus ditandatangani oleh pemohon",
-                        "required": False,
-                        "id": 67
-                    },
-                    {
-                        "name": "Pasport",
-                        "description": "-",
-                        "required": False,
-                        "id": 68
-                    },
-                    {
-                        "name": "Paspor Lama",
-                        "description": "Jika Ada",
-                        "required": False,
-                        "id": 69
-                    },
-                    {
-                        "name": "Foto",
-                        "description": "-",
-                        "required": False,
-                        "id": 70
-                    },
-                    {
-                        "name": "KTP Ibu",
-                        "description": "**Jika pemohon berusia di bawah 18 tahun",
-                        "required": False,
-                        "id": 71
-                    },
-                    {
-                        "name": "KTP Ayah",
-                        "description": "**Jika pemohon berusia di bawah 18 tahun",
-                        "required": False,
-                        "id": 72
-                    },
-                    {
-                        "name": "Kartu Keluarga",
-                        "description": "-",
-                        "required": False,
-                        "id": 73
-                    },
-                    {
-                        "name": "Surat Ganti nama",
-                        "description": "** Jika pernah ganti nama",
-                        "required": False,
-                        "id": 74
-                    },
-                    {
-                        "name": "Surat Keterangan WNI",
-                        "description": "**Jika pemohon sebelumnya adalah warga negara asing dan berubah menjadi warga negara Indonesia",
-                        "required": False,
-                        "id": 75
-                    },
-                    {
-                        "name": "Akta Lahir",
-                        "description": "-",
-                        "required": False,
-                        "id": 76
-                    },
-                    {
-                        "name": "Akta Nikah",
-                        "description": "-",
-                        "required": False,
-                        "id": 77
-                    },
-                    {
-                        "name": "Surat Keterangan Sekolah",
-                        "description": "** Jika pemohon adalah murid dan harus berbahasa inggris",
-                        "required": False,
-                        "id": 78
-                    },
-                    {
-                        "name": "Surat Sponsor",
-                        "description": "** Jika perusahaan harus ada Logo dan stampel perusahaan",
-                        "required": False,
-                        "id": 79
-                    },
-                    {
-                        "name": "Surat Keterangan Kerja",
-                        "description": "** Jika pemohon adalah pegawai (Jika ada)",
-                        "required": False,
-                        "id": 80
-                    },
-                    {
-                        "name": "Tanda Daftar Perusahaan (TDP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 81
-                    },
-                    {
-                        "name": "Surat Izin Usaha Perdagangan (SIUP)",
-                        "description": "-",
-                        "required": False,
-                        "id": 82
-                    },
-                    {
-                        "name": "N.P.W.P (Nomor Pokok Wajib Pajak)",
-                        "description": "-",
-                        "required": False,
-                        "id": 83
-                    },
-                    {
-                        "name": "Laporan Keuangan 3 Bulan Terakhir",
-                        "description": "-",
-                        "required": False,
-                        "id": 84
-                    },
-                    {
-                        "name": "Tiket pesawat",
-                        "description": "-",
-                        "required": False,
-                        "id": 85
-                    },
-                    {
-                        "name": "Voucher Hotel",
-                        "description": "-",
-                        "required": False,
-                        "id": 86
-                    },
-                    {
-                        "name": "Itinerary",
-                        "description": "-",
-                        "required": False,
-                        "id": 87
-                    },
-                    {
-                        "name": "Surat Ijin Suami/Orang Tua",
-                        "description": "-",
-                        "required": False,
-                        "id": 88
-                    },
-                    {
-                        "name": "Surat Kuasa",
-                        "description": "Harus di tanda tangan oleh pemohon",
-                        "required": False,
-                        "id": 89
-                    }
-                ],
-                "attachments": [],
-                "sale_price": {
-                    "commission": 70000,
-                    "total_price": 865000,
-                    "currency": "IDR"
-                },
-                "id": 26,
-                "notes": [],
-                "commission": [
-                    {
-                        "charge_type": "RAC",
-                        "charge_code": "rac",
-                        "amount": -70000,
-                        "currency": "IDR",
-                        "commission_agent_id": 2
-                    }
-                ]
-            }
-        ],
-        "total_cost": 25,
-        "provider": "rodextrip_visa",
-        "pax": {
-            "adult": 2,
-            "child": 1,
-            "infant": 0,
-            "elder": 0
-        }
-    }
-
-    param_booker = {
-        "title": "MR",
-        "first_name": "Lala",
-        "last_name": "Lala",
-        "email": "asd@gmail.com",
-        "calling_code": "62",
-        "mobile": "81238823122",
-        "nationality_name": "Indonesia",
-        "booker_seq_id": "",
-        "nationality_code": "ID",
-        "gender": "male"
-    }
-
-    param_contact = [
-        {
-            "title": "MR",
-            "first_name": "Lala",
-            "last_name": "Lala",
-            "email": "asd@gmail.com",
-            "calling_code": "62",
-            "mobile": "81238823122",
-            "nationality_name": "Indonesia",
-            "contact_seq_id": "",
-            "is_booker": True,
-            "nationality_code": "ID",
-            "gender": "male"
-        }
-    ]
-
-    param_passenger = [
-        {
-            "pax_type": "ADT",
-            "first_name": "Lala",
-            "last_name": "Lala",
-            "title": "MR",
-            "birth_date": "2003-01-31",
-            "nationality_name": "Indonesia",
-            "passenger_seq_id": "",
-            "is_booker": False,
-            "is_contact": False,
-            "number": 1,
-            "nationality_code": "ID",
-            "master_visa_Id": "visa_internal_Japan_1",
-            "required": [
-                {
-                    "is_original": True,
-                    "is_copy": False,
-                    "id": 81
-                }
-            ],
-            "handling": [
-                {
-                    "answer": False,
-                    "id": 21
-                }
-            ],
-            "notes": "",
-            "sequence": 1,
-            "passenger_id": "PSG_1",
-            "gender": "male",
-            "is_also_booker": False,
-            "is_also_contact": False
-        },
-        {
-            "pax_type": "ADT",
-            "first_name": "Lili",
-            "last_name": "Lili",
-            "title": "MR",
-            "birth_date": "2003-01-31",
-            "nationality_name": "Indonesia",
-            "passenger_seq_id": "",
-            "is_booker": False,
-            "is_contact": False,
-            "number": 2,
-            "nationality_code": "ID",
-            "master_visa_Id": "visa_internal_Japan_1",
-            "required": [
-                {
-                    "is_original": True,
-                    "is_copy": False,
-                    "id": 2
-                }
-            ],
-            "handling": [
-                {
-                    "answer": False,
-                    "id": 21
-                }
-            ],
-            "notes": "",
-            "sequence": 1,
-            "passenger_id": "PSG_1",
-            "gender": "female",
-            "is_also_booker": False,
-            "is_also_contact": False
-        }
-    ]
-
-    param_search = {
-        "destination": "Japan",
-        "consulate": "Surabaya",
-        "departure_date": "2019-04-10",
-        "provider": "visa_rodextrip"
-    }
-
-    param_context = {
-        'co_uid': 8,
-        'co_agent_id': 2,
-        'co_agent_type_id': 2
-    }
-
-    param_kwargs = {
-        'force_issued': True
-    }
-
-    param_payment = {
-        "member": True,
-        "acquirer_seq_id": "CTP.1411067",
-        'force_issued': False
-        # "member": False,
-        # "seq_id": "PQR.0429001",
-    }
-
-    param_voucher = False
-
     def change_pnr_api(self, data, context):
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data.get('order_number'))], limit=1)
         if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1):
@@ -2118,7 +1304,7 @@ class TtVisa(models.Model):
                         for visa in sell_visa['search_data']:
                             if visa['id'] == pax['master_visa_Id']:
                                 visa_list.append({
-                                    'id': pax['master_visa_Id'],
+                                    'id': visa['id'],
                                     'pax_count': 1,
                                     'service_charges': visa['service_charges']
                                 })
@@ -2194,12 +1380,6 @@ class TtVisa(models.Model):
         country_obj = self.env['res.country']
         provider_obj = self.env['tt.provider']
 
-        provider = provider_obj.env['tt.provider'].search([('code', '=', sell_visa['provider'])], limit=1)
-        country = country_obj.search([('name', '=', booking_data['destination'])], limit=1)
-
-        provider_type_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa')
-        provider_obj = self.env['tt.provider'].sudo().search([('code', '=', sell_visa['provider']), ('provider_type_id', '=', provider_type_id.id)], limit=1)
-
         # "pax_type": "ADT",
         # "pax_count": 1,
         # "amount": 150000,
@@ -2210,15 +1390,29 @@ class TtVisa(models.Model):
         # "charge_code": "fare",
         # "charge_type": "FARE"
 
-        provider_vals = {
-            'state': 'booked',
-            'provider_id': provider.id,
-            'country_id': country.id,
-            'departure_date': datetime.strptime(booking_data['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
-            'hold_date': datetime.now() + timedelta(days=31),
-            'booked_uid': context_gateway['co_uid'],
-            'booked_date': fields.Datetime.now()
+        provider_vals = []
+        country = country_obj.search([('name', '=', booking_data['destination'])], limit=1)
+        pax = {
+            "adult": 0,
+            "child": 0,
+            "infant": 0
         }
+        for rec in sell_visa['provider_bookings']:
+            provider = provider_obj.env['tt.provider'].search([('code', '=', rec['provider'])], limit=1)
+            provider_type_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa')
+            provider_obj = self.env['tt.provider'].sudo().search([('code', '=', rec['provider']), ('provider_type_id', '=', provider_type_id.id)], limit=1)
+
+            provider_vals = {
+                'state': 'booked',
+                'provider_id': provider.id,
+                'country_id': country.id,
+                'departure_date': datetime.strptime(booking_data['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
+                'hold_date': datetime.now() + timedelta(days=31),
+                'booked_uid': context_gateway['co_uid'],
+                'booked_date': fields.Datetime.now()
+            }
+            for pax_type in rec['pax']:
+                pax[pax_type] += rec['pax'][pax_type]
 
         booking_tmp = {
             'state': 'booked',
@@ -2232,7 +1426,10 @@ class TtVisa(models.Model):
             'departure_date': datetime.strptime(booking_data['departure_date'], '%Y-%m-%d').strftime('%d/%m/%Y'),
             'provider_booking_ids': [(0,0,provider_vals)],
             'booked_uid': context_gateway['co_uid'],
-            'booked_date': fields.Datetime.now()
+            'booked_date': fields.Datetime.now(),
+            'adult': pax['adult'],
+            'child': pax['child'],
+            'infant': pax['infant']
         }
         return booking_tmp
 
@@ -2241,61 +1438,77 @@ class TtVisa(models.Model):
         for service_charge in self.sale_service_charge_ids:
             service_charge.unlink()
 
-        for provider in self.provider_booking_ids:
+        # April 30, 2020 - SAM
+        this_service_charges = []
+        # END
+        for idx, provider in enumerate(self.provider_booking_ids):
             sc_value = {}
             for p_sc in provider.cost_service_charge_ids:
-                p_charge_code = p_sc.charge_code  # get charge code
-                p_charge_type = p_sc.charge_type  # get charge type
-                p_pax_type = p_sc.pax_type  # get pax type
-                p_pricelist_id = p_sc.pricelist_id.id
-                if not sc_value.get(p_pricelist_id):  # if sc_value[pax type] not exists
-                    sc_value[p_pricelist_id] = {}
-                if p_charge_type != 'RAC':  # if charge type != RAC
-                    if not sc_value[p_pricelist_id].get(p_charge_type):  # if charge type not exists
-                        sc_value[p_pricelist_id][p_charge_type] = {}
-                        sc_value[p_pricelist_id][p_charge_type].update({
+                p_charge_code = p_sc.charge_code
+                p_charge_type = p_sc.charge_type
+                p_pax_type = p_sc.pax_type
+                if not sc_value.get(p_pax_type):
+                    sc_value[p_pax_type] = {}
+                c_code = ''
+                if p_charge_type != 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_type):
+                        sc_value[p_pax_type][p_charge_type] = {}
+                        sc_value[p_pax_type][p_charge_type].update({
                             'amount': 0,
                             'foreign_amount': 0,
                             'total': 0
                         })
                     c_type = p_charge_type
                     c_code = p_charge_type.lower()
-                elif p_charge_type == 'RAC':  # elif charge type == RAC
-                    if not sc_value[p_pricelist_id].get(p_charge_code):
-                        sc_value[p_pricelist_id][p_charge_code] = {}
-                        sc_value[p_pricelist_id][p_charge_code].update({
+                elif p_charge_type == 'RAC':
+                    if not sc_value[p_pax_type].get(p_charge_code):
+                        sc_value[p_pax_type][p_charge_code] = {}
+                        sc_value[p_pax_type][p_charge_code].update({
                             'amount': 0,
                             'foreign_amount': 0,
                             'total': 0
                         })
                     c_type = p_charge_code
                     c_code = p_charge_code
-                sc_value[p_pricelist_id][c_type].update({
+
+                sc_value[p_pax_type][c_type].update({
                     'charge_type': p_charge_type,
-                    'charge_code': p_charge_code,
-                    'pax_type': p_pax_type,
+                    'charge_code': c_code,
                     'pax_count': p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
-                    'amount': sc_value[p_pricelist_id][c_type]['amount'] + p_sc.amount,
-                    'total': sc_value[p_pricelist_id][c_type]['total'] + p_sc.total,
-                    'foreign_amount': sc_value[p_pricelist_id][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                    'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
+                    'total': sc_value[p_pax_type][c_type]['total'] + p_sc.total,
+                    'foreign_amount': sc_value[p_pax_type][c_type]['foreign_amount'] + p_sc.foreign_amount,
+                    'commission_agent_id': p_sc.commission_agent_id.id
                 })
 
-            values = []
-            for p_pricelist, p_val in sc_value.items():
-                for c_type, c_val in p_val.items():
+            # values = []
+            for p_type,p_val in sc_value.items():
+                for c_type,c_val in p_val.items():
+                    # April 27, 2020 - SAM
                     curr_dict = {
-                        'pricelist_id': p_pricelist,
-                        'booking_visa_id': self.id,
-                        'description': provider.pnr
+                        'pax_type': p_type,
+                        'booking_airline_id': self.id,
+                        'description': provider.pnr,
                     }
+                    # curr_dict['pax_type'] = p_type
+                    # curr_dict['booking_airline_id'] = self.id
+                    # curr_dict['description'] = provider.pnr
+                    # END
                     curr_dict.update(c_val)
-                    values.append((0, 0, curr_dict))
-
-            self.write({
-                'sale_service_charge_ids': values
-            })
+                    # values.append((0,0,curr_dict))
+                    # April 30, 2020 - SAM
+                    this_service_charges.append((0,0,curr_dict))
+                    # END
+        # April 2020 - SAM
+        #     self.write({
+        #         'sale_service_charge_ids': values
+        #     })
+        self.write({
+            'sale_service_charge_ids': this_service_charges
+        })
+        #END
 
     def create_sale_service_charge_value(self, passenger, passenger_ids, context, sell_visa):
         ssc_list = []
@@ -2996,7 +2209,7 @@ class TtVisa(models.Model):
         return pax_list
 
 
-class ActivitySyncProductsChildren(models.TransientModel):
+class VisaSyncProductsChildren(models.TransientModel):
     _name = "visa.sync.product.children.wizard"
     _description = 'Visa Sync Product Children Wizard'
 
