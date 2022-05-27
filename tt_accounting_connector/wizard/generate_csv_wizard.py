@@ -17,8 +17,8 @@ ACC_PRODUCT_LIST = [('tt.reservation.airline', 'Reservation Airline'), ('tt.rese
 class AccGenerateCSVWizard(models.TransientModel):
     _name = 'tt.accounting.generate.csv.wizard'
 
-    date_from = fields.Date(string='Start Date')
-    date_to = fields.Date(string='End Date')
+    date_from = fields.Date(string='Start Date', required=True)
+    date_to = fields.Date(string='End Date', required=True, default=fields.Date.today())
     is_all_models = fields.Boolean('All Products')
     is_all_reservations = fields.Boolean('Only Reservation Products')
     specific_product = fields.Selection(ACC_PRODUCT_LIST, 'Specific Product', default='tt.reservation.airline')
