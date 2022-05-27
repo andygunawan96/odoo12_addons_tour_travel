@@ -27,10 +27,12 @@
                         <separator colspan="6" string="Booking"/>
                         <group>
                             <field name="origin_id"/>
+                            <field name="origin_terminal"/>
                             <field name="departure_date"/>
                         </group>
                         <group>
                             <field name="destination_id"/>
+                            <field name="destination_terminal"/>
                             <field name="arrival_date"/>
                         </group>
                     </group>
