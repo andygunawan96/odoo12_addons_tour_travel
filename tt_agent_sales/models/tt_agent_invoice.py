@@ -247,9 +247,9 @@ class AgentInvoice(models.Model):
 
     def print_reschedule_invoice_api(self, data, context):
         new_data = {}
-        if data.get('bill_to_name'):
+        if data.get('bill_name'):
             new_data.update({
-                'bill_to_name': data.get('bill_to_name')
+                'bill_name': data.get('bill_name')
             })
         if data.get('bill_address'):
             new_data.update({
@@ -305,9 +305,9 @@ class AgentInvoice(models.Model):
 
     def print_invoice_api(self, data, context):
         new_data = {}
-        if data.get('bill_to_name'):
+        if data.get('bill_name'):
             new_data.update({
-                'bill_to_name': data.get('bill_to_name')
+                'bill_name': data.get('bill_name')
             })
         if data.get('bill_address'):
             new_data.update({
@@ -364,9 +364,9 @@ class AgentInvoice(models.Model):
 
     def print_kwitansi_api(self, data, context):
         new_data = {}
-        if data.get('bill_to_name'):
+        if data.get('bill_name'):
             new_data.update({
-                'bill_to_name': data.get('bill_to_name')
+                'bill_name': data.get('bill_name')
             })
         if data.get('bill_address'):
             new_data.update({
