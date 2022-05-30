@@ -1489,7 +1489,7 @@ class TtVisa(models.Model):
                     # April 27, 2020 - SAM
                     curr_dict = {
                         'pax_type': p_type,
-                        'booking_airline_id': self.id,
+                        'booking_visa_id': self.id,
                         'description': provider.pnr,
                     }
                     # curr_dict['pax_type'] = p_type
