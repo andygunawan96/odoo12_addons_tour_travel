@@ -249,7 +249,7 @@ class TtPaymentApiCon(models.Model):
             'proxy_co_uid': req.get('user_id', False),
             'member': req['member'],
             'force_issued': req['force_issued'],
-            'seq_id': req['acquirer_seq_id']
+            'acquirer_seq_id': req['acquirer_seq_id']
         }
         provider = req.get('provider_type')
         action = 'issued'
