@@ -132,7 +132,7 @@ class TtCustomer(models.Model):
         res = {
             'name': self.name,
             'first_name': self.first_name,
-            'face_image': self.face_image_id and [self.face_image_id.url,self.face_image_id.seq_id] or [],
+            'face_image': self.face_image_id and [self.face_image_id.url,self.face_image_id.seq_id, self.face_image_id.file_reference, self.face_image_id.create_date.strftime('%Y-%m-%d %H:%M:%S')] or [],
             'last_name': self.last_name and self.last_name or '',
             'gender': self.gender and self.gender or '',
             'birth_date': self.birth_date and self.birth_date.strftime('%Y-%m-%d') or '',
@@ -656,7 +656,7 @@ class TtCustomerIdentityNumber(models.Model):
         return new_identity
 
     def to_dict(self):
-        image_list = [(rec.url,rec.seq_id,rec.file_reference) for rec in self.identity_image_ids]
+        image_list = [(rec.url,rec.seq_id,rec.file_reference, rec.create_date.strftime('%Y-%m-%d %H:%M:%S')) for rec in self.identity_image_ids]
         return {
             self.identity_type:{
                 'identity_number': self.identity_number,

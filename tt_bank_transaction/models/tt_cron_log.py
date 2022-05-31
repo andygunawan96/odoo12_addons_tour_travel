@@ -165,7 +165,7 @@ class ttCronTopUpValidator(models.Model):
                                                         data = {
                                                             'code': 9903,
                                                             'title': 'ERROR ISSUED using BCA',
-                                                            'message': 'Error issued espay order number %s\n%s' % (book_obj.name, res['error_msg']),
+                                                            'message': 'Error issued BCA order number %s\n%s' % (book_obj.name, res['error_msg']),
                                                         }
                                                         GatewayConnector().telegram_notif_api(data, {})
 
