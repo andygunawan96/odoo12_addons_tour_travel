@@ -24,26 +24,28 @@ class MailMail(models.Model):
         """
         for server_id, batch_ids in self._split_by_server():
             google_auth = self.env['ir.mail_server'].connect()
-            email_user_account = self.env['ir.mail_server'].get_email_name()
-            for batch_id in batch_ids:
-                try:
-
-                    # kalau mau ngirim di cek juga statenya
-                    rec = self.browse(batch_id)
-                    if rec.state == 'outgoing':
-                        attachments_list_file = []
-                        for attachment_obj in rec.attachment_ids:
-                            attachments_list_file.append(attachment_obj.url)
-                        destination_email = {
-                            'to': rec.email_to,
-                            'cc': rec.email_cc,
-                            'bcc': ''
-                        }
-                        gmail.send_message(service=google_auth,destination=destination_email, obj=rec.subject, body=rec.body_html, attachments=attachments_list_file, type='html', email_account=email_user_account)
-                        # setelah ngirim di ganti statenya jadi sent agar tidak ke kirim di cron odoo
-                        rec.state = 'sent'
-                except Exception as e:
-                    _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+            if google_auth:
+                email_user_account = self.env['ir.mail_server'].get_email_name()
+                for batch_id in batch_ids:
+                    try:
+                        # kalau mau ngirim di cek juga statenya
+                        rec = self.browse(batch_id)
+                        if rec.state == 'outgoing':
+                            attachments_list_file = []
+                            for attachment_obj in rec.attachment_ids:
+                                attachments_list_file.append(attachment_obj.url)
+                            destination_email = {
+                                'to': rec.email_to,
+                                'cc': rec.email_cc,
+                                'bcc': ''
+                            }
+                            gmail.send_message(service=google_auth,destination=destination_email, obj=rec.subject, body=rec.body_html, attachments=attachments_list_file, type='html', email_account=email_user_account)
+                            # setelah ngirim di ganti statenya jadi sent agar tidak ke kirim di cron odoo
+                            rec.state = 'sent'
+                    except Exception as e:
+                        _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+            else:
+                _logger.error("Error send email, Please setup email!")
         # for rec in self:
         #     try:
         #         google_auth = self.env['ir.mail_server'].connect()
