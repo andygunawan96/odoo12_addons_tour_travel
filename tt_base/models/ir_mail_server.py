@@ -69,19 +69,23 @@ class IrMailServer(models.Model):
     def connect(self):
         # login using pickle here
         connection = None
+        email = self.get_email_name()
         self._check_folder_exists(def_folder)
         if os.path.exists("%s/token.pickle" % (def_folder)):
             with open("%s/token.pickle" % (def_folder), "rb") as token:
                 creds = pickle.load(token)
-            connection = gmail.connect_gmail(creds)
+            connection = gmail.connect_gmail(creds, email)
         return connection
 
     def get_email_name(self):
         self._check_folder_exists(def_folder)
-        file = open("%s/email_name.txt" % def_folder, "r")
-        email = file.read()
-        file.close()
-        return email
+        try:
+            file = open("%s/email_name.txt" % def_folder, "r")
+            email = file.read()
+            file.close()
+            return email
+        except:
+            return 'no email'
 
 class IrModelData(models.Model):
     _inherit = "ir.model.data"
