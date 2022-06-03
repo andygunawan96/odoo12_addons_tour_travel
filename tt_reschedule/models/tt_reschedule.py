@@ -610,6 +610,28 @@ class TtReschedule(models.Model):
             'done_date': datetime.now()
         })
 
+    # June 2, 2022 - SAM
+    def send_reschedule_from_api(self, co_uid=False):
+        self.send_reschedule_from_button()
+        if co_uid:
+            self.write({'sent_uid': co_uid})
+
+    def validate_reschedule_from_api(self, co_uid=False):
+        self.validate_reschedule_from_button()
+        if co_uid:
+            self.write({'validate_uid': co_uid})
+
+    def finalize_reschedule_from_api(self, co_uid=False):
+        self.finalize_reschedule_from_button()
+        if co_uid:
+            self.write({'final_uid': co_uid})
+
+    def action_done_from_api(self, bypass_po=False, co_uid=False):
+        self.action_done(bypass_po)
+        if co_uid:
+            self.write({'done_uid': co_uid})
+    # END
+
     def cancel_reschedule_from_button(self):
         if self.state in ['validate', 'final']:
             if not self.cancel_message:
@@ -622,6 +644,11 @@ class TtReschedule(models.Model):
             'cancel_uid': self.env.user.id,
             'cancel_date': datetime.now()
         })
+
+    def cancel_reschedule_from_api(self, co_uid=False):
+        self.cancel_reschedule_from_button()
+        if co_uid:
+            self.write({'cancel_uid': co_uid})
 
     def action_create_invoice(self):
         invoice_id = False

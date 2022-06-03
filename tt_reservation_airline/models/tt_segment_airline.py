@@ -2,13 +2,13 @@ from odoo import api, fields, models, _
 # import odoo.addons.decimal_precision as dp
 from ...tools import variables
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class TtSegmentAirline(models.Model):
     _name = 'tt.segment.airline'
     _rec_name = 'name'
-    _order = 'departure_date'
+    _order = 'departure_date_utc'
     _description = 'Segment Airline'
 
     name = fields.Char('Name', compute='_fill_name')
@@ -32,6 +32,7 @@ class TtSegmentAirline(models.Model):
 
     departure_date = fields.Char('Departure Date')
     arrival_date = fields.Char('Arrival Date')
+    departure_date_utc = fields.Datetime('Departure Date (UTC)', compute='_compute_departure_date_utc', store=True, readonly=1)
 
     elapsed_time = fields.Char('Elapsed Time')
 
@@ -59,6 +60,24 @@ class TtSegmentAirline(models.Model):
     # September 2, 2021 - SAM
     cabin_class_str = fields.Char('Cabin Class String', compute='_compute_cabin_class_str', default='', store=True)
     # END
+
+    @api.depends('departure_date', 'origin_id')
+    def _compute_departure_date_utc(self):
+        for rec in self:
+            departure_date = rec.departure_date
+            dept_time_obj = None
+            try:
+                dept_time_obj = datetime.strptime(departure_date, '%Y-%m-%d %H:%M:%S')
+            except:
+                departure_date = None
+
+            origin_obj = rec.origin_id
+            if not origin_obj or not dept_time_obj:
+                rec.departure_date_utc = departure_date
+                continue
+
+            utc_time = origin_obj.timezone_hour
+            rec.departure_date_utc = dept_time_obj - timedelta(hours=utc_time)
 
     @api.depends('cabin_class')
     def _compute_cabin_class_str(self):
