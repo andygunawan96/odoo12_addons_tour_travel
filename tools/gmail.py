@@ -18,13 +18,14 @@ import logging
 import codecs
 from datetime import datetime, timedelta
 import traceback
+from .db_connector import GatewayConnector
 _logger = logging.getLogger(__name__)
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
 SCOPES = ['https://mail.google.com/']
 ##AUTH
 def_folder = '/var/log/tour_travel/gmailcredentials'
-def gmail_authenticate(creds):
-    if not creds or not creds.valid:
+def gmail_authenticate(creds, email):
+    if not creds or creds.valid:
         if creds and creds.expired:
             if creds.refresh_token:
                 try:
@@ -34,12 +35,20 @@ def gmail_authenticate(creds):
                     return build('gmail', 'v1', credentials=creds)
                 except Exception as e:
                     _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+                    # data = {
+                    #     'code': 9903,
+                    #     'title': 'ERROR EMAIL BACKEND',
+                    #     'message': 'Error get authenticate email backend %s\n%s' % (email,  str(e)),
+                    # }
+                    # GatewayConnector().telegram_notif_api(data, {})
                     return False
             else:
+                _logger.error('Error email backend no refresh token')
                 return False
         else:
             return build('gmail', 'v1', credentials=creds)
     else:
+        _logger.error('Error please set email first')
         return False
 
 ##SEARCH EMAIL
@@ -252,8 +261,8 @@ def send_message(service, destination, obj, body, attachments=[], type='plain', 
     ).execute()
 
 
-def connect_gmail(creds):
-    gmail_auth = gmail_authenticate(creds)
+def connect_gmail(creds, email):
+    gmail_auth = gmail_authenticate(creds, email)
     return gmail_auth
 
 def search_email(gmail_auth, keyword, limit_messages=100):
