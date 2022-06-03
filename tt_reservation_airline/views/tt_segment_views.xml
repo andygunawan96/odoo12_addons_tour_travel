@@ -29,6 +29,7 @@
                             <field name="origin_id"/>
                             <field name="origin_terminal"/>
                             <field name="departure_date"/>
+                            <field name="departure_date_utc" groups="base.group_no_one"/>
                         </group>
                         <group>
                             <field name="destination_id"/>
