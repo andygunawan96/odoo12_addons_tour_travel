@@ -20,26 +20,17 @@ class IrMailServer(models.Model):
     def _check_folder_exists(self, folder_path):
         if not os.path.exists(folder_path):
             os.mkdir(folder_path)
-        if not os.path.exists("%s/credentials.json" % folder_path):
-            path = os.path.dirname(__file__)
-            for idx, rec in enumerate(path.split('/')):
-                if 'tt' in rec:
-                    break
-            path = path.split('/')[0:idx]
-            path.append('tools')
-
-            file = open("%s/credentials.json" % ("/".join(path)), "r")
-            data = file.read()
-            file.close()
-            _file = open("%s/credentials.json" % def_folder, 'w+')
-            _file.write(data)
-            _file.close()
 
     def set_email_from_gateway(self, data):
         self._check_folder_exists(def_folder)
         _file = open("%s/email_name.txt" % def_folder, 'w+')
         _file.write(data['email'])
         _file.close()
+
+        _file = open("%s/credentials.json" % def_folder, 'w+')
+        _file.write(data['google_credential_json'])
+        _file.close()
+
         credential = pickle.loads(codecs.decode(data['credential'].encode(), "base64"))
         with open("%s/token.pickle" % def_folder, "wb") as token:
             pickle.dump(credential, token)
