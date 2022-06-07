@@ -1506,6 +1506,17 @@ class TtProviderAirlinePricing(models.Model):
     agent_commission_residual_amount_to = fields.Char('Residual Amount To', readonly=1)
     upline_ids = fields.One2many('tt.provider.airline.pricing.upline', 'pricing_id', string='Uplines')
 
+    agent_commission_discount_percentage = fields.Char('Discount (%)', readonly=1)
+    agent_commission_discount_minimum = fields.Char('Discount Minimum', readonly=1)
+    agent_commission_discount_has_minimum = fields.Char('Has Minimum', readonly=1)
+    agent_commission_discount_maximum = fields.Char('Maximum Discount', readonly=1)
+    agent_commission_discount_has_maximum = fields.Char('Has Maximum', readonly=1)
+    agent_commission_discount_amount = fields.Char('Discount Amount', readonly=1)
+    agent_commission_discount_route = fields.Char('Discount Route', readonly=1)
+    agent_commission_discount_segment = fields.Char('Discount Segment', readonly=1)
+    agent_commission_discount_pax = fields.Char('Discount Pax', readonly=1)
+    agent_commission_discount_infant = fields.Char('Discount Include Infant', readonly=1)
+
     def convert_value(self, data=None, key=None, value=None):
         if isinstance(value, (str, int, float)) and type(value) != bool:
             pass
@@ -2007,6 +2018,16 @@ class TtProviderAirlinePricing(models.Model):
                 'agent_commission_commission_pax': agent_com_data['commission']['agent']['commission_by_amount']['is_pax'],
                 'agent_commission_commission_infant': agent_com_data['commission']['agent']['commission_by_amount']['is_infant'],
                 'agent_commission_residual_amount_to': agent_com_data['commission']['residual_amount_to'],
+                'agent_commission_discount_percentage': agent_com_data['commission']['agent']['discount_by_percentage']['percentage'],
+                'agent_commission_discount_minimum': agent_com_data['commission']['agent']['discount_by_percentage']['minimum'],
+                'agent_commission_discount_has_minimum': agent_com_data['commission']['agent']['discount_by_percentage']['has_minimum'],
+                'agent_commission_discount_maximum': agent_com_data['commission']['agent']['discount_by_percentage']['maximum'],
+                'agent_commission_discount_has_maximum': agent_com_data['commission']['agent']['discount_by_percentage']['has_maximum'],
+                'agent_commission_discount_amount': agent_com_data['commission']['agent']['discount_by_amount']['amount'],
+                'agent_commission_discount_route': agent_com_data['commission']['agent']['discount_by_amount']['is_route'],
+                'agent_commission_discount_segment': agent_com_data['commission']['agent']['discount_by_amount']['is_segment'],
+                'agent_commission_discount_pax': agent_com_data['commission']['agent']['discount_by_amount']['is_pax'],
+                'agent_commission_discount_infant': agent_com_data['commission']['agent']['discount_by_amount']['is_infant'],
             })
         self.write(values)
         _logger.info('Compute Raw Data : DONE')
