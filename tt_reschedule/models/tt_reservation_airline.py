@@ -1133,6 +1133,16 @@ class ReservationAirline(models.Model):
                     res_obj.send_refund_from_button()
                     res_obj.validate_refund_from_button()
                     res_obj.finalize_refund_from_button()
+                    # June 2, 2022 - SAM
+                    if not is_webhook and context.get('co_uid'):
+                        co_uid = context['co_uid']
+                        res_obj.write({
+                            'confirm_uid': co_uid,
+                            'sent_uid': co_uid,
+                            'validate_uid': co_uid,
+                            'finalize_uid': co_uid,
+                        })
+                    # END
                     continue
                 else:
                     try:
@@ -1197,11 +1207,17 @@ class ReservationAirline(models.Model):
                     res_vals.pop('service_type')
                     rsch_obj.write(res_vals)
 
+                    # June 2, 2022 - SAM
+                    co_uid = context.get('co_uid') if not is_webhook else ''
                     if rsv_prov_obj.state == 'issued':
-                        rsch_obj.finalize_reschedule_from_button()
-                        rsch_obj.action_done(bypass_po=True)
+                        # rsch_obj.finalize_reschedule_from_button()
+                        # rsch_obj.action_done(bypass_po=True)
+                        rsch_obj.finalize_reschedule_from_api(co_uid=co_uid)
+                        rsch_obj.action_done_from_api(bypass_po=True, co_uid=co_uid)
                     else:
-                        rsch_obj.cancel_reschedule_from_button()
+                        # rsch_obj.cancel_reschedule_from_button()
+                        rsch_obj.cancel_reschedule_from_api(co_uid=co_uid)
+                    # END
                 else:
                     rsch_obj = self.env['tt.reschedule'].create(res_vals)
 
@@ -1221,18 +1237,27 @@ class ReservationAirline(models.Model):
                     # END
 
                     # VIN: 22/10/2020 Check klo book tetep di catet cman ledger agent tidak terpotong
+                    # June 2, 2022 - SAM
                     if rsv_prov_obj.state == 'issued':
-                        # July 13, 2020 - SAM
-                        # Sementara diasumsikan untuk seluruh proses berhasil
-                        rsch_obj.confirm_reschedule_from_api(context.get('co_uid'))
-                        rsch_obj.send_reschedule_from_button()
-                        rsch_obj.validate_reschedule_from_button()
-                        rsch_obj.finalize_reschedule_from_button()
-                        # Klo dari API dia bypass PO
-                        rsch_obj.action_done(bypass_po=True)
-                        # END
+                        # # July 13, 2020 - SAM
+                        # # Sementara diasumsikan untuk seluruh proses berhasil
+                        # rsch_obj.confirm_reschedule_from_api(context.get('co_uid'))
+                        # rsch_obj.send_reschedule_from_button()
+                        # rsch_obj.validate_reschedule_from_button()
+                        # rsch_obj.finalize_reschedule_from_button()
+                        # # Klo dari API dia bypass PO
+                        # rsch_obj.action_done(bypass_po=True)
+                        # # END
+                        co_uid = context.get('co_uid') if not is_webhook else False
+                        rsch_obj.confirm_reschedule_from_api(co_uid=co_uid)
+                        rsch_obj.send_reschedule_from_api(co_uid=co_uid)
+                        rsch_obj.validate_reschedule_from_api(co_uid=co_uid)
+                        rsch_obj.finalize_reschedule_from_api(co_uid=co_uid)
+                        rsch_obj.action_done_from_api(bypass_po=True, co_uid=co_uid)
                     else:
-                        rsch_obj.cancel_reschedule_from_button()
+                        # rsch_obj.cancel_reschedule_from_button()
+                        co_uid = context.get('co_uid') if not is_webhook else False
+                        rsch_obj.cancel_reschedule_from_api(co_uid=co_uid)
 
             # Remove passenger from list
             # Get New Data
@@ -1426,6 +1451,16 @@ class ReservationAirline(models.Model):
                         res_obj.send_refund_from_button()
                         res_obj.validate_refund_from_button()
                         res_obj.finalize_refund_from_button()
+                        # June 2, 2022 - SAM
+                        co_uid = context.get('co_uid')
+                        if not is_webhook and co_uid:
+                            res_obj.write({
+                                'confirm_uid': co_uid,
+                                'sent_uid': co_uid,
+                                'validate_uid': co_uid,
+                                'finalize_uid': co_uid,
+                            })
+                        # END
 
                 # for rec in new_provider_bookings:
                 #     rsv_prov_obj = resv_provider_dict.get(rec['provider_id'], None)
