@@ -506,12 +506,9 @@ class TtAgent(models.Model):
                 #                                               offset=req['minimum'],
                 #                                               limit=req['maximum']-req['minimum'],
                 #                                             order='create_date desc')
-                if len(dom) > 1:
-                    list_obj = self.env['tt.reservation.%s'% (type)].search(dom,order='create_date desc')
-                else:
-                    list_obj = self.env['tt.reservation.%s'% (type)].search(dom,order='create_date desc',
-                                                                            offset=req['minimum'],
-                                                                            limit=req['maximum']-req['minimum'])
+                list_obj = self.env['tt.reservation.%s'% (type)].search(dom,order='create_date desc',
+                                                                        offset=req['minimum'],
+                                                                        limit=req['maximum']-req['minimum'])
                 if len(list_obj.ids)>0:
                     res_dict[type] = []
                 for rec in list_obj:
