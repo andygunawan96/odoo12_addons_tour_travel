@@ -38,8 +38,8 @@ class TtReservationPeriksain(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1000)
 
-    def action_issued_periksain(self,co_uid,customer_parent_id,acquirer_id = False):
-        super(TtReservationPeriksain, self).action_issued_periksain(co_uid,customer_parent_id,acquirer_id)
+    def action_issued_periksain(self,data):
+        super(TtReservationPeriksain, self).action_issued_periksain(data)
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_periksain', '=', True)])

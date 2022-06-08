@@ -119,6 +119,9 @@ class ReservationGroupBooking(models.Model):
 
     passenger_ids = fields.One2many('tt.reservation.passenger.groupbooking', 'booking_id', 'Passengers')
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     ho_final_ledger_id = fields.Many2one('tt.ledger')
 
     sale_service_charge_ids = fields.One2many('tt.service.charge', 'booking_groupbooking_id', 'Service Charge',
@@ -176,6 +179,15 @@ class ReservationGroupBooking(models.Model):
                 for provider_obj in rec.provider_booking_ids:
                     pnr.append(provider_obj.pnr)
                 rec.pnr = ", ".join(pnr)
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):

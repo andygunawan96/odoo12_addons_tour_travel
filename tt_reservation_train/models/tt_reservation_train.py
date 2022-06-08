@@ -24,6 +24,9 @@ class TtReservationTrain(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.train', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     provider_booking_ids = fields.One2many('tt.provider.train', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
 
     journey_ids = fields.One2many('tt.journey.train', 'booking_id', 'Journeys', readonly=True, states={'draft': [('readonly', False)]})
@@ -33,6 +36,15 @@ class TtReservationTrain(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_train.tt_reservation_train_form_views")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
@@ -113,8 +125,15 @@ class TtReservationTrain(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_api_train(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_train(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_train(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_train(data)
 
     def action_partial_booked_api_train(self,context,pnr_list=[],hold_date=False):
         if type(hold_date) != datetime:
@@ -145,12 +164,12 @@ class TtReservationTrain(models.Model):
             'refund_date': datetime.now()
         })
 
-    def action_issued_train(self,co_uid,customer_parent_id,acquirer_id = False):
+    def action_issued_train(self,data):
         self.write({
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'issued_uid': data.get('co_uid', self.env.user.id),
+            'customer_parent_id': data['customer_parent_id']
         })
         for provider_obj in self.provider_booking_ids:
             for journey in provider_obj.journey_ids:
@@ -478,7 +497,13 @@ class TtReservationTrain(models.Model):
                 if payment_res['error_code'] != 0:
                     raise RequestException(payment_res['error_code'])
 
-            self.action_issued_api_train(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_train(issued_req, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',

@@ -1,5 +1,6 @@
 from odoo import models,api,fields
-from datetime import datetime
+from datetime import datetime, timedelta
+import base64
 
 
 class ReservationEvent(models.Model):
@@ -36,7 +37,7 @@ class ReservationEvent(models.Model):
         tmp += 'Contact Phone : %s\n' % (self.contact_phone,)
         return tmp
 
-    def action_create_invoice(self, acquirer_id, co_uid, customer_parent_id):
+    def action_create_invoice(self, data):
         invoice_id = self.invoice_line_ids.filtered(lambda x: x.state in ['bill', 'bill2', 'paid'])
 
         if not invoice_id:
@@ -46,7 +47,7 @@ class ReservationEvent(models.Model):
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
                 'state': 'confirm',
-                'confirmed_uid': co_uid,
+                'confirmed_uid': data['co_uid'],
                 'confirmed_date': datetime.now()
             })
 
@@ -57,7 +58,7 @@ class ReservationEvent(models.Model):
             'reference': self.name,
             'desc': self.get_segment_description(),
             'admin_fee': self.payment_acquirer_number_id.fee_amount,
-            'customer_parent_id': customer_parent_id
+            'customer_parent_id': self.customer_parent_id.id
         })
 
         discount = 0
@@ -81,27 +82,50 @@ class ReservationEvent(models.Model):
                 'quantity': 1,
             })
 
-        ##membuat payment dalam draft
-        if acquirer_id:
-            # B2B
-            acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', acquirer_id['seq_id'])], limit=1)
-        else:
-            # B2C
-            acquirer_obj = self.payment_acquirer_number_id.payment_acquirer_id
-
         inv_line_obj.discount = abs(discount)
 
-        payment_obj = self.env['tt.payment'].create({
+        payref_id_list = []
+        for idx, att in enumerate(data['payment_ref_attachment']):
+            file_ext = att['name'].split(".")[-1]
+            temp_filename = '%s_Payment_Ref_%s.%s' % (str(idx), invoice_id.name, file_ext)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': temp_filename,
+                    'file_reference': 'Payment Reference',
+                    'file': att['file']
+                },
+                {
+                    'co_agent_id': self.agent_id.id,
+                    'co_uid': data['co_uid'],
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            payref_id_list.append(upc_id.id)
+
+        payment_vals = {
             'agent_id': self.agent_id.id,
-            'acquirer_id': acquirer_obj.id,
+            'acquirer_id': data['acquirer_id'],
             'real_total_amount': invoice_id.grand_total,
-            'customer_parent_id': self.customer_parent_id.id,
-            'confirm_uid': co_uid,
+            'customer_parent_id': data['customer_parent_id'],
+            'confirm_uid': data['co_uid'],
             'confirm_date': datetime.now()
-        })
+        }
+
+        if payref_id_list:
+            payment_vals.update({
+                'reference': data.get('payment_reference', ''),
+                'payment_image_ids': [(6, 0, payref_id_list)]
+            })
+
+        ##membuat payment dalam draft
+        payment_obj = self.env['tt.payment'].create(payment_vals)
 
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
             'pay_amount': invoice_id.grand_total
         })
+
+    def action_issued_event(self,data):
+        super(ReservationEvent, self).action_issued_event(data)
+        self.action_create_invoice(data)

@@ -80,6 +80,9 @@
                 </div>
             </xpath>
             <field name="child" position="replace"/>
+            <field name="agent_nta" position="after">
+                <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+            </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Trip Information"/>
                 <group>

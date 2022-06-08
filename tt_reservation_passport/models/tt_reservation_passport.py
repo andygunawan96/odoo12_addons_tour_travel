@@ -73,6 +73,10 @@ class TtPassport(models.Model):
 
     passenger_ids = fields.One2many('tt.reservation.passport.order.passengers', 'passport_id',
                                     'Passport Order Passengers', readonly=0)
+
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')  #
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
@@ -108,6 +112,15 @@ class TtPassport(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_passport.tt_reservation_passport_view_form")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):

@@ -88,6 +88,9 @@
             <field name="adult" position="after">
                 <field name="senior" readonly="1"/>
             </field>
+            <field name="agent_nta" position="after">
+                <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+            </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>
                     <field name="voucher_url_ids">

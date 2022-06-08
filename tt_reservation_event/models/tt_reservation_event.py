@@ -85,6 +85,9 @@ class ReservationEvent(models.Model):
     provider_booking_ids = fields.One2many('tt.provider.event', 'booking_id', string="Provider Booking", readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.event', 'booking_id', string="Passengers")
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     information = fields.Text('Additional Information', help='Information from vendor to customer / agent')
     special_request = fields.Text('Special Request', help='Request / Notes from customer')
     file_upload = fields.Text('File Upload')
@@ -98,6 +101,15 @@ class ReservationEvent(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_event.tt_reservation_event_form_view")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
@@ -528,13 +540,14 @@ class ReservationEvent(models.Model):
     def payment_event_api(self, data, context):
         return self.payment_reservation_api('event', data, context)
 
-    def action_issued_event(self, context):
-        self.state = 'issued'
-        self.issued_uid = context['co_uid']
-        self.issued_date = datetime.now()
-
-    def action_create_invoice(self, acq_id, uid, customer_parent_id):
-        return True
+    def action_issued_event(self, data):
+        values = {
+            'state': 'issued',
+            'issued_date': datetime.now(),
+            'issued_uid': data.get('co_uid', self.env.user.id),
+            'customer_parent_id': data['customer_parent_id']
+        }
+        self.write(values)
 
     def issued_booking_api(self, data, context):
         try:
@@ -547,14 +560,15 @@ class ReservationEvent(models.Model):
 
             acquirer_id, customer_parent_id = book_obj.get_acquirer_n_c_parent_id(data)
 
-            book_obj.sudo().write({
+            req = {
+                'co_uid': context['co_uid'],
                 'customer_parent_id': customer_parent_id,
-            })
-            book_obj.action_issued_event(context)
+                'acquirer_id': acquirer_id,
+                'payment_reference': data.get('payment_reference', ''),
+                'payment_ref_attachment': data.get('payment_ref_attachment', []),
+            }
+            book_obj.action_issued_event(req)
             self.env.cr.commit()
-
-            if book_obj.state == 'issued':
-                book_obj.action_create_invoice(acquirer_id, context['co_uid'], customer_parent_id)
 
             response = {
                 'order_id': book_obj.id,

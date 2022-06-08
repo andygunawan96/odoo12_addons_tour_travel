@@ -29,6 +29,9 @@ class Reservationphc(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.phc', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     state_vendor = fields.Selection(variables.STATE_VENDOR, 'State Vendor', default='draft')
 
     origin_id = fields.Many2one('tt.destinations', 'Test Area', readonly=True, states={'draft': [('readonly', False)]})
@@ -61,6 +64,15 @@ class Reservationphc(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_phc.tt_reservation_phc_form_views")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.multi
     def action_set_as_draft(self):
@@ -110,12 +122,12 @@ class Reservationphc(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_phc(self,co_uid, customer_parent_id, acquirer_id = False):
+    def action_issued_phc(self,data):
         write_values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id,
+            'issued_uid': data.get('co_uid', self.env.user.id),
+            'customer_parent_id': data['customer_parent_id'],
             'state_vendor': 'new_order',
         }
 
@@ -152,8 +164,15 @@ class Reservationphc(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_api_phc(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_phc(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_phc(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_phc(data)
 
     @api.multi
     def action_set_as_cancel(self):
@@ -830,7 +849,14 @@ class Reservationphc(models.Model):
         #     self.action_issued_phc(context)
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_phc(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_phc(issued_req, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             self.action_booked_api_phc(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):

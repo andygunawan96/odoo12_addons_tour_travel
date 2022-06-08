@@ -29,6 +29,9 @@ class ReservationLabPintar(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.labpintar', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     # issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
     # issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
     # issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
@@ -64,6 +67,15 @@ class ReservationLabPintar(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_labpintar.tt_reservation_labpintar_form_views")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.multi
     def action_set_as_draft(self):
@@ -117,7 +129,7 @@ class ReservationLabPintar(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_labpintar(self, co_uid, customer_parent_id, acquirer_id = False):
+    def action_issued_labpintar(self, data):
         # issued_pending_hold_date = datetime.max
         # for provider_obj in self.provider_booking_ids:
         #     if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
@@ -126,11 +138,11 @@ class ReservationLabPintar(models.Model):
         write_values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
+            'issued_uid': data.get('co_uid', self.env.user.id),
             # 'issued_pending_hold_date': issued_pending_hold_date,
             # 'issued_pending_date': datetime.now(),
             # 'issued_pending_uid': co_uid,
-            'customer_parent_id': customer_parent_id,
+            'customer_parent_id': data['customer_parent_id'],
             'state_vendor': 'new_order',
         }
 
@@ -167,8 +179,15 @@ class ReservationLabPintar(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_api_labpintar(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_labpintar(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_labpintar(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_labpintar(data)
 
     # def action_issued_labpintar(self,context):
     #     values = {
@@ -609,7 +628,14 @@ class ReservationLabPintar(models.Model):
         #     self.action_issued_labpintar(context)
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_labpintar(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_labpintar(issued_req, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             self.action_booked_api_labpintar(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):

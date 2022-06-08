@@ -96,6 +96,9 @@
                             class="oe_stat_button" states="booked,issued,done"
                             string="Print Itinerary" type="object" icon="fa-print"/>
                 </xpath>
+                <field name="agent_nta" position="after">
+                    <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+                </field>
                 <xpath expr="//group[@name='paxgroup']" position="before">
                     <separator string="Information"/>
                     <group>

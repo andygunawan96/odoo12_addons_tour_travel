@@ -29,6 +29,9 @@ class ReservationSwabExpress(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.swabexpress', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     # issued_pending_uid = fields.Many2one('res.users', 'Issued Pending by', readonly=True)
     # issued_pending_date = fields.Datetime('Issued Pending Date', readonly=True)
     # issued_pending_hold_date = fields.Datetime('Pending Date', readonly=True)
@@ -64,6 +67,15 @@ class ReservationSwabExpress(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_swabexpress.tt_reservation_swabexpress_form_views")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.multi
     def action_set_as_draft(self):
@@ -117,7 +129,7 @@ class ReservationSwabExpress(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_swabexpress(self, co_uid, customer_parent_id, acquirer_id = False):
+    def action_issued_swabexpress(self, data):
         # issued_pending_hold_date = datetime.max
         # for provider_obj in self.provider_booking_ids:
         #     if issued_pending_hold_date > provider_obj.issued_pending_hold_date:
@@ -126,11 +138,11 @@ class ReservationSwabExpress(models.Model):
         write_values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
+            'issued_uid': data.get('co_uid', self.env.user.id),
             # 'issued_pending_hold_date': issued_pending_hold_date,
             # 'issued_pending_date': datetime.now(),
             # 'issued_pending_uid': co_uid,
-            'customer_parent_id': customer_parent_id,
+            'customer_parent_id': data['customer_parent_id'],
             'state_vendor': 'new_order',
         }
 
@@ -167,8 +179,15 @@ class ReservationSwabExpress(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_api_swabexpress(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_swabexpress(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_swabexpress(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_swabexpress(data)
 
     # def action_issued_swabexpress(self,context):
     #     values = {
@@ -598,7 +617,14 @@ class ReservationSwabExpress(models.Model):
         #     self.action_issued_swabexpress(context)
         if all(rec.state == 'issued' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_swabexpress(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_swabexpress(issued_req, context)
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             self.action_booked_api_swabexpress(context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
