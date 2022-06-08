@@ -611,6 +611,22 @@
                                     <field name="agent_commission_ho_charge_infant"/>
                                 </group>
                             </group>
+                            <group string="Discount">
+                                <group>
+                                    <field name="agent_commission_discount_percentage"/>
+                                    <field name="agent_commission_discount_minimum"/>
+                                    <field name="agent_commission_discount_has_minimum"/>
+                                    <field name="agent_commission_discount_maximum"/>
+                                    <field name="agent_commission_discount_has_maximum"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_discount_amount"/>
+                                    <field name="agent_commission_discount_route"/>
+                                    <field name="agent_commission_discount_segment"/>
+                                    <field name="agent_commission_discount_pax"/>
+                                    <field name="agent_commission_discount_infant"/>
+                                </group>
+                            </group>
                             <group string="Uplines">
                                 <field name="upline_ids" nolabel="1">
                                     <tree>

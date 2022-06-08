@@ -2221,24 +2221,59 @@ class ReservationAirline(models.Model):
 
             refund_line_ids = []
 
+            # June 3, 2022 - SAM
+            # TODO Tambahin pengecekkan untuk pnr yang di proses, untuk yang sekarang asumsi 1 order number ter refund
+            # pnr_list = []
+            # for prov in data['provider_bookings']:
+            #     pnr = prov['pnr']
+            #     pnr_list.append(pnr)
+            # END
+
             # July 21, 2020 - SAM
             penalty_amount = 0.0
             for prov_obj in airline_obj.provider_booking_ids:
+                # if prov_obj.pnr not in pnr_list:
+                #     continue
                 penalty_amount += prov_obj.penalty_amount
 
             total_pax = len(airline_obj.passenger_ids)
             charge_fee = penalty_amount / total_pax
             # END
+            # June 6, 2022 - SAM
+            total_after_sales_fee = 0.0
+            for rsch_obj in airline_obj.reschedule_ids:
+                state = rsch_obj.state
+                if state not in ['confirm', 'sent', 'validate', 'final', 'done']:
+                    continue
+
+                total_amount = rsch_obj.total_amount
+                admin_fee = rsch_obj.admin_fee
+                rsv_amount = total_amount - admin_fee
+                if rsv_amount < 0:
+                    rsv_amount = 0
+                total_after_sales_fee += rsv_amount
+                # total_after_sales_fee += total_amount
+            after_sales_fee = total_after_sales_fee / total_pax
+            # END
             for pax in airline_obj.passenger_ids:
-                pax_price = 0
+                # pax_price = 0
+                pax_price = after_sales_fee
+                additional_charge_fee = 0
                 for cost in pax.cost_service_charge_ids:
-                    if cost.charge_type != 'RAC':
+                    # pnr = cost.description
+                    # if pnr and pnr not in pnr_list:
+                    #     continue
+                    if cost.charge_type not in ['RAC', 'DISC']:
                         pax_price += cost.amount
+                        if cost.charge_type == 'ROC':
+                            additional_charge_fee += cost.amount
+
+                total_charge_fee = charge_fee + additional_charge_fee
                 line_obj = self.env['tt.refund.line'].create({
                     'name': (pax.title or '') + ' ' + (pax.name or ''),
                     'birth_date': pax.birth_date,
                     'pax_price': pax_price,
-                    'charge_fee': charge_fee,
+                    'charge_fee': total_charge_fee,
                 })
                 refund_line_ids.append(line_obj.id)
 

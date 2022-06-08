@@ -1065,16 +1065,21 @@ class ReservationAirline(models.Model):
                     for psg in commit_data['passengers']:
                         psg_obj = resv_passenger_number_dict[psg['passenger_number']]
                         pax_price = 0
+                        additional_charge_fee = 0
                         for cost in psg_obj.cost_service_charge_ids:
                             if cost.description != commit_data['pnr']:
                                 continue
-                            if cost.charge_type != 'RAC':
+                            if cost.charge_type not in ['RAC', 'DISC']:
                                 pax_price += cost.amount
+                                if cost.charge_type == 'ROC':
+                                    additional_charge_fee += cost.amount
+
+                        total_charge_fee = charge_fee + additional_charge_fee
                         line_obj = self.env['tt.refund.line'].create({
                             'name': (psg_obj.title or '') + ' ' + (psg_obj.name or ''),
                             'birth_date': psg_obj.birth_date,
                             'pax_price': pax_price,
-                            'charge_fee': charge_fee,
+                            'charge_fee': total_charge_fee,
                         })
                         refund_line_ids.append(line_obj.id)
 
@@ -1414,16 +1419,21 @@ class ReservationAirline(models.Model):
                         for psg in commit_data['passengers']:
                             psg_obj = new_resv_passenger_number_dict[psg['passenger_number']]
                             pax_price = 0
+                            additional_charge_fee = 0
                             for cost in psg_obj.cost_service_charge_ids:
                                 if cost.description != commit_data['pnr']:
                                     continue
-                                if cost.charge_type != 'RAC':
+                                if cost.charge_type not in ['RAC', 'DISC']:
                                     pax_price += cost.amount
+                                    if cost.charge_type == 'ROC':
+                                        additional_charge_fee += cost.amount
+
+                            total_charge_fee = charge_fee + additional_charge_fee
                             line_obj = self.env['tt.refund.line'].create({
                                 'name': (psg_obj.title or '') + ' ' + (psg_obj.name or ''),
                                 'birth_date': psg_obj.birth_date,
                                 'pax_price': pax_price,
-                                'charge_fee': charge_fee,
+                                'charge_fee': total_charge_fee,
                             })
                             refund_line_ids.append(line_obj.id)
 
