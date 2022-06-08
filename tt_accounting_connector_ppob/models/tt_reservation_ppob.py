@@ -38,8 +38,8 @@ class TtReservationPPOB(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1000)
 
-    def action_issued_ppob(self, co_uid, customer_parent_id, acquirer_id=False):
-        super(TtReservationPPOB, self).action_issued_ppob(co_uid, customer_parent_id, acquirer_id)
+    def action_issued_ppob(self, data):
+        super(TtReservationPPOB, self).action_issued_ppob(data)
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_ppob', '=', True)])

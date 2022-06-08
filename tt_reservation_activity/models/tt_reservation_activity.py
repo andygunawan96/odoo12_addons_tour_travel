@@ -102,6 +102,9 @@ class ReservationActivity(models.Model):
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.activity', 'booking_id', string='Passengers')
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     file_upload = fields.Text('File Upload')
     voucher_url = fields.Text('Voucher URL')
     voucher_url_ids = fields.One2many('tt.reservation.activity.vouchers', 'booking_id', 'Voucher URLs')
@@ -148,6 +151,15 @@ class ReservationActivity(models.Model):
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
             rec.total_nta = rec.total - rec.total_commission
 
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
+
     def check_provider_state(self,context,pnr_list=[],hold_date=False,req={}):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
@@ -157,7 +169,13 @@ class ReservationActivity(models.Model):
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_activity(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_activity(issued_req, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             # refund
             self.action_refund()
@@ -309,8 +327,15 @@ class ReservationActivity(models.Model):
             'state': 'issued',
         })
 
-    def action_issued_api_activity(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_activity(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_activity(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_activity(data)
 
     def action_reverse_activity(self,context):
         self.write({
@@ -1113,7 +1138,7 @@ class ReservationActivity(models.Model):
             except Exception as e:
                 _logger.info('Error Create Email Queue')
 
-    def action_issued_activity(self,co_uid,customer_parent_id,acquirer_id = False):
+    def action_issued_activity(self,data):
         if self.state != 'issued':
             pnr_list = []
             provider_list = []
@@ -1126,8 +1151,8 @@ class ReservationActivity(models.Model):
             self.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': co_uid or self.env.user.id,
-                'customer_parent_id': customer_parent_id,
+                'issued_uid': data.get('co_uid', self.env.user.id),
+                'customer_parent_id': data['customer_parent_id'],
                 'pnr': ', '.join(pnr_list),
                 'provider_name': ','.join(provider_list),
                 'carrier_name': ','.join(carrier_list),

@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
+import base64
 
 
 class ReservationOffline(models.Model):

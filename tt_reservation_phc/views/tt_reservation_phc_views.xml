@@ -118,6 +118,9 @@
                     <field name="verified_date" readonly="1" class="oe_inline"/>
                 </div>
             </xpath>
+            <field name="agent_nta" position="after">
+                <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+            </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <group>
                     <group attrs="{'invisible': [('split_from_resv_id', '=', False)]}">

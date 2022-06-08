@@ -124,6 +124,9 @@ class IssuedOffline(models.Model):
     line_ids = fields.One2many('tt.reservation.offline.lines', 'booking_id', 'Lines')
     passenger_ids = fields.One2many('tt.reservation.offline.passenger', 'booking_id', 'Passengers')
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     incentive_amount = fields.Monetary('Insentif')
     vendor_amount = fields.Float('Vendor Amount')
     ho_final_amount = fields.Float('HO Amount', readonly=True, compute='compute_final_ho')
@@ -173,6 +176,15 @@ class IssuedOffline(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_offline.issued_offline_view_form")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('admin_fee_id', 'input_total', 'passenger_ids.name', 'line_ids.pnr', 'line_ids.check_in', 'line_ids.check_out', 'line_ids.obj_qty')
     def _compute_admin_fee(self):

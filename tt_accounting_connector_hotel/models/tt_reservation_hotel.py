@@ -38,8 +38,8 @@ class TtReservationHotel(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1000)
 
-    def action_issued(self, acquirer_id, co_uid, kwargs=False):
-        res = super(TtReservationHotel, self).action_issued(acquirer_id, co_uid, kwargs)
+    def action_issued(self, data, kwargs=False):
+        res = super(TtReservationHotel, self).action_issued(data['acquirer_id'], data['co_uid'], kwargs)
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_hotel', '=', True)])

@@ -185,6 +185,7 @@
                                 <field name="incentive_amount" groups="tt_base.group_tt_tour_travel" attrs="{'invisible': [('state_offline', '=', 'draft')]}"/>
                                 <field name="nta_price" groups="tt_base.group_tt_tour_travel"/>
                                 <field name="agent_nta_price"/>
+                                <field name="total_channel_upsell"/>
                                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel"/>
                                 <field name="admin_fee" groups="tt_base.group_tt_tour_travel"/>
                                 <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel"/>

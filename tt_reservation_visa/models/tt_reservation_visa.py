@@ -110,6 +110,10 @@ class TtVisa(models.Model):
     ho_validate_date = fields.Datetime('HO Validate Date', readonly=1)
 
     passenger_ids = fields.One2many('tt.reservation.visa.order.passengers', 'visa_id', 'Visa Order Passengers')
+
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     commercial_state = fields.Char('Payment Status', readonly=1, compute='_compute_commercial_state')  #
     confirmed_date = fields.Datetime('Confirmed Date', readonly=1)
     confirmed_uid = fields.Many2one('res.users', 'Confirmed By', readonly=1)
@@ -155,6 +159,15 @@ class TtVisa(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_visa.tt_reservation_visa_view_form")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):

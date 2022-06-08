@@ -47,12 +47,25 @@ class ReservationTour(models.Model):
     provider_booking_ids = fields.One2many('tt.provider.tour', 'booking_id', string='Provider Booking',
                                            readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.tour', 'booking_id', string='Passengers')
+
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', default=lambda self: self.env.ref('tt_reservation_tour.tt_provider_type_tour'))
     payment_method_tour = fields.Selection(PAYMENT_METHOD, 'Tour Payment Method')
     installment_invoice_ids = fields.One2many('tt.installment.invoice', 'booking_id', 'Installments')
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_tour.tt_reservation_tour_form_view")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('tour_id')
     @api.onchange('tour_id')
@@ -97,7 +110,14 @@ class ReservationTour(models.Model):
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_tour(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_tour(issued_req, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             # refund
             self.action_refund()
@@ -129,7 +149,7 @@ class ReservationTour(models.Model):
             })
             # raise RequestException(1006)
 
-    def action_issued_tour(self,co_uid,customer_parent_id,acquirer_id = False):
+    def action_issued_tour(self,data):
         if self.state != 'issued':
             pnr_list = []
             provider_list = []
@@ -142,8 +162,8 @@ class ReservationTour(models.Model):
             self.write({
                 'state': 'issued',
                 'issued_date': datetime.now(),
-                'issued_uid': co_uid or self.env.user.id,
-                'customer_parent_id': customer_parent_id,
+                'issued_uid': data.get('co_uid', self.env.user.id),
+                'customer_parent_id': data['customer_parent_id'],
                 'pnr': ', '.join(pnr_list),
                 'provider_name': ','.join(provider_list),
                 'carrier_name': ','.join(carrier_list),
@@ -168,8 +188,15 @@ class ReservationTour(models.Model):
             except Exception as e:
                 _logger.info('Error Create Email Queue')
 
-    def action_issued_api_tour(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_tour(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_tour(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_tour(data)
 
     def call_create_invoice(self, acquirer_id, co_uid, customer_parent_id, payment_method):
         _logger.info('Creating Invoice for ' + self.name)
