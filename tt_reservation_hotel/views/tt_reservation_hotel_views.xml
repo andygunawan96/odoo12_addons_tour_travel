@@ -458,6 +458,9 @@
                 <button name="print_ho_invoice" class="oe_stat_button" states="issued,done" string="Print Invoice (HO)" type="object" icon="fa-print" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                 <button name="print_itinerary" class="oe_stat_button" states="booked,issued,done" string="Print Itinerary" type="object" icon="fa-print"/>
             </xpath>
+            <field name="agent_nta" position="after">
+                <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+            </field>
             <xpath expr="//group[@name='paxgroup']" position="before">
                 <separator string="Trip Information"/>
                 <group>

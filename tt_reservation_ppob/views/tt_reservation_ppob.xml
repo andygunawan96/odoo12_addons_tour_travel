@@ -76,7 +76,9 @@
                             string="Print Itinerary" type="object" icon="fa-print"/>
                 </div>
             </xpath>
-
+            <field name="agent_nta" position="after">
+                <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
+            </field>
             <xpath expr="//page[@name='anchor']" position="before">
                 <page string="Passengers">
                     <field name="passenger_ids">

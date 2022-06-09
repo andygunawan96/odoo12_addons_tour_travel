@@ -31,6 +31,9 @@ class ReservationInsurance(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.insurance', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     provider_booking_ids = fields.One2many('tt.provider.insurance', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default= lambda self: self.env.ref('tt_reservation_insurance.tt_provider_type_insurance'))
@@ -47,6 +50,15 @@ class ReservationInsurance(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_insurance.tt_reservation_insurance_form_views")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('provider_booking_ids', 'provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
@@ -122,8 +134,15 @@ class ReservationInsurance(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_api_insurance(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_insurance(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_insurance(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_insurance(data)
 
     def action_reverse_insurance(self,context):
         self.write({
@@ -137,12 +156,12 @@ class ReservationInsurance(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_insurance(self,co_uid,customer_parent_id,acquirer_id = False):
+    def action_issued_insurance(self,data):
         values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'issued_uid': data.get('co_uid', self.env.user.id),
+            'customer_parent_id': data['customer_parent_id']
         }
         if not self.booked_date:
             values.update({
@@ -534,7 +553,14 @@ class ReservationInsurance(models.Model):
             # issued
             ##credit limit
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
-            self.action_issued_api_insurance(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_insurance(issued_req, context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
@@ -648,7 +674,13 @@ class ReservationInsurance(models.Model):
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
                     raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
 
-            self.action_issued_api_insurance(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_insurance(issued_req, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',

@@ -25,6 +25,9 @@ class TtReservationBus(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.bus', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     provider_booking_ids = fields.One2many('tt.provider.bus', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
     journey_ids = fields.One2many('tt.journey.bus', 'booking_id', 'Journeys', readonly=True,
                                   states={'draft': [('readonly', False)]})
@@ -48,6 +51,15 @@ class TtReservationBus(models.Model):
                 rec.reconcile_state = 'cancel'
             else:
                 rec.reconcile_state = 'not_reconciled'
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.multi
     def action_set_as_draft(self):
@@ -118,8 +130,15 @@ class TtReservationBus(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_api_bus(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_bus(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_bus(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_bus(data)
 
     def action_partial_booked_api_bus(self,context,pnr_list=[],hold_date=False):
         if type(hold_date) != datetime:
@@ -150,12 +169,12 @@ class TtReservationBus(models.Model):
             'refund_date': datetime.now()
         })
 
-    def action_issued_bus(self,co_uid,customer_parent_id,acquirer_id = False):
+    def action_issued_bus(self,data):
         self.write({
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'issued_uid': data.get('co_uid', self.env.user.id),
+            'customer_parent_id': data['customer_parent_id']
         })
 
         try:
@@ -416,7 +435,13 @@ class TtReservationBus(models.Model):
                 if payment_res['error_code'] != 0:
                     raise RequestException(payment_res['error_code'])
 
-            self.action_issued_api_bus(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_bus(issued_req, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',

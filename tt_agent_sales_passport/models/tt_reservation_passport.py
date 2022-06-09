@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, timedelta
+import base64
 
 
 class ReservationPassport(models.Model):
@@ -97,17 +98,44 @@ class ReservationPassport(models.Model):
                 })]
             })
 
-        ##membuat payment dalam draft
-        payment_obj = self.env['tt.payment'].create({
+        payref_id_list = []
+        if data.get('payment_ref_attachment'):
+            for idx, att in enumerate(data['payment_ref_attachment']):
+                file_ext = att['name'].split(".")[-1]
+                temp_filename = '%s_Payment_Ref_%s.%s' % (str(idx), invoice_id.name, file_ext)
+                res = self.env['tt.upload.center.wizard'].upload_file_api(
+                    {
+                        'filename': temp_filename,
+                        'file_reference': 'Payment Reference',
+                        'file': att['file']
+                    },
+                    {
+                        'co_agent_id': self.agent_id.id,
+                        'co_uid': data['co_uid'],
+                    }
+                )
+                upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+                payref_id_list.append(upc_id.id)
+
+        payment_vals = {
             'agent_id': book_obj.agent_id.id,
             'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': book_obj.customer_parent_id.id
-        })
+        }
+
+        if payref_id_list:
+            payment_vals.update({
+                'reference': data.get('payment_reference', ''),
+                'payment_image_ids': [(6, 0, payref_id_list)]
+            })
         if 'seq_id' in data:
             if data['seq_id']:
-                payment_obj.update({
+                payment_vals.update({
                     'acquirer_id': self.env['payment.acquirer'].search([('seq_id', '=', data['seq_id'])],limit=1).id,
                 })
+
+        ##membuat payment dalam draft
+        payment_obj = self.env['tt.payment'].create(payment_vals)
 
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,

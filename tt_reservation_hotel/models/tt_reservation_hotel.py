@@ -50,6 +50,9 @@ class HotelReservation(models.Model):
     #                                  string='List of Guest', readonly=True, states={'draft': [('readonly', False)]})
     passenger_ids = fields.One2many('tt.reservation.passenger.hotel', 'booking_id', string='Passengers')
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     # Hotel Information
     hotel_id = fields.Many2one('tt.hotel', 'Hotel Information', readonly=True, states={'draft': [('readonly', False)]})
     hotel_name = fields.Char('Hotel Name', readonly=True, states={'draft': [('readonly', False)]})
@@ -88,6 +91,15 @@ class HotelReservation(models.Model):
 
     def get_form_id(self):
         return self.env.ref("tt_reservation_hotel.tt_reservation_hotel_form_views")
+
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('provider_booking_ids','provider_booking_ids.reconcile_line_id')
     def _compute_reconcile_state(self):
@@ -554,9 +566,6 @@ class HotelReservation(models.Model):
         for rec in self:
             rec.state = 'issued'
 
-    def action_create_invoice(self, acquirer_id, customer_parent_id):
-        return True
-
     def action_issued_backend(self):
         if not self.ensure_one():
             raise UserError('Cannot Issued more than 1 Resv.')
@@ -578,15 +587,14 @@ class HotelReservation(models.Model):
         self.state = 'fail_issued'
 
     @api.one
-    def action_issued(self, acquirer_id, co_uid, kwargs=False):
+    def action_issued(self, data, kwargs=False):
         if not self.ensure_one():
             return False
         # Jika cukup Potong Saldo
         # self.pnr = self.get_pnr_list()
         self.issued_date = fields.Datetime.now()
-        self.issued_uid = co_uid
+        self.issued_uid = data['co_uid']
 
-        self.action_create_invoice(acquirer_id, co_uid)
         self.state = 'issued'
         self.calc_voucher_name()
 
@@ -986,7 +994,14 @@ class HotelReservation(models.Model):
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             acquirer_id, customer_parent_id = self.get_acquirer_n_c_parent_id(req)
             # self.action_issued_api_ppob(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
-            self.action_issued(acquirer_id and acquirer_id.id or False, context['co_uid'])
+            issued_req = {
+                'co_uid': context['co_uid'],
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued(issued_req)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',

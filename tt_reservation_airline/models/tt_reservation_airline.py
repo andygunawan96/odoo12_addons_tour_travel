@@ -30,6 +30,9 @@ class ReservationAirline(models.Model):
     passenger_ids = fields.One2many('tt.reservation.passenger.airline', 'booking_id',
                                     readonly=True, states={'draft': [('readonly', False)]})
 
+    total_channel_upsell = fields.Monetary(string='Total Channel Upsell', default=0,
+                                           compute='_compute_total_channel_upsell', store=True)
+
     provider_booking_ids = fields.One2many('tt.provider.airline', 'booking_id', string='Provider Booking', readonly=True, states={'draft': [('readonly', False)]})
 
     journey_ids = fields.One2many('tt.journey.airline', 'booking_id', 'Journeys', readonly=True, states={'draft': [('readonly', False)]})
@@ -95,6 +98,15 @@ class ReservationAirline(models.Model):
             elif destination_set == 1:
                 rec.sector_type = "Domestic"
 
+    @api.depends("passenger_ids")
+    def _compute_total_channel_upsell(self):
+        for rec in self:
+            chan_upsell_total = 0
+            for pax in rec.passenger_ids:
+                for csc in pax.channel_service_charge_ids:
+                    chan_upsell_total += abs(csc.amount)
+            rec.total_channel_upsell = chan_upsell_total
+
     @api.multi
     def action_set_as_draft(self):
         for rec in self:
@@ -154,8 +166,15 @@ class ReservationAirline(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_issued_api_airline(self,acquirer_id,customer_parent_id,context):
-        self.action_issued_airline(context['co_uid'],customer_parent_id,acquirer_id)
+    def action_issued_api_airline(self,req,context):
+        data = {
+            'co_uid': context['co_uid'],
+            'customer_parent_id': req['customer_parent_id'],
+            'acquirer_id': req['acquirer_id'],
+            'payment_reference': req.get('payment_reference', ''),
+            'payment_ref_attachment': req.get('payment_ref_attachment', []),
+        }
+        self.action_issued_airline(data)
 
     def action_reverse_airline(self,context):
         self.write({
@@ -169,12 +188,12 @@ class ReservationAirline(models.Model):
             'state':  'refund_failed',
         })
 
-    def action_issued_airline(self,co_uid,customer_parent_id,acquirer_id = False):
+    def action_issued_airline(self,data):
         values = {
             'state': 'issued',
             'issued_date': datetime.now(),
-            'issued_uid': co_uid,
-            'customer_parent_id': customer_parent_id
+            'issued_uid': data.get('co_uid', self.env.user.id),
+            'customer_parent_id': data['customer_parent_id']
         }
         if not self.booked_date:
             values.update({
@@ -1164,7 +1183,13 @@ class ReservationAirline(models.Model):
             #         raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
             # END
             # self.calculate_service_charge()
-            self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_airline(issued_req, context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
@@ -1280,7 +1305,13 @@ class ReservationAirline(models.Model):
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
                     raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
 
-            self.action_issued_api_airline(acquirer_id and acquirer_id.id or False, customer_parent_id, context)
+            issued_req = {
+                'acquirer_id': acquirer_id and acquirer_id.id or False,
+                'customer_parent_id': customer_parent_id,
+                'payment_reference': req.get('payment_reference', ''),
+                'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            }
+            self.action_issued_api_airline(issued_req, context)
         elif all(rec.state == 'refund' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'refund',
@@ -2221,24 +2252,59 @@ class ReservationAirline(models.Model):
 
             refund_line_ids = []
 
+            # June 3, 2022 - SAM
+            # TODO Tambahin pengecekkan untuk pnr yang di proses, untuk yang sekarang asumsi 1 order number ter refund
+            # pnr_list = []
+            # for prov in data['provider_bookings']:
+            #     pnr = prov['pnr']
+            #     pnr_list.append(pnr)
+            # END
+
             # July 21, 2020 - SAM
             penalty_amount = 0.0
             for prov_obj in airline_obj.provider_booking_ids:
+                # if prov_obj.pnr not in pnr_list:
+                #     continue
                 penalty_amount += prov_obj.penalty_amount
 
             total_pax = len(airline_obj.passenger_ids)
             charge_fee = penalty_amount / total_pax
             # END
+            # June 6, 2022 - SAM
+            total_after_sales_fee = 0.0
+            for rsch_obj in airline_obj.reschedule_ids:
+                state = rsch_obj.state
+                if state not in ['confirm', 'sent', 'validate', 'final', 'done']:
+                    continue
+
+                total_amount = rsch_obj.total_amount
+                admin_fee = rsch_obj.admin_fee
+                rsv_amount = total_amount - admin_fee
+                if rsv_amount < 0:
+                    rsv_amount = 0
+                total_after_sales_fee += rsv_amount
+                # total_after_sales_fee += total_amount
+            after_sales_fee = total_after_sales_fee / total_pax
+            # END
             for pax in airline_obj.passenger_ids:
-                pax_price = 0
+                # pax_price = 0
+                pax_price = after_sales_fee
+                additional_charge_fee = 0
                 for cost in pax.cost_service_charge_ids:
-                    if cost.charge_type != 'RAC':
+                    # pnr = cost.description
+                    # if pnr and pnr not in pnr_list:
+                    #     continue
+                    if cost.charge_type not in ['RAC', 'DISC']:
                         pax_price += cost.amount
+                        if cost.charge_type == 'ROC':
+                            additional_charge_fee += cost.amount
+
+                total_charge_fee = charge_fee + additional_charge_fee
                 line_obj = self.env['tt.refund.line'].create({
                     'name': (pax.title or '') + ' ' + (pax.name or ''),
                     'birth_date': pax.birth_date,
                     'pax_price': pax_price,
-                    'charge_fee': charge_fee,
+                    'charge_fee': total_charge_fee,
                 })
                 refund_line_ids.append(line_obj.id)
 
