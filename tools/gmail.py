@@ -18,6 +18,8 @@ import logging
 import codecs
 from datetime import datetime, timedelta
 import traceback
+import time
+import json
 from .db_connector import GatewayConnector
 _logger = logging.getLogger(__name__)
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
@@ -25,31 +27,57 @@ SCOPES = ['https://mail.google.com/']
 ##AUTH
 def_folder = '/var/log/tour_travel/gmailcredentials'
 def gmail_authenticate(creds, email):
-    if not creds or creds.valid:
-        if creds and creds.expired:
-            if creds.refresh_token:
-                try:
-                    creds.refresh(Request())
-                    with open("%s/token.pickle" % def_folder, "wb") as token:
-                        pickle.dump(creds, token)
-                    return build('gmail', 'v1', credentials=creds)
-                except Exception as e:
-                    _logger.error('%s, %s' % (str(e), traceback.format_exc()))
-                    # data = {
-                    #     'code': 9903,
-                    #     'title': 'ERROR EMAIL BACKEND',
-                    #     'message': 'Error get authenticate email backend %s\n%s' % (email,  str(e)),
-                    # }
-                    # GatewayConnector().telegram_notif_api(data, {})
-                    return False
+    if creds:
+        if creds.refresh_token and creds.expiry - datetime.now() < timedelta(minutes=10):
+            if os.path.exists("%s/update_status_email.txt" % (def_folder)):
+                update_status_email_file = read_file_update()
             else:
-                _logger.error('Error email backend no refresh token')
-                return False
-        else:
-            return build('gmail', 'v1', credentials=creds)
+                update_status_email_file = {## Block, karena pasti sdh mau expired
+                    "last_update": time.time(),
+                    "is_update": True
+                }
+                write_file_update(update_status_email_file)
+                update_status_email_file.update({## open untuk worker yg bikin file
+                    "is_update": False
+                })
+
+            last_update_time = datetime.strptime(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(update_status_email_file['last_update']))),'%Y-%m-%d %H:%M:%S')
+
+            if update_status_email_file['is_update'] and datetime.now() - last_update_time < timedelta(minutes=5):
+                ## someone is updating but the expiry time is still longer than 5 minutes, do nothing and use old creds
+                pass ## do nothing
+            else:
+                ## 1. no one is updating
+                ## 2. someone is updating but the expiry time is less than 5 minutes
+                update_status_email_file.update({  ## Block
+                    "last_update": time.time(),
+                    "is_update": True
+                })
+                write_file_update(update_status_email_file)
+
+                creds.refresh(Request())
+                with open("%s/token.pickle" % def_folder, "wb") as token:
+                    pickle.dump(creds, token)
+                update_status_email_file.update({
+                    "is_update": False,
+                    "last_update": time.time(),
+                })
+                write_file_update(update_status_email_file)
+        return build('gmail', 'v1', credentials=creds)
     else:
         _logger.error('Error please set email first')
         return False
+
+def write_file_update(update_status_email_file):
+    _file = open("%s/update_status_email.txt" % def_folder, 'w+')
+    _file.write(json.dumps(update_status_email_file))
+    _file.close()
+
+def read_file_update():
+    file = open("%s/update_status_email.txt" % (def_folder), "r")
+    data = file.read()
+    file.close()
+    return json.loads(data)
 
 ##SEARCH EMAIL
 def search_messages(service, query, limit_message=100):
