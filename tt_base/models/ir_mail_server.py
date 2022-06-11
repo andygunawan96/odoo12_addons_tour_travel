@@ -65,7 +65,7 @@ class IrMailServer(models.Model):
         if os.path.exists("%s/token.pickle" % (def_folder)):
             with open("%s/token.pickle" % (def_folder), "rb") as token:
                 creds = pickle.load(token)
-            connection = gmail.connect_gmail(creds, email)
+            connection = gmail.connect_gmail(creds)
         return connection
 
     def get_email_name(self):
