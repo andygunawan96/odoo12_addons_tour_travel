@@ -26,7 +26,7 @@ _logger = logging.getLogger(__name__)
 SCOPES = ['https://mail.google.com/']
 ##AUTH
 def_folder = '/var/log/tour_travel/gmailcredentials'
-def gmail_authenticate(creds, email):
+def gmail_authenticate(creds):
     if creds:
         if creds.refresh_token and creds.expiry - datetime.now() < timedelta(minutes=10):
             if os.path.exists("%s/update_status_email.txt" % (def_folder)):
@@ -289,8 +289,8 @@ def send_message(service, destination, obj, body, attachments=[], type='plain', 
     ).execute()
 
 
-def connect_gmail(creds, email):
-    gmail_auth = gmail_authenticate(creds, email)
+def connect_gmail(creds):
+    gmail_auth = gmail_authenticate(creds)
     return gmail_auth
 
 def search_email(gmail_auth, keyword, limit_messages=100):
