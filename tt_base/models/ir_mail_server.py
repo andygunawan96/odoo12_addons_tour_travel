@@ -36,18 +36,6 @@ class IrMailServer(models.Model):
             pickle.dump(credential, token)
         return ERR.get_no_error()
 
-    def test_smtp_oauth2_connection(self):
-        self._check_folder_exists(def_folder)
-        if os.path.exists("%s/token.pickle" % (def_folder)):
-            with open("%s/token.pickle" % (def_folder), "rb") as token:
-                creds = pickle.load(token)
-            connection = gmail.connect_gmail(creds)
-            if connection:
-                raise UserError('Connection Success')
-            else:
-                raise UserError('Connection Failed')
-        raise UserError('Connection Failed')
-
     #########OVERRIDE FUNCTION ODOO OFFICIAL#############
     #override odoo official connect function
     def test_smtp_connection(self):
