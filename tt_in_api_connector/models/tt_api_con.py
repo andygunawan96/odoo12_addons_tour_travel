@@ -48,7 +48,7 @@ class TtApiCon(models.Model):
             return e.error_dict()
         except Exception as e:
             _logger.error(traceback.format_exc())
-        return res
+            return ERR.get_error(500,additional_message=str(e))
 
     def _gateway_sign_in(self,co_uid=''):
         sign_in_req = {
