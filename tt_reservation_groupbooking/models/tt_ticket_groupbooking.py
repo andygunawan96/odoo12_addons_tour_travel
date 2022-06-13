@@ -296,6 +296,7 @@ class TtPaxPriceGroupBooking(models.Model):
                 'amount': sc_value[p_charge_type]['amount'] + p_sc.amount,
                 # 'amount': p_sc.amount,
                 'foreign_amount': sc_value[p_charge_type]['foreign_amount'] + p_sc.foreign_amount,
+                'pax_type': p_sc.pax_type #untuk ambil pax type di to_dict
                 # 'foreign_amount': p_sc.foreign_amount,
             })
 

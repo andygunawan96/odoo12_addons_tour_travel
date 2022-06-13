@@ -64,7 +64,7 @@ def gmail_authenticate(creds):
                     })
                     write_file_update(update_status_email_file)
                 except Exception as e:
-                    _logger.info('Error update credential backend')
+                    _logger.error('Error update credential backend')
                     # data = {
                     #     'code': 9903,
                     #     'title': 'ERROR EMAIL BACKEND',
