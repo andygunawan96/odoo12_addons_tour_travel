@@ -45,8 +45,15 @@ class TtReservationCustomer(models.Model):
                     insurance_data['addons'][idx]['detail'][idy] = ''
             if rec['timelimitdisplay'] == None:
                 insurance_data['addons'][idx]['timelimitdisplay'] = ''
+        sale_service_charges = self.get_service_charges()
+        pax_type = ''
+        for pnr in sale_service_charges:
+            for svc in sale_service_charges[pnr]:
+                pax_type = sale_service_charges[pnr][svc]['pax_type']
+                break
+            break
         res.update({
-            'sale_service_charges': self.get_service_charges(),
+            'sale_service_charges': sale_service_charges,
             'passport_type': self.passport_type and self.passport_type or '',
             'passport_number': self.passport_number and self.passport_number or '',
             'passport_expdate': self.passport_expdate and self.passport_expdate.strftime('%Y-%m-%d'),
@@ -54,7 +61,8 @@ class TtReservationCustomer(models.Model):
             'insurance_data': insurance_data,
             'email': self.email,
             'phone_number': self.phone_number,
-            'seq_id': self.seq_id
+            'seq_id': self.seq_id,
+            'pax_type': pax_type
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()

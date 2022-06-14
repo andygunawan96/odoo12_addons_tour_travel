@@ -57,11 +57,19 @@ class TtReservationCustomer(models.Model):
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
+        sale_service_charges = self.get_service_charges()
+        pax_type = ''
+        for pnr in sale_service_charges:
+            for svc in sale_service_charges[pnr]:
+                pax_type = sale_service_charges[pnr][svc]['pax_type']
+                break
+            break
         res.update({
             'result_url': self.result_url,
             'label_url': self.label_url,
             'verify': self.verify,
-            'sale_service_charges': self.get_service_charges(),
+            'sale_service_charges': sale_service_charges,
+            'pax_type': pax_type,
             'tempat_lahir': self.tempat_lahir,
             'profession': self.profession,
             'work_place': self.work_place,

@@ -33,7 +33,7 @@ class MailMail(models.Model):
                         if rec.state == 'outgoing':
                             attachments_list_file = []
                             for attachment_obj in rec.attachment_ids:
-                                attachments_list_file.append(attachment_obj.url)
+                                attachments_list_file.append(attachment_obj)
                             destination_email = {
                                 'to': rec.email_to,
                                 'cc': rec.email_cc,
