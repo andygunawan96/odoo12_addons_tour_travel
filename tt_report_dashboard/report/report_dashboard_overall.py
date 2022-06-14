@@ -45,6 +45,7 @@ class ReportDashboardOverall(models.Model):
             rsv.total as grand_total,
             rsv.total_commission,
             rsv.total_nta,
+            rsv.total_channel_upsell,
             rsv.state,
             booking_ids.id as booking_id,
             booking_ids.pnr as booking_pnr,

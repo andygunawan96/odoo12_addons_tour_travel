@@ -25,8 +25,8 @@
         <table width="100%">
             <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
                 <td><b>Pax Type</b></td>
-                <td><b>Base Fare</b></td>
-                <td><b>Tax</b></td>
+                <td><b>Qty</b></td>
+                <td><b>Total per Pax</b></td>
                 <td><b>Total</b></td>
             </thead>
             <tbody>
@@ -35,9 +35,9 @@
                         <t t-if="length.pnr == price['pnr']">
                             <tr style="border-bottom: 1px solid lightgray">
                                 <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
-                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                                <td style="text-align:right;"><t t-esc="float(price['fare']) + float(price['tax'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="((float(price['fare']) + float(price['tax']))*price['qty'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                             </tr>
                         </t>
                     </t>
@@ -132,96 +132,96 @@
                 <t t-set="row_idx" t-value="0"/>
 
                 <!-- Printed Leg -->
-<!--                <t t-foreach="line.segment_ids" t-as="segment_obj">-->
-<!--                    <t t-foreach="segment_obj.leg_ids" t-as="leg_obj">-->
-<!--                        <t t-if="row_idx == len(segment_obj.leg_ids)-1">-->
-<!--                            <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 40px">-->
-<!--                                <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; border-color: #CCC; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; margin-right: 10px; border: 1px solid #BBB;">-->
-<!--                                    &lt;!&ndash;<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>&ndash;&gt;-->
-<!--                                    <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>-->
-<!--                                    <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>-->
-<!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>-->
-<!--                                    <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>-->
-<!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>-->
-<!--                                </div>-->
-<!--                                <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding-left: 25px; margin-left: -10px; padding-top: 10px; padding-bottom: 10px; padding-right: 25px;">-->
-<!--                                    <div class="row">-->
-<!--                                        <div class="col-5" style="margin-right: 0px">-->
-<!--                                            <div style="height: 75px; max-height: 150px">-->
-<!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.origin_id.city"/> (<span t-field="leg_obj.origin_id.code"/>)</span><br/>-->
-<!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.origin_id.name"/></span>-->
-<!--                                            </div>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.departure_date[10:16]"/></span>-->
+                <!--                <t t-foreach="line.segment_ids" t-as="segment_obj">-->
+                <!--                    <t t-foreach="segment_obj.leg_ids" t-as="leg_obj">-->
+                <!--                        <t t-if="row_idx == len(segment_obj.leg_ids)-1">-->
+                <!--                            <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 40px">-->
+                <!--                                <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; border-color: #CCC; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; margin-right: 10px; border: 1px solid #BBB;">-->
+                <!--                                    &lt;!&ndash;<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>&ndash;&gt;-->
+                <!--                                    <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>-->
+                <!--                                    <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>-->
+                <!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>-->
+                <!--                                    <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>-->
+                <!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>-->
+                <!--                                </div>-->
+                <!--                                <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding-left: 25px; margin-left: -10px; padding-top: 10px; padding-bottom: 10px; padding-right: 25px;">-->
+                <!--                                    <div class="row">-->
+                <!--                                        <div class="col-5" style="margin-right: 0px">-->
+                <!--                                            <div style="height: 75px; max-height: 150px">-->
+                <!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.origin_id.city"/> (<span t-field="leg_obj.origin_id.code"/>)</span><br/>-->
+                <!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.origin_id.name"/></span>-->
+                <!--                                            </div>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.departure_date[10:16]"/></span>-->
 
-<!--                                        </div>-->
-<!--                                        <div class="col-2" style="text-align: center;">-->
-<!--                                            <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>-->
-<!--                                            &lt;!&ndash;                                                <img src="/tt_report_common/static/images/airfreight-white.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:'+ base_color +';'"/>&ndash;&gt;-->
-<!--                                            <span style="font-size: 15px; font-weight: 400;"><span t-field="leg_obj.elapsed_time"/></span>-->
-<!--                                        </div>-->
-<!--                                        <div class="col-5">-->
-<!--                                            <div style="height: 75px; max-height: 150px">-->
-<!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.destination_id.city"/> (<span t-field="leg_obj.destination_id.code"/>)</span><br/>-->
-<!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.destination_id.name"/></span>-->
-<!--                                            </div>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.arrival_date[10:16]"/></span>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div class="col-2" style="background-color: #FFF; border: 1px solid #BBB; border-radius: 0 0 20px 0px; padding-left: 25px; padding-top: 10px; padding-right: 25px; padding-bottom: 10px; margin-right: 0px;">-->
-<!--&lt;!&ndash;                                    <t t-set="transit_total" t-value="len(segment_obj.leg_ids)-1"/>&ndash;&gt;-->
-<!--                                    <t t-set="transit_total" t-value="0"/>-->
-<!--                                    <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </t>-->
-<!--                        <t t-else="">-->
-<!--                            <div class="row" style="margin-left: 0px; margin-right: 0px;">-->
-<!--                                <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0 0; border-color: #CCC; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; margin-right: 10px; border: 1px solid #BBB;">-->
-<!--                                    &lt;!&ndash;<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>&ndash;&gt;-->
-<!--                                    <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>-->
-<!--                                    <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>-->
-<!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>-->
-<!--                                    <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>-->
-<!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>-->
-<!--                                </div>-->
-<!--                                <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding-left: 25px; margin-left: -10px; padding-top: 10px; padding-bottom: 10px; padding-right: 25px;">-->
-<!--                                    <div class="row">-->
-<!--                                        <div class="col-5" style="margin-right: 0px">-->
-<!--                                            <div style="height: 75px; max-height: 150px">-->
-<!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.origin_id.city"/> (<span t-field="leg_obj.origin_id.code"/>)</span><br/>-->
-<!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.origin_id.name"/></span>-->
-<!--                                            </div>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.departure_date[10:16]"/></span>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="col-2" style="text-align: center;">-->
+                <!--                                            <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>-->
+                <!--                                            &lt;!&ndash;                                                <img src="/tt_report_common/static/images/airfreight-white.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:'+ base_color +';'"/>&ndash;&gt;-->
+                <!--                                            <span style="font-size: 15px; font-weight: 400;"><span t-field="leg_obj.elapsed_time"/></span>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="col-5">-->
+                <!--                                            <div style="height: 75px; max-height: 150px">-->
+                <!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.destination_id.city"/> (<span t-field="leg_obj.destination_id.code"/>)</span><br/>-->
+                <!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.destination_id.name"/></span>-->
+                <!--                                            </div>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.arrival_date[10:16]"/></span>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <div class="col-2" style="background-color: #FFF; border: 1px solid #BBB; border-radius: 0 0 20px 0px; padding-left: 25px; padding-top: 10px; padding-right: 25px; padding-bottom: 10px; margin-right: 0px;">-->
+                <!--&lt;!&ndash;                                    <t t-set="transit_total" t-value="len(segment_obj.leg_ids)-1"/>&ndash;&gt;-->
+                <!--                                    <t t-set="transit_total" t-value="0"/>-->
+                <!--                                    <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </t>-->
+                <!--                        <t t-else="">-->
+                <!--                            <div class="row" style="margin-left: 0px; margin-right: 0px;">-->
+                <!--                                <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0 0; border-color: #CCC; padding-right: 10px; padding-top: 10px; padding-bottom: 10px; padding-left: 20px; margin-right: 10px; border: 1px solid #BBB;">-->
+                <!--                                    &lt;!&ndash;<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>&ndash;&gt;-->
+                <!--                                    <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>-->
+                <!--                                    <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>-->
+                <!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>-->
+                <!--                                    <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>-->
+                <!--                                    <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>-->
+                <!--                                </div>-->
+                <!--                                <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding-left: 25px; margin-left: -10px; padding-top: 10px; padding-bottom: 10px; padding-right: 25px;">-->
+                <!--                                    <div class="row">-->
+                <!--                                        <div class="col-5" style="margin-right: 0px">-->
+                <!--                                            <div style="height: 75px; max-height: 150px">-->
+                <!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.origin_id.city"/> (<span t-field="leg_obj.origin_id.code"/>)</span><br/>-->
+                <!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.origin_id.name"/></span>-->
+                <!--                                            </div>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.departure_date[10:16]"/></span>-->
 
-<!--                                        </div>-->
-<!--                                        <div class="col-2" style="text-align: center;">-->
-<!--                                            <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>-->
-<!--                                            &lt;!&ndash;<img src="/tt_report_common/static/images/airfreight-orange.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:' + backgounrd_color + ';"/>&ndash;&gt;-->
-<!--                                            <span style="font-size: 15px; font-weight: 400;"><span t-field="leg_obj.elapsed_time"/></span>-->
-<!--                                        </div>-->
-<!--                                        <div class="col-5">-->
-<!--                                            <div style="height: 75px; max-height: 150px">-->
-<!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.destination_id.city"/> (<span t-field="leg_obj.destination_id.code"/>)</span><br/>-->
-<!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.destination_id.name"/></span>-->
-<!--                                            </div>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>-->
-<!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.arrival_date[10:16]"/></span>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                                <div class="col-2" style="background-color: #FFF; border: 1px solid #BBB; border-radius: 0 0 0 0; padding-left: 25px; padding-top: 10px; padding-right: 25px; padding-bottom: 10px; margin-right: 0px;">-->
-<!--                                    <t t-set="transit_total" t-value="0"/>-->
-<!--                                    <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </t>-->
-<!--                        <t t-set="row_idx" t-value="row_idx+1"/>-->
-<!--                    </t>-->
-<!--                </t>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="col-2" style="text-align: center;">-->
+                <!--                                            <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>-->
+                <!--                                            &lt;!&ndash;<img src="/tt_report_common/static/images/airfreight-orange.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:' + backgounrd_color + ';"/>&ndash;&gt;-->
+                <!--                                            <span style="font-size: 15px; font-weight: 400;"><span t-field="leg_obj.elapsed_time"/></span>-->
+                <!--                                        </div>-->
+                <!--                                        <div class="col-5">-->
+                <!--                                            <div style="height: 75px; max-height: 150px">-->
+                <!--                                                <span style="font-size: 18px; font-weight:500"><span t-field="leg_obj.destination_id.city"/> (<span t-field="leg_obj.destination_id.code"/>)</span><br/>-->
+                <!--                                                <span style="font-size: 16px; font-weight:200"><span t-field="leg_obj.destination_id.name"/></span>-->
+                <!--                                            </div>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(leg_obj.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>-->
+                <!--                                            <span style="font-size: 16px; font-weight:200"><span t-esc="leg_obj.arrival_date[10:16]"/></span>-->
+                <!--                                        </div>-->
+                <!--                                    </div>-->
+                <!--                                </div>-->
+                <!--                                <div class="col-2" style="background-color: #FFF; border: 1px solid #BBB; border-radius: 0 0 0 0; padding-left: 25px; padding-top: 10px; padding-right: 25px; padding-bottom: 10px; margin-right: 0px;">-->
+                <!--                                    <t t-set="transit_total" t-value="0"/>-->
+                <!--                                    <span style="font-size: 18px; font-weight: 400">Transit : <span t-esc="transit_total"/></span><br/>-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </t>-->
+                <!--                        <t t-set="row_idx" t-value="row_idx+1"/>-->
+                <!--                    </t>-->
+                <!--                </t>-->
 
                 <!-- Segment Only -->
                 <t t-foreach="line.segment_ids" t-as="segment_obj">
