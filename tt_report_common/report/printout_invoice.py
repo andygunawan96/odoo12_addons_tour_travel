@@ -86,18 +86,16 @@ class PrintoutTicketForm(models.AbstractModel):
                     if not price_target:
                         price_target = {
                             'pax_type': rec2.pax_type,
-                            'fare': 0,
-                            'tax': 0,
-                            'qty': 0,
-                            'pnr': provider.pnr
+                            'price_per_pax': 0,
+                            'price_total': 0,
+                            'qty': rec2.pax_count,  # asumsi yang pertama fare, qtynya benar
+                            'pnr': provider.pnr,
                         }
                         a[provider.pnr].append(price_target)
 
-                    if rec2.charge_type.lower() == 'fare':
-                        price_target['fare'] += rec2.amount
-                        price_target['qty'] = rec2.pax_count
-                    elif rec2.charge_type.lower() in ['roc', 'tax']:
-                        price_target['tax'] += rec2.amount
+                    if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                        price_target['price_per_pax'] += rec2.amount
+                        price_target['price_total'] += rec2.amount * rec2.pax_count
 
                 if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus', 'insurance', 'mitrakeluarga']:
                     for rec2 in provider.ticket_ids:
