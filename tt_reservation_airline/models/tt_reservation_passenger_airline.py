@@ -20,11 +20,19 @@ class TtReservationCustomer(models.Model):
         fee_list = []
         for rec in self.fee_ids:
             fee_list.append(rec.to_dict())
+        sale_service_charges = self.get_service_charges()
+        pax_type = ''
+        for pnr in sale_service_charges:
+            for svc in sale_service_charges[pnr]:
+                pax_type = sale_service_charges[pnr][svc]['pax_type']
+                break
+            break
         res.update({
-            'sale_service_charges': self.get_service_charges(),
+            'sale_service_charges': sale_service_charges,
             'fees': fee_list,
             'behaviors': self.customer_id.get_most_behavior(),
-            'seq_id': self.customer_id.seq_id
+            'seq_id': self.customer_id.seq_id,
+            'pax_type': pax_type
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()

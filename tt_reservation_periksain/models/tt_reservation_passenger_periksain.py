@@ -38,8 +38,18 @@ class TtReservationCustomer(models.Model):
             for rec in VARIABLE_SAMPLE_METHOD:
                 if rec[0] == self.sample_method:
                     sample_method = rec[1]
+
+        sale_service_charges = self.get_service_charges()
+        pax_type = ''
+        for pnr in sale_service_charges:
+            for svc in sale_service_charges[pnr]:
+                pax_type = sale_service_charges[pnr][svc]['pax_type']
+                break
+            break
+
         res.update({
-            'sale_service_charges': self.get_service_charges(),
+            'sale_service_charges': sale_service_charges,
+            'pax_type': pax_type,
             'address': self.address,
             'provinsi': self.provinsi,
             'kabupaten': self.kabupaten,

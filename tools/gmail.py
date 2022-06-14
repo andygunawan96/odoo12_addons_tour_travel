@@ -20,6 +20,7 @@ from datetime import datetime, timedelta
 import traceback
 import time
 import json
+import base64
 from .db_connector import GatewayConnector
 _logger = logging.getLogger(__name__)
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
@@ -54,10 +55,18 @@ def gmail_authenticate(creds):
                     "is_update": True
                 })
                 write_file_update(update_status_email_file)
-
-                creds.refresh(Request())
-                with open("%s/token.pickle" % def_folder, "wb") as token:
-                    pickle.dump(creds, token)
+                try:
+                    creds.refresh(Request())
+                    with open("%s/token.pickle" % def_folder, "wb") as token:
+                        pickle.dump(creds, token)
+                except Exception as e:
+                    _logger.error('Error update credential backend')
+                    # data = {
+                    #     'code': 9903,
+                    #     'title': 'ERROR EMAIL BACKEND',
+                    #     'message': 'Error refresh token email backend %s' % (str(e)),
+                    # }
+                    # GatewayConnector().telegram_notif_api(data, {})
                 update_status_email_file.update({
                     "is_update": False,
                     "last_update": time.time(),
@@ -231,55 +240,90 @@ def read_message(service, message):
 
 ##SEND EMAIL
 # Adds the attachment with the given filename to the given message
-def add_attachment(message, filename):
-    content_type, encoding = guess_mime_type(filename)
-    if content_type is None or encoding is not None:
-        content_type = 'application/octet-stream'
-    main_type, sub_type = content_type.split('/', 1)
+# def add_attachment(message, filename):
+#     content_type, encoding = guess_mime_type(filename)
+#     if content_type is None or encoding is not None:
+#         content_type = 'application/octet-stream'
+#     main_type, sub_type = content_type.split('/', 1)
+#     if main_type == 'text':
+#         fp = open(filename, 'rb')
+#         msg = MIMEText(fp.read().decode(), _subtype=sub_type)
+#         fp.close()
+#     elif main_type == 'image':
+#         fp = open(filename, 'rb')
+#         msg = MIMEImage(fp.read(), _subtype=sub_type)
+#         fp.close()
+#     elif main_type == 'audio':
+#         fp = open(filename, 'rb')
+#         msg = MIMEAudio(fp.read(), _subtype=sub_type)
+#         fp.close()
+#     else:
+#         fp = open(filename, 'rb')
+#         msg = MIMEBase(main_type, sub_type)
+#         msg.set_payload(fp.read())
+#         fp.close()
+#     filename = os.path.basename(filename)
+#     msg.add_header('Content-Disposition', 'attachment', filename=filename)
+#     encoders.encode_base64(msg)
+#     message.attach(msg)
+
+def add_attachment(message, attachment):
+    main_type, sub_type = attachment.mimetype.split('/', 1)
     if main_type == 'text':
-        fp = open(filename, 'rb')
-        msg = MIMEText(fp.read().decode(), _subtype=sub_type)
-        fp.close()
+        msg = MIMEText(base64.b64decode(attachment.datas.decode()), _subtype=sub_type)
     elif main_type == 'image':
-        fp = open(filename, 'rb')
-        msg = MIMEImage(fp.read(), _subtype=sub_type)
-        fp.close()
+        msg = MIMEImage(base64.b64decode(attachment.datas), _subtype=sub_type)
     elif main_type == 'audio':
-        fp = open(filename, 'rb')
-        msg = MIMEAudio(fp.read(), _subtype=sub_type)
-        fp.close()
+        msg = MIMEAudio(base64.b64decode(attachment.datas), _subtype=sub_type)
     else:
-        fp = open(filename, 'rb')
         msg = MIMEBase(main_type, sub_type)
-        msg.set_payload(fp.read())
-        fp.close()
-    filename = os.path.basename(filename)
-    msg.add_header('Content-Disposition', 'attachment', filename=filename)
+        msg.set_payload(base64.b64decode(attachment.datas))
+
+
+    msg.add_header('Content-Disposition', 'attachment', filename=attachment.datas_fname)
     encoders.encode_base64(msg)
     message.attach(msg)
+
+# def build_message(destination, obj, body, attachments=[],email_account='', type='plain'):
+#     if not attachments:  # no attachments given
+#         message = MIMEText(body, type)
+#         message['to'] = destination['to']
+#         if destination['cc']:
+#             message['cc'] = destination['cc']
+#         if destination['bcc']:
+#             message['bcc'] = destination['bcc']
+#         message['from'] = email_account
+#         message['subject'] = obj
+#     else:
+#         message = MIMEMultipart()
+#         message['to'] = destination['to']
+#         if destination['cc']:
+#             message['cc'] = destination['cc']
+#         if destination['bcc']:
+#             message['bcc'] = destination['bcc']
+#         message['from'] = email_account
+#         message['subject'] = obj
+#         message.attach(MIMEText(body, type))
+#         for filename in attachments:
+#             add_attachment(message, filename)
+#     return {'raw': urlsafe_b64encode(message.as_bytes()).decode()}
 
 def build_message(destination, obj, body, attachments=[],email_account='', type='plain'):
     if not attachments:  # no attachments given
         message = MIMEText(body, type)
-        message['to'] = destination['to']
-        if destination['cc']:
-            message['cc'] = destination['cc']
-        if destination['bcc']:
-            message['bcc'] = destination['bcc']
-        message['from'] = email_account
-        message['subject'] = obj
     else:
         message = MIMEMultipart()
-        message['to'] = destination['to']
-        if destination['cc']:
-            message['cc'] = destination['cc']
-        if destination['bcc']:
-            message['bcc'] = destination['bcc']
-        message['from'] = email_account
-        message['subject'] = obj
+    message['to'] = destination['to']
+    if destination['cc']:
+        message['cc'] = destination['cc']
+    if destination['bcc']:
+        message['bcc'] = destination['bcc']
+    message['from'] = email_account
+    message['subject'] = obj
+    if attachments:
         message.attach(MIMEText(body, type))
-        for filename in attachments:
-            add_attachment(message, filename)
+        for attachment in attachments:
+            add_attachment(message, attachment)
     return {'raw': urlsafe_b64encode(message.as_bytes()).decode()}
 
 def send_message(service, destination, obj, body, attachments=[], type='plain', email_account=''):
