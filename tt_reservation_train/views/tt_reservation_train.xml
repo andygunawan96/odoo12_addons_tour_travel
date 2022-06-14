@@ -75,7 +75,7 @@
                             string="Print Invoice (HO)" type="object" icon="fa-print"
                             groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
                     <button name="print_itinerary"
-                            class="oe_stat_button" states="issued,done"
+                            class="oe_stat_button" states="booked,issued,done"
                             string="Print Itinerary" type="object" icon="fa-print"/>
                 </div>
             </xpath>
