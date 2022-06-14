@@ -86,18 +86,16 @@ class PrintoutTicketForm(models.AbstractModel):
                     if not price_target:
                         price_target = {
                             'pax_type': rec2.pax_type,
-                            'fare': 0,
-                            'tax': 0,
-                            'qty': 0,
-                            'pnr': provider.pnr
+                            'price_per_pax': 0,
+                            'price_total': 0,
+                            'qty': rec2.pax_count,  # asumsi yang pertama fare, qtynya benar
+                            'pnr': provider.pnr,
                         }
                         a[provider.pnr].append(price_target)
 
-                    if rec2.charge_type.lower() == 'fare':
-                        price_target['fare'] += rec2.total
-                        price_target['qty'] = rec2.pax_count
-                    elif rec2.charge_type.lower() in ['roc', 'tax']:
-                        price_target['tax'] += rec2.total
+                    if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                        price_target['price_per_pax'] += rec2.amount
+                        price_target['price_total'] += rec2.amount * rec2.pax_count
 
                 if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus', 'insurance', 'mitrakeluarga']:
                     for rec2 in provider.ticket_ids:
@@ -324,39 +322,33 @@ class PrintoutTicketEventForm(models.AbstractModel):
                     if not a[provider.pnr]:
                         a[provider.pnr].append({
                             'pax_type': rec2.pax_type,
-                            'fare': 0,
-                            'tax': 0,
-                            'qty': 0,
-                            'pnr': provider.pnr
+                            'price_per_pax': 0,
+                            'price_total': 0,
+                            'qty': rec2.pax_count,  # asumsi yang pertama fare, qtynya benar
+                            'pnr': provider.pnr,
                         })
-                        if rec2.charge_type.lower() == 'fare':
-                            a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.amount
-                            a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
-                        elif rec2.charge_type.lower() in ['roc', 'tax']:
-                            a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.amount
+                        if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                            a[provider.pnr][len(a[provider.pnr])-1]['price_per_pax'] += rec2.amount
+                            a[provider.pnr][len(a[provider.pnr])-1]['price_total'] += rec2.amount * rec2.pax_count
                     else:
                         pax_type_found = False
                         for idx, price_detail in enumerate(a[provider.pnr]):
                             if rec2.pax_type == price_detail['pax_type']:
                                 pax_type_found = True
-                                if rec2.charge_type.lower() == 'fare':
-                                    a[provider.pnr][idx]['fare'] += rec2.amount
-                                    a[provider.pnr][idx]['qty'] = rec2.pax_count
-                                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                                    a[provider.pnr][idx]['tax'] += rec2.amount
+                                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                                    a[provider.pnr][idx]['price_per_pax'] += rec2.amount
+                                    a[provider.pnr][idx]['price_total'] += rec2.amount * rec2.pax_count
                         if not pax_type_found:
                             a[provider.pnr].append({
                                 'pax_type': rec2.pax_type,
-                                'fare': 0,
-                                'tax': 0,
-                                'qty': 0,
-                                'pnr': provider.pnr
+                                'price_per_pax': 0,
+                                'price_total': 0,
+                                'qty': rec2.pax_count,  # asumsi yang pertama fare, qtynya benar
+                                'pnr': provider.pnr,
                             })
-                            if rec2.charge_type.lower() == 'fare':
-                                a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.amount
-                                a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
-                            elif rec2.charge_type.lower() in ['roc', 'tax']:
-                                a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.amount
+                            if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                                a[provider.pnr][len(a[provider.pnr])-1]['price_per_pax'] += rec2.amount
+                                a[provider.pnr][len(a[provider.pnr])-1]['price_total'] += rec2.amount * rec2.pax_count
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
@@ -434,15 +426,13 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.amount
-                    a[rec2.pax_type]['qty'] = rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.amount
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             # tidak ada ticket with price, dan tidak ada pax type
             # for rec2 in rec.passenger_ids:
             #     for rec3 in rec2.channel_service_charge_ids:
@@ -2076,16 +2066,14 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.amount
-                    a[rec2.pax_type]['qty'] = rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.amount
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
 
             for psg in rec.passenger_ids:
                 for csc in psg.channel_service_charge_ids:
@@ -2148,16 +2136,14 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] = rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2211,16 +2197,14 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] = rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2275,16 +2259,14 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] = rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2338,16 +2320,14 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'total':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] += rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2401,16 +2381,14 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] += rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             if rec.pnr:
                 pnr_length = len(rec.pnr)
@@ -2468,16 +2446,14 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'total':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] += rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2529,16 +2505,14 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.amount
-                    a[rec2.pax_type]['qty'] += rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.amount
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2595,16 +2569,14 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.amount
-                    a[rec2.pax_type]['qty'] += rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.amount
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2663,16 +2635,14 @@ class PrintoutBusItineraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] += rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2733,16 +2703,14 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
                 if rec2.pax_type not in a.keys():
                     a[rec2.pax_type] = {
                         'pax_type': rec2.pax_type,
-                        'fare': 0,
-                        'tax': 0,
-                        'qty': 0,
+                        'price_per_pax': 0,
+                        'price_total': 0,
+                        'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
 
-                if rec2.charge_type.lower() == 'fare':
-                    a[rec2.pax_type]['fare'] += rec2.total
-                    a[rec2.pax_type]['qty'] += rec2.pax_count
-                elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    a[rec2.pax_type]['tax'] += rec2.total
+                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    a[rec2.pax_type]['price_per_pax'] += rec2.amount
+                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
