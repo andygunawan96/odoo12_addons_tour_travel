@@ -222,29 +222,29 @@ class TtEmailQueue(models.Model):
                 else:
                     ticket_data = {}
                 if ticket_data.get('url'):
-                    # headers = {
-                    #     'Content-Type': 'application/json',
-                    # }
-                    # upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
-                    #                                 content_type='content', timeout=600)
-                    # if upload_data['error_code'] == 0:
-                    #     attachment_obj = self.env['ir.attachment'].create({
-                    #         'name': ref_obj.name + ' E-Ticket.pdf',
-                    #         'datas_fname': ref_obj.name + ' E-Ticket.pdf',
-                    #         'datas': upload_data['response'],
-                    #         'url': ticket_data['url']
-                    #     })
-                    #     attachment_id_list.append(attachment_obj.id)
-                    # else:
-                    #     _logger.info(upload_data['error_msg'])
-                    #     raise Exception(_('Failed to convert ticket attachment!'))
+                    headers = {
+                        'Content-Type': 'application/json',
+                    }
+                    upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                                    content_type='content', timeout=600)
+                    if upload_data['error_code'] == 0:
+                        attachment_obj = self.env['ir.attachment'].create({
+                            'name': ref_obj.name + ' E-Ticket.pdf',
+                            'datas_fname': ref_obj.name + ' E-Ticket.pdf',
+                            'datas': upload_data['response'],
+                            'url': ticket_data['url']
+                        })
+                        attachment_id_list.append(attachment_obj.id)
+                    else:
+                        _logger.info(upload_data['error_msg'])
+                        raise Exception(_('Failed to convert ticket attachment!'))
                     ###########GOOGLE API ATTACHMENT OAUTH2##################
-                    attachment_obj = self.env['ir.attachment'].create({
-                        'name': ref_obj.name + ' E-Ticket.pdf',
-                        'datas_fname': ref_obj.name + ' E-Ticket.pdf',
-                        'url': ticket_data['path'],
-                    })
-                    attachment_id_list.append(attachment_obj.id)
+                    # attachment_obj = self.env['ir.attachment'].create({
+                    #     'name': ref_obj.name + ' E-Ticket.pdf',
+                    #     'datas_fname': ref_obj.name + ' E-Ticket.pdf',
+                    #     'url': ticket_data['path'],
+                    # })
+                    # attachment_id_list.append(attachment_obj.id)
                 else:
                     raise Exception(_('Failed to get ticket attachment!'))
 
@@ -254,31 +254,31 @@ class TtEmailQueue(models.Model):
                 if rec.invoice_id.id not in printed_inv_ids and rec.invoice_id.state != 'cancel':
                     inv_data = rec.invoice_id.print_invoice()
                     if inv_data.get('url'):
-                        # headers = {
-                        #     'Content-Type': 'application/json',
-                        # }
-                        # upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
-                        #                                 content_type='content', timeout=600)
-                        # if upload_data['error_code'] == 0:
-                        #     attachment_obj = self.env['ir.attachment'].create({
-                        #         'name': ref_obj.name + ' Invoice.pdf',
-                        #         'datas_fname': ref_obj.name + ' Invoice.pdf',
-                        #         'datas': upload_data['response'],
-                        #         'url': inv_data['url']
-                        #     })
-                        #     attachment_id_list.append(attachment_obj.id)
-                        #     resv_has_invoice = True
-                        # else:
-                        #     _logger.info(upload_data['error_msg'])
-                        #     raise Exception(_('Failed to convert invoice attachment!'))
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                        content_type='content', timeout=600)
+                        if upload_data['error_code'] == 0:
+                            attachment_obj = self.env['ir.attachment'].create({
+                                'name': ref_obj.name + ' Invoice.pdf',
+                                'datas_fname': ref_obj.name + ' Invoice.pdf',
+                                'datas': upload_data['response'],
+                                'url': inv_data['url']
+                            })
+                            attachment_id_list.append(attachment_obj.id)
+                            resv_has_invoice = True
+                        else:
+                            _logger.info(upload_data['error_msg'])
+                            raise Exception(_('Failed to convert invoice attachment!'))
                         ###########GOOGLE API ATTACHMENT OAUTH2##################
-                        attachment_obj = self.env['ir.attachment'].create({
-                            'name': ref_obj.name + ' Invoice.pdf',
-                            'datas_fname': ref_obj.name + ' Invoice.pdf',
-                            # 'datas': upload_data['response'],
-                            'url': inv_data['path'],
-                        })
-                        attachment_id_list.append(attachment_obj.id)
+                        # attachment_obj = self.env['ir.attachment'].create({
+                        #     'name': ref_obj.name + ' Invoice.pdf',
+                        #     'datas_fname': ref_obj.name + ' Invoice.pdf',
+                        #     # 'datas': upload_data['response'],
+                        #     'url': inv_data['path'],
+                        # })
+                        # attachment_id_list.append(attachment_obj.id)
                         resv_has_invoice = True
                     else:
                         raise Exception(_('Failed to get invoice attachment!'))

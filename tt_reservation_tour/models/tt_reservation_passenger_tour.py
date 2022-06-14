@@ -22,10 +22,18 @@ class TtReservationCustomer(models.Model):
 
     def to_dict(self):
         res = super(TtReservationCustomer, self).to_dict()
+        sale_service_charges = self.get_service_charges()
+        pax_type = ''
+        for pnr in sale_service_charges:
+            for svc in sale_service_charges[pnr]:
+                pax_type = sale_service_charges[pnr][svc]['pax_type']
+                break
+            break
         res.update({
             'tour_room_id': self.tour_room_id and self.tour_room_id.id or 0,
             'pax_type': self.pax_type and self.pax_type or '',
-            'sale_service_charges': self.get_service_charges()
+            'sale_service_charges': sale_service_charges,
+            'pax_type': pax_type
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()
