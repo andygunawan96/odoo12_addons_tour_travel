@@ -1469,6 +1469,7 @@ class TtVisa(models.Model):
                         sc_value[p_pax_type][p_charge_type].update({
                             'amount': 0,
                             'foreign_amount': 0,
+                            'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
                             'total': 0
                         })
                     c_type = p_charge_type
@@ -1479,6 +1480,7 @@ class TtVisa(models.Model):
                         sc_value[p_pax_type][p_charge_code].update({
                             'amount': 0,
                             'foreign_amount': 0,
+                            'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
                             'total': 0
                         })
                     c_type = p_charge_code
@@ -1487,7 +1489,6 @@ class TtVisa(models.Model):
                 sc_value[p_pax_type][c_type].update({
                     'charge_type': p_charge_type,
                     'charge_code': c_code,
-                    'pax_count': p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
                     'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
