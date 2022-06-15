@@ -92,7 +92,7 @@ class HotelReservation(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_hotel.tt_reservation_hotel_form_views")
 
-    @api.depends("passenger_ids")
+    @api.depends("passenger_ids.channel_service_charge_ids")
     def _compute_total_channel_upsell(self):
         for rec in self:
             chan_upsell_total = 0
