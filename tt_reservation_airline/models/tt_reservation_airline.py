@@ -912,6 +912,9 @@ class ReservationAirline(models.Model):
                                 'arrival_date': segment_data['arrival_date'],
                                 'departure_date': segment_data['departure_date'],
                                 'class_of_service': segment_data['fares'][0]['class_of_service'],
+                                'cabin_class': segment_data['fares'][0].get('cabin_class', ''),
+                                'fare_basis_code': segment_data['fares'][0].get('fare_basis_code', ''),
+                                'tour_code': segment_data['fares'][0].get('tour_code', ''),
                                 'leg_ids': leg_ids
                             })
                         journey_obj.compute_detail_info()
