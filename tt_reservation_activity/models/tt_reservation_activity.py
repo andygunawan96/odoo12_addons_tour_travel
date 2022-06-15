@@ -151,7 +151,7 @@ class ReservationActivity(models.Model):
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
             rec.total_nta = rec.total - rec.total_commission
 
-    @api.depends("passenger_ids")
+    @api.depends("passenger_ids.channel_service_charge_ids")
     def _compute_total_channel_upsell(self):
         for rec in self:
             chan_upsell_total = 0

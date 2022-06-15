@@ -180,7 +180,7 @@ class ReservationGroupBooking(models.Model):
                     pnr.append(provider_obj.pnr)
                 rec.pnr = ", ".join(pnr)
 
-    @api.depends("passenger_ids")
+    @api.depends("passenger_ids.channel_service_charge_ids")
     def _compute_total_channel_upsell(self):
         for rec in self:
             chan_upsell_total = 0
