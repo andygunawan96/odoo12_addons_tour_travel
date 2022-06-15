@@ -52,7 +52,7 @@ class TtReservationBus(models.Model):
             else:
                 rec.reconcile_state = 'not_reconciled'
 
-    @api.depends("passenger_ids")
+    @api.depends("passenger_ids.channel_service_charge_ids")
     def _compute_total_channel_upsell(self):
         for rec in self:
             chan_upsell_total = 0
