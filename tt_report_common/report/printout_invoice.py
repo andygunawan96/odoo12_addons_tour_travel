@@ -100,6 +100,13 @@ class PrintoutTicketForm(models.AbstractModel):
                     elif rec2.charge_type.lower() == 'disc':
                         discount_value += rec2.amount
 
+                a[provider.pnr].append({
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                    'pnr': provider.pnr,
+                })
                 if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus', 'insurance', 'mitrakeluarga']:
                     csc_found = []
                     for rec2 in provider.ticket_ids:
@@ -110,8 +117,6 @@ class PrintoutTicketForm(models.AbstractModel):
                                         price_detail['price_per_pax'] += scs.amount
                                         csc_found.append(rec2.pax_type)
                                     price_detail['price_total'] += scs.amount
-
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value, 'qty': 1, }})
 
             for ssr_per_pax in rec.passenger_ids:
                 if hasattr(ssr_per_pax, 'fee_ids'):
