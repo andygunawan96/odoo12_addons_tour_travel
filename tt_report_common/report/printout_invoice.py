@@ -403,7 +403,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
                     }
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             # tidak ada ticket with price, dan tidak ada pax type
             # for rec2 in rec.passenger_ids:
             #     for rec3 in rec2.channel_service_charge_ids:
@@ -2045,7 +2045,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
@@ -2128,7 +2128,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2189,7 +2189,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2251,7 +2251,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2312,7 +2312,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2373,7 +2373,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             if rec.pnr:
                 pnr_length = len(rec.pnr)
@@ -2438,7 +2438,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2497,7 +2497,7 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2561,7 +2561,7 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2627,7 +2627,7 @@ class PrintoutBusItineraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2695,7 +2695,7 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
-                    a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                    a[rec2.pax_type]['price_total'] += rec2.total
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
