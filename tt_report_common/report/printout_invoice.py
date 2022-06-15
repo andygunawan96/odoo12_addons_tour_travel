@@ -100,7 +100,8 @@ class PrintoutTicketForm(models.AbstractModel):
                     elif rec2.charge_type.lower() == 'disc':
                         discount_value += rec2.amount
 
-                a[provider.pnr].append({
+                if discount_value:
+                    a[provider.pnr].append({
                     'pax_type': 'DISC',
                     'price_per_pax': discount_value,
                     'price_total': discount_value,
@@ -2054,16 +2055,23 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value, 'qty': 1,}})
+            if discount_value:
+                a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value, 'qty': 1,}})
 
             csc_found = []
             for psg in rec.passenger_ids:
                 pax_type = psg.cost_service_charge_ids[0].pax_type
+                # Noted Mark Up Airline pakek tngan per org makane langsung di kali QTY
                 for csc in psg.channel_service_charge_ids:
                     if pax_type not in csc_found:
                         a[pax_type]['price_per_pax'] += csc.amount
                         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
                         csc_found.append(pax_type)
+
+                # Add SSR cman karena ssr itu per pax maka smentara cman ku kasih di total
+                # klo di tmbah ke per pax jadi slah jumlah
+                for csc in psg.fee_ids:
+                    a[pax_type]['price_total'] += csc.amount
 
             for sc_key in a.keys():
                 sc = a[sc_key]
