@@ -2118,6 +2118,8 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2134,6 +2136,25 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2148,6 +2169,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -2179,6 +2201,8 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2195,6 +2219,25 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2209,6 +2252,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
                                                                            default='#FFFFFF'),
@@ -2241,6 +2285,8 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2257,6 +2303,25 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2271,6 +2336,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -2302,6 +2368,8 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2318,6 +2386,25 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
@@ -2332,6 +2419,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -2363,6 +2451,8 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2379,6 +2469,25 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             if rec.pnr:
                 pnr_length = len(rec.pnr)
@@ -2396,6 +2505,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
                                                                            default='#FFFFFF'),
@@ -2428,6 +2538,8 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2444,6 +2556,25 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2454,6 +2585,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -2487,6 +2619,8 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2503,6 +2637,25 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2513,6 +2666,7 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -2551,6 +2705,8 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2567,6 +2723,25 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2577,6 +2752,7 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -2617,6 +2793,8 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2633,6 +2811,25 @@ class PrintoutBusItineraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2643,6 +2840,7 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -2685,6 +2883,8 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2701,6 +2901,25 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
+
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
+                               'qty': 1, }})
+
+            csc_found = []
+            for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
+                for csc in psg.channel_service_charge_ids:
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
+
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         return {
@@ -2711,6 +2930,7 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
