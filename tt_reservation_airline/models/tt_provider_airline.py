@@ -1092,6 +1092,7 @@ class TtProviderAirlinePricing(models.Model):
     rule_destination_city = fields.Char('Destination City Code', readonly=1)
     rule_destination_country = fields.Char('Destination Country Code', readonly=1)
     rule_class_of_service_list = fields.Char('Class of Service Code List', readonly=1)
+    rule_tour_code_list = fields.Char('Tour Code List', readonly=1)
     rule_charge_code_list = fields.Char('Charge Code List', readonly=1)
     rule_pricing_datetime = fields.Datetime('Pricing Datetime', readonly=1)
 
@@ -1593,6 +1594,7 @@ class TtProviderAirlinePricing(models.Model):
                 'rule_destination_city': rule_data['destination_city'],
                 'rule_destination_country': rule_data['destination_country'],
                 'rule_class_of_service_list': rule_data['class_of_service_list'],
+                'rule_tour_code_list': rule_data['tour_code_list'],
                 'rule_charge_code_list': rule_data['charge_code_list'],
                 'rule_pricing_datetime': rule_data['pricing_datetime'],
             })

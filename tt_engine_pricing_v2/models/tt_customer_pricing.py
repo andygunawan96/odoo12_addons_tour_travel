@@ -244,6 +244,10 @@ class CustomerPricingLine(models.Model):
     charge_code_access_type = fields.Selection(ACCESS_TYPE, 'Charge Code Access Type', default='all', required=True)
     charge_code_list = fields.Char('Charge Code List', help='Use comma (,) for separate the values')
 
+    tour_code_name = fields.Char('Tour Code Name')
+    tour_code_access_type = fields.Selection(ACCESS_TYPE, 'Tour Code Access Type', default='all', required=True)
+    tour_code_list = fields.Char('Tour Code List', help='Use comma (,) for separate the values')
+
     tkt_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)
     tkt_sales_upsell_minimum = fields.Float('Minimum Amount', default=0)
     tkt_sales_upsell_has_minimum = fields.Boolean('Has Minimum', default=True)
@@ -303,6 +307,10 @@ class CustomerPricingLine(models.Model):
                 'charge_code': {
                     'access_type': self.charge_code_access_type,
                     'charge_code_list': [rec.strip() for rec in self.charge_code_list.split(',')] if self.charge_code_list else [],
+                },
+                'tour_code': {
+                    'access_type': self.tour_code_access_type,
+                    'tour_code_list': [rec.strip() for rec in self.tour_code_list.split(',')] if self.tour_code_list else [],
                 }
             },
             'ticketing': {

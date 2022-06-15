@@ -239,6 +239,10 @@ class ProviderPricingLine(models.Model):
     charge_code_access_type = fields.Selection(ACCESS_TYPE, 'Charge Code Access Type', default='all', required=True)
     charge_code_list = fields.Char('Charge Code List', help='Use comma (,) for separate the values')
 
+    tour_code_name = fields.Char('Tour Code Name')
+    tour_code_access_type = fields.Selection(ACCESS_TYPE, 'Tour Code Access Type', default='all', required=True)
+    tour_code_list = fields.Char('Tour Code List', help='Use comma (,) for separate the values')
+
     less_percentage = fields.Float('Vendor Less (%)', default=0)
     less_infant = fields.Boolean('Apply less to Infant', default=False)
 
@@ -406,6 +410,10 @@ class ProviderPricingLine(models.Model):
                 'charge_code': {
                     'access_type': self.charge_code_access_type,
                     'charge_code_list': [rec.strip() for rec in self.charge_code_list.split(',')] if self.charge_code_list else [],
+                },
+                'tour_code': {
+                    'access_type': self.tour_code_access_type,
+                    'tour_code_list': [rec.strip() for rec in self.tour_code_list.split(',')] if self.tour_code_list else [],
                 }
             },
             'less': {

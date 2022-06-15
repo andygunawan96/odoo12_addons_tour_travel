@@ -1134,7 +1134,7 @@ class ProviderPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, agent_id, agent_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, pricing_datetime, **kwargs):
+    def get_pricing_data(self, agent_id, agent_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -1204,6 +1204,7 @@ class ProviderPricing(object):
                 is_destination = False
                 is_class_of_service = False
                 is_charge_code = False
+                is_tour_code = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -1309,7 +1310,17 @@ class ProviderPricing(object):
                 elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
                     is_charge_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                tour_code_data = rule['route']['tour_code']
+                if tour_code_data['access_type'] == 'all':
+                    is_tour_code = True
+                elif not tour_code_list:
+                    pass
+                elif tour_code_data['access_type'] == 'allow' and any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -1518,7 +1529,7 @@ class AgentPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, pricing_datetime, **kwargs):
+    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -1599,6 +1610,7 @@ class AgentPricing(object):
                 is_destination = False
                 is_class_of_service = False
                 is_charge_code = False
+                is_tour_code = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -1706,7 +1718,17 @@ class AgentPricing(object):
                 elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
                     is_charge_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                tour_code_data = rule['route']['tour_code']
+                if tour_code_data['access_type'] == 'all':
+                    is_tour_code = True
+                elif not tour_code_list:
+                    pass
+                elif tour_code_data['access_type'] == 'allow' and any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -2108,7 +2130,7 @@ class CustomerPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, customer_parent_type_code, customer_parent_id, provider_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, pricing_datetime, **kwargs):
+    def get_pricing_data(self, customer_parent_type_code, customer_parent_id, provider_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -2190,6 +2212,7 @@ class CustomerPricing(object):
                 is_destination = False
                 is_class_of_service = False
                 is_charge_code = False
+                is_tour_code = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -2295,7 +2318,17 @@ class CustomerPricing(object):
                 elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
                     is_charge_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                tour_code_data = rule['route']['tour_code']
+                if tour_code_data['access_type'] == 'all':
+                    is_tour_code = True
+                elif not tour_code_list:
+                    pass
+                elif tour_code_data['access_type'] == 'allow' and any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -2436,7 +2469,7 @@ class AgentCommission(object):
 
     def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city,
                          origin_country, destination_code, destination_city, destination_country, class_of_service_list,
-                         charge_code_list, pricing_datetime, **kwargs):
+                         charge_code_list, tour_code_list, pricing_datetime, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -2517,6 +2550,7 @@ class AgentCommission(object):
                 is_destination = False
                 is_class_of_service = False
                 is_charge_code = False
+                is_tour_code = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -2624,7 +2658,17 @@ class AgentCommission(object):
                 elif charge_code_data['access_type'] == 'restrict' and not any(charge_code in charge_code_data['charge_code_list'] for charge_code in charge_code_list):
                     is_charge_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code]
+                tour_code_data = rule['route']['tour_code']
+                if tour_code_data['access_type'] == 'all':
+                    is_tour_code = True
+                elif not tour_code_list:
+                    pass
+                elif tour_code_data['access_type'] == 'allow' and any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
+                    is_tour_code = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -2965,12 +3009,16 @@ class RepricingToolsV2(object):
 
         class_of_service_list = []
         charge_code_list = []
+        tour_code_list = []
         pax_count_dict = {
             'ADT': 0
         }
         for fare in self.ticket_fare_list:
             if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
                 class_of_service_list.append(fare['class_of_service'])
+
+            if fare.get('tour_code') and fare['tour_code'] not in tour_code_list:
+                tour_code_list.append(fare['tour_code'])
 
             if 'service_charges' not in fare:
                 continue
@@ -2998,6 +3046,7 @@ class RepricingToolsV2(object):
             'destination_city': destination_city,
             'destination_country': destination_country,
             'class_of_service_list': class_of_service_list,
+            'tour_code_list': tour_code_list,
             'charge_code_list': charge_code_list,
             'pricing_datetime': datetime.now().strftime(FORMAT_DATETIME)
         }
@@ -3017,7 +3066,7 @@ class RepricingToolsV2(object):
         }
         return payload
 
-    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, **kwargs):
+    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], tour_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, **kwargs):
         '''
             pricing_datetime = %Y-%m-%d %H:%M:%S
         '''
@@ -3043,11 +3092,15 @@ class RepricingToolsV2(object):
         # April 13, 2022 - SAM
         # Menambahkan mekanisme untuk auto mendapatkan class of service list dan charge code list
         temp_cos_list = []
+        temp_tc_list = []
         temp_sc_list = []
         for fare in self.ticket_fare_list:
             cos = fare.get('class_of_service', '')
             if cos and cos not in class_of_service_list:
                 class_of_service_list.append(cos)
+            tc = fare.get('tour_code', '')
+            if tc and tc not in tour_code_list:
+                tour_code_list.append(tc)
             for sc in fare.get('service_charges', []):
                 c_code = sc.get('charge_code', '')
                 if c_code and c_code not in charge_code_list:
@@ -3055,6 +3108,8 @@ class RepricingToolsV2(object):
 
         # if not class_of_service_list:
         #     class_of_service_list = temp_cos_list
+        # if not tour_code_list:
+        #     tour_code_list = temp_tc_list
         # if not charge_code_list:
         #     charge_code_list = temp_sc_list
         # END
@@ -3070,9 +3125,10 @@ class RepricingToolsV2(object):
             'destination_country': destination_country,
             'class_of_service_list': class_of_service_list,
             'charge_code_list': charge_code_list,
+            'tour_code_list': tour_code_list,
             'pricing_datetime': pricing_datetime,
         }
-        rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_type), str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id)] + class_of_service_list + charge_code_list
+        rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_type), str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id)] + class_of_service_list + charge_code_list + tour_code_list
         rule_key = ''.join(rule_key_list)
         if rule_key in self.provider_data_dict:
             rule_obj = self.provider_data_dict[rule_key]
@@ -3229,6 +3285,7 @@ class RepricingToolsV2(object):
 
         # December 17, 2021 - SAM
         # Flow 2
+        is_agent_commission_applied = False
         for pricing_idx in range(3):
             for pax_type, sc_sum in sc_summary_dict.items():
                 pax_count = pax_count_dict[pax_type]
@@ -3699,6 +3756,7 @@ class RepricingToolsV2(object):
                             pass
 
                 if agent_com_obj:
+                    is_agent_commission_applied = True
                     total_pax_count = 0
                     infant_count = 0
                     for pax_type, pax_count in pax_count_dict.items():
@@ -3733,6 +3791,7 @@ class RepricingToolsV2(object):
                                 'total': -agent_com_res['agent_discount_amount'],
                             })
                             fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= agent_com_res['agent_discount_amount']
                         else:
                             # April 14 2022 - SAM
                             # Mengurangi komisi apabila minus
@@ -3754,6 +3813,7 @@ class RepricingToolsV2(object):
                                     'total': -agent_com_res['agent_commission_amount'],
                                 })
                                 fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= agent_com_res['agent_commission_amount']
                         else:
                             # April 14 2022 - SAM
                             # Mengurangi komisi apabila minus
@@ -3776,6 +3836,7 @@ class RepricingToolsV2(object):
                                     'commission_agent_id': agent_com_res['parent_agent_id']
                                 })
                                 fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= agent_com_res['parent_charge_amount']
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3799,6 +3860,7 @@ class RepricingToolsV2(object):
                                     'commission_agent_id': agent_com_res['ho_agent_id']
                                 })
                                 fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= agent_com_res['ho_charge_amount']
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3823,6 +3885,7 @@ class RepricingToolsV2(object):
                                         'commission_agent_id': upline['agent_id']
                                     })
                                     fare_data['service_charges'].append(sc_values)
+                                total_commission_amount -= upline['commission_amount']
                             else:
                                 # # April 14, 2022 - SAM
                                 # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3846,6 +3909,7 @@ class RepricingToolsV2(object):
                                     'commission_agent_id': agent_com_res['residual_agent_id']
                                 })
                                 fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= agent_com_res['residual_amount']
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3916,6 +3980,28 @@ class RepricingToolsV2(object):
                             temp_total_com_amount = -cust_rsv_res['commission_amount']
                             total_commission_amount -= temp_total_com_amount
                             # END
+
+        # May 30, 2022 - SAM
+        if not is_agent_commission_applied and total_commission_amount > 0:
+            com_agent_id = self.agent_id
+            if self.upline_list:
+                com_agent_id = self.upline_list[-1]['id']
+
+            # _logger.info('Agent Commission is not applied, commission given to Agent ID %s' % com_agent_id)
+            sc_values = copy.deepcopy(sc_temp)
+            sc_values.update({
+                'charge_type': 'RAC',
+                'charge_code': 'racsdo',
+                'pax_type': 'ADT',
+                'pax_count': 1,
+                'amount': -total_commission_amount,
+                'foreign_amount': -total_commission_amount,
+                'total': -total_commission_amount,
+                'commission_agent_id': com_agent_id
+            })
+            fare_data['service_charges'].append(sc_values)
+            total_commission_amount -= total_commission_amount
+        # END
 
         # April 13, 2022 - SAM
         # Menambahkan pengecekkan untuk repricing

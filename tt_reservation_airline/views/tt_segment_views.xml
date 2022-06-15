@@ -47,6 +47,7 @@
                         <group>
                             <field name="class_of_service"/>
                             <field name="fare_basis_code"/>
+                            <field name="tour_code"/>
                             <field name="fare_class"/>
                             <field name="fare_name"/>
                         </group>
