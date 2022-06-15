@@ -75,6 +75,7 @@ class PrintoutTicketForm(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
+            discount_value = 0
             for provider in rec.provider_booking_ids:
                 a[provider.pnr] = []
                 for rec2 in provider.cost_service_charge_ids:
@@ -96,51 +97,21 @@ class PrintoutTicketForm(models.AbstractModel):
                     if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                         price_target['price_per_pax'] += rec2.amount
                         price_target['price_total'] += rec2.amount * rec2.pax_count
+                    elif rec2.charge_type.lower() == 'disc':
+                        discount_value += rec2.amount
 
                 if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus', 'insurance', 'mitrakeluarga']:
+                    csc_found = []
                     for rec2 in provider.ticket_ids:
                         for price_detail in a[provider.pnr]:
                             if rec2.pax_type == price_detail['pax_type']:
                                 for scs in rec2.passenger_id.channel_service_charge_ids:
-                                    price_detail['tax'] += scs.amount
+                                    if rec2.pax_type not in csc_found:
+                                        price_detail['price_per_pax'] += scs.amount
+                                        csc_found.append(rec2.pax_type)
+                                    price_detail['price_total'] += scs.amount
 
-                    # TODO VIN: Re cek all voucher/ticket with price apa ada kendala tak ganti gini
-                    # if not a[provider.pnr]:
-                    #     a[provider.pnr].append({
-                    #         'pax_type': rec2.pax_type,
-                    #         'fare': 0,
-                    #         'tax': 0,
-                    #         'qty': 0,
-                    #         'pnr': provider.pnr
-                    #     })
-                    #     if rec2.charge_type.lower() == 'fare':
-                    #         a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.total
-                    #         a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
-                    #     elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    #         a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.total
-                    # else:
-                    #     pax_type_found = False
-                    #     for idx, price_detail in enumerate(a[provider.pnr]):
-                    #         if rec2.pax_type == price_detail['pax_type']:
-                    #             pax_type_found = True
-                    #             if rec2.charge_type.lower() == 'fare':
-                    #                 a[provider.pnr][idx]['fare'] += rec2.total
-                    #                 a[provider.pnr][idx]['qty'] = rec2.pax_count
-                    #             elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    #                 a[provider.pnr][idx]['tax'] += rec2.total
-                    #     if not pax_type_found:
-                    #         a[provider.pnr].append({
-                    #             'pax_type': rec2.pax_type,
-                    #             'fare': 0,
-                    #             'tax': 0,
-                    #             'qty': 0,
-                    #             'pnr': provider.pnr
-                    #         })
-                    #         if rec2.charge_type.lower() == 'fare':
-                    #             a[provider.pnr][len(a[provider.pnr])-1]['fare'] += rec2.total
-                    #             a[provider.pnr][len(a[provider.pnr])-1]['qty'] = rec2.pax_count
-                    #         elif rec2.charge_type.lower() in ['roc', 'tax']:
-                    #             a[provider.pnr][len(a[provider.pnr])-1]['tax'] += rec2.total
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value, 'qty': 1, }})
 
             for ssr_per_pax in rec.passenger_ids:
                 if hasattr(ssr_per_pax, 'fee_ids'):
@@ -2056,8 +2027,9 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
         values = {}
         pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
         header_width = 90
-        other_service_charges = 0
         agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
@@ -2074,10 +2046,23 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.amount * rec2.pax_count
+                elif rec2.charge_type.lower() == 'disc':
+                    discount_value += rec2.amount
 
+            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value, 'qty': 1,}})
+
+            csc_found = []
             for psg in rec.passenger_ids:
+                pax_type = psg.cost_service_charge_ids[0].pax_type
                 for csc in psg.channel_service_charge_ids:
-                    other_service_charges += csc.amount
+                    if pax_type not in csc_found:
+                        a[pax_type]['price_per_pax'] += csc.amount
+                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                        csc_found.append(pax_type)
+
+            for sc_key in a.keys():
+                sc = a[sc_key]
+                customer_grand_total += sc['price_total']
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
@@ -2095,7 +2080,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
-            'other_service_charges': other_service_charges,
+            'customer_grand_total': customer_grand_total,
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),

@@ -2159,7 +2159,7 @@ class HotelInformation(models.Model):
         # Perlu dibuat gini karena cache data bisa berasal dari mana sja
         # EXAMPLE: mg_pool, miki_api, hotelspro_file, dida_pool dll
         provider = provider.split('_')[0]
-        if provider in ['webbeds', 'fitruums']:
+        if provider in ['mg', 'mgholiday', 'mgjarvis']:
             return 'A1'
         elif provider == 'dida':
             return 'A2'
@@ -2169,7 +2169,7 @@ class HotelInformation(models.Model):
             return 'A4'
         elif provider == 'quantum':
             return 'A5'
-        elif provider in ['mg', 'mgholiday']:
+        elif provider in ['webbeds', 'fitruums']:
             return 'A6'
         elif provider == 'hotelbeds':
             return 'A7'
@@ -3585,7 +3585,7 @@ class HotelInformation(models.Model):
                                                         'comp_hotel_id': same_hotel_obj_id.id,
                                                     })
                                                     comparing_id.compare_hotel()
-                                        if hotel_id % 300 == 0:
+                                        if hotel_id % 50 == 0:
                                             _logger.info('====== Saving Poin Hotel Raw Data ======')
                                             self.env.cr.commit()
                                 f2.close()
@@ -3924,3 +3924,18 @@ class HotelInformation(models.Model):
                     'latitude': rec[5],
                     'longitude': rec[6],
                 })
+
+    def get_xml_data(self, xml_dict, xml_list, is_list=False):
+        if not isinstance(xml_list, list):
+            xml_list = [xml_list]
+        data = xml_dict
+        for key in xml_list:
+            if not data or not data.get(key):
+                data = ''
+                break
+            data = data[key]
+        if not data and is_list:
+            data = []
+        elif is_list and not isinstance(data, list):
+            data = [data]
+        return data
