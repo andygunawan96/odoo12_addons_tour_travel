@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from datetime import datetime as dt
+from dateutil.relativedelta import relativedelta
 from ...tools import util,variables,ERR
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from datetime import date, datetime, timedelta
@@ -554,7 +555,7 @@ class TestSearch(models.Model):
             'checkin_date': check_in,
             'checkout_date': check_out,
             'room_count': room_count,
-            'nights': dt.strptime(check_out, "%Y-%m-%d").day - dt.strptime(check_in, "%Y-%m-%d").day,
+            'nights': relativedelta(dt.strptime(check_out, "%Y-%m-%d"), dt.strptime(check_in, "%Y-%m-%d")).days,
             'booker_id': booker_obj.id, #
             'contact_id': contact_obj.id, #
             'contact_name': contact_obj.name, #

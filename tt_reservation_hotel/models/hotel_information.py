@@ -365,6 +365,12 @@ class HotelMaster(models.Model):
         for rec in self.compare_ids:
             self.info_ids = [(4, rec.hotel_id.id)]
 
+    def calc_get_city(self):
+        if not self.city_id:
+            self.city_id = self.destination_id.city_id.id
+        if not self.country_id:
+            self.country_id = self.destination_id.country_id.id
+
     def calc_get_provider_name(self):
         for rec in self.search([('city_id', '=', self.city_id.id)]):
             rec.get_provider_name()

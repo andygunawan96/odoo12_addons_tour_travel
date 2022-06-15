@@ -25,15 +25,14 @@ class ReservationHotel(models.Model):
             self.state_invoice = 'partial'
 
     def get_segment_description(self):
-        tmp = ''
-        for rec in self.room_detail_ids:
-            tmp += 'Hotel : %s\nRoom : %s %s(%s),\n' % (self.hotel_name, rec.room_name, rec.room_type, rec.meal_type if rec.meal_type else 'Room Only')
-            tmp += 'Date  : %s - %s\n' % (str(self.checkin_date)[:10], str(self.checkout_date)[:10])
-            tmp += 'Guest :\n'
-            for idx, guest in enumerate(self.passenger_ids):
-                tmp += str(idx+1) + '. ' + guest['customer_id'].name + '\n'
-            spc = rec.special_request or '-'
-            tmp += 'Special Request: ' + spc + '\n'
+        tmp = 'Hotel : %s\n' % (self.hotel_name, )
+        for idx, rec in enumerate(self.room_detail_ids):
+            tmp += 'Room %s: %s %s(%s),\n' % (str(idx+1), rec.room_name, rec.room_type, rec.meal_type if rec.meal_type else 'Room Only')
+        tmp += 'Date  : %s - %s\n' % (str(self.checkin_date)[:10], str(self.checkout_date)[:10])
+        tmp += 'Guest :\n'
+        for idx, guest in enumerate(self.passenger_ids):
+            tmp += str(idx+1) + '. ' + guest['customer_id'].name + '\n'
+        tmp += 'Special Request: %s\n'  % (self.special_req or '-', )
         return tmp
 
     def action_create_invoice(self, data):
@@ -68,6 +67,11 @@ class ReservationHotel(models.Model):
                 'price_unit': room_obj.sale_price,
                 'quantity': 1,
             })
+
+        upsell_sc = 0
+        for psg in self.passenger_ids:
+            upsell_sc += sum(channel_charge.amount for channel_charge in psg.channel_service_charge_ids)
+        inv_line_obj.invoice_line_detail_ids[0]['price_unit'] += upsell_sc
 
         ##membuat payment dalam draft
         if data.get('acquirer_id'):

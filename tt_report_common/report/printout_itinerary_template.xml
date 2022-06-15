@@ -18,7 +18,7 @@
                             <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
                             <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
                             <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="float(price['price_per_pax'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="float(price['price_total'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="float(price['price_total'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                         </tr>
                     </t>
                 </t>
@@ -36,22 +36,7 @@
                 </t>
             </t>
         </table>
-        <t t-if="other_service_charges">
-            <br/>
-            <span style="font-size: 28px; font-weight: 730">Other Service Charge</span><br/>
-            <table width="100%">
-                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
-                    <td style="text-align:left;"><b>Name</b></td>
-                    <td style="text-align:right;"><b>Price</b></td>
-                </thead>
-                <tr>
-                    <td style="text-align:left;">Other Service Charges</td>
-                    <td style="text-align:right;">
-                        <t t-esc="other_service_charges" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                    </td>
-                </tr>
-            </table>
-        </t>
+
         <span style="font-size: 28px; font-weight: 730">Grand Total</span><br/>
         <table width="100%">
             <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
@@ -61,7 +46,7 @@
             <tr>
                 <td style="text-align:left;">Grand Total</td>
                 <td style="text-align:right;">
-                    <t t-esc="doc.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                    <t t-esc="float(customer_grand_total)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                 </td>
             </tr>
         </table>
@@ -289,7 +274,6 @@
                     </t>
                     </div>
                 </t>
-
             </div>
         </div>
     </template>
@@ -1604,20 +1588,23 @@
 
     <template id="itinerary_signature">
         <div class="row">
-            <ul>
-                <!-- <t t-set="limit" t-value="3"/>-->
-                <t t-set="current" t-value="0"/>
-                <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
-                    <!-- <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and current &lt; limit">-->
-                    <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
-                        <li style="font-size: 14px;"><span t-field="payment_id.bank_id.name"/> <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
-                        <t t-set="current" t-value="current + 1"/>
+            <div class="col-12">
+                List of bank:<br/>
+                <ul>
+                    <!-- <t t-set="limit" t-value="3"/>-->
+                    <t t-set="current" t-value="0"/>
+                    <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
+                        <!-- <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and current &lt; limit">-->
+                        <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
+                            <li style="font-size: 14px;"><span t-field="payment_id.bank_id.name"/> <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
+                            <t t-set="current" t-value="current + 1"/>
+                        </t>
                     </t>
-                </t>
-                <t t-if="current == 0">
-                    <li>Direct payment (cash) at <span t-field="doc.agent_id.name"/></li>
-                </t>
-            </ul>
+                    <t t-if="current == 0">
+                        <li>Direct payment (cash) at <span t-field="doc.agent_id.name"/></li>
+                    </t>
+                </ul>
+            </div>
         </div>
         <div class="row">
             <span t-raw="printout_itinerary_footer"/>
@@ -1919,19 +1906,120 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <t t-call="tt_report_common.external_layout">
-                        <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
-                            <div style="margin-bottom: 10px; margin-top: 10px;">
-                                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
-                            </div>
+                    <div class="container">
+                        <div class="article" style="margin: 0px !important; padding: 0px !important">
+                            <!-- Copasan id="external_layout_header" Start -->
+                            <div class="row" style="height:100px; font-family: 'Liberation Sans'">
+                                <t t-if="doc.agent_id.logo">
+                                    <div class="col-4" style="margin-left: 30px">
+                                        <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                        <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
+                                            <span t-field="doc.agent_id.name" style="font-size: 28px;"/>
+                                        </div>
+                                    </t>
+                                <div class="col-1">
 
-                            <t t-call="tt_report_common.json_itinerary_content_view"/>
-                            <t t-call="tt_report_common.itinerary_price_detail"/>
-                            <br/>
-                            <t t-call="tt_report_common.itinerary_signature"/>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">Itinerary Form</span><br/>
+                                    <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
+
+                                    <div t-att-style="'height: 105px; width:'+ header_width+'%; float: right'">
+                                        <div id="circle" t-att-style="'width: 60px; height: 60px; background: '+ base_color +'; border-radius: 100%; position: absolute; z-index: 1;'">
+                                            <img t-att-src="printout_icon" style="max-height: 35px; max-width: 35px; margin: 12px 0px 0px 0px;"/>
+                                        </div>
+                                        <div id="rectangle" t-att-style="'width: '+header_width+'%; height: 50px; bottom: 15px; border-radius: 25px; position: absolute; z-index: 0; background-image: ' + img_url">
+                                            <div style="padding-left: 75px; padding-bottom: 10px; vertical-align: middle; text-align: center; border-radius: 25px; background-color: rgba(39,62,84,0.76); padding-top: 5px;">
+                                                <div style="vertical-align: middle; display: flex; letter-spacing: 0.05em; font-size: 24px; color: white; font-weight: 600; margin-top: 0px; margin-left: -10px; margin-right: 10px;">
+                                                    <span t-esc="'Itinerary'" style="margin-top: 5px;"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="border: 1px solid #BBB; margin-bottom: 10px; margin-top: 10px; position: absolute; left: 0; right: 0; width: 100%"/>  <!---15px -15px-->
+                            <!-- Copasan id="external_layout_header" End -->
+                            <!-- Body Start -->
+                            <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
+                                <div style="margin-bottom: 10px; margin-top: 10px;">
+                                    <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                                    <span t-esc="doc['name']" style="font-size: 18px; font-weight: 730"/><br/>
+                                </div>
+
+                                <t t-call="tt_report_common.json_itinerary_content_view"/>
+                                <t t-call="tt_report_common.itinerary_price_detail"/>
+                                <br/>
+                                <t t-call="tt_report_common.itinerary_signature"/>
+                            </div>
+                            <!-- Body End -->
+                            <div class="footer" style="margin-top: 20px; position: absolute; left: 0; right: 0; background-image: url('/tt_reservation_offline/static/images/background footer airline.jpg');">
+                                <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82); font-family: 'DejaVu Sans'">  <!--rgba(70,70,70,0.8);-->
+                                    <div class="row">
+                                        <div class="col-5" style="margin-top:10px; margin-left: 15px; margin-right: 15px; padding: 0 30px;">
+                                            <div>
+                                                <span style="font-weight: 600; color: white" t-field="doc['agent_id'].name"/>
+                                            </div>
+                                            <div>
+                                                <t t-if="doc['agent_id'].address_ids">
+                                                    <span style="color: white; font-size: 13px;" t-field="doc['agent_id'].address_ids[0].address"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span style="color: white; font-size: 13px;">-</span>
+                                                </t>
+                                            </div>
+                                        </div>
+                                        <div class="col-6" style="margin-top:10px;">
+                                            <div>
+                                                <span style="font-weight: 500; color: white">Contact Customer Care</span>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div style="margin-top: 5px;">
+                                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/24-hours-phone-service.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                                            <t t-if="doc['agent_id'].phone_ids">
+                                                                <span style="color: white; font-size: 13px" t-field="doc['agent_id'].phone_ids[0].calling_code"/> <span style="color: white; font-size: 14px" t-field="doc['agent_id'].phone_ids[0].calling_number"/>
+                                                            </t>
+                                                            <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
+                                                        </span>
+                                                    </div>
+                                                    <div style="margin-top: 5px;">
+                                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/whatsapp.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')">
+                                                                <span style="color: white; font-size: 13px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'WhatApps')[0].name"/>
+                                                            </t>
+                                                            <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div style="margin-top: 5px;">
+                                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/telegram.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')">
+                                                                <span style="color: white; font-size: 13px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Telegram')[0].name"/>
+                                                            </t>
+                                                            <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
+                                                        </span>
+                                                    </div>
+                                                    <div style="margin-top: 5px;">
+                                                        <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
+                                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
+                                                                <span style="color: white; font-size: 13px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
+                                                            </t>
+                                                            <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </t>
+                    </div>
                 </div>
             </t>
         </t>

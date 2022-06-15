@@ -107,20 +107,11 @@
                 <table style="table-layout: fixed; width: 100%">
                     <tr style="vertical-align: top;">
                         <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">Phone</span>
+                            <span style="padding-left: 20px; font-weight: 700;">Contact</span>
                         </td>
                         <td style="width: 5%;"> : </td>
                         <td style="width: 55%; word-wrap: break-word">
-                            <t t-if="doc.hotel_phone"><span t-field="doc.hotel_phone"/></t><t t-else="">-</t>
-                        </td>
-                    </tr>
-                    <tr style="vertical-align: top;">
-                        <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">Hotel Confirm</span>
-                        </td>
-                        <td style="width: 5%;"> : </td>
-                        <td style="width: 55%; word-wrap: break-word">
-                            <span t-field="doc.room_detail_ids[0].issued_name"/>
+                            <span t-field="doc.contact_name"/> (<span t-field="doc.contact_phone"/>)
                         </td>
                     </tr>
                     <tr style="vertical-align: top;">
@@ -134,11 +125,11 @@
                     </tr>
                     <tr style="vertical-align: top;">
                         <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">Numb. Night</span>
+                            <span style="padding-left: 20px; font-weight: 700;">CheckOut Date</span>
                         </td>
                         <td style="width: 5%;"> : </td>
                         <td style="width: 55%; word-wrap: break-word">
-                            <span t-field="doc.nights"/>
+                            <span t-field="doc.checkout_date"/>
                         </td>
                     </tr>
                 </table>
@@ -148,29 +139,11 @@
                 <table style="table-layout: fixed; width: 100%">
                     <tr style="vertical-align: top;">
                         <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">Issued Through</span>
+                            <span style="padding-left: 20px; font-weight: 700;">Num. Night</span>
                         </td>
                         <td style="width: 5%;"> : </td>
                         <td style="width: 55%; word-wrap: break-word">
-                            <span t-field="doc.provider_name"/>
-                        </td>
-                    </tr>
-                    <tr style="vertical-align: top;">
-                        <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">Room Name</span>
-                        </td>
-                        <td style="width: 5%;"> : </td>
-                        <td style="width: 55%; word-wrap: break-word">
-                            <span t-field="doc.room_detail_ids[0].room_name"/>
-                        </td>
-                    </tr>
-                    <tr style="vertical-align: top;">
-                        <td style="width: 40%;">
-                            <span style="padding-left: 20px; font-weight: 700;">CheckOut Date</span>
-                        </td>
-                        <td style="width: 5%;"> : </td>
-                        <td style="width: 55%; word-wrap: break-word">
-                            <span t-field="doc.checkout_date"/>
+                            <span t-field="doc.nights"/>
                         </td>
                     </tr>
                     <tr style="vertical-align: top;">
@@ -225,7 +198,8 @@
                             </t>
 
                             <t t-if="room.supplements">
-                                <span t-field="room.supplements"/>
+                                <br/>
+                                Supplement: <span t-field="room.supplements"/>
                             </t>
                         </label><br/>
                         <t t-set="idx" t-value="idx + 1"/>
@@ -239,10 +213,14 @@
                                 No Special Request
                             </t>
                     </span>
+                    <br/><br/>
+                    <span>*Please Use Contact Name or Any Pax Name during Check in.</span>
                 </div>
             </div>
+            <hr/>
             <div style="margin-bottom: 5px"/>
         </div>
+        <br/>
 
         <span t-raw="hotel_ticket_footer"/>
     </template>
