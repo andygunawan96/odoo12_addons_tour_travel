@@ -220,7 +220,7 @@ class TtReconcileTransaction(models.Model):
             for line in self.reconcile_lines_ids:
                 if line.state == 'cancel':
                     continue
-                elif line.type in ['nta', 'admin_bank', 'reissue', 'other']:
+                elif line.type in ['nta', 'admin_bank', 'reissue', 'other','reversal']:
                     end_balance -= line.total
                 else:
                     end_balance += line.total
