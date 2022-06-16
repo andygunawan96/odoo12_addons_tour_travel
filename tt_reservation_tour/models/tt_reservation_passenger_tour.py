@@ -33,7 +33,6 @@ class TtReservationCustomer(models.Model):
             'tour_room_id': self.tour_room_id and self.tour_room_id.id or 0,
             'pax_type': self.pax_type and self.pax_type or '',
             'sale_service_charges': sale_service_charges,
-            'pax_type': pax_type
         })
         if len(self.channel_service_charge_ids.ids)>0:
             res['channel_service_charges'] = self.get_channel_service_charges()

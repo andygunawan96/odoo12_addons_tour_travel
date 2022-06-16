@@ -849,7 +849,7 @@ class TtVisa(models.Model):
             res_dict = book_obj.sudo().to_dict(context)
             passenger = []
             requirement_check = True
-            for idx, pax in enumerate(book_obj.passenger_ids, 1):
+            for idx, pax in enumerate(book_obj.passenger_ids, 0):
                 requirement = []
                 interview = {
                     'needs': pax.interview
@@ -900,6 +900,13 @@ class TtVisa(models.Model):
                 for rec in book_obj.provider_booking_ids:
                     prov_list.append(rec.to_dict())
 
+                pax_type = ''
+                for pnr in sale_service_charges:
+                    for svc in sale_service_charges[pnr]:
+                        pax_type = sale_service_charges[pnr][svc]['pax_type']
+                        break
+                    break
+
                 passenger.append({
                     'title': pax.title,
                     'first_name': pax.first_name,
@@ -926,6 +933,7 @@ class TtVisa(models.Model):
                     },
                     'channel_service_charges': channel_service_charges,
                     'sale_service_charges': sale_service_charges,
+                    'pax_type': pax_type,
                     'sequence': idx
                 })
             state_visa = {}

@@ -13,6 +13,14 @@ ACCESS_TYPE = [
     ('restrict', 'Restricted'),
 ]
 
+ACCESS_TYPE_2 = [
+    ('all', 'ALL'),
+    ('allow', 'Allowed'),
+    ('restrict', 'Restricted'),
+    ('if_any', 'If any value'),
+    ('if_blank', 'If no value'),
+]
+
 STATE = [
     ('enable', 'Enable'),
     ('disable', 'Disable'),
@@ -245,7 +253,7 @@ class CustomerPricingLine(models.Model):
     charge_code_list = fields.Char('Charge Code List', help='Use comma (,) for separate the values')
 
     tour_code_name = fields.Char('Tour Code Name')
-    tour_code_access_type = fields.Selection(ACCESS_TYPE, 'Tour Code Access Type', default='all', required=True)
+    tour_code_access_type = fields.Selection(ACCESS_TYPE_2, 'Tour Code Access Type', default='all', required=True)
     tour_code_list = fields.Char('Tour Code List', help='Use comma (,) for separate the values')
 
     tkt_sales_upsell_percentage = fields.Float('Upsell (%)', default=0)

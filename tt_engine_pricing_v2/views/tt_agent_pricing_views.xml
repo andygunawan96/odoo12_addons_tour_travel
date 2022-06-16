@@ -259,7 +259,7 @@ YR,D5,G7</pre>
                                     <group string="Tour Codes">
                                         <group>
                                             <field name="tour_code_access_type" widget="radio"/>
-                                            <field name="tour_code_list"/>
+                                            <field name="tour_code_list" attrs="{'invisible': [('tour_code_access_type', 'in', ['all', 'if_any', 'if_blank'])]}"/>
                                         </group>
                                         <group>
                                         </group>
@@ -269,7 +269,7 @@ YR,D5,G7</pre>
                                         <field name="charge_code_ids" nolabel="1"/>
                                     </group>
                                     -->
-                                    <div>
+                                    <div attrs="{'invisible': [('tour_code_access_type', 'in', ['all', 'if_any', 'if_blank'])]}">
                                         <pre>NOTES:
 Use comma for the separator of each values: A,B,C,D.
 Or you can define one value
