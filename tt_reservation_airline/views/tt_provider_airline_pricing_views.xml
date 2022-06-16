@@ -44,6 +44,7 @@
                     <group>
                         <group>
                             <field name="rule_class_of_service_list"/>
+                            <field name="rule_tour_code_list"/>
                         </group>
                         <group>
                             <field name="rule_charge_code_list"/>

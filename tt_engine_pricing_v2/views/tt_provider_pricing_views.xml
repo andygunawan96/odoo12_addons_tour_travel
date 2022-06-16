@@ -262,6 +262,29 @@ Input Example :
 YR,D5,G7</pre>
                                     </div>
                                 </page>
+                                <page string="Tour Code" name="tour_code">
+                                    <group string="Tour Codes">
+                                        <group>
+                                            <field name="tour_code_access_type" widget="radio"/>
+                                            <field name="tour_code_list" attrs="{'invisible': [('tour_code_access_type', 'in', ['all', 'if_any', 'if_blank'])]}"/>
+                                        </group>
+                                        <group>
+                                        </group>
+                                    </group>
+                                    <!--
+                                    <group string="Charge Codes">
+                                        <field name="charge_code_ids" nolabel="1"/>
+                                    </group>
+                                    -->
+                                    <div attrs="{'invisible': [('tour_code_access_type', 'in', ['all', 'if_any', 'if_blank'])]}">
+                                        <pre>NOTES:
+Use comma for the separator of each values: A,B,C,D.
+Or you can define one value
+
+Input Example :
+QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
+                                    </div>
+                                </page>
                             </notebook>
                         </page>
                         <page string="Less" name="less">

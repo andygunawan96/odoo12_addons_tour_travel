@@ -151,7 +151,7 @@ class ReservationActivity(models.Model):
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
             rec.total_nta = rec.total - rec.total_commission
 
-    @api.depends("passenger_ids")
+    @api.depends("passenger_ids.channel_service_charge_ids")
     def _compute_total_channel_upsell(self):
         for rec in self:
             chan_upsell_total = 0
@@ -436,6 +436,8 @@ class ReservationActivity(models.Model):
                 p_charge_code = p_sc.charge_code
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
+                c_type = ''
+                c_code = ''
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
@@ -444,8 +446,8 @@ class ReservationActivity(models.Model):
                         sc_value[p_pax_type][p_charge_type].update({
                             'amount': 0,
                             'foreign_amount': 0,
-                            'total': 0,
-                            'pax_count': 0
+                            'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
+                            'total': 0
                         })
                     c_type = p_charge_type
                     c_code = p_charge_type.lower()
@@ -455,15 +457,14 @@ class ReservationActivity(models.Model):
                         sc_value[p_pax_type][p_charge_code].update({
                             'amount': 0,
                             'foreign_amount': 0,
-                            'total': 0,
-                            'pax_count': 0
+                            'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
+                            'total': 0
                         })
                     c_type = p_charge_code
                     c_code = p_charge_code
                 sc_value[p_pax_type][c_type].update({
                     'charge_type': p_charge_type,
                     'charge_code': c_code,
-                    'pax_count': sc_value[p_pax_type][c_type]['pax_count'] + p_sc.pax_count,
                     'currency_id': p_sc.currency_id.id,
                     'foreign_currency_id': p_sc.foreign_currency_id.id,
                     'amount': sc_value[p_pax_type][c_type]['amount'] + p_sc.amount,
