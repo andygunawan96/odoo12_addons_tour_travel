@@ -232,6 +232,8 @@
                     <field name="create_date"/>
                     <field name="hold_date" string="Time Limit"/>
                     <!--                    <field name="expired_date"/>-->
+                    <field name="currency_id" invisible="1"/>
+                    <field name="total"/>
                     <field name="state_groupbooking" string="State Group Booking"/>
                     <field name="state" invisible="1"/>
                     <field name="reconcile_state"/>

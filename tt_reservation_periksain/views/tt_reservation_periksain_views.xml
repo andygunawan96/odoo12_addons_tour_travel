@@ -365,6 +365,8 @@
                 <field name="hold_date"/>
                 <field name="issued_uid"/>
                 <field name="issued_date"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="total"/>
                 <field name="state"/>
                 <field name="state_vendor"/>
                 <field name="reconcile_state" groups="tt_base.group_reconcile_level_3"/>
