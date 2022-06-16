@@ -344,6 +344,8 @@
                     <field name="confirm_date"/>
                     <field name="create_date"/>
                     <field name="hold_date" string="Time Limit"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="total"/>
                     <!--                    <field name="expired_date"/>-->
                     <field name="state_offline" string="State Offline"/>
                     <field name="state" invisible="1"/>

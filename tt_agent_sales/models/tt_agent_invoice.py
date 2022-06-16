@@ -31,7 +31,7 @@ class AgentInvoice(models.Model):
     paid_amount = fields.Monetary('Paid Amount', compute="_compute_paid_amount")
     invoice_line_ids = fields.One2many('tt.agent.invoice.line','invoice_id','Invoice Line', readonly=True,
                                        states={'draft': [('readonly', False)]})
-    booker_id = fields.Many2one('tt.customer', 'Booker',readonly=True)
+    booker_id = fields.Many2one('tt.customer', 'Booker', readonly=True, states={'draft': [('readonly', False)]})
     type = fields.Selection([
         ('out_invoice', 'Customer Invoice'),
         ('in_invoice', 'Vendor Bill'),
