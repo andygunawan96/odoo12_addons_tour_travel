@@ -1313,6 +1313,10 @@ class ProviderPricing(object):
                 tour_code_data = rule['route']['tour_code']
                 if tour_code_data['access_type'] == 'all':
                     is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_any' and tour_code_list:
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_blank' and not tour_code_list:
+                    is_tour_code = True
                 elif not tour_code_list:
                     pass
                 elif tour_code_data['access_type'] == 'allow' and any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
@@ -1720,6 +1724,10 @@ class AgentPricing(object):
 
                 tour_code_data = rule['route']['tour_code']
                 if tour_code_data['access_type'] == 'all':
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_any' and tour_code_list:
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_blank' and not tour_code_list:
                     is_tour_code = True
                 elif not tour_code_list:
                     pass
@@ -2321,6 +2329,10 @@ class CustomerPricing(object):
                 tour_code_data = rule['route']['tour_code']
                 if tour_code_data['access_type'] == 'all':
                     is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_any' and tour_code_list:
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_blank' and not tour_code_list:
+                    is_tour_code = True
                 elif not tour_code_list:
                     pass
                 elif tour_code_data['access_type'] == 'allow' and any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
@@ -2660,6 +2672,10 @@ class AgentCommission(object):
 
                 tour_code_data = rule['route']['tour_code']
                 if tour_code_data['access_type'] == 'all':
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_any' and tour_code_list:
+                    is_tour_code = True
+                elif tour_code_data['access_type'] == 'if_blank' and not tour_code_list:
                     is_tour_code = True
                 elif not tour_code_list:
                     pass
