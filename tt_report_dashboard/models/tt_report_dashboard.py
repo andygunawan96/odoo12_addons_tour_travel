@@ -1096,6 +1096,8 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -1780,6 +1782,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         # reset pnr
                         pnr_within = []
 
@@ -2687,6 +2692,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         # set journey to current journey (id)
                         current_journey = i['journey_id']
 
@@ -3224,6 +3232,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -3719,6 +3730,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[
                                                                                  int(i['issued_month']) - 1]})
@@ -4088,6 +4102,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -4454,6 +4471,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -4818,6 +4838,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -5176,6 +5199,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -5535,6 +5561,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -5903,6 +5932,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -6247,6 +6279,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -6603,6 +6638,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -6958,6 +6996,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -7349,6 +7390,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         # set journey to current journey (id)
                         current_journey = i['journey_id']
 
@@ -7879,6 +7923,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -8234,6 +8281,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -8589,6 +8639,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -8944,6 +8997,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
@@ -9299,6 +9355,9 @@ class TtReportDashboard(models.Model):
                     current_id[i['provider_type_name']] = []
                 if i['reservation_id'] not in current_id[i['provider_type_name']]:
                     try:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
+
                         month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
                                                                              'month': month[int(i['issued_month']) - 1]})
 
