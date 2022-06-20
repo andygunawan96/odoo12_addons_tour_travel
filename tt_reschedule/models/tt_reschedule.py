@@ -310,7 +310,8 @@ class TtReschedule(models.Model):
             'changes': [change.to_dict() for change in self.change_ids],
             'passengers': [pax.to_dict() for pax in self.passenger_ids],
             'old_fee_notes': self.old_fee_notes if self.old_fee_notes else '',
-            'new_fee_notes': self.new_fee_notes if self.new_fee_notes else ''
+            'new_fee_notes': self.new_fee_notes if self.new_fee_notes else '',
+            'create_date': self.create_date.strftime("%Y-%m-%d %H:%M:%S")
         }
 
     def get_reschedule_admin_fee_rule(self, agent_id):
@@ -1015,7 +1016,8 @@ class TtReschedule(models.Model):
             'created_by_api': self.created_by_api,
             'state': self.state,
             'old_fee_notes': self.old_fee_notes if self.old_fee_notes else '',
-            'new_fee_notes': self.new_fee_notes if self.new_fee_notes else ''
+            'new_fee_notes': self.new_fee_notes if self.new_fee_notes else '',
+            'create_date': self.create_date.strftime("%Y-%m-%d %H:%M:%S")
         }
 
         return new_vals
