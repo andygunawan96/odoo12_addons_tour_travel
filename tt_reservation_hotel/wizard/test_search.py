@@ -936,6 +936,14 @@ class TestSearch(models.Model):
             bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
 
             passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
+            if len(resv_obj.passenger_ids[0].channel_service_charge_ids.ids) > 0: ##ASUMSI UPSELL HANYA 1 PER PASSENGER & HOTEL UPSELL PER RESERVASI (MASUK KE PAX 1)
+                svc_csc = self.sudo().prepare_service_charge(resv_obj.passenger_ids[0].channel_service_charge_ids, resv_obj.pnr or resv_obj.name)
+                for pnr in svc_csc:
+
+                    passengers[0]['channel_service_charges'] = {
+                        "amount": svc_csc[pnr]['CSC']['amount'],
+                        "currency": svc_csc[pnr]['CSC']['currency']
+                    }
             vals = {
                 'adult': resv_obj.adult,
                 'checkin_date': resv_obj.checkin_date,

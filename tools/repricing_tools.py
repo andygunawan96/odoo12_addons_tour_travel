@@ -3086,6 +3086,12 @@ class RepricingToolsV2(object):
         '''
             pricing_datetime = %Y-%m-%d %H:%M:%S
         '''
+        '''
+            Note June 16, 2022
+            ROC : 10
+            RAC : 19
+            DISC : 1
+        '''
         if not self.ticket_fare_list:
             _logger.error('Ticket Fare List is empty')
             return False
@@ -3298,6 +3304,13 @@ class RepricingToolsV2(object):
                 fare['service_charge'].pop(idx)
 
         fare_data = self.ticket_fare_list[-1]
+
+        # June 16, 2022 - SAM
+        # Buat mekanisme untuk memisahkan upsell
+        total_all_pax_count = 0
+        for pax_count in pax_count_dict.values():
+            total_all_pax_count += pax_count
+        # END
 
         # December 17, 2021 - SAM
         # Flow 2
@@ -3672,34 +3685,72 @@ class RepricingToolsV2(object):
                 if rule_obj:
                     tkt_rsv_res = self.provider_pricing.get_reservation_calculation(rule_obj, total_reservation_amount, route_count, segment_count)
                     if tkt_rsv_res['upsell_amount']:
-                        total_reservation_amount += tkt_rsv_res['upsell_amount']
-                        sc_values = copy.deepcopy(sc_temp)
-                        sc_values.update({
-                            'charge_type': 'ROC',
-                            'charge_code': 'rocrsv',
-                            'pax_type': 'ADT',
-                            'pax_count': 1,
-                            'amount': tkt_rsv_res['upsell_amount'],
-                            'foreign_amount': tkt_rsv_res['upsell_amount'],
-                            'total': tkt_rsv_res['upsell_amount'],
-                        })
-                        fare_data['service_charges'].append(sc_values)
+                        # # June 16, 2022 - SAM
+                        # total_reservation_amount += tkt_rsv_res['upsell_amount']
+                        # sc_values = copy.deepcopy(sc_temp)
+                        # sc_values.update({
+                        #     'charge_type': 'ROC',
+                        #     'charge_code': 'rocrsv',
+                        #     'pax_type': 'ADT',
+                        #     'pax_count': 1,
+                        #     'amount': tkt_rsv_res['upsell_amount'],
+                        #     'foreign_amount': tkt_rsv_res['upsell_amount'],
+                        #     'total': tkt_rsv_res['upsell_amount'],
+                        # })
+                        # fare_data['service_charges'].append(sc_values)
+
+                        calc_amount = tkt_rsv_res['upsell_amount'] / total_all_pax_count
+                        calc_amount = self.ceil(calc_amount, 0)
+                        for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                            if pcd_pax_count > 0:
+                                total_calc_amount = calc_amount * pcd_pax_count
+                                total_reservation_amount += total_calc_amount
+                                sc_values = copy.deepcopy(sc_temp)
+                                sc_values.update({
+                                    'charge_type': 'ROC',
+                                    'charge_code': 'rocrsv',
+                                    'pax_type': pcd_pax_type,
+                                    'pax_count': pcd_pax_count,
+                                    'amount': calc_amount,
+                                    'foreign_amount': calc_amount,
+                                    'total': total_calc_amount,
+                                })
+                                fare_data['service_charges'].append(sc_values)
 
                     if tkt_rsv_res['ho_commission_amount']:
                         if tkt_rsv_res['ho_commission_amount'] > 0:
                             if show_commission and show_upline_commission and self.ho_agent_id:
-                                sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'rachorsv',
-                                    'pax_type': 'ADT',
-                                    'pax_count': 1,
-                                    'amount': -tkt_rsv_res['ho_commission_amount'],
-                                    'foreign_amount': -tkt_rsv_res['ho_commission_amount'],
-                                    'total': -tkt_rsv_res['ho_commission_amount'],
-                                    'commission_agent_id': self.ho_agent_id
-                                })
-                                fare_data['service_charges'].append(sc_values)
+                                # # June 16, 2022 - SAM
+                                # sc_values = copy.deepcopy(sc_temp)
+                                # sc_values.update({
+                                #     'charge_type': 'RAC',
+                                #     'charge_code': 'rachorsv',
+                                #     'pax_type': 'ADT',
+                                #     'pax_count': 1,
+                                #     'amount': -tkt_rsv_res['ho_commission_amount'],
+                                #     'foreign_amount': -tkt_rsv_res['ho_commission_amount'],
+                                #     'total': -tkt_rsv_res['ho_commission_amount'],
+                                #     'commission_agent_id': self.ho_agent_id
+                                # })
+                                # fare_data['service_charges'].append(sc_values)
+
+                                calc_amount = tkt_rsv_res['ho_commission_amount'] / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rachorsv',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                            'commission_agent_id': self.ho_agent_id
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3714,22 +3765,53 @@ class RepricingToolsV2(object):
                 if agent_obj:
                     agent_rsv_res = self.agent_pricing.get_reservation_calculation(agent_obj, total_reservation_amount, route_count, segment_count)
                     if agent_rsv_res['upsell_amount']:
-                        total_reservation_amount += agent_rsv_res['upsell_amount']
-                        sc_values = copy.deepcopy(sc_temp)
-                        sc_values.update({
-                            'charge_type': 'ROC',
-                            'charge_code': 'rocrsvagt',
-                            'pax_type': 'ADT',
-                            'pax_count': 1,
-                            'amount': agent_rsv_res['upsell_amount'],
-                            'foreign_amount': agent_rsv_res['upsell_amount'],
-                            'total': agent_rsv_res['upsell_amount'],
-                        })
-                        fare_data['service_charges'].append(sc_values)
+                        # # June 16, 2022 - SAN
+                        # total_reservation_amount += agent_rsv_res['upsell_amount']
+                        # sc_values = copy.deepcopy(sc_temp)
+                        # sc_values.update({
+                        #     'charge_type': 'ROC',
+                        #     'charge_code': 'rocrsvagt',
+                        #     'pax_type': 'ADT',
+                        #     'pax_count': 1,
+                        #     'amount': agent_rsv_res['upsell_amount'],
+                        #     'foreign_amount': agent_rsv_res['upsell_amount'],
+                        #     'total': agent_rsv_res['upsell_amount'],
+                        # })
+                        # fare_data['service_charges'].append(sc_values)
+                        calc_amount = agent_rsv_res['upsell_amount'] / total_all_pax_count
+                        calc_amount = self.ceil(calc_amount, 0)
+                        for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                            if pcd_pax_count > 0:
+                                total_calc_amount = calc_amount * pcd_pax_count
+                                total_reservation_amount += total_calc_amount
+                                sc_values = copy.deepcopy(sc_temp)
+                                sc_values.update({
+                                    'charge_type': 'ROC',
+                                    'charge_code': 'rocrsvagt',
+                                    'pax_type': pcd_pax_type,
+                                    'pax_count': pcd_pax_count,
+                                    'amount': calc_amount,
+                                    'foreign_amount': calc_amount,
+                                    'total': total_calc_amount,
+                                })
+                                fare_data['service_charges'].append(sc_values)
 
                     if agent_rsv_res['commission_amount']:
                         if agent_rsv_res['commission_amount'] > 0:
                             if show_commission:
+                                # # June 16, 2022 - SAM
+                                # sc_values = copy.deepcopy(sc_temp)
+                                # sc_values.update({
+                                #     'charge_type': 'RAC',
+                                #     'charge_code': 'rac',
+                                #     'pax_type': 'ADT',
+                                #     'pax_count': 1,
+                                #     'amount': -agent_rsv_res['commission_amount'],
+                                #     'foreign_amount': -agent_rsv_res['commission_amount'],
+                                #     'total': -agent_rsv_res['commission_amount'],
+                                # })
+                                # fare_data['service_charges'].append(sc_values)
+
                                 sc_values = copy.deepcopy(sc_temp)
                                 sc_values.update({
                                     'charge_type': 'RAC',
@@ -3751,18 +3833,37 @@ class RepricingToolsV2(object):
                     if agent_rsv_res['ho_commission_amount']:
                         if agent_rsv_res['ho_commission_amount'] > 0:
                             if show_commission and show_upline_commission and self.ho_agent_id:
-                                sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'racagthorsv',
-                                    'pax_type': 'ADT',
-                                    'pax_count': 1,
-                                    'amount': -agent_rsv_res['ho_commission_amount'],
-                                    'foreign_amount': -agent_rsv_res['ho_commission_amount'],
-                                    'total': -agent_rsv_res['ho_commission_amount'],
-                                    'commission_agent_id': self.ho_agent_id
-                                })
-                                fare_data['service_charges'].append(sc_values)
+                                # # June 16, 2022 - SAM
+                                # sc_values = copy.deepcopy(sc_temp)
+                                # sc_values.update({
+                                #     'charge_type': 'RAC',
+                                #     'charge_code': 'racagthorsv',
+                                #     'pax_type': 'ADT',
+                                #     'pax_count': 1,
+                                #     'amount': -agent_rsv_res['ho_commission_amount'],
+                                #     'foreign_amount': -agent_rsv_res['ho_commission_amount'],
+                                #     'total': -agent_rsv_res['ho_commission_amount'],
+                                #     'commission_agent_id': self.ho_agent_id
+                                # })
+                                # fare_data['service_charges'].append(sc_values)
+
+                                calc_amount = agent_rsv_res['ho_commission_amount'] / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racagthorsv',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                            'commission_agent_id': self.ho_agent_id
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3796,18 +3897,39 @@ class RepricingToolsV2(object):
                     agent_com_res = self.agent_commission.get_commission_calculation(**com_param)
                     if agent_com_res['agent_discount_amount']:
                         if agent_com_res['agent_discount_amount'] > 0:
-                            sc_values = copy.deepcopy(sc_temp)
-                            sc_values.update({
-                                'charge_type': 'DISC',
-                                'charge_code': 'disc',
-                                'pax_type': 'ADT',
-                                'pax_count': 1,
-                                'amount': -agent_com_res['agent_discount_amount'],
-                                'foreign_amount': -agent_com_res['agent_discount_amount'],
-                                'total': -agent_com_res['agent_discount_amount'],
-                            })
-                            fare_data['service_charges'].append(sc_values)
-                            total_commission_amount -= agent_com_res['agent_discount_amount']
+                            # # June 20, 2022 - SAM
+                            # sc_values = copy.deepcopy(sc_temp)
+                            # sc_values.update({
+                            #     'charge_type': 'DISC',
+                            #     'charge_code': 'disc',
+                            #     'pax_type': 'ADT',
+                            #     'pax_count': 1,
+                            #     'amount': -agent_com_res['agent_discount_amount'],
+                            #     'foreign_amount': -agent_com_res['agent_discount_amount'],
+                            #     'total': -agent_com_res['agent_discount_amount'],
+                            # })
+                            # fare_data['service_charges'].append(sc_values)
+                            # total_commission_amount -= agent_com_res['agent_discount_amount']
+
+                            real_discount_amount = 0.0
+                            calc_amount = agent_com_res['agent_discount_amount'] / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                if pcd_pax_count > 0:
+                                    total_calc_amount = calc_amount * pcd_pax_count
+                                    real_discount_amount += total_calc_amount
+                                    sc_values = copy.deepcopy(sc_temp)
+                                    sc_values.update({
+                                        'charge_type': 'DISC',
+                                        'charge_code': 'disc',
+                                        'pax_type': pcd_pax_type,
+                                        'pax_count': pcd_pax_count,
+                                        'amount': -calc_amount,
+                                        'foreign_amount': -calc_amount,
+                                        'total': -total_calc_amount,
+                                    })
+                                    fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= real_discount_amount
                         else:
                             # April 14 2022 - SAM
                             # Mengurangi komisi apabila minus
@@ -3817,19 +3939,41 @@ class RepricingToolsV2(object):
 
                     if agent_com_res['agent_commission_amount']:
                         if agent_com_res['agent_commission_amount'] > 0:
-                            if show_commission:
-                                sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'rac',
-                                    'pax_type': 'ADT',
-                                    'pax_count': 1,
-                                    'amount': -agent_com_res['agent_commission_amount'],
-                                    'foreign_amount': -agent_com_res['agent_commission_amount'],
-                                    'total': -agent_com_res['agent_commission_amount'],
-                                })
-                                fare_data['service_charges'].append(sc_values)
-                            total_commission_amount -= agent_com_res['agent_commission_amount']
+                            # # June 16, 2022 - SAM
+                            # if show_commission:
+                            #     sc_values = copy.deepcopy(sc_temp)
+                            #     sc_values.update({
+                            #         'charge_type': 'RAC',
+                            #         'charge_code': 'rac',
+                            #         'pax_type': 'ADT',
+                            #         'pax_count': 1,
+                            #         'amount': -agent_com_res['agent_commission_amount'],
+                            #         'foreign_amount': -agent_com_res['agent_commission_amount'],
+                            #         'total': -agent_com_res['agent_commission_amount'],
+                            #     })
+                            #     fare_data['service_charges'].append(sc_values)
+                            # total_commission_amount -= agent_com_res['agent_commission_amount']
+
+                            real_commission_amount = 0.0
+                            calc_amount = agent_com_res['agent_commission_amount'] / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                if pcd_pax_count > 0:
+                                    total_calc_amount = calc_amount * pcd_pax_count
+                                    real_commission_amount += total_calc_amount
+                                    if show_commission:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rac',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= real_commission_amount
                         else:
                             # April 14 2022 - SAM
                             # Mengurangi komisi apabila minus
@@ -3839,20 +3983,43 @@ class RepricingToolsV2(object):
 
                     if agent_com_res['parent_agent_id'] and agent_com_res['parent_charge_amount']:
                         if agent_com_res['parent_charge_amount'] > 0:
-                            if show_commission and show_upline_commission:
-                                sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'rac0',
-                                    'pax_type': 'ADT',
-                                    'pax_count': 1,
-                                    'amount': -agent_com_res['parent_charge_amount'],
-                                    'foreign_amount': -agent_com_res['parent_charge_amount'],
-                                    'total': -agent_com_res['parent_charge_amount'],
-                                    'commission_agent_id': agent_com_res['parent_agent_id']
-                                })
-                                fare_data['service_charges'].append(sc_values)
-                            total_commission_amount -= agent_com_res['parent_charge_amount']
+                            # # June 16, 2022 - SAM
+                            # if show_commission and show_upline_commission:
+                            #     sc_values = copy.deepcopy(sc_temp)
+                            #     sc_values.update({
+                            #         'charge_type': 'RAC',
+                            #         'charge_code': 'rac0',
+                            #         'pax_type': 'ADT',
+                            #         'pax_count': 1,
+                            #         'amount': -agent_com_res['parent_charge_amount'],
+                            #         'foreign_amount': -agent_com_res['parent_charge_amount'],
+                            #         'total': -agent_com_res['parent_charge_amount'],
+                            #         'commission_agent_id': agent_com_res['parent_agent_id']
+                            #     })
+                            #     fare_data['service_charges'].append(sc_values)
+                            # total_commission_amount -= agent_com_res['parent_charge_amount']
+
+                            real_commission_amount = 0.0
+                            calc_amount = agent_com_res['parent_charge_amount'] / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                if pcd_pax_count > 0:
+                                    total_calc_amount = calc_amount * pcd_pax_count
+                                    real_commission_amount += total_calc_amount
+                                    if show_commission and show_upline_commission:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rac0',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                            'commission_agent_id': agent_com_res['parent_agent_id']
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= real_commission_amount
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3863,20 +4030,42 @@ class RepricingToolsV2(object):
 
                     if agent_com_res['ho_agent_id'] and agent_com_res['ho_charge_amount']:
                         if agent_com_res['ho_charge_amount'] > 0:
-                            if show_commission and show_upline_commission:
-                                sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'rac0',
-                                    'pax_type': 'ADT',
-                                    'pax_count': 1,
-                                    'amount': -agent_com_res['ho_charge_amount'],
-                                    'foreign_amount': -agent_com_res['ho_charge_amount'],
-                                    'total': -agent_com_res['ho_charge_amount'],
-                                    'commission_agent_id': agent_com_res['ho_agent_id']
-                                })
-                                fare_data['service_charges'].append(sc_values)
-                            total_commission_amount -= agent_com_res['ho_charge_amount']
+                            # # June 16, 2022 - SAM
+                            # if show_commission and show_upline_commission:
+                            #     sc_values = copy.deepcopy(sc_temp)
+                            #     sc_values.update({
+                            #         'charge_type': 'RAC',
+                            #         'charge_code': 'rac0',
+                            #         'pax_type': 'ADT',
+                            #         'pax_count': 1,
+                            #         'amount': -agent_com_res['ho_charge_amount'],
+                            #         'foreign_amount': -agent_com_res['ho_charge_amount'],
+                            #         'total': -agent_com_res['ho_charge_amount'],
+                            #         'commission_agent_id': agent_com_res['ho_agent_id']
+                            #     })
+                            #     fare_data['service_charges'].append(sc_values)
+                            # total_commission_amount -= agent_com_res['ho_charge_amount']
+                            real_commission_amount = 0.0
+                            calc_amount = agent_com_res['ho_charge_amount'] / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                if pcd_pax_count > 0:
+                                    total_calc_amount = calc_amount * pcd_pax_count
+                                    real_commission_amount += total_calc_amount
+                                    if show_commission and show_upline_commission:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rac0',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                            'commission_agent_id': agent_com_res['ho_agent_id']
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= real_commission_amount
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3888,20 +4077,43 @@ class RepricingToolsV2(object):
                     for idx, upline in enumerate(agent_com_res['upline_commission_list'], 1):
                         if upline['commission_amount']:
                             if upline['commission_amount'] > 0:
-                                if show_commission and show_upline_commission:
-                                    sc_values = copy.deepcopy(sc_temp)
-                                    sc_values.update({
-                                        'charge_type': 'RAC',
-                                        'charge_code': 'rac%s' % idx,
-                                        'pax_type': 'ADT',
-                                        'pax_count': 1,
-                                        'amount': -upline['commission_amount'],
-                                        'foreign_amount': -upline['commission_amount'],
-                                        'total': -upline['commission_amount'],
-                                        'commission_agent_id': upline['agent_id']
-                                    })
-                                    fare_data['service_charges'].append(sc_values)
-                                total_commission_amount -= upline['commission_amount']
+                                # # June 16, 2022 - SAM
+                                # if show_commission and show_upline_commission:
+                                #     sc_values = copy.deepcopy(sc_temp)
+                                #     sc_values.update({
+                                #         'charge_type': 'RAC',
+                                #         'charge_code': 'rac%s' % idx,
+                                #         'pax_type': 'ADT',
+                                #         'pax_count': 1,
+                                #         'amount': -upline['commission_amount'],
+                                #         'foreign_amount': -upline['commission_amount'],
+                                #         'total': -upline['commission_amount'],
+                                #         'commission_agent_id': upline['agent_id']
+                                #     })
+                                #     fare_data['service_charges'].append(sc_values)
+                                # total_commission_amount -= upline['commission_amount']
+
+                                real_commission_amount = 0.0
+                                calc_amount = upline['commission_amount'] / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        real_commission_amount += total_calc_amount
+                                        if show_commission and show_upline_commission:
+                                            sc_values = copy.deepcopy(sc_temp)
+                                            sc_values.update({
+                                                'charge_type': 'RAC',
+                                                'charge_code': 'rac%s' % idx,
+                                                'pax_type': pcd_pax_type,
+                                                'pax_count': pcd_pax_count,
+                                                'amount': -calc_amount,
+                                                'foreign_amount': -calc_amount,
+                                                'total': -total_calc_amount,
+                                                'commission_agent_id': upline['agent_id']
+                                            })
+                                            fare_data['service_charges'].append(sc_values)
+                                total_commission_amount -= real_commission_amount
                             else:
                                 # # April 14, 2022 - SAM
                                 # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3912,20 +4124,43 @@ class RepricingToolsV2(object):
 
                     if agent_com_res['residual_agent_id'] and agent_com_res['residual_amount']:
                         if agent_com_res['residual_amount'] > 0:
-                            if show_commission and show_upline_commission:
-                                sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'racsd',
-                                    'pax_type': 'ADT',
-                                    'pax_count': 1,
-                                    'amount': -agent_com_res['residual_amount'],
-                                    'foreign_amount': -agent_com_res['residual_amount'],
-                                    'total': -agent_com_res['residual_amount'],
-                                    'commission_agent_id': agent_com_res['residual_agent_id']
-                                })
-                                fare_data['service_charges'].append(sc_values)
-                            total_commission_amount -= agent_com_res['residual_amount']
+                            # # June 16, 2022 - SAM
+                            # if show_commission and show_upline_commission:
+                            #     sc_values = copy.deepcopy(sc_temp)
+                            #     sc_values.update({
+                            #         'charge_type': 'RAC',
+                            #         'charge_code': 'racsd',
+                            #         'pax_type': 'ADT',
+                            #         'pax_count': 1,
+                            #         'amount': -agent_com_res['residual_amount'],
+                            #         'foreign_amount': -agent_com_res['residual_amount'],
+                            #         'total': -agent_com_res['residual_amount'],
+                            #         'commission_agent_id': agent_com_res['residual_agent_id']
+                            #     })
+                            #     fare_data['service_charges'].append(sc_values)
+                            # total_commission_amount -= agent_com_res['residual_amount']
+
+                            real_commission_amount = 0.0
+                            calc_amount = agent_com_res['residual_amount'] / total_all_pax_count
+                            calc_amount = self.ceil(calc_amount, 0)
+                            for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                if pcd_pax_count > 0:
+                                    total_calc_amount = calc_amount * pcd_pax_count
+                                    real_commission_amount += total_calc_amount
+                                    if show_commission and show_upline_commission:
+                                        sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'racsd',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                            'commission_agent_id': agent_com_res['residual_agent_id']
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
+                            total_commission_amount -= real_commission_amount
                         else:
                             # # April 14, 2022 - SAM
                             # # Kalau expected apabila komisi HO minus dan ingin ditambahkan ke komisi agent
@@ -3963,33 +4198,70 @@ class RepricingToolsV2(object):
                 if cust_obj:
                     cust_rsv_res = self.customer_pricing.get_reservation_calculation(cust_obj, total_reservation_amount, route_count, segment_count)
                     if cust_rsv_res['upsell_amount']:
-                        total_reservation_amount += cust_rsv_res['upsell_amount']
-                        sc_values = copy.deepcopy(sc_temp)
-                        sc_values.update({
-                            'charge_type': 'ROC',
-                            'charge_code': 'rocrsvcust',
-                            'pax_type': 'ADT',
-                            'pax_count': 1,
-                            'amount': cust_rsv_res['upsell_amount'],
-                            'foreign_amount': cust_rsv_res['upsell_amount'],
-                            'total': cust_rsv_res['upsell_amount'],
-                        })
-                        fare_data['service_charges'].append(sc_values)
+                        # # June 16, 2022 - SAM
+                        # total_reservation_amount += cust_rsv_res['upsell_amount']
+                        # sc_values = copy.deepcopy(sc_temp)
+                        # sc_values.update({
+                        #     'charge_type': 'ROC',
+                        #     'charge_code': 'rocrsvcust',
+                        #     'pax_type': 'ADT',
+                        #     'pax_count': 1,
+                        #     'amount': cust_rsv_res['upsell_amount'],
+                        #     'foreign_amount': cust_rsv_res['upsell_amount'],
+                        #     'total': cust_rsv_res['upsell_amount'],
+                        # })
+                        # fare_data['service_charges'].append(sc_values)
+
+                        calc_amount = cust_rsv_res['upsell_amount'] / total_all_pax_count
+                        calc_amount = self.ceil(calc_amount, 0)
+                        for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                            if pcd_pax_count > 0:
+                                total_calc_amount = calc_amount * pcd_pax_count
+                                total_reservation_amount += total_calc_amount
+                                sc_values = copy.deepcopy(sc_temp)
+                                sc_values.update({
+                                    'charge_type': 'ROC',
+                                    'charge_code': 'rocrsvcust',
+                                    'pax_type': pcd_pax_type,
+                                    'pax_count': pcd_pax_count,
+                                    'amount': calc_amount,
+                                    'foreign_amount': calc_amount,
+                                    'total': total_calc_amount,
+                                })
+                                fare_data['service_charges'].append(sc_values)
 
                     if cust_rsv_res['commission_amount']:
                         if cust_rsv_res['commission_amount'] > 0:
                             if show_commission:
-                                sc_values = copy.deepcopy(sc_temp)
-                                sc_values.update({
-                                    'charge_type': 'RAC',
-                                    'charge_code': 'rac',
-                                    'pax_type': 'ADT',
-                                    'pax_count': 1,
-                                    'amount': -cust_rsv_res['commission_amount'],
-                                    'foreign_amount': -cust_rsv_res['commission_amount'],
-                                    'total': -cust_rsv_res['commission_amount'],
-                                })
-                                fare_data['service_charges'].append(sc_values)
+                                # # June 16, 2022 - SAM
+                                # sc_values = copy.deepcopy(sc_temp)
+                                # sc_values.update({
+                                #     'charge_type': 'RAC',
+                                #     'charge_code': 'rac',
+                                #     'pax_type': 'ADT',
+                                #     'pax_count': 1,
+                                #     'amount': -cust_rsv_res['commission_amount'],
+                                #     'foreign_amount': -cust_rsv_res['commission_amount'],
+                                #     'total': -cust_rsv_res['commission_amount'],
+                                # })
+                                # fare_data['service_charges'].append(sc_values)
+
+                                calc_amount = cust_rsv_res['commission_amount'] / total_all_pax_count
+                                calc_amount = self.ceil(calc_amount, 0)
+                                for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                                    if pcd_pax_count > 0:
+                                        total_calc_amount = calc_amount * pcd_pax_count
+                                        sc_values = copy.deepcopy(sc_temp)
+                                        sc_values.update({
+                                            'charge_type': 'RAC',
+                                            'charge_code': 'rac',
+                                            'pax_type': pcd_pax_type,
+                                            'pax_count': pcd_pax_count,
+                                            'amount': -calc_amount,
+                                            'foreign_amount': -calc_amount,
+                                            'total': -total_calc_amount,
+                                        })
+                                        fare_data['service_charges'].append(sc_values)
                         else:
                             # April 14 2022 - SAM
                             # Mengurangi komisi apabila minus
@@ -4004,18 +4276,38 @@ class RepricingToolsV2(object):
                 com_agent_id = self.upline_list[-1]['id']
 
             # _logger.info('Agent Commission is not applied, commission given to Agent ID %s' % com_agent_id)
-            sc_values = copy.deepcopy(sc_temp)
-            sc_values.update({
-                'charge_type': 'RAC',
-                'charge_code': 'racsdo',
-                'pax_type': 'ADT',
-                'pax_count': 1,
-                'amount': -total_commission_amount,
-                'foreign_amount': -total_commission_amount,
-                'total': -total_commission_amount,
-                'commission_agent_id': com_agent_id
-            })
-            fare_data['service_charges'].append(sc_values)
+            # # June 16, 2022 - SAM
+            # sc_values = copy.deepcopy(sc_temp)
+            # sc_values.update({
+            #     'charge_type': 'RAC',
+            #     'charge_code': 'racsdo',
+            #     'pax_type': 'ADT',
+            #     'pax_count': 1,
+            #     'amount': -total_commission_amount,
+            #     'foreign_amount': -total_commission_amount,
+            #     'total': -total_commission_amount,
+            #     'commission_agent_id': com_agent_id
+            # })
+            # fare_data['service_charges'].append(sc_values)
+            # total_commission_amount -= total_commission_amount
+
+            calc_amount = total_commission_amount / total_all_pax_count
+            calc_amount = self.ceil(calc_amount, 0)
+            for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
+                if pcd_pax_count > 0:
+                    total_calc_amount = calc_amount * pcd_pax_count
+                    sc_values = copy.deepcopy(sc_temp)
+                    sc_values.update({
+                        'charge_type': 'RAC',
+                        'charge_code': 'racsdo',
+                        'pax_type': pcd_pax_type,
+                        'pax_count': pcd_pax_count,
+                        'amount': -calc_amount,
+                        'foreign_amount': -calc_amount,
+                        'total': -total_calc_amount,
+                        'commission_agent_id': com_agent_id
+                    })
+                    fare_data['service_charges'].append(sc_values)
             total_commission_amount -= total_commission_amount
         # END
 

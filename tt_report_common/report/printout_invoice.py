@@ -2070,8 +2070,9 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
                 # Add SSR cman karena ssr itu per pax maka smentara cman ku kasih di total
                 # klo di tmbah ke per pax jadi slah jumlah
-                for csc in psg.fee_ids:
-                    a[pax_type]['price_total'] += csc.amount
+                if hasattr(psg,'fee_ids'):
+                    for csc in psg.fee_ids:
+                        a[pax_type]['price_total'] += csc.amount
 
             for sc_key in a.keys():
                 sc = a[sc_key]
