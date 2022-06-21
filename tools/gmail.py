@@ -269,20 +269,21 @@ def read_message(service, message):
 
 def add_attachment(message, attachment):
     main_type, sub_type = attachment.mimetype.split('/', 1)
-    if main_type == 'text':
-        msg = MIMEText(base64.b64decode(attachment.datas.decode()), _subtype=sub_type)
-    elif main_type == 'image':
-        msg = MIMEImage(base64.b64decode(attachment.datas), _subtype=sub_type)
-    elif main_type == 'audio':
-        msg = MIMEAudio(base64.b64decode(attachment.datas), _subtype=sub_type)
-    else:
-        msg = MIMEBase(main_type, sub_type)
-        msg.set_payload(base64.b64decode(attachment.datas))
+    if attachment.datas: #pastikan attachment ada isi nya
+        if main_type == 'text':
+            msg = MIMEText(base64.b64decode(attachment.datas.decode()), _subtype=sub_type)
+        elif main_type == 'image':
+            msg = MIMEImage(base64.b64decode(attachment.datas), _subtype=sub_type)
+        elif main_type == 'audio':
+            msg = MIMEAudio(base64.b64decode(attachment.datas), _subtype=sub_type)
+        else:
+            msg = MIMEBase(main_type, sub_type)
+            msg.set_payload(base64.b64decode(attachment.datas))
 
 
-    msg.add_header('Content-Disposition', 'attachment', filename=attachment.datas_fname)
-    encoders.encode_base64(msg)
-    message.attach(msg)
+        msg.add_header('Content-Disposition', 'attachment', filename=attachment.datas_fname)
+        encoders.encode_base64(msg)
+        message.attach(msg)
 
 # def build_message(destination, obj, body, attachments=[],email_account='', type='plain'):
 #     if not attachments:  # no attachments given
