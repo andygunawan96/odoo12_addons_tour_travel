@@ -177,13 +177,26 @@ class PrintoutTicketForm(models.AbstractModel):
             vals.update({
                 'with_price': data.get('is_with_price') or False,
             })
-        elif 'is_with_price' in data.get('data', ''):
+        elif 'is_with_price' in data.get('data', {}):
             vals.update({
                 'with_price': data['data'].get('is_with_price') or False,
             })
         else:
             vals.update({
                 'with_price': False,
+            })
+
+        if 'is_hide_agent_logo' in data:
+            vals.update({
+                'is_hide_agent_logo': data.get('is_hide_agent_logo') or False,
+            })
+        elif 'is_hide_agent_logo' in data.get('data', {}):
+            vals.update({
+                'is_hide_agent_logo': data['data'].get('is_hide_agent_logo') or False
+            })
+        else:
+            vals.update({
+                'is_hide_agent_logo': False
             })
 
         if data['context']['active_model'] in ['tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
@@ -273,6 +286,20 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             vals.update({
                 'with_price': False,
             })
+
+        if 'is_hide_agent_logo' in data:
+            vals.update({
+                'is_hide_agent_logo': data.get('is_hide_agent_logo') or False,
+            })
+        elif 'is_hide_agent_logo' in data.get('data', {}):
+            vals.update({
+                'is_hide_agent_logo': data['data'].get('is_hide_agent_logo') or False
+            })
+        else:
+            vals.update({
+                'is_hide_agent_logo': False
+            })
+
         return vals
 
 
@@ -352,6 +379,19 @@ class PrintoutTicketEventForm(models.AbstractModel):
         else:
             vals.update({
                 'with_price': False,
+            })
+
+        if 'is_hide_agent_logo' in data:
+            vals.update({
+                'is_hide_agent_logo': data.get('is_hide_agent_logo') or False,
+            })
+        elif 'is_hide_agent_logo' in data.get('data', {}):
+            vals.update({
+                'is_hide_agent_logo': data['data'].get('is_hide_agent_logo') or False
+            })
+        else:
+            vals.update({
+                'is_hide_agent_logo': False
             })
         return vals
 
@@ -454,6 +494,19 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
         else:
             vals.update({
                 'with_price': False,
+            })
+
+        if 'is_hide_agent_logo' in data:
+            vals.update({
+                'is_hide_agent_logo': data.get('is_hide_agent_logo') or False,
+            })
+        elif 'is_hide_agent_logo' in data.get('data', {}):
+            vals.update({
+                'is_hide_agent_logo': data['data'].get('is_hide_agent_logo') or False
+            })
+        else:
+            vals.update({
+                'is_hide_agent_logo': False
             })
         return vals
 
@@ -703,6 +756,20 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                                                                            default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
+
+        if 'is_hide_agent_logo' in data:
+            vals.update({
+                'is_hide_agent_logo': data.get('is_hide_agent_logo') or False,
+            })
+        elif 'is_hide_agent_logo' in data.get('data', {}):
+            vals.update({
+                'is_hide_agent_logo': data['data'].get('is_hide_agent_logo') or False
+            })
+        else:
+            vals.update({
+                'is_hide_agent_logo': False
+            })
+
         return vals
 
 

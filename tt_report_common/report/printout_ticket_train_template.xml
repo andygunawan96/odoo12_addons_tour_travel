@@ -10,7 +10,7 @@
     <template id="train_footer">
         <div class="footer" style="position: absolute; left: 0; right: 0;">
             <div class="text-center" style="border-top: 1px solid black; font-size: 10px; font-weight: 300">
-                <t t-if="not doc.booker_id.is_whitelist_ticket">
+                <t t-if="not is_hide_agent_logo">
                     <ul class="list-inline">
                         <li style="display: inline-block; margin-right: 20px;" t-if="doc.agent_id.phone_ids">Phone: <span t-field="doc.agent_id.phone_ids[0].phone_number"/></li>
 
@@ -48,7 +48,7 @@
                         <span>AGEN RESMI PT. KERETA API INDONESIA (PERSERO)</span>
                     </div>
                     <div class="col-2">
-                        <t t-if="not doc.booker_id.is_whitelist_ticket">
+                        <t t-if="not is_hide_agent_logo">
                             <t t-if="doc.agent_id.logo">
                                 <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" style="max-height: 80px; margin-top: 9px;"/>
                             </t>
