@@ -169,6 +169,8 @@ class AgentInvoice(models.Model):
             'res_id_resv': self.res_id_resv
         })
 
+        # Notes: untuk merge or move line yg di pindah hnya line sja, payment tdk ikut dipindah
+        # asumsi nya jika payment dipindh pun bakaal di cancel, diganti payment baru dengan nominal gbungan
         detail_ids = self.invoice_line_detail_ids.ids
         lines = [self.env['tt.merge.invoice.line'].sudo().create({
             'invoice_line_detail_id': p,

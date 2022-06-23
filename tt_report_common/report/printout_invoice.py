@@ -1380,7 +1380,7 @@ class PrintoutInvoice(models.AbstractModel):
             #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
             #     })
         else:
-            a = {'descs': self.format_description(line.desc), 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            a = {'descs': self.format_description(line.desc), 'pnr': line.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
             for line_detail in line.invoice_line_detail_ids:
                 a['line_detail'].append({
                     'name': line_detail.desc,
@@ -2079,7 +2079,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
     _description = 'Report Common Printout Itinerary'
 
     @api.model
-    def _get_report_values(self, docids, data=None):
+    def _get_report_values_1(self, docids, data=None):
         if not data.get('context'):
             internal_model_id = docids.pop(0)
             data['context'] = {}
@@ -2160,8 +2160,114 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'pnr_length': pnr_length,
             'header_width': str(header_width),
-            'price_lines': values,
+            'price_lines': values, #Old format Here
             'customer_grand_total': customer_grand_total,
+            'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
+        }
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            internal_model_id = docids.pop(0)
+            data['context'] = {}
+            if internal_model_id == 1:
+                data['context']['active_model'] = 'tt.reservation.airline'
+            elif internal_model_id == 2:
+                data['context']['active_model'] = 'tt.reservation.train'
+            elif internal_model_id == 3:
+                data['context']['active_model'] = 'tt.reservation.hotel'
+            else:
+                data['context']['active_model'] = 'tt.agent.invoice'
+
+            data['context']['active_ids'] = docids
+
+        values = {}
+        pnr_length = 0
+        customer_grand_total = 0
+        discount_value = 0
+        header_width = 90
+        agent_id = False
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+
+            if data['context']['active_model'] == 'tt.reservation.airline':
+                for psg in rec.passenger_ids:
+                    total_price_pax = 0
+                    pax_type = psg.cost_service_charge_ids[-1].pax_type # Notes Pax type bisa jadi slah first bisa di isi SSR
+                    for cost_sc in psg.cost_service_charge_ids:
+                        if cost_sc.charge_type.lower() in ['fare', 'roc', 'tax']:
+                            total_price_pax += cost_sc.amount
+                        elif cost_sc.charge_type.lower() == 'disc':
+                            discount_value += cost_sc.amount
+
+                    for csc in psg.channel_service_charge_ids:
+                        total_price_pax += csc.amount
+
+                    inc_ssr_descs = []
+                    for seg_id in rec.segment_ids:
+                        for ssr_sc in seg_id.segment_addons_ids:
+                            inc_ssr_descs.append({'name':str(ssr_sc.amount) + ' ' + ssr_sc.unit + ';' + ssr_sc.segment_id.origin_id.code + '-' + ssr_sc.segment_id.destination_id.code, 'value':ssr_sc.amount,'category_icon':""})
+
+                    # Add SSR cman karena ssr itu per pax maka smentara cman ku kasih di total
+                    # klo di tmbah ke per pax jadi slah jumlah
+                    ssr_descs = []
+                    if hasattr(psg, 'fee_ids'):
+                        for ssr_sc in psg.fee_ids:
+                            ssr_seg_applied = ';' + ssr_sc.journey_code.split(',')[2] + '-' + ssr_sc.journey_code.split(',')[4] if ssr_sc.journey_code else ""
+                            ssr_descs.append({'name': ssr_sc.name + ssr_seg_applied, 'value': ssr_sc.value, 'category_icon': ssr_sc.category_icon})
+                            total_price_pax += ssr_sc.amount
+
+                    values[rec.id].append({
+                        'name': psg.name,
+                        'pax_type': pax_type,
+                        'inc_ssr': inc_ssr_descs, # Inc. SSR
+                        'add_ssr': ssr_descs,  # Add SSR
+                        'price_total': total_price_pax,
+                    })
+                    customer_grand_total += total_price_pax
+            elif data['context']['active_model'] == 'tt.reservation.hotel':
+                pax_type = 'ADT'
+                total_price_pax = 0
+                for sc in rec.sale_service_charge_ids:
+                    if sc.charge_type.lower() in ['fare', 'roc', 'tax']:
+                        total_price_pax += sc.amount
+                    elif sc.charge_type.lower() == 'disc':
+                        discount_value += sc.amount
+
+                for psg in rec.passenger_ids:
+                    for csc in psg.channel_service_charge_ids:
+                        total_price_pax += csc.amount
+
+                    customer_grand_total += total_price_pax
+
+                values[rec.id].append({
+                    'name': rec.passenger_ids[0].name,
+                    'pax_type': pax_type,
+                    'inc_ssr': "",  # Inc. SSR
+                    'add_ssr': "",  # Add SSR
+                    'price_total': customer_grand_total,
+                })
+
+            pnr_length = len(rec.pnr)
+            if pnr_length > 27:
+                header_width += 3 * (abs(27 - pnr_length))
+                if header_width > 105:
+                    header_width = 105
+            agent_id = rec.agent_id
+        printout_itinerary_footer = self.env['tt.report.common.setting'].get_footer('printout_itinerary', agent_id)
+        return {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'itin',
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'pnr_length': pnr_length,
+            'header_width': str(header_width),
+            'price_lines': values,
+            'discount_value': discount_value,
+            'customer_grand_total': customer_grand_total + discount_value, #Disc value (-1)
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
