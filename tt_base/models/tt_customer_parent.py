@@ -164,7 +164,7 @@ class TtCustomerParent(models.Model):
         email_cc = False
         email_cc_list = []
         if self.email_cc:
-            email_cc_list.append(self.email_cc)
+            email_cc_list += self.email_cc.split(",")
         if self.is_send_email_cc:
             if self.parent_agent_id.email:
                 email_cc_list.append(self.parent_agent_id.email)
