@@ -173,7 +173,7 @@
                 <div class="col-9" style="text-align: left">
                     <t t-foreach="doc.passenger_ids" t-as="psg">
                         <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.title"><span t-field="psg.title"/>. </t><span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
+                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.title"><span t-field="psg.title"/> </t><span t-field="psg.first_name"/> <span t-field="psg.last_name"/></label>
                         <br/>
                     </t>
                 </div>

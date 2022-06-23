@@ -807,7 +807,6 @@
         </div>
     </template>
 
-
     <!-- Type 1: Diganti tgl 2021-01-05 karena klo isi kpanjangan kurang enak bacane-->
     <template id="agent_invoice_content_type_1_view">
         <!-- Base Info Booker dkk -->
