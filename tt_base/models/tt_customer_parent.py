@@ -27,6 +27,7 @@ class TtCustomerParent(models.Model):
 
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     email = fields.Char(string="Email")
+    email_cc = fields.Char(string="Email CC(s) (Split by comma for multiple CCs)", required=False)
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.user.company_id.currency_id.id, string='Currency')
     address_ids = fields.One2many('address.detail', 'customer_parent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'customer_parent_id', string='Phones')
@@ -43,7 +44,8 @@ class TtCustomerParent(models.Model):
     tax_percentage = fields.Float('Tax (%)', default=0)
     tax_identity_number = fields.Char('NPWP')
     company_bank_data = fields.Char('Company Bank Data')
-    is_send_email_cc = fields.Boolean('Send Email CC', default=False)
+    is_send_email_cc = fields.Boolean('Send Email to Parent Agent', default=False)
+
     active = fields.Boolean('Active', default='True')
     state = fields.Selection([('draft', 'Draft'),('confirm', 'Confirmed'),('request', 'Requested'),('validate', 'Validated'),('done', 'Done'),('reject', 'Rejected')], 'State', default='draft', readonly=True)
     confirm_uid = fields.Many2one('res.users', 'Confirmed by', readonly=True)
@@ -159,16 +161,18 @@ class TtCustomerParent(models.Model):
         return self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
 
     def check_send_email_cc(self):
+        email_cc = False
+        email_cc_list = []
+        if self.email_cc:
+            email_cc_list.append(self.email_cc)
         if self.is_send_email_cc:
-            email_cc_list = []
             if self.parent_agent_id.email:
                 email_cc_list.append(self.parent_agent_id.email)
             if self.parent_agent_id.email_cc:
                 email_cc_list += self.parent_agent_id.email_cc.split(",")
+        if email_cc_list:
             email_cc_list = list(set(email_cc_list)) ## remove duplicate
             email_cc = ",".join(email_cc_list)
-        else:
-            email_cc = False
         return email_cc
 
     def set_all_cor_por_email_cc(self):
