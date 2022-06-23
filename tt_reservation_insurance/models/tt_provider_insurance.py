@@ -35,7 +35,7 @@ class TtProviderInsurance(models.Model):
     carrier_id = fields.Many2one('tt.transport.carrier', 'Product')
     carrier_code = fields.Char('Product Code')
     carrier_name = fields.Char('Product Name')
-    product_type = fields.Selection([('1', 'Individual'), ('2', 'Family')], 'Product Type', readonly=True, states={'draft': [('readonly', False)]}, compute='compute_product_type', store=True)
+    product_type = fields.Selection([('1', 'Individual'), ('2', 'Family'), ('8', 'Duo Plus'), ('7', 'Group')], 'Product Type', readonly=True, states={'draft': [('readonly', False)]}, compute='compute_product_type', store=True) ## 7,8 ngikut zurich
     sid_issued = fields.Char('SID Issued', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
     sid_cancel = fields.Char('SID Cancel', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
     total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]})

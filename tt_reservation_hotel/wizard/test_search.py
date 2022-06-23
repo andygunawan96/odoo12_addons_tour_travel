@@ -1112,11 +1112,13 @@ class TestSearch(models.Model):
                 'acquirer_seq_id': acq_id['acquirer_seq_id'],
             }, context)
 
-        for pax in resv_obj.passenger_ids:
-            for csc in pax.channel_service_charge_ids:
-                csc.resv_hotel_id = resv_obj.id
-                csc.total = csc.amount * csc.pax_count
-                resv_obj.total += csc.total
+        # Matikan Part ini agar csc tidka tercatat di resv ny juga START
+        # for pax in resv_obj.passenger_ids:
+        #     for csc in pax.channel_service_charge_ids:
+        #         csc.resv_hotel_id = resv_obj.id
+        #         csc.total = csc.amount * csc.pax_count
+        #         resv_obj.total += csc.total
+        # Mtikan Part ini END
         # if resv_obj.state not in ['issued', 'fail_issued']:
         #     resv_obj.sudo().action_issued(acq_id, co_uid)
         return resv_obj.sudo().action_done(issued_res)

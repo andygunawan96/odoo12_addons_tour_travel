@@ -2,9 +2,20 @@ from odoo import api,models,fields
 from ...tools import ERR, gmail
 import logging, traceback
 _logger = logging.getLogger(__name__)
-
+import re
+regex_check_email_valid = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 class MailMail(models.Model):
     _inherit = "mail.mail"
+
+    def is_email_valid(self, email_str_list):
+
+        # pass the regular expression
+        # and the string into the fullmatch() method
+        check_one_email_valid = False
+        for email in email_str_list.split(','):
+            if (re.fullmatch(regex_check_email_valid, email)):
+                check_one_email_valid = True
+        return check_one_email_valid
 
     @api.multi
     def send(self, auto_commit=False, raise_exception=False):
@@ -31,17 +42,23 @@ class MailMail(models.Model):
                         # kalau mau ngirim di cek juga statenya
                         rec = self.browse(batch_id)
                         if rec.state == 'outgoing':
-                            attachments_list_file = []
-                            for attachment_obj in rec.attachment_ids:
-                                attachments_list_file.append(attachment_obj)
-                            destination_email = {
-                                'to': rec.email_to,
-                                'cc': rec.email_cc,
-                                'bcc': ''
-                            }
-                            gmail.send_message(service=google_auth,destination=destination_email, obj=rec.subject, body=rec.body_html, attachments=attachments_list_file, type='html', email_account=email_user_account)
-                            # setelah ngirim di ganti statenya jadi sent agar tidak ke kirim di cron odoo
-                            rec.state = 'sent'
+                            if self.is_email_valid(rec.email_to) or self.is_email_valid(rec.email_cc):
+                                attachments_list_file = []
+                                for attachment_obj in rec.attachment_ids:
+                                    attachments_list_file.append(attachment_obj)
+                                destination_email = {
+                                    'to': rec.email_to if self.is_email_valid(rec.email_to) else '',
+                                    'cc': rec.email_cc if self.is_email_valid(rec.email_cc) else '',
+                                    'bcc': ''
+                                }
+                                gmail.send_message(service=google_auth,destination=destination_email, obj=rec.subject, body=rec.body_html, attachments=attachments_list_file, type='html', email_account=email_user_account)
+                                # setelah ngirim di ganti statenya jadi sent agar tidak ke kirim di cron odoo
+                                rec.state = 'sent'
+                            else:
+                                ## EMAIL TIDAK VALID STATE GANTI KE FAILED
+                                rec.state = 'exception'
+                                _logger.error('Error send email, Invalid email id: %s, display name: %s' % (rec.id, rec.display_name))
+
                     except Exception as e:
                         _logger.error("%s, %s" % (str(e), traceback.format_exc()))
             else:

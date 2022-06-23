@@ -1846,7 +1846,7 @@ class ReservationAirline(models.Model):
             data['provider_type'] = self.provider_type_id.name
 
         book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
-        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        datas = {'ids': book_obj.env.context.get('active_ids', []), 'is_hide_agent_logo': data.get('is_hide_agent_logo', False)}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
         res = book_obj.read()
         res = res and res[0] or {}
@@ -1917,7 +1917,7 @@ class ReservationAirline(models.Model):
             data['provider_type'] = self.provider_type_id.name
 
         book_obj = self.env['tt.reservation.airline'].search([('name', '=', data['order_number'])], limit=1)
-        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        datas = {'ids': book_obj.env.context.get('active_ids', []), 'is_hide_agent_logo': data.get('is_hide_agent_logo', False)}
         # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
         res = book_obj.read()
         res = res and res[0] or {}

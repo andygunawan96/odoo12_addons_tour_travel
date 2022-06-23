@@ -152,6 +152,7 @@ class VisaOrderPassengers(models.Model):
                                                 accepted = Accepted by the Consulate
                                                 rejected = Rejected by the Consulate
                                                 done = Document at agent or picked up by customer''')
+    is_ticketed = fields.Boolean('Ticketed')
 
     @api.depends('pricelist_id')
     @api.onchange('pricelist_id')

@@ -769,7 +769,8 @@ class ReservationEvent(models.Model):
     def print_eticket(self, data, ctx=None):
         datas = {
             'ids': self.env.context.get('active_ids', []),
-            'model': self._name
+            'model': self._name,
+            'is_hide_agent_logo': data.get('is_hide_agent_logo', False)
         }
         res = self.read()
         res = res and res[0] or {}
@@ -818,7 +819,8 @@ class ReservationEvent(models.Model):
     def print_eticket_with_price(self, data, ctx=None):
         datas = {
             'ids': self.env.context.get('active_ids', []),
-            'model': self._name
+            'model': self._name,
+            'is_hide_agent_logo': data.get('is_hide_agent_logo', False)
         }
         res = self.read()
         res = res and res[0] or {}

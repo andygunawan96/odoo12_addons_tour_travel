@@ -86,6 +86,7 @@
                         <group>
                             <field name="tax_identity_number"/>
                             <field name="email"/>
+                            <field name="email_cc"/>
                         </group>
                         <group>
                             <field name="company_bank_data"/>
