@@ -72,7 +72,7 @@ def gmail_authenticate(creds):
                     "last_update": time.time(),
                 })
                 write_file_update(update_status_email_file)
-        return build('gmail', 'v1', credentials=creds)
+        return build('gmail', 'v1', credentials=creds, cache_discovery=False)
     else:
         _logger.error('Error please set email first')
         return False
