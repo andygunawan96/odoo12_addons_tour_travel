@@ -7,15 +7,15 @@ regex_check_email_valid = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 class MailMail(models.Model):
     _inherit = "mail.mail"
 
-    def is_email_valid(self, email):
+    def is_email_valid(self, email_str_list):
 
         # pass the regular expression
         # and the string into the fullmatch() method
-        if (re.fullmatch(regex_check_email_valid, email)):
-            return True
-
-        else:
-            return False
+        check_one_email_valid = False
+        for email in email_str_list.split(','):
+            if (re.fullmatch(regex_check_email_valid, email)):
+                check_one_email_valid = True
+        return check_one_email_valid
 
     @api.multi
     def send(self, auto_commit=False, raise_exception=False):
