@@ -78,7 +78,7 @@ def gmail_authenticate(creds):
         return False
 
 def write_file_update(update_status_email_file):
-    _file = open("%s/update_status_email.txt" % def_folder, 'w+')
+    _file = open("%s/update_status_email.txt" % def_folder, 'w')
     _file.write(json.dumps(update_status_email_file))
     _file.close()
 
