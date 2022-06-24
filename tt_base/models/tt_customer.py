@@ -424,7 +424,12 @@ class TtCustomer(models.Model):
                     action = 2
                 if not action:
                     raise RequestException(1023,additional_message="Wrong Upload Action")
-                image_ids.append((action,self.env['tt.upload.center'].search([('seq_id','=',seq[0])],limit=1).id))
+                image_obj = self.env['tt.upload.center'].search([('seq_id', '=', seq[0])], limit=1)
+                try:
+                    image_obj.create_date
+                    image_ids.append((action,image_obj.id))
+                except:
+                    _logger.error("Error linking Customer Identity Image, UPC not found")
 
         if not_exist:
             create_vals = {
