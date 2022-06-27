@@ -51,22 +51,32 @@ class AgentInvoice(models.Model):
         # security : user_agent_supervisor
         if self.state != 'confirm':
             raise UserError('You can only create Bill Statement from an invoice that has been set to \'Confirm\'.')
-        if self.ledger_ids:
-            raise UserError('You cannot Bill already Billed Invoice')
-        self.state = 'bill'
-        self.billing_uid = self.env.user.id
-        self.create_ledger_invoice(debit=False)
+        ledger_diff = 0
+        for ledger_obj in self.ledger_ids:
+            ledger_diff += ledger_obj.debit
+            ledger_diff -= ledger_obj.credit
+        if ledger_diff == 0:
+            self.state = 'bill2'
+            self.billing_uid = self.env.user.id
+            self.create_ledger_invoice(debit=False)
+        else:
+            _logger.error("%s %s action_bill2 failed, because ledger exist" % (self.name, self.id))
 
     #cron
     def action_bill2(self):
         # security : user_agent_supervisor
         if self.state != 'confirm':
             raise UserError('You can only create Bill Statement from an invoice that has been set to \'Confirm\'.')
-        if self.ledger_ids:
-            raise UserError('You cannot Bill already Billed Invoice')
-        self.state = 'bill2'
-        self.billing_uid = self.env.user.id
-        self.create_ledger_invoice(debit=False)
+        ledger_diff = 0
+        for ledger_obj in self.ledger_ids:
+            ledger_diff += ledger_obj.debit
+            ledger_diff -= ledger_obj.credit
+        if ledger_diff == 0:
+            self.state = 'bill2'
+            self.billing_uid = self.env.user.id
+            self.create_ledger_invoice(debit=False)
+        else:
+            _logger.error("%s %s action_bill2 failed, because ledger exist" % (self.name, self.id))
 
     def create_ledger_invoice(self, debit=False):
         # create_ledger dilakukan saat state = bill atau bill2
