@@ -228,8 +228,9 @@
                                 <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <t t-if="segment_obj.carrier_id.id != segment_obj.operating_airline_id.id">
+                                    <b><span style="font-size: 14px;">Operated By:</span></b><br/>
                                     <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.operating_airline_id.code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
-                                    <span style="font-size: 13px;">Operated By <span t-field="segment_obj.operating_airline_id.name"/></span><br/>
+                                    <span style="font-size: 13px;"><span t-field="segment_obj.operating_airline_id.name"/></span><br/>
                                 </t>
                                 <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>
