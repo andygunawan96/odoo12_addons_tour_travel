@@ -44,49 +44,13 @@
                 </t>
             </tbody>
         </table>
-        <t t-if="ssr_list">
-            <br/>
-            <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
-            <table width="100%">
-                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
-                    <td><b>Passenger(s)</b></td>
-                    <td><b>Description</b></td>
-                    <td><b>Price</b></td>
-                </thead>
-                <tbody>
-                    <t t-foreach="ssr_list" t-as="ssr_obj">
-                        <tr>
-                            <td><t t-esc="ssr_obj['name']"/></td>
-                            <td>
-                                <ul>
-                                    <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj1">
-                                        <t t-if="length.pnr == ssr_obj1['pnr']">
-                                            <li><t t-esc="ssr_obj1['name']"/></li>
-                                        </t>
-                                    </t>
-                                </ul>
-                            </td>
-                            <td style="text-align: right">
-                                <ul>
-                                    <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj2">
-                                        <t t-if="length.pnr == ssr_obj2['pnr']">
-                                            <li><t t-esc="ssr_obj2['amount']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></li>
-                                        </t>
-                                    </t>
-                                </ul>
-                            </td>
-                        </tr>
-                    </t>
-                </tbody>
-            </table>
-        </t>
     </template>
 
     <template id="airline_pax_ssr">
         <t t-set="any_ssr" t-value="0"/>
         <t t-foreach="length.journey_ids" t-as="line">
             <t t-foreach="line.segment_ids" t-as="segment_obj">
-                <t t-set="data_pax" t-value="psg.passenger_id"/>
+                <t t-set="data_pax" t-value="psg['passenger_id']"/>
                 <t t-if="data_pax.fee_ids">
                     <t t-foreach="data_pax.fee_ids" t-as="fee_id">
                         <t t-if="fee_id.journey_code == segment_obj.segment_code">
@@ -99,7 +63,7 @@
                     </t>
                 </t>
                 <t t-foreach="segment_obj.segment_addons_ids" t-as="addons_obj">
-                    <t t-if="psg.pax_type in addons_obj.get_pax_type()">
+                    <t t-if="psg['pax_type'] in addons_obj.get_pax_type()">
                         <t t-set="any_ssr" t-value="1"/>
                         <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/></i><br/>
                     </t>
@@ -330,51 +294,120 @@
         <!-- Passenger Detail (Content) -->
         <div class="box" style="margin-top: 20px; margin-bottom: 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
             <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
-                <div class="col-1" style="text-align: center; font-size:17px;">
-                    No.
-                </div>
-                <div class="col-3" style="text-align: left; font-size:17px;">
-                    Name
-                </div>
-                <div class="col-1" style="text-align: center; font-size:17px;">
-                    Type
-                </div>
-                <div class="col-4" style="text-align: center; font-size:17px;">
-                    Facility(s)
-                </div>
-                <div class="col-3" style="text-align: right; font-size:17px; padding-right: 30px;">
-                    Ticket Number
-                </div>
+                <t t-if="with_price">
+                    <div class="col-1" style="text-align: center; font-size:17px;">
+                        No.
+                    </div>
+                    <div class="col-3" style="text-align: left; font-size:17px;">
+                        Name
+                    </div>
+                    <div class="col-1" style="text-align: center; font-size:17px;">
+                        Type
+                    </div>
+                    <div class="col-3" style="text-align: center; font-size:17px;">
+                        Facility(s)
+                    </div>
+                    <div class="col-2" style="text-align: center; font-size:17px;">
+                        Ticket Number
+                    </div>
+                    <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
+                        Price
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="col-1" style="text-align: center; font-size:17px;">
+                        No.
+                    </div>
+                    <div class="col-3" style="text-align: left; font-size:17px;">
+                        Name
+                    </div>
+                    <div class="col-1" style="text-align: center; font-size:17px;">
+                        Type
+                    </div>
+                    <div class="col-4" style="text-align: center; font-size:17px;">
+                        Facility(s)
+                    </div>
+                    <div class="col-3" style="text-align: right; font-size:17px; padding-right: 30px;">
+                        Ticket Number
+                    </div>
+                </t>
             </div>
             <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
             <t t-set="psg_index" t-value="0"/>
-            <t t-foreach="length.ticket_ids" t-as="psg">
-                <div class="row" style="margin-left: 0px; margin-right: 0px">
-                    <div class="col-1" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
-                    </div>
-                    <div class="col-3" style="text-align: left">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
-                    </div>
-                    <div class="col-1" style="text-align: center">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
-                    </div>
-                    <div class="col-4" style="text-align: center">
-                        <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
-                        <t t-call="tt_report_common.airline_pax_ssr"/>
-                    </div>
-                    <div class="col-3" style="text-align: right">
-                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.ticket_number"><span t-field="psg.ticket_number"/></t><t t-else="">-</t></label>
-                    </div>
-                </div>
+            <t t-foreach="price_lines[doc.id]" t-as="price_psg">
+                <t t-foreach="price_psg" t-as="psg">
+                    <t t-if="psg['pnr'] == length.pnr">
+                        <div class="row" style="margin-left: 0px; margin-right: 0px">
+                            <t t-if="with_price">
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                </div>
+                                <div class="col-3" style="text-align: left">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['name']"/></label>
+                                </div>
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['pax_type']"/></label>
+                                </div>
+                                <div class="col-3" style="text-align: center">
+                                    <t t-call="tt_report_common.airline_pax_ssr"/>
+                                </div>
+                                <div class="col-2" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.get('ticket_number')"><span t-esc="psg['ticket_number']"/></t><t t-else="">-</t></label>
+                                </div>
+                                <div class="col-2" style="text-align: right">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['total_price']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></label>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                </div>
+                                <div class="col-3" style="text-align: left">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['name']"/></label>
+                                </div>
+                                <div class="col-1" style="text-align: center">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['pax_type']"/></label>
+                                </div>
+                                <div class="col-4" style="text-align: center">
+                                    <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
+                                    <t t-call="tt_report_common.airline_pax_ssr"/>
+                                </div>
+                                <div class="col-3" style="text-align: right">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><t t-if="psg.get('ticket_number')"><span t-esc="psg['ticket_number']"/></t><t t-else="">-</t></label>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t>
             </t>
             <div style="margin-bottom: 5px"/>
         </div>
 
-        <!-- Price & Addons Detail (if with price) -->
-        <t t-if="with_price">
-            <!--<t t-call="tt_report_common.price_ticket"/>-->
-            <t t-call="tt_report_common.price_detail"/>
+        <t t-if="ssr_list">
+            <br/>
+            <span style="font-size: 28px; font-weight: 730">Addons Detail(s)</span><br/>
+            <table width="100%">
+                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                    <td><b>Passenger(s)</b></td>
+                    <td><b>Description</b></td>
+                </thead>
+                <tbody>
+                    <t t-foreach="ssr_list" t-as="ssr_obj">
+                        <tr>
+                            <td><t t-esc="ssr_obj['name']"/></td>
+                            <td>
+                                <ul>
+                                    <t t-foreach="ssr_obj['ssr']" t-as="ssr_obj1">
+                                        <t t-if="length.pnr == ssr_obj1['pnr']">
+                                            <li><t t-esc="ssr_obj1['name']"/></li>
+                                        </t>
+                                    </t>
+                                </ul>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
         </t>
 
         <!-- Important Notes -->
