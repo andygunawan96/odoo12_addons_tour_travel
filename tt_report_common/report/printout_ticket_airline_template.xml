@@ -228,6 +228,7 @@
                                 <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <t t-if="segment_obj.carrier_id.id != segment_obj.operating_airline_id.id">
+                                    <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.operating_airline_id.code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                     <span style="font-size: 13px;">Operated By <span t-field="segment_obj.operating_airline_id.name"/></span><br/>
                                 </t>
                                 <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>
@@ -239,7 +240,7 @@
                                         <div style="height: 75px; max-height: 150px">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.origin_id.city"/> (<span t-field="segment_obj.origin_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.origin_id.name"/></span><br/>
-                                            <span style="font-size: 16px; font-weight:200">Terminal <span t-field="segment_obj.origin_terminal"/></span>
+                                            <span style="font-size: 16px; font-weight:200"><t t-if="segment_obj.origin_terminal">Terminal <span t-field="segment_obj.origin_terminal"/></t></span>
                                         </div>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.departure_date[10:16]"/></span>
@@ -254,7 +255,7 @@
                                         <div style="height: 75px; max-height: 150px">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.destination_id.city"/> (<span t-field="segment_obj.destination_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.destination_id.name"/></span><br/>
-                                            <span style="font-size: 16px; font-weight:200">Terminal <span t-field="segment_obj.destination_terminal"/></span>
+                                            <span style="font-size: 16px; font-weight:200"><t t-if="segment_obj.destination_terminal">Terminal <span t-field="segment_obj.destination_terminal"/></t></span>
                                         </div>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.arrival_date[:10],'%Y-%m-%d'))"/></span><br/>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.arrival_date[10:16]"/></span>
