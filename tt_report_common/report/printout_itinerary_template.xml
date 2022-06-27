@@ -361,17 +361,17 @@
                     <t t-foreach="price_lines[doc.id]" t-as="psg">
                         <div class="row" style="margin-left: 0px; margin-right: 0px">
                             <div class="col-1" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                             </div>
-                            <div class="col-3" style="text-align: left">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['name']"/></label>
+                            <div class="col-3" style="text-align: left;">
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
                             </div>
                             <div class="col-1" style="text-align: center">
-                                <label style="font-weight:300; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['pax_type']"/></label>
+                                <label style="font-weight:300; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>
                             </div>
-                            <div class="col-4" style="text-align: left">
-                                <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
-                                <t t-if="psg['add_ssr'] or psg['inc_ssr']">
+                            <t t-if="psg['add_ssr'] or psg['inc_ssr']">
+                                <div class="col-4" style="text-align: left; overflow-wrap: break-word;">
+                                    <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
                                     <t t-foreach="psg['inc_ssr']" t-as="add_ssr">
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
                                     </t>
@@ -383,13 +383,15 @@
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
                                             <!--</t>-->
                                     </t>
-                                </t>
-                                <t t-else="">
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="col-4" style="text-align: center; overflow-wrap: break-word;">
                                     -
-                                </t>
-                            </div>
-                            <div class="col-2" style="text-align: left">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg['price_total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></label>
+                                </div>
+                            </t>
+                            <div class="col-2" style="text-align: left; overflow-wrap: break-word;">
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['price_total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></label>
                             </div>
                         </div>
                     </t>
