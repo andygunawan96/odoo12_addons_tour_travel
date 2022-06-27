@@ -21,7 +21,7 @@
                     <filter string="Confirm to HO/Validated by HO" name="confirm_validate" domain="['|', ('state_visa','=','confirm'),('state_visa','=','validate')]"/>
                     <filter string="Send to Vendor/Proceed by Vendor" name="to_vendor_vendor_process" domain="['|', ('state_visa','=','to_vendor'),('state_visa','=','vendor_process')]"/>
                     <filter string="In Process/Payment" name="in_process_payment" domain="['|', ('state_visa','=','in_process'),('state_visa','=','payment')]"/>
-                    <filter string="Process by Consulate" name="process_by_consulate" domain="[('state_visa','=','process_by_consulate')]"/>
+                    <filter string="Process by Consulate" name="process_by_consulate" domain="[('state_visa','=','vendor_process')]"/>
                     <filter string="Partial Proceed/Proceed" name="partial_proceed_proceed" domain="['|', ('state_visa','=','partial_proceed'),('state_visa','=','proceed')]"/>
                     <filter string="Partial Approved/Approved/Rejected" name="partial_approved_approved_rejected" domain="[('state_visa','in',['partial_approve','approve','reject'])]"/>
                     <filter string="Delivered/Done" name="delivered_done" domain="['|', ('state_visa','=','delivered'),('state_visa','=','done')]"/>

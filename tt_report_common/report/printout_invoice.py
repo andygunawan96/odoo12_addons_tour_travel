@@ -75,49 +75,27 @@ class PrintoutTicketForm(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
-            discount_value = 0
+            csc_pax_list = []
             for provider in rec.provider_booking_ids:
                 a[provider.pnr] = []
-                for rec2 in provider.cost_service_charge_ids:
-                    price_target = False
-                    for price_detail in a[provider.pnr]:
-                        if rec2.pax_type == price_detail['pax_type']:
-                            price_target = price_detail
-                            break
-                    if not price_target:
-                        price_target = {
-                            'pax_type': rec2.pax_type,
-                            'price_per_pax': 0,
-                            'price_total': 0,
-                            'qty': rec2.pax_count,  # asumsi yang pertama fare, qtynya benar
-                            'pnr': provider.pnr,
-                        }
-                        a[provider.pnr].append(price_target)
+                for pax in provider.ticket_ids:
+                    price_target = {
+                        'pnr': provider.pnr,
+                        'passenger_id': pax.passenger_id,
+                        'name': '%s %s' % (pax.passenger_id.title, pax.passenger_id.name),
+                        'pax_type': pax.pax_type,
+                        'ticket_number': pax.ticket_number,
+                        'total_price': 0
+                    }
+                    for rec2 in pax.passenger_id.cost_service_charge_ids:
+                        if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc']:
+                            price_target['total_price'] += rec2.amount
 
-                    if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
-                        price_target['price_per_pax'] += rec2.amount
-                        price_target['price_total'] += rec2.amount * rec2.pax_count
-                    elif rec2.charge_type.lower() == 'disc':
-                        discount_value += rec2.amount
-
-                if discount_value:
-                    a[provider.pnr].append({
-                    'pax_type': 'DISC',
-                    'price_per_pax': discount_value,
-                    'price_total': discount_value,
-                    'qty': 1,
-                    'pnr': provider.pnr,
-                })
-                if provider.provider_id.provider_type_id.code in ['airline', 'train', 'tour', 'activity', 'visa', 'passport', 'phc', 'periksain', 'medical', 'bus', 'insurance', 'mitrakeluarga']:
-                    csc_found = []
-                    for rec2 in provider.ticket_ids:
-                        for price_detail in a[provider.pnr]:
-                            if rec2.pax_type == price_detail['pax_type']:
-                                for scs in rec2.passenger_id.channel_service_charge_ids:
-                                    if rec2.pax_type not in csc_found:
-                                        price_detail['price_per_pax'] += scs.amount
-                                        csc_found.append(rec2.pax_type)
-                                    price_detail['price_total'] += scs.amount
+                    if pax.passenger_id.id not in csc_pax_list:
+                        for scs in pax.passenger_id.channel_service_charge_ids:
+                            price_target['total_price'] += scs.amount
+                        csc_pax_list.append(pax.passenger_id.id)
+                    a[provider.pnr].append(price_target)
 
             for ssr_per_pax in rec.passenger_ids:
                 if hasattr(ssr_per_pax, 'fee_ids'):

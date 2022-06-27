@@ -11,5 +11,17 @@ class TtCronLogInhBill(models.Model):
         try:
             self.env['tt.customer.parent'].cron_create_billing_statement()
         except Exception as e:
+            try:
+                request = {
+                    'code': 9903,
+                    'message': str(e),
+                    "title": 'CRON BILLING STATEMENT'
+                }
+                api_con_obj = self.env['tt.api.con']
+                return api_con_obj.send_request_to_gateway('%s/notification' % (api_con_obj.url),
+                                                    request
+                                                    , 'notification_code')
+            except:
+                pass
             self.create_cron_log_folder()
             self.write_cron_log('auto create billing statement')
