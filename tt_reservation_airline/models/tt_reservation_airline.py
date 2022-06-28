@@ -908,6 +908,7 @@ class ReservationAirline(models.Model):
                             segment_obj.write({
                                 'segment_code': segment_data['segment_code'],
                                 'carrier_code': segment_data['carrier_code'],
+                                'carrier_type_code': segment_data.get('carrier_type_code', ''),
                                 'carrier_number': segment_data['carrier_number'],
                                 'arrival_date': segment_data['arrival_date'],
                                 'departure_date': segment_data['departure_date'],
@@ -1357,6 +1358,7 @@ class ReservationAirline(models.Model):
         dest_obj = self.env['tt.destinations']
         provider_airline_obj = self.env['tt.provider.airline']
         carrier_obj = self.env['tt.transport.carrier']
+        carrier_type_obj = self.env['tt.transport.carrier.type']
         provider_obj = self.env['tt.provider']
         currency_obj = self.env['res.currency']
 
@@ -1416,6 +1418,9 @@ class ReservationAirline(models.Model):
                 for segment in journey['segments']:
                     ###create segment
                     carrier_id = carrier_obj.get_id(segment['carrier_code'],_destination_type)
+                    carrier_type_id = None
+                    if segment.get('carrier_type_code'):
+                        carrier_type_id = carrier_type_obj.get_id(segment.get('carrier_type_code', ''), _destination_type)
                     org_id = dest_obj.get_id(segment['origin'],_destination_type)
                     dest_id = dest_obj.get_id(segment['destination'],_destination_type)
                     operating_id = carrier_obj.get_id(segment['operating_airline_code'],_destination_type) if segment.get('operating_airline_code') else None
@@ -1500,7 +1505,9 @@ class ReservationAirline(models.Model):
                         'segment_code': segment['segment_code'],
                         'fare_code': segment.get('fare_code', ''),
                         'carrier_id': carrier_id and carrier_id.id or False,
+                        'carrier_type_id': carrier_type_id and carrier_type_id.id or False,
                         'carrier_code': segment['carrier_code'],
+                        'carrier_type_code': segment.get('carrier_type_code', ''),
                         'carrier_number': segment['carrier_number'],
                         'provider_id': provider_id,
                         'origin_id': org_id and org_id or False,

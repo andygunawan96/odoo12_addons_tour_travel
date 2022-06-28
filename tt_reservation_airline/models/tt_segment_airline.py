@@ -23,6 +23,8 @@ class TtSegmentAirline(models.Model):
     operating_airline_code = fields.Char('Operating Airline Code', default='')
     carrier_number = fields.Char('Flight Number')
     provider_id = fields.Many2one('tt.provider','Provider')
+    carrier_type_code = fields.Char('Carrier Type Code')
+    carrier_type_id = fields.Many2one('tt.transport.carrier.type', 'Carrier Type', default=None)
 
     origin_id = fields.Many2one('tt.destinations', 'Origin')
     destination_id = fields.Many2one('tt.destinations', 'Destination')
@@ -117,6 +119,8 @@ class TtSegmentAirline(models.Model):
             'pnr': self.pnr and self.pnr or '',
             'carrier_name': self.carrier_id.name,
             'carrier_code': self.carrier_code,
+            'carrier_type_code': self.carrier_code,
+            'carrier_type_name': self.carrier_type_id and self.carrier_type_id.name or '',
             'carrier_number': self.carrier_number,
             'provider': self.provider_id.code,
             'origin': self.origin_id.code,
