@@ -298,42 +298,33 @@ class PrintoutTicketEventForm(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
             a = {}
+            csc_pax_list = []
             for provider in rec.provider_booking_ids:
                 a[provider.pnr] = []
-                for rec2 in provider.cost_service_charge_ids:
-                    if not a[provider.pnr]:
-                        a[provider.pnr].append({
-                            'pax_type': rec2.pax_type,
-                            'price_per_pax': 0,
-                            'price_total': 0,
-                            'qty': rec2.pax_count,  # asumsi yang pertama fare, qtynya benar
-                            'pnr': provider.pnr,
-                        })
-                        if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
-                            a[provider.pnr][len(a[provider.pnr])-1]['price_per_pax'] += rec2.amount
-                            a[provider.pnr][len(a[provider.pnr])-1]['price_total'] += rec2.amount * rec2.pax_count
-                    else:
-                        pax_type_found = False
-                        for idx, price_detail in enumerate(a[provider.pnr]):
-                            if rec2.pax_type == price_detail['pax_type']:
-                                pax_type_found = True
-                                if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
-                                    a[provider.pnr][idx]['price_per_pax'] += rec2.amount
-                                    a[provider.pnr][idx]['price_total'] += rec2.amount * rec2.pax_count
-                        if not pax_type_found:
-                            a[provider.pnr].append({
-                                'pax_type': rec2.pax_type,
-                                'price_per_pax': 0,
-                                'price_total': 0,
-                                'qty': rec2.pax_count,  # asumsi yang pertama fare, qtynya benar
-                                'pnr': provider.pnr,
-                            })
-                            if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
-                                a[provider.pnr][len(a[provider.pnr])-1]['price_per_pax'] += rec2.amount
-                                a[provider.pnr][len(a[provider.pnr])-1]['price_total'] += rec2.amount * rec2.pax_count
+                for pax in provider.passenger_ids:
+                    price_target = {
+                        'pnr': provider.pnr,
+                        'passenger_id': pax,
+                        'name': pax.name,
+                        'pax_type': pax.pax_type,
+                        'total_price': 0
+                    }
+                    for rec2 in pax.cost_service_charge_ids:
+                        if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare',
+                                                                                                            'roc',
+                                                                                                            'tax',
+                                                                                                            'disc']:
+                            price_target['total_price'] += rec2.amount
+
+                    if pax.id not in csc_pax_list:
+                        for scs in pax.channel_service_charge_ids:
+                            price_target['total_price'] += scs.amount
+                        csc_pax_list.append(pax.id)
+                    a[provider.pnr].append(price_target)
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
+
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
