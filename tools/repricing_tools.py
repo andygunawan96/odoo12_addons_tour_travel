@@ -2840,7 +2840,7 @@ class AgentCommission(object):
         # upline_list[1:] => [ ] => Parent Agentnya tidak ada
         if upline_list[1:]:
             parent_agent_id = upline_list[1]['id']
-            parent_res = self.calculate_commission(com_data['parent'], upline_list[1]['id'], commission_amount, pax_count, infant_count, route_count, segment_count)
+            parent_res = self.calculate_commission(com_data['parent'], commission_amount, upline_list[1]['id'], pax_count, infant_count, route_count, segment_count)
             parent_charge_amount = parent_res['charge_amount']
             if parent_charge_amount > commission_amount:
                 parent_charge_amount = 0.0
