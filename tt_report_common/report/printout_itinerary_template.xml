@@ -165,16 +165,16 @@
                         <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                                 </div>
                                 <div class="col-2" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-2" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.pax_type"/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
                                     <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
@@ -254,16 +254,16 @@
                                 <t t-foreach="data_pax.fee_ids" t-as="fee_id">
                                     <div class="row" style="margin-left: 0px; margin-right: 0px">
                                         <div class="col-1" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                                         </div>
                                         <div class="col-2" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.category"/></label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="fee_id.category"/></label>
                                         </div>
                                         <div class="col-2" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="fee_id.name"/></label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="fee_id.name"/></label>
                                         </div>
                                         <div class="col-3" style="text-align: right">
                                             <t t-foreach="provider_itin_id.journey_ids" t-as="data_journey">
@@ -277,10 +277,10 @@
                                                 </t>
                                             </t>
                                             <t t-if="journey_pick">
-                                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="journey_pick.origin_id.code"/> - <span t-field="journey_pick.destination_id.code"/></label>
+                                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="journey_pick.origin_id.code"/> - <span t-field="journey_pick.destination_id.code"/></label>
                                             </t>
                                             <t t-else="">
-                                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</label>
+                                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">-</label>
                                             </t>
                                         </div>
                                     </div>
@@ -465,16 +465,16 @@
                         <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                                 </div>
                                 <div class="col-2" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-2" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.pax_type"/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
                                     -
@@ -546,19 +546,19 @@
                         <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                                 </div>
                                 <div class="col-2" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-2" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.pax_type"/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.ticket_number"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.ticket_number"/></label>
                                 </div>
                             </div>
                         </t>
@@ -614,17 +614,17 @@
                         <t t-foreach="doc.option_ids" t-as="option">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-5" style="text-align: center;">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">
                                         <span t-field="option.ticket_number"/>
                                     </label>
                                 </div>
                                 <div class="col-3" style="text-align: center;">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">
                                         <span t-field="option.event_option_id.grade"/>
                                     </label>
                                 </div>
                                 <div class="col-4" style="text-align: center;">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">
                                         <span t-field="option.description"/>
                                     </label>
                                 </div>
@@ -688,10 +688,10 @@
                     <t t-foreach="doc.passenger_ids" t-as="psg">
                         <div class="row" style="margin-left: 0px; margin-right: 0px">
                             <div class="col-1" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                             </div>
                             <div class="col-4" style="text-align: left">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">
                                     <t t-if="psg.name">
                                         <span t-field="psg.name"/>
                                     </t>
@@ -701,10 +701,10 @@
                                 </label>
                             </div>
                             <div class="col-4" style="text-align: right">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                             </div>
                             <div class="col-3" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.gender"/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.gender"/></label>
                             </div>
                         </div>
                     </t>
@@ -770,16 +770,16 @@
                         <t t-foreach="doc.passenger_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.name"/></label>
                                 </div>
                                 <div class="col-4" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.gender"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.gender"/></label>
                                 </div>
                             </div>
                         </t>
@@ -840,16 +840,16 @@
                         <t t-foreach="doc.passenger_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.name"/></label>
                                 </div>
                                 <div class="col-4" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_type"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_type"/></label>
                                 </div>
                             </div>
                         </t>
@@ -929,13 +929,13 @@
                                 <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                                 <div class="row" style="margin-left: 0px; margin-right: 0px">
                                     <div class="col-1" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">1.</label>
                                     </div>
                                     <div class="col-6" style="text-align: left">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_name"/></label>
                                     </div>
                                     <div class="col-5" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_number"/></label>
                                     </div>
                                 </div>
                             </div>
@@ -985,13 +985,13 @@
                                 <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                                 <div class="row" style="margin-left: 0px; margin-right: 0px">
                                     <div class="col-1" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">1.</label>
                                     </div>
                                     <div class="col-6" style="text-align: left">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_name"/></label>
                                     </div>
                                     <div class="col-5" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_number"/></label>
                                     </div>
                                 </div>
                             </div>
@@ -1037,13 +1037,13 @@
                                 <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                                 <div class="row" style="margin-left: 0px; margin-right: 0px">
                                     <div class="col-1" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">1.</label>
                                     </div>
                                     <div class="col-6" style="text-align: left">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_name"/></label>
                                     </div>
                                     <div class="col-5" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_number"/></label>
                                     </div>
                                 </div>
                             </div>
@@ -1097,19 +1097,19 @@
                                 <t t-foreach="provider_itin_id.ppob_bill_detail_ids" t-as="bill">
                                     <div class="row" style="margin-left: 0px; margin-right: 0px">
                                         <div class="col-1" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                         </div>
                                         <div class="col-4" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.customer_name"/></label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="bill.customer_name"/></label>
                                         </div>
                                         <div class="col-3" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.customer_number"/></label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="bill.customer_number"/></label>
                                         </div>
                                         <div class="col-2" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.unit_code"/></label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="bill.unit_code"/></label>
                                         </div>
                                         <div class="col-2" style="text-align: center">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="bill.unit_name"/></label>
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="bill.unit_name"/></label>
                                         </div>
                                     </div>
                                     <t t-set="psg_index" t-value="psg_index + 1"/>
@@ -1157,13 +1157,13 @@
                                 <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                                 <div class="row" style="margin-left: 0px; margin-right: 0px">
                                     <div class="col-1" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">1.</label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">1.</label>
                                     </div>
                                     <div class="col-6" style="text-align: left">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_name"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_name"/></label>
                                     </div>
                                     <div class="col-5" style="text-align: center">
-                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="provider_itin_id.customer_number"/></label>
+                                        <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="provider_itin_id.customer_number"/></label>
                                     </div>
                                 </div>
                             </div>
@@ -1224,16 +1224,16 @@
                         <t t-foreach="doc.passenger_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.name"/></label>
                                 </div>
                                 <div class="col-4" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_type"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_type"/></label>
                                 </div>
                             </div>
                         </t>
@@ -1297,17 +1297,17 @@
                     <t t-foreach="doc.passenger_ids" t-as="psg">
                         <div class="row" style="margin-left: 0px; margin-right: 0px">
                             <div class="col-1" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                             </div>
                             <div class="col-4" style="text-align: left">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.name"/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.name"/></label>
                             </div>
                             <div class="col-3" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                             </div>
                             <div class="col-4" style="text-align: left">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Email: <span t-field="psg.email"/></label><br/>
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phone: <span t-field="psg.phone_number"/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">Email: <span t-field="psg.email"/></label><br/>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">Phone: <span t-field="psg.phone_number"/></label>
                             </div>
                         </div>
                     </t>
@@ -1378,17 +1378,17 @@
                     <t t-foreach="doc.passenger_ids" t-as="psg">
                         <div class="row" style="margin-left: 0px; margin-right: 0px">
                             <div class="col-1" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                             </div>
                             <div class="col-4" style="text-align: left">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.name"/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.name"/></label>
                             </div>
                             <div class="col-3" style="text-align: center">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                             </div>
                             <div class="col-4" style="text-align: left">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Email: <span t-field="psg.email"/></label><br/>
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Phone: <span t-field="psg.phone_number"/></label>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">Email: <span t-field="psg.email"/></label><br/>
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">Phone: <span t-field="psg.phone_number"/></label>
                             </div>
                         </div>
                     </t>
@@ -1464,16 +1464,16 @@
                         <t t-foreach="provider_itin_id.ticket_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                                 </div>
                                 <div class="col-2" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-2" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.pax_type"/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
                                     -
@@ -1546,16 +1546,16 @@
                         <t t-foreach="provider_booking.ticket_ids" t-as="psg">
                             <div class="row" style="margin-left: 0px; margin-right: 0px">
                                 <div class="col-1" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-esc="psg_index+1"/>.</label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-4" style="text-align: left">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.title"/> <span t-field="psg.passenger_id.name"/></label>
                                 </div>
                                 <div class="col-2" style="text-align: right">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.passenger_id.birth_date" t-options ='{"format": "dd MMM yyyy"}'/></label>
                                 </div>
                                 <div class="col-2" style="text-align: center">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><span t-field="psg.pax_type"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="psg.pax_type"/></label>
                                 </div>
                                 <div class="col-3" style="text-align: center">
                                     -

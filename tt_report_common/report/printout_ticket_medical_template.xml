@@ -81,40 +81,83 @@
         <!-- Passenger Detail (Content) -->
         <div class="box" style="margin-top: 20px; margin-bottom: 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
             <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
-                <div class="col-1" style="text-align: center; font-size:17px;">No.</div>
-                <div class="col-4" style="text-align: left; font-size:17px;">Name</div>
-                <div class="col-1" style="text-align: left; font-size:17px;">Type</div>
-                <div class="col-4" style="text-align: cleft; font-size:17px;">ID Number</div>
-                <div class="col-2" style="text-align: center; font-size:17px;">Phone</div>
+                <t t-if="with_price">
+                    <div class="col-1" style="text-align: center; font-size:17px;">No.</div>
+                    <div class="col-3" style="text-align: left; font-size:17px;">Name</div>
+                    <div class="col-1" style="text-align: left; font-size:17px;">Type</div>
+                    <div class="col-3" style="text-align: cleft; font-size:17px;">ID Number</div>
+                    <div class="col-2" style="text-align: center; font-size:17px;">Phone</div>
+                    <div class="col-2" style="text-align: center; font-size:17px;">Price</div>
+                </t>
+                <t t-else="">
+                    <div class="col-1" style="text-align: center; font-size:17px;">No.</div>
+                    <div class="col-4" style="text-align: left; font-size:17px;">Name</div>
+                    <div class="col-1" style="text-align: left; font-size:17px;">Type</div>
+                    <div class="col-4" style="text-align: cleft; font-size:17px;">ID Number</div>
+                    <div class="col-2" style="text-align: center; font-size:17px;">Phone</div>
+                </t>
             </div>
             <div style='border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px;'/>
             <div style="background-image: url('/tt_report_common/static/images/paid_invoices.jpeg'); background-repeat: no-repeat; background-position: center; min-height: 100px;">
-                <t t-set="psg_index" t-value="0"/>
-                <t t-foreach="doc.passenger_ids" t-as="pax">
-                    <t t-set="psg_index" t-value="psg_index+1"/>
-                    <div class="row" style="margin: 5px 0px;">
-                        <div class="col-1" style="text-align: center; font-size:15px;">
-                            <span t-esc="psg_index"/>
-                        </div>
-                        <div class="col-4" style="text-align: left; font-size:15px;">
-                            <span t-field="pax.title"/> <span t-field="pax.first_name"/> <span t-field="pax.last_name"/>
-                        </div>
-                        <div class="col-1" style="text-align: left; font-size:15px;"><span t-field="pax.identity_type"/></div>
-                        <div class="col-4" style="text-align: left; font-size:15px;"><span t-field="pax.identity_number"/></div>
-                        <div class="col-2" style="text-align: center; font-size:15px;"><span t-field="pax.phone_number"/></div>
-                    </div>
+                <t t-foreach="doc.provider_booking_ids" t-as="length">
+                    <t t-set="psg_index" t-value="0"/>
+                    <t t-foreach="price_lines[doc.id]" t-as="price_psg">
+                        <t t-foreach="price_psg" t-as="psg">
+                            <t t-if="psg['pnr'] == length.pnr">
+                                <div class="row" style="margin: 5px 0px;">
+                                    <t t-if="with_price">
+                                        <div class="col-1" style="text-align: center; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
+                                        </div>
+                                        <div class="col-3" style="text-align: left; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
+                                        </div>
+                                        <div class="col-1" style="text-align: left; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['passenger_id'].identity_type"/></label>
+                                        </div>
+                                        <div class="col-3" style="text-align: left; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['passenger_id'].identity_number"/></label>
+                                        </div>
+                                        <div class="col-2" style="text-align: center; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['passenger_id'].phone_number"/></label>
+                                        </div>
+                                        <div class="col-2" style="text-align: center; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['total_price']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></label>
+                                        </div>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="col-1" style="text-align: center; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
+                                        </div>
+                                        <div class="col-4" style="text-align: left; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
+                                        </div>
+                                        <div class="col-1" style="text-align: left; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['passenger_id'].identity_type"/></label>
+                                        </div>
+                                        <div class="col-4" style="text-align: left; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['passenger_id'].identity_number"/></label>
+                                        </div>
+                                        <div class="col-2" style="text-align: center; font-size:15px;">
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['passenger_id'].phone_number"/></label>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                        </t>
+                    </t>
                 </t>
             </div>
             <div style="margin-bottom: 5px"/>
         </div>
 
         <!-- Price & Addons Detail (if with price) -->
-        <t t-if="with_price">
-            <t t-foreach="doc.provider_booking_ids" t-as="length">
-                <!--<t t-call="tt_report_common.price_ticket"/>-->
-                <t t-call="tt_report_common.price_detail"/>
-            </t>
-        </t>
+<!--        <t t-if="with_price">-->
+<!--            <t t-foreach="doc.provider_booking_ids" t-as="length">-->
+<!--                &lt;!&ndash;<t t-call="tt_report_common.price_ticket"/>&ndash;&gt;-->
+<!--                <t t-call="tt_report_common.price_detail"/>-->
+<!--            </t>-->
+<!--        </t>-->
         <div class="row">
             <!--            <div class="col-3"/>-->
             <!--            <div class="col-9">-->
