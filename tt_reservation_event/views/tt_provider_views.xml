@@ -48,7 +48,7 @@
                         </tree>
                     </field>
                     <separator string="Service Charges"/>
-                    <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_airline.tt_service_charge_airline_inherit_form_view'}">
+                    <field name="cost_service_charge_ids" context="{'form_view_ref':'tt_reservation_event.tt_service_charge_event_inherit_form_view'}">
                         <tree>
                             <field name="charge_code"/>
                             <field name="charge_type"/>

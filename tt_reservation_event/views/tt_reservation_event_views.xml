@@ -145,8 +145,9 @@
                                     <field name="event_option_id"/>
                                     <field name="description"/>
                                 </group>
-                            </group>
-                            <group>
+                                <separator string="Passengers"/>
+                                <field name="passenger_ids"/>
+                                <separator string="Extra Questions"/>
                                 <field name="extra_question_ids">
                                     <tree>
                                         <field name="question"/>
