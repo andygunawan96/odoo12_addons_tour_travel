@@ -18,6 +18,7 @@
                                 <field name="name" required="True"/>
                             </h1>
                         </div>
+                        <field name="code"/>
                         <separator string="Description"/>
                         <field name="description"/>
                     </sheet>

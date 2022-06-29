@@ -52,6 +52,7 @@ class TtCustomer(models.Model):
 
     identity_ids = fields.One2many('tt.customer.identity','customer_id','Identity List')
     behavior_ids = fields.One2many('tt.customer.behavior', 'customer_id', 'Behavior List')
+    frequent_flyer_ids = fields.One2many('tt.customer.frequent.flyer', 'customer_id', 'Frequent Flyer List')
     is_get_booking_from_vendor = fields.Boolean('Get Booking From Vendor')
     is_search_allowed = fields.Boolean("Search Allowed", default=True)
 
@@ -128,6 +129,8 @@ class TtCustomer(models.Model):
 
         behavior_dict = self.get_most_behavior()
 
+        ff_list_dict = self.frequent_flyer_ids.to_dict()
+
         res = {
             'name': self.name,
             'first_name': self.first_name,
@@ -143,7 +146,8 @@ class TtCustomer(models.Model):
             'seq_id': self.seq_id,
             'identities': identity_dict,
             'behaviors': behavior_dict,
-            'original_agent': self.agent_id and self.agent_id.name or ''
+            'original_agent': self.agent_id and self.agent_id.name or '',
+            'frequent_flyers': ff_list_dict
         }
         if get_customer_parent:
             customer_parent_list = []
@@ -386,6 +390,38 @@ class TtCustomer(models.Model):
             'email': 'twesting@gmail.com'
         })
         # self.add_or_update_identity('sim','BBBBB',157,'2024-09-01')
+
+    def add_or_ff_number(self, ff_list):
+        not_exist = True
+        error_msg = ''
+        for idx, rec_ff in enumerate(ff_list):
+            try:
+                number = util.get_without_empty(rec_ff, 'ff_number', False)
+                code = util.get_without_empty(rec_ff, 'ff_code', False)
+            except:
+                raise RequestException(1023, additional_message="Missing key ff.")
+
+            for customer_ff in self.frequent_flyer_ids:
+                if customer_ff.loyalty_program_id.code == code:
+                    not_exist = False
+                    break
+
+            if not_exist:
+                ## create new
+                loyalty_program = self.env['tt.loyalty.program'].search([('code', '=', code)])
+                loyalty_program_id = loyalty_program and loyalty_program[0].id or False
+                if loyalty_program_id:
+                    create_vals = {
+                        'ff_number': number,
+                        'loyalty_program_id': loyalty_program_id,
+                        'customer_id': self.id,
+                    }
+                    self.env['tt.customer.frequent.flyer'].create(create_vals)
+            else:
+                ## update jika ada pasti di customer_ff karena di break
+                customer_ff.update({
+                    "ff_number": number
+                })
 
     def add_or_update_identity(self,data):
         not_exist =True
@@ -691,3 +727,21 @@ class TtCustomerBehavior(models.Model):
             "counter": self.counter,
             "remark": self.remark
         }
+
+class TtCustomerFrequentFlyer(models.Model):
+    _name = "tt.customer.frequent.flyer"
+    _description = "Customer Frequent Flyer"
+    # _rec_name = "behavior_type"
+
+    loyalty_program_id = fields.Many2one('tt.loyalty.program', 'Loyalty Program')
+    ff_number = fields.Char('Frequent Flyer Number')
+    customer_id = fields.Many2one('tt.customer', 'Owner', required=True)
+
+    def to_dict(self):
+        ff_list = []
+        for rec in self:
+            ff_list.append({
+                "ff_code": rec.loyalty_program_id.code,
+                "ff_number": rec.ff_number
+            })
+        return ff_list
