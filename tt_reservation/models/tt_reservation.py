@@ -483,6 +483,8 @@ class TtReservation(models.Model):
 
                     if psg.get('identity'):
                         current_passenger.add_or_update_identity(psg['identity'])
+                    if psg.get('ff_numbers'):
+                        current_passenger.add_or_ff_number(psg['ff_numbers'])
                     res_ids.append(current_passenger)
                     continue
 
@@ -516,6 +518,8 @@ class TtReservation(models.Model):
                 psg_obj.add_or_update_identity(psg['identity'])
             if psg.get('identity_passport'):
                 psg_obj.add_or_update_identity(psg['identity_passport'])
+            if psg.get('ff_numbers'):
+                psg_obj.add_or_ff_number(psg['ff_numbers'])
             res_ids.append(psg_obj)
 
         return res_ids
