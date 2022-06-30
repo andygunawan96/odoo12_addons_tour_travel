@@ -183,7 +183,9 @@
                 <field name="pnr"/>
                 <field name="payment_acquirers"/>
                 <field name="confirmed_uid"/>
-                <field name="total_after_tax"/>
+                <field name="total" sum="Total"/>
+                <field name="total_after_tax" sum="Total After Tax"/>
+                <field name="grand_total" sum="Grand Total"/>
                 <field name="paid_amount"/>
                 <field name="state"/>
                 <field name="currency_id" invisible="1"/>

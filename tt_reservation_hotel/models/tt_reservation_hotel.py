@@ -345,7 +345,7 @@ class HotelReservation(models.Model):
         datas['form'] = res
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_hotel')
 
-        if not book_obj.printout_ticket_id:
+        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -402,7 +402,7 @@ class HotelReservation(models.Model):
         datas['is_with_price'] = True
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_hotel')
 
-        if not book_obj.printout_ticket_price_id:
+        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
