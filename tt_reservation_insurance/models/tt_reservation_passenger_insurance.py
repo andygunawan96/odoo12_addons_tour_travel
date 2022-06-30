@@ -35,16 +35,17 @@ class TtReservationCustomer(models.Model):
 
         insurance_data = self.insurance_data and json.loads(self.insurance_data) or {}
 
-        for idx,rec in enumerate(insurance_data.get('addons')):
-            for idy, child in enumerate(rec['child']):
-                for idz, detail in enumerate(child['detail']):
+        if 'addons' in insurance_data:
+            for idx,rec in enumerate(insurance_data['addons']):
+                for idy, child in enumerate(rec['child']):
+                    for idz, detail in enumerate(child['detail']):
+                        if detail == None:
+                            insurance_data['addons'][idx]['child'][idy]['detail'][idz] = ''
+                for idy, detail in enumerate(rec['detail']):
                     if detail == None:
-                        insurance_data['addons'][idx]['child'][idy]['detail'][idz] = ''
-            for idy, detail in enumerate(rec['detail']):
-                if detail == None:
-                    insurance_data['addons'][idx]['detail'][idy] = ''
-            if rec['timelimitdisplay'] == None:
-                insurance_data['addons'][idx]['timelimitdisplay'] = ''
+                        insurance_data['addons'][idx]['detail'][idy] = ''
+                if rec['timelimitdisplay'] == None:
+                    insurance_data['addons'][idx]['timelimitdisplay'] = ''
         sale_service_charges = self.get_service_charges()
         pax_type = ''
         for pnr in sale_service_charges:

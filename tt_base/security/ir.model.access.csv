@@ -64,6 +64,14 @@ access_tt_customer_behavior_for_customer_level_3,tt.customer.behavior.for.custom
 access_tt_customer_behavior_for_customer_level_4,tt.customer.behavior.for.customer.level.4,model_tt_customer_behavior,tt_base.group_customer_level_4,1,1,1,0
 access_tt_customer_behavior_for_customer_level_5,tt.customer.behavior.for.customer.level.5,model_tt_customer_behavior,tt_base.group_customer_level_5,1,1,1,1
 ,,,,,,,
+access_tt_customer_frequent_flyer_for_public,tt.customer.frequent.flyer.for.public,model_tt_customer_frequent_flyer,,1,0,0,0
+,,,,,,,
+access_tt_customer_frequent_flyer_for_customer_level_1,tt.customer.frequent.flyer.for.customer.level.1,model_tt_customer_frequent_flyer,tt_base.group_customer_level_1,1,0,0,0
+access_tt_customer_frequent_flyer_for_customer_level_2,tt.customer.frequent.flyer.for.customer.level.2,model_tt_customer_frequent_flyer,tt_base.group_customer_level_2,1,0,1,0
+access_tt_customer_frequent_flyer_for_customer_level_3,tt.customer.frequent.flyer.for.customer.level.3,model_tt_customer_frequent_flyer,tt_base.group_customer_level_3,1,1,1,0
+access_tt_customer_frequent_flyer_for_customer_level_4,tt.customer.frequent.flyer.for.customer.level.4,model_tt_customer_frequent_flyer,tt_base.group_customer_level_4,1,1,1,0
+access_tt_customer_frequent_flyer_for_customer_level_5,tt.customer.frequent.flyer.for.customer.level.5,model_tt_customer_frequent_flyer,tt_base.group_customer_level_5,1,1,1,1
+,,,,,,,
 access_tt_employee_for_public,tt_employee_for_public,model_tt_employee,,1,0,0,0
 ,,,,,,,
 access_tt_employee_for_agent_level_1,tt_employee_for_agent_level_1,model_tt_employee,tt_base.group_agent_level_1,1,0,0,0

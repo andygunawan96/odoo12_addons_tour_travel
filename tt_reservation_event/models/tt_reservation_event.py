@@ -354,7 +354,7 @@ class ReservationEvent(models.Model):
                             balance_due += scs['amount'] * scs['pax_count']
 
                             # Cost Service Charge
-                            self.env['tt.service.charge'].create({
+                            sc_id = self.env['tt.service.charge'].create({
                                 'provider_event_booking_id': book_obj.provider_booking_ids[0].id,
                                 'charge_code': scs['charge_code'],
                                 'charge_type': scs['charge_type'],
@@ -366,9 +366,10 @@ class ReservationEvent(models.Model):
                                 'description': book_obj.pnr and book_obj.pnr or '',
                                 'commission_agent_id': scs['commission_agent_id'],
                             })
+                            pax_event_id.update({'cost_service_charge_ids': [(4, sc_id.id)]})
 
                         # Sale Service Charge
-                        sc_id = self.env['tt.service.charge'].create({
+                        self.env['tt.service.charge'].create({
                             'booking_event_id': book_obj.id,
                             # 'cost_service_charge_ids': [(4, pax_event_id.id)],
                             'charge_code': scs['charge_code'],
@@ -381,7 +382,6 @@ class ReservationEvent(models.Model):
                             'description': book_obj.pnr and book_obj.pnr or '',
                             'commission_agent_id': scs['commission_agent_id'],
                         })
-                        pax_event_id.update({'cost_service_charge_ids': [(4, sc_id.id)]})
 
             # Create Provider Ids
             prov_event_id['balance_due'] = balance_due  # di PNR
@@ -1016,6 +1016,7 @@ class TtReservationEventOption(models.Model):
     ticket_number = fields.Char('Ticket Number')
     ticket_file_ids = fields.Many2many('tt.upload.center', 'reservation_event_ticket_rel', 'reservation_event_id', 'ticket_id', 'Tickets')
     validator_sequence = fields.Char('Sequence')
+    passenger_ids = fields.One2many('tt.reservation.passenger.event', 'option_id', 'Passengers')
 
     def to_dict(self):
         a = self.read(['ticket_number', 'validator_sequence'])
