@@ -1349,7 +1349,7 @@ class PrintoutInvoice(models.AbstractModel):
             #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
             #     })
         else:
-            a = {'descs': self.format_description(line.desc), 'pnr': line.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            a = {'descs': self.format_description(line.desc), 'pnr': line.pnr.split(',') if line.pnr else '', 'line_detail': [], 'total_after_tax': line.total_after_tax}
             for line_detail in line.invoice_line_detail_ids:
                 a['line_detail'].append({
                     'name': line_detail.desc,
