@@ -717,13 +717,14 @@ class TtReportDashboard(models.Model):
                     }
                     if current_id not in passed_resv_id_list:
                         temp_dict['profit'] += i['channel_profit']
+                        temp_dict['revenue'] += i['channel_profit']
                         passed_resv_id_list.append(current_id)
 
                     # add to summary_customer
                     summary_customer.append(temp_dict)
                 else:
                     # data is exist, so we only need to update existing data yey
-                    summary_customer[customer_index]['revenue'] += i['amount']
+                    summary_customer[customer_index]['revenue'] += i['amount'] + i['channel_profit']
                     summary_customer[customer_index]['reservation'] += 1
                     if current_id not in passed_resv_id_list:
                         summary_customer[customer_index]['profit'] += i['channel_profit']
@@ -739,7 +740,7 @@ class TtReportDashboard(models.Model):
                     temp_dict = {
                         'customer_parent_id': i['customer_parent_id'],
                         'customer_parent_name': i['customer_parent_name'],
-                        'revenue': i['amount'],
+                        'revenue': i['amount'] + i['channel_profit'],
                         'profit': i['channel_profit'],
                         'reservation': 1
                     }
@@ -747,7 +748,7 @@ class TtReportDashboard(models.Model):
                     # add to summary_customer_parent
                     summary_customer_parent.append(temp_dict)
                 else:
-                    summary_customer_parent[customer_parent_index]['revenue'] += i['amount']
+                    summary_customer_parent[customer_parent_index]['revenue'] += i['amount'] + i['channel_profit']
                     summary_customer_parent[customer_parent_index]['reservation'] += 1
                     summary_customer_parent[customer_parent_index]['profit'] += i['channel_profit']
 
@@ -910,7 +911,7 @@ class TtReportDashboard(models.Model):
                         'agent_type_id': i['agent_type_id'],
                         'agent_name': i['agent_name'],
                         'agent_type_name': i['agent_type_name'],
-                        'revenue': i['amount'],
+                        'revenue': i['amount'] + i['channel_profit'],
                         'profit': i['channel_profit'],
                         'reservation': 1
                     }
@@ -918,7 +919,7 @@ class TtReportDashboard(models.Model):
                     summary_chanel.append(temp_dict)
                 else:
                     # data exist
-                    summary_chanel[person_index]['revenue'] += i['amount']
+                    summary_chanel[person_index]['revenue'] += i['amount'] + i['channel_profit']
                     summary_chanel[person_index]['reservation'] += 1
                     summary_chanel[person_index]['profit'] += i['channel_profit']
 
@@ -1125,10 +1126,10 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount']
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
 
                         # add to global variable
-                        total += i['amount']
+                        total += i['amount'] + i['channel_profit']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -1138,8 +1139,8 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                        total += i['amount']
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -1187,7 +1188,7 @@ class TtReportDashboard(models.Model):
                             'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
                             'counter': 1,
                             i['reservation_state']: 1,
-                            'total_price': 0,
+                            'total_price': i['channel_profit'],
                             'total_commission': i['channel_profit']
                         }
                     else:
@@ -1195,7 +1196,7 @@ class TtReportDashboard(models.Model):
                             'provider': i['provider_type_name'],
                             'counter': 1,
                             i['reservation_state']: 1,
-                            'total_price': 0,
+                            'total_price': i['channel_profit'],
                             'total_commission': i['channel_profit']
                         }
                     summary_provider.append(temp_dict)
@@ -1206,6 +1207,7 @@ class TtReportDashboard(models.Model):
                             summary_provider[provider_index][i['reservation_state']] += 1
                         except:
                             summary_provider[provider_index][i['reservation_state']] = 1
+                        summary_provider[provider_index]['total_price'] += i['channel_profit']
                         summary_provider[provider_index]['total_commission'] += i['channel_profit']
                 reservation_id_list_issued[i['provider_type_name']].append(i['reservation_id'])
 
@@ -1822,8 +1824,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             # add the first profit if ledger type is 3 a.k.a commission
                             if i['ledger_transaction_type'] == 3:
@@ -1843,8 +1845,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -2725,8 +2727,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             # add the first profit if ledger type is 3 a.k.a commission
                             if i['ledger_transaction_type'] == 3:
@@ -2754,8 +2756,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -3262,8 +3264,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -3290,8 +3292,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -3761,8 +3763,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -3789,8 +3791,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -4132,8 +4134,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -4160,8 +4162,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -4501,8 +4503,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -4529,8 +4531,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -4871,8 +4873,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -4899,8 +4901,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -5232,8 +5234,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -5260,8 +5262,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -5594,8 +5596,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -5622,8 +5624,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -5965,8 +5967,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -5993,8 +5995,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -6312,8 +6314,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -6340,8 +6342,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -6671,8 +6673,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -6699,8 +6701,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -7029,8 +7031,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -7057,8 +7059,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -7423,8 +7425,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             # add the first profit if ledger type is 3 a.k.a commission
                             if i['ledger_transaction_type'] == 3:
@@ -7452,8 +7454,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -7956,8 +7958,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -7984,8 +7986,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -8314,8 +8316,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -8342,8 +8344,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -8672,8 +8674,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -8700,8 +8702,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -9030,8 +9032,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -9058,8 +9060,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -9388,8 +9390,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
@@ -9416,8 +9418,8 @@ class TtReportDashboard(models.Model):
                             splits = i['reservation_issued_date'].split("-")
                             day_index = int(splits[2]) - 1
                             summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
-                            total += i['amount']
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
                             num_data += 1
                             if i['ledger_transaction_type'] == 3:
                                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
