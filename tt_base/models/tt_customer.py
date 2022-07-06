@@ -265,6 +265,8 @@ class TtCustomer(models.Model):
                     if psg.get('identity'):
                         for key,identity in psg['identity'].items():
                             current_passenger.add_or_update_identity(identity)
+                    if psg.get('ff_numbers'):
+                        current_passenger.add_or_ff_number(psg['ff_numbers'])
                 else:
                     raise RequestException(1024)
             else:
@@ -293,6 +295,8 @@ class TtCustomer(models.Model):
                 if psg.get('identity'):
                     for identity_key, identity in psg['identity'].items():
                         psg_obj.add_or_update_identity(identity)
+                if psg.get('ff_numbers'):
+                    psg_obj.add_or_ff_number(psg['ff_numbers'])
 
             return ERR.get_no_error(result_psg.to_dict())
         except:
