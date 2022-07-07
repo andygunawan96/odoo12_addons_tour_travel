@@ -16,7 +16,7 @@ username = 'rodexskytors@gmail.com'
 password = 'Ivanivanivan1!'
 database_id = 545518
 
-class AccountingConnector(models.Model):
+class AccountingConnectorAccurate(models.Model):
     _name = 'tt.accounting.connector.accurate'
     _description = 'Accounting Connector Accurate'
 
