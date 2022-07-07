@@ -133,6 +133,8 @@ class TtReservation(models.Model):
     total_commission = fields.Monetary(string='Total Commission', default=0, compute='_compute_total_commission',store=True)
     total_nta = fields.Monetary(string='NTA Amount',compute='_compute_total_nta',store=True)
     agent_nta = fields.Monetary(string='Agent NTA Amount',compute='_compute_agent_nta',store=True)
+    parent_agent_commission = fields.Monetary(string='Parent Agent Commission', default=0, compute='_compute_parent_agent_commission',store=True)
+    ho_commission = fields.Monetary(string='HO Commission', default=0, compute='_compute_ho_commission',store=True)
 
     # yang jual
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
@@ -661,6 +663,24 @@ class TtReservation(models.Model):
                 if sale.charge_code == 'rac' and sale.charge_type == 'RAC':
                     agent_nta_total += sale.total
             rec.agent_nta = agent_nta_total + rec.total
+
+    @api.depends("sale_service_charge_ids")
+    def _compute_parent_agent_commission(self):
+        for rec in self:
+            commission_total = 0
+            for sale in rec.sale_service_charge_ids:
+                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != self.env.ref('tt_base.rodex_ho').id:
+                    commission_total += abs(sale.total)
+            rec.parent_agent_commission = commission_total
+
+    @api.depends("sale_service_charge_ids")
+    def _compute_ho_commission(self):
+        for rec in self:
+            commission_total = 0
+            for sale in rec.sale_service_charge_ids:
+                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    commission_total += abs(sale.total)
+            rec.ho_commission = commission_total
 
     def cancel_payment(self, req, context): # cancel di gabung karena sama semua kalau create payment beda" per reservasi karena di panggil waktu issued
         book_obj = self.env['tt.reservation.%s' % PROVIDER_TYPE_SELECTION[req['order_number'].split('.')[0]]].search([('name', '=', req['order_number'])])
