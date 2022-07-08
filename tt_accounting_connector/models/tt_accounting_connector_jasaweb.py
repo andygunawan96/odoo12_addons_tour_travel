@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 url = 'https://accounting.rodextrip.com'
 
 
-class AccountingConnector(models.Model):
+class AccountingConnectorJasaweb(models.Model):
     _name = 'tt.accounting.connector.jasaweb'
     _description = 'Accounting Connector Jasaweb'
 
