@@ -16,6 +16,7 @@ class AccountingConnectorITM(models.Model):
     _name = 'tt.accounting.connector.itm'
     _description = 'Accounting Connector ITM'
 
+    # cuma support airline for now
     def add_sales_order(self, vals):
         headers = {
             'Content-Type': 'application/json',
