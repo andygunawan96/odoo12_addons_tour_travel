@@ -40,7 +40,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="action_send_to_vendor" states="new,failed"
+                    <button name="action_send_to_vendor" states="new,failed,partial"
                             groups="tt_base.group_after_sales_master_level_4"
                             string="Send Manually to Vendor" type="object" class="oe_highlight"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,success"/>

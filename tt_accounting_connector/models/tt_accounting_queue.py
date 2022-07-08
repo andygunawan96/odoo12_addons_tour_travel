@@ -21,7 +21,7 @@ class TtAccountingQueue(models.Model):
     transport_type = fields.Char('Transport Type', readonly=True)
     res_model = fields.Char('Related Model', readonly=True)
     res_id = fields.Integer('Related ID', index=True, help='Id of the followed resource')
-    state = fields.Selection([('new', 'New'), ('success', 'Success'), ('failed', 'Failed')], 'State', default='new', readonly=True)
+    state = fields.Selection([('new', 'New'), ('success', 'Success'), ('failed', 'Failed'), ('partial', 'Partial')], 'State', default='new', readonly=True)
     send_uid = fields.Many2one('res.users', 'Last Sent By', readonly=True)
     send_date = fields.Datetime('Last Sent Date', readonly=True)
     action = fields.Char('Action', readonly=True)
@@ -90,12 +90,41 @@ class TtAccountingQueue(models.Model):
                         led.sudo().write({
                             'is_sent_to_acc': True
                         })
+                prov_book_list = []
+                for prov in trans_obj.provider_booking_ids:
+                    temp_prov_dict = prov.to_dict()
+                    temp_prov_price_dict = {
+                        'agent_nta': 0,
+                        'total_nta': 0,
+                        'parent_agent_commission': 0,
+                        'ho_commission': 0,
+                        'total_commission': 0
+                    }
+                    for sale in prov.cost_service_charge_ids:
+                        if sale.charge_code == 'rac' and sale.charge_type == 'RAC':
+                            temp_prov_price_dict['agent_nta'] += abs(sale.total)
+                        elif sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != self.env.ref('tt_base.rodex_ho').id:
+                            temp_prov_price_dict['parent_agent_commission'] += abs(sale.total)
+                        elif sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                            temp_prov_price_dict['ho_commission'] += abs(sale.total)
+                        elif sale.charge_type == 'RAC':
+                            temp_prov_price_dict['total_commission'] += abs(sale.total)
+                        elif sale.charge_type not in ['DISC']:
+                            temp_prov_price_dict['total_nta'] += abs(sale.total)
+                            temp_prov_price_dict['agent_nta'] += abs(sale.total)
+                        else:
+                            temp_prov_price_dict['agent_nta'] += abs(sale.total)
+                    temp_prov_dict.update(temp_prov_price_dict)
+                    prov_book_list.append(temp_prov_dict)
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'total_nta': trans_obj.total_nta or 0,
+                    'parent_agent_commission': trans_obj.parent_agent_commission or 0,
+                    'ho_commission': trans_obj.ho_commission or 0,
+                    'total_commission': trans_obj.total_commission or 0,
                     'payment_acquirer': pay_acq and pay_acq.jasaweb_name or '',
                     'provider_type_name': trans_obj.provider_type_id and trans_obj.provider_type_id.name or '',
-                    'provider_bookings': [prov.to_dict() for prov in trans_obj.provider_booking_ids],
+                    'provider_bookings': prov_book_list,
                     'ledgers': ledger_list,
                     'category': 'reservation'
                 })
@@ -213,6 +242,9 @@ class TtAccountingQueue(models.Model):
                     'customer_parent_name': trans_obj.customer_parent_id and trans_obj.customer_parent_id.name or '',
                     'customer_parent_type': trans_obj.customer_parent_type_id and trans_obj.customer_parent_type_id.name or '',
                     'total_nta': trans_obj.total_nta or 0,
+                    'parent_agent_commission': trans_obj.parent_agent_commission or 0,
+                    'ho_commission': trans_obj.ho_commission or 0,
+                    'total_commission': trans_obj.total_commission or 0,
                     'commission_booker': trans_obj.booker_insentif or 0,
                     'payment_acquirer': pay_acq and pay_acq.jasaweb_name or '',
                     'provider_type_name': trans_obj.provider_type_id and trans_obj.provider_type_id.name or '',
