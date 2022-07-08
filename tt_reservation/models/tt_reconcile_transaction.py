@@ -220,7 +220,7 @@ class TtReconcileTransaction(models.Model):
             for line in self.reconcile_lines_ids:
                 if line.state == 'cancel':
                     continue
-                elif line.type in ['nta', 'admin_bank', 'reissue', 'other','reversal']:
+                elif line.type in ['nta', 'admin_bank', 'reissue', 'other','reversal_top_up']:
                     end_balance -= line.total
                 else:
                     end_balance += line.total
@@ -242,14 +242,15 @@ class TtReconcileTransactionLines(models.Model):
     pnr = fields.Char('PNR',readonly=True)
     transaction_code = fields.Char('Transaction Code',readonly=True)
     type = fields.Selection([('nta','NTA'),
-                             ('insentif','Insentif'),
-                             ('refund_ssr','Refund SSR'),
-                             ('top_up','Top Up'),
-                             ('admin_bank','Admin Fee Bank'),
-                             ('refund','Refund'),
-                             ('reissue','ReIssue'),
-                             ('reissue_ssr','ReIssue SSR'),
-                             ('reversal','Reversal'),
+                             ('insentif','Insentif'),# saldo bertambah
+                             ('refund_ssr','Refund SSR'),# saldo bertambah
+                             ('top_up','Top Up'),# saldo bertambah
+                             ('admin_bank','Admin Fee Bank'),# saldo berkurang
+                             ('refund','Refund'),# saldo bertambah
+                             ('reissue','ReIssue'),# saldo berkurang
+                             ('reissue_ssr','ReIssue SSR'),# saldo berkurang
+                             ('reversal','Reversal'),# saldo bertambah
+                             ('reversal_top_up','Reversal Top Up'),# saldo berkurang
                              ('other','Other')],'Type', readonly=True)
     booking_time = fields.Datetime('Booking Time',readonly=True)
     issued_time = fields.Datetime('Issued Time',readonly=True)
