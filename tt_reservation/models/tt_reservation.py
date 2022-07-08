@@ -666,19 +666,21 @@ class TtReservation(models.Model):
 
     @api.depends("sale_service_charge_ids")
     def _compute_parent_agent_commission(self):
+        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != self.env.ref('tt_base.rodex_ho').id:
+                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != id_ho:
                     commission_total += abs(sale.total)
             rec.parent_agent_commission = commission_total
 
     @api.depends("sale_service_charge_ids")
     def _compute_ho_commission(self):
+        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == id_ho:
                     commission_total += abs(sale.total)
             rec.ho_commission = commission_total
 
