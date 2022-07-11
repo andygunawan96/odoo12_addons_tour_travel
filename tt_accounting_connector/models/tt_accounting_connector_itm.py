@@ -79,7 +79,8 @@ class AccountingConnectorITM(models.Model):
                         })
 
                     if request.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] + request['total_channel_upsell'] or 0
+                        prov_channel_upsell = request['total_channel_upsell'] / len(request['provider_bookings'])
+                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] + prov_channel_upsell or 0
                     else:
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
                     provider_list.append({
