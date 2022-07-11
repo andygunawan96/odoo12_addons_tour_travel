@@ -1,0 +1,151 @@
+<odoo>
+    <record model="ir.ui.view" id="tt_master_activity_lines_view_form">
+        <field name="name">tt.master.activity.lines.view.form</field>
+        <field name="model">tt.master.activity.lines</field>
+        <field name="arch" type="xml">
+            <form string="" create="false" edit="false">
+                <div class="oe_button_box" name="button_box">
+                    <button name="toggle_active" type="object"
+                            class="oe_stat_button" icon="fa-archive"
+                            groups="tt_base.group_master_data_activity_level_3">
+                        <field name="active" widget="boolean_button"
+                               options='{"terminology": "archive"}'/>
+                    </button>
+                </div>
+                <group>
+                    <group>
+                        <field name="uuid"/>
+                        <field name="name"/>
+                        <field name="description"/>
+                        <label for="durationDays" string="Duration"/>
+                        <div>
+                            <field name="durationDays" class="oe_inline"/> days
+                            <field name="durationHours" class="oe_inline"/> hours
+                            <field name="durationMinutes" class="oe_inline"/> minutes
+                        </div>
+                        <field name="advanceBookingDays"/>
+                    </group>
+                    <group>
+                        <field name="minimumSellingPrice"/>
+                        <label for="minPax" string="Booking Limit"/>
+                        <div>
+                            <field name="minPax" class="oe_inline"/> -
+                            <field name="maxPax" class="oe_inline"/> person(s)
+                        </div>
+                        <field name="isNonRefundable"/>
+                        <field name="timeslot_ids">
+                            <tree>
+                                <field name="startTime"/>
+                                <field name="endTime"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="uuid"/>
+                                    <field name="startTime"/>
+                                    <field name="endTime"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </group>
+                <group>
+                    <field name="option_ids">
+                        <tree>
+                            <field name="name"/>
+                            <field name="inputType"/>
+                            <field name="type"/>
+                            <field name="price"/>
+                            <field name="items"/>
+                        </tree>
+                    </field>
+                </group>
+                <group>
+                    <field name="voucherUse"/>
+                    <field name="voucherRedemptionAddress"/>
+                </group>
+                <group>
+                    <group>
+                        <field name="voucherRequiresPrinting"/>
+                        <field name="voucher_validity_type"/>
+                    </group>
+                    <group>
+                        <field name="voucher_validity_days"/>
+                        <field name="voucher_validity_date"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="meetingLocation"/>
+                    <field name="meetingAddress"/>
+                    <field name="meetingTime"/>
+                    <field name="cancellationPolicies"/>
+                    <field name="instantConfirmation"/>
+                </group>
+                <separator string="Stock Keeping Units"/>
+                <field name="sku_ids">
+                    <tree>
+                        <field name="sku_id"/>
+                        <field name="title"/>
+                        <field name="pax_type"/>
+                        <field name="minPax"/>
+                        <field name="maxPax"/>
+                        <field name="minAge"/>
+                        <field name="maxAge"/>
+                    </tree>
+                    <form>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object"
+                                    class="oe_stat_button" icon="fa-archive"
+                                    groups="tt_base.group_master_data_activity_level_3">
+                                <field name="active" widget="boolean_button"
+                                       options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="sku_id"/>
+                                <field name="title"/>
+                                <field name="pax_type"/>
+                                <field name="add_information"/>
+                            </group>
+                            <group>
+                                <field name="minPax"/>
+                                <field name="maxPax"/>
+                                <field name="minAge"/>
+                                <field name="maxAge"/>
+                            </group>
+                        </group>
+                    </form>
+                </field>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_master_activity_lines_view_tree" >
+        <field name="name">tt.master.activity.lines.view.tree</field>
+        <field name="model">tt.master.activity.lines</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="uuid"/>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="option_ids"/>
+                <field name="instantConfirmation"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_master_activity_lines_view_action">
+        <field name="name">Master Activity Lines</field>
+        <field name="res_model">tt.master.activity.lines</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_master_activity_lines_view_form',
+            'tree_view_ref': 'tt_reservation_activity.tt_master_activity_lines_view_tree',
+            }
+        </field>
+    </record>
+</odoo>
