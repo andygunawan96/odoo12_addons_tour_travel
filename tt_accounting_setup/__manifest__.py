@@ -19,6 +19,7 @@ Key Features
     'data': [
         'security/ir.model.access.csv',
         'views/tt_accounting_setup_views.xml',
+        'views/tt_accounting_setup_variables_views.xml'
     ],
     'demo': [],
     'qweb': [],
