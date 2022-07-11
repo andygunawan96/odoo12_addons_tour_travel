@@ -7,9 +7,9 @@ import time
 from datetime import datetime
 
 _logger = logging.getLogger(__name__)
-url = 'http://cloud1.suvarna-mi.com:1293/Data15/RunTravelfileV3'
-live_id = 'b02849bd-788f-401e-a039-9afba72e3c9d'
-product_code = 'AVINTBSP'
+# url = 'http://cloud1.suvarna-mi.com:1293/Data15/RunTravelfileV3'
+# live_id = 'b02849bd-788f-401e-a039-9afba72e3c9d'
+# product_code = 'AVINTBSP'
 
 
 class AccountingConnectorITM(models.Model):
@@ -18,6 +18,11 @@ class AccountingConnectorITM(models.Model):
 
     # cuma support airline for now
     def add_sales_order(self, vals):
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', 'url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in ITM Accounting Setup!')
+
+        url = url_obj.variable_value
         headers = {
             'Content-Type': 'application/json',
         }
@@ -35,6 +40,15 @@ class AccountingConnectorITM(models.Model):
         return res
 
     def request_parser(self, request):
+        live_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', 'live_id')], limit=1)
+        if not live_id_obj:
+            raise Exception('Please provide a variable with the name "live_id" in ITM Accounting Setup!')
+        product_code_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', 'product_code')], limit=1)
+        if not product_code_obj:
+            raise Exception('Please provide a variable with the name "product_code" in ITM Accounting Setup!')
+
+        live_id = live_id_obj.variable_value
+        product_code = product_code_obj.variable_value
         if request['category'] == 'reservation':
             pnr_list = request.get('pnr') and request['pnr'].split(', ') or []
             provider_list = []
@@ -64,6 +78,10 @@ class AccountingConnectorITM(models.Model):
                             "Nationality": "ID"
                         })
 
+                    if request.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] + request['total_channel_upsell'] or 0
+                    else:
+                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
                     provider_list.append({
                         "ItemNo": idx+1,
                         "ProductCode": product_code,
@@ -73,10 +91,10 @@ class AccountingConnectorITM(models.Model):
                         "Description": prov['pnr'],
                         "Quantity": 1,
                         "Cost": prov.get('agent_nta', 0),
-                        "Profit": prov.get('ho_commission') and (prov['ho_commission'] - (prov['ho_commission'] * 9.9099 / 100)) or 0,
+                        "Profit": ho_prof - (ho_prof * 9.9099 / 100),
                         "ServiceFee": 0,
-                        "VAT": prov.get('ho_commission', 0) * 9.9099 / 100,
-                        "Sales": prov.get('agent_nta') and (prov['agent_nta'] - (prov.get('ho_commission', 0) * 9.9099 / 100)) or 0,
+                        "VAT": ho_prof * 9.9099 / 100,
+                        "Sales": prov.get('agent_nta') and (prov['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0,
                         "Itin": journey_list,
                         "Pax": pax_list
                     })

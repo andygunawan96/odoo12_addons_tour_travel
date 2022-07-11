@@ -21,9 +21,38 @@ class TtAccountingSetup(models.Model):
     active = fields.Boolean('Active', default='True')
     is_send_topup = fields.Boolean('Send Top Up Transaction', default=False)
     is_send_refund = fields.Boolean('Send Refund Transaction', default=False)
+    variable_ids = fields.One2many('tt.accounting.setup.variables', 'accounting_setup_id', 'Variables')
 
     @api.depends('accounting_provider')
     @api.onchange('accounting_provider')
     def _compute_display_name(self):
         for rec in self:
             rec.display_name = dict(self._fields['accounting_provider'].selection).get(self.accounting_provider)
+
+    def copy_setup(self):
+        new_setup_obj = self.copy()
+
+        variables_ids = []
+        new_setup_obj.sudo().write({
+            'other_info_ids': [(6, 0, variables_ids)]
+        })
+
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        action_num = self.env.ref('tt_accounting_connector.tt_accounting_setup_action_view').id
+        menu_num = self.env.ref('tt_accounting_connector.menu_administration_accounting_setup').id
+        return {
+            'type': 'ir.actions.act_url',
+            'name': new_setup_obj.name,
+            'target': 'self',
+            'url': base_url + "/web#id=" + str(new_setup_obj.id) + "&action=" + str(
+                action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
+        }
+
+
+class TtAccountingSetupVariables(models.Model):
+    _name = 'tt.accounting.setup.variables'
+    _description = 'Tour & Travel - Accounting Setup Variables'
+
+    accounting_setup_id = fields.Many2one('tt.accounting.setup', 'Accounting Setup')
+    variable_name = fields.Char('Variable Name')
+    variable_value = fields.Char('Variable Value')

@@ -46,6 +46,7 @@
                             </group>
                         </group>
                         <separator string="Send Transactions"/>
+                        <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Only Airline transactions can be sent.</p>
                         <group>
                             <group>
                                 <field name="is_send_topup"/>
@@ -54,6 +55,11 @@
                                 <field name="is_send_refund"/>
                             </group>
                         </group>
+                        <separator string="Variables"/>
+                        <p attrs="{'invisible': [('accounting_provider', '!=', 'jasaweb')]}">Jasaweb: Provide 'url', 'usr', and 'pwd'.</p>
+                        <p attrs="{'invisible': [('accounting_provider', '!=', 'accurate')]}">Accurate: Provide 'url', 'client_id', 'client_secret', 'url_redirect_web', 'username', 'password', and 'database_id'.</p>
+                        <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Provide 'url', 'live_id', and 'product_code'.</p>
+                        <field name="variable_ids"/>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>

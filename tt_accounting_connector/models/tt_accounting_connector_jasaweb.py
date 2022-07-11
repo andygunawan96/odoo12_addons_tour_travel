@@ -4,7 +4,9 @@ import requests
 import json
 
 _logger = logging.getLogger(__name__)
-url = 'https://accounting.rodextrip.com'
+# url = 'https://accounting.rodextrip.com'
+# usr = 'rodexapi'
+# pwd = 'rodexapi'
 
 
 class AccountingConnectorJasaweb(models.Model):
@@ -12,12 +14,31 @@ class AccountingConnectorJasaweb(models.Model):
     _description = 'Accounting Connector Jasaweb'
 
     def acc_login(self):
-        auth = {'usr': 'rodexapi', 'pwd': 'rodexapi'}
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in Jasaweb Accounting Setup!')
+        usr_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'usr')], limit=1)
+        if not usr_obj:
+            raise Exception('Please provide a variable with the name "usr" in Jasaweb Accounting Setup!')
+        pwd_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'pwd')], limit=1)
+        if not pwd_obj:
+            raise Exception('Please provide a variable with the name "pwd" in Jasaweb Accounting Setup!')
+
+        url = url_obj.variable_value
+        usr = usr_obj.variable_value
+        pwd = pwd_obj.variable_value
+        auth = {'usr': usr, 'pwd': pwd}
         res = requests.post(url + '/api/method/login', data=auth)
         _logger.info(res)
         return res
 
     def get_sales_order(self):
+        url_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in Jasaweb Accounting Setup!')
+
+        url = url_obj.variable_value
         # ses = requests.Session()
         cookies = False
         login_res = self.acc_login()
@@ -34,6 +55,12 @@ class AccountingConnectorJasaweb(models.Model):
         return res
 
     def add_sales_order(self, vals):
+        url_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in Jasaweb Accounting Setup!')
+
+        url = url_obj.variable_value
         # ses = requests.Session()
         cookies = False
         login_res = self.acc_login()
