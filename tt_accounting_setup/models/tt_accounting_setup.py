@@ -32,17 +32,19 @@ class TtAccountingSetup(models.Model):
     def copy_setup(self):
         new_setup_obj = self.copy()
 
-        variables_ids = []
-        new_setup_obj.sudo().write({
-            'other_info_ids': [(6, 0, variables_ids)]
-        })
+        for rec in self.variable_ids:
+            self.env['tt.accounting.setup.variables'].create({
+                'accounting_setup_id': new_setup_obj.id,
+                'variable_name': rec.variable_name or '',
+                'variable_value': rec.variable_value or ''
+            })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        action_num = self.env.ref('tt_accounting_connector.tt_accounting_setup_action_view').id
-        menu_num = self.env.ref('tt_accounting_connector.menu_administration_accounting_setup').id
+        action_num = self.env.ref('tt_accounting_setup.tt_accounting_setup_action_view').id
+        menu_num = self.env.ref('tt_accounting_setup.menu_administration_accounting_setup').id
         return {
             'type': 'ir.actions.act_url',
-            'name': new_setup_obj.name,
+            'name': new_setup_obj.display_name,
             'target': 'self',
             'url': base_url + "/web#id=" + str(new_setup_obj.id) + "&action=" + str(
                 action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
