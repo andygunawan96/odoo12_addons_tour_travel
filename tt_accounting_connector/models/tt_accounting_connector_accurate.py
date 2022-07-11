@@ -42,6 +42,11 @@ class AccountingConnectorAccurate(models.Model):
         database_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'database_id')], limit=1)
         if not database_id_obj:
             raise Exception('Please provide a variable with the name "database_id" in Accurate Accounting Setup!')
+        else:
+            try:
+                database_id = int(database_id_obj.variable_value)
+            except:
+                raise Exception('The "database_id" variable value in Accurate Accounting Setup must be integer!')
 
         url = url_obj.variable_value
         client_id = client_id_obj.variable_value
@@ -49,7 +54,6 @@ class AccountingConnectorAccurate(models.Model):
         url_redirect_web = url_redirect_web_obj.variable_value
         username = username_obj.variable_value
         password = password_obj.variable_value
-        database_id = database_id_obj.variable_value
 
         ##page login get jsessionid
         res = requests.post('%s/oauth/authorize?client_id=%s&response_type=code&redirect_uri=%s&scope=customer_save customer_view customer_delete item_save glaccount_view glaccount_save glaccount_delete sales_invoice_view sales_invoice_save sales_receipt_save' % (url,client_id, url_redirect_web))
