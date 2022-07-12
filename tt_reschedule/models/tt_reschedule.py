@@ -84,9 +84,9 @@ class TtRescheduleLine(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', related='reschedule_id.agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('id', '=', -1)], readonly=True, states={'confirm': [('readonly', False)]})
-    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="")
-    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="")
-    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="")
+    admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True, compute="_compute_admin_fee", store=True)
+    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
+    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
     sequence = fields.Integer('Sequence', default=50, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, readonly=True)
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'),
@@ -120,11 +120,6 @@ class TtRescheduleLine(models.Model):
             'currency': self.currency_id.name if self.currency_id else '',
             'state': self.state
         }
-
-    def compute_all_admin_fee_reschedule_line(self):
-        reschedule_line_objs = self.env['tt.reschedule.line'].search([])
-        for rec in reschedule_line_objs:
-            rec._compute_admin_fee()
 
     @api.depends('admin_fee_id', 'reschedule_amount', 'reschedule_id')
     @api.onchange('admin_fee_id', 'reschedule_amount', 'reschedule_id')
@@ -400,11 +395,6 @@ class TtReschedule(models.Model):
             for rec2 in rec.new_segment_ids:
                 pnr += rec2.pnr and rec2.pnr + ',' or ''
             rec.pnr = pnr and pnr[:-1] or ''
-
-    def compute_all_admin_fee_reschedule(self):
-        reschedule_objs = self.env['tt.reschedule'].search([])
-        for rec in reschedule_objs:
-            rec._compute_admin_fee()
 
     @api.depends('reschedule_line_ids')
     @api.onchange('reschedule_line_ids')
