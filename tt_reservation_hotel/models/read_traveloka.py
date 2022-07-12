@@ -290,14 +290,14 @@ class HotelInformation(models.Model):
         # setiap geo_list
 
         # for type in ['geo_list', 'property_list']:
-        for type in ['geo_list']:
+        for type in ['property_list']:
             search_req = {
                 'provider': 'traveloka_hotel',
                 'type': type,
                 'limit': 100,
                 'offset': 100,
-                'codes': ['ID', 'SG', 'MY', 'HK', 'TH', 'PH', 'VN', 'KH', 'LA'],
-                # 'codes': ['ID',],
+                # 'codes': ['ID', 'SG', 'MY', 'HK', 'TH', 'PH', 'VN', 'KH', 'LA'],
+                'codes': ['AU', 'AE', 'GR', 'CH', 'GB', 'DE', 'FR', 'DE', 'IT', 'US', 'KR', 'TR', 'JP', 'CA',],
             }
             a = API_CN_HOTEL.get_record_by_api(search_req, api_context)
             # f2 = open('/var/log/tour_travel/traveloka_hotel/cache/2_AdminGW/edb093e3d658475394105f33926a1be8_VendorContent_geo_list_fmt_RESP_2.json','r')
@@ -328,7 +328,7 @@ class HotelInformation(models.Model):
 
                         for dict_key, dict_value in a['response'].items():
                             _logger.info("Write File " + rec)
-                            file_url = base_cache_directory + 'traveloka/' + rec
+                            file_url = base_cache_directory + 'traveloka_api/' + rec
                             self.split_per_city(dict_value, file_url)
             else:
                 for x in a['response'].keys():

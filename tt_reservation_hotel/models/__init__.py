@@ -23,6 +23,7 @@ from . import tt_reservation_hotel
 from . import tt_reservation_hotel_details
 from . import tt_reservation_passenger_hotel
 from . import tt_refund_wizard
+from . import tt_cron_log
 
 ###### Data Pelengkap FrontEnd ######
 # from . import res_config
