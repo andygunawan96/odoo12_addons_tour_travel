@@ -166,3 +166,11 @@ class ReservationAirline(models.Model):
         super(ReservationAirline, self).action_issued_airline(data)
         if not self.is_invoice_created:
             self.action_create_invoice(data)
+
+    def update_pnr_provider_airline_api(self, req, context):
+        resp = super(ReservationAirline, self).update_pnr_provider_airline_api(req, context)
+        updated_obj = self.browse(resp['response']['book_id'])
+        if updated_obj.is_invoice_created:
+            for inv_obj in updated_obj.invoice_line_ids:
+                inv_obj.pnr = updated_obj.pnr
+        return resp

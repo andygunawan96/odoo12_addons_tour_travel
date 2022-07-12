@@ -60,7 +60,10 @@ class Country(models.Model):
     def find_country_by_name(self, str_name, limit=1):
         if str_name:
             str_name = str_name.rstrip()
-            found = self.search(['|', ('name', '=ilike', str_name), ('code', '=ilike', str_name)], limit=limit)
+            search_params = [('name','=ilike',str_name)]
+            if len(str_name) == 2:
+                search_params = ['|',search_params[0],('code','=ilike',str_name)]
+            found = self.search(search_params, limit=limit)
             if len(found) < limit:
                 for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
                     found += rec.country_id
@@ -100,7 +103,7 @@ class CountryState(models.Model):
     _description = 'Tour & Travel - Res Country State'
 
     city_ids = fields.One2many('res.city', 'state_id', string='Cities')
-    provide_code_ids = fields.One2many('tt.provider.code', 'state_id', string='Provide Code')
+    provider_code_ids = fields.One2many('tt.provider.code', 'state_id', string='Provide Code')
     active = fields.Boolean('Active', default=True)
 
     other_name_ids = fields.One2many('tt.destination.alias', 'state_id', 'Dest. Alias', help='Destination Alias or Other Name')
@@ -124,7 +127,7 @@ class CountryCity(models.Model):
     code = fields.Char('Internal Code', help="Code for internal channel")
     district_ids = fields.One2many('res.district', 'city_id', string='Districts')
     country_id = fields.Many2one('res.country', string='Country')
-    provide_code_ids = fields.One2many('tt.provider.code', 'city_id', string='Provide Code')
+    provider_code_ids = fields.One2many('tt.provider.code', 'city_id', string='Provide Code')
     active = fields.Boolean('Active', default=True)
 
     other_name_ids = fields.One2many('tt.destination.alias', 'city_id', 'Dest. Alias', help='Destination Alias or Other Name')

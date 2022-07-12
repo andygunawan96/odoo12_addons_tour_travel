@@ -2162,7 +2162,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
 
-            if data['context']['active_model'] == 'tt.reservation.airline':
+            if data['context']['active_model'] in ['tt.reservation.airline','tt.reservation.train']:
                 for psg in rec.passenger_ids:
                     total_price_pax = 0
                     pax_type = psg.cost_service_charge_ids[-1].pax_type # Notes Pax type bisa jadi slah first bisa di isi SSR

@@ -35,7 +35,7 @@
                             <field name="city_ids"/>
                         </page>
                         <page id="provider_code_page" string="Provider Code(s)">
-                            <field name="provide_code_ids"/>
+                            <field name="provider_code_ids"/>
                         </page>
                     </notebook>
                 </sheet>
