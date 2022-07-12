@@ -2162,7 +2162,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values[rec.id] = []
 
-            if data['context']['active_model'] in ['tt.reservation.airline','tt.reservation.train']:
+            if data['context']['active_model'] == 'tt.reservation.airline':
                 for psg in rec.passenger_ids:
                     total_price_pax = 0
                     pax_type = psg.cost_service_charge_ids[-1].pax_type # Notes Pax type bisa jadi slah first bisa di isi SSR
@@ -2219,6 +2219,33 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     'add_ssr': "",  # Add SSR
                     'price_total': customer_grand_total,
                 })
+            elif data['context']['active_model'] == 'tt.reservation.train':
+                for psg in rec.passenger_ids:
+                    total_price_pax = 0
+                    pax_type = psg.cost_service_charge_ids[-1].pax_type # Notes Pax type bisa jadi slah first bisa di isi SSR
+                    for cost_sc in psg.cost_service_charge_ids:
+                        if cost_sc.charge_type.lower() in ['fare', 'roc', 'tax']:
+                            total_price_pax += cost_sc.amount
+                        elif cost_sc.charge_type.lower() == 'disc':
+                            discount_value += cost_sc.amount
+
+                    for csc in psg.channel_service_charge_ids:
+                        total_price_pax += csc.amount
+
+                    inc_ssr_descs = []
+
+                    # Add SSR cman karena ssr itu per pax maka smentara cman ku kasih di total
+                    # klo di tmbah ke per pax jadi slah jumlah
+                    ssr_descs = []
+
+                    values[rec.id].append({
+                        'name': psg.name,
+                        'pax_type': pax_type,
+                        'inc_ssr': inc_ssr_descs, # Inc. SSR
+                        'add_ssr': ssr_descs,  # Add SSR
+                        'price_total': total_price_pax,
+                    })
+                    customer_grand_total += total_price_pax
 
             pnr_length = len(rec.pnr)
             if pnr_length > 27:
