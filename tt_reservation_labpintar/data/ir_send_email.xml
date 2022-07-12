@@ -99,7 +99,7 @@ ${object.get_terms_conditions_email() | safe}
 			<field name="email_from">${object.get_email_reply_to()}</field>
 			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Reservation Issued: ${object.name}</field>
-			<field name="email_to">${object.contact_email}</field>
+			<field name="email_to">${object.booker_id.email}</field>
             <field name="email_cc">${object.customer_parent_id.check_send_email_cc()}</field>
 			<field name="model_id" ref="tt_reservation_labpintar.model_tt_reservation_labpintar"/>
 			<field name="auto_delete" eval="False"/>
@@ -134,7 +134,7 @@ ${object.get_terms_conditions_email() | safe}
 <!--			<field name="email_from">${object.get_email_reply_to()}</field>-->
 <!--			<field name="reply_to">${object.get_email_reply_to()}</field>-->
 <!--			<field name="subject">Reservation Issued Pending: ${object.name}</field>-->
-<!--			<field name="email_to">${object.contact_email}</field>-->
+<!--			<field name="email_to">${object.booker_id.email}</field>-->
 <!--            <field name="email_cc">${object.customer_parent_id.check_send_email_cc()}</field>-->
 <!--			<field name="model_id" ref="tt_reservation_labpintar.model_tt_reservation_labpintar"/>-->
 <!--			<field name="auto_delete" eval="False"/>-->
@@ -163,7 +163,7 @@ ${object.get_terms_conditions_email() | safe}
 			<field name="email_from">${object.get_email_reply_to()}</field>
 			<field name="reply_to">${object.get_email_reply_to()}</field>
 			<field name="subject">Reservation Booked: ${object.name}</field>
-			<field name="email_to">${object.contact_email}</field>
+			<field name="email_to">${object.booker_id.email}</field>
             <field name="email_cc"/>
 			<field name="model_id" ref="tt_reservation_labpintar.model_tt_reservation_labpintar"/>
 			<field name="auto_delete" eval="False"/>

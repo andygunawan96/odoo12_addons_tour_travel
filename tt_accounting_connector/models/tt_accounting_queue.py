@@ -122,6 +122,7 @@ class TtAccountingQueue(models.Model):
                     'parent_agent_commission': trans_obj.parent_agent_commission or 0,
                     'ho_commission': trans_obj.ho_commission or 0,
                     'total_commission': trans_obj.total_commission or 0,
+                    'total_channel_upsell': trans_obj.total_channel_upsell or 0,
                     'payment_acquirer': pay_acq and pay_acq.jasaweb_name or '',
                     'provider_type_name': trans_obj.provider_type_id and trans_obj.provider_type_id.name or '',
                     'provider_bookings': prov_book_list,
@@ -245,6 +246,7 @@ class TtAccountingQueue(models.Model):
                     'parent_agent_commission': trans_obj.parent_agent_commission or 0,
                     'ho_commission': trans_obj.ho_commission or 0,
                     'total_commission': trans_obj.total_commission or 0,
+                    'total_channel_upsell': trans_obj.total_channel_upsell or 0,
                     'commission_booker': trans_obj.booker_insentif or 0,
                     'payment_acquirer': pay_acq and pay_acq.jasaweb_name or '',
                     'provider_type_name': trans_obj.provider_type_id and trans_obj.provider_type_id.name or '',
@@ -312,6 +314,7 @@ class TtAccountingQueue(models.Model):
                     'ho_nta': real_amt,
                     'ho_commission': ho_adm,
                     'total_commission': agent_adm + ho_adm,
+                    'total_channel_upsell': 0,
                     'grand_total': trans_obj.total_amount or 0,
                     'category': cat
                 })
@@ -349,6 +352,7 @@ class TtAccountingQueue(models.Model):
                     'ho_nta': 0,
                     'ho_commission': 0,
                     'total_commission': 0,
+                    'total_channel_upsell': 0,
                     'grand_total': trans_obj.total,
                     'category': 'top_up'
                 })

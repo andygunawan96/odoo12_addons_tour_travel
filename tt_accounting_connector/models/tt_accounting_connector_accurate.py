@@ -7,20 +7,54 @@ import time
 from datetime import datetime
 
 _logger = logging.getLogger(__name__)
-url = 'https://accurate.id'
-client_id = '55e778d2-f988-40b4-9723-b81f1dcce6ef'
-client_secret = 'f7195a4c40f1e38585bfc49efcad9a83'
+# url = 'https://accurate.id'
+# client_id = '55e778d2-f988-40b4-9723-b81f1dcce6ef'
+# client_secret = 'f7195a4c40f1e38585bfc49efcad9a83'
 
-url_redirect_web = 'https://frontendinternal.rodextrip.com'
-username = 'rodexskytors@gmail.com'
-password = 'Ivanivanivan1!'
-database_id = 545518
+# url_redirect_web = 'https://frontendinternal.rodextrip.com'
+# username = 'rodexskytors@gmail.com'
+# password = 'Ivanivanivan1!'
+# database_id = 545518
 
 class AccountingConnectorAccurate(models.Model):
     _name = 'tt.accounting.connector.accurate'
     _description = 'Accounting Connector Accurate'
 
     def acc_login(self):
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in Accurate Accounting Setup!')
+        client_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'client_id')], limit=1)
+        if not client_id_obj:
+            raise Exception('Please provide a variable with the name "client_id" in Accurate Accounting Setup!')
+        client_secret_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'client_secret')], limit=1)
+        if not client_secret_obj:
+            raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
+        url_redirect_web_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'url_redirect_web')], limit=1)
+        if not url_redirect_web_obj:
+            raise Exception('Please provide a variable with the name "url_redirect_web" in Accurate Accounting Setup!')
+        username_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'username')], limit=1)
+        if not username_obj:
+            raise Exception('Please provide a variable with the name "username" in Accurate Accounting Setup!')
+        password_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'password')], limit=1)
+        if not password_obj:
+            raise Exception('Please provide a variable with the name "password" in Accurate Accounting Setup!')
+        database_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'database_id')], limit=1)
+        if not database_id_obj:
+            raise Exception('Please provide a variable with the name "database_id" in Accurate Accounting Setup!')
+        else:
+            try:
+                database_id = int(database_id_obj.variable_value)
+            except:
+                raise Exception('The "database_id" variable value in Accurate Accounting Setup must be integer!')
+
+        url = url_obj.variable_value
+        client_id = client_id_obj.variable_value
+        client_secret = client_secret_obj.variable_value
+        url_redirect_web = url_redirect_web_obj.variable_value
+        username = username_obj.variable_value
+        password = password_obj.variable_value
+
         ##page login get jsessionid
         res = requests.post('%s/oauth/authorize?client_id=%s&response_type=code&redirect_uri=%s&scope=customer_save customer_view customer_delete item_save glaccount_view glaccount_save glaccount_delete sales_invoice_view sales_invoice_save sales_receipt_save' % (url,client_id, url_redirect_web))
 
@@ -31,8 +65,8 @@ class AccountingConnectorAccurate(models.Model):
             cookies[url_to_cookie.split('=')[0]] = url_to_cookie.split('=')[1]
         ##login
         data = {
-            "email": "rodexskytors@gmail.com",
-            "password": "Ivanivanivan1!"
+            "email": username,
+            "password": password
         }
         headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:98.0) Gecko/20100101 Firefox/98.0",
@@ -92,6 +126,12 @@ class AccountingConnectorAccurate(models.Model):
 
     ##BELUM GANTI
     def get_sales_order(self):
+        url_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in Accurate Accounting Setup!')
+
+        url = url_obj.variable_value
         # ses = requests.Session()
         cookies = False
         login_res = self.acc_login()
