@@ -5,6 +5,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="compute_all_admin_fee_reschedule_line" string="Compute All Adm Fee" type="object" groups="base.user_admin"/>
                     <button string="Set Real Amount" name="%(tt_reschedule.set_real_amount_wizard_action_view)d" type="action" groups="tt_base.group_after_sales_master_level_3"
                             context="{
                                         'default_reschedule_line_id': id,
