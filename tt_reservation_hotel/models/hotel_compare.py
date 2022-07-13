@@ -308,8 +308,14 @@ class HotelInformationCompare(models.Model):
     def set_to_draft(self):
         if self.state == 'cancel':
             self.state = 'draft'
-        elif self.hotel_id.state not in ['tobe_merge', 'draft']:
-            raise UserError('Hotel #1 state Must be To be Merge')
+        elif self.hotel_id.state == 'merged':
+            any_merged = False
+            for comp_id in self.hotel_id.compare_ids:
+                if comp_id.state == 'merged':
+                    any_merged = True
+            if not any_merged:
+                self.hotel_id.state = 'draft'
+            self.state = 'draft'
         elif self.state != 'tobe_merge':
             if self.state == 'merge':
                 raise UserError('Cannot Cancelling Merge Document already Merged')

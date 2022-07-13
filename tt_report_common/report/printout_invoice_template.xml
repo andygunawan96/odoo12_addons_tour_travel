@@ -592,8 +592,8 @@
                                     </div>
                                     <div style="margin-top: 5px;">
                                         <span style="color: white"><img t-att-src="'/tt_report_common/static/images/line.png'" height="200" border="1" width="300" style="max-height:24px; max-width:24px;"/>
-                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Line')">
-                                                <span style="color: white; font-size: 13px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Line')[0].name"/>
+                                            <t t-if="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Instagram')">
+                                                <span style="color: white; font-size: 13px" t-field="doc['agent_id'].social_media_ids.filtered(lambda x: x.type_id.name == 'Instagram')[0].name"/>
                                             </t>
                                             <t t-else=""><span style="color: white; font-size: 13px">-</span></t>
                                         </span>

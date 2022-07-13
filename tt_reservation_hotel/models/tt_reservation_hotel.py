@@ -292,12 +292,12 @@ class HotelReservation(models.Model):
                 pdf_report_bytes = False
         else:
             # Part ini untuk print ittin resv yg blum terbut di backend (tidk da model dkk) jadi data full dari json frontend
-            pdf = self.env.ref('tt_report_common.action_printout_itinerary_from_json')
+            pdf_obj = self.env.ref('tt_report_common.action_printout_itinerary_from_json')
             data = {'context': {'json_content': data['json_printout']}}
-            pdf_report_bytes, _ = pdf.sudo().render_qweb_pdf(False, data=data)
+            pdf_report_bytes, _ = pdf_obj.sudo().render_qweb_pdf(False, data=data)
             book_name = 'Printout'
-            co_agent_id = self.env.user.agent_id.id
-            co_uid = self.env.user.id
+            co_agent_id = ctx['co_agent_id']
+            co_uid = ctx['co_uid']
             # pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
             # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
             # self.make_response(pdf, headers=pdfhttpheaders)

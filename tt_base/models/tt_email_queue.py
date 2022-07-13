@@ -188,6 +188,46 @@ class TtEmailQueue(models.Model):
                         })
             else:
                 raise RequestException(1001)
+        elif data.get('provider_type') == 'hotel_confirmation':
+            model_name = 'tt.reservation.hotel'
+            try:
+                self.env.get(model_name)._name
+            except:
+                raise Exception('Module {} not found!'.format(model_name,))
+
+            resv = self.env[model_name].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
+            if resv:
+                template = self.env.ref('tt_reservation_hotel.template_mail_' + data['provider_type']).id
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Confirmation for {} ( {} ) '.format(resv.name, resv.pnr),
+                    'type': '{}_{}'.format(data['provider_type'], data.get('type', 'used')),
+                    'template_id': template,
+                    'res_model': resv._name,
+                    'res_id': resv.id,
+                })
+            else:
+                raise RequestException(1001)
+        elif data.get('provider_type') == 'hotel_spc_request':
+            model_name = 'tt.reservation.hotel'
+            try:
+                self.env.get(model_name)._name
+            except:
+                raise Exception('Module {} not found!'.format(model_name, ))
+
+            resv = self.env[model_name].search(
+                [('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))],
+                limit=1)
+            if resv:
+                template = self.env.ref('tt_reservation_hotel.template_mail_' + data['provider_type']).id
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Special Request {} ( {} ) '.format(resv.name, resv.pnr),
+                    'type': '{}_{}'.format(data['provider_type'], data.get('type', 'used')),
+                    'template_id': template,
+                    'res_model': resv._name,
+                    'res_id': resv.id,
+                })
+            else:
+                raise RequestException(1001)
 
     def open_reference(self):
         try:

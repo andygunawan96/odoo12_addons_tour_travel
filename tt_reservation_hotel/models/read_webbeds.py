@@ -90,6 +90,7 @@ class HotelInformation(models.Model):
                     file.write(json.dumps(hotel_fmt_list))
                     file.close()
                     _logger.info("Done City: " + rec[2] + ' get: ' + str(len(hotel_fmt_list)) + ' Hotel(s)')
+                    self.env.cr.commit()
                 except Exception as e:
                     _logger.info("Error " + rec[2] + ': ' + str(e) + '.')
                     continue

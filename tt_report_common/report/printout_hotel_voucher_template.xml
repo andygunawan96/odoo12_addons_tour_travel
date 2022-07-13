@@ -111,7 +111,7 @@
                         </td>
                         <td style="width: 5%;"> : </td>
                         <td style="width: 55%; word-wrap: break-word">
-                            <span t-field="doc.contact_name"/> (<span t-field="doc.contact_phone"/>)
+                            <span t-field="doc.contact_name"/>
                         </td>
                     </tr>
                     <tr style="vertical-align: top;">
