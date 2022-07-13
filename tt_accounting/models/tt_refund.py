@@ -188,9 +188,9 @@ class TtRefund(models.Model):
                 ('agent_access_type', '=', 'restrict'), ('id', 'not in', agent_adm_ids)]
 
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=get_admin_fee_domain, readonly=True)
-    admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="")
-    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="")
-    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="")
+    admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="_compute_admin_fee", store=True)
+    admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
+    admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
     real_refund_amount = fields.Monetary('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
@@ -331,11 +331,6 @@ class TtRefund(models.Model):
             'admin_fee_agent': admin_fee_agent,
             'admin_fee': admin_fee,
         }
-
-    def compute_all_admin_fee_refund(self):
-        refund_objs = self.env['tt.refund'].search([])
-        for rec in refund_objs:
-            rec._compute_admin_fee()
 
     @api.depends('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     @api.onchange('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
