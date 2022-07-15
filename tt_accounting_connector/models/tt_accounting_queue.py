@@ -137,6 +137,7 @@ class TtAccountingQueue(models.Model):
                     'category': 'reservation',
                     'invoice_data': invoice_data,
                     'total': trans_obj.total,
+                    'total_discount': trans_obj.total_discount,
                     'is_send_commission': is_send_commission
                 })
                 if self.action in ['reverse', 'split_reservation']:
@@ -274,6 +275,7 @@ class TtAccountingQueue(models.Model):
                     'category': 'reservation',
                     'invoice_data': invoice_data,
                     'total': trans_obj.total,
+                    'total_discount': trans_obj.total_discount,
                     'is_send_commission': is_send_commission
                 })
                 if self.action in ['reverse', 'split_reservation']:

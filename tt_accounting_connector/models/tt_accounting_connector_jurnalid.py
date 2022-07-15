@@ -446,7 +446,7 @@ class AccountingConnectorAccurate(models.Model):
                 "transaction_lines_attributes": [
                     {
                         "quantity": 1,
-                        "rate": vals['total'] + vals['total_channel_upsell'],
+                        "rate": vals['total'] + vals['total_channel_upsell'] - vals['total_discount'],
                         "discount": 0,
                         "product_name": product,
                         "description": desc
