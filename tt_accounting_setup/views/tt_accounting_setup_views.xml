@@ -53,6 +53,7 @@
                         <group>
                             <group>
                                 <field name="is_send_topup"/>
+                                <field name="is_send_commission"/>
                             </group>
                             <group>
                                 <field name="is_send_refund"/>
@@ -62,6 +63,7 @@
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'jasaweb')]}">Jasaweb: Provide 'url', 'usr', and 'pwd'.</p>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'accurate')]}">Accurate: Provide 'url', 'client_id', 'client_secret', 'url_redirect_web', 'username', 'password', and 'database_id'.</p>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Provide 'url', 'live_id', and 'product_code'.</p>
+                        <p attrs="{'invisible': [('accounting_provider', '!=', 'jurnalid')]}">Jurnal ID: Provide 'url_api', 'url_web', 'client_id', 'client_secret', 'api_key', 'email', 'password'.</p>
                         <field name="variable_ids"/>
                     </sheet>
                     <div class="oe_chatter">
