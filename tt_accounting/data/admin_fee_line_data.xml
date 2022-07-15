@@ -33,6 +33,14 @@
             <field name="balance_for">ho</field>
             <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_refund_quick"/>
         </record>
+        <record id="admin_fee_line_refund_quick_special_ho" model="tt.master.admin.fee.line">
+            <field name="type">percentage</field>
+            <field name="amount">8</field>
+            <field name="is_per_pnr">False</field>
+            <field name="is_per_pax">False</field>
+            <field name="balance_for">ho</field>
+            <field name="master_admin_fee_id" ref="tt_accounting.admin_fee_refund_quick_special"/>
+        </record>
         <record id="admin_fee_line_reschedule_ho" model="tt.master.admin.fee.line">
             <field name="type">amount</field>
             <field name="amount">30000</field>
