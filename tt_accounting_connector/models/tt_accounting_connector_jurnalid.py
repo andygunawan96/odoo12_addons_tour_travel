@@ -84,7 +84,7 @@ class AccountingConnectorAccurate(models.Model):
             url = '%s/partner/core/api/v1/contacts?contact_index={"curr_page":%s,"selected_tab":1,"sort_asc":true,"show_archive":false}&access_token=%s' % (data_login['url_api'], index_page, data_login['access_token'])
             _logger.info('######REQUEST CONTACT#########\n%s' % json.dumps(data))
             res = requests.get(url, headers=headers, json=data)
-            _logger.info('######RESPONSE CONTACT#########\n%s' % json.dumps(res))
+            _logger.info('######RESPONSE CONTACT#########\n%s' % res.text)
             res_response = json.loads(res.text)
             contact_name = [d['display_name'] for d in res_response['contact_list']['contact_data']['person_data'] if d['display_name'] == data_contact]
             if res_response['contact_list']['contact_data']['max_page'] <= index_page or len(contact_name) > 0:
@@ -164,7 +164,7 @@ class AccountingConnectorAccurate(models.Model):
         }
         _logger.info('######REQUEST SEARCH CONTACT#########\n%s' % json.dumps(data))
         response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPONSE SEARCH CONTACT#########\n%s' % json.dumps(response))
+        _logger.info('######RESPONSE SEARCH CONTACT#########\n%s' % response.text)
         return json.loads(response.text)['person']['display_name']
 
     def get_contact_group(self, data_login):
@@ -179,7 +179,7 @@ class AccountingConnectorAccurate(models.Model):
         url = '%s/partner/core/api/v1/contact_groups' % (data_login['url_api'])
         _logger.info('######REQUEST PRODUCT#########\n%s' % json.dumps(data))
         response = requests.get(url, headers=headers, json=data)
-        _logger.info('######RESPONSE CONTACT GROUP#########\n%s' % json.dumps(response))
+        _logger.info('######RESPONSE CONTACT GROUP#########\n%s' % response.text)
         response_data = json.loads(response.text)
         contact_group_id = [d['id'] for d in response_data['contact_group'] if d['name'] == data_contact_group]
         if len(contact_group_id) > 0:
@@ -203,7 +203,7 @@ class AccountingConnectorAccurate(models.Model):
         }
         _logger.info('######REQUEST CONTACT GROUP#########\n%s' % json.dumps(data))
         response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPOSNE CONTACT GROUP#########\n%s' % json.dumps(response))
+        _logger.info('######RESPOSNE CONTACT GROUP#########\n%s' % json.dumps(response.text))
         return json.loads(response.text)['contact_group'][0]['id']
 
     def get_vendor(self, data_login, vendor_name):
@@ -216,7 +216,7 @@ class AccountingConnectorAccurate(models.Model):
         url = '%s/partner/core/api/v1/vendors' % (data_login['url_api'])
         _logger.info('######REQUEST SEARCH VENDOR#########\n%s' % json.dumps(data))
         response = requests.get(url, headers=headers, json=data)
-        _logger.info('######RESPONSE SEARCH VENDOR#########\n%s' % json.dumps(response))
+        _logger.info('######RESPONSE SEARCH VENDOR#########\n%s' % response.text)
         response_data = json.loads(response.text)
         vendor_name_data = [d['display_name'] for d in response_data['vendors'] if d['display_name'] == vendor_name]
         if len(vendor_name_data) == 0:
@@ -256,7 +256,7 @@ class AccountingConnectorAccurate(models.Model):
         }
         _logger.info('######REQUEST ADD VENDOR#########\n%s' % json.dumps(data))
         response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPOSNE ADD PRODUCT#########\n%s' % json.dumps(response))
+        _logger.info('######RESPOSNE ADD PRODUCT#########\n%s' % response.text)
         return vendor_name
 
     ############
@@ -271,7 +271,7 @@ class AccountingConnectorAccurate(models.Model):
         url = '%s/partner/core/api/v1/products' % (data_login['url_api'])
         _logger.info('######REQUEST SEARCH PRODUCT#########\n%s' % json.dumps(data))
         res = requests.get(url, headers=headers, json=data)
-        _logger.info('######RESPONSE SEARCH PRODUCT#########\n%s' % json.dumps(res))
+        _logger.info('######RESPONSE SEARCH PRODUCT#########\n%s' % res.text)
         res_response = json.loads(res.text)
         product_name_data = [d['name'] for d in res_response['products'] if d['name'] == product_name]
         if len(product_name_data) > 0:
@@ -318,7 +318,7 @@ class AccountingConnectorAccurate(models.Model):
         }
         _logger.info('######REQUEST ADD PRODUCT#########\n%s' % json.dumps(data))
         response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPONSE ADD PRODUCT#########\n%s' % json.dumps(response))
+        _logger.info('######RESPONSE ADD PRODUCT#########\n%s' % response.text)
         return product_name
 
     def add_purchase(self, data_login, vals):
@@ -411,7 +411,7 @@ class AccountingConnectorAccurate(models.Model):
                 }
                 _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
                 response = requests.post(url, headers=headers, json=data)
-                _logger.info('######RESPONSE PURCHASE#########\n%s' % json.dumps(response))
+                _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
         return 0
 
     def add_sales(self, data_login, vals, contact):
@@ -482,7 +482,7 @@ class AccountingConnectorAccurate(models.Model):
         }
         _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
         response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPONSE SALES#########\n%s' % json.dumps(response))
+        _logger.info('######RESPONSE SALES#########\n%s' % response.text)
         return 0
 
 
@@ -503,4 +503,12 @@ class AccountingConnectorAccurate(models.Model):
         ###################################
 
 
-        return True
+        res = self.response_parser()
+        return res
+
+    def response_parser(self):
+        res = {
+            'status_code': 'success',
+            'content': ''
+        }
+        return res
