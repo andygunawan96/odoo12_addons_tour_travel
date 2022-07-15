@@ -51,7 +51,7 @@
         <field name="name">tt.hotel.destination.view.tree.rodex</field>
         <field name="model">tt.hotel.destination</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree decoration-muted="active == False" >
                 <field name="name"/>
                 <field name="city_str"/>
                 <field name="city_id"/>
@@ -87,7 +87,7 @@
         <field name="res_model">tt.hotel.destination</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[]</field>
+        <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
     </record>
 
     <record model="ir.actions.server" id="action_multi_merge_destination_hotel">
