@@ -2030,14 +2030,14 @@
                         <div class="article" style="margin: 0px !important; padding: 0px !important">
                             <!-- Copasan id="external_layout_header" Start -->
                             <div class="row" style="height:100px; font-family: 'Liberation Sans'">
-                                <t t-if="doc.agent_id.logo">
+                                <t t-if="doc['agent_id'].logo">
                                     <div class="col-4" style="margin-left: 30px">
-                                        <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                                        <img t-att-src="'data:image/png;base64,%s' % to_text(doc['agent_id'].logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
                                     </div>
                                 </t>
                                 <t t-else="">
                                         <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
-                                            <span t-field="doc.agent_id.name" style="font-size: 28px;"/>
+                                            <span t-field="doc['agent_id'].name" style="font-size: 28px;"/>
                                         </div>
                                     </t>
                                 <div class="col-1">
@@ -2067,7 +2067,7 @@
                             <div style="margin: 0px 10px 20px 10px; font-family: 'Liberation Sans'">
                                 <div style="margin-bottom: 10px; margin-top: 10px;">
                                     <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-                                    <span t-esc="doc['name']" style="font-size: 18px; font-weight: 730"/><br/>
+                                    <span t-esc="doc.get('name') or 'Ittinerary'" style="font-size: 18px; font-weight: 730"/><br/>
                                 </div>
 
                                 <t t-call="tt_report_common.json_itinerary_content_view"/>

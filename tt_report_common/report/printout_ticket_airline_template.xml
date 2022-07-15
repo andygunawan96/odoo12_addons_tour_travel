@@ -337,16 +337,13 @@
                     <div class="col-3" style="text-align: left; font-size:17px;">
                         Name
                     </div>
-                    <div class="col-1" style="text-align: center; font-size:17px;">
-                        Type
-                    </div>
                     <div class="col-3" style="text-align: left; font-size:17px;">
                         Facility(s)
                     </div>
                     <div class="col-2" style="text-align: center; font-size:17px;">
                         Ticket Number
                     </div>
-                    <div class="col-2" style="text-align: right; font-size:17px; padding-right: 30px;">
+                    <div class="col-3" style="text-align: right; font-size:17px; padding-right: 30px;">
                         Price
                     </div>
                 </t>
@@ -379,10 +376,8 @@
                                     <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                                 </div>
                                 <div class="col-3" style="text-align: left;">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
-                                </div>
-                                <div class="col-1" style="text-align: center;">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label><br/>
+                                    (<label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>)
                                 </div>
                                 <div class="col-3" style="text-align: left;">
                                     <t t-call="tt_report_common.airline_pax_ssr"/>
@@ -390,7 +385,7 @@
                                 <div class="col-2" style="text-align: center;">
                                     <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><t t-if="psg.get('ticket_number')"><span t-esc="psg['ticket_number']"/></t><t t-else="">-</t></label>
                                 </div>
-                                <div class="col-2" style="text-align: right;">
+                                <div class="col-3" style="text-align: right;">
                                     <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['total_price']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></label>
                                 </div>
                             </t>
