@@ -4,6 +4,7 @@
         <record id="admin_fee_refund_regular" model="tt.master.admin.fee">
             <field name="name">Regular Refund</field>
             <field name="after_sales_type">refund</field>
+            <field name="refund_type_id" ref="tt_accounting.refund_type_regular_refund"/>
             <field name="min_amount_ho">0</field>
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
@@ -13,6 +14,7 @@
         <record id="admin_fee_refund_regular_special" model="tt.master.admin.fee">
             <field name="name">Regular Refund (Special Agents)</field>
             <field name="after_sales_type">refund</field>
+            <field name="refund_type_id" ref="tt_accounting.refund_type_regular_refund"/>
             <field name="min_amount_ho">0</field>
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
@@ -22,11 +24,22 @@
         <record id="admin_fee_refund_quick" model="tt.master.admin.fee">
             <field name="name">Quick Refund</field>
             <field name="after_sales_type">refund</field>
+            <field name="refund_type_id" ref="tt_accounting.refund_type_quick_refund"/>
             <field name="min_amount_ho">0</field>
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
             <field name="sequence">102</field>
+        </record>
+        <record id="admin_fee_refund_quick_special" model="tt.master.admin.fee">
+            <field name="name">Quick Refund (Special Agents)</field>
+            <field name="after_sales_type">refund</field>
+            <field name="refund_type_id" ref="tt_accounting.refund_type_quick_refund"/>
+            <field name="min_amount_ho">0</field>
+            <field name="min_amount_agent">0</field>
+            <field name="agent_type_access_type">all</field>
+            <field name="agent_access_type">allow</field>
+            <field name="sequence">103</field>
         </record>
         <record id="admin_fee_refund_free" model="tt.master.admin.fee">
             <field name="name">No Admin Fee</field>
@@ -34,7 +47,7 @@
             <field name="min_amount">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
-            <field name="sequence">103</field>
+            <field name="sequence">104</field>
         </record>
         <record id="admin_fee_reschedule" model="tt.master.admin.fee">
             <field name="name">Reschedule</field>

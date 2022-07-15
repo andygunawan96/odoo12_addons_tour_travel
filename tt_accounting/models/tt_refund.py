@@ -126,16 +126,6 @@ class TtRefundLineCustomer(models.Model):
             rec.total_amount = rec.refund_amount - rec.citra_fee
 
 
-class TtRefundType(models.Model):
-    _name = "tt.refund.type"
-    _inherit = 'tt.history'
-    _description = "Refund Type Model"
-
-    name = fields.Char('Name', default='New')
-    days = fields.Integer('Amount of Days', default=40)
-    active = fields.Boolean('Active', default=True)
-
-
 class TtRefund(models.Model):
     _name = "tt.refund"
     _inherit = 'tt.history'
@@ -294,10 +284,16 @@ class TtRefund(models.Model):
                 temp_total += rec2.real_refund_amount
             rec.real_refund_amount = temp_total
 
-    def get_refund_admin_fee_rule(self, agent_id):
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund')], order='sequence, id desc')
+    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular'):
+        if refund_type == 'quick':
+            search_param = ('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_quick_refund').id)
+            default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_quick')
+        else:
+            search_param = ('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_regular_refund').id)
+            default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund'), search_param], order='sequence, id desc')
         if not refund_admin_fee_list:
-            current_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+            current_refund_env = default_refund_env
         else:
             current_refund_env = refund_admin_fee_list[0]
         for admin_fee in refund_admin_fee_list:
@@ -306,8 +302,8 @@ class TtRefund(models.Model):
                 break
         return current_refund_env
 
-    def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0):
-        admin_fee_obj = self.get_refund_admin_fee_rule(agent_id)
+    def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0, refund_type='regular'):
+        admin_fee_obj = self.get_refund_admin_fee_rule(agent_id, refund_type)
 
         pnr_amount = 1
         pax_amount = 1
@@ -361,7 +357,7 @@ class TtRefund(models.Model):
                 rec.admin_fee = 0
 
     def compute_admin_fee_api(self, req):
-        refund_fee = self.get_refund_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'], req.get('passenger_count'))
+        refund_fee = self.get_refund_fee_amount(req['agent_id'], req['order_number'], req['order_type'], req['refund_amount'], req.get('passenger_count'), req.get('refund_type'))
         return refund_fee['admin_fee']
 
     @api.depends('admin_fee', 'refund_amount')
