@@ -295,11 +295,30 @@ class TtRefund(models.Model):
         if not refund_admin_fee_list:
             current_refund_env = default_refund_env
         else:
-            current_refund_env = refund_admin_fee_list[0]
-        for admin_fee in refund_admin_fee_list:
-            if admin_fee.agent_access_type == 'allow' and agent_id in admin_fee.agent_ids.ids:
-                current_refund_env = admin_fee
-                break
+            agent_obj = self.env['tt.agent'].browse(int(agent_id))
+            qualified_admin_fee = []
+            for admin_fee in refund_admin_fee_list:
+                is_agent = False
+                is_agent_type = False
+                if admin_fee.agent_access_type == 'all':
+                    is_agent = True
+                elif admin_fee.agent_access_type == 'allow' and agent_id in admin_fee.agent_ids.ids:
+                    is_agent = True
+                elif admin_fee.agent_access_type == 'restrict' and agent_id not in admin_fee.agent_ids.ids:
+                    is_agent = True
+                
+                if admin_fee.agent_type_access_type == 'all':
+                    is_agent_type = True
+                elif admin_fee.agent_type_access_type == 'allow' and agent_obj.agent_type_id.id in admin_fee.agent_type_ids.ids:
+                    is_agent_type = True
+                elif admin_fee.agent_type_access_type == 'restrict' and agent_obj.agent_type_id.id not in admin_fee.agent_type_ids.ids:
+                    is_agent_type = True
+
+                if not is_agent_type or not is_agent:
+                    continue
+
+                qualified_admin_fee.append(admin_fee)
+            current_refund_env = qualified_admin_fee and qualified_admin_fee[0] or default_refund_env
         return current_refund_env
 
     def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0, refund_type='regular'):
