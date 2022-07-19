@@ -27,6 +27,7 @@ class AccountingConnectorITM(models.Model):
             'Content-Type': 'application/json',
         }
         req_data = self.request_parser(vals)
+        _logger.info('ITM Request Add Sales Order: %s', req_data)
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
         response = requests.post(url, data=req_data, headers=headers)
         res = self.response_parser(response)

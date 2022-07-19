@@ -244,7 +244,7 @@ class AccountingConnectorAccurate(models.Model):
             "Authorization": "Bearer %s" % token,
             "X-Session-ID": session_id
         }
-
+        _logger.info('Accurate Request Add Customer: %s', request)
         response = requests.post(url_db + '/accurate/api/customer/save.do', data=request, headers=headers)
         if response.status_code == 200:
             id = json.loads(response.text)['r']['id']
@@ -273,7 +273,7 @@ class AccountingConnectorAccurate(models.Model):
             "Authorization": "Bearer %s" % token,
             "X-Session-ID": session_id
         }
-
+        _logger.info('Accurate Request Top Up: %s', request)
         response = requests.post(url_db + '/accurate/api/customer/save.do', data=request, headers=headers)
 
     def get_customer(self, url_db, token, session_id):
@@ -284,7 +284,7 @@ class AccountingConnectorAccurate(models.Model):
             "Authorization": "Bearer %s" % token,
             "X-Session-ID": session_id
         }
-
+        _logger.info('Accurate Request Get Customer: %s', request)
         response = requests.post(url_db + '/accurate/api/customer/list.do', data=request, headers=headers)
         data_response = []
         if response.status_code == 200:
@@ -331,6 +331,7 @@ class AccountingConnectorAccurate(models.Model):
             "Authorization": "Bearer %s" % token,
             "X-Session-ID": session_id
         }
+        _logger.info('Accurate Request Create Account: %s', request)
         response = requests.post(url_db + '/accurate/api/glaccount/bulk-save.do', json=request, headers=headers)
 
         ##SETELAH CREATE SETTING DI DEFAULT ACCURATE
@@ -353,6 +354,7 @@ class AccountingConnectorAccurate(models.Model):
             "X-Session-ID": session_id
         }
 
+        _logger.info('Accurate Request Get Account: %s', request)
         response = requests.post(url_db + '/accurate/api/glaccount/list.do', json=request, headers=headers)
         data_response = []
         if response.status_code == 200:
@@ -384,6 +386,7 @@ class AccountingConnectorAccurate(models.Model):
             "X-Session-ID": session_id
         }
 
+        _logger.info('Accurate Request Create Item: %s', request)
         response = requests.post(url_db + '/accurate/api/item/save.do', json=request, headers=headers)
         if response.status_code == 200:
             return json.loads(response.text)['r']['no']
@@ -416,6 +419,7 @@ class AccountingConnectorAccurate(models.Model):
             "X-Session-ID": session_id
         }
 
+        _logger.info('Accurate Request Create Sales: %s', request)
         response = requests.post(url_db + '/accurate/api/sales-invoice/save.do', json=request, headers=headers)
         if response.status_code == 200:
             return json.loads(response.text)['r']['number']
@@ -441,6 +445,7 @@ class AccountingConnectorAccurate(models.Model):
             "X-Session-ID": session_id
         }
 
+        _logger.info('Accurate Request Create Payment: %s', request)
         response = requests.post(url_db + '/accurate/api/sales-receipt/save.do', json=request, headers=headers)
 
         return response
