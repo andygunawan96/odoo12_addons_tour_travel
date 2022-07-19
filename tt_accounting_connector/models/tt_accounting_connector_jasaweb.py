@@ -71,6 +71,7 @@ class AccountingConnectorJasaweb(models.Model):
             'Content-Type': 'text/text, */*; q=0.01',
         }
         req_data = self.request_parser(vals)
+        _logger.info('Jasaweb Request Add Sales Order: %s', req_data)
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
         response = requests.post(url + '/api/method/jasaweb.rodex.insert_journal_entry', data=req_data, headers=headers, cookies=cookies)
         res = self.response_parser(response)
