@@ -59,17 +59,19 @@ class TtCronLogInhResv(models.Model):
     def sub_func_agent_balance_report_log(self):
         pass
 
-    def cron_ledger_statement_agent(self):
+    def cron_ledger_statement_agent(self, create_ledger_statement=False):
         try:
             # comment for now karena bs berulang ulang
-            # list_agent_obj = self.env['tt.agent'].search([])
-            # for agent_obj in list_agent_obj:
-            #     try:
-            #         agent_obj.create_ledger_statement()
-            #         _logger.info("Ledger Statement Success for %s %s" % (agent_obj.id, agent_obj.name))
-            #         self._cr.commit()
-            #     except Exception as e:
-            #         _logger.error("Failed Ledger Statement for %s\n%s" %(agent_obj.name,str(e)))
+            ## problem di rodextrip sangat lama start 01.00 selesai 05.00 bahkan tdk selesai karena timeout worker cron 2400s
+            if create_ledger_statement:
+                list_agent_obj = self.env['tt.agent'].search([])
+                for agent_obj in list_agent_obj:
+                    try:
+                        agent_obj.create_ledger_statement()
+                        _logger.info("Ledger Statement Success for %s %s" % (agent_obj.id, agent_obj.name))
+                        self._cr.commit()
+                    except Exception as e:
+                        _logger.error("Failed Ledger Statement for %s\n%s" %(agent_obj.name,str(e)))
             self.sub_func_agent_balance_report_log()
         except Exception as e:
             self.create_cron_log_folder()

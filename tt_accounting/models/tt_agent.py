@@ -56,8 +56,11 @@ class TtAgent(models.Model):
             if ledger.balance != true_balance:
                 ledger.balance = true_balance
                 _logger.info("Ledger %s ID %s from agent %s Balance Fixed" % (ledger.name,ledger.id,self.name))
+        _logger.info("Start agent compute balance %s" % self.name)
         self._compute_balance_agent()
+        _logger.info("End agent compute balance %s" % self.name)
 
+        _logger.info("Start create ledger statement %s" % self.name)
         ##create ledger statement
         self.env['tt.ledger'].create_ledger_vanilla(
             self._name,
@@ -74,3 +77,4 @@ class TtAgent(models.Model):
             0,
             'Automatic End Balance Statement'
         )
+        _logger.info("End create ledger statement %s" % self.name)
