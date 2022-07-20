@@ -78,7 +78,6 @@ class HotelInformation(models.Model):
                 'id': rec.id,
                 'type': 'hotel',
                 'name': rec.name,
-                'display_name': rec.name,
                 'city_id': rec.city_id.id,
                 'city_name': rec.city_id.name,
                 'state_name': rec.city_id.state_id and rec.city_id.state_id.name or rec.city_id.state_id,

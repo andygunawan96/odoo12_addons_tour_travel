@@ -83,7 +83,7 @@
                         <t t-if="fee_id.journey_code == segment_obj.segment_code">
                             <t t-set="any_ssr" t-value="1"/>
                             <!--<i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
-                            <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> <span t-field="fee_id.name"/></i><br/>
+                            <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> <span t-field="fee_id.name"/></i><br/>
                             <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
                             <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
                         </t>
