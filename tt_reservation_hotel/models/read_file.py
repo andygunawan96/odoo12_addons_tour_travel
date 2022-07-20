@@ -3709,6 +3709,7 @@ class HotelInformation(models.Model):
                         'city_id': city.id,
                         'city_name': city.name,
                         'alias': city and ','.join([rec.name for rec in city.other_name_ids]) or '',
+                        'name': city.get_full_name()
                     })
                 country = destination.country_id and city.country_id
                 if country:
