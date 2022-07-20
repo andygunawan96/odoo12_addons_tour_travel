@@ -1023,6 +1023,12 @@ class ReservationAirline(models.Model):
                 admin_fee_obj = None
                 is_refund = False
 
+                is_ledger_created = False
+                for sc in rsv_prov_obj.cost_service_charge_ids:
+                    if sc.is_ledger_created:
+                        is_ledger_created = True
+                        break
+
                 if commit_data['status'] == 'BOOKED' and rsv_prov_obj.state == 'booked':
                     ledger_created = rsv_prov_obj.sudo().delete_service_charge()
                     if ledger_created:
@@ -1045,6 +1051,15 @@ class ReservationAirline(models.Model):
                     for psg in commit_data['passengers']:
                         psg_obj = resv_passenger_number_dict[psg['passenger_number']]
                         psg_obj.create_ssr(psg['fees'], rsv_prov_obj.pnr, rsv_prov_obj.id, is_create_service_charge=False)
+                elif commit_data['status'] == 'ISSUED' and rsv_prov_obj.state == 'booked' and is_ledger_created:
+                    rsv_prov_obj.write({
+                        'state': 'issued'
+                    })
+                    rsv_prov_obj.sudo().delete_passenger_fees()
+                    for psg in commit_data['passengers']:
+                        psg_obj = resv_passenger_number_dict[psg['passenger_number']]
+                        psg_obj.create_ssr(psg['fees'], rsv_prov_obj.pnr, rsv_prov_obj.id, is_create_service_charge=False)
+                    airline_obj.check_provider_state(context)
                 elif commit_data['status'] == 'VOID' and rsv_prov_obj.state == 'booked' and commit_data['pnr'] == rsv_prov_obj.pnr:
                     rsv_prov_obj.action_void_api_airline(commit_data, context)
                     continue

@@ -17,9 +17,9 @@ Key Features
     'data': [
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+        'data/refund_type_data.xml',
         'data/admin_fee_data.xml',
         'data/admin_fee_line_data.xml',
-        'data/refund_type_data.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
