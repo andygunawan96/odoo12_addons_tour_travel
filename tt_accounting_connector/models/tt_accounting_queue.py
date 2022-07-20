@@ -68,6 +68,10 @@ class TtAccountingQueue(models.Model):
                 pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', trans_obj.payment_method)], limit=1)
                 request = trans_obj.to_dict()
                 ledger_list = []
+                is_send_commission = False
+                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider','=', self.accounting_provider)],limit=1)
+                if accounting_obj:
+                    is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
                     if not led.is_sent_to_acc:
                         ledger_list.append({
@@ -116,6 +120,9 @@ class TtAccountingQueue(models.Model):
                             temp_prov_price_dict['agent_nta'] += abs(sale.total)
                     temp_prov_dict.update(temp_prov_price_dict)
                     prov_book_list.append(temp_prov_dict)
+                invoice_data = []
+                for rec in trans_obj.invoice_line_ids:
+                    invoice_data.append(rec.invoice_id.name)
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'total_nta': trans_obj.total_nta or 0,
@@ -127,7 +134,11 @@ class TtAccountingQueue(models.Model):
                     'provider_type_name': trans_obj.provider_type_id and trans_obj.provider_type_id.name or '',
                     'provider_bookings': prov_book_list,
                     'ledgers': ledger_list,
-                    'category': 'reservation'
+                    'category': 'reservation',
+                    'invoice_data': invoice_data,
+                    'total': trans_obj.total,
+                    'total_discount': trans_obj.total_discount,
+                    'is_send_commission': is_send_commission
                 })
                 if self.action in ['reverse', 'split_reservation']:
                     self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider)
@@ -216,6 +227,10 @@ class TtAccountingQueue(models.Model):
                 pay_acq = self.env['payment.acquirer'].search([('seq_id', '=', trans_obj.payment_method)], limit=1)
                 request = trans_obj.to_dict()
                 ledger_list = []
+                is_send_commission = False
+                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider', '=', self.accounting_provider)], limit=1)
+                if accounting_obj:
+                    is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
                     ledger_list.append({
                         'id': led.id,
@@ -235,6 +250,11 @@ class TtAccountingQueue(models.Model):
                         'pnr': led.pnr or '',
                         'transaction_type': led.transaction_type
                     })
+
+                invoice_data = []
+                for rec in trans_obj.invoice_line_ids:
+                    invoice_data.append(rec.invoice_id.name)
+
                 request.update({
                     'create_by': trans_obj.create_uid and trans_obj.create_uid.name or '',
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
@@ -252,7 +272,11 @@ class TtAccountingQueue(models.Model):
                     'provider_type_name': trans_obj.provider_type_id and trans_obj.provider_type_id.name or '',
                     'ledgers': ledger_list,
                     'passenger_pricings': trans_obj.get_passenger_pricing_breakdown(),
-                    'category': 'reservation'
+                    'category': 'reservation',
+                    'invoice_data': invoice_data,
+                    'total': trans_obj.total,
+                    'total_discount': trans_obj.total_discount,
+                    'is_send_commission': is_send_commission
                 })
                 if self.action in ['reverse', 'split_reservation']:
                     self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider)

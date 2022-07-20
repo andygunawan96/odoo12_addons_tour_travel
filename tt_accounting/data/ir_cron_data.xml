@@ -47,7 +47,7 @@
             <field name="active">True</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
-            <field name="code">model.cron_ledger_statement_agent()</field>
+            <field name="code">model.cron_ledger_statement_agent(create_ledger_statement=False)</field>
         </record>
     </data>
 </odoo>

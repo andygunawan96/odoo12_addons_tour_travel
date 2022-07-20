@@ -2257,8 +2257,12 @@ class ReservationAirline(models.Model):
 
             # VIN: 2021/03/02: admin fee tdak bisa di hardcode
             # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
-            admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(airline_obj.agent_id.id)
-            refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
+            ref_type = data.get('refund_type', 'regular')
+            admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(airline_obj.agent_id.id, ref_type)
+            if ref_type == 'quick':
+                refund_type = self.env.ref('tt_accounting.refund_type_quick_refund').id
+            else:
+                refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
             # refund_type = 'regular'
 
             refund_line_ids = []
