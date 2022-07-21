@@ -96,7 +96,7 @@ class AgentInvoice(models.Model):
         self.env['tt.ledger'].create_ledger_vanilla(
             self._name,
             self.id,
-            'Agent Invoice : %s' % self.name,
+            '%sAgent Invoice : %s' % ("Payment For " if debit else "",self.name),
             self.name,
             datetime.now(pytz.timezone('Asia/Jakarta')).date(),
             2,
@@ -106,7 +106,7 @@ class AgentInvoice(models.Model):
             self.customer_parent_id.id,
             amount if debit == True else 0,
             amount if debit == False else 0,
-            'Ledger for: %s' % self.name,
+            'Ledger for: %s%s' % ("Payment " if debit else "",self.name),
             **{
                 'agent_invoice_id': self.id
             }
