@@ -343,7 +343,6 @@ class AccountingConnectorAccurate(models.Model):
         for pnr in pnr_list:
             passenger_data = ''
             desc = ''
-            discount = vals['total_discount'] / len(vals['provider_bookings'])
             for provider_booking in vals['provider_bookings']:
                 if pnr == provider_booking['pnr']:
                     for rec_ticket in provider_booking['tickets']:
@@ -368,20 +367,20 @@ class AccountingConnectorAccurate(models.Model):
             price = 0
             send_all_ledger = vals['is_send_commission']
             for idy,ledger in enumerate(pnr_list[pnr], start=1):
-                if ledger['debit'] != 0:
-                    if vals['is_send_commission']:
-                        product_name = 'Commission'
-                        price = ledger['debit']
-                        send = vals['is_send_commission']
+                send = False
+                if vals['agent_id'] == ledger['agent_id']:
+                    if ledger['debit'] != 0:
+                        if vals['is_send_commission']:
+                            product_name = 'Commission'
+                            price = ledger['debit']
+                            send = vals['is_send_commission']
+                        else:
+                            price -= ledger['debit']
+                            send = True
                     else:
-                        price -= ledger['debit']
+                        product_name = 'Tiket Perjalanan'
+                        price += ledger['credit']
                         send = True
-                else:
-                    product_name = 'Tiket Perjalanan'
-                    if price == 0 and idy == 0: ## masih belum tau kalau order di tempat ke 2 sementara begini
-                        price -= discount
-                    price += ledger['credit']
-                    send = True
                 if send and send_all_ledger or send and idy == len(pnr_list[pnr]):
                     product = self.get_product(data_login, product_name)
                     ###################################
