@@ -334,11 +334,18 @@ class AccountingConnectorAccurate(models.Model):
             if invoice != '':
                 invoice = ', '
             invoice += rec
+        pnr_list = {}
         for idx, ledger in enumerate(vals['ledgers'], start=1):
+            if not pnr_list.get(ledger['pnr']):
+                pnr_list[ledger['pnr']] = []
+            pnr_list[ledger['pnr']].append(ledger)
+
+        for pnr in pnr_list:
             passenger_data = ''
             desc = ''
+            discount = vals['total_discount'] / len(vals['provider_bookings'])
             for provider_booking in vals['provider_bookings']:
-                if ledger['pnr'] == provider_booking['pnr']:
+                if pnr == provider_booking['pnr']:
                     for rec_ticket in provider_booking['tickets']:
                         if passenger_data != '':
                             passenger_data += ', '
@@ -346,9 +353,12 @@ class AccountingConnectorAccurate(models.Model):
                     pnr = provider_booking['pnr2'] if provider_booking['pnr2'] else provider_booking['pnr']
                     if desc != '':
                         desc += '; '
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'],provider_booking['departure_date'].split(' ')[0], passenger_data)
+                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
+                    pnr, provider_booking['origin'], provider_booking['destination'],
+                    provider_booking['departure_date'].split(' ')[0], passenger_data)
                     break
-            vendor_data = ledger['display_provider_name']
+            vendor_data = pnr_list[pnr][0]['display_provider_name']
+
             ##### AMBIL VENDOR ###############
             vendor = self.get_vendor(data_login, vendor_data)
             ###################################
@@ -356,62 +366,72 @@ class AccountingConnectorAccurate(models.Model):
             ##### AMBIL PRODUCT ###############
             product_name = ''
             price = 0
-            if ledger['debit'] != 0:
-                product_name = 'Commission'
-                price = ledger['debit']
-                send = vals['is_send_commission']
-            else:
-                product_name = 'Tiket Perjalanan'
-                price = ledger['credit']
-                send = True
-            if send:
-                product = self.get_product(data_login, product_name)
-                ###################################
-                data = {
-                    "purchase_invoice": {
-                        "transaction_date": vals['issued_date'].split(' ')[0],
-                        "transaction_lines_attributes": [
-                            {
-                                "quantity": 1,
-                                "rate": price,
-                                "discount": 0,
-                                "product_name": product,
-                                "description": desc
-                            }
-                        ],
-                        "shipping_date": vals['issued_date'].split(' ')[0],
-                        "shipping_price": 0,
-                        "shipping_address": "",
-                        "is_shipped": True,
-                        "ship_via": "",
-                        "reference_no": "%s - %s" % (invoice, product),
-                        "tracking_no": "",
-                        "address": "",
-                        "term_name": "Cash",
-                        "due_date": vals['issued_date'].split(' ')[0],
-                        "refund_from_name": "",
-                        "deposit": 0,
-                        "discount_unit": 0,
-                        "witholding_account_name": "",
-                        "witholding_value": 0,
-                        "witholding_type": "percent",
-                        "discount_type_name": "percent",
-                        "person_name": vendor,
-                        "warehouse_name": "",
-                        "warehouse_code": "",
-                        "tags": [],
-                        "email": "",
-                        "message": desc,
-                        "memo": desc,
-                        "custom_id": "",
-                        "source": "API",
-                        "use_tax_inclusive": False,
-                        "tax_after_discount": False
+            send_all_ledger = vals['is_send_commission']
+            for idy,ledger in enumerate(pnr_list[pnr], start=1):
+                if ledger['debit'] != 0:
+                    if vals['is_send_commission']:
+                        product_name = 'Commission'
+                        price = ledger['debit']
+                        send = vals['is_send_commission']
+                    else:
+                        price -= ledger['debit']
+                        send = True
+                else:
+                    product_name = 'Tiket Perjalanan'
+                    if price == 0 and idy == 0: ## masih belum tau kalau order di tempat ke 2 sementara begini
+                        price -= discount
+                    price += ledger['credit']
+                    send = True
+                if send and send_all_ledger or send and idy == len(pnr_list[pnr]):
+                    product = self.get_product(data_login, product_name)
+                    ###################################
+                    data = {
+                        "purchase_invoice": {
+                            "transaction_date": vals['issued_date'].split(' ')[0],
+                            "transaction_lines_attributes": [
+                                {
+                                    "quantity": 1,
+                                    "rate": price,
+                                    "discount": 0,
+                                    "product_name": product,
+                                    "description": desc
+                                }
+                            ],
+                            "shipping_date": vals['issued_date'].split(' ')[0],
+                            "shipping_price": 0,
+                            "shipping_address": "",
+                            "is_shipped": True,
+                            "ship_via": "",
+                            "reference_no": "%s - %s" % (invoice, product),
+                            "tracking_no": "",
+                            "address": "",
+                            "term_name": "Cash",
+                            "due_date": vals['issued_date'].split(' ')[0],
+                            "refund_from_name": "",
+                            "deposit": 0,
+                            "discount_unit": 0,
+                            "witholding_account_name": "",
+                            "witholding_value": 0,
+                            "witholding_type": "percent",
+                            "discount_type_name": "percent",
+                            "person_name": vendor,
+                            "warehouse_name": "",
+                            "warehouse_code": "",
+                            "tags": [],
+                            "email": "",
+                            "message": desc,
+                            "memo": desc,
+                            "custom_id": "",
+                            "source": "API",
+                            "use_tax_inclusive": False,
+                            "tax_after_discount": False
+                        }
                     }
-                }
-                _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
-                response = requests.post(url, headers=headers, json=data)
-                _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
+                    _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
+                    response = requests.post(url, headers=headers, json=data)
+                    _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
+                    price = 0
+
         return 0
 
     def add_sales(self, data_login, vals, contact):
