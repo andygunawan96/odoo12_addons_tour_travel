@@ -439,12 +439,13 @@ class Ledger(models.Model):
     def history_transaction_ledger_api(self, data, context):
         page = data['page'] - 1
         dom = []
-        dom.append(('agent_id','=',context['co_agent_id']))
         dom.append(('date','>=', data['start_date']))
         dom.append(('date','<=', data['end_date']))
 
         if util.get_without_empty(context, 'co_customer_parent_id'):
             dom.append(('customer_parent_id', '=', context['co_customer_parent_id']))
+        else:
+            dom.append(('agent_id', '=', context['co_agent_id']))
         ledger_obj = self.search(dom, offset=page * data['limit'],limit=(page+1) * data['limit'])
         res = []
         for rec_ledger in ledger_obj:
