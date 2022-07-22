@@ -349,11 +349,9 @@ class AccountingConnectorAccurate(models.Model):
                         if passenger_data != '':
                             passenger_data += ', '
                         passenger_data += rec_ticket['passenger']
-                    pnr = provider_booking['pnr2'] if provider_booking['pnr2'] else provider_booking['pnr']
                     if desc != '':
                         desc += '; '
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
-                    pnr, provider_booking['origin'], provider_booking['destination'],
+                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'],
                     provider_booking['departure_date'].split(' ')[0], passenger_data)
                     vendor_data = provider_booking['provider']
 
