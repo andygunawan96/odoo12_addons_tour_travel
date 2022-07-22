@@ -355,8 +355,9 @@ class AccountingConnectorAccurate(models.Model):
                     desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
                     pnr, provider_booking['origin'], provider_booking['destination'],
                     provider_booking['departure_date'].split(' ')[0], passenger_data)
+                    vendor_data = provider_booking['provider']
                     break
-            vendor_data = pnr_list[pnr][0]['display_provider_name']
+
 
             ##### AMBIL VENDOR ###############
             vendor = self.get_vendor(data_login, vendor_data)
