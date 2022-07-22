@@ -356,7 +356,6 @@ class AccountingConnectorAccurate(models.Model):
                     pnr, provider_booking['origin'], provider_booking['destination'],
                     provider_booking['departure_date'].split(' ')[0], passenger_data)
                     vendor_data = provider_booking['provider']
-                    break
 
 
             ##### AMBIL VENDOR ###############
