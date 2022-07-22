@@ -343,7 +343,6 @@ class AccountingConnectorAccurate(models.Model):
         for pnr in pnr_list:
             passenger_data = ''
             desc = ''
-            price = 0
             for provider_booking in vals['provider_bookings']:
                 if pnr == provider_booking['pnr']:
                     for rec_ticket in provider_booking['tickets']:
@@ -356,7 +355,6 @@ class AccountingConnectorAccurate(models.Model):
                     desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
                     pnr, provider_booking['origin'], provider_booking['destination'],
                     provider_booking['departure_date'].split(' ')[0], passenger_data)
-                    price += provider_booking.total_price
                     break
             vendor_data = pnr_list[pnr][0]['display_provider_name']
 
@@ -365,83 +363,72 @@ class AccountingConnectorAccurate(models.Model):
             ###################################
 
             ##### AMBIL PRODUCT ###############
-            product_name = 'Tiket Perjalanan'
-            product = self.get_product(data_login, product_name)
-
-            data = self.data_purchase(vals, product, price, desc, vendor)
-            #### SEND PURCHASE
-            self.send_purchase(url, headers, data)
-
-
-            send = vals['is_send_commission']
-            if send:
-                price = 0
-                for idy,ledger in enumerate(pnr_list[pnr], start=1):
-                    send = False
-                    if vals['agent_id'] == ledger['agent_id']:
-                        if ledger['debit'] != 0:
-                            if vals['is_send_commission']:
-                                product_name = 'Commission'
-                                price = ledger['debit']
-
-                                product = self.get_product(data_login, product_name)
-                                ###################################
-                                data = self.data_purchase(vals, product, price, desc, vendor)
-                                self.send_purchase(url, headers, data)
-                                price = 0
-
-        return 0
-
-    def send_purchase(self, url, headers, data):
-        _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
-        response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
-        return 0
-
-    def data_purchase(self, vals, product, price, desc, vendor):
-        data = {
-            "purchase_invoice": {
-                "transaction_date": vals['issued_date'].split(' ')[0],
-                "transaction_lines_attributes": [
-                    {
-                        "quantity": 1,
-                        "rate": price,
-                        "discount": 0,
-                        "product_name": product,
-                        "description": desc
+            product_name = ''
+            price = 0
+            for idy,ledger in enumerate(pnr_list[pnr], start=1):
+                send = False
+                if vals['agent_id'] == ledger['agent_id']:
+                    if ledger['debit'] != 0:
+                        product_name = 'Commission'
+                        price = ledger['debit']
+                        send = vals['is_send_commission']
+                    else:
+                        for provider_booking in vals['provider_bookings']:
+                            if pnr == provider_booking.pnr:
+                                price += provider_booking.total_price
+                        product_name = 'Tiket Perjalanan'
+                        send = True
+                if send:
+                    product = self.get_product(data_login, product_name)
+                    ###################################
+                    data = {
+                        "purchase_invoice": {
+                            "transaction_date": vals['issued_date'].split(' ')[0],
+                            "transaction_lines_attributes": [
+                                {
+                                    "quantity": 1,
+                                    "rate": price,
+                                    "discount": 0,
+                                    "product_name": product,
+                                    "description": desc
+                                }
+                            ],
+                            "shipping_date": vals['issued_date'].split(' ')[0],
+                            "shipping_price": 0,
+                            "shipping_address": "",
+                            "is_shipped": True,
+                            "ship_via": "",
+                            "reference_no": "%s - %s" % (invoice, product),
+                            "tracking_no": "",
+                            "address": "",
+                            "term_name": "Cash",
+                            "due_date": vals['issued_date'].split(' ')[0],
+                            "refund_from_name": "",
+                            "deposit": 0,
+                            "discount_unit": 0,
+                            "witholding_account_name": "",
+                            "witholding_value": 0,
+                            "witholding_type": "percent",
+                            "discount_type_name": "percent",
+                            "person_name": vendor,
+                            "warehouse_name": "",
+                            "warehouse_code": "",
+                            "tags": [],
+                            "email": "",
+                            "message": desc,
+                            "memo": desc,
+                            "custom_id": "",
+                            "source": "API",
+                            "use_tax_inclusive": False,
+                            "tax_after_discount": False
+                        }
                     }
-                ],
-                "shipping_date": vals['issued_date'].split(' ')[0],
-                "shipping_price": 0,
-                "shipping_address": "",
-                "is_shipped": True,
-                "ship_via": "",
-                "reference_no": "%s - %s" % (invoice, product),
-                "tracking_no": "",
-                "address": "",
-                "term_name": "Cash",
-                "due_date": vals['issued_date'].split(' ')[0],
-                "refund_from_name": "",
-                "deposit": 0,
-                "discount_unit": 0,
-                "witholding_account_name": "",
-                "witholding_value": 0,
-                "witholding_type": "percent",
-                "discount_type_name": "percent",
-                "person_name": vendor,
-                "warehouse_name": "",
-                "warehouse_code": "",
-                "tags": [],
-                "email": "",
-                "message": desc,
-                "memo": desc,
-                "custom_id": "",
-                "source": "API",
-                "use_tax_inclusive": False,
-                "tax_after_discount": False
-            }
-        }
-        return data
+                    _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
+                    response = requests.post(url, headers=headers, json=data)
+                    _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
+                    price = 0
+
+        return 0
 
     def add_sales(self, data_login, vals, contact):
         url = "%s/partner/core/api/v1/sales_invoices" % data_login['url_api']
