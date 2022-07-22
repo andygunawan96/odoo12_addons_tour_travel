@@ -291,7 +291,6 @@ class PaymentAcquirer(models.Model):
                         '|',
                         ('type', '=', 'va'),  ## search yg espay
                         ('type', '=', 'payment_gateway'),  ## search yg mutasi bca
-                        ('type', '=', 'credit')  ## search yg credit card
                     ]
                     # pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
                     # if pay_acq_num:
