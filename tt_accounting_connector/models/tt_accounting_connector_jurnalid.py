@@ -374,7 +374,7 @@ class AccountingConnectorAccurate(models.Model):
                         send = vals['is_send_commission']
                     else:
                         for provider_booking in vals['provider_bookings']:
-                            if pnr == provider_booking.pnr:
+                            if pnr == provider_booking['pnr']:
                                 price += provider_booking.total_price
                         product_name = 'Tiket Perjalanan'
                         send = True
