@@ -124,6 +124,7 @@ class Ledger(models.Model):
                                  ledger_date, ledger_type,
                                  currency_id, issued_uid,
                                  debit, credit,description, source_of_funds_type)
+        _logger.info(json.dumps(vals))
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
