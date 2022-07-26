@@ -75,7 +75,7 @@ class Ledger(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
-    source_of_funds_type = fields.Selection(SOURCE_OF_FUNDS_TYPE, string='Source of Funds')
+    source_of_funds_type = fields.Selection(SOURCE_OF_FUNDS_TYPE, string='Source of Funds', default=0)
 
     def calc_balance(self, vals):
         # Pertimbangkan Multi Currency Ledgers
@@ -90,15 +90,9 @@ class Ledger(models.Model):
         elif vals.get('customer_parent_id'):
             owner_id = vals['customer_parent_id']
             param_search = 'customer_parent_id'
-        _logger.info('################CALC BALANCE##################')
-        _logger.info(vals['source_of_funds_type'])
         sql_query = 'select balance from tt_ledger where %s = %s and source_of_funds_type = %s order by id desc limit 1;' % (param_search,owner_id, vals['source_of_funds_type'])
-        _logger.info(sql_query)
         self.env.cr.execute(sql_query)
         balance = self.env.cr.dictfetchall()
-        _logger.info(balance[0]['balance'])
-        _logger.info(json.dumps(balance))
-        raise UserError(_('TESTING'))
         if balance:
             current_balance = balance[0]['balance']
         else:
@@ -129,8 +123,6 @@ class Ledger(models.Model):
                                  ledger_date, ledger_type,
                                  currency_id, issued_uid,
                                  debit, credit,description, source_of_funds_type)
-        _logger.info('############### CREATE LEDGER VANILLA #################')
-        _logger.info(vals['source_of_funds_type'])
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
