@@ -93,8 +93,12 @@ class Ledger(models.Model):
         _logger.info('################CALC BALANCE##################')
         _logger.info(vals['source_of_funds_type'])
         sql_query = 'select balance from tt_ledger where %s = %s and source_of_funds_type = %s order by id desc limit 1;' % (param_search,owner_id, vals['source_of_funds_type'])
+        _logger.info(sql_query)
         self.env.cr.execute(sql_query)
         balance = self.env.cr.dictfetchall()
+        _logger.info(balance[0]['balance'])
+        _logger.info(json.dumps(balance))
+        raise UserError(_('TESTING'))
         if balance:
             current_balance = balance[0]['balance']
         else:
