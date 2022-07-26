@@ -1197,6 +1197,20 @@ class TtReservation(models.Model):
                 if voucher_reference: ##USE VOUCHER
                     book_obj.add_voucher(voucher_reference, context, 'use')
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
+                if req.get('use_point'):
+                    total_use_point = 0
+                    point_reward = book_obj.agent_id.point_reward
+                    if point_reward > agent_check_amount:
+                        total_use_point = agent_check_amount - 1
+                    else:
+                        total_use_point = point_reward
+                    if total_use_point:
+                        ## potong point
+                        # self.env['tt.point.reward'].minus_points("Use for: ", book_obj, total_use_point, context['co_uid'])
+                        ## bikin ledger
+
+                        agent_check_amount -= total_use_point
+
                 balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount)
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
@@ -1218,7 +1232,7 @@ class TtReservation(models.Model):
 
                 for provider in book_obj.provider_booking_ids:
                     _logger.info('create quota pnr')
-                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method)
+                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, req.get('use_point', False))
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         try:
@@ -1260,6 +1274,10 @@ class TtReservation(models.Model):
                             _logger.error(traceback.format_exc(e))
                         # if not quota_used:
                         #     print("5k woi")
+
+                ## add point reward for agent
+                self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
+
                 data = {
                     'order_number': book_obj.name,
                     'table_name': table_name

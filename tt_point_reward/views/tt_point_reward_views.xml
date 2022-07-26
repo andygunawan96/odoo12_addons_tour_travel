@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="point_reward_filter_view" model="ir.ui.view">
+        <field name="name">point.reward.filter.view</field>
+        <field name="model">tt.point.reward</field>
+        <field name="arch" type="xml">
+            <search string="Search Point Reward">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="point_reward_tree_view" model="ir.ui.view">
+        <field name="name">point.reward.tree.view</field>
+        <field name="model">tt.point.reward</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="sequence"/>
+                <field name="is_active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="voucher_form_view" model="ir.ui.view">
+        <field name="name">point.reward.form.view</field>
+        <field name="model">tt.point.reward</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Point Reward Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="sequence"/>
+                        <field name="is_active"/>
+                    </group>
+                    <separator string="Point Reward Rules"/>
+                    <field name="point_reward_rules_id"/>
+                    <notebook>
+                        <page string="Agent Type">
+                            <group>
+                                <field name="agent_type_access_type"/>
+                            </group>
+                            <field name="point_reward_agent_type_eligibility_ids"/>
+                        </page>
+                        <page string="Provider Type">
+                            <group>
+                                <field name="provider_type_access_type"/>
+                            </group>
+                            <field name="point_reward_provider_type_eligibility_ids"/>
+                        </page>
+                        <page string="Provider">
+                            <group>
+                                <field name="provider_access_type"/>
+                            </group>
+                            <field name="point_reward_provider_eligibility_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="point_reward_action_view" model="ir.actions.act_window">
+        <field name="name">Point Reward</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.point.reward</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+
+</odoo>

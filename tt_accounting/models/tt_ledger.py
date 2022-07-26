@@ -21,6 +21,11 @@ LEDGER_TYPE = [
     (99, 'Others')
 ]
 
+SOURCE_OF_FUNDS_TYPE = [
+    (0, 'Balance'),
+    (1, 'Point Reward')
+]
+
 _logger = logging.getLogger(__name__)
 
 class Ledger(models.Model):
@@ -70,6 +75,8 @@ class Ledger(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
+    source_of_funds_type = fields.Selection(SOURCE_OF_FUNDS_TYPE, string='Source of Funds')
+
     def calc_balance(self, vals):
         # Pertimbangkan Multi Currency Ledgers
         balance = 0
@@ -84,7 +91,7 @@ class Ledger(models.Model):
             owner_id = vals['customer_parent_id']
             param_search = 'customer_parent_id'
 
-        sql_query = 'select balance from tt_ledger where %s = %s order by id desc limit 1;' % (param_search,owner_id)
+        sql_query = 'select balance from tt_ledger where %s = %s and source_of_funds_type = %s order by id desc limit 1;' % (param_search,owner_id, vals['source_of_funds_type'])
         self.env.cr.execute(sql_query)
         balance = self.env.cr.dictfetchall()
         if balance:
@@ -94,7 +101,7 @@ class Ledger(models.Model):
         current_balance += vals['debit'] - vals['credit']
         return current_balance
 
-    def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description = ''):
+    def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description='', source_of_funds_type=0):
         return {
             'name': name,
             'debit': debit,
@@ -106,16 +113,17 @@ class Ledger(models.Model):
             'res_model': res_model,
             'res_id': res_id,
             'description': description,
-            'issued_uid': issued_uid
+            'issued_uid': issued_uid,
+            'source_of_funds_type': source_of_funds_type
         }
 
-    def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description = '',**kwargs):
+    def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description='',source_of_funds_type=0,**kwargs):
         # self.waiting_list_process([agent_id],customer_parent_id,debit)
         vals = self.prepare_vals(res_model,
                                  res_id,name, ref,
                                  ledger_date, ledger_type,
                                  currency_id, issued_uid,
-                                 debit, credit,description)
+                                 debit, credit,description, source_of_funds_type)
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
@@ -241,7 +249,7 @@ class Ledger(models.Model):
 
 
     # API START #####################################################################
-    def create_ledger(self, provider_obj,issued_uid):
+    def create_ledger(self, provider_obj,issued_uid, use_point):
         amount = 0
         used_sc_list = []
         for sc in provider_obj.cost_service_charge_ids:
@@ -253,6 +261,15 @@ class Ledger(models.Model):
             return
 
         booking_obj = provider_obj.booking_id
+        if use_point:
+            total_use_point = 0
+            point_reward = booking_obj.agent_id.point_reward
+            if point_reward > amount:
+                total_use_point = amount - 1
+            else:
+                total_use_point = point_reward
+            amount -= total_use_point
+            self.env['tt.point.reward'].minus_points("Used", booking_obj, total_use_point, issued_uid)
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                           2, booking_obj.currency_id.id, issued_uid, 0, amount)
 
@@ -296,13 +313,13 @@ class Ledger(models.Model):
 
         return True #return berhasil create ledger
 
-    def action_create_ledger(self, provider_obj,issued_uid):
+    def action_create_ledger(self, provider_obj,issued_uid, use_point=False):
         #1
         # affected_agent = [rec.commission_agent_id.id if rec.commission_agent_id else provider_obj.booking_id.agent_id.id for rec in provider_obj.cost_service_charge_ids]
         # affected_agent = set(affected_agent)
         # self.waiting_list_process(affected_agent, False,"Create Ledger Provider")
         commission_created = self.create_commission_ledger(provider_obj,issued_uid)
-        ledger_created = self.create_ledger(provider_obj,issued_uid)
+        ledger_created = self.create_ledger(provider_obj,issued_uid, use_point)
         return commission_created or ledger_created
 
     # May 12, 2020 - SAM

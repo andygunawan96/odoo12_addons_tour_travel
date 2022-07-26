@@ -73,7 +73,7 @@ class TtAccountingQueue(models.Model):
                 if accounting_obj:
                     is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
-                    if not led.is_sent_to_acc:
+                    if not led.is_sent_to_acc and led.source_of_funds_type == 0: ## source_of_funds_type 0 untuk balance:
                         ledger_list.append({
                             'id': led.id,
                             'ref': led.ref or '',
@@ -150,7 +150,7 @@ class TtAccountingQueue(models.Model):
                     cat = 'reschedule'
                 ledger_list = []
                 for led in trans_obj.ledger_ids:
-                    if not led.is_sent_to_acc:
+                    if not led.is_sent_to_acc and led.source_of_funds_type == 0: ## source_of_funds_type 0 untuk balance:
                         ledger_list.append({
                             'id': led.id,
                             'ref': led.ref or '',
@@ -171,15 +171,19 @@ class TtAccountingQueue(models.Model):
                         led.sudo().write({
                             'is_sent_to_acc': True
                         })
+                new_segment_list = []
+                for segment_obj in trans_obj.new_segment_ids:
+                    new_segment_list.append(segment_obj.to_dict())
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'ledgers': ledger_list,
-                    'category': cat
+                    'category': cat,
+                    'new_segment': new_segment_list
                 })
             elif self.res_model == 'tt.top.up':
                 request = trans_obj.to_dict_acc()
                 ledger_list = []
-                if not trans_obj.ledger_id.is_sent_to_acc:
+                if not trans_obj.ledger_id.is_sent_to_acc and trans_obj.ledger_id.source_of_funds_type == 0: ## source_of_funds_type 0 untuk balance
                     ledger_list.append({
                         'id': trans_obj.ledger_id.id,
                         'ref': trans_obj.ledger_id.ref or '',

@@ -198,6 +198,7 @@ class TtAgent(models.Model):
         if 'corp_limitation' in frontend_security:  # customer parent login
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
             balance = 0
+            point_reward = 0
             customer_parent_balance = customer_parent_obj.actual_balance
             currency_code = ''
             customer_parent_currency_code = customer_parent_obj.currency_id.name
@@ -205,10 +206,12 @@ class TtAgent(models.Model):
             is_show_balance = False
             is_show_customer_parent_balance = True
             is_show_credit_limit = True
+            is_show_point_reward = False
         elif customer_parent_id:  # agent as customer parent login
             agent_obj = self.browse(context['co_agent_id'])
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
             balance = agent_obj.balance
+            point_reward = 0
             customer_parent_balance = customer_parent_obj.actual_balance
             currency_code = agent_obj.currency_id.name
             customer_parent_currency_code = customer_parent_obj.currency_id.name
@@ -216,16 +219,22 @@ class TtAgent(models.Model):
             is_show_balance = True
             is_show_customer_parent_balance = True
             is_show_credit_limit = True
+            is_show_point_reward = False
         else:  # agent login
             agent_obj = self.browse(context['co_agent_id'])
             balance = agent_obj.balance
             customer_parent_balance = 0
+            try:
+                point_reward = agent_obj.point_reward
+            except:
+                point_reward = 0
             currency_code = agent_obj.currency_id.name
             customer_parent_currency_code = ''
             credit_limit = 0
             is_show_balance = True
             is_show_customer_parent_balance = False
             is_show_credit_limit = False
+            is_show_point_reward = True
 
         return ERR.get_no_error({
             'balance': balance,
@@ -235,7 +244,9 @@ class TtAgent(models.Model):
             'currency_code': currency_code,
             'is_show_balance': is_show_balance,
             'is_show_customer_parent_balance': is_show_customer_parent_balance,
-            'is_show_credit_limit': is_show_credit_limit
+            'is_show_credit_limit': is_show_credit_limit,
+            'point_reward': point_reward,
+            'is_show_point_reward': is_show_point_reward
         })
 
     def get_data(self):

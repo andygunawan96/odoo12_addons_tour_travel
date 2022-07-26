@@ -331,8 +331,8 @@ class TtProviderSentraMedika(models.Model):
         return ledger_created
 
 
-    def action_create_ledger(self, issued_uid, pay_method=None):
-        return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point)
 
     def create_ticket_api(self, passengers):
         ticket_list = []

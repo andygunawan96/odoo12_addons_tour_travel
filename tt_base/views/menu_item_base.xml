@@ -274,6 +274,13 @@
                   parent="tt_base.top_tour_travel_configuration"
                   sequence = "110"/>
 
+        <!-- Point Reward -->
+        <menuitem id="menu_tour_travel_configuration_point_reward"
+                  name="Point Reward"
+                  groups="tt_base.group_point_reward_level_1"
+                  parent="tt_base.top_tour_travel_configuration"
+                  sequence = "110"/>
+
         <!--Transaction Pricing-->
         <menuitem id="menu_transaction_pricing"
                   name="Pricing"

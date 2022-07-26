@@ -56,8 +56,8 @@ class TtProviderEvent(models.Model):
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
 
-    def action_create_ledger(self, issued_uid, pay_method=None):
-        return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point)
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
