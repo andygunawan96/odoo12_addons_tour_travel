@@ -90,6 +90,7 @@ class Ledger(models.Model):
         elif vals.get('customer_parent_id'):
             owner_id = vals['customer_parent_id']
             param_search = 'customer_parent_id'
+        _logger.info('################CALC BALANCE##################')
         _logger.info(json.dumps(vals))
         sql_query = 'select balance from tt_ledger where %s = %s and source_of_funds_type = %s order by id desc limit 1;' % (param_search,owner_id, vals['source_of_funds_type'])
         self.env.cr.execute(sql_query)
@@ -124,6 +125,7 @@ class Ledger(models.Model):
                                  ledger_date, ledger_type,
                                  currency_id, issued_uid,
                                  debit, credit,description, source_of_funds_type)
+        _logger.info('############### CREATE LEDGER VANILLA #################')
         _logger.info(json.dumps(vals))
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
