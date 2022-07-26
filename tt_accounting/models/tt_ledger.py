@@ -90,7 +90,7 @@ class Ledger(models.Model):
         elif vals.get('customer_parent_id'):
             owner_id = vals['customer_parent_id']
             param_search = 'customer_parent_id'
-
+        _logger.info(json.dumps(vals))
         sql_query = 'select balance from tt_ledger where %s = %s and source_of_funds_type = %s order by id desc limit 1;' % (param_search,owner_id, vals['source_of_funds_type'])
         self.env.cr.execute(sql_query)
         balance = self.env.cr.dictfetchall()
