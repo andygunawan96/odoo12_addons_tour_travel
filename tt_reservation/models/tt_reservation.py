@@ -1199,7 +1199,10 @@ class TtReservation(models.Model):
                 if voucher_reference: ##USE VOUCHER
                     book_obj.add_voucher(voucher_reference, context, 'use')
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
-                if req.get('use_point'):
+
+                website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_use_point_reward',default='')
+
+                if req.get('use_point') and website_use_point_reward == 'True':
                     total_use_point = 0
                     point_reward = book_obj.agent_id.point_reward
                     book_obj.is_use_point_reward = True
