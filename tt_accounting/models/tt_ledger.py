@@ -160,7 +160,8 @@ class Ledger(models.Model):
             'refund_id': self.refund_id and self.refund_id.id or False,
             'reschedule_id': hasattr(self,'reschedule_id') and self.reschedule_id or False,
             'reschedule_model': hasattr(self,'reschedule_model') and self.reschedule_model or False,
-            'provider_type_id': self.provider_type_id and self.provider_type_id.id or False
+            'provider_type_id': self.provider_type_id and self.provider_type_id.id or False,
+            'source_of_funds_type': self.source_of_funds_type and self.source_of_funds_type or 0 ## default balance
         })
 
         self.update({
