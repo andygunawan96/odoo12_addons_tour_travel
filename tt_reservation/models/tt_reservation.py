@@ -167,6 +167,8 @@ class TtReservation(models.Model):
     reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State',default='not_reconciled',
                                        compute='_compute_reconcile_state', store=True )
 
+    is_use_point_reward = fields.Boolean('Is Use Point Reward', default=False)
+
     @api.model
     def create(self, vals_list):
         try:
@@ -1200,6 +1202,7 @@ class TtReservation(models.Model):
                 if req.get('use_point'):
                     total_use_point = 0
                     point_reward = book_obj.agent_id.point_reward
+                    book_obj.is_use_point_reward = True
                     if point_reward > agent_check_amount:
                         total_use_point = agent_check_amount - 1
                     else:
