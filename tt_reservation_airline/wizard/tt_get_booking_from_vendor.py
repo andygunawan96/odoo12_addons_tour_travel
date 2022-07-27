@@ -21,6 +21,7 @@ provider_selection = [
         ('scoot', 'Scoot'),
         ('jetstar', 'Jetstar'),
         ('rodextrip_airline', 'Rodextrip Airline'),
+        ('airasia', 'Airasia'),
         # ('sabre', 'Sabre'),
     ]
 
