@@ -290,7 +290,7 @@ class PaymentAcquirer(models.Model):
                         ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
                         '|',
                         ('type', '=', 'va'),  ## search yg espay
-                        ('type', '=', 'payment_gateway')  ## search yg mutasi bca
+                        ('type', '=', 'payment_gateway'),  ## search yg mutasi bca
                     ]
                     # pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
                     # if pay_acq_num:
