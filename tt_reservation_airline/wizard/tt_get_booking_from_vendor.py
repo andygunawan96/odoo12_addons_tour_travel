@@ -577,14 +577,14 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             'error_code': 0,
             'error_msg': ''
         }
-        # if retrieve_res['status'] == 'ISSUED':
-        #     payment_res = self.env['tt.reservation.airline'].payment_reservation_api('airline', update_req,context={
-        #         'co_uid': self.user_id.id,
-        #         'co_user_name': self.user_id.name,
-        #         'co_agent_id': self.agent_id.id,
-        #         'co_agent_name': self.agent_id.name,
-        #         'signature': signature
-        #     })
+        if retrieve_res['status'] == 'ISSUED' and self.env['ir.config_parameter'].sudo().get_param('create.ledger.issued.get.booking') in ['True', 'true', '1']:
+            payment_res = self.env['tt.reservation.airline'].payment_reservation_api('airline', update_req,context={
+                'co_uid': self.user_id.id,
+                'co_user_name': self.user_id.name,
+                'co_agent_id': self.agent_id.id,
+                'co_agent_name': self.agent_id.name,
+                'signature': signature
+            })
 
         # END
 
