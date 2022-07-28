@@ -1291,7 +1291,8 @@ class TtReservation(models.Model):
                         #     print("5k woi")
 
                 ## add point reward for agent
-                self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
+                if website_use_point_reward == 'True':
+                    self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
 
                 data = {
                     'order_number': book_obj.name,
