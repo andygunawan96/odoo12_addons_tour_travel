@@ -607,7 +607,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += ', '
                     passenger_data += pax['name']
                 for segment in pnr_list[pnr]:
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, segment['origin'], segment['destination'],segment['departure_date'].split(' ')[0], passenger_data)
+                    desc += "%s; Reschedule Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, segment['origin'], segment['destination'],segment['departure_date'].split(' ')[0], passenger_data)
                     vendor_data = segment['provider']
 
                 ##### AMBIL VENDOR ###############
