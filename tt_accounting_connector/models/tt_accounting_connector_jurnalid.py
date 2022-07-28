@@ -545,37 +545,40 @@ class AccountingConnectorAccurate(models.Model):
         return account
 
     def create_journal(self, data_login, vals, account_ho, account_agent):
-        url = "%s/partner/core/api/v1/journal_entries" % data_login['url_api']
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "bearer %s" % data_login['access_token'],
-            "api_key": data_login['api_key']
-        }
-        date = vals['date'].split(' ')[0].split('-')
-        date.reverse()
-        data = {
-            "journal_entry": {
-                "transaction_date": "-".join(date),
-                "memo": "TOP UP %s %s" % (account_agent, vals['name']),
-                "transaction_account_lines_attributes": [
-                  {
-                    "account_name": account_agent,
-                    "debit": vals['amount'],
-                    "description": "TOP UP %s %s" % (account_agent, vals['name'])
-                  },
-                  {
-                    "account_name": account_ho,
-                    "credit": vals['amount'],
-                    "description": "TOP UP %s %s" % (account_agent, vals['name'])
-                  }
-                ],
-                "tags": [
-                ]
+        if len(vals['ledgers']) > 0:
+            url = "%s/partner/core/api/v1/journal_entries" % data_login['url_api']
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer %s" % data_login['access_token'],
+                "api_key": data_login['api_key']
             }
-        }
-        _logger.info('######REQUEST ADD LEDGER TOP UP#########\n%s' % json.dumps(data))
-        response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPONSE ADD LEDGER TOP UP#########\n%s' % response.text)
+            date = vals['date'].split(' ')[0].split('-')
+            date.reverse()
+            data = {
+                "journal_entry": {
+                    "transaction_date": "-".join(date),
+                    "memo": "TOP UP %s %s" % (account_agent, vals['name']),
+                    "transaction_account_lines_attributes": [
+                      {
+                        "account_name": account_agent,
+                        "debit": vals['total'],
+                        "description": "TOP UP %s %s" % (account_agent, vals['name'])
+                      },
+                      {
+                        "account_name": account_ho,
+                        "credit": vals['total'],
+                        "description": "TOP UP %s %s" % (account_agent, vals['name'])
+                      }
+                    ],
+                    "tags": [
+                    ]
+                }
+            }
+            _logger.info('######REQUEST ADD LEDGER TOP UP#########\n%s' % json.dumps(data))
+            response = requests.post(url, headers=headers, json=data)
+            _logger.info('######RESPONSE ADD LEDGER TOP UP#########\n%s' % response.text)
+        else:
+            _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0
 
     def add_purchase_after_sales(self, data_login, vals):
