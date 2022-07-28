@@ -260,6 +260,8 @@ class TtCustomer(models.Model):
                     if 'face_image_id' in psg:
                         if current_passenger.face_image_id:
                             current_passenger.face_image_id.unlink()
+                    if psg.get('title') == 'MRS':
+                        psg['marital_status'] = 'married'
                     current_passenger.write(psg)
                     result_psg = current_passenger
                     if psg.get('identity'):
