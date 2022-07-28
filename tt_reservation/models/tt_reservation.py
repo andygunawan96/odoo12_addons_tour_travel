@@ -168,6 +168,7 @@ class TtReservation(models.Model):
                                        compute='_compute_reconcile_state', store=True )
 
     is_use_point_reward = fields.Boolean('Is Use Point Reward', default=False)
+    is_get_point_reward = fields.Boolean('Is Get Point Reward', default=False)
 
     @api.model
     def create(self, vals_list):

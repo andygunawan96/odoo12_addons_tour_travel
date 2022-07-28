@@ -140,6 +140,7 @@
                             <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel"/>
                             <field name="payment_date" readonly="1" groups="tt_base.group_tt_tour_travel"/>
                             <field name="sid_booked" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="is_get_point_reward" groups="tt_base.group_tt_tour_travel"/>
                             <field name="is_use_point_reward" groups="tt_base.group_tt_tour_travel"/>
 
                         </group>
