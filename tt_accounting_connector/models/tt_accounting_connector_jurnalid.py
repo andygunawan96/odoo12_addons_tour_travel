@@ -343,21 +343,18 @@ class AccountingConnectorAccurate(models.Model):
         for pnr in pnr_list:
             passenger_data = ''
             desc = ''
-            discount = vals['total_discount'] / len(vals['provider_bookings'])
             for provider_booking in vals['provider_bookings']:
                 if pnr == provider_booking['pnr']:
                     for rec_ticket in provider_booking['tickets']:
                         if passenger_data != '':
                             passenger_data += ', '
                         passenger_data += rec_ticket['passenger']
-                    pnr = provider_booking['pnr2'] if provider_booking['pnr2'] else provider_booking['pnr']
                     if desc != '':
                         desc += '; '
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
-                    pnr, provider_booking['origin'], provider_booking['destination'],
+                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'],
                     provider_booking['departure_date'].split(' ')[0], passenger_data)
-                    break
-            vendor_data = pnr_list[pnr][0]['display_provider_name']
+                    vendor_data = provider_booking['provider']
+
 
             ##### AMBIL VENDOR ###############
             vendor = self.get_vendor(data_login, vendor_data)
@@ -366,23 +363,20 @@ class AccountingConnectorAccurate(models.Model):
             ##### AMBIL PRODUCT ###############
             product_name = ''
             price = 0
-            send_all_ledger = vals['is_send_commission']
             for idy,ledger in enumerate(pnr_list[pnr], start=1):
-                if ledger['debit'] != 0:
-                    if vals['is_send_commission']:
+                send = False
+                if vals['agent_id'] == ledger['agent_id']:
+                    if ledger['debit'] != 0:
                         product_name = 'Commission'
                         price = ledger['debit']
                         send = vals['is_send_commission']
                     else:
-                        price -= ledger['debit']
+                        for provider_booking in vals['provider_bookings']:
+                            if pnr == provider_booking['pnr']:
+                                price += provider_booking['total_price']
+                        product_name = 'Tiket Perjalanan'
                         send = True
-                else:
-                    product_name = 'Tiket Perjalanan'
-                    if price == 0 and idy == 0: ## masih belum tau kalau order di tempat ke 2 sementara begini
-                        price -= discount
-                    price += ledger['credit']
-                    send = True
-                if send and send_all_ledger or send and idy == len(pnr_list[pnr]):
+                if send:
                     product = self.get_product(data_login, product_name)
                     ###################################
                     data = {
