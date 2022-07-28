@@ -228,17 +228,19 @@ class TtAgent(models.Model):
             agent_obj = self.browse(context['co_agent_id'])
             balance = agent_obj.balance
             customer_parent_balance = 0
-            try:
-                point_reward = agent_obj.actual_point_reward
-            except:
-                point_reward = 0
             currency_code = agent_obj.currency_id.name
             customer_parent_currency_code = ''
             credit_limit = 0
             is_show_balance = True
             is_show_customer_parent_balance = False
             is_show_credit_limit = False
-            is_show_point_reward = True
+            website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+            if website_use_point_reward == 'True':
+                is_show_point_reward = True
+                try:
+                    point_reward = agent_obj.actual_point_reward
+                except:
+                    point_reward = 0
 
         return ERR.get_no_error({
             'balance': balance,
