@@ -93,7 +93,11 @@ class TtPaymentApiCon(models.Model):
                     book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
                     _logger.info(data['order_number'])
                     if book_obj:
-                        if book_obj.total - book_obj.total_discount == float(data['transaction_amount']):
+                        reservation_transaction_amount = book_obj.total - book_obj.total_discount
+                        if pay_acq_num.is_use_point_reward:
+                            reservation_transaction_amount -= pay_acq_num.point_reward_amount
+                        ##testing dulu
+                        if reservation_transaction_amount == float(data['transaction_amount']):
                             seq_id = ''
                             if book_obj.payment_acquirer_number_id:
                                 seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
@@ -105,6 +109,7 @@ class TtPaymentApiCon(models.Model):
                                 'member': False, # KALAU BAYAR PAKE ESPAY PASTI MEMBER FALSE
                                 'acquirer_seq_id': seq_id,
                                 'force_issued': True,
+                                'use_point': book_obj.is_use_point_reward
                             }
                             res = ERR.get_no_error(values)
                         else:
@@ -249,7 +254,8 @@ class TtPaymentApiCon(models.Model):
             'proxy_co_uid': req.get('user_id', False),
             'member': req['member'],
             'force_issued': req['force_issued'],
-            'acquirer_seq_id': req['acquirer_seq_id']
+            'acquirer_seq_id': req['acquirer_seq_id'],
+            'use_point': req['use_point']
         }
         provider = req.get('provider_type')
         action = 'issued'

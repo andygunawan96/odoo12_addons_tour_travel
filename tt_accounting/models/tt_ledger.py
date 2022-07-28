@@ -261,13 +261,23 @@ class Ledger(models.Model):
             return
 
         booking_obj = provider_obj.booking_id
-        if use_point:
+
+        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+        if use_point and website_use_point_reward == 'True':
             total_use_point = 0
-            point_reward = booking_obj.agent_id.point_reward
-            if point_reward > amount:
-                total_use_point = amount - 1
-            else:
-                total_use_point = point_reward
+            payment_method = self.env['payment.acquirer'].search([('seq_id', '=', booking_obj.payment_method)])
+            if payment_method.type == 'cash':
+                point_reward = booking_obj.agent_id.actual_point_reward
+                if point_reward > amount:
+                    total_use_point = amount - 1
+                else:
+                    total_use_point = point_reward
+            elif payment_method.type == 'payment_gateway':
+                point_reward = booking_obj.agent_id.actual_point_reward
+                if point_reward - payment_method.minimum_amount > amount:
+                    total_use_point = amount - payment_method.minimum_amount
+                else:
+                    total_use_point = point_reward
             amount -= total_use_point
             self.env['tt.point.reward'].minus_points("Used", booking_obj, total_use_point, issued_uid)
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
