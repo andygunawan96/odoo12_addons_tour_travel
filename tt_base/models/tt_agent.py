@@ -235,6 +235,7 @@ class TtAgent(models.Model):
             is_show_customer_parent_balance = False
             is_show_credit_limit = False
             point_reward = 0
+            is_show_point_reward = False
             website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
             if website_use_point_reward == 'True':
                 is_show_point_reward = True
