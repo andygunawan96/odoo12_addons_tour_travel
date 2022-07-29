@@ -134,10 +134,14 @@ class TtPaymentApiCon(models.Model):
         elif action == 'get_amount':
             book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
             if book_obj:
+                amount = book_obj.total - book_obj.total_discount
                 payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
                 if payment_acq_number_obj:
                     different_time = payment_acq_number_obj.time_limit - datetime.now()
                     timelimit = int(different_time.seconds / 60)
+                    ## ada 2 cara amount langsung pakai amount di payment acq number / amount dari book_obj di kurang dengan point reward yg di pakai
+                    if payment_acq_number_obj.is_use_point_reward:
+                        amount -= payment_acq_number_obj.point_reward_amount
                 else: ## KALAU PAYMENT ACQ NUMBER TIDAK KETEMU
                     different_time = book_obj.hold_date - datetime.now()
                     if different_time > timedelta(hours=1): ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
@@ -146,7 +150,7 @@ class TtPaymentApiCon(models.Model):
                         different_time_in_minutes = int(different_time.seconds / 60)
                         timelimit = different_time_in_minutes - 5
                 values = {
-                    "amount": book_obj.total - book_obj.total_discount,
+                    "amount": amount,
                     "currency": book_obj.currency_id.name,
                     "phone_number": "".join(book_obj.contact_phone.split(' - ')),
                     "name": book_obj.contact_id.name,
