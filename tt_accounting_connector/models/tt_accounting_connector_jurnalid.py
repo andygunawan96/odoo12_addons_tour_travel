@@ -706,7 +706,7 @@ class AccountingConnectorAccurate(models.Model):
                                 "rate": float(rec['rate']),
                                 "discount": 0,
                                 "product_name": rec['product']['name'],
-                                "description": rec['discount']
+                                "description": rec['description']
                             })
                         transaction_line_list.append({
                             "quantity": 1,
