@@ -97,6 +97,8 @@ class TtPaymentApiCon(models.Model):
                         if pay_acq_num.is_use_point_reward:
                             reservation_transaction_amount -= pay_acq_num.point_reward_amount
                         ##testing dulu
+                        _logger.info("BOOKING Transaction %s" % str(reservation_transaction_amount))
+                        _logger.info("DATA Transaction %s" % str(data['transaction_amount']))
                         if reservation_transaction_amount == float(data['transaction_amount']):
                             seq_id = ''
                             if book_obj.payment_acquirer_number_id:
