@@ -393,7 +393,7 @@ class PaymentAcquirerNumber(models.Model):
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type')
     email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
-    is_use_point_reward = fields.Boolean('Is Use Point Reward', default=False)
+    is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
     point_reward_amount = fields.Float('Point Reward Amount')
 
     @api.depends('number','payment_acquirer_id')
@@ -454,9 +454,6 @@ class PaymentAcquirerNumber(models.Model):
             else:
                 point_amount = amount - payment_acq_obj.minimum_amount
             amount -= point_amount
-            ### MASUKKAN POINT KE UNPROCESS AMOUNT
-            booking_obj.agent_id.unprocessed_point_reward += point_amount
-            booking_obj.is_use_point_reward = True
 
         if payment_acq_obj.account_number: ## Transfer mutasi
             unique_obj = self.env['payment.acquirer'].generate_unique_amount(amount, False)
@@ -482,7 +479,7 @@ class PaymentAcquirerNumber(models.Model):
             'res_model': provider_type,
             'res_id': booking_obj.id,
             'time_limit': hold_date,
-            'is_use_point_reward': is_use_point,
+            'is_using_point_reward': is_use_point,
             'point_reward_amount': point_amount,
             'agent_id': booking_obj.agent_id.id
         })

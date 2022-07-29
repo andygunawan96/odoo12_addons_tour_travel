@@ -94,7 +94,7 @@ class TtPaymentApiCon(models.Model):
                     _logger.info(data['order_number'])
                     if book_obj:
                         reservation_transaction_amount = book_obj.total - book_obj.total_discount
-                        if pay_acq_num.is_use_point_reward:
+                        if pay_acq_num.is_using_point_reward:
                             reservation_transaction_amount -= pay_acq_num.point_reward_amount
                         ##testing dulu
                         _logger.info("BOOKING Transaction %s" % str(reservation_transaction_amount))
@@ -111,7 +111,7 @@ class TtPaymentApiCon(models.Model):
                                 'member': False, # KALAU BAYAR PAKE ESPAY PASTI MEMBER FALSE
                                 'acquirer_seq_id': seq_id,
                                 'force_issued': True,
-                                'use_point': book_obj.is_use_point_reward
+                                'use_point': book_obj.is_using_point_reward
                             }
                             res = ERR.get_no_error(values)
                         else:
@@ -140,7 +140,7 @@ class TtPaymentApiCon(models.Model):
                     different_time = payment_acq_number_obj.time_limit - datetime.now()
                     timelimit = int(different_time.seconds / 60)
                     ## ada 2 cara amount langsung pakai amount di payment acq number / amount dari book_obj di kurang dengan point reward yg di pakai
-                    if payment_acq_number_obj.is_use_point_reward:
+                    if payment_acq_number_obj.is_using_point_reward:
                         amount -= payment_acq_number_obj.point_reward_amount
                 else: ## KALAU PAYMENT ACQ NUMBER TIDAK KETEMU
                     different_time = book_obj.hold_date - datetime.now()

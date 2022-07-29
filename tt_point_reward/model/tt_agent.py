@@ -32,7 +32,7 @@ class TtAgent(models.Model):
     def _compute_unprocessed_point_reward(self):
         for rec in self:
             total_amt = 0
-            payment_acq_number_objs = self.env['payment.acquirer.number'].sudo().search([('agent_id', '=', rec.id), ('state', 'in', ['close', 'waiting']), ('is_use_point_reward','=',True)])
+            payment_acq_number_objs = self.env['payment.acquirer.number'].sudo().search([('agent_id', '=', rec.id), ('state', 'in', ['close', 'waiting']), ('is_using_point_reward','=',True)])
             for payment_acq_number_obj in payment_acq_number_objs:
                 total_amt += payment_acq_number_obj.point_reward_amount
             rec.unprocessed_point_reward = total_amt

@@ -167,7 +167,7 @@ class TtReservation(models.Model):
     reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State',default='not_reconciled',
                                        compute='_compute_reconcile_state', store=True )
 
-    is_use_point_reward = fields.Boolean('Is Use Point Reward', default=False)
+    is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
     is_get_point_reward = fields.Boolean('Is Get Point Reward', default=False)
 
     @api.model
@@ -823,7 +823,7 @@ class TtReservation(models.Model):
             'booked_by': self.user_id.name,
             'issued_by': self.issued_uid.name,
             'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-            'use_point': self.is_use_point_reward
+            'use_point': self.is_using_point_reward
             # END
         }
         if self.booker_insentif:
