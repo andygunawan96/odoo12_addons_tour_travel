@@ -731,7 +731,6 @@ class TtAgent(models.Model):
             file.write(row)
         file.close()
 
-
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.target'

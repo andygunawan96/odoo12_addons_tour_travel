@@ -581,6 +581,70 @@ class AccountingConnectorAccurate(models.Model):
             _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0
 
+    def search_purchase(self, reservation_name, data_login):
+        url = "%s/partner/core/api/v1/purchase_invoices" % data_login['url_api']
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
+        }
+
+        index_page = 1
+        page_size = 10000000
+        while True:
+            data = {
+                "page": index_page,
+                "page_size": page_size,
+                "sort_key": {},
+                "sort_order": ""
+            }
+            _logger.info('######REQUEST SEARCH PURCHASE#########\n%s' % json.dumps(data))
+            res = requests.get(url, headers=headers, json=data)
+            _logger.info('######RESPONSE SEARCH PURCHASE#########\n%s' % json.dumps(res.text))
+            res_response = json.loads(res.text)
+            reservation = [d for d in res_response['purchase_invoices'] if d['reference_no'] in reservation_name]
+            if res_response['total_pages'] <= index_page or len(reservation) > 0:
+                if len(reservation) > 0:
+                    reservation = reservation[0]
+                else:
+                    # reservation = []
+                    reservation = res_response['purchase_invoices'][0] ## FOR TESTING ONLY
+                break
+            index_page += 1
+        return reservation
+
+    def search_sales(self, reservation_name, data_login):
+        url = "%s/partner/core/api/v1/sales_invoices" % data_login['url_api']
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
+        }
+
+        index_page = 1
+        page_size = 10000000
+        while True:
+            data = {
+                "page": index_page,
+                "page_size": page_size,
+                "sort_key": {},
+                "sort_order": ""
+            }
+            _logger.info('######REQUEST SEARCH SALES#########\n%s' % json.dumps(data))
+            res = requests.get(url, headers=headers, json=data)
+            _logger.info('######RESPONSE SEARCH SALES#########\n%s' % json.dumps(res.text))
+            res_response = json.loads(res.text)
+            reservation = [d for d in res_response['sales_invoices'] if d['reference_no'] in reservation_name]
+            if res_response['total_pages'] <= index_page or len(reservation) > 0:
+                if len(reservation) > 0:
+                    reservation = reservation[0]
+                else:
+                    # reservation = []
+                    reservation = res_response['sales_invoices'][0] ## FOR TESTING ONLY
+                break
+            index_page += 1
+        return reservation
+
     def add_purchase_after_sales(self, data_login, vals):
         if len(vals['ledgers']) > 0:
             url = "%s/partner/core/api/v1/purchase_invoices" % data_login['url_api']
@@ -622,51 +686,119 @@ class AccountingConnectorAccurate(models.Model):
                 price = vals['reschedule_amount']
                 product = self.get_product(data_login, product_name)
                 issued_date = vals['create_date'].split(' ')[0]
-                data = {
-                    "purchase_invoice": {
-                        "transaction_date": issued_date,
-                        "transaction_lines_attributes": [
-                            {
-                                "quantity": 1,
-                                "rate": price,
+                is_reservation_found = False
+                if len(vals['reservation_name']) > 0:
+                    reservaation_name = ''
+                    for rec in vals['invoice_data']:
+                        if invoice != '':
+                            invoice = ', '
+                        invoice += rec
+                    booking_reservation_list = self.search_purchase(invoice, data_login)
+                    if len(booking_reservation_list) > 0:
+                        is_reservation_found = True
+                        issued_date = booking_reservation_list['transaction_date'].split('/')
+                        issued_date.reverse()
+                        issued_date = "-".join(issued_date)
+                        transaction_line_list = []
+                        for rec in booking_reservation_list['transaction_lines_attributes']:
+                            transaction_line_list.append({
+                                "quantity": rec['quantity'],
+                                "rate": float(rec['rate']),
                                 "discount": 0,
-                                "product_name": product,
-                                "description": desc
+                                "product_name": rec['product']['name'],
+                                "description": rec['discount']
+                            })
+                        transaction_line_list.append({
+                            "quantity": 1,
+                            "rate": price,
+                            "discount": 0,
+                            "product_name": product,
+                            "description": desc
+                        })
+                        data = {
+                            "purchase_invoice": {
+                                "transaction_date": issued_date,
+                                "transaction_lines_attributes": transaction_line_list,
+                                "shipping_date": issued_date,
+                                "shipping_price": 0,
+                                "shipping_address": "",
+                                "is_shipped": True,
+                                "ship_via": "",
+                                "reference_no": "%s; %s - %s" % (booking_reservation_list['reference_no'], invoice, product),
+                                "tracking_no": "",
+                                "address": "",
+                                "term_name": "Cash",
+                                "due_date": issued_date,
+                                "refund_from_name": "",
+                                "deposit": 0,
+                                "discount_unit": 0,
+                                "witholding_account_name": "",
+                                "witholding_value": 0,
+                                "witholding_type": "percent",
+                                "discount_type_name": "percent",
+                                "person_name": vendor,
+                                "warehouse_name": "",
+                                "warehouse_code": "",
+                                "tags": [],
+                                "email": "",
+                                "message": "%s; %s" % (booking_reservation_list['message'], desc),
+                                "memo": "%s; %s" % (booking_reservation_list['memo'], desc),
+                                "custom_id": "",
+                                "source": "API",
+                                "use_tax_inclusive": False,
+                                "tax_after_discount": False
                             }
-                        ],
-                        "shipping_date": issued_date,
-                        "shipping_price": 0,
-                        "shipping_address": "",
-                        "is_shipped": True,
-                        "ship_via": "",
-                        "reference_no": "%s - %s" % (invoice, product),
-                        "tracking_no": "",
-                        "address": "",
-                        "term_name": "Cash",
-                        "due_date": issued_date,
-                        "refund_from_name": "",
-                        "deposit": 0,
-                        "discount_unit": 0,
-                        "witholding_account_name": "",
-                        "witholding_value": 0,
-                        "witholding_type": "percent",
-                        "discount_type_name": "percent",
-                        "person_name": vendor,
-                        "warehouse_name": "",
-                        "warehouse_code": "",
-                        "tags": [],
-                        "email": "",
-                        "message": desc,
-                        "memo": desc,
-                        "custom_id": "",
-                        "source": "API",
-                        "use_tax_inclusive": False,
-                        "tax_after_discount": False
+                        }
+                        url += '/%s' % booking_reservation_list['id']
+                        _logger.info('######REQUEST PURCHASE RESCHEDULE UPDATE SALES#########\n%s' % json.dumps(data))
+                        response = requests.patch(url, headers=headers, json=data)
+                        _logger.info('######RESPONSE PURCHASE RESCHEDULE UPDATE SALES#########\n%s' % response.text)
+                if not is_reservation_found:
+                    data = {
+                        "purchase_invoice": {
+                            "transaction_date": issued_date,
+                            "transaction_lines_attributes": [
+                                {
+                                    "quantity": 1,
+                                    "rate": price,
+                                    "discount": 0,
+                                    "product_name": product,
+                                    "description": desc
+                                }
+                            ],
+                            "shipping_date": issued_date,
+                            "shipping_price": 0,
+                            "shipping_address": "",
+                            "is_shipped": True,
+                            "ship_via": "",
+                            "reference_no": "%s - %s" % (invoice, product),
+                            "tracking_no": "",
+                            "address": "",
+                            "term_name": "Cash",
+                            "due_date": issued_date,
+                            "refund_from_name": "",
+                            "deposit": 0,
+                            "discount_unit": 0,
+                            "witholding_account_name": "",
+                            "witholding_value": 0,
+                            "witholding_type": "percent",
+                            "discount_type_name": "percent",
+                            "person_name": vendor,
+                            "warehouse_name": "",
+                            "warehouse_code": "",
+                            "tags": [],
+                            "email": "",
+                            "message": desc,
+                            "memo": desc,
+                            "custom_id": "",
+                            "source": "API",
+                            "use_tax_inclusive": False,
+                            "tax_after_discount": False
+                        }
                     }
-                }
-                _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
-                response = requests.post(url, headers=headers, json=data)
-                _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
+                    _logger.info('######REQUEST PURCHASE RESCHEDULE#########\n%s' % json.dumps(data))
+                    response = requests.post(url, headers=headers, json=data)
+                    _logger.info('######RESPONSE PURCHASE RESCHEDULE#########\n%s' % response.text)
         else:
             _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0
@@ -698,49 +830,114 @@ class AccountingConnectorAccurate(models.Model):
 
             due_date = (datetime.strptime(vals['create_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%d-%m-%Y')
             issued_date = vals['create_date'].split(' ')[0]
-            data = {
-                "sales_invoice": {
-                    "transaction_date": issued_date,
-                    "transaction_lines_attributes": [
-                        {
-                            "quantity": 1,
-                            "rate": vals['total_amount'],
+            is_reservation_found = False
+            if vals['reservation_name']:
+                reservation_name = vals['reservation_name']
+                booking_reservation_list = self.search_purchase(reservation_name, data_login)
+                if len(booking_reservation_list) > 0:
+                    is_reservation_found = True
+                    issued_date = booking_reservation_list['transaction_date'].split('/')
+                    issued_date.reverse()
+                    issued_date = "-".join(issued_date)
+                    due_date = booking_reservation_list['due_date'].split('/')
+                    due_date.reverse()
+                    due_date = "-".join(due_date)
+                    transaction_line_list = []
+                    for rec in booking_reservation_list['transaction_lines_attributes']:
+                        transaction_line_list.append({
+                            "quantity": rec['quantity'],
+                            "rate": rec['amount'],
                             "discount": 0,
-                            "product_name": product,
-                            "description": desc
+                            "product_name": rec['product']['name'],
+                            "description": rec['description']
+                        })
+                    transaction_line_list.append({
+                        "quantity": 1,
+                        "rate": vals['total_amount'],
+                        "discount": 0,
+                        "product_name": product,
+                        "description": desc
+                    })
+                    data = {
+                        "sales_invoice": {
+                            "transaction_date": issued_date,
+                            "transaction_lines_attributes": transaction_line_list,
+                            "shipping_date": issued_date,
+                            "shipping_price": 0,
+                            "shipping_address": "",
+                            "is_shipped": False,
+                            "ship_via": "",
+                            "reference_no": booking_reservation_list['reference_no'],
+                            "tracking_no": "",
+                            "address": "",
+                            "term_name": 'Cash' if vals['billing_due_date'] == 0 else "Billing cycle %s days" % vals['billing_due_date'],
+                            "due_date": due_date,
+                            "deposit": 0,
+                            "discount_unit": 0,
+                            "witholding_value": 0,
+                            "witholding_type": "percent",
+                            "discount_type_name": "percent",
+                            "person_name": contact,
+                            "warehouse_name": "",
+                            "warehouse_code": "",
+                            "tags": [],
+                            "email": vals['booker'].get('email', ''),
+                            "message": "%s; %s" % (booking_reservation_list['message'], desc),
+                            "memo": "%s; %s" % (booking_reservation_list['memo'], desc),
+                            "custom_id": "",
+                            "source": "API",
+                            "use_tax_inclusive": False,
+                            "tax_after_discount": False
                         }
-                    ],
-                    "shipping_date": issued_date,
-                    "shipping_price": 0,
-                    "shipping_address": "",
-                    "is_shipped": False,
-                    "ship_via": "",
-                    "reference_no": vals['order_number'],
-                    "tracking_no": "",
-                    "address": "",
-                    "term_name": 'Cash' if vals['billing_due_date'] == 0 else "Billing cycle %s days" % vals['billing_due_date'],
-                    "due_date": due_date,
-                    "deposit": 0,
-                    "discount_unit": 0,
-                    "witholding_value": 0,
-                    "witholding_type": "percent",
-                    "discount_type_name": "percent",
-                    "person_name": contact,
-                    "warehouse_name": "",
-                    "warehouse_code": "",
-                    "tags": [],
-                    "email": vals['booker'].get('email', ''),
-                    "message": desc,
-                    "memo": desc,
-                    "custom_id": "",
-                    "source": "API",
-                    "use_tax_inclusive": False,
-                    "tax_after_discount": False
+                    }
+                    url += '/%s' % booking_reservation_list['id']
+                    _logger.info('######REQUEST PURCHASE RESCHEDULE UPDATE SALES#########\n%s' % json.dumps(data))
+                    response = requests.patch(url, headers=headers, json=data)
+                    _logger.info('######RESPONSE PURCHASE RESCHEDULE UPDATE SALES#########\n%s' % response.text)
+            if not is_reservation_found:
+                data = {
+                    "sales_invoice": {
+                        "transaction_date": issued_date,
+                        "transaction_lines_attributes": [
+                            {
+                                "quantity": 1,
+                                "rate": vals['total_amount'],
+                                "discount": 0,
+                                "product_name": product,
+                                "description": desc
+                            }
+                        ],
+                        "shipping_date": issued_date,
+                        "shipping_price": 0,
+                        "shipping_address": "",
+                        "is_shipped": False,
+                        "ship_via": "",
+                        "reference_no": vals['order_number'],
+                        "tracking_no": "",
+                        "address": "",
+                        "term_name": 'Cash' if vals['billing_due_date'] == 0 else "Billing cycle %s days" % vals['billing_due_date'],
+                        "due_date": due_date,
+                        "deposit": 0,
+                        "discount_unit": 0,
+                        "witholding_value": 0,
+                        "witholding_type": "percent",
+                        "discount_type_name": "percent",
+                        "person_name": contact,
+                        "warehouse_name": "",
+                        "warehouse_code": "",
+                        "tags": [],
+                        "email": vals['booker'].get('email', ''),
+                        "message": desc,
+                        "memo": desc,
+                        "custom_id": "",
+                        "source": "API",
+                        "use_tax_inclusive": False,
+                        "tax_after_discount": False
+                    }
                 }
-            }
-            _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
-            response = requests.post(url, headers=headers, json=data)
-            _logger.info('######RESPONSE SALES#########\n%s' % response.text)
+                _logger.info('######REQUEST SALES RESCHEDULE UPDATE SALES#########\n%s' % json.dumps(data))
+                response = requests.post(url, headers=headers, json=data)
+                _logger.info('######RESPONSE SALES RESCHEDULE UPDATE SALES#########\n%s' % response.text)
         else:
             _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0

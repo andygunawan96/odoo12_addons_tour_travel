@@ -11,20 +11,20 @@ from datetime import datetime
 _logger = logging.getLogger(__name__)
 
 provider_selection = [
-        ('altea', 'Garuda Altea'),
-        ('amadeus', 'Amadeus'),
-        ('lionair', 'Lion Air'),
-        ('lionairapi', 'Lion Air API'),
-        ('citilink', 'Citilink'),
-        ('sriwijaya', 'Sriwijaya'),
-        ('sia', 'Singapore Airline NDC'),
-        ('scoot', 'Scoot'),
-        ('jetstar', 'Jetstar'),
-        ('rodextrip_airline', 'Rodextrip Airline'),
-        ('airasia', 'Airasia'),
-        ('airasia_web', 'Airasia Web'),
-        # ('sabre', 'Sabre'),
-    ]
+    ('altea', 'Garuda Altea'),
+    ('amadeus', 'Amadeus'),
+    ('lionair', 'Lion Air'),
+    ('lionairapi', 'Lion Air API'),
+    ('citilink', 'Citilink'),
+    ('sriwijaya', 'Sriwijaya'),
+    ('sia', 'Singapore Airline NDC'),
+    ('scoot', 'Scoot'),
+    ('jetstar', 'Jetstar'),
+    ('rodextrip_airline', 'Rodextrip Airline'),
+    ('airasia', 'Airasia'),
+    ('airasia_web', 'Airasia Web'),
+    # ('sabre', 'Sabre'),
+]
 
 class TtGetBookingFromVendor(models.TransientModel):
     _name = "tt.get.booking.from.vendor"
