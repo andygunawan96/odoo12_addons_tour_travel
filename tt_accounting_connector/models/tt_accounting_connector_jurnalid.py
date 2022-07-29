@@ -289,7 +289,7 @@ class AccountingConnectorAccurate(models.Model):
         }
         data = {
             "product": {
-                "name": "Ticket Perjalanan",
+                "name": product_name,
                 "taxable_buy": True,
                 "unit_name": "Paket",
                 "sell_price_per_unit": "0",
@@ -379,9 +379,10 @@ class AccountingConnectorAccurate(models.Model):
                 if send:
                     product = self.get_product(data_login, product_name)
                     ###################################
+                    issued_date = vals['issued_date'].split(' ')[0]
                     data = {
                         "purchase_invoice": {
-                            "transaction_date": vals['issued_date'].split(' ')[0],
+                            "transaction_date": issued_date,
                             "transaction_lines_attributes": [
                                 {
                                     "quantity": 1,
@@ -391,7 +392,7 @@ class AccountingConnectorAccurate(models.Model):
                                     "description": desc
                                 }
                             ],
-                            "shipping_date": vals['issued_date'].split(' ')[0],
+                            "shipping_date": issued_date,
                             "shipping_price": 0,
                             "shipping_address": "",
                             "is_shipped": True,
@@ -400,7 +401,7 @@ class AccountingConnectorAccurate(models.Model):
                             "tracking_no": "",
                             "address": "",
                             "term_name": "Cash",
-                            "due_date": vals['issued_date'].split(' ')[0],
+                            "due_date": issued_date,
                             "refund_from_name": "",
                             "deposit": 0,
                             "discount_unit": 0,
@@ -452,11 +453,11 @@ class AccountingConnectorAccurate(models.Model):
 
         product = self.get_product(data_login, 'Tiket Perjalanan')
 
-        due_date = (datetime.strptime(vals['issued_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=30)).strftime('%Y-%m-%d')
-
+        due_date = (datetime.strptime(vals['issued_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%Y-%m-%d')
+        issued_date = vals['issued_date'].split(' ')[0]
         data = {
             "sales_invoice": {
-                "transaction_date": vals['issued_date'].split(' ')[0],
+                "transaction_date": issued_date,
                 "transaction_lines_attributes": [
                     {
                         "quantity": 1,
@@ -466,7 +467,7 @@ class AccountingConnectorAccurate(models.Model):
                         "description": desc
                     }
                 ],
-                "shipping_date": vals['issued_date'].split(' ')[0],
+                "shipping_date": issued_date,
                 "shipping_price": 0,
                 "shipping_address": "",
                 "is_shipped": False,
@@ -474,7 +475,7 @@ class AccountingConnectorAccurate(models.Model):
                 "reference_no": vals['order_number'],
                 "tracking_no": "",
                 "address": "",
-                "term_name": "Billing cycle 30 days",
+                "term_name": 'Cash' if vals['billing_due_date'] == 0 else "Billing cycle %s days" % vals['billing_due_date'],
                 "due_date": due_date,
                 "deposit": 0,
                 "discount_unit": 0,
@@ -499,23 +500,288 @@ class AccountingConnectorAccurate(models.Model):
         _logger.info('######RESPONSE SALES#########\n%s' % response.text)
         return 0
 
+    def get_account(self, data_login, account_name):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
+        }
+
+        data = {}
+        url = '%s/partner/core/api/v1/accounts' % (data_login['url_api'])
+        _logger.info('######REQUEST SEARCH ACCOUNT#########\n%s' % json.dumps(data))
+        res = requests.get(url, headers=headers, json=data)
+        _logger.info('######RESPONSE SEARCH ACCOUNT#########\n%s' % res.text)
+        res_response = json.loads(res.text)
+        account_name_data = [d['name'] for d in res_response['accounts'] if d['name'] in account_name]
+        if len(account_name_data) > 0:
+            account_name = account_name_data[0]
+        else:
+            account_name = self.add_account(data_login, account_name)
+        return account_name
+
+    def add_account(self, data_login, account):
+        url = "%s/partner/core/api/v1/accounts" % data_login['url_api']
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
+        }
+        data = {
+            "account": {
+                "name": account,
+                "description": "Account Description %s" % account,
+                "category_name": "Cash & Bank",
+                "parent_category_name": "Bank Account",
+                "as_a_parent": True,
+                "children_names": [
+
+                ]
+            }
+        }
+        _logger.info('######REQUEST ADD ACCOUNT#########\n%s' % json.dumps(data))
+        response = requests.post(url, headers=headers, json=data)
+        _logger.info('######RESPONSE ADD ACCOUNT#########\n%s' % response.text)
+        return account
+
+    def create_journal(self, data_login, vals, account_ho, account_agent):
+        if len(vals['ledgers']) > 0:
+            url = "%s/partner/core/api/v1/journal_entries" % data_login['url_api']
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer %s" % data_login['access_token'],
+                "api_key": data_login['api_key']
+            }
+            date = vals['date'].split(' ')[0].split('-')
+            date.reverse()
+            data = {
+                "journal_entry": {
+                    "transaction_date": "-".join(date),
+                    "memo": "TOP UP %s %s" % (account_agent, vals['name']),
+                    "transaction_account_lines_attributes": [
+                      {
+                        "account_name": account_agent,
+                        "debit": vals['total'],
+                        "description": "TOP UP %s %s" % (account_agent, vals['name'])
+                      },
+                      {
+                        "account_name": account_ho,
+                        "credit": vals['total'],
+                        "description": "TOP UP %s %s" % (account_agent, vals['name'])
+                      }
+                    ],
+                    "tags": [
+                    ]
+                }
+            }
+            _logger.info('######REQUEST ADD LEDGER TOP UP#########\n%s' % json.dumps(data))
+            response = requests.post(url, headers=headers, json=data)
+            _logger.info('######RESPONSE ADD LEDGER TOP UP#########\n%s' % response.text)
+        else:
+            _logger.info('###JurnalID, Already sent to vendor accounting####')
+        return 0
+
+    def add_purchase_after_sales(self, data_login, vals):
+        if len(vals['ledgers']) > 0:
+            url = "%s/partner/core/api/v1/purchase_invoices" % data_login['url_api']
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer %s" % data_login['access_token'],
+                "api_key": data_login['api_key']
+            }
+
+            invoice = ''
+            for rec in vals['invoice_data']:
+                if invoice != '':
+                    invoice = ', '
+                invoice += rec
+            pnr_list = {}
+            for idx, segment in enumerate(vals['new_segment'], start=1):
+                if not pnr_list.get(segment['pnr']):
+                    pnr_list[segment['pnr']] = []
+                pnr_list[segment['pnr']].append(segment)
+
+            for pnr in pnr_list:
+                passenger_data = ''
+                desc = ''
+                vendor_data = ''
+                for pax in vals['passengers']:
+                    if passenger_data != '':
+                        passenger_data += ', '
+                    passenger_data += pax['name']
+                for segment in pnr_list[pnr]:
+                    desc += "%s; Reschedule Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, segment['origin'], segment['destination'],segment['departure_date'].split(' ')[0], passenger_data)
+                    vendor_data = segment['provider']
+
+                ##### AMBIL VENDOR ###############
+                vendor = self.get_vendor(data_login, vendor_data)
+                ###################################
+
+                ##### AMBIL PRODUCT ###############
+                product_name = 'Reschedule Tiket Perjalanan'
+                price = vals['reschedule_amount']
+                product = self.get_product(data_login, product_name)
+                issued_date = vals['create_date'].split(' ')[0]
+                data = {
+                    "purchase_invoice": {
+                        "transaction_date": issued_date,
+                        "transaction_lines_attributes": [
+                            {
+                                "quantity": 1,
+                                "rate": price,
+                                "discount": 0,
+                                "product_name": product,
+                                "description": desc
+                            }
+                        ],
+                        "shipping_date": issued_date,
+                        "shipping_price": 0,
+                        "shipping_address": "",
+                        "is_shipped": True,
+                        "ship_via": "",
+                        "reference_no": "%s - %s" % (invoice, product),
+                        "tracking_no": "",
+                        "address": "",
+                        "term_name": "Cash",
+                        "due_date": issued_date,
+                        "refund_from_name": "",
+                        "deposit": 0,
+                        "discount_unit": 0,
+                        "witholding_account_name": "",
+                        "witholding_value": 0,
+                        "witholding_type": "percent",
+                        "discount_type_name": "percent",
+                        "person_name": vendor,
+                        "warehouse_name": "",
+                        "warehouse_code": "",
+                        "tags": [],
+                        "email": "",
+                        "message": desc,
+                        "memo": desc,
+                        "custom_id": "",
+                        "source": "API",
+                        "use_tax_inclusive": False,
+                        "tax_after_discount": False
+                    }
+                }
+                _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
+                response = requests.post(url, headers=headers, json=data)
+                _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
+        else:
+            _logger.info('###JurnalID, Already sent to vendor accounting####')
+        return 0
+
+    def add_sales_after_sales(self, data_login, vals, contact):
+        if len(vals['ledgers']) > 0:
+            url = "%s/partner/core/api/v1/sales_invoices" % data_login['url_api']
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer %s" % data_login['access_token'],
+                "api_key": data_login['api_key']
+            }
+            passenger_data = ''
+            desc = ''
+            for pax in vals['passengers']:
+                if passenger_data != '':
+                    passenger_data += ', '
+                passenger_data += pax['name']
+            for segment in vals['new_segment']:
+                pnr = segment['pnr']
+                if desc != '':
+                    desc += '; '
+                desc += "%s; Reschedule Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
+                pnr, segment['origin'], segment['destination'],
+                segment['departure_date'].split(' ')[0], passenger_data)
+                passenger_data = ''
+
+            product = self.get_product(data_login, 'Reschedule Tiket Perjalanan')
+
+            due_date = (datetime.strptime(vals['create_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%d-%m-%Y')
+            issued_date = vals['create_date'].split(' ')[0]
+            data = {
+                "sales_invoice": {
+                    "transaction_date": issued_date,
+                    "transaction_lines_attributes": [
+                        {
+                            "quantity": 1,
+                            "rate": vals['total_amount'],
+                            "discount": 0,
+                            "product_name": product,
+                            "description": desc
+                        }
+                    ],
+                    "shipping_date": issued_date,
+                    "shipping_price": 0,
+                    "shipping_address": "",
+                    "is_shipped": False,
+                    "ship_via": "",
+                    "reference_no": vals['order_number'],
+                    "tracking_no": "",
+                    "address": "",
+                    "term_name": 'Cash' if vals['billing_due_date'] == 0 else "Billing cycle %s days" % vals['billing_due_date'],
+                    "due_date": due_date,
+                    "deposit": 0,
+                    "discount_unit": 0,
+                    "witholding_value": 0,
+                    "witholding_type": "percent",
+                    "discount_type_name": "percent",
+                    "person_name": contact,
+                    "warehouse_name": "",
+                    "warehouse_code": "",
+                    "tags": [],
+                    "email": vals['booker'].get('email', ''),
+                    "message": desc,
+                    "memo": desc,
+                    "custom_id": "",
+                    "source": "API",
+                    "use_tax_inclusive": False,
+                    "tax_after_discount": False
+                }
+            }
+            _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
+            response = requests.post(url, headers=headers, json=data)
+            _logger.info('######RESPONSE SALES#########\n%s' % response.text)
+        else:
+            _logger.info('###JurnalID, Already sent to vendor accounting####')
+        return 0
 
     def add_sales_order(self, vals):
         cookies = False
         data_login = self.acc_login()
 
-        ##### AMBIL CONTACT ###############
-        contact = self.get_contact(data_login, vals)
-        ###################################
+        if vals['category'] == 'reservation':
+            ##### AMBIL CONTACT ###############
+            contact = self.get_contact(data_login, vals)
+            ###################################
+            ####### CREATE PURCHASE INVOICE ##########
+            self.add_purchase(data_login, vals)
+            ###################################
 
-        ####### CREATE PURCHASE INVOICE ##########
-        self.add_purchase(data_login, vals)
-        ###################################
+            ####### CREATE SALES INVOICE ##########
+            self.add_sales(data_login, vals, contact)
+            ###################################
+        elif vals['category'] == 'top_up':
+            ######## GET ACCOUNT ############
+            account_ho = self.get_account(data_login, vals['bank'])
+            account_agent = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
+            self.create_journal(data_login, vals, account_ho, account_agent)
+            pass
+        elif vals['category'] == 'reschedule':
+            ##### AMBIL CONTACT ###############
+            contact = self.get_contact(data_login, vals)
+            ###################################
 
-        ####### CREATE SALES INVOICE ##########
-        self.add_sales(data_login, vals, contact)
-        ###################################
+            ####### CREATE PURCHASE INVOICE ##########
+            self.add_purchase_after_sales(data_login, vals)
+            ###################################
 
+            ####### CREATE SALES INVOICE ##########
+            self.add_sales_after_sales(data_login, vals, contact)
+            ###################################
+            pass
+        elif vals['category'] == 'refund':
+            ####### CREATE PURCHASE INVOICE ##########
+            pass
 
         res = self.response_parser()
         return res

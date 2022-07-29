@@ -93,7 +93,8 @@ class TtPaymentApiCon(models.Model):
                     book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
                     _logger.info(data['order_number'])
                     if book_obj:
-                        if book_obj.total - book_obj.total_discount == float(data['transaction_amount']):
+                        reservation_transaction_amount = book_obj.total - book_obj.total_discount
+                        if reservation_transaction_amount == float(data['transaction_amount']):
                             seq_id = ''
                             if book_obj.payment_acquirer_number_id:
                                 seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
@@ -127,6 +128,7 @@ class TtPaymentApiCon(models.Model):
         elif action == 'get_amount':
             book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
             if book_obj:
+                amount = book_obj.total - book_obj.total_discount
                 payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
                 if payment_acq_number_obj:
                     different_time = payment_acq_number_obj.time_limit - datetime.now()
@@ -139,7 +141,7 @@ class TtPaymentApiCon(models.Model):
                         different_time_in_minutes = int(different_time.seconds / 60)
                         timelimit = different_time_in_minutes - 5
                 values = {
-                    "amount": book_obj.total - book_obj.total_discount,
+                    "amount": amount,
                     "currency": book_obj.currency_id.name,
                     "phone_number": "".join(book_obj.contact_phone.split(' - ')),
                     "name": book_obj.contact_id.name,
