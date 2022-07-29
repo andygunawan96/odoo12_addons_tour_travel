@@ -77,7 +77,8 @@ class AccountingConnectorAccurate(models.Model):
         }
 
         data = {}
-        data_contact = vals.get('customer_parent_name') or vals['booker']['name']
+
+        data_contact = vals.get('customer_parent_name') or vals['booker']['name'] if vals.get('customer_parent_type_id').get('code') == 'cor' else vals['booker']['name']
         contact_name = ''
         index_page = 1
         while True:
@@ -351,8 +352,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'],
-                    provider_booking['departure_date'].split(' ')[0], passenger_data)
+                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'], provider_booking['departure_date'].split(' ')[0], passenger_data)
                     vendor_data = provider_booking['provider']
 
 
