@@ -607,8 +607,8 @@ class AccountingConnectorAccurate(models.Model):
                 if len(reservation) > 0:
                     reservation = reservation[0]
                 else:
-                    # reservation = []
-                    reservation = res_response['purchase_invoices'][0] ## FOR TESTING ONLY
+                    reservation = []
+                    # reservation = res_response['purchase_invoices'][0] ## FOR TESTING ONLY
                 break
             index_page += 1
         return reservation
@@ -639,8 +639,8 @@ class AccountingConnectorAccurate(models.Model):
                 if len(reservation) > 0:
                     reservation = reservation[0]
                 else:
-                    # reservation = []
-                    reservation = res_response['sales_invoices'][0] ## FOR TESTING ONLY
+                    reservation = []
+                    # reservation = res_response['sales_invoices'][0] ## FOR TESTING ONLY
                 break
             index_page += 1
         return reservation
