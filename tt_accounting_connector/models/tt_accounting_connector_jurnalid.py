@@ -77,7 +77,7 @@ class AccountingConnectorAccurate(models.Model):
         }
 
         data = {}
-        _logger.info(json.loads(vals))
+        _logger.info(json.dumps(vals))
         data_contact = vals.get('customer_parent_name') or vals['booker']['name'] if vals.get('customer_parent_type_id').get('code') == 'cor' else vals['booker']['name']
         contact_name = ''
         index_page = 1
