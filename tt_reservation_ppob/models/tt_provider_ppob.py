@@ -193,7 +193,7 @@ class TtProviderPPOB(models.Model):
                 'state': 'booked',
                 'booked_uid': api_context['co_uid'],
                 'booked_date': fields.Datetime.now(),
-                'hold_date': datetime.today() + timedelta(hours=2),
+                'hold_date': datetime.today() + timedelta(hours=1),
                 'balance_due': provider_data['balance_due']
             })
 
