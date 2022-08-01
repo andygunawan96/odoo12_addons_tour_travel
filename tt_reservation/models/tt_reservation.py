@@ -899,7 +899,7 @@ class TtReservation(models.Model):
                 return ERR.get_error(1001)
             if book_obj.agent_id.id == context['co_agent_id']:
                 for psg in req['passengers']:
-                    book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'])
+                    book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'], req.get('type', ''))
             else:
                 return ERR.get_error(1001)
         except Exception as e:

@@ -119,6 +119,41 @@ class TtAccountingQueue(models.Model):
                         else:
                             temp_prov_price_dict['agent_nta'] += abs(sale.total)
                     temp_prov_dict.update(temp_prov_price_dict)
+
+                    for tick in prov.ticket_ids:
+                        temp_tick_price_dict = {
+                            'agent_nta': 0,
+                            'total_nta': 0,
+                            'parent_agent_commission': 0,
+                            'ho_commission': 0,
+                            'total_commission': 0,
+                            'total_channel_upsell': 0
+                        }
+                        for sale in tick.passenger_id.cost_service_charge_ids:
+                            if sale.charge_code == 'rac' and sale.charge_type == 'RAC':
+                                temp_tick_price_dict['agent_nta'] += abs(sale.amount)
+                            elif sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != self.env.ref(
+                                    'tt_base.rodex_ho').id:
+                                temp_tick_price_dict['parent_agent_commission'] += abs(sale.amount)
+                            elif sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == self.env.ref(
+                                    'tt_base.rodex_ho').id:
+                                temp_tick_price_dict['ho_commission'] += abs(sale.amount)
+                            elif sale.charge_type == 'RAC':
+                                temp_tick_price_dict['total_commission'] += abs(sale.amount)
+                            elif sale.charge_type not in ['DISC']:
+                                temp_tick_price_dict['total_nta'] += abs(sale.amount)
+                                temp_tick_price_dict['agent_nta'] += abs(sale.amount)
+                            else:
+                                temp_tick_price_dict['agent_nta'] += abs(sale.amount)
+
+                        for sale in tick.passenger_id.channel_service_charge_ids:
+                            if sale.charge_code == 'csc':
+                                temp_tick_price_dict['total_channel_upsell'] += abs(sale.amount)
+
+                        for prov_pax in temp_prov_dict['tickets']:
+                            if prov_pax['passenger_number'] == tick.passenger_id.sequence:
+                                prov_pax.update(temp_tick_price_dict)
+
                     prov_book_list.append(temp_prov_dict)
                 invoice_data = []
                 for rec in trans_obj.invoice_line_ids:
