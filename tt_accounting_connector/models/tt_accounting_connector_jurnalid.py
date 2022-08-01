@@ -602,7 +602,7 @@ class AccountingConnectorAccurate(models.Model):
             res = requests.get(url, headers=headers, json=data)
             _logger.info('######RESPONSE SEARCH PURCHASE#########\n%s' % json.dumps(res.text))
             res_response = json.loads(res.text)
-            reservation = [d for d in res_response['purchase_invoices'] if d['reference_no'] in reservation_name]
+            reservation = [d for d in res_response['purchase_invoices'] if reservation_name in d['reference_no']]
             if res_response['total_pages'] <= index_page or len(reservation) > 0:
                 if len(reservation) > 0:
                     reservation = reservation[0]
@@ -634,7 +634,7 @@ class AccountingConnectorAccurate(models.Model):
             res = requests.get(url, headers=headers, json=data)
             _logger.info('######RESPONSE SEARCH SALES#########\n%s' % json.dumps(res.text))
             res_response = json.loads(res.text)
-            reservation = [d for d in res_response['sales_invoices'] if d['reference_no'] in reservation_name]
+            reservation = [d for d in res_response['sales_invoices'] if reservation_name in d['reference_no']]
             if res_response['total_pages'] <= index_page or len(reservation) > 0:
                 if len(reservation) > 0:
                     reservation = reservation[0]
@@ -686,7 +686,7 @@ class AccountingConnectorAccurate(models.Model):
                     price = vals['reschedule_amount']
                     product = self.get_product(data_login, product_name)
                     issued_date = vals['create_date'].split(' ')[0]
-                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, issued_date, url, headers)
+                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers)
                     # if len(vals['reservation_name']) > 0:
                     #     reservation_name = ''
                     #     for rec in vals['invoice_data']:
@@ -822,21 +822,21 @@ class AccountingConnectorAccurate(models.Model):
                     price = vals['reschedule_amount']
                     product = self.get_product(data_login, product_name)
                     issued_date = vals['create_date'].split(' ')[0]
-                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, issued_date, url, headers)
+                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers)
         else:
             _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0
 
-    def add_purchase_after_sales_to_vendor(self, vals, data_login, price, product, desc, vendor, issued_date, url, headers):
+    def add_purchase_after_sales_to_vendor(self, vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers):
         is_reservation_found = False
         if len(vals['reservation_name']) > 0:
             reservation_name = ''
-            invoice = ''
-            for rec in vals['invoice_data']:
-                if invoice != '':
-                    invoice = ', '
-                invoice += rec
-            booking_reservation_list = self.search_purchase(invoice, data_login)
+            reservation_invoice = ''
+            for rec in vals['reservation_invoice_data']:
+                if reservation_invoice != '':
+                    reservation_invoice = ', '
+                reservation_invoice += rec
+            booking_reservation_list = self.search_purchase(reservation_invoice, data_login)
             if len(booking_reservation_list) > 0:
                 is_reservation_found = True
                 issued_date = booking_reservation_list['transaction_date'].split('/')
@@ -985,7 +985,7 @@ class AccountingConnectorAccurate(models.Model):
             is_reservation_found = False
             if vals['reservation_name']:
                 reservation_name = vals['reservation_name']
-                booking_reservation_list = self.search_purchase(reservation_name, data_login)
+                booking_reservation_list = self.search_sales(reservation_name, data_login)
                 if len(booking_reservation_list) > 0:
                     is_reservation_found = True
                     issued_date = booking_reservation_list['transaction_date'].split('/')
