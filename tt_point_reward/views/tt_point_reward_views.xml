@@ -15,8 +15,8 @@
         <field name="model">tt.point.reward</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="sequence"/>
                 <field name="is_active"/>
             </tree>
         </field>
