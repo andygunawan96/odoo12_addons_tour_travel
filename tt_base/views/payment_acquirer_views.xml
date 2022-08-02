@@ -221,8 +221,6 @@
                             <field name="url"/>
                             <field name="va_number"/>
                             <field name="bank_name"/>
-                            <field name="is_using_point_reward"/>
-                            <field name="point_reward_amount" attrs="{'invisible': [('is_using_point_reward','=',False)]}"/>
                             <field name="create_date"/>
                             <field name="time_limit"/>
                         </group>
