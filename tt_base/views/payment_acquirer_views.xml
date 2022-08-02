@@ -75,9 +75,10 @@
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
-                                <field name="va_fee_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
-                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
-                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
+                                <field name="va_fee_type" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
+                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
+                                <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
+                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                             </group>
                         </group>
                         <group name="acquirer_base2">
@@ -135,8 +136,10 @@
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
-                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
-                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
+                                <field name="va_fee_type" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
+                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
+                                <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
+                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
                             </group>
                         </group>
                         <group name="acquirer_base2">
@@ -218,6 +221,8 @@
                             <field name="url"/>
                             <field name="va_number"/>
                             <field name="bank_name"/>
+                            <field name="is_using_point_reward"/>
+                            <field name="point_reward_amount" attrs="{'invisible': [('is_using_point_reward','=',False)]}"/>
                             <field name="create_date"/>
                             <field name="time_limit"/>
                         </group>

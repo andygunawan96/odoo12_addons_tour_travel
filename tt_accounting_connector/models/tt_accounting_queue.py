@@ -121,8 +121,10 @@ class TtAccountingQueue(models.Model):
                     temp_prov_dict.update(temp_prov_price_dict)
                     prov_book_list.append(temp_prov_dict)
                 invoice_data = []
+                billing_due_date = 0
                 for rec in trans_obj.invoice_line_ids:
                     invoice_data.append(rec.invoice_id.name)
+                    billing_due_date = rec.customer_parent_id.billing_due_date
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'total_nta': trans_obj.total_nta or 0,
@@ -138,7 +140,8 @@ class TtAccountingQueue(models.Model):
                     'invoice_data': invoice_data,
                     'total': trans_obj.total,
                     'total_discount': trans_obj.total_discount,
-                    'is_send_commission': is_send_commission
+                    'is_send_commission': is_send_commission,
+                    'billing_due_date': billing_due_date
                 })
                 if self.action in ['reverse', 'split_reservation']:
                     self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider)
@@ -171,10 +174,22 @@ class TtAccountingQueue(models.Model):
                         led.sudo().write({
                             'is_sent_to_acc': True
                         })
+                new_segment_list = []
+                for segment_obj in trans_obj.new_segment_ids:
+                    new_segment_list.append(segment_obj.to_dict())
+                invoice_data = []
+                billing_due_date = 0
+                for rec in trans_obj.invoice_line_ids:
+                    invoice_data.append(rec.invoice_id.name)
+                    billing_due_date = rec.customer_parent_id.billing_due_date
+
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'ledgers': ledger_list,
-                    'category': cat
+                    'category': cat,
+                    'new_segment': new_segment_list,
+                    'invoice_data': invoice_data,
+                    'billing_due_date': billing_due_date
                 })
             elif self.res_model == 'tt.top.up':
                 request = trans_obj.to_dict_acc()
@@ -204,7 +219,8 @@ class TtAccountingQueue(models.Model):
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'acquirer_type': trans_obj.acquirer_id and trans_obj.acquirer_id.type or '',
                     'ledgers': ledger_list,
-                    'category': 'top_up'
+                    'category': 'top_up',
+                    'bank': trans_obj.acquirer_id.bank_id.name
                 })
             else:
                 request = {}
@@ -252,9 +268,10 @@ class TtAccountingQueue(models.Model):
                     })
 
                 invoice_data = []
+                billing_due_date = 0
                 for rec in trans_obj.invoice_line_ids:
                     invoice_data.append(rec.invoice_id.name)
-
+                    billing_due_date = rec.customer_parent_id.billing_due_date
                 request.update({
                     'create_by': trans_obj.create_uid and trans_obj.create_uid.name or '',
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
@@ -276,7 +293,8 @@ class TtAccountingQueue(models.Model):
                     'invoice_data': invoice_data,
                     'total': trans_obj.total,
                     'total_discount': trans_obj.total_discount,
-                    'is_send_commission': is_send_commission
+                    'is_send_commission': is_send_commission,
+                    'billing_due_date': billing_due_date
                 })
                 if self.action in ['reverse', 'split_reservation']:
                     self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider)
@@ -300,6 +318,11 @@ class TtAccountingQueue(models.Model):
                     ho_adm = trans_obj.admin_fee
                     agent_adm = 0
                 ledger_list = []
+                invoice_data = []
+                billing_due_date = 0
+                for rec in trans_obj.invoice_line_ids:
+                    invoice_data.append(rec.invoice_id.name)
+                    billing_due_date = rec.customer_parent_id.billing_due_date
                 for led in trans_obj.ledger_ids:
                     ledger_list.append({
                         'id': led.id,
@@ -340,7 +363,9 @@ class TtAccountingQueue(models.Model):
                     'total_commission': agent_adm + ho_adm,
                     'total_channel_upsell': 0,
                     'grand_total': trans_obj.total_amount or 0,
-                    'category': cat
+                    'category': cat,
+                    'invoice_data': invoice_data,
+                    'billing_due_date': billing_due_date
                 })
             elif self.res_model == 'tt.top.up':
                 request = trans_obj.to_dict_acc()
