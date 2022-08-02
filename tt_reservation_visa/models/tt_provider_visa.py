@@ -380,6 +380,7 @@ class TtProviderVisa(models.Model):
         vendor_list = []
         for rec in self.vendor_ids:
             vendor_list.append(rec.to_dict())
+        ticket_list = []
         res = {
             'pnr': self.pnr and self.pnr or '',
             'provider': self.provider_id.code,
@@ -391,7 +392,8 @@ class TtProviderVisa(models.Model):
             'country_id': self.country_id.id,
             'departure_date': self.departure_date,
             'passengers': passenger_list,
-            'vendors': vendor_list
+            'vendors': vendor_list,
+            'tickets': ticket_list
         }
         return res
 

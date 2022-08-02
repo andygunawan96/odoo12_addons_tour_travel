@@ -14,6 +14,8 @@ class TtTicketTour(models.Model):
         res = {
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
-            'tour_room_id': self.tour_room_id.name
+            'tour_room_id': self.tour_room_id.name,
+            'sequence': self.passenger_id and self.passenger_id.sequence or '',
+            'passenger_number': int(self.passenger_id.sequence) if self.passenger_id else ''
         }
         return res

@@ -478,6 +478,8 @@ class TtProviderPPOB(models.Model):
                 'nominal': rec.nominal,
             })
 
+        ticket_list = []
+
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -520,7 +522,8 @@ class TtProviderPPOB(models.Model):
             'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
             'allowed_denominations': allowed_denominations,
-            'description': self.get_description()
+            'description': self.get_description(),
+            'tickets': ticket_list
         }
 
         return res

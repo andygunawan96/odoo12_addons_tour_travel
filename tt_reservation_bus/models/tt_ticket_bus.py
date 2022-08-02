@@ -16,6 +16,7 @@ class TtTicketBus(models.Model):
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
             'ticket_number': self.ticket_number,
-            'passenger_sequence': self.passenger_id.sequence
+            'passenger_sequence': self.passenger_id.sequence,
+            'passenger_number': int(self.passenger_id.sequence) if self.passenger_id else ''
         }
         return res

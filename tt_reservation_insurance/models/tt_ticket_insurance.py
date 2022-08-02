@@ -16,6 +16,8 @@ class TtTicketInsurance(models.Model):
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
             'ticket_number': self.ticket_number,
-            'ticket_url': self.ticket_url
+            'ticket_url': self.ticket_url,
+            'sequence': self.passenger_id and self.passenger_id.sequence or '',
+            'passenger_number': int(self.passenger_id.sequence) if self.passenger_id else '',
         }
         return res
