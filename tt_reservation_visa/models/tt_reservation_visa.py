@@ -473,6 +473,11 @@ class TtVisa(models.Model):
                     'provider': self.provider_name,
                 },
             })
+        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+        if self.is_using_point_reward and website_use_point_reward == 'True':
+            data.update({
+                'use_point': self.is_using_point_reward
+            })
         ctx = {
             'co_agent_type_id': self.agent_type_id.id,
             'co_agent_id': self.agent_id.id,
