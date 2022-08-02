@@ -277,7 +277,7 @@ class ProviderGroupBooking(models.Model):
             for scs in rec.cost_service_charge_ids:
                     rec.total_price += scs.total
 
-    def action_create_ledger(self, issued_uid, pay_method=None):
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
         for rec in self.booking_id.payment_rules_id.installment_ids:
             if rec.due_date == 0:
                 total_amount = (rec.payment_percentage / 100) * self.booking_id.total
@@ -300,7 +300,7 @@ class ProviderGroupBooking(models.Model):
                     'display_provider_name': self.provider_id.name,
                     'provider_type_id': self.provider_id.provider_type_id.id,
                 }
-
+                ##CHECK USE POINT IVAN
                 return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
                                                             ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, **additional_vals)
 

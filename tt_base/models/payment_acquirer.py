@@ -393,6 +393,8 @@ class PaymentAcquirerNumber(models.Model):
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type')
     email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
+    is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
+    point_reward_amount = fields.Float('Point Reward Amount')
 
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
@@ -403,7 +405,7 @@ class PaymentAcquirerNumber(models.Model):
         ### BAYAR PAKAI PAYMENT GATEWAY
         provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
-
+        is_use_point = data.get('use_point', False)
         if not booking_obj:
             raise RequestException(1001)
 
@@ -420,19 +422,19 @@ class PaymentAcquirerNumber(models.Model):
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
-                payment = self.create_payment_acq(data,booking_obj,provider_type)
+                payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point)
                 booking_obj.payment_acquirer_number_id = payment.id
                 payment = {'order_number': payment.number}
             else:
                 payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
                 booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
-            payment = self.create_payment_acq(data,booking_obj,provider_type)
+            payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point)
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
 
-    def create_payment_acq(self,data,booking_obj,provider_type):
+    def create_payment_acq(self,data,booking_obj,provider_type, is_use_point):
         if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
             hold_date = booking_obj.hold_date
         elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
@@ -443,19 +445,29 @@ class PaymentAcquirerNumber(models.Model):
 
 
         payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['acquirer_seq_id'])])
+
+        amount = data['amount']
+        point_amount = 0
+        if is_use_point:
+            if amount - payment_acq_obj.minimum_amount > booking_obj.agent_id.point_reward:
+                point_amount = booking_obj.agent_id.point_reward
+            else:
+                point_amount = amount - payment_acq_obj.minimum_amount
+            amount -= point_amount
+
         if payment_acq_obj.account_number: ## Transfer mutasi
-            unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'], False)
+            unique_obj = self.env['payment.acquirer'].generate_unique_amount(amount, False)
                                                                              # booking_obj.agent_id.agent_type_id.id == self.env.ref(
                                                                              #     'tt_base.agent_type_btc').id)
                                                                              ## 7 July Request Kuamala ubah jadi fee bukan subsidy lagi
 
             unique_amount_id = unique_obj.id
             unique_amount = unique_obj.get_unique_amount()
-            amount = data['amount']
         else:## VA Espay
             unique_amount_id = False
             unique_amount = 0
-            amount = data['amount']
+
+
 
         payment = self.env['payment.acquirer.number'].create({
             'state': 'close',
@@ -466,7 +478,10 @@ class PaymentAcquirerNumber(models.Model):
             'amount': amount,
             'res_model': provider_type,
             'res_id': booking_obj.id,
-            'time_limit': hold_date
+            'time_limit': hold_date,
+            'is_using_point_reward': is_use_point,
+            'point_reward_amount': point_amount,
+            'agent_id': booking_obj.agent_id.id
         })
         return payment
 

@@ -167,6 +167,9 @@ class TtReservation(models.Model):
     reconcile_state = fields.Selection(variables.RESV_RECONCILE_STATE, 'Reconcile State',default='not_reconciled',
                                        compute='_compute_reconcile_state', store=True )
 
+    is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
+    is_get_point_reward = fields.Boolean('Is Get Point Reward', default=False)
+
     @api.model
     def create(self, vals_list):
         try:
@@ -820,6 +823,7 @@ class TtReservation(models.Model):
             'booked_by': self.user_id.name,
             'issued_by': self.issued_uid.name,
             'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
+            'use_point': self.is_using_point_reward
             # END
         }
         if self.booker_insentif:
@@ -906,7 +910,7 @@ class TtReservation(models.Model):
                 return ERR.get_error(1001)
             if book_obj.agent_id.id == context['co_agent_id']:
                 for psg in req['passengers']:
-                    book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'], req.get('type', ''))
+                    book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'])
             else:
                 return ERR.get_error(1001)
         except Exception as e:
@@ -1204,6 +1208,31 @@ class TtReservation(models.Model):
                 if voucher_reference: ##USE VOUCHER
                     book_obj.add_voucher(voucher_reference, context, 'use')
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
+
+                is_use_point = False
+                website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+                if website_use_point_reward == 'True':
+                    is_use_point = req.get('use_point')
+
+                total_use_point = 0
+                if is_use_point:
+                    payment_method_obj = self.env['payment.acquirer'].search([('seq_id','=',book_obj.payment_method)])
+                    if payment_method_obj.type == 'cash':
+                        point_reward = book_obj.agent_id.actual_point_reward
+                        if point_reward > agent_check_amount:
+                            total_use_point = agent_check_amount - 1
+                        else:
+                            total_use_point = point_reward
+                    elif payment_method_obj.type == 'payment_gateway':  ## minimal bayar 10 rb dari transfer bank
+                        point_reward = book_obj.agent_id.actual_point_reward
+                        if point_reward - payment_method_obj.minimum_amount > agent_check_amount:
+                            total_use_point = agent_check_amount - payment_method_obj.minimum_amount
+                        else:
+                            total_use_point = point_reward
+                    if total_use_point:
+                        ### check agent amount minimal saldo yg di punya oleh agent yg setelah di kurang point
+                        agent_check_amount -= total_use_point
+
                 balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount)
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
@@ -1225,7 +1254,7 @@ class TtReservation(models.Model):
 
                 for provider in book_obj.provider_booking_ids:
                     _logger.info('create quota pnr')
-                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method)
+                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point)
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         try:
@@ -1267,6 +1296,11 @@ class TtReservation(models.Model):
                             _logger.error(traceback.format_exc(e))
                         # if not quota_used:
                         #     print("5k woi")
+
+                ## add point reward for agent
+                if website_use_point_reward == 'True':
+                    self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
+
                 data = {
                     'order_number': book_obj.name,
                     'table_name': table_name

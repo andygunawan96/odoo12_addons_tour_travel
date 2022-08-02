@@ -103,7 +103,7 @@ class InstallmentInvoice(models.Model):
                         raise UserError(
                             _('Please pay the previous installment first!'))
             for rec in self.booking_id.provider_booking_ids:
-                rec.action_create_installment_ledger(self.booking_id.issued_uid.id, self.payment_rules_id.id, commission_ledger)
+                rec.action_create_installment_ledger(self.booking_id.issued_uid.id, self.payment_rules_id.id, commission_ledger, self.booking_id.is_using_point_reward)
             self.sudo().write({
                 'state_invoice': 'done'
             })

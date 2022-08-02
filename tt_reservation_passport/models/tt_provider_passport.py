@@ -174,8 +174,8 @@ class TtProviderPassport(models.Model):
                 rec.unlink()
         return ledger_created
 
-    def action_create_ledger(self, issued_uid, pay_method=None):
-        return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
 
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
