@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="point_reward_rules_detail_filter_view" model="ir.ui.view">
+        <field name="name">point.reward.rules.filter.view</field>
+        <field name="model">tt.point.reward.rules</field>
+        <field name="arch" type="xml">
+            <search string="Search Point Reward Rules">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="point_reward_rules_tree_view" model="ir.ui.view">
+        <field name="name">point.reward.rules.tree.view</field>
+        <field name="model">tt.point.reward.rules</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="is_gradual_points"/>
+                <field name="currency_id"/>
+                <field name="min_price"/>
+                <field name="points"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="point_reward_rules_form_view" model="ir.ui.view">
+        <field name="name">point.reward.rules.form.view</field>
+        <field name="model">tt.point.reward.rules</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="is_gradual_points"/>
+                        <field name="currency_id"/>
+                        <field name="min_price"/>
+                        <field name="points"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="point_reward_rules_action_view" model="ir.actions.act_window">
+        <field name="name">Point Reward Rules</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.point.reward.rules</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+    </record>
+</odoo>

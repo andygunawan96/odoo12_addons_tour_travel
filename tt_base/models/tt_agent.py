@@ -67,6 +67,10 @@ class TtAgent(models.Model):
 
     third_party_key_ids = fields.One2many('tt.agent.third.party.key','agent_id','Third Party Key')
 
+    point_reward = fields.Monetary(string="Point Reward")
+    actual_point_reward = fields.Monetary(string="Actual Point Reward")
+    unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward")
+
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
     # 2. Credit limit buat agent di kasih ta? jika enggak actual balance di hapus ckup balance sja
@@ -198,6 +202,7 @@ class TtAgent(models.Model):
         if 'corp_limitation' in frontend_security:  # customer parent login
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
             balance = 0
+            point_reward = 0
             customer_parent_balance = customer_parent_obj.actual_balance
             currency_code = ''
             customer_parent_currency_code = customer_parent_obj.currency_id.name
@@ -205,10 +210,12 @@ class TtAgent(models.Model):
             is_show_balance = False
             is_show_customer_parent_balance = True
             is_show_credit_limit = True
+            is_show_point_reward = False
         elif customer_parent_id:  # agent as customer parent login
             agent_obj = self.browse(context['co_agent_id'])
             customer_parent_obj = self.env['tt.customer.parent'].browse(customer_parent_id)
             balance = agent_obj.balance
+            point_reward = 0
             customer_parent_balance = customer_parent_obj.actual_balance
             currency_code = agent_obj.currency_id.name
             customer_parent_currency_code = customer_parent_obj.currency_id.name
@@ -216,6 +223,7 @@ class TtAgent(models.Model):
             is_show_balance = True
             is_show_customer_parent_balance = True
             is_show_credit_limit = True
+            is_show_point_reward = False
         else:  # agent login
             agent_obj = self.browse(context['co_agent_id'])
             balance = agent_obj.balance
@@ -226,6 +234,15 @@ class TtAgent(models.Model):
             is_show_balance = True
             is_show_customer_parent_balance = False
             is_show_credit_limit = False
+            point_reward = 0
+            is_show_point_reward = False
+            website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+            if website_use_point_reward == 'True':
+                is_show_point_reward = True
+                try:
+                    point_reward = agent_obj.actual_point_reward
+                except:
+                    point_reward = 0
 
         return ERR.get_no_error({
             'balance': balance,
@@ -235,7 +252,9 @@ class TtAgent(models.Model):
             'currency_code': currency_code,
             'is_show_balance': is_show_balance,
             'is_show_customer_parent_balance': is_show_customer_parent_balance,
-            'is_show_credit_limit': is_show_credit_limit
+            'is_show_credit_limit': is_show_credit_limit,
+            'point_reward': point_reward,
+            'is_show_point_reward': is_show_point_reward
         })
 
     def get_data(self):

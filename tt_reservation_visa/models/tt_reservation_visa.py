@@ -473,6 +473,11 @@ class TtVisa(models.Model):
                     'provider': self.provider_name,
                 },
             })
+        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+        if self.is_using_point_reward and website_use_point_reward == 'True':
+            data.update({
+                'use_point': self.is_using_point_reward
+            })
         ctx = {
             'co_agent_type_id': self.agent_type_id.id,
             'co_agent_id': self.agent_id.id,
@@ -1261,8 +1266,9 @@ class TtVisa(models.Model):
         passengers = req['passengers']
         booking_data = req['search']
         sell_visa = req['sell_visa']
-        payment = req['payment']  # self.param_payment
+        payment = req['acquirer_seq_id']  # self.param_payment
         voucher = ''
+        is_using_point_reward = req.get('use_point')
         if req.get('voucher'):
             voucher = req['voucher']['voucher_reference']
         try:
@@ -1298,9 +1304,10 @@ class TtVisa(models.Model):
                 'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
                 'passenger_ids': [(6, 0, psg_ids)],
                 # 'passenger_ids': list_passenger_value,
-                'payment_method': payment['acquirer_seq_id'],
+                'payment_method': payment,
                 'payment_active': True,
                 'voucher_code': voucher,
+                'is_using_point_reward': is_using_point_reward
             })
 
             book_obj = self.create(values)
