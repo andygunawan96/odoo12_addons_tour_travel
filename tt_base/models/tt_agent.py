@@ -67,9 +67,9 @@ class TtAgent(models.Model):
 
     third_party_key_ids = fields.One2many('tt.agent.third.party.key','agent_id','Third Party Key')
 
-    point_reward = fields.Monetary(string="Point Reward", compute="")
-    actual_point_reward = fields.Monetary(string="Actual Point Reward", compute="")
-    unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward", compute="")
+    point_reward = fields.Monetary(string="Point Reward")
+    actual_point_reward = fields.Monetary(string="Actual Point Reward")
+    unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward")
 
     # TODO VIN:tnyakan creator
     # 1. Image ckup 1 ae (logo)
