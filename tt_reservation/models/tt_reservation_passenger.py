@@ -38,14 +38,18 @@ class TtReservationCustomer(models.Model):
         }
         return res
 
-    def create_channel_pricing(self,channel_prices):
-        for rec in self.channel_service_charge_ids:
+    def create_channel_pricing(self,channel_prices,type=''):
+        if type == 'request_new':
+            ch_code = 'csc.ssr'
+        else:
+            ch_code = 'csc'
+        for rec in self.channel_service_charge_ids.filtered(lambda x: x.charge_code == ch_code):
             rec.unlink()
 
         currency_obj = self.env['res.currency']
         for sc in channel_prices:
             sc['currency_id'] = currency_obj.search([('name','=',sc.pop('currency_code'))]).id
-            sc['charge_code'] = 'csc'
+            sc['charge_code'] = ch_code
             sc['charge_type'] = 'CSC'
             self.write({
                 'channel_service_charge_ids': [(0,0,sc)]
@@ -88,12 +92,17 @@ class TtReservationCustomer(models.Model):
     #butuh field channel_service_charge_ids
     def get_channel_service_charges(self):
         total = 0
+        total_ssr = 0
         currency_code = 'IDR'
         for rec in self.channel_service_charge_ids:
-            total+= rec.amount
+            if rec.charge_code == 'csc.ssr':
+                total_ssr += rec.amount
+            else:
+                total += rec.amount
             currency_code = rec.currency_id.name
 
         return {
             'amount': total,
+            'amount_ssr': total_ssr,
             'currency_code': currency_code
         }

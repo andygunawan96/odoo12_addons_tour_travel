@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="default_create_ledger_during_get_booking" model="ir.config_parameter">
+        <field name="key">create.ledger.issued.get.booking</field>
+        <field name="value">True</field>
+    </record>
+</odoo>

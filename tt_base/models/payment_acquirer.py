@@ -23,16 +23,17 @@ class PaymentAcquirer(models.Model):
     account_name = fields.Char('Account Name')
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
-    va_fee = fields.Float('VA Fee')
+    va_fee = fields.Float('Fee') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA
     online_wallet = fields.Boolean('Online Wallet')
     is_sunday_off = fields.Boolean('Sunday Off')
     is_specific_time = fields.Boolean('Specific Time')
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
-    va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type VA', default='flat')
+    va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type', default='flat')
     show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
     save_url = fields.Boolean('Save URL')
+    minimum_amount = fields.Float('Minimum Amount')
 
     @api.model
     def create(self, vals_list):
@@ -126,7 +127,8 @@ class PaymentAcquirer(models.Model):
             'show_device_type': self.show_device_type,
             'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
-            'description_msg': self.description_msg or ''
+            'description_msg': self.description_msg or '',
+            'minimum_amount': self.minimum_amount
         }
 
     def acquirer_format_VA(self, acq, amount,unique):
@@ -155,7 +157,8 @@ class PaymentAcquirer(models.Model):
             },
             'total_amount': float(amount) + fee + uniq,
             'image': payment_acq.bank_id.image_id and payment_acq.bank_id.image_id.url or '',
-            'description_msg': payment_acq.description_msg or ''
+            'description_msg': payment_acq.description_msg or '',
+            'minimum_amount': payment_acq.minimum_amount
         }
 
     def get_va_number(self, req, context):
@@ -288,9 +291,7 @@ class PaymentAcquirer(models.Model):
                         ('website_published', '=', True),
                         ('company_id', '=', self.env.user.company_id.id),
                         ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
-                        '|',
-                        ('type', '=', 'va'),  ## search yg espay
-                        ('type', '=', 'payment_gateway'),  ## search yg mutasi bca
+                        ('type', 'in', ['payment_gateway', 'credit', 'va']),  ## search yg mutasi bca / creditcard espay
                     ]
                     # pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
                     # if pay_acq_num:
