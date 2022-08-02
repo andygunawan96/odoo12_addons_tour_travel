@@ -38,6 +38,6 @@ class TtTicketAirline(models.Model):
             'ff_name': self.loyalty_program_id and self.loyalty_program_id.name or '',
             'fees': fees,
             'sequence': self.passenger_id and self.passenger_id.sequence or '',
-            'passenger_number': self.passenger_id.sequence if self.passenger_id else '',
+            'passenger_number': int(self.passenger_id.sequence) if self.passenger_id else ''
         }
         return res
