@@ -1216,17 +1216,17 @@ class TtReservation(models.Model):
 
                 total_use_point = 0
                 if is_use_point:
-                    payment_method = self.env['payment.acquirer'].search([('seq_id','=',book_obj.payment_method)])
-                    if payment_method.type == 'cash':
+                    payment_method_obj = self.env['payment.acquirer'].search([('seq_id','=',book_obj.payment_method)])
+                    if payment_method_obj.type == 'cash':
                         point_reward = book_obj.agent_id.actual_point_reward
                         if point_reward > agent_check_amount:
                             total_use_point = agent_check_amount - 1
                         else:
                             total_use_point = point_reward
-                    elif payment_method.type == 'payment_gateway':  ## minimal bayar 10 rb dari transfer bank
+                    elif payment_method_obj.type == 'payment_gateway':  ## minimal bayar 10 rb dari transfer bank
                         point_reward = book_obj.agent_id.actual_point_reward
-                        if point_reward - payment_method.minimum_amount > agent_check_amount:
-                            total_use_point = agent_check_amount - payment_method.minimum_amount
+                        if point_reward - payment_method_obj.minimum_amount > agent_check_amount:
+                            total_use_point = agent_check_amount - payment_method_obj.minimum_amount
                         else:
                             total_use_point = point_reward
                     if total_use_point:
