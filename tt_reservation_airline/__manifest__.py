@@ -23,6 +23,7 @@ Key Features
 
         'data/ir_cron_data.xml',
         'data/ir_sequence_data.xml',
+        'data/res_config_settings_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_airline.xml',
         'data/tt_destination_airline.xml',

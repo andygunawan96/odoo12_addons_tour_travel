@@ -280,6 +280,7 @@ class Ledger(models.Model):
                     total_use_point = point_reward
             amount -= total_use_point
             self.env['tt.point.reward'].minus_points("Used", booking_obj, total_use_point, issued_uid)
+            booking_obj.is_using_point_reward = True
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
                                           2, booking_obj.currency_id.id, issued_uid, 0, amount)
 

@@ -73,9 +73,9 @@
                     <group>
                         <group>
                             <field name="currency_id" readonly="1"/>
-                            <field name="point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
-                            <field name="actual_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
-                            <field name="unprocessed_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                            <!--<field name="point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>-->
+                            <!--<field name="actual_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>-->
+                            <!--<field name="unprocessed_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>-->
                             <field name="is_using_pnr_quota" groups="tt_base.group_agent_level_4"
                                    invisible="1"/>
                             <field name="is_send_email_cust" groups="tt_base.group_agent_level_4"/>

@@ -94,11 +94,11 @@ class TtPaymentApiCon(models.Model):
                     _logger.info(data['order_number'])
                     if book_obj:
                         reservation_transaction_amount = book_obj.total - book_obj.total_discount
-                        if pay_acq_num.is_using_point_reward:
-                            reservation_transaction_amount -= pay_acq_num.point_reward_amount
+                        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+                        if website_use_point_reward == 'True':
+                            if pay_acq_num.is_using_point_reward:
+                                reservation_transaction_amount -= pay_acq_num.point_reward_amount
                         ##testing dulu
-                        _logger.info("BOOKING Transaction %s" % str(reservation_transaction_amount))
-                        _logger.info("DATA Transaction %s" % str(data['transaction_amount']))
                         if reservation_transaction_amount == float(data['transaction_amount']):
                             seq_id = ''
                             if book_obj.payment_acquirer_number_id:
@@ -140,8 +140,10 @@ class TtPaymentApiCon(models.Model):
                     different_time = payment_acq_number_obj.time_limit - datetime.now()
                     timelimit = int(different_time.seconds / 60)
                     ## ada 2 cara amount langsung pakai amount di payment acq number / amount dari book_obj di kurang dengan point reward yg di pakai
-                    if payment_acq_number_obj.is_using_point_reward:
-                        amount -= payment_acq_number_obj.point_reward_amount
+                    website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+                    if website_use_point_reward == 'True':
+                        if payment_acq_number_obj.is_using_point_reward:
+                            amount -= payment_acq_number_obj.point_reward_amount
                 else: ## KALAU PAYMENT ACQ NUMBER TIDAK KETEMU
                     different_time = book_obj.hold_date - datetime.now()
                     if different_time > timedelta(hours=1): ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT

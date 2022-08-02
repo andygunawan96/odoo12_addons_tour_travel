@@ -286,7 +286,7 @@ class ReservationPpob(models.Model):
                         'state': 'booked',
                         'booked_uid': context['co_uid'],
                         'booked_date': fields.Datetime.now(),
-                        'hold_date': datetime.today() + timedelta(days=1),
+                        'hold_date': datetime.today() + timedelta(hours=1),
                     })
                 provider_list.append(rec.to_dict())
             psg_list = []
@@ -298,7 +298,7 @@ class ReservationPpob(models.Model):
                     'state': 'booked',
                     'booked_uid': context['co_uid'],
                     'booked_date': datetime.now(),
-                    'hold_date': datetime.today() + timedelta(days=1)
+                    'hold_date': datetime.today() + timedelta(hours=1)
                 })
 
             res = resv_obj.to_dict()
@@ -318,7 +318,7 @@ class ReservationPpob(models.Model):
         if all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
             self.calculate_service_charge()
-            hold_date = datetime.today() + timedelta(days=1)
+            hold_date = datetime.today() + timedelta(hours=1)
             self.action_booked_api_ppob(context, pnr_list, hold_date)
         elif all(rec.state == 'issued' for rec in self.provider_booking_ids):
             # issued
@@ -473,7 +473,7 @@ class ReservationPpob(models.Model):
             'state': 'booked',
             'booked_uid': context['co_uid'],
             'booked_date': fields.Datetime.now(),
-            'hold_date': fields.Datetime.now() + timedelta(days=1),
+            'hold_date': fields.Datetime.now() + timedelta(hours=1),
             'balance_due': data['total'],
             'total_price': data['total'],
             'sequence': 1,
