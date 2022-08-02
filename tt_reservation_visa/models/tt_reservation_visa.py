@@ -1263,7 +1263,7 @@ class TtVisa(models.Model):
         sell_visa = req['sell_visa']
         payment = req['payment']  # self.param_payment
         voucher = ''
-        is_using_point = req.get('use_point')
+        is_using_point_reward = req.get('use_point')
         if req.get('voucher'):
             voucher = req['voucher']['voucher_reference']
         try:
@@ -1302,7 +1302,7 @@ class TtVisa(models.Model):
                 'payment_method': payment['acquirer_seq_id'],
                 'payment_active': True,
                 'voucher_code': voucher,
-                'is_using_point': is_using_point
+                'is_using_point_reward': is_using_point_reward
             })
 
             book_obj = self.create(values)
