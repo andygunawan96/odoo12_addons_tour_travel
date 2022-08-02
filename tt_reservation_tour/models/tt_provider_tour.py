@@ -488,7 +488,7 @@ class TtProviderTour(models.Model):
                                                         ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, source_of_funds_type, **additional_vals)
         else:
             _logger.info('####### CREATE LEDGER NORMAL ########')
-            return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+            return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point)
 
     def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False):
         try:
