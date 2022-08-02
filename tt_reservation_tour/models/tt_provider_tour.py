@@ -438,7 +438,8 @@ class TtProviderTour(models.Model):
     def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
         if pay_method == 'installment':
             total_amount = (self.booking_id.tour_lines_id.down_payment / 100) * self.booking_id.total
-
+            booking_obj = self.booking_id
+            
             res_model = self.booking_id._name
             res_id = self.booking_id.id
             name = 'Order Down Payment: ' + self.booking_id.name
@@ -459,9 +460,30 @@ class TtProviderTour(models.Model):
             }
 
             ###### USE POINT IVAN
+            website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+            if use_point and website_use_point_reward == 'True':
+                total_use_point = 0
+                payment_method = self.env['payment.acquirer'].search([('seq_id', '=', booking_obj.payment_method)])
+                if payment_method.type == 'cash':
+                    point_reward = booking_obj.agent_id.actual_point_reward
+                    if point_reward > credit:
+                        total_use_point = credit - 1
+                    else:
+                        total_use_point = point_reward
+                elif payment_method.type == 'payment_gateway':
+                    point_reward = booking_obj.agent_id.actual_point_reward
+                    if point_reward - payment_method.minimum_amount > credit:
+                        total_use_point = credit - payment_method.minimum_amount
+                    else:
+                        total_use_point = point_reward
+                credit -= total_use_point
+                self.env['tt.point.reward'].minus_points("Used", booking_obj, total_use_point, issued_uid)
+                booking_obj.is_using_point_reward = True
 
+
+            source_of_funds_type = 0  ## balance
             return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
-                                                        ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, **additional_vals)
+                                                        ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, source_of_funds_type, **additional_vals)
         else:
             return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
 
