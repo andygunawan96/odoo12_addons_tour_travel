@@ -505,7 +505,8 @@ class Ledger(models.Model):
                 "date": rec_ledger.date.strftime('%Y-%m-%d') if rec_ledger.date else '',
                 "booker": booker,
                 "create_date": rec_ledger.create_date.strftime('%Y-%m-%d %H:%M:%S'),
-                "provider_type_name": provider_type
+                "provider_type_name": provider_type,
+                "source_of_funds_type": "balance" if rec_ledger.source_of_funds_type == 0 else "point"
 
             })
 
