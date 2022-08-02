@@ -53,7 +53,8 @@ class AccountingConnectorITM(models.Model):
         if request['category'] == 'reservation':
             pnr_list = request.get('pnr') and request['pnr'].split(', ') or []
             provider_list = []
-            for idx, prov in enumerate(request['provider_bookings']):
+            idx = 0
+            for prov in request['provider_bookings']:
                 if request['provider_type'] == 'airline':
                     journey_list = []
                     journ_idx = 0
@@ -70,36 +71,38 @@ class AccountingConnectorITM(models.Model):
                                 "Arrival": segm['destination']
                             })
                             journ_idx += 1
-                    pax_list = []
+
                     for pax in prov['tickets']:
-                        pax_list.append({
+                        pax_list = [{
                             "PassangerName": pax['passenger'],
                             "TicketNumber": pax['ticket_number'],
                             "Gender": 1,
                             "Nationality": "ID"
+                        }]
+
+                        if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or 0
+                        else:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
+
+                        provider_list.append({
+                            "ItemNo": idx+1,
+                            "ProductCode": product_code,
+                            "ProductName": "",
+                            "CarrierCode": prov['provider'],
+                            "CArrierName": "",
+                            "Description": prov['pnr'],
+                            "Quantity": 1,
+                            "Cost": pax.get('agent_nta', 0),
+                            "Profit": ho_prof - (ho_prof * 9.9099 / 100),
+                            "ServiceFee": 0,
+                            "VAT": ho_prof * 9.9099 / 100,
+                            "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0,
+                            "Itin": journey_list,
+                            "Pax": pax_list
                         })
 
-                    if request.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                        prov_channel_upsell = request['total_channel_upsell'] / len(request['provider_bookings'])
-                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] + prov_channel_upsell or 0
-                    else:
-                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
-                    provider_list.append({
-                        "ItemNo": idx+1,
-                        "ProductCode": product_code,
-                        "ProductName": "",
-                        "CarrierCode": prov['provider'],
-                        "CArrierName": "",
-                        "Description": prov['pnr'],
-                        "Quantity": 1,
-                        "Cost": prov.get('agent_nta', 0),
-                        "Profit": ho_prof - (ho_prof * 9.9099 / 100),
-                        "ServiceFee": 0,
-                        "VAT": ho_prof * 9.9099 / 100,
-                        "Sales": prov.get('agent_nta') and (prov['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0,
-                        "Itin": journey_list,
-                        "Pax": pax_list
-                    })
+                        idx += 1
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",
