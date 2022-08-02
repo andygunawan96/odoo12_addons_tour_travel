@@ -7,6 +7,7 @@ from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
 import logging
 import traceback
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -437,6 +438,7 @@ class TtProviderTour(models.Model):
 
     def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
         _logger.info('####### CREATE LEDGER HERE ########')
+        _logger.info(json.dumps(pay_method))
         if pay_method == 'installment':
             _logger.info('####### INSTALLMENT ########')
             total_amount = (self.booking_id.tour_lines_id.down_payment / 100) * self.booking_id.total
