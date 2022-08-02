@@ -1266,7 +1266,7 @@ class TtVisa(models.Model):
         passengers = req['passengers']
         booking_data = req['search']
         sell_visa = req['sell_visa']
-        payment = req['payment']  # self.param_payment
+        payment = req['acquirer_seq_id']  # self.param_payment
         voucher = ''
         is_using_point_reward = req.get('use_point')
         if req.get('voucher'):
@@ -1304,7 +1304,7 @@ class TtVisa(models.Model):
                 'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
                 'passenger_ids': [(6, 0, psg_ids)],
                 # 'passenger_ids': list_passenger_value,
-                'payment_method': payment['acquirer_seq_id'],
+                'payment_method': payment,
                 'payment_active': True,
                 'voucher_code': voucher,
                 'is_using_point_reward': is_using_point_reward
