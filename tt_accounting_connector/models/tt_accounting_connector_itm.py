@@ -100,7 +100,7 @@ class AccountingConnectorITM(models.Model):
                             "Profit": ho_prof - (ho_prof * 9.9099 / 100),
                             "ServiceFee": 0,
                             "VAT": ho_prof * 9.9099 / 100,
-                            "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0,
+                            "Sales": pax.get('agent_nta', 0),
                             "Itin": journey_list,
                             "Pax": pax_list
                         })
