@@ -75,8 +75,8 @@
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
-                                <field name="va_fee_type" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
+                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                                 <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                             </group>
@@ -136,8 +136,8 @@
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
-                                <field name="va_fee_type" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
+                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
                                 <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
                             </group>

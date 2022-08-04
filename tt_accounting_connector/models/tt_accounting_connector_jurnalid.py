@@ -808,7 +808,7 @@ class AccountingConnectorAccurate(models.Model):
                         if passenger_data != '':
                             passenger_data += ', '
                         passenger_data += pax['name']
-                    desc += "%s; Addons Tiket Perjalanan %s; Atas Nama: %s" % (vals['referenced_pnr'], vals['new_fee_notes'], passenger_data)
+                    desc += "%s; Addons Tiket Perjalanan; Atas Nama: %s" % (vals['referenced_pnr'], passenger_data)
                     for provider_bookings in vals['provider_bookings']:
                         if vals['referenced_pnr'] == provider_bookings['pnr']:
                             vendor_data = provider_bookings['provider']
@@ -974,8 +974,7 @@ class AccountingConnectorAccurate(models.Model):
                     if provider_booking['pnr'] == vals['referenced_pnr']:
                         if desc != '':
                             desc += '; '
-                        desc += "%s; Addons Tiket Perjalanan %s; Atas Nama: %s" % (
-                        provider_booking['pnr'], vals['new_fee_notes'], passenger_data)
+                        desc += "%s; Addons Tiket Perjalanan; Atas Nama: %s" % (provider_booking['pnr'], passenger_data)
                         passenger_data = ''
             if product == '':
                 product = self.get_product(data_login, 'Addons Tiket Perjalanan')

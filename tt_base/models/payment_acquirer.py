@@ -23,14 +23,14 @@ class PaymentAcquirer(models.Model):
     account_name = fields.Char('Account Name')
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
-    va_fee = fields.Float('Fee') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA
+    va_fee = fields.Float('Fee Flat') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA UNTUK FLAT NAMA FIELD SUDAH MASUK INI
+    fee_percentage = fields.Float('Fee Percentage') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA
     online_wallet = fields.Boolean('Online Wallet')
     is_sunday_off = fields.Boolean('Sunday Off')
     is_specific_time = fields.Boolean('Specific Time')
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
-    va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type', default='flat')
     show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
     save_url = fields.Boolean('Save URL')
     minimum_amount = fields.Float('Minimum Amount')
@@ -70,12 +70,10 @@ class PaymentAcquirer(models.Model):
             bank_fee = round((amount+cust_fee) * self.bank_fee / 100)
         ##untuk VA fee, jika VA fee pasti bukan EDC jadi bisa replace
 
-        if self.va_fee:
-            if self.va_fee_type == 'flat':
-                return 0,self.va_fee,uniq
-            else:
-                return 0,math.ceil(self.va_fee*amount/100),uniq
-
+        if self.type == 'credit': ## UNTUK CREDIT CARD ESPAY
+            return 0, int(round((amount + self.va_fee) / ((100-self.fee_percentage)/100) * (self.fee_percentage/100), 0)) + self.va_fee, uniq
+        elif self.va_fee or self.fee_percentage:
+            return 0, math.ceil(self.fee_percentage * amount / 100) + self.va_fee, uniq
         else:
             lost_or_profit = cust_fee-bank_fee
             return lost_or_profit,cust_fee, uniq
