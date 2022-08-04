@@ -97,9 +97,9 @@ class AccountingConnectorITM(models.Model):
                             "Description": prov['pnr'],
                             "Quantity": 1,
                             "Cost": pax.get('total_nta', 0),
-                            "Profit": ho_prof - (ho_prof * 9.9099 / 100),
+                            "Profit": ho_prof - round(ho_prof * 9.9099 / 100),
                             "ServiceFee": 0,
-                            "VAT": ho_prof * 9.9099 / 100,
+                            "VAT": round(ho_prof * 9.9099 / 100),
                             "Sales": pax.get('agent_nta', 0),
                             "Itin": journey_list,
                             "Pax": pax_list
