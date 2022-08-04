@@ -97,15 +97,41 @@ class PaymentAcquirer(models.Model):
         #     if self.start_time > self.end_time:
         #         raise UserError(_('End Date cannot be lower than Start Time.'))
 
-    def acquirer_format(self, amount, unique):
+    def acquirer_format(self, amount, unique, agent_obj=None):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         loss_or_profit,fee, uniq = self.compute_fee(amount,unique)
-        minimum_amount = self.minimum_amount + uniq
+        minimum_amount = {
+            "default": 0,
+            "with_point": 0
+        }
+        minimum_amount_default = self.minimum_amount + uniq
         if self.type == 'credit':
-            minimum_amount += fee
+            minimum_amount_default += fee
+        minimum_amount['default'] = minimum_amount_default
+
+        ###POINT
+        amount_when_use_point = 0
+        fee_point = 0
+        uniq_point = 0
+        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+        if website_use_point_reward == 'True':
+            point_reward = agent_obj.actual_point_reward
+            minimum_amount_with_point = self.minimum_amount
+            if point_reward - minimum_amount_with_point > amount:
+                total_use_point = amount - minimum_amount_with_point
+            else:
+                total_use_point = point_reward
+            amount_when_use_point = amount - total_use_point
+            loss_or_profit_point, fee_point, uniq_point = self.compute_fee(amount_when_use_point, unique)
+
+            with_point_minimum_amount = self.minimum_amount + uniq_point
+            if self.type == 'credit':
+                with_point_minimum_amount += fee_point
+            minimum_amount['with_point'] = with_point_minimum_amount
+
         return {
             'acquirer_seq_id': self.seq_id,
             'name': self.name,
@@ -123,10 +149,16 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
+            'price_component_with_point': {
+                'amount': amount_when_use_point,
+                'fee': fee_point,
+                'unique_amount': uniq_point,
+            },
             'online_wallet': self.online_wallet,
             'save_url': self.save_url,
             'show_device_type': self.show_device_type,
             'total_amount': float(amount) + uniq + fee,
+            'total_amount_with_point': float(amount_when_use_point) + uniq_point + fee_point,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'description_msg': self.description_msg or '',
             'minimum_amount': minimum_amount
@@ -158,8 +190,7 @@ class PaymentAcquirer(models.Model):
             },
             'total_amount': float(amount) + fee + uniq,
             'image': payment_acq.bank_id.image_id and payment_acq.bank_id.image_id.url or '',
-            'description_msg': payment_acq.description_msg or '',
-            'minimum_amount': payment_acq.minimum_amount
+            'description_msg': payment_acq.description_msg or ''
         }
 
     def get_va_number(self, req, context):
@@ -283,7 +314,7 @@ class PaymentAcquirer(models.Model):
                         if self.validate_time(acq, now_time):
                             if not values.get(acq.type):
                                 values[acq.type] = []
-                            values[acq.type].append(acq.acquirer_format(amount, unique))
+                            values[acq.type].append(acq.acquirer_format(amount, unique, self.env['tt.agent'].browse(co_agent_id)))
 
                 # # payment gateway
                 # penjualan
@@ -318,7 +349,7 @@ class PaymentAcquirer(models.Model):
                             # if acq.account_number:
                             #     values[acq.type].append(acq.acquirer_format(amount, unique))
                             # else:
-                            values[acq.type].append(acq.acquirer_format(amount, 0))
+                            values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id)))
 
                 res['non_member'] = values
                 can_use_cor_account = True
