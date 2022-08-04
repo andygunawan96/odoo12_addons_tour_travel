@@ -103,6 +103,9 @@ class PaymentAcquirer(models.Model):
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         loss_or_profit,fee, uniq = self.compute_fee(amount,unique)
+        minimum_amount = self.minimum_amount + uniq
+        if self.type == 'credit':
+            minimum_amount += fee
         return {
             'acquirer_seq_id': self.seq_id,
             'name': self.name,
@@ -126,7 +129,7 @@ class PaymentAcquirer(models.Model):
             'total_amount': float(amount) + uniq + fee,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'description_msg': self.description_msg or '',
-            'minimum_amount': self.minimum_amount
+            'minimum_amount': minimum_amount
         }
 
     def acquirer_format_VA(self, acq, amount,unique):
