@@ -65,6 +65,8 @@
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Provide 'url', 'live_id', and 'product_code'.</p>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'jurnalid')]}">Jurnal ID: Provide 'url_api', 'url_web', 'client_id', 'client_secret', 'api_key', 'email', 'password'.</p>
                         <field name="variable_ids"/>
+                        <separator string="Provider Suppliers" attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}"/>
+                        <field name="provider_supplier_ids" attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}"/>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" widget="mail_followers"/>
