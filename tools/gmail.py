@@ -22,6 +22,7 @@ import time
 import json
 import base64
 from .db_connector import GatewayConnector
+from odoo.exceptions import UserError
 _logger = logging.getLogger(__name__)
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
 SCOPES = ['https://mail.google.com/']
@@ -42,9 +43,7 @@ def gmail_authenticate(creds):
                     "is_update": False
                 })
 
-            last_update_time = datetime.strptime(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(float(update_status_email_file['last_update']))),'%Y-%m-%d %H:%M:%S')
-
-            if update_status_email_file['is_update'] and datetime.now() - last_update_time < timedelta(minutes=5):
+            if update_status_email_file['is_update'] and creds.expiry - datetime.now() > timedelta(minutes=5):
                 ## someone is updating but the expiry time is still longer than 5 minutes, do nothing and use old creds
                 pass ## do nothing
             else:
@@ -61,6 +60,8 @@ def gmail_authenticate(creds):
                         pickle.dump(creds, token)
                 except Exception as e:
                     _logger.error('Error update credential backend')
+                    _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+                    raise UserError('Connection Failed') ## user error disini karena kalau di test connection pakai try except hasil return akan selalu failed
                     # data = {
                     #     'code': 9903,
                     #     'title': 'ERROR EMAIL BACKEND',
