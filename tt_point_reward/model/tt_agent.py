@@ -46,14 +46,14 @@ class TtAgent(models.Model):
         point_reward = 0
         for rec in self:
             if len(rec.ledger_ids)>0:
-                for ledger_points_obj in rec.ledger_ids.search([('source_of_funds_type','=',1)]): ## source_of_funds_type 1 untuk points
+                for ledger_points_obj in rec.ledger_ids.search([('source_of_funds_type','=','point')]): ## source_of_funds_type 1 untuk points
                     point_reward += ledger_points_obj.debit - ledger_points_obj.credit
             rec.point_reward = point_reward
 
     # kalau pakai cron sementara tidak di pakai
     def create_point_reward_statement(self):
         statement_ledger_obj = self.env['tt.ledger'].search(
-            [('agent_id', '=', self.id), ('transaction_type', '=', 9), ('source_of_funds_type', '=', 1)], limit=1,
+            [('agent_id', '=', self.id), ('transaction_type', '=', 9), ('source_of_funds_type', '=', 'point')], limit=1,
             order='id desc')  ## source_of_funds_type 1 untuk points
         dom = [('agent_id', '=', self.id)]
         beginning = True

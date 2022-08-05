@@ -22,8 +22,8 @@ LEDGER_TYPE = [
 ]
 
 SOURCE_OF_FUNDS_TYPE = [
-    (0, 'Balance'),
-    (1, 'Point Reward')
+    ('balance', 'Balance'),
+    ('point', 'Point Reward')
 ]
 
 _logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ class Ledger(models.Model):
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
 
-    source_of_funds_type = fields.Selection(SOURCE_OF_FUNDS_TYPE, string='Source of Funds', default=0)
+    source_of_funds_type = fields.Selection(SOURCE_OF_FUNDS_TYPE, string='Source of Funds', default='balance')
 
     def calc_balance(self, vals):
         # Pertimbangkan Multi Currency Ledgers
@@ -91,7 +91,7 @@ class Ledger(models.Model):
             owner_id = vals['customer_parent_id']
             param_search = 'customer_parent_id'
             
-        sql_query = 'select balance from tt_ledger where %s = %s and source_of_funds_type = %s order by id desc limit 1;' % (param_search,owner_id, vals['source_of_funds_type'])
+        sql_query = "select balance from tt_ledger where %s = %s and source_of_funds_type = '%s' order by id desc limit 1;" % (param_search,owner_id, vals['source_of_funds_type'])
         self.env.cr.execute(sql_query)
         balance = self.env.cr.dictfetchall()
         if balance:
@@ -101,7 +101,7 @@ class Ledger(models.Model):
         current_balance += vals['debit'] - vals['credit']
         return current_balance
 
-    def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description='', source_of_funds_type=0):
+    def prepare_vals(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid, debit=0, credit=0,description='', source_of_funds_type='balance'):
         return {
             'name': name,
             'debit': debit,
@@ -117,7 +117,7 @@ class Ledger(models.Model):
             'source_of_funds_type': source_of_funds_type
         }
 
-    def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description='',source_of_funds_type=0,**kwargs):
+    def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description='',source_of_funds_type='balance',**kwargs):
         # self.waiting_list_process([agent_id],customer_parent_id,debit)
         vals = self.prepare_vals(res_model,
                                  res_id,name, ref,
@@ -160,7 +160,7 @@ class Ledger(models.Model):
             'reschedule_id': hasattr(self,'reschedule_id') and self.reschedule_id or False,
             'reschedule_model': hasattr(self,'reschedule_model') and self.reschedule_model or False,
             'provider_type_id': self.provider_type_id and self.provider_type_id.id or False,
-            'source_of_funds_type': self.source_of_funds_type and self.source_of_funds_type or 0 ## default balance
+            'source_of_funds_type': self.source_of_funds_type and self.source_of_funds_type or 'balance' ## default balance
         })
 
         self.update({
@@ -508,7 +508,7 @@ class Ledger(models.Model):
                 "booker": booker,
                 "create_date": rec_ledger.create_date.strftime('%Y-%m-%d %H:%M:%S'),
                 "provider_type_name": provider_type,
-                "source_of_funds_type": "balance" if rec_ledger.source_of_funds_type == 0 else "point"
+                "source_of_funds_type": "balance" if rec_ledger.source_of_funds_type == 'balance' else "point"
 
             })
 

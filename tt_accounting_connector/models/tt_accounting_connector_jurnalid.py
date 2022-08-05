@@ -103,7 +103,8 @@ class AccountingConnectorAccurate(models.Model):
         url = "%s/partner/core/api/v1/contacts" % data_login['url_api']
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "bearer %s" % data_login['access_token']
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
         }
         contact_group_id = self.get_contact_group(data_login)
         data = {
@@ -193,7 +194,8 @@ class AccountingConnectorAccurate(models.Model):
         url = "%s/partner/core/api/v1/contacts" % data_login['url_api']
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "bearer %s" % data_login['access_token']
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
         }
         data = {
             "contact_group": {
@@ -228,7 +230,8 @@ class AccountingConnectorAccurate(models.Model):
         url = "%s/partner/core/api/v1/vendors" % data_login['url_api']
         headers = {
             "Content-Type": "application/json",
-            "Authorization": "bearer %s" % data_login['access_token']
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
         }
         data = {
             "vendor": {
@@ -282,11 +285,14 @@ class AccountingConnectorAccurate(models.Model):
         return product_name
 
     def add_product(self, data_login, product_name):
-        url = "%s/partner/core/api/v1/contacts" % data_login['url_api']
+        url = "%s/partner/core/api/v1/products" % data_login['url_api']
         headers = {
             "Content-Type": "application/json",
             "Authorization": "bearer %s" % data_login['access_token'],
-            "api_key": data_login['api_key']
+            "api_key": data_login['api_key'],
+            "Connection": "keep-alive",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept": "*/*"
         }
         data = {
             "product": {
@@ -309,12 +315,9 @@ class AccountingConnectorAccurate(models.Model):
                 "inventory_asset_account_id": 0,
                 "inventory_asset_account_name": "",
                 "inventory_asset_account_number": "",
-                "product_category_ids": [
-                ],
-                "product_bundles_attributes": [
-                ],
-                "bundle_costs_attributes": [
-                ]
+                "product_category_ids": [],
+                "product_bundles_attributes": [],
+                "bundle_costs_attributes": []
             }
         }
         _logger.info('######REQUEST ADD PRODUCT#########\n%s' % json.dumps(data))
