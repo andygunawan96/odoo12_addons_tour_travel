@@ -2200,6 +2200,37 @@
             <field name="implied_ids" eval="[(4, ref('group_voucher_level_4'))]"/>
         </record>
 
+        <!--    point reward-->
+        <record id="group_point_reward_level_1" model="res.groups">
+            <field name="name">Level 1</field>
+            <field name="category_id" ref="tt_base.module_category_point_reward"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_point_reward_level_2" model="res.groups">
+            <field name="name">Level 2</field>
+            <field name="category_id" ref="tt_base.module_category_point_reward"/>
+            <field name="implied_ids" eval="[(4, ref('group_point_reward_level_1'))]"/>
+        </record>
+
+        <record id="group_point_reward_level_3" model="res.groups">
+            <field name="name">Level 3</field>
+            <field name="category_id" ref="tt_base.module_category_point_reward"/>
+            <field name="implied_ids" eval="[(4, ref('group_point_reward_level_2'))]"/>
+        </record>
+
+        <record id="group_point_reward_level_4" model="res.groups">
+            <field name="name">Level 4</field>
+            <field name="category_id" ref="tt_base.module_category_point_reward"/>
+            <field name="implied_ids" eval="[(4, ref('group_point_reward_level_3'))]"/>
+        </record>
+
+        <record id="group_point_reward_level_5" model="res.groups">
+            <field name="name">Level 5</field>
+            <field name="category_id" ref="tt_base.module_category_point_reward"/>
+            <field name="implied_ids" eval="[(4, ref('group_point_reward_level_4'))]"/>
+        </record>
+
         <!--    new city records-->
         <record id="group_new_city_records_level_1" model="res.groups">
             <field name="name">Level 1</field>

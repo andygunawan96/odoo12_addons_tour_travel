@@ -33,7 +33,7 @@
         </record>
 
         <record id="tt_accounting_setup_variables_action_view" model="ir.actions.act_window">
-            <field name="name">Accounting Setup</field>
+            <field name="name">Accounting Setup Variables</field>
             <field name="view_type">form</field>
             <field name="res_model">tt.accounting.setup.variables</field>
             <field name="view_mode">tree,form</field>

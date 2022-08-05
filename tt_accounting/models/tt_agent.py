@@ -34,14 +34,16 @@ class TtAgent(models.Model):
     @api.depends('ledger_ids','ledger_ids.balance')
     def _compute_balance_agent(self):
         for rec in self:
-            if len(rec.ledger_ids)>0:
-                rec.balance = rec.ledger_ids[0].balance
+            if len(rec.ledger_ids) > 0:
+                for ledger_obj in rec.ledger_ids.search([('source_of_funds_type', '=', 0)]): ## source_of_funds_type 0 untuk balance
+                    rec.balance = ledger_obj.balance
+                    break
             else:
                 rec.balance = 0
 
     def create_ledger_statement(self):
         ##fixing balance from last statement
-        statement_ledger_obj = self.env['tt.ledger'].search([('agent_id','=',self.id),('transaction_type','=',9)],limit=1,order='id desc')
+        statement_ledger_obj = self.env['tt.ledger'].search([('agent_id','=',self.id),('transaction_type','=',9), ('source_of_funds_type','=',0)],limit=1,order='id desc') ## source_of_funds_type 0 untuk balance
         dom = [('agent_id', '=', self.id)]
         beginning = True
         if statement_ledger_obj:

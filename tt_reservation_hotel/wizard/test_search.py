@@ -549,7 +549,7 @@ class TestSearch(models.Model):
             'hotel_id': backend_hotel_obj and backend_hotel_obj.id or False,
             'hotel_name': backend_hotel_obj and backend_hotel_obj.sudo().name or hotel_obj['name'],
             'hotel_address': backend_hotel_obj and backend_hotel_obj.sudo().address or hotel_obj['address'],
-            'hotel_rating': backend_hotel_obj and backend_hotel_obj.sudo().rating or hotel_obj['rating'],
+            'hotel_rating': backend_hotel_obj and backend_hotel_obj.sudo().rating or hotel_obj.get('rating'),
             'hotel_city': backend_hotel_obj and backend_hotel_obj.sudo().city_id.name or hotel_obj['city'],
             'hotel_phone': backend_hotel_obj and backend_hotel_obj.sudo().phone or hotel_obj['phone'],
             'checkin_date': check_in,

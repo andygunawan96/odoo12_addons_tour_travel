@@ -13,5 +13,9 @@
             <field name="key">tt_base.redirect_url_signup_rodex</field>
             <field name="value">/</field>
         </record>
+        <record id="website_use_point_reward" model="ir.config_parameter">
+            <field name="key">use_point_reward</field>
+            <field name="value">False</field>
+        </record>
     </data>
 </odoo>

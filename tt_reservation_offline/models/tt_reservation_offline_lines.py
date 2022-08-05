@@ -117,12 +117,12 @@ class IssuedOfflineLines(models.Model):
         for rec in self:
             rec.provider = rec.carrier_id.name
 
-    def action_create_ledger(self):
+    def action_create_ledger(self, use_point=False):
         if not self.is_ledger_created:
             self.write({
                 'is_ledger_created': True
             })
-            return self.env['tt.ledger'].action_create_ledger(self)
+            return self.env['tt.ledger'].action_create_ledger(self, use_point=use_point)
 
     def get_pnr_list(self):
         pnr_seen = set()

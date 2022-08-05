@@ -558,6 +558,11 @@ class IssuedOffline(models.Model):
             'acquirer_seq_id': self.acquirer_id.seq_id,
             'member': False
         }
+        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+        if self.is_using_point_reward and website_use_point_reward == 'True':
+            req.update({
+                'use_point': self.is_using_point_reward
+            })
         if self.customer_parent_id.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
             req.update({
                 'member': True,
@@ -2043,7 +2048,7 @@ class IssuedOffline(models.Model):
         context = context  # self.param_context
         lines = data['issued_offline_data']['line_ids']  # data_reservation_offline['line_ids']
         payment = data['payment']  # self.param_payment
-
+        is_using_point_reward = data.get('use_point')
         try:
             booker_obj = self.create_booker_api(booker, context)  # create booker
             contact_obj = self.create_contact_api(contact[0], booker_obj, context)
@@ -2088,6 +2093,7 @@ class IssuedOffline(models.Model):
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
+                'is_using_point_reward': is_using_point_reward
             }
 
             if data_reservation_offline['type'] == 'airline':

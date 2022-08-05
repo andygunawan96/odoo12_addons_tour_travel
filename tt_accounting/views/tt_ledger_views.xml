@@ -9,6 +9,7 @@
                 <field name="pnr"/>
                 <field name="ref"/>
                 <field name="description"/>
+                <field name="source_of_funds_type"/>
                 <field name="transaction_type" groups="tt_base.group_tt_tour_travel"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
@@ -81,6 +82,7 @@
                             <field name="debit"/>
                             <field name="credit"/>
                             <field name="balance"/>
+                            <field name="source_of_funds_type"/>
                         </group>
                         <group name="transaction_references">
                             <field name="pnr"/>
@@ -118,6 +120,7 @@
                 <field name="description"/>
                 <field name="issued_uid"/>
                 <field name="transaction_type"/>
+                <field name="source_of_funds_type"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="debit" sum="Total Debit"/>
                 <field name="credit" sum="Total Credit"/>
@@ -140,6 +143,7 @@
                 <field name="description"/>
                 <field name="issued_uid"/>
                 <field name="transaction_type"/>
+                <field name="source_of_funds_type"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="debit" sum="Total Debit"/>
                 <field name="credit" sum="Total Credit"/>
@@ -177,6 +181,7 @@
                 <field name="description"/>
                 <field name="issued_uid"/>
                 <field name="transaction_type"/>
+                <field name="source_of_funds_type"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="debit" sum="Total Debit"/>
                 <field name="credit" sum="Total Credit"/>

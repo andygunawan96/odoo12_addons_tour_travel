@@ -394,8 +394,8 @@ class TtProviderPPOB(models.Model):
     #             'total_orig': total_orig
     #         })
 
-    def action_create_ledger(self,issued_uid,pay_method=None):
-        return self.env['tt.ledger'].action_create_ledger(self,issued_uid)
+    def action_create_ledger(self,issued_uid,pay_method=None, use_point=False):
+        return self.env['tt.ledger'].action_create_ledger(self,issued_uid, use_point=use_point)
         # else:
         #     raise UserError("Cannot create ledger, ledger has been created before.")
 
@@ -478,6 +478,8 @@ class TtProviderPPOB(models.Model):
                 'nominal': rec.nominal,
             })
 
+        ticket_list = []
+
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -520,7 +522,8 @@ class TtProviderPPOB(models.Model):
             'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
             'allowed_denominations': allowed_denominations,
-            'description': self.get_description()
+            'description': self.get_description(),
+            'tickets': ticket_list
         }
 
         return res

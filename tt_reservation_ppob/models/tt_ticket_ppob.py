@@ -15,5 +15,7 @@ class TtTicketPPOB(models.Model):
         res = {
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
+            'sequence': self.passenger_id and self.passenger_id.sequence or '',
+            'passenger_number': int(self.passenger_id.sequence) if self.passenger_id else ''
         }
         return res

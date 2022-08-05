@@ -81,10 +81,13 @@ class AccountingConnectorITM(models.Model):
                         }]
 
                         if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or 0
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
 
+                        # total cost = Total NTA
+                        # total sales = Agent NTA
+                        # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
                         provider_list.append({
                             "ItemNo": idx+1,
                             "ProductCode": product_code,
@@ -93,16 +96,27 @@ class AccountingConnectorITM(models.Model):
                             "CArrierName": "",
                             "Description": prov['pnr'],
                             "Quantity": 1,
-                            "Cost": pax.get('agent_nta', 0),
-                            "Profit": ho_prof - (ho_prof * 9.9099 / 100),
+                            "Cost": pax.get('total_nta', 0),
+                            "Profit": ho_prof - round(ho_prof * 9.9099 / 100),
                             "ServiceFee": 0,
-                            "VAT": ho_prof * 9.9099 / 100,
-                            "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0,
+                            "VAT": round(ho_prof * 9.9099 / 100),
+                            "Sales": pax.get('agent_nta', 0),
                             "Itin": journey_list,
                             "Pax": pax_list
                         })
 
                         idx += 1
+            total_sales = request.get('agent_nta', 0)
+            if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                total_sales += request.get('total_channel_upsell', 0)
+            sup_code = ''
+            sup_name = ''
+            if provider_list:
+                supplier_obj = self.env['tt.accounting.setup.suppliers'].search([('accounting_setup_id.accounting_provider', '=', 'itm'),
+                                                                                 ('provider_id.code', '=', provider_list[0]['CarrierCode'])], limit=1)
+                if supplier_obj:
+                    sup_code = supplier_obj.supplier_code or ''
+                    sup_name = supplier_obj.supplier_name or ''
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",
@@ -117,10 +131,10 @@ class AccountingConnectorITM(models.Model):
                     "TransID": "48720",
                     "Description": '_'.join(pnr_list),
                     "ActivityDate": "",
-                    "SupplierCode": "",
-                    "SupplierName": "",
-                    "TotalCost": 0,
-                    "TotalSales": 0,
+                    "SupplierCode": sup_code,
+                    "SupplierName": sup_name,
+                    "TotalCost": request.get('total_nta', 0),
+                    "TotalSales": total_sales,
                     "Source": "",
                     "UserName": "",
                     "SalesID": 0,

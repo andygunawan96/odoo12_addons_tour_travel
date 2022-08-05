@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="tt_point_reward_sub_menu"
+              name="Point Reward"
+              sequence="1"
+              parent="tt_base.menu_tour_travel_configuration_point_reward"
+              action="point_reward_action_view"
+              groups="tt_base.group_point_reward_level_4"
+        />
+
+    <menuitem id="tt_point_reward_rules_sub_menu"
+              name="Point Reward Rules"
+              sequence="2"
+              parent="tt_base.menu_tour_travel_configuration_point_reward"
+              action="point_reward_rules_action_view"
+              groups="tt_base.group_point_reward_level_4"
+        />
+
+</odoo>

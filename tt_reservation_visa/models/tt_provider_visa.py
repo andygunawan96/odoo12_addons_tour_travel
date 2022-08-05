@@ -212,8 +212,8 @@ class TtProviderVisa(models.Model):
                 rec.unlink()
         return ledger_created
 
-    def action_create_ledger(self, issued_uid, pay_method=None):
-        return self.env['tt.ledger'].action_create_ledger(self, issued_uid)
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
 
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
@@ -380,6 +380,7 @@ class TtProviderVisa(models.Model):
         vendor_list = []
         for rec in self.vendor_ids:
             vendor_list.append(rec.to_dict())
+        ticket_list = []
         res = {
             'pnr': self.pnr and self.pnr or '',
             'provider': self.provider_id.code,
@@ -391,7 +392,8 @@ class TtProviderVisa(models.Model):
             'country_id': self.country_id.id,
             'departure_date': self.departure_date,
             'passengers': passenger_list,
-            'vendors': vendor_list
+            'vendors': vendor_list,
+            'tickets': ticket_list
         }
         return res
 

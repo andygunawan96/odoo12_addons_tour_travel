@@ -23,14 +23,14 @@ class PaymentAcquirer(models.Model):
     account_name = fields.Char('Account Name')
     cust_fee = fields.Float('Customer Fee')
     bank_fee = fields.Float('Bank Fee')
-    va_fee = fields.Float('Fee') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA
+    va_fee = fields.Float('Fee Flat') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA UNTUK FLAT NAMA FIELD SUDAH MASUK INI
+    fee_percentage = fields.Float('Fee Percentage') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA
     online_wallet = fields.Boolean('Online Wallet')
     is_sunday_off = fields.Boolean('Sunday Off')
     is_specific_time = fields.Boolean('Specific Time')
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
-    va_fee_type = fields.Selection([('flat', 'Flat'), ('percentage', 'Percentage')], 'Fee Type', default='flat')
     show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
     save_url = fields.Boolean('Save URL')
     minimum_amount = fields.Float('Minimum Amount')
@@ -70,12 +70,10 @@ class PaymentAcquirer(models.Model):
             bank_fee = round((amount+cust_fee) * self.bank_fee / 100)
         ##untuk VA fee, jika VA fee pasti bukan EDC jadi bisa replace
 
-        if self.va_fee:
-            if self.va_fee_type == 'flat':
-                return 0,self.va_fee,uniq
-            else:
-                return 0,math.ceil(self.va_fee*amount/100),uniq
-
+        if self.type == 'credit': ## UNTUK CREDIT CARD ESPAY
+            return 0, int(round((amount + self.va_fee) / ((100-self.fee_percentage)/100) * (self.fee_percentage/100), 0)) + self.va_fee, uniq
+        elif self.va_fee or self.fee_percentage:
+            return 0, math.ceil(self.fee_percentage * amount / 100) + self.va_fee, uniq
         else:
             lost_or_profit = cust_fee-bank_fee
             return lost_or_profit,cust_fee, uniq
@@ -99,12 +97,41 @@ class PaymentAcquirer(models.Model):
         #     if self.start_time > self.end_time:
         #         raise UserError(_('End Date cannot be lower than Start Time.'))
 
-    def acquirer_format(self, amount, unique):
+    def acquirer_format(self, amount, unique, agent_obj=None):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         loss_or_profit,fee, uniq = self.compute_fee(amount,unique)
+        minimum_amount = {
+            "default": 0,
+            "with_point": 0
+        }
+        minimum_amount_default = self.minimum_amount + uniq
+        if self.type == 'credit':
+            minimum_amount_default += fee
+        minimum_amount['default'] = minimum_amount_default
+
+        ###POINT
+        amount_when_use_point = 0
+        fee_point = 0
+        uniq_point = 0
+        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+        if website_use_point_reward == 'True':
+            point_reward = agent_obj.actual_point_reward
+            minimum_amount_with_point = self.minimum_amount
+            if point_reward - minimum_amount_with_point > amount:
+                total_use_point = amount - minimum_amount_with_point
+            else:
+                total_use_point = point_reward
+            amount_when_use_point = amount - total_use_point
+            loss_or_profit_point, fee_point, uniq_point = self.compute_fee(amount_when_use_point, unique)
+
+            with_point_minimum_amount = self.minimum_amount + uniq_point
+            if self.type == 'credit':
+                with_point_minimum_amount += fee_point
+            minimum_amount['with_point'] = with_point_minimum_amount
+
         return {
             'acquirer_seq_id': self.seq_id,
             'name': self.name,
@@ -122,13 +149,19 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
+            'price_component_with_point': {
+                'amount': amount_when_use_point,
+                'fee': fee_point,
+                'unique_amount': uniq_point,
+            },
             'online_wallet': self.online_wallet,
             'save_url': self.save_url,
             'show_device_type': self.show_device_type,
             'total_amount': float(amount) + uniq + fee,
+            'total_amount_with_point': float(amount_when_use_point) + uniq_point + fee_point,
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'description_msg': self.description_msg or '',
-            'minimum_amount': self.minimum_amount
+            'minimum_amount': minimum_amount
         }
 
     def acquirer_format_VA(self, acq, amount,unique):
@@ -157,8 +190,7 @@ class PaymentAcquirer(models.Model):
             },
             'total_amount': float(amount) + fee + uniq,
             'image': payment_acq.bank_id.image_id and payment_acq.bank_id.image_id.url or '',
-            'description_msg': payment_acq.description_msg or '',
-            'minimum_amount': payment_acq.minimum_amount
+            'description_msg': payment_acq.description_msg or ''
         }
 
     def get_va_number(self, req, context):
@@ -282,7 +314,7 @@ class PaymentAcquirer(models.Model):
                         if self.validate_time(acq, now_time):
                             if not values.get(acq.type):
                                 values[acq.type] = []
-                            values[acq.type].append(acq.acquirer_format(amount, unique))
+                            values[acq.type].append(acq.acquirer_format(amount, unique, self.env['tt.agent'].browse(co_agent_id)))
 
                 # # payment gateway
                 # penjualan
@@ -317,7 +349,7 @@ class PaymentAcquirer(models.Model):
                             # if acq.account_number:
                             #     values[acq.type].append(acq.acquirer_format(amount, unique))
                             # else:
-                            values[acq.type].append(acq.acquirer_format(amount, 0))
+                            values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id)))
 
                 res['non_member'] = values
                 can_use_cor_account = True
@@ -393,6 +425,8 @@ class PaymentAcquirerNumber(models.Model):
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type')
     email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
+    is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
+    point_reward_amount = fields.Float('Point Reward Amount')
 
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
@@ -403,7 +437,7 @@ class PaymentAcquirerNumber(models.Model):
         ### BAYAR PAKAI PAYMENT GATEWAY
         provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
-
+        is_use_point = data.get('use_point', False)
         if not booking_obj:
             raise RequestException(1001)
 
@@ -420,19 +454,19 @@ class PaymentAcquirerNumber(models.Model):
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
-                payment = self.create_payment_acq(data,booking_obj,provider_type)
+                payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point)
                 booking_obj.payment_acquirer_number_id = payment.id
                 payment = {'order_number': payment.number}
             else:
                 payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
                 booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
-            payment = self.create_payment_acq(data,booking_obj,provider_type)
+            payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point)
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
 
-    def create_payment_acq(self,data,booking_obj,provider_type):
+    def create_payment_acq(self,data,booking_obj,provider_type, is_use_point):
         if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
             hold_date = booking_obj.hold_date
         elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
@@ -443,19 +477,29 @@ class PaymentAcquirerNumber(models.Model):
 
 
         payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['acquirer_seq_id'])])
+
+        amount = data['amount']
+        point_amount = 0
+        if is_use_point:
+            if amount - payment_acq_obj.minimum_amount > booking_obj.agent_id.point_reward:
+                point_amount = booking_obj.agent_id.point_reward
+            else:
+                point_amount = amount - payment_acq_obj.minimum_amount
+            amount -= point_amount
+
         if payment_acq_obj.account_number: ## Transfer mutasi
-            unique_obj = self.env['payment.acquirer'].generate_unique_amount(data['amount'], False)
+            unique_obj = self.env['payment.acquirer'].generate_unique_amount(amount, False)
                                                                              # booking_obj.agent_id.agent_type_id.id == self.env.ref(
                                                                              #     'tt_base.agent_type_btc').id)
                                                                              ## 7 July Request Kuamala ubah jadi fee bukan subsidy lagi
 
             unique_amount_id = unique_obj.id
             unique_amount = unique_obj.get_unique_amount()
-            amount = data['amount']
         else:## VA Espay
             unique_amount_id = False
             unique_amount = 0
-            amount = data['amount']
+
+
 
         payment = self.env['payment.acquirer.number'].create({
             'state': 'close',
@@ -466,7 +510,10 @@ class PaymentAcquirerNumber(models.Model):
             'amount': amount,
             'res_model': provider_type,
             'res_id': booking_obj.id,
-            'time_limit': hold_date
+            'time_limit': hold_date,
+            'is_using_point_reward': is_use_point,
+            'point_reward_amount': point_amount,
+            'agent_id': booking_obj.agent_id.id
         })
         return payment
 

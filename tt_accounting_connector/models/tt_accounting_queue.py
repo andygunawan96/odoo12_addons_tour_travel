@@ -73,7 +73,7 @@ class TtAccountingQueue(models.Model):
                 if accounting_obj:
                     is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
-                    if not led.is_sent_to_acc:
+                    if not led.is_sent_to_acc and led.source_of_funds_type == 0: ## source_of_funds_type 0 untuk balance:
                         ledger_list.append({
                             'id': led.id,
                             'ref': led.ref or '',
@@ -120,36 +120,37 @@ class TtAccountingQueue(models.Model):
                     temp_prov_price_dict['parent_agent_commission'] = temp_prov_price_dict['total_commission'] - temp_prov_price_dict['agent_commission'] - temp_prov_price_dict['ho_commission']
                     temp_prov_dict.update(temp_prov_price_dict)
 
-                    for tick in prov.ticket_ids:
-                        temp_tick_price_dict = {
-                            'agent_nta': 0,
-                            'total_nta': 0,
-                            'parent_agent_commission': 0,
-                            'agent_commission': 0,
-                            'ho_commission': 0,
-                            'total_commission': 0,
-                            'total_channel_upsell': 0
-                        }
-                        for sale in tick.passenger_id.cost_service_charge_ids:
-                            temp_tick_price_dict['total_nta'] += sale.amount
-                            if sale.charge_type == 'RAC' and sale.charge_code == 'rac':
-                                temp_tick_price_dict['agent_commission'] -= sale.amount
-                                temp_tick_price_dict['agent_nta'] += sale.amount
-                            if sale.charge_type == 'RAC':
-                                temp_tick_price_dict['total_commission'] -= sale.amount
-                                if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
-                                    temp_tick_price_dict['ho_commission'] -= sale.amount
-                            if sale.charge_type != 'RAC':
-                                temp_tick_price_dict['agent_nta'] += sale.amount
-                        temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
+                    if temp_prov_dict.get('tickets'):
+                        for tick in prov.ticket_ids:
+                            temp_tick_price_dict = {
+                                'agent_nta': 0,
+                                'total_nta': 0,
+                                'parent_agent_commission': 0,
+                                'agent_commission': 0,
+                                'ho_commission': 0,
+                                'total_commission': 0,
+                                'total_channel_upsell': 0
+                            }
+                            for sale in tick.passenger_id.cost_service_charge_ids:
+                                temp_tick_price_dict['total_nta'] += sale.amount
+                                if sale.charge_type == 'RAC' and sale.charge_code == 'rac':
+                                    temp_tick_price_dict['agent_commission'] -= sale.amount
+                                    temp_tick_price_dict['agent_nta'] += sale.amount
+                                if sale.charge_type == 'RAC':
+                                    temp_tick_price_dict['total_commission'] -= sale.amount
+                                    if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                                        temp_tick_price_dict['ho_commission'] -= sale.amount
+                                if sale.charge_type != 'RAC':
+                                    temp_tick_price_dict['agent_nta'] += sale.amount
+                            temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
 
-                        for sale in tick.passenger_id.channel_service_charge_ids:
-                            if sale.charge_code == 'csc':
-                                temp_tick_price_dict['total_channel_upsell'] += abs(sale.amount)
+                            for sale in tick.passenger_id.channel_service_charge_ids:
+                                if sale.charge_code == 'csc':
+                                    temp_tick_price_dict['total_channel_upsell'] += abs(sale.amount)
 
-                        for prov_pax in temp_prov_dict['tickets']:
-                            if prov_pax['passenger_number'] == tick.passenger_id.sequence:
-                                prov_pax.update(temp_tick_price_dict)
+                            for prov_pax in temp_prov_dict['tickets']:
+                                if prov_pax['passenger_number'] == tick.passenger_id.sequence:
+                                    prov_pax.update(temp_tick_price_dict)
 
                     prov_book_list.append(temp_prov_dict)
                 invoice_data = []
@@ -185,7 +186,7 @@ class TtAccountingQueue(models.Model):
                     cat = 'reschedule'
                 ledger_list = []
                 for led in trans_obj.ledger_ids:
-                    if not led.is_sent_to_acc:
+                    if not led.is_sent_to_acc and led.source_of_funds_type == 0: ## source_of_funds_type 0 untuk balance:
                         ledger_list.append({
                             'id': led.id,
                             'ref': led.ref or '',
@@ -207,26 +208,46 @@ class TtAccountingQueue(models.Model):
                             'is_sent_to_acc': True
                         })
                 new_segment_list = []
-                for segment_obj in trans_obj.new_segment_ids:
-                    new_segment_list.append(segment_obj.to_dict())
                 invoice_data = []
                 billing_due_date = 0
-                for rec in trans_obj.invoice_line_ids:
-                    invoice_data.append(rec.invoice_id.name)
-                    billing_due_date = rec.customer_parent_id.billing_due_date
+                if self.res_model == 'tt.reschedule':
+                    for segment_obj in trans_obj.new_segment_ids:
+                        new_segment_list.append(segment_obj.to_dict())
 
+                    for rec in trans_obj.invoice_line_ids:
+                        invoice_data.append(rec.invoice_id.name)
+                        billing_due_date = rec.customer_parent_id.billing_due_date
+
+                book_obj = self.env[trans_obj.res_model].browse(trans_obj.res_id)
+                book_invoice_data = []
+                prov_book_list = []
+                for prov in book_obj.provider_booking_ids:
+                    prov_book_list.append(prov.to_dict())
+
+                for rec in book_obj.invoice_line_ids:
+                    book_invoice_data.append(rec.invoice_id.name)
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
                     'ledgers': ledger_list,
                     'category': cat,
                     'new_segment': new_segment_list,
                     'invoice_data': invoice_data,
-                    'billing_due_date': billing_due_date
+                    'billing_due_date': billing_due_date,
+                    'reservation_name': book_obj.name if book_obj else '',
+                    'reservation_invoice_data': book_invoice_data,
+                    'provider_bookings': prov_book_list,
+                    'customer_parent_name': book_obj.customer_parent_id.name,
+                    'customer_parent_type_id': {
+                        'code': book_obj.customer_parent_type_id.code
+                    },
+                    'booker': {
+                        'name': book_obj.booker_id.name
+                    }
                 })
             elif self.res_model == 'tt.top.up':
                 request = trans_obj.to_dict_acc()
                 ledger_list = []
-                if not trans_obj.ledger_id.is_sent_to_acc:
+                if not trans_obj.ledger_id.is_sent_to_acc and trans_obj.ledger_id.source_of_funds_type == 0: ## source_of_funds_type 0 untuk balance
                     ledger_list.append({
                         'id': trans_obj.ledger_id.id,
                         'ref': trans_obj.ledger_id.ref or '',

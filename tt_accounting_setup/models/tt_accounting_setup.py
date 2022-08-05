@@ -23,6 +23,7 @@ class TtAccountingSetup(models.Model):
     is_send_refund = fields.Boolean('Send Refund Transaction', default=False)
     is_send_commission= fields.Boolean('Send Commission Transaction', default=False)
     variable_ids = fields.One2many('tt.accounting.setup.variables', 'accounting_setup_id', 'Variables')
+    provider_supplier_ids = fields.One2many('tt.accounting.setup.suppliers', 'accounting_setup_id', 'Provider Suppliers')
 
     @api.depends('accounting_provider')
     @api.onchange('accounting_provider')
@@ -38,6 +39,14 @@ class TtAccountingSetup(models.Model):
                 'accounting_setup_id': new_setup_obj.id,
                 'variable_name': rec.variable_name or '',
                 'variable_value': rec.variable_value or ''
+            })
+
+        for rec in self.provider_supplier_ids:
+            self.env['tt.accounting.setup.suppliers'].create({
+                'accounting_setup_id': new_setup_obj.id,
+                'provider_id': rec.provider_id and rec.provider_id.id or '',
+                'supplier_code': rec.supplier_code or '',
+                'supplier_name': rec.supplier_name or ''
             })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
@@ -57,5 +66,15 @@ class TtAccountingSetupVariables(models.Model):
     _description = 'Tour & Travel - Accounting Setup Variables'
 
     accounting_setup_id = fields.Many2one('tt.accounting.setup', 'Accounting Setup')
-    variable_name = fields.Char('Variable Name')
-    variable_value = fields.Char('Variable Value')
+    variable_name = fields.Char('Variable Name', required=True)
+    variable_value = fields.Char('Variable Value', required=True)
+
+
+class TtAccountingSetupSuppliers(models.Model):
+    _name = 'tt.accounting.setup.suppliers'
+    _description = 'Tour & Travel - Accounting Setup Suppliers'
+
+    accounting_setup_id = fields.Many2one('tt.accounting.setup', 'Accounting Setup')
+    provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
+    supplier_code = fields.Char('Supplier Code', required=True)
+    supplier_name = fields.Char('Supplier Name')
