@@ -283,8 +283,7 @@ class PaymentAcquirer(models.Model):
                 dom = [
                     ('website_published', '=', True),
                     ('company_id', '=', self.env.user.company_id.id),
-                    ('type', '!=', 'va'),  ## search yg bukan espay
-                    ('type', '!=', 'payment_gateway')  ## search yg bukan mutasi bca
+                    ('type', 'not in', ['va', 'payment_gateway'])
                 ]
                 can_use_payment_gateway_only = False #HANYA BOLEH PAYMENT GATEWAY
                 if book_obj: #ASUMSI SELAMA BELUM BOOKING AGENT BOOK & YANG BAYAR SAMA
@@ -323,7 +322,7 @@ class PaymentAcquirer(models.Model):
                         ('website_published', '=', True),
                         ('company_id', '=', self.env.user.company_id.id),
                         ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
-                        ('type', 'in', ['payment_gateway', 'credit', 'va']),  ## search yg mutasi bca / creditcard espay
+                        ('type', 'in', ['payment_gateway']),  ## search yg mutasi bca / creditcard espay
                     ]
                     # pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
                     # if pay_acq_num:
