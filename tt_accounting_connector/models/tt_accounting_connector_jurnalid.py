@@ -289,10 +289,7 @@ class AccountingConnectorAccurate(models.Model):
         headers = {
             "Content-Type": "application/json",
             "Authorization": "bearer %s" % data_login['access_token'],
-            "api_key": data_login['api_key'],
-            "Connection": "keep-alive",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept": "*/*"
+            "api_key": data_login['api_key']
         }
         data = {
             "product": {
@@ -324,6 +321,44 @@ class AccountingConnectorAccurate(models.Model):
         response = requests.post(url, headers=headers, json=data)
         _logger.info('######RESPONSE ADD PRODUCT#########\n%s' % response.text)
         return product_name
+
+    def search_tags(self, data_login, tag_name):
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
+        }
+
+        data = {}
+        url = '%s/partner/core/api/v1/tags' % (data_login['url_api'])
+        _logger.info('######REQUEST SEARCH TAGS#########\n%s' % json.dumps(data))
+        res = requests.get(url, headers=headers, json=data)
+        _logger.info('######RESPONSE SEARCH PRODUCT#########\n%s' % res.text)
+        res_response = json.loads(res.text)
+        tags_name_data = [d['name'] for d in res_response['tags'] if d['name'] == tag_name]
+        if len(tags_name_data) > 0:
+            tag_name = tags_name_data[0]
+        else:
+            tag_name = self.add_tag(data_login, tag_name)
+        return tag_name
+
+    def add_tag(self, data_login, tag_name):
+        url = "%s/partner/core/api/v1/tags" % data_login['url_api']
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": "bearer %s" % data_login['access_token'],
+            "api_key": data_login['api_key']
+        }
+        data = {
+            "tag": {
+                "name": tag_name,
+                "custom_id": tag_name
+            }
+        }
+        _logger.info('######REQUEST ADD TAG#########\n%s' % json.dumps(data))
+        response = requests.post(url, headers=headers, json=data)
+        _logger.info('######RESPONSE ADD TAG#########\n%s' % response.text)
+        return tag_name
 
     def add_purchase(self, data_login, vals):
         url = "%s/partner/core/api/v1/purchase_invoices" % data_login['url_api']
@@ -368,17 +403,22 @@ class AccountingConnectorAccurate(models.Model):
             price = 0
             for idy,ledger in enumerate(pnr_list[pnr], start=1):
                 send = False
+                price = 0
                 if vals['agent_id'] == ledger['agent_id']:
                     if ledger['debit'] != 0:
                         product_name = 'Commission'
                         price = ledger['debit']
                         send = vals['is_send_commission']
+                        tag_name = self.search_tags(data_login, 'Komisi Tiket Pesawat')
                     else:
                         for provider_booking in vals['provider_bookings']:
-                            if pnr == provider_booking['pnr']:
+                            if not provider_booking.get('is_sent') and pnr == provider_booking['pnr']:
                                 price += provider_booking['total_price']
-                        product_name = 'Tiket Perjalanan'
-                        send = True
+                                provider_booking['is_sent'] = True
+                        if price != 0:
+                            product_name = 'Tiket Perjalanan'
+                            tag_name = self.search_tags(data_login, 'Pembelian Tiket Pesawat')
+                            send = True
                 if send:
                     product = self.get_product(data_login, product_name)
                     ###################################
@@ -415,7 +455,9 @@ class AccountingConnectorAccurate(models.Model):
                             "person_name": vendor,
                             "warehouse_name": "",
                             "warehouse_code": "",
-                            "tags": [],
+                            "tags": [
+                                tag_name
+                            ],
                             "email": "",
                             "message": desc,
                             "memo": desc,
@@ -455,6 +497,7 @@ class AccountingConnectorAccurate(models.Model):
             passenger_data = ''
 
         product = self.get_product(data_login, 'Tiket Perjalanan')
+        tag_name = self.search_tags(data_login, 'Penjualan Tiket Pesawat')
 
         due_date = (datetime.strptime(vals['issued_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%Y-%m-%d')
         issued_date = vals['issued_date'].split(' ')[0]
@@ -488,7 +531,9 @@ class AccountingConnectorAccurate(models.Model):
                 "person_name": contact,
                 "warehouse_name": "",
                 "warehouse_code": "",
-                "tags": [],
+                "tags": [
+                    tag_name
+                ],
                 "email": vals['booker'].get('email', ''),
                 "message": desc,
                 "memo": desc,
@@ -547,7 +592,7 @@ class AccountingConnectorAccurate(models.Model):
         _logger.info('######RESPONSE ADD ACCOUNT#########\n%s' % response.text)
         return account
 
-    def create_journal(self, data_login, vals, account_ho, account_agent, description, date, total):
+    def create_journal(self, data_login, vals, account_ho, account_agent, description, date, total, tag_name):
         if len(vals['ledgers']) > 0:
             url = "%s/partner/core/api/v1/journal_entries" % data_login['url_api']
             headers = {
@@ -574,6 +619,7 @@ class AccountingConnectorAccurate(models.Model):
                       }
                     ],
                     "tags": [
+                        tag_name
                     ]
                 }
             }
@@ -668,6 +714,7 @@ class AccountingConnectorAccurate(models.Model):
                     pnr_list[segment['pnr']] = []
                 pnr_list[segment['pnr']].append(segment)
             if pnr_list:
+                ## RESCHEDULE
                 for pnr in pnr_list:
                     passenger_data = ''
                     desc = ''
@@ -689,120 +736,10 @@ class AccountingConnectorAccurate(models.Model):
                     price = vals['reschedule_amount']
                     product = self.get_product(data_login, product_name)
                     issued_date = vals['create_date'].split(' ')[0]
-                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers)
-                    # if len(vals['reservation_name']) > 0:
-                    #     reservation_name = ''
-                    #     for rec in vals['invoice_data']:
-                    #         if invoice != '':
-                    #             invoice = ', '
-                    #         invoice += rec
-                    #     booking_reservation_list = self.search_purchase(invoice, data_login)
-                    #     if len(booking_reservation_list) > 0:
-                    #         is_reservation_found = True
-                    #         issued_date = booking_reservation_list['transaction_date'].split('/')
-                    #         issued_date.reverse()
-                    #         issued_date = "-".join(issued_date)
-                    #         transaction_line_list = []
-                    #         for rec in booking_reservation_list['transaction_lines_attributes']:
-                    #             transaction_line_list.append({
-                    #                 "quantity": rec['quantity'],
-                    #                 "rate": float(rec['rate']),
-                    #                 "discount": 0,
-                    #                 "product_name": rec['product']['name'],
-                    #                 "description": rec['description']
-                    #             })
-                    #         transaction_line_list.append({
-                    #             "quantity": 1,
-                    #             "rate": price,
-                    #             "discount": 0,
-                    #             "product_name": product,
-                    #             "description": desc
-                    #         })
-                    #         data = {
-                    #             "purchase_invoice": {
-                    #                 "transaction_date": issued_date,
-                    #                 "transaction_lines_attributes": transaction_line_list,
-                    #                 "shipping_date": issued_date,
-                    #                 "shipping_price": 0,
-                    #                 "shipping_address": "",
-                    #                 "is_shipped": True,
-                    #                 "ship_via": "",
-                    #                 "reference_no": "%s; %s - %s" % (booking_reservation_list['reference_no'], invoice, product),
-                    #                 "tracking_no": "",
-                    #                 "address": "",
-                    #                 "term_name": "Cash",
-                    #                 "due_date": issued_date,
-                    #                 "refund_from_name": "",
-                    #                 "deposit": 0,
-                    #                 "discount_unit": 0,
-                    #                 "witholding_account_name": "",
-                    #                 "witholding_value": 0,
-                    #                 "witholding_type": "percent",
-                    #                 "discount_type_name": "percent",
-                    #                 "person_name": vendor,
-                    #                 "warehouse_name": "",
-                    #                 "warehouse_code": "",
-                    #                 "tags": [],
-                    #                 "email": "",
-                    #                 "message": "%s; %s" % (booking_reservation_list['message'], desc),
-                    #                 "memo": "%s; %s" % (booking_reservation_list['memo'], desc),
-                    #                 "custom_id": "",
-                    #                 "source": "API",
-                    #                 "use_tax_inclusive": False,
-                    #                 "tax_after_discount": False
-                    #             }
-                    #         }
-                    #         url += '/%s' % booking_reservation_list['id']
-                    #         _logger.info('######REQUEST PURCHASE RESCHEDULE UPDATE SALES#########\n%s' % json.dumps(data))
-                    #         response = requests.patch(url, headers=headers, json=data)
-                    #         _logger.info('######RESPONSE PURCHASE RESCHEDULE UPDATE SALES#########\n%s' % response.text)
-                    # if not is_reservation_found:
-                    #     data = {
-                    #         "purchase_invoice": {
-                    #             "transaction_date": issued_date,
-                    #             "transaction_lines_attributes": [
-                    #                 {
-                    #                     "quantity": 1,
-                    #                     "rate": price,
-                    #                     "discount": 0,
-                    #                     "product_name": product,
-                    #                     "description": desc
-                    #                 }
-                    #             ],
-                    #             "shipping_date": issued_date,
-                    #             "shipping_price": 0,
-                    #             "shipping_address": "",
-                    #             "is_shipped": True,
-                    #             "ship_via": "",
-                    #             "reference_no": "%s - %s" % (invoice, product),
-                    #             "tracking_no": "",
-                    #             "address": "",
-                    #             "term_name": "Cash",
-                    #             "due_date": issued_date,
-                    #             "refund_from_name": "",
-                    #             "deposit": 0,
-                    #             "discount_unit": 0,
-                    #             "witholding_account_name": "",
-                    #             "witholding_value": 0,
-                    #             "witholding_type": "percent",
-                    #             "discount_type_name": "percent",
-                    #             "person_name": vendor,
-                    #             "warehouse_name": "",
-                    #             "warehouse_code": "",
-                    #             "tags": [],
-                    #             "email": "",
-                    #             "message": desc,
-                    #             "memo": desc,
-                    #             "custom_id": "",
-                    #             "source": "API",
-                    #             "use_tax_inclusive": False,
-                    #             "tax_after_discount": False
-                    #         }
-                    #     }
-                    #     _logger.info('######REQUEST PURCHASE RESCHEDULE#########\n%s' % json.dumps(data))
-                    #     response = requests.post(url, headers=headers, json=data)
-                    #     _logger.info('######RESPONSE PURCHASE RESCHEDULE#########\n%s' % response.text)
+                    tag_name = self.search_tags(data_login, 'Reschedule Tiket Pesawat')
+                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers, tag_name)
             else:
+                ## ADDONS
                 for reschedule_line in vals['reschedule_lines']:
                     passenger_data = ''
                     desc = ''
@@ -825,12 +762,13 @@ class AccountingConnectorAccurate(models.Model):
                     price = vals['reschedule_amount']
                     product = self.get_product(data_login, product_name)
                     issued_date = vals['create_date'].split(' ')[0]
-                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers)
+                    tag_name = self.search_tags(data_login, 'Addons Tiket Pesawat')
+                    self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers, tag_name)
         else:
             _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0
 
-    def add_purchase_after_sales_to_vendor(self, vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers):
+    def add_purchase_after_sales_to_vendor(self, vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers, tag_name):
         is_reservation_found = False
         if len(vals['reservation_name']) > 0:
             reservation_name = ''
@@ -846,6 +784,10 @@ class AccountingConnectorAccurate(models.Model):
                 issued_date.reverse()
                 issued_date = "-".join(issued_date)
                 transaction_line_list = []
+                tag_list = []
+                for rec in booking_reservation_list['tags']:
+                    tag_list.append(rec['name'])
+                tag_list.append(tag_name)
                 for rec in booking_reservation_list['transaction_lines_attributes']:
                     transaction_line_list.append({
                         "quantity": rec['quantity'],
@@ -885,7 +827,7 @@ class AccountingConnectorAccurate(models.Model):
                         "person_name": vendor,
                         "warehouse_name": "",
                         "warehouse_code": "",
-                        "tags": [],
+                        "tags": tag_list,
                         "email": "",
                         "message": "%s; %s" % (booking_reservation_list['message'], desc),
                         "memo": "%s; %s" % (booking_reservation_list['memo'], desc),
@@ -932,7 +874,9 @@ class AccountingConnectorAccurate(models.Model):
                     "person_name": vendor,
                     "warehouse_name": "",
                     "warehouse_code": "",
-                    "tags": [],
+                    "tags": [
+                        tag_name
+                    ],
                     "email": "",
                     "message": desc,
                     "memo": desc,
@@ -957,6 +901,7 @@ class AccountingConnectorAccurate(models.Model):
             passenger_data = ''
             desc = ''
             product = ''
+            tag_name = ''
             for pax in vals['passengers']:
                 if passenger_data != '':
                     passenger_data += ', '
@@ -969,7 +914,9 @@ class AccountingConnectorAccurate(models.Model):
                 pnr, segment['origin'], segment['destination'],
                 segment['departure_date'].split(' ')[0], passenger_data)
                 passenger_data = ''
+
             if desc != '':
+                tag_name = self.search_tags(data_login, 'Reschedule Tiket Pesawat')
                 product = self.get_product(data_login, 'Reschedule Tiket Perjalanan')
 
             for reschedule_line in vals['reschedule_lines']:
@@ -980,6 +927,7 @@ class AccountingConnectorAccurate(models.Model):
                         desc += "%s; Addons Tiket Perjalanan; Atas Nama: %s" % (provider_booking['pnr'], passenger_data)
                         passenger_data = ''
             if product == '':
+                tag_name = self.search_tags(data_login, 'Addons Tiket Pesawat')
                 product = self.get_product(data_login, 'Addons Tiket Perjalanan')
 
             due_date = (datetime.strptime(vals['create_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%d-%m-%Y')
@@ -997,6 +945,10 @@ class AccountingConnectorAccurate(models.Model):
                     due_date.reverse()
                     due_date = "-".join(due_date)
                     transaction_line_list = []
+                    tag_list = []
+                    for rec in booking_reservation_list['tags']:
+                        tag_list.append(rec['name'])
+                    tag_list.append(tag_name)
                     for rec in booking_reservation_list['transaction_lines_attributes']:
                         transaction_line_list.append({
                             "quantity": rec['quantity'],
@@ -1034,7 +986,7 @@ class AccountingConnectorAccurate(models.Model):
                             "person_name": contact,
                             "warehouse_name": "",
                             "warehouse_code": "",
-                            "tags": [],
+                            "tags": tag_list,
                             "email": vals['booker'].get('email', ''),
                             "message": "%s; %s" % (booking_reservation_list['message'], desc),
                             "memo": "%s; %s" % (booking_reservation_list['memo'], desc),
@@ -1079,7 +1031,9 @@ class AccountingConnectorAccurate(models.Model):
                         "person_name": contact,
                         "warehouse_name": "",
                         "warehouse_code": "",
-                        "tags": [],
+                        "tags": [
+                            tag_name
+                        ],
                         "email": vals['booker'].get('email', ''),
                         "message": desc,
                         "memo": desc,
@@ -1116,7 +1070,8 @@ class AccountingConnectorAccurate(models.Model):
             if len(vals['ledgers']) > 0:
                 account_ho = self.get_account(data_login, vals['bank'])
                 account_agent = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
-                self.create_journal(data_login, vals, account_ho, account_agent, "TOP UP %s %s" % (account_agent, vals['name']),vals['date'], vals['total'])
+                tag_name = self.search_tags(data_login, 'Top Up')
+                self.create_journal(data_login, vals, account_ho, account_agent, "TOP UP %s %s" % (account_agent, vals['name']),vals['date'], vals['total'], tag_name)
             else:
                 _logger.info('###JurnalID, Already sent to vendor accounting####')
         elif vals['category'] == 'reschedule':
@@ -1166,15 +1121,20 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data = ''
                         break
 
+                ####### REFUND #################
+
+                ##### VENDOR TO HEAD OFFICE #######
                 account_vendor = self.get_account(data_login, vendor_name)
                 account_ho = self.get_account(data_login, "Cash")
-                self.create_journal(data_login, vals, account_vendor, account_ho, desc, vals['real_refund_date'], vals['refund_amount'])
-                ##### VENDOR TO HEAD OFFICE #######
+                tag_name = self.search_tags(data_login, 'Refund From Vendor')
+                self.create_journal(data_login, vals, account_vendor, account_ho, desc, vals['real_refund_date'], vals['refund_amount'], tag_name)
+
 
                 ##### HEAD OFFICE TO AGENT ########
                 account_customer = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
-                self.create_journal(data_login, vals, account_ho, account_customer, desc, vals['refund_date'], vals['total_amount'])
-                ####### REFUND #################
+                tag_name = self.search_tags(data_login, 'Refund To Customer')
+                self.create_journal(data_login, vals, account_ho, account_customer, desc, vals['refund_date'], vals['total_amount'], tag_name)
+
             else:
                 _logger.info('###JurnalID, Already sent to vendor accounting####')
         res = self.response_parser()

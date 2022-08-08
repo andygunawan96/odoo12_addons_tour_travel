@@ -87,7 +87,7 @@ class TtAgent(models.Model):
             0,
             0,
             'Automatic End Points Statement',
-            1
+            'point'
         )
 
 
