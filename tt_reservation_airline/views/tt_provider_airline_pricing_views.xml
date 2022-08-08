@@ -48,6 +48,7 @@
                         </group>
                         <group>
                             <field name="rule_charge_code_list"/>
+                            <field name="rule_departure_date_list"/>
                         </group>
                     </group>
                     <notebook>
@@ -101,10 +102,22 @@
                                     <field name="provider_charge_code_list"/>
                                 </group>
                             </group>
+                            <group>
+                                <group>
+                                    <field name="provider_tour_code_access_type"/>
+                                    <field name="provider_tour_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="provider_dot_access_type"/>
+                                    <field name="provider_dot_start_date"/>
+                                    <field name="provider_dot_end_date"/>
+                                </group>
+                            </group>
                             <group string="Less">
                                 <group>
                                     <field name="provider_less_percentage"/>
                                     <field name="provider_less_infant"/>
+                                    <field name="provider_less_tour_code"/>
                                 </group>
                                 <group>
                                 </group>
@@ -317,6 +330,27 @@
                                     <field name="agent_charge_code_list"/>
                                 </group>
                             </group>
+                            <group>
+                                <group>
+                                    <field name="agent_class_of_service_access_type"/>
+                                    <field name="agent_class_of_service_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_charge_code_access_type"/>
+                                    <field name="agent_charge_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_tour_code_access_type"/>
+                                    <field name="agent_tour_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_dot_access_type"/>
+                                    <field name="agent_dot_start_date"/>
+                                    <field name="agent_dot_end_date"/>
+                                </group>
+                            </group>
                             <hr/>
                             <h3>Reservation</h3>
                             <group string="Reservation Sales" col="3" colspan="3">
@@ -474,7 +508,27 @@
                                     <field name="customer_charge_code_list"/>
                                 </group>
                             </group>
-                            <h3>Reservation</h3>
+                            <group>
+                                <group>
+                                    <field name="customer_class_of_service_access_type"/>
+                                    <field name="customer_class_of_service_list"/>
+                                </group>
+                                <group>
+                                    <field name="customer_charge_code_access_type"/>
+                                    <field name="customer_charge_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="customer_tour_code_access_type"/>
+                                    <field name="customer_tour_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="customer_dot_access_type"/>
+                                    <field name="customer_dot_start_date"/>
+                                    <field name="customer_dot_end_date"/>
+                                </group>
+                            </group>customer                     <h3>Reservation</h3>
                             <group string="Reservation Sales" col="3" colspan="3">
                                 <group>
                                     <field name="customer_rsv_sales_upsell_percentage"/>
@@ -560,6 +614,27 @@
                                 <group>
                                     <field name="agent_commission_charge_code_access_type"/>
                                     <field name="agent_commission_charge_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_commission_class_of_service_access_type"/>
+                                    <field name="agent_commission_class_of_service_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_charge_code_access_type"/>
+                                    <field name="agent_commission_charge_code_list"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_commission_tour_code_access_type"/>
+                                    <field name="agent_commission_tour_code_list"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_dot_access_type"/>
+                                    <field name="agent_commission_dot_start_date"/>
+                                    <field name="agent_commission_dot_end_date"/>
                                 </group>
                             </group>
                             <h3>Commission</h3>

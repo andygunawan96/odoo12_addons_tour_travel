@@ -278,6 +278,17 @@ Input Example :
 QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                     </div>
                                 </page>
+                                <page string="Date of Travel" name="tour_code">
+                                    <group string="Date of Travel">
+                                        <group>
+                                            <field name="dot_access_type" widget="radio"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('dot_access_type', 'in', ['all'])]}">
+                                            <field name="dot_start_date" attrs="{'required': [('dot_access_type', '!=', 'all')]}"/>
+                                            <field name="dot_end_date" attrs="{'required': [('dot_access_type', '!=', 'all')]}"/>
+                                        </group>
+                                    </group>
+                                </page>
                             </notebook>
                         </page>
                         <!--

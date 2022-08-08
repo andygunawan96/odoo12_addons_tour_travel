@@ -251,8 +251,14 @@ class ProviderPricingLine(models.Model):
     tour_code_access_type = fields.Selection(ACCESS_TYPE_2, 'Tour Code Access Type', default='all', required=True)
     tour_code_list = fields.Char('Tour Code List', help='Use comma (,) for separate the values')
 
+    dot_name = fields.Char('DOT Name')
+    dot_access_type = fields.Selection(ACCESS_TYPE, 'DOT Access Type', default='all', required=True)
+    dot_start_date = fields.Datetime('Start DOT')
+    dot_end_date = fields.Datetime('End DOT')
+
     less_percentage = fields.Float('Vendor Less (%)', default=0)
     less_infant = fields.Boolean('Apply less to Infant', default=False)
+    less_tour_code = fields.Char('Tour Code', default='')
 
     tkt_nta_fare_percentage = fields.Float('Fare (%)', default=0)
     tkt_nta_fare_amount = fields.Float('Fare Amount', default=0)
@@ -422,11 +428,17 @@ class ProviderPricingLine(models.Model):
                 'tour_code': {
                     'access_type': self.tour_code_access_type,
                     'tour_code_list': [rec.strip() for rec in self.tour_code_list.split(',')] if self.tour_code_list else [],
+                },
+                'date_of_travel': {
+                    'access_type': self.dot_access_type,
+                    'start_date': self.dot_start_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_start_date else '',
+                    'end_date': self.dot_end_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_end_date else '',
                 }
             },
             'less': {
                 'percentage': self.less_percentage,
-                'is_infant': self.less_infant
+                'is_infant': self.less_infant,
+                'tour_code': self.less_tour_code if self.less_tour_code else '',
             },
             'ticketing': {
                 'nta': {
