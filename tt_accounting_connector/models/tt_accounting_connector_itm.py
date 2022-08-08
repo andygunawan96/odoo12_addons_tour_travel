@@ -44,18 +44,23 @@ class AccountingConnectorITM(models.Model):
         live_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', 'live_id')], limit=1)
         if not live_id_obj:
             raise Exception('Please provide a variable with the name "live_id" in ITM Accounting Setup!')
-        product_code_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', 'product_code')], limit=1)
-        if not product_code_obj:
-            raise Exception('Please provide a variable with the name "product_code" in ITM Accounting Setup!')
 
         live_id = live_id_obj.variable_value
-        product_code = product_code_obj.variable_value
         if request['category'] == 'reservation':
             pnr_list = request.get('pnr') and request['pnr'].split(', ') or []
             provider_list = []
+            supplier_list = []
             idx = 0
             for prov in request['provider_bookings']:
                 if request['provider_type'] == 'airline':
+                    supplier_obj = self.env['tt.accounting.setup.suppliers'].search(
+                        [('accounting_setup_id.accounting_provider', '=', 'itm'),
+                         ('provider_id.code', '=', prov['provider'])], limit=1)
+                    if supplier_obj:
+                        supplier_list.append({
+                            'supplier_code': supplier_obj.supplier_code or '',
+                            'supplier_name': supplier_obj.supplier_name or ''
+                        })
                     journey_list = []
                     journ_idx = 0
                     for journ in prov['journeys']:
@@ -73,9 +78,15 @@ class AccountingConnectorITM(models.Model):
                             journ_idx += 1
 
                     for pax in prov['tickets']:
+                        pax_tick = ''
+                        if pax.get('ticket_number'):
+                            if len(pax['ticket_number']) > 3:
+                                pax_tick = '%s-%s' % (pax['ticket_number'][:3], pax['ticket_number'][3:])
+                            else:
+                                pax_tick = pax['ticket_number']
                         pax_list = [{
                             "PassangerName": pax['passenger'],
-                            "TicketNumber": pax['ticket_number'],
+                            "TicketNumber": pax_tick,
                             "Gender": 1,
                             "Nationality": "ID"
                         }]
@@ -90,9 +101,9 @@ class AccountingConnectorITM(models.Model):
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
                         provider_list.append({
                             "ItemNo": idx+1,
-                            "ProductCode": product_code,
-                            "ProductName": "",
-                            "CarrierCode": prov['provider'],
+                            "ProductCode": supplier_obj.product_code or '',
+                            "ProductName": supplier_obj.product_name or '',
+                            "CarrierCode": "",
                             "CArrierName": "",
                             "Description": prov['pnr'],
                             "Quantity": 1,
@@ -109,14 +120,7 @@ class AccountingConnectorITM(models.Model):
             total_sales = request.get('agent_nta', 0)
             if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
                 total_sales += request.get('total_channel_upsell', 0)
-            sup_code = ''
-            sup_name = ''
-            if provider_list:
-                supplier_obj = self.env['tt.accounting.setup.suppliers'].search([('accounting_setup_id.accounting_provider', '=', 'itm'),
-                                                                                 ('provider_id.code', '=', provider_list[0]['CarrierCode'])], limit=1)
-                if supplier_obj:
-                    sup_code = supplier_obj.supplier_code or ''
-                    sup_name = supplier_obj.supplier_name or ''
+
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",
@@ -131,8 +135,8 @@ class AccountingConnectorITM(models.Model):
                     "TransID": "48720",
                     "Description": '_'.join(pnr_list),
                     "ActivityDate": "",
-                    "SupplierCode": sup_code,
-                    "SupplierName": sup_name,
+                    "SupplierCode": supplier_list and supplier_list[0]['supplier_code'],
+                    "SupplierName": supplier_list and supplier_list[0]['supplier_name'],
                     "TotalCost": request.get('total_nta', 0),
                     "TotalSales": total_sales,
                     "Source": "",
