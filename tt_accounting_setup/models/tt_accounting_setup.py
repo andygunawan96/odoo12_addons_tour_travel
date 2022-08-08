@@ -76,5 +76,7 @@ class TtAccountingSetupSuppliers(models.Model):
 
     accounting_setup_id = fields.Many2one('tt.accounting.setup', 'Accounting Setup')
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
-    supplier_code = fields.Char('Supplier Code', required=True)
+    supplier_code = fields.Char('Supplier Code')
     supplier_name = fields.Char('Supplier Name')
+    product_code = fields.Char('Product Code')
+    product_name = fields.Char('Product Name')
