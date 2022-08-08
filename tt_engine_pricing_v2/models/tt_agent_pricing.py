@@ -281,6 +281,11 @@ class AgentPricingLine(models.Model):
     tour_code_access_type = fields.Selection(ACCESS_TYPE_2, 'Tour Code Access Type', default='all', required=True)
     tour_code_list = fields.Char('Tour Code List', help='Use comma (,) for separate the values')
 
+    dot_name = fields.Char('DOT Name')
+    dot_access_type = fields.Selection(ACCESS_TYPE, 'DOT Access Type', default='all', required=True)
+    dot_start_date = fields.Datetime('Start DOT')
+    dot_end_date = fields.Datetime('End DOT')
+
     parent_charge_percentage = fields.Float('Parent Charge (%)', default=0)
     parent_charge_minimum = fields.Float('Parent Charge Minimum', default=0)
     parent_charge_has_minimum = fields.Boolean('Has Minimum', default=True)
@@ -456,6 +461,11 @@ class AgentPricingLine(models.Model):
                 'tour_code': {
                     'access_type': self.tour_code_access_type,
                     'tour_code_list': [rec.strip() for rec in self.tour_code_list.split(',')] if self.tour_code_list else [],
+                },
+                'date_of_travel': {
+                    'access_type': self.dot_access_type,
+                    'start_date': self.dot_start_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_start_date else '',
+                    'end_date': self.dot_end_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_end_date else '',
                 }
             },
             'commission': {
