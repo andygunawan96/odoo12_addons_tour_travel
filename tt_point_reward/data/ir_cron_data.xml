@@ -15,18 +15,18 @@
             <field name="code">model.cron_point_reward_expired()</field>
         </record>
 
-        <record model="ir.cron" id="cron_create_end_balance_point_reward">
-            <field name="name">Auto-PointReward End Balance Statement</field>
-            <field name="user_id" ref="base.user_root"/>
-            <field name="interval_number">1</field>
-            <field name="interval_type">days</field>
-            <field name="numbercall">-1</field>
-            <field name="nextcall" eval="(datetime.now().replace(hour=17,minute=0,second=0).isoformat())"/>
-            <field name="active">False</field>
-            <field name="state">code</field>
-            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
-            <field name="code">model.cron_point_reward_statement_agent()</field>
-        </record>
+        <!--<record model="ir.cron" id="cron_create_end_balance_point_reward">-->
+            <!--<field name="name">Auto-PointReward End Balance Statement</field>-->
+            <!--<field name="user_id" ref="base.user_root"/>-->
+            <!--<field name="interval_number">1</field>-->
+            <!--<field name="interval_type">days</field>-->
+            <!--<field name="numbercall">-1</field>-->
+            <!--<field name="nextcall" eval="(datetime.now().replace(hour=17,minute=0,second=0).isoformat())"/>-->
+            <!--<field name="active">False</field>-->
+            <!--<field name="state">code</field>-->
+            <!--<field name="model_id" ref="tt_base.model_tt_cron_log"/>-->
+            <!--<field name="code">model.cron_point_reward_statement_agent()</field>-->
+        <!--</record>-->
 
     </data>
 </odoo>
