@@ -1095,6 +1095,7 @@ class TtProviderAirlinePricing(models.Model):
     rule_tour_code_list = fields.Char('Tour Code List', readonly=1)
     rule_charge_code_list = fields.Char('Charge Code List', readonly=1)
     rule_pricing_datetime = fields.Datetime('Pricing Datetime', readonly=1)
+    rule_departure_date_list = fields.Char('Departure Date List', readonly=1, default='')
 
     provider_pricing_id = fields.Many2one('tt.provider.pricing', 'Pricing ID', readonly=1, ondelete='set null')
     provider_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1127,8 +1128,14 @@ class TtProviderAirlinePricing(models.Model):
     provider_class_of_service_list = fields.Char('Class of Service List', readonly=1)
     provider_charge_code_access_type = fields.Char('Charge Code Access Type', readonly=1)
     provider_charge_code_list = fields.Char('Charge Code List', readonly=1)
+    provider_tour_code_access_type = fields.Char('Tour Code Access Type', readonly=1)
+    provider_tour_code_list = fields.Char('Tour Code List', readonly=1)
+    provider_dot_access_type = fields.Char('DOT Access Type', readonly=1)
+    provider_dot_start_date = fields.Char('DOT Start Date', readonly=1)
+    provider_dot_end_date = fields.Char('DOT End Date', readonly=1)
     provider_less_percentage = fields.Char('Vendor Less (%)', readonly=1)
     provider_less_infant = fields.Char('Apply less to Infant', readonly=1)
+    provider_less_tour_code = fields.Char('Vendor Tour Code', readonly=1, default='')
     provider_tkt_nta_fare_percentage = fields.Char('Fare (%)', readonly=1)
     provider_tkt_nta_fare_amount = fields.Char('Fare Amount', readonly=1)
     provider_tkt_nta_tax_percentage = fields.Char('Tax (%)', readonly=1)
@@ -1278,6 +1285,11 @@ class TtProviderAirlinePricing(models.Model):
     agent_class_of_service_list = fields.Char('Class of Service List', readonly=1)
     agent_charge_code_access_type = fields.Char('Charge Code Access Type', readonly=1)
     agent_charge_code_list = fields.Char('Charge Code List', readonly=1)
+    agent_tour_code_access_type = fields.Char('Tour Code Access Type', readonly=1)
+    agent_tour_code_list = fields.Char('Tour Code List', readonly=1)
+    agent_dot_access_type = fields.Char('DOT Access Type', readonly=1)
+    agent_dot_start_date = fields.Char('DOT Start Date', readonly=1)
+    agent_dot_end_date = fields.Char('DOT End Date', readonly=1)
     agent_parent_charge_percentage = fields.Char('Parent Charge (%)', readonly=1)
     agent_parent_charge_minimum = fields.Char('Parent Charge Minimum', readonly=1)
     agent_parent_charge_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -1418,6 +1430,11 @@ class TtProviderAirlinePricing(models.Model):
     customer_class_of_service_list = fields.Char('Class of Service List', readonly=1)
     customer_charge_code_access_type = fields.Char('Charge Code Access Type', readonly=1)
     customer_charge_code_list = fields.Char('Charge Code List', readonly=1)
+    customer_tour_code_access_type = fields.Char('Tour Code Access Type', readonly=1)
+    customer_tour_code_list = fields.Char('Tour Code List', readonly=1)
+    customer_dot_access_type = fields.Char('DOT Access Type', readonly=1)
+    customer_dot_start_date = fields.Char('DOT Start Date', readonly=1)
+    customer_dot_end_date = fields.Char('DOT End Date', readonly=1)
     customer_tkt_sales_upsell_percentage = fields.Char('Upsell (%)', readonly=1)
     customer_tkt_sales_upsell_minimum = fields.Char('Minimum Amount', readonly=1)
     customer_tkt_sales_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -1474,6 +1491,11 @@ class TtProviderAirlinePricing(models.Model):
     agent_commission_class_of_service_list = fields.Char('Class of Service List', readonly=1)
     agent_commission_charge_code_access_type = fields.Char('Charge Code Access Type', readonly=1)
     agent_commission_charge_code_list = fields.Char('Charge Code List', readonly=1)
+    agent_commission_tour_code_access_type = fields.Char('Tour Code Access Type', readonly=1)
+    agent_commission_tour_code_list = fields.Char('Tour Code List', readonly=1)
+    agent_commission_dot_access_type = fields.Char('DOT Access Type', readonly=1)
+    agent_commission_dot_start_date = fields.Char('DOT Start Date', readonly=1)
+    agent_commission_dot_end_date = fields.Char('DOT End Date', readonly=1)
     agent_commission_parent_charge_percentage = fields.Char('Parent Charge (%)', readonly=1)
     agent_commission_parent_charge_minimum = fields.Char('Parent Charge Minimum', readonly=1)
     agent_commission_parent_charge_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -1597,6 +1619,7 @@ class TtProviderAirlinePricing(models.Model):
                 'rule_tour_code_list': rule_data['tour_code_list'],
                 'rule_charge_code_list': rule_data['charge_code_list'],
                 'rule_pricing_datetime': rule_data['pricing_datetime'],
+                'rule_departure_date_list': rule_data.get('departure_date_list', ''),
             })
 
         if provider_data:
@@ -1632,8 +1655,14 @@ class TtProviderAirlinePricing(models.Model):
                 'provider_class_of_service_list': provider_data['route']['class_of_service']['class_of_service_list'],
                 'provider_charge_code_access_type': provider_data['route']['charge_code']['access_type'],
                 'provider_charge_code_list': provider_data['route']['charge_code']['charge_code_list'],
+                'provider_tour_code_access_type': provider_data['route']['charge_code']['access_type'],
+                'provider_tour_code_list': provider_data['route']['charge_code']['charge_code_list'],
+                'provider_dot_access_type': provider_data['route']['date_of_travel']['access_type'] if provider_data['route'].get('date_of_travel') else '',
+                'provider_dot_start_date': provider_data['route']['date_of_travel']['start_date'] if provider_data['route'].get('date_of_travel') else '',
+                'provider_dot_end_date': provider_data['route']['date_of_travel']['end_date'] if provider_data['route'].get('date_of_travel') else '',
                 'provider_less_percentage': provider_data['less']['percentage'],
                 'provider_less_infant': provider_data['less']['is_infant'],
+                'provider_less_tour_code': provider_data['less'].get('tour_code', ''),
                 'provider_tkt_nta_fare_percentage': provider_data['ticketing']['nta']['fare']['percentage'],
                 'provider_tkt_nta_fare_amount': provider_data['ticketing']['nta']['fare']['amount'],
                 'provider_tkt_nta_tax_percentage': provider_data['ticketing']['nta']['tax']['percentage'],
@@ -1786,6 +1815,11 @@ class TtProviderAirlinePricing(models.Model):
                 'agent_class_of_service_list': agent_data['route']['class_of_service']['class_of_service_list'],
                 'agent_charge_code_access_type': agent_data['route']['charge_code']['access_type'],
                 'agent_charge_code_list': agent_data['route']['charge_code']['charge_code_list'],
+                'agent_tour_code_access_type': agent_data['route']['charge_code']['access_type'],
+                'agent_tour_code_list': agent_data['route']['charge_code']['charge_code_list'],
+                'agent_dot_access_type': agent_data['route']['date_of_travel']['access_type'] if agent_data['route'].get('date_of_travel') else '',
+                'agent_dot_start_date': agent_data['route']['date_of_travel']['start_date'] if agent_data['route'].get('date_of_travel') else '',
+                'agent_dot_end_date': agent_data['route']['date_of_travel']['end_date'] if agent_data['route'].get('date_of_travel') else '',
                 # 'agent_parent_charge_percentage': '',
                 # 'agent_parent_charge_minimum': '',
                 # 'agent_parent_charge_has_minimum': '',
@@ -1930,6 +1964,11 @@ class TtProviderAirlinePricing(models.Model):
                 'customer_class_of_service_list': customer_data['route']['class_of_service']['class_of_service_list'],
                 'customer_charge_code_access_type': customer_data['route']['charge_code']['access_type'],
                 'customer_charge_code_list': customer_data['route']['charge_code']['charge_code_list'],
+                'customer_tour_code_access_type': customer_data['route']['charge_code']['access_type'],
+                'customer_tour_code_list': customer_data['route']['charge_code']['charge_code_list'],
+                'customer_dot_access_type': customer_data['route']['date_of_travel']['access_type'] if customer_data['route'].get('date_of_travel') else '',
+                'customer_dot_start_date': customer_data['route']['date_of_travel']['start_date'] if customer_data['route'].get('date_of_travel') else '',
+                'customer_dot_end_date': customer_data['route']['date_of_travel']['end_date'] if customer_data['route'].get('date_of_travel') else '',
                 'customer_tkt_sales_upsell_percentage': customer_data['ticketing']['sales']['upsell_by_percentage']['percentage'],
                 'customer_tkt_sales_upsell_minimum': customer_data['ticketing']['sales']['upsell_by_percentage']['minimum'],
                 'customer_tkt_sales_upsell_has_minimum': customer_data['ticketing']['sales']['upsell_by_percentage']['has_minimum'],
@@ -1989,6 +2028,11 @@ class TtProviderAirlinePricing(models.Model):
                 'agent_commission_class_of_service_list': agent_com_data['route']['class_of_service']['class_of_service_list'],
                 'agent_commission_charge_code_access_type': agent_com_data['route']['charge_code']['access_type'],
                 'agent_commission_charge_code_list': agent_com_data['route']['charge_code']['charge_code_list'],
+                'agent_commission_tour_code_access_type': agent_com_data['route']['charge_code']['access_type'],
+                'agent_commission_tour_code_list': agent_com_data['route']['charge_code']['charge_code_list'],
+                'agent_commission_dot_access_type': agent_com_data['route']['date_of_travel']['access_type'] if agent_com_data['route'].get('date_of_travel') else '',
+                'agent_commission_dot_start_date': agent_com_data['route']['date_of_travel']['start_date'] if agent_com_data['route'].get('date_of_travel') else '',
+                'agent_commission_dot_end_date': agent_com_data['route']['date_of_travel']['end_date'] if agent_com_data['route'].get('date_of_travel') else '',
                 'agent_commission_parent_charge_percentage': agent_com_data['commission']['parent']['charge_by_percentage']['percentage'],
                 'agent_commission_parent_charge_minimum': agent_com_data['commission']['parent']['charge_by_percentage']['minimum'],
                 'agent_commission_parent_charge_has_minimum': agent_com_data['commission']['parent']['charge_by_percentage']['has_minimum'],
