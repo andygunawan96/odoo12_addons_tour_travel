@@ -39,12 +39,23 @@ class TtReservationCustomer(models.Model):
         return res
 
     def create_channel_pricing(self,channel_prices,type=''):
+        is_post_issued = False
         if type == 'request_new':
-            ch_code = 'csc.ssr'
+            ch_code = 'csc.addons'
+        elif len(type.split('~')) > 1:
+            ch_code = 'csc.rs.%s' % (type.split('~')[1])
+            is_post_issued = True
         else:
             ch_code = 'csc'
-        for rec in self.channel_service_charge_ids.filtered(lambda x: x.charge_code == ch_code):
-            rec.unlink()
+
+        if is_post_issued:
+            rs_idx = 1
+            for rec in self.channel_service_charge_ids.filtered(lambda x: 'rs' in x.charge_code.split('.')):
+                rs_idx += 1
+            ch_code = 'csc.rs.%s.%s' % (str(rs_idx), type.split('~')[1])
+        else:
+            for rec in self.channel_service_charge_ids.filtered(lambda x: x.charge_code == ch_code):
+                rec.unlink()
 
         currency_obj = self.env['res.currency']
         for sc in channel_prices:
@@ -92,17 +103,21 @@ class TtReservationCustomer(models.Model):
     #butuh field channel_service_charge_ids
     def get_channel_service_charges(self):
         total = 0
-        total_ssr = 0
+        total_addons = 0
+        total_rs = 0
         currency_code = 'IDR'
         for rec in self.channel_service_charge_ids:
-            if rec.charge_code == 'csc.ssr':
-                total_ssr += rec.amount
-            else:
+            if rec.charge_code == 'csc':
                 total += rec.amount
+            elif rec.charge_code == 'csc.addons':
+                total_addons += rec.amount
+            else:
+                total_rs += rec.amount
             currency_code = rec.currency_id.name
 
         return {
             'amount': total,
-            'amount_ssr': total_ssr,
+            'amount_addons': total_addons,
+            'amount_rs': total_rs,
             'currency_code': currency_code
         }

@@ -11,10 +11,12 @@
                             <group>
                                 <field name="accounting_setup_id" invisible="1"/>
                                 <field name="provider_id"/>
-                            </group>
-                            <group>
                                 <field name="supplier_code"/>
                                 <field name="supplier_name"/>
+                            </group>
+                            <group>
+                                <field name="product_code"/>
+                                <field name="product_name"/>
                             </group>
                         </group>
                     </sheet>
@@ -30,6 +32,8 @@
                     <field name="provider_id"/>
                     <field name="supplier_code"/>
                     <field name="supplier_name"/>
+                    <field name="product_code"/>
+                    <field name="product_name"/>
                 </tree>
             </field>
         </record>
