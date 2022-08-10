@@ -63,6 +63,7 @@ class AccountingConnectorITM(models.Model):
                         })
                     journey_list = []
                     journ_idx = 0
+                    first_carrier_name = ''
                     for journ in prov['journeys']:
                         for segm in journ['segments']:
                             journey_list.append({
@@ -75,6 +76,8 @@ class AccountingConnectorITM(models.Model):
                                 "ClassNumber": segm['cabin_class'],
                                 "Arrival": segm['destination']
                             })
+                            if not first_carrier_name:
+                                first_carrier_name = segm['carrier_name']
                             journ_idx += 1
 
                     for pax in prov['tickets']:
@@ -103,8 +106,8 @@ class AccountingConnectorITM(models.Model):
                             "ItemNo": idx+1,
                             "ProductCode": supplier_obj.product_code or '',
                             "ProductName": supplier_obj.product_name or '',
-                            "CarrierCode": "",
-                            "CArrierName": "",
+                            "CarrierCode": journey_list and journey_list[0]['CarrierCode'] or '',
+                            "CArrierName": first_carrier_name or '',
                             "Description": prov['pnr'],
                             "Quantity": 1,
                             "Cost": pax.get('total_nta', 0),
@@ -135,8 +138,8 @@ class AccountingConnectorITM(models.Model):
                     "TransID": "48720",
                     "Description": '_'.join(pnr_list),
                     "ActivityDate": "",
-                    "SupplierCode": supplier_list and supplier_list[0]['supplier_code'],
-                    "SupplierName": supplier_list and supplier_list[0]['supplier_name'],
+                    "SupplierCode": supplier_list and supplier_list[0]['supplier_code'] or '',
+                    "SupplierName": supplier_list and supplier_list[0]['supplier_name'] or '',
                     "TotalCost": request.get('total_nta', 0),
                     "TotalSales": total_sales,
                     "Source": "",
