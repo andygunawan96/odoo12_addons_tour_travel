@@ -35,6 +35,11 @@ class PaymentAcquirer(models.Model):
     save_url = fields.Boolean('Save URL')
     minimum_amount = fields.Float('Minimum Amount')
 
+    agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Agent Type Access Type', default='all')
+    payment_acquirer_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_payment_acquirer_rel","payment_acquirer_id", "tt_agent_type_id","Agent Type")  # type of agent that are able to use the voucher
+    provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Type Access Type', default='all')
+    payment_acquirer_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_payment_acquirer_rel","payment_acquirer_id", "tt_provider_type_id","Provider Type")  # what product this voucher can be applied
+
     @api.model
     def create(self, vals_list):
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('pay.acq')
@@ -307,16 +312,17 @@ class PaymentAcquirer(models.Model):
 
                 values = {}
                 now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
+                # tanpa ORDER NUMBER
                 if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc') or req['order_number'].split('.')[0] == 'PH' and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids: #PHC pakai process channel operator
                     for acq in self.sudo().search(dom):
-                        # self.test_validate(acq) utk testig saja
+                        # self.test_validate(acq) utk testing saja
                         if self.validate_time(acq, now_time):
                             if not values.get(acq.type):
                                 values[acq.type] = []
                             values[acq.type].append(acq.acquirer_format(amount, unique, self.env['tt.agent'].browse(co_agent_id)))
 
                 # # payment gateway
-                # penjualan
+                # dengan ORDER NUMBER
                 if util.get_without_empty(req, 'order_number'):
                     dom = [
                         ('website_published', '=', True),
@@ -343,12 +349,33 @@ class PaymentAcquirer(models.Model):
                     for acq in self.sudo().search(dom):
                         # self.test_validate(acq) utk testing saja
                         if self.validate_time(acq,now_time):
-                            if not values.get(acq.type):
-                                values[acq.type] = []
                             # if acq.account_number:
                             #     values[acq.type].append(acq.acquirer_format(amount, unique))
                             # else:
-                            values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id)))
+                            if acq.type == 'payment_gateway':
+                                is_agent = False
+                                is_provider_type = False
+                                if acq.agent_type_access_type == 'all':
+                                    is_agent = True
+                                elif acq.agent_type_access_type == 'allow' and agent_obj.agent_type_id and agent_obj.agent_type_id in acq.payment_acquirer_agent_type_eligibility_ids:
+                                    is_agent = True
+                                elif acq.agent_type_access_type == 'restrict' and agent_obj.agent_type_id and agent_obj.agent_type_id not in acq.payment_acquirer_agent_type_eligibility_ids:
+                                    is_agent = True
+
+                                if acq.provider_type_access_type == 'all':
+                                    is_provider_type = True
+                                elif acq.provider_type_access_type == 'allow' and book_obj.provider_type_id and book_obj.provider_type_id in acq.payment_acquirer_provider_type_eligibility_ids:
+                                    is_provider_type = True
+                                elif acq.provider_type_access_type == 'restrict' and book_obj.provider_type_id and book_obj.provider_type_id not in acq.payment_acquirer_provider_type_eligibility_ids:
+                                    is_provider_type = True
+                                if is_agent and is_provider_type:
+                                    if not values.get(acq.type):
+                                        values[acq.type] = []
+                                    values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id)))
+                            else:
+                                if not values.get(acq.type):
+                                    values[acq.type] = []
+                                values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id)))
 
                 res['non_member'] = values
                 can_use_cor_account = True

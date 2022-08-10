@@ -23,9 +23,9 @@ class TtPointReward(models.Model):
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Agent Type Access Type', default='all')
     point_reward_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_point_reward_rel", "tt_point_reward_id", "tt_agent_type_id", "Agent Type")  #type of agent that are able to use the voucher
     provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Type Access Type', default='all')
-    point_reward_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_voucher_rel","tt_voucher_id", "tt_provider_type_id", "Provider Type")  # what product this voucher can be applied
+    point_reward_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_voucher_rel","tt_point_reward_id", "tt_provider_type_id", "Provider Type")  # what product this voucher can be applied
     provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Access Type', default='all')
-    point_reward_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_voucher_rel", "tt_voucher_id","tt_provier_id", "Provider ID")  # what provider this voucher can be applied
+    point_reward_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_voucher_rel", "tt_point_reward_id","tt_provier_id", "Provider ID")  # what provider this voucher can be applied
 
     point_reward_rules_id = fields.Many2one('tt.point.reward.rules', 'Point Reward Rules')
     sequence = fields.Integer('Sequence')
