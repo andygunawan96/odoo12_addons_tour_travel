@@ -81,6 +81,20 @@
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
                             </group>
                         </group>
+                        <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
+                            <page string="Agent Type">
+                                <group>
+                                    <field name="agent_type_access_type"/>
+                                </group>
+                                <field name="payment_acquirer_agent_type_eligibility_ids"/>
+                            </page>
+                            <page string="Provider Type">
+                                <group>
+                                    <field name="provider_type_access_type"/>
+                                </group>
+                                <field name="payment_acquirer_provider_type_eligibility_ids"/>
+                            </page>
+                        </notebook>
                         <group name="acquirer_base2">
                             <group>
                                 <field name="is_sunday_off"/>
@@ -142,6 +156,20 @@
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
                             </group>
                         </group>
+                        <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
+                            <page string="Agent Type">
+                                <group>
+                                    <field name="agent_type_access_type"/>
+                                </group>
+                                <field name="payment_acquirer_agent_type_eligibility_ids"/>
+                            </page>
+                            <page string="Provider Type">
+                                <group>
+                                    <field name="provider_type_access_type"/>
+                                </group>
+                                <field name="payment_acquirer_provider_type_eligibility_ids"/>
+                            </page>
+                        </notebook>
                         <group name="acquirer_base2">
                             <group>
                                 <field name="is_sunday_off"/>
