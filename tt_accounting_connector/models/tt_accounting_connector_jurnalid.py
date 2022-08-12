@@ -464,7 +464,8 @@ class AccountingConnectorAccurate(models.Model):
                             "custom_id": "",
                             "source": "API",
                             "use_tax_inclusive": False,
-                            "tax_after_discount": False
+                            "tax_after_discount": False,
+                            "status": "open"
                         }
                     }
                     _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
@@ -540,7 +541,8 @@ class AccountingConnectorAccurate(models.Model):
                 "custom_id": "",
                 "source": "API",
                 "use_tax_inclusive": False,
-                "tax_after_discount": False
+                "tax_after_discount": False,
+                "status": "open"
             }
         }
         _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
@@ -883,7 +885,8 @@ class AccountingConnectorAccurate(models.Model):
                     "custom_id": "",
                     "source": "API",
                     "use_tax_inclusive": False,
-                    "tax_after_discount": False
+                    "tax_after_discount": False,
+                    "status": "open"
                 }
             }
             _logger.info('######REQUEST PURCHASE RESCHEDULE#########\n%s' % json.dumps(data))
@@ -1040,7 +1043,8 @@ class AccountingConnectorAccurate(models.Model):
                         "custom_id": "",
                         "source": "API",
                         "use_tax_inclusive": False,
-                        "tax_after_discount": False
+                        "tax_after_discount": False,
+                        "status": "open"
                     }
                 }
                 _logger.info('######REQUEST SALES RESCHEDULE UPDATE SALES#########\n%s' % json.dumps(data))
