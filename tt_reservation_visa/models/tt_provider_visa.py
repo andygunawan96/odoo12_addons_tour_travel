@@ -393,7 +393,8 @@ class TtProviderVisa(models.Model):
             'departure_date': self.departure_date,
             'passengers': passenger_list,
             'vendors': vendor_list,
-            'tickets': ticket_list
+            'tickets': ticket_list,
+            'total_price': self.total_price
         }
         return res
 

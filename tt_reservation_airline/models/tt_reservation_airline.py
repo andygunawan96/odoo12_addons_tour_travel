@@ -588,7 +588,7 @@ class ReservationAirline(models.Model):
                             whitelist_passport.chances_left -= 1
                             return True
 
-                        raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route." % (name.name))
+                        raise RequestException(1026,additional_message="Passenger validator failed on %s because of rebooking with same name and same route or same identity number and same route." % (name.name))
             elif rule_check_type == 'contact':
                 search_query = [('segment_code', '=', segment.segment_code),
                                 ('booking_id.contact_id', '=', book_obj.contact_id.id),
