@@ -33,7 +33,7 @@ class TtReservationNotification(models.Model):
             "provider_type": self.provider_type_id.code
         }
 
-    def get_notification_check_identity_booking_api(self, req, context):
+    def get_notification_api(self, req, context):
         agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
         try:
             agent_obj.create_date
@@ -69,7 +69,7 @@ class TtReservationNotification(models.Model):
         return ERR.get_no_error(res)
 
 
-    def set_notif_read_api(self, req, context):
+    def set_notification_read_api(self, req, context):
         agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
         try:
             agent_obj.create_date
