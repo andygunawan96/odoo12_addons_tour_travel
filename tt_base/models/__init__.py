@@ -50,3 +50,4 @@ from . import tt_public_holiday
 from . import tt_letter_guarantee
 from . import ir_mail_server
 from . import mail_mail
+from . import tt_agent_notification

@@ -400,11 +400,12 @@ class ReservationAirline(models.Model):
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
             for idx,rec in enumerate(list_passenger_value):
                 rec[2].update({
-                    'customer_id': list_customer_id[idx].id
+                    'customer_id': list_customer_id[idx].id,
+                    'is_valid_identity': passengers[idx]['identity']['is_valid_identity'],
                 })
 
             for psg in list_passenger_value:
-                util.pop_empty_key(psg[2])
+                util.pop_empty_key(psg[2], ['is_valid_identity'])
 
             values.update({
                 'user_id': context['co_uid'],

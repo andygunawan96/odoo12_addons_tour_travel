@@ -254,33 +254,48 @@ class TransportBookingProvider(models.Model):
     def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
         return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
 
-    def to_dict(self):
-        journey_list = []
-        # for rec in self.journey_ids:
-        #     journey_list.append(rec.to_dict())
-        ticket_list = []
-        # for rec in self.ticket_ids:
-        #     ticket_list.append(rec.to_dict())
-        res = {
-            'pnr': self.pnr and self.pnr or '',
-            'pnr2': self.pnr2 and self.pnr2 or '',
-            'provider': self.provider_id.code,
-            'provider_id': self.id,
-            'state': self.state,
-            'state_description': variables.BOOKING_STATE_STR[self.state],
-            'sequence': self.sequence,
-            'balance_due': self.balance_due,
-            'direction': self.direction,
-            'origin': self.origin_id.code,
-            'destination': self.destination_id.code,
-            'departure_date': self.departure_date,
-            'arrival_date': self.arrival_date,
-            'journeys': journey_list,
-            'currency': self.currency_id.name,
-            'hold_date': self.hold_date and self.hold_date or '',
-            'tickets': ticket_list,
-        }
+    # def to_dict(self):
+    #     journey_list = []
+    #     # for rec in self.journey_ids:
+    #     #     journey_list.append(rec.to_dict())
+    #     ticket_list = []
+    #     # for rec in self.ticket_ids:
+    #     #     ticket_list.append(rec.to_dict())
+    #     res = {
+    #         'pnr': self.pnr and self.pnr or '',
+    #         'pnr2': self.pnr2 and self.pnr2 or '',
+    #         'provider': self.provider_id.code,
+    #         'provider_id': self.id,
+    #         'state': self.state,
+    #         'state_description': variables.BOOKING_STATE_STR[self.state],
+    #         'sequence': self.sequence,
+    #         'balance_due': self.balance_due,
+    #         'direction': self.direction,
+    #         'origin': self.origin_id.code,
+    #         'destination': self.destination_id.code,
+    #         'departure_date': self.departure_date,
+    #         'arrival_date': self.arrival_date,
+    #         'journeys': journey_list,
+    #         'currency': self.currency_id.name,
+    #         'hold_date': self.hold_date and self.hold_date or '',
+    #         'tickets': ticket_list,
+    #     }
+    #     return res
 
+    def to_dict(self):
+        ## IVAN HANYA DI PAKAI DI ACCOUNTING KALAU DI PAKAI DI FRONTEND EDIT LAGI
+        room_obj = self.env['test.search'].prepare_booking_room(self.booking_id.room_detail_ids, self.booking_id.passenger_ids)
+        passengers = self.env['test.search'].prepare_passengers(self.booking_id.passenger_ids)
+        res = {
+            "rooms": room_obj,
+            "provider_name": self.booking_id.provider_name,
+            "passengers": passengers,
+            "hotel_name": self.booking_id.hotel_name,
+            "checkin_date": str(self.booking_id.checkin_date)[:10],
+            "checkout_date": str(self.booking_id.checkout_date)[:10],
+            "pnr": room_obj[0]['prov_issued_code'],
+            "total_price": self.total_price
+        }
         return res
 
     def get_carrier_name(self):
