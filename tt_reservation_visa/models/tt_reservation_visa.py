@@ -1320,6 +1320,7 @@ class TtVisa(models.Model):
             for provider_obj in book_obj.provider_booking_ids:
                 provider_obj.create_ticket_api(passengers)
                 provider_obj.pnr = book_obj.name
+                total_price = 0
                 service_charges_val = []
                 visa_list = []
                 for pax in passengers:
@@ -1360,8 +1361,10 @@ class TtVisa(models.Model):
                             "charge_type": svc['charge_type'],
                             "commission_agent_id": svc.get('commission_agent_id', False)
                         })
+                        total_price += svc['amount'] * visa['pax_count']
 
                 provider_obj.create_service_charge(service_charges_val)
+                provider_obj.total_price = total_price
 
             book_obj.calculate_service_charge()
             book_obj.check_provider_state(context)

@@ -22,7 +22,7 @@
         </field>
     </record>
 
-    <record id="voucher_form_view" model="ir.ui.view">
+    <record id="point_reward_form_view" model="ir.ui.view">
         <field name="name">point.reward.form.view</field>
         <field name="model">tt.point.reward</field>
         <field name="arch" type="xml">

@@ -77,7 +77,7 @@ class AccountingConnectorAccurate(models.Model):
         }
 
         data = {}
-        _logger.info(json.dumps(vals))
+        # _logger.info(json.dumps(vals))
         data_contact = vals.get('customer_parent_name') or vals['booker']['name'] if vals.get('customer_parent_type_id') and vals['customer_parent_type_id'].get('code') == 'cor' else vals['booker']['name']
         contact_name = ''
         index_page = 1
@@ -87,7 +87,7 @@ class AccountingConnectorAccurate(models.Model):
             res = requests.get(url, headers=headers, json=data)
             _logger.info('######RESPONSE CONTACT#########\n%s' % res.text)
             res_response = json.loads(res.text)
-            contact_name = [d['display_name'] for d in res_response['contact_list']['contact_data']['person_data'] if d['display_name'] == data_contact]
+            contact_name = [d['display_name'] for d in res_response['contact_list']['contact_data']['person_data'] if d['display_name'].upper() == data_contact.upper()]
             if res_response['contact_list']['contact_data']['max_page'] <= index_page or len(contact_name) > 0:
                 if len(contact_name) > 0:
                     contact_name = contact_name[0]
@@ -361,191 +361,342 @@ class AccountingConnectorAccurate(models.Model):
         return tag_name
 
     def add_purchase(self, data_login, vals):
-        url = "%s/partner/core/api/v1/purchase_invoices" % data_login['url_api']
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "bearer %s" % data_login['access_token'],
-            "api_key": data_login['api_key']
-        }
+        if len(vals['ledgers']) > 0:
+            url = "%s/partner/core/api/v1/purchase_invoices" % data_login['url_api']
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer %s" % data_login['access_token'],
+                "api_key": data_login['api_key']
+            }
 
-        invoice = ''
-        for rec in vals['invoice_data']:
-            if invoice != '':
-                invoice = ', '
-            invoice += rec
-        pnr_list = {}
-        for idx, ledger in enumerate(vals['ledgers'], start=1):
-            if not pnr_list.get(ledger['pnr']):
-                pnr_list[ledger['pnr']] = []
-            pnr_list[ledger['pnr']].append(ledger)
+            invoice = ''
+            for rec in vals['invoice_data']:
+                if invoice != '':
+                    invoice = ', '
+                invoice += rec
+            pnr_list = {}
+            for idx, ledger in enumerate(vals['ledgers'], start=1):
+                if not pnr_list.get(ledger['pnr']):
+                    pnr_list[ledger['pnr']] = []
+                pnr_list[ledger['pnr']].append(ledger)
 
-        for pnr in pnr_list:
+
+            for pnr in pnr_list:
+                passenger_data = ''
+                desc = ''
+                for provider_booking in vals['provider_bookings']:
+                    ## HOTEL
+                    if vals['provider_type_name'] == 'Hotel':
+                        for rec_ticket in provider_booking['passengers']:
+                            if passenger_data != '':
+                                passenger_data += ', '
+                            passenger_data += rec_ticket['name']
+                        for room in provider_booking['rooms']:
+                            if pnr == room['prov_issued_code']:
+                                if desc != '':
+                                    desc += '; '
+                                desc += "%s; Voucher Hotel %s-%s; %sRoom; Atas Nama: %s" % (pnr, datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'), len(provider_booking['rooms']), passenger_data)
+                                break
+                        vendor_data = provider_booking['provider_name']
+                    ##AIRLINE TRAIN BUS
+                    elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
+                        if pnr == provider_booking['pnr']:
+                            for rec_ticket in provider_booking['tickets']:
+                                if passenger_data != '':
+                                    passenger_data += ', '
+                                passenger_data += rec_ticket['passenger']
+                            if desc != '':
+                                desc += '; '
+                            desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'], provider_booking['departure_date'].split(' ')[0], passenger_data)
+                            vendor_data = provider_booking['provider']
+                    ## PPOB
+                    elif vals['provider_type_name'] == 'PPOB':
+                        if pnr == provider_booking['pnr']:
+                            for rec_ticket in provider_booking['tickets']:
+                                if passenger_data != '':
+                                    passenger_data += ', '
+                                passenger_data += rec_ticket['passenger']
+                            if desc != '':
+                                desc += '; '
+                            desc += "%s; TBC %s; %s;" % (pnr, provider_booking['carrier_name'], datetime.strptime(vals['issued_date'][:10], '%Y-%m-%d').strftime('%d %b %Y'))
+                            vendor_data = provider_booking['provider']
+
+                    ## ACTIVITY
+                    elif vals['provider_type_name'] == 'Activity':
+                        if pnr == provider_booking['pnr']:
+                            for rec_ticket in provider_booking['tickets']:
+                                if passenger_data != '':
+                                    passenger_data += ', '
+                                passenger_data += rec_ticket['passenger']
+                            if desc != '':
+                                desc += '; '
+                            activity_name = provider_booking['activity_details'][0]['activity']
+                            visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'], '%Y-%m-%d').strftime('%d %b %Y')
+                            desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, passenger_data)
+                            vendor_data = provider_booking['provider']
+
+                    ## TOUR
+                    elif vals['provider_type_name'] == 'Tour':
+                        if pnr == provider_booking['pnr']:
+                            for rec_ticket in provider_booking['tickets']:
+                                if passenger_data != '':
+                                    passenger_data += ', '
+                                passenger_data += rec_ticket['passenger']
+                            if desc != '':
+                                desc += '; '
+                            desc += "%s; TBC %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'], datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
+                            vendor_data = provider_booking['provider']
+
+                    ## VISA PASSPORT
+                    elif vals['provider_type_name'] == 'Visa':
+                        if pnr == provider_booking['pnr']:
+                            for pax in provider_booking['passengers']:
+                                if passenger_data != '':
+                                    passenger_data += ', '
+                                passenger_data += pax['passenger']
+                            if desc != '':
+                                desc += '; '
+                            desc += "%s; VISA/ SG Arrival %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'], datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
+                            vendor_data = provider_booking['provider']
+                    passenger_data = ''
+
+                ##### AMBIL VENDOR ###############
+                vendor = self.get_vendor(data_login, vendor_data)
+                ###################################
+
+                ##### AMBIL PRODUCT ###############
+                product_name = ''
+                price = 0
+                for idy,ledger in enumerate(pnr_list[pnr], start=1):
+                    send = False
+                    price = 0
+                    if vals['agent_id'] == ledger['agent_id']:
+                        if ledger['debit'] != 0:
+                            product_name = 'Tiket Perjalanan'
+                            price = ledger['debit']
+                            send = vals['is_send_commission']
+                        else:
+                            for provider_booking in vals['provider_bookings']:
+                                if not provider_booking.get('is_sent') and pnr == provider_booking['pnr']:
+                                    price += provider_booking['total_price']
+                                    provider_booking['is_sent'] = True
+                            if price != 0:
+                                if vals['provider_type_name'] == 'Hotel':
+                                    product_name = 'Voucher Hotel'
+                                elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
+                                    product_name = 'Tiket Perjalanan'
+                                elif vals['provider_type_name'] in ['PPOB', 'Tour']:
+                                    product_name = 'TBC'
+                                elif vals['provider_type_name'] == 'Activity':
+                                    product_name = 'Jasa Lainnya'
+                                elif vals['provider_type_name'] == 'Visa':
+                                    product_name = 'VISA/ SG Arrival'
+                                elif vals['provider_type_name'] == 'Passport':
+                                    product_name = 'Paspor'
+                                send = True
+                    if send:
+                        product = self.get_product(data_login, product_name)
+                        ###################################
+                        issued_date = vals['issued_date'].split(' ')[0]
+                        data = {
+                            "purchase_invoice": {
+                                "transaction_date": issued_date,
+                                "transaction_lines_attributes": [
+                                    {
+                                        "quantity": 1,
+                                        "rate": price,
+                                        "discount": 0,
+                                        "product_name": product,
+                                        "description": desc
+                                    }
+                                ],
+                                "shipping_date": issued_date,
+                                "shipping_price": 0,
+                                "shipping_address": "",
+                                "is_shipped": True,
+                                "ship_via": "",
+                                "reference_no": "%s - %s" % (invoice, product),
+                                "tracking_no": "",
+                                "address": "",
+                                "term_name": "Cash",
+                                "due_date": issued_date,
+                                "refund_from_name": "",
+                                "deposit": 0,
+                                "discount_unit": 0,
+                                "witholding_account_name": "",
+                                "witholding_value": 0,
+                                "witholding_type": "percent",
+                                "discount_type_name": "percent",
+                                "person_name": vendor,
+                                "warehouse_name": "",
+                                "warehouse_code": "",
+                                "tags": [],
+                                "email": "",
+                                "message": desc,
+                                "memo": desc,
+                                "custom_id": "",
+                                "source": "API",
+                                "use_tax_inclusive": False,
+                                "tax_after_discount": False,
+                                "status": "open"
+                            }
+                        }
+                        _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
+                        response = requests.post(url, headers=headers, json=data)
+                        _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
+                        price = 0
+        else:
+            _logger.info('###JurnalID, Already sent to vendor accounting####')
+        return 0
+
+    def add_sales(self, data_login, vals, contact):
+        if len(vals['ledgers']) > 0:
+            url = "%s/partner/core/api/v1/sales_invoices" % data_login['url_api']
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "bearer %s" % data_login['access_token'],
+                "api_key": data_login['api_key']
+            }
             passenger_data = ''
             desc = ''
+            ## AIRLINE & TRAIN
             for provider_booking in vals['provider_bookings']:
-                if pnr == provider_booking['pnr']:
+                ## HOTEL
+                if vals['provider_type_name'] == 'Hotel':
+                    for rec_ticket in provider_booking['passengers']:
+                        if passenger_data != '':
+                            passenger_data += ', '
+                        passenger_data += rec_ticket['name']
+                    pnr = provider_booking['pnr']
+                    for room in provider_booking['rooms']:
+                        if pnr == room['prov_issued_code']:
+                            if desc != '':
+                                desc += '; '
+                            desc += "%s; Voucher Hotel %s-%s; %sRoom; Atas Nama: %s" % (
+                            pnr, datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'),
+                            datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'),
+                            len(provider_booking['rooms']), passenger_data)
+                            break
+                ##AIRLINE TRAIN BUS
+                elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
+                    for rec_ticket in provider_booking['tickets']:
+                        if passenger_data != '':
+                            passenger_data += ', '
+                        passenger_data += rec_ticket['passenger']
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
+                    if desc != '':
+                        desc += '; '
+                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
+                    pnr, provider_booking['origin'], provider_booking['destination'],
+                    provider_booking['departure_date'].split(' ')[0], passenger_data)
+                ## PPOB
+                elif vals['provider_type_name'] == 'PPOB':
                     for rec_ticket in provider_booking['tickets']:
                         if passenger_data != '':
                             passenger_data += ', '
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'], provider_booking['departure_date'].split(' ')[0], passenger_data)
+                    desc += "%s; TBC %s; %s;" % (pnr, provider_booking['carrier_name'],
+                                                 datetime.strptime(vals['issued_date'][:10],
+                                                                   '%Y-%m-%d').strftime('%d %b %Y'))
                     vendor_data = provider_booking['provider']
 
+                ## ACTIVITY
+                elif vals['provider_type_name'] == 'Activity':
+                    for rec_ticket in provider_booking['tickets']:
+                        if passenger_data != '':
+                            passenger_data += ', '
+                        passenger_data += rec_ticket['passenger']
+                    if desc != '':
+                        desc += '; '
+                    activity_name = provider_booking[0]['activity_details'][0]['activity']
+                    visit_date = datetime.strptime(provider_booking[0]['activity_details'][0]['visit_date'],
+                                                   '%Y-%m-%d').strftime('%d %b %Y')
+                    desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, passenger_data)
 
-            ##### AMBIL VENDOR ###############
-            vendor = self.get_vendor(data_login, vendor_data)
-            ###################################
+                ## TOUR
+                elif vals['provider_type_name'] == 'Tour':
+                    for rec_ticket in provider_booking['tickets']:
+                        if passenger_data != '':
+                            passenger_data += ', '
+                        passenger_data += rec_ticket['passenger']
+                    if desc != '':
+                        desc += '; '
+                    desc += "%s; TBC %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
 
-            ##### AMBIL PRODUCT ###############
-            product_name = ''
-            price = 0
-            for idy,ledger in enumerate(pnr_list[pnr], start=1):
-                send = False
-                price = 0
-                if vals['agent_id'] == ledger['agent_id']:
-                    if ledger['debit'] != 0:
-                        product_name = 'Commission'
-                        price = ledger['debit']
-                        send = vals['is_send_commission']
-                        tag_name = self.search_tags(data_login, 'Komisi Tiket Pesawat')
-                    else:
-                        for provider_booking in vals['provider_bookings']:
-                            if not provider_booking.get('is_sent') and pnr == provider_booking['pnr']:
-                                price += provider_booking['total_price']
-                                provider_booking['is_sent'] = True
-                        if price != 0:
-                            product_name = 'Tiket Perjalanan'
-                            tag_name = self.search_tags(data_login, 'Pembelian Tiket Pesawat')
-                            send = True
-                if send:
-                    product = self.get_product(data_login, product_name)
-                    ###################################
-                    issued_date = vals['issued_date'].split(' ')[0]
-                    data = {
-                        "purchase_invoice": {
-                            "transaction_date": issued_date,
-                            "transaction_lines_attributes": [
-                                {
-                                    "quantity": 1,
-                                    "rate": price,
-                                    "discount": 0,
-                                    "product_name": product,
-                                    "description": desc
-                                }
-                            ],
-                            "shipping_date": issued_date,
-                            "shipping_price": 0,
-                            "shipping_address": "",
-                            "is_shipped": True,
-                            "ship_via": "",
-                            "reference_no": "%s - %s" % (invoice, product),
-                            "tracking_no": "",
-                            "address": "",
-                            "term_name": "Cash",
-                            "due_date": issued_date,
-                            "refund_from_name": "",
-                            "deposit": 0,
-                            "discount_unit": 0,
-                            "witholding_account_name": "",
-                            "witholding_value": 0,
-                            "witholding_type": "percent",
-                            "discount_type_name": "percent",
-                            "person_name": vendor,
-                            "warehouse_name": "",
-                            "warehouse_code": "",
-                            "tags": [
-                                tag_name
-                            ],
-                            "email": "",
-                            "message": desc,
-                            "memo": desc,
-                            "custom_id": "",
-                            "source": "API",
-                            "use_tax_inclusive": False,
-                            "tax_after_discount": False
+                ## VISA PASSPORT
+                elif vals['provider_type_name'] == 'Visa':
+                    for pax in provider_booking['passengers']:
+                        if passenger_data != '':
+                            passenger_data += ', '
+                        passenger_data += pax['passenger']
+                    if desc != '':
+                        desc += '; '
+                    desc += "%s; VISA/ SG Arrival %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
+                passenger_data = ''
+
+            if vals['provider_type_name'] == 'Hotel':
+                product_name = 'Voucher Hotel'
+            elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
+                product_name = 'Tiket Perjalanan'
+            elif vals['provider_type_name'] in ['PPOB', 'Tour']:
+                product_name = 'TBC'
+            elif vals['provider_type_name'] == 'Activity':
+                product_name = 'Jasa Lainnya'
+            elif vals['provider_type_name'] == 'Visa':
+                product_name = 'VISA/ SG Arrival'
+            elif vals['provider_type_name'] == 'Passport':
+                product_name = 'Paspor'
+            product = self.get_product(data_login, product_name)
+            due_date = (datetime.strptime(vals['issued_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%Y-%m-%d')
+            issued_date = vals['issued_date'].split(' ')[0]
+            data = {
+                "sales_invoice": {
+                    "transaction_date": issued_date,
+                    "transaction_lines_attributes": [
+                        {
+                            "quantity": 1,
+                            "rate": vals['total'] + vals['total_channel_upsell'] - vals['total_discount'],
+                            "discount": 0,
+                            "product_name": product,
+                            "description": desc
                         }
-                    }
-                    _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
-                    response = requests.post(url, headers=headers, json=data)
-                    _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
-                    price = 0
-
-        return 0
-
-    def add_sales(self, data_login, vals, contact):
-        url = "%s/partner/core/api/v1/sales_invoices" % data_login['url_api']
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "bearer %s" % data_login['access_token'],
-            "api_key": data_login['api_key']
-        }
-        passenger_data = ''
-        desc = ''
-        for provider_bookings in vals['provider_bookings']:
-            for rec_ticket in provider_bookings['tickets']:
-                if passenger_data != '':
-                    passenger_data += ', '
-                passenger_data += rec_ticket['passenger']
-            pnr = provider_bookings['pnr2'] if provider_bookings['pnr2'] else provider_bookings['pnr']
-            if desc != '':
-                desc += '; '
-            desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
-            pnr, provider_bookings['origin'], provider_bookings['destination'],
-            provider_bookings['departure_date'].split(' ')[0], passenger_data)
-            passenger_data = ''
-
-        product = self.get_product(data_login, 'Tiket Perjalanan')
-        tag_name = self.search_tags(data_login, 'Penjualan Tiket Pesawat')
-
-        due_date = (datetime.strptime(vals['issued_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%Y-%m-%d')
-        issued_date = vals['issued_date'].split(' ')[0]
-        data = {
-            "sales_invoice": {
-                "transaction_date": issued_date,
-                "transaction_lines_attributes": [
-                    {
-                        "quantity": 1,
-                        "rate": vals['total'] + vals['total_channel_upsell'] - vals['total_discount'],
-                        "discount": 0,
-                        "product_name": product,
-                        "description": desc
-                    }
-                ],
-                "shipping_date": issued_date,
-                "shipping_price": 0,
-                "shipping_address": "",
-                "is_shipped": False,
-                "ship_via": "",
-                "reference_no": vals['order_number'],
-                "tracking_no": "",
-                "address": "",
-                "term_name": 'Cash' if vals['billing_due_date'] == 0 else "Billing cycle %s days" % vals['billing_due_date'],
-                "due_date": due_date,
-                "deposit": 0,
-                "discount_unit": 0,
-                "witholding_value": 0,
-                "witholding_type": "percent",
-                "discount_type_name": "percent",
-                "person_name": contact,
-                "warehouse_name": "",
-                "warehouse_code": "",
-                "tags": [
-                    tag_name
-                ],
-                "email": vals['booker'].get('email', ''),
-                "message": desc,
-                "memo": desc,
-                "custom_id": "",
-                "source": "API",
-                "use_tax_inclusive": False,
-                "tax_after_discount": False
+                    ],
+                    "shipping_date": issued_date,
+                    "shipping_price": 0,
+                    "shipping_address": "",
+                    "is_shipped": False,
+                    "ship_via": "",
+                    "reference_no": vals['order_number'],
+                    "tracking_no": "",
+                    "address": "",
+                    "term_name": 'Cash' if vals['billing_due_date'] == 0 else "Billing cycle %s days" % vals['billing_due_date'],
+                    "due_date": due_date,
+                    "deposit": 0,
+                    "discount_unit": 0,
+                    "witholding_value": 0,
+                    "witholding_type": "percent",
+                    "discount_type_name": "percent",
+                    "person_name": contact,
+                    "warehouse_name": "",
+                    "warehouse_code": "",
+                    "tags": [],
+                    "email": vals['booker'].get('email', ''),
+                    "message": desc,
+                    "memo": desc,
+                    "custom_id": "",
+                    "source": "API",
+                    "use_tax_inclusive": False,
+                    "tax_after_discount": False,
+                    "status": "open"
+                }
             }
-        }
-        _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
-        response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPONSE SALES#########\n%s' % response.text)
+            _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
+            response = requests.post(url, headers=headers, json=data)
+            _logger.info('######RESPONSE SALES#########\n%s' % response.text)
+        else:
+            _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0
 
     def get_account(self, data_login, account_name):
@@ -732,11 +883,12 @@ class AccountingConnectorAccurate(models.Model):
                     ###################################
 
                     ##### AMBIL PRODUCT ###############
-                    product_name = 'Reschedule Tiket Perjalanan'
+                    # product_name = 'Reschedule Tiket Perjalanan'
+                    product_name = 'Tiket Perjalanan'
                     price = vals['reschedule_amount']
                     product = self.get_product(data_login, product_name)
                     issued_date = vals['create_date'].split(' ')[0]
-                    tag_name = self.search_tags(data_login, 'Reschedule Tiket Pesawat')
+                    tag_name = self.search_tags(data_login, 'Rechedule Tiket')
                     self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers, tag_name)
             else:
                 ## ADDONS
@@ -758,11 +910,12 @@ class AccountingConnectorAccurate(models.Model):
                     ###################################
 
                     ##### AMBIL PRODUCT ###############
-                    product_name = 'Addons Tiket Perjalanan'
+                    # product_name = 'Addons Tiket Perjalanan'
+                    product_name = 'Tiket Perjalanan'
                     price = vals['reschedule_amount']
                     product = self.get_product(data_login, product_name)
                     issued_date = vals['create_date'].split(' ')[0]
-                    tag_name = self.search_tags(data_login, 'Addons Tiket Pesawat')
+                    tag_name = self.search_tags(data_login, 'Addons (After sales)')
                     self.add_purchase_after_sales_to_vendor(vals, data_login, price, product, desc, vendor, invoice, issued_date, url, headers, tag_name)
         else:
             _logger.info('###JurnalID, Already sent to vendor accounting####')
@@ -883,7 +1036,8 @@ class AccountingConnectorAccurate(models.Model):
                     "custom_id": "",
                     "source": "API",
                     "use_tax_inclusive": False,
-                    "tax_after_discount": False
+                    "tax_after_discount": False,
+                    "status": "open"
                 }
             }
             _logger.info('######REQUEST PURCHASE RESCHEDULE#########\n%s' % json.dumps(data))
@@ -916,8 +1070,8 @@ class AccountingConnectorAccurate(models.Model):
                 passenger_data = ''
 
             if desc != '':
-                tag_name = self.search_tags(data_login, 'Reschedule Tiket Pesawat')
-                product = self.get_product(data_login, 'Reschedule Tiket Perjalanan')
+                tag_name = self.search_tags(data_login, 'Reschedule Tiket')
+                product = self.get_product(data_login, 'Tiket Perjalanan')
 
             for reschedule_line in vals['reschedule_lines']:
                 for provider_booking in vals['provider_bookings']:
@@ -927,8 +1081,9 @@ class AccountingConnectorAccurate(models.Model):
                         desc += "%s; Addons Tiket Perjalanan; Atas Nama: %s" % (provider_booking['pnr'], passenger_data)
                         passenger_data = ''
             if product == '':
-                tag_name = self.search_tags(data_login, 'Addons Tiket Pesawat')
-                product = self.get_product(data_login, 'Addons Tiket Perjalanan')
+                tag_name = self.search_tags(data_login, 'Addons (After Sales)')
+                # product = self.get_product(data_login, 'Addons Tiket Perjalanan')
+                product = self.get_product(data_login, 'Tiket Perjalanan')
 
             due_date = (datetime.strptime(vals['create_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%d-%m-%Y')
             issued_date = vals['create_date'].split(' ')[0]
@@ -1040,7 +1195,8 @@ class AccountingConnectorAccurate(models.Model):
                         "custom_id": "",
                         "source": "API",
                         "use_tax_inclusive": False,
-                        "tax_after_discount": False
+                        "tax_after_discount": False,
+                        "status": "open"
                     }
                 }
                 _logger.info('######REQUEST SALES RESCHEDULE UPDATE SALES#########\n%s' % json.dumps(data))
@@ -1075,6 +1231,7 @@ class AccountingConnectorAccurate(models.Model):
             else:
                 _logger.info('###JurnalID, Already sent to vendor accounting####')
         elif vals['category'] == 'reschedule':
+            ## HANYA UNTUK AIRLINE
             ##### AMBIL CONTACT ###############
             contact = self.get_contact(data_login, vals)
             ###################################
@@ -1088,6 +1245,7 @@ class AccountingConnectorAccurate(models.Model):
             ###################################
             pass
         elif vals['category'] == 'refund':
+            ## HANYA UNTUK AIRLINE
             ####### REFUND ################
             ##### VENDOR TO HEAD OFFICE #######
             if len(vals['ledgers']) > 0:
