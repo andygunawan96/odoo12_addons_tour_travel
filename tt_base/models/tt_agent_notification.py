@@ -102,7 +102,7 @@ class TtReservationNotification(models.Model):
 
     def create_notification_record(self):
         self.set_false_all_record()
-        ## create new notif
+        ## create new notif yg booked
         for provider_type in variables.PROVIDER_TYPE:
             book_objs = self.env['tt.reservation.%s' % provider_type].search([('state', '=', 'booked')])
             for book_obj in book_objs:
@@ -117,8 +117,8 @@ class TtReservationNotification(models.Model):
                     "provider_type_id": book_obj.provider_type_id.id,
                     "pnr": book_obj.pnr
                 })
-
-        provider_types = ['airline'] ### PROVIDER YANG MAU MASUK KE NOTIF
+        ### NOTIF UNTUK INVALID IDENTITY
+        provider_types = ['airline']
         for provider_type in provider_types:
             book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('passenger_ids.identity_number', '=', 'P999999'),('state', 'not in', ['draft', 'cancel', 'cancel2'])])
             for book_obj in book_objs:
