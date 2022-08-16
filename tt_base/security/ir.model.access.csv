@@ -625,3 +625,11 @@ tt_letter_guarantee_lines_for_lg_po_level_2,tt.letter.guarantee.lines.for.lg.po.
 tt_letter_guarantee_lines_for_lg_po_level_3,tt.letter.guarantee.lines.for.lg.po.level.3,model_tt_letter_guarantee_lines,tt_base.group_lg_po_level_3,1,1,1,0
 tt_letter_guarantee_lines_for_lg_po_level_4,tt.letter.guarantee.lines.for.lg.po.level.4,model_tt_letter_guarantee_lines,tt_base.group_lg_po_level_4,1,1,1,0
 tt_letter_guarantee_lines_for_lg_po_level_5,tt.letter.guarantee.lines.for.lg.po.level.5,model_tt_letter_guarantee_lines,tt_base.group_lg_po_level_5,1,1,1,1
+,,,,,,,
+access_tt_agent_notification_for_public,tt.agent.notification.for.public,model_tt_agent_notification,,1,0,0,0
+,,,,,,,
+access_tt_agent_notification_for_customer_level_1,tt.agent.notification.for.customer.level.1,model_tt_agent_notification,tt_base.group_customer_level_1,1,0,0,0
+access_tt_agent_notification_for_customer_level_2,tt.agent.notification.for.customer.level.2,model_tt_agent_notification,tt_base.group_customer_level_2,1,0,1,0
+access_tt_agent_notification_for_customer_level_3,tt.agent.notification.for.customer.level.3,model_tt_agent_notification,tt_base.group_customer_level_3,1,1,1,1
+access_tt_agent_notification_for_customer_level_4,tt.agent.notification.for.customer.level.4,model_tt_agent_notification,tt_base.group_customer_level_4,1,1,1,1
+access_tt_agent_notification_for_customer_level_5,tt.agent.notification.for.customer.level.5,model_tt_agent_notification,tt_base.group_customer_level_5,1,1,1,1
