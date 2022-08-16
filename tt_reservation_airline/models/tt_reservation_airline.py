@@ -503,6 +503,10 @@ class ReservationAirline(models.Model):
             if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
+            # channel repricing upsell SSR
+            if req.get('repricing_data_ssr'):
+                req['repricing_data_ssr']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(req['repricing_data_ssr'], context)
             ##pengecekan segment kembar airline dengan nama passengers
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)
