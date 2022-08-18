@@ -610,10 +610,12 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
-                    activity_name = provider_booking[0]['activity_details'][0]['activity']
-                    visit_date = datetime.strptime(provider_booking[0]['activity_details'][0]['visit_date'],
+                    activity_name = provider_booking['activity_details'][0]['activity']
+                    visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'],
                                                    '%Y-%m-%d').strftime('%d %b %Y')
-                    desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, passenger_data)
+                    desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (
+                    pnr, activity_name, visit_date, passenger_data)
+                    vendor_data = provider_booking['provider']
 
                 ## TOUR
                 elif vals['provider_type_name'] == 'Tour':
@@ -1215,7 +1217,7 @@ class AccountingConnectorAccurate(models.Model):
             contact = self.get_contact(data_login, vals)
             ###################################
             ####### CREATE PURCHASE INVOICE ##########
-            self.add_purchase(data_login, vals)
+            # self.add_purchase(data_login, vals)
             ###################################
 
             ####### CREATE SALES INVOICE ##########
