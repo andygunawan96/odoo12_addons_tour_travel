@@ -545,7 +545,7 @@ class TtReservation(models.Model):
         for rec in passenger:
             nationality_id = country_obj.search([('code','=ilike',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
-            is_valid_identity = identity.get('is_valid_identity', True)
+            is_valid_identity = identity and identity.get('is_valid_identity', True) or True
             pax_data = (0,0,{
                 'name': "%s %s" % (rec['first_name'],rec['last_name']),
                 'first_name': rec['first_name'],
