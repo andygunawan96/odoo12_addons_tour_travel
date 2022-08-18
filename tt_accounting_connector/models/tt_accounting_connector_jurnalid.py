@@ -597,6 +597,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     desc += "%s; TBC %s; %s;" % (pnr, provider_booking['carrier_name'],
                                                  datetime.strptime(vals['issued_date'][:10],
                                                                    '%Y-%m-%d').strftime('%d %b %Y'))
@@ -610,11 +611,11 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     activity_name = provider_booking['activity_details'][0]['activity']
                     visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'],
                                                    '%Y-%m-%d').strftime('%d %b %Y')
-                    desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (
-                    pnr, activity_name, visit_date, passenger_data)
+                    desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, passenger_data)
                     vendor_data = provider_booking['provider']
 
                 ## TOUR
@@ -625,6 +626,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     desc += "%s; TBC %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
 
                 ## VISA PASSPORT
@@ -635,6 +637,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += pax['passenger']
                     if desc != '':
                         desc += '; '
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     desc += "%s; VISA/ SG Arrival %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
                 passenger_data = ''
 
