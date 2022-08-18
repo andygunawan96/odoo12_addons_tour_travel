@@ -1220,7 +1220,7 @@ class AccountingConnectorAccurate(models.Model):
             contact = self.get_contact(data_login, vals)
             ###################################
             ####### CREATE PURCHASE INVOICE ##########
-            # self.add_purchase(data_login, vals)
+            self.add_purchase(data_login, vals)
             ###################################
 
             ####### CREATE SALES INVOICE ##########
