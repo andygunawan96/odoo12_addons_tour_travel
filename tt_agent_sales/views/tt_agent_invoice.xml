@@ -79,6 +79,8 @@
                         <button name="print_kwitansi"
                                 class="oe_stat_button" states="paid"
                                 string="Print (Kwitansi)" type="object" icon="fa-print"/>
+                        <button name="unlink_all_printout"
+                            class="oe_stat_button" string="Empty PrintOut" type="object" icon="fa-minus-square"/>
                     </div>
                     <div class="oe_title">
                         <h1>
