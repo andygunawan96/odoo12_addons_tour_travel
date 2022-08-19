@@ -399,9 +399,12 @@ class ReservationAirline(models.Model):
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
             for idx,rec in enumerate(list_passenger_value):
+                is_valid_identity = True
+                if passengers[idx].get('identity'): ## DARI FRONTEND / BTBO JIKA TANPA IDENTITY TIDAK ADA KEY IDENTITY
+                    is_valid_identity = passengers[idx]['identity'].get('is_valid_identity', True)
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
-                    'is_valid_identity': passengers[idx]['identity']['is_valid_identity'],
+                    'is_valid_identity': is_valid_identity,
                 })
 
             for psg in list_passenger_value:
