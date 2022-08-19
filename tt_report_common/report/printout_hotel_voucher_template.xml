@@ -207,11 +207,12 @@
                     <br/>
                     <span>Special Request:
                         <t t-if="doc.special_req">
-                                <span t-field="doc.special_req"/>
-                            </t>
-                            <t t-else="">
-                                No Special Request
-                            </t>
+                            <span t-field="doc.special_req"/>
+                            (THIS REQUEST SUBJECT TO AVAILABILITY AND MAY NOT BE GUARANTEED)
+                        </t>
+                        <t t-else="">
+                            No Special Request
+                        </t>
                     </span>
                     <br/><br/>
                     <span>*Please Use Contact Name or Any Pax Name during Check in.</span>

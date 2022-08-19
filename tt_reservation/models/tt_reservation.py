@@ -1431,3 +1431,16 @@ class TtReservation(models.Model):
         except Exception as e:
             _logger.info("FIXING PRICES CAUSE %s" % (prices.charge_code))
             _logger.error(traceback.format_exc())
+
+    def unlink_all_printout(self, type='All'):
+        # Untuk Unlink All Printout
+        # Biasane Fungsi def print_, Nma fiel biasane: printout_"XXX"_id
+        for rec in self:
+            rec.printout_ticket_id.unlink()
+            rec.printout_ticket_price_id.unlink()
+            rec.printout_itinerary_id.unlink()
+            rec.printout_ho_invoice_id.unlink()
+            # rec.printout_voucher_id.unlink()
+            # rec.printout_vendor_invoice_id.unlink()
+        return True
+
