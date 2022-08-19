@@ -372,7 +372,7 @@ class AccountingConnectorAccurate(models.Model):
             invoice = ''
             for rec in vals['invoice_data']:
                 if invoice != '':
-                    invoice = ', '
+                    invoice += ', '
                 invoice += rec
             pnr_list = {}
             for idx, ledger in enumerate(vals['ledgers'], start=1):
@@ -862,7 +862,7 @@ class AccountingConnectorAccurate(models.Model):
             invoice = ''
             for rec in vals['invoice_data']:
                 if invoice != '':
-                    invoice = ', '
+                    invoice += ', '
                 invoice += rec
             pnr_list = {}
             for idx, segment in enumerate(vals['new_segment'], start=1):
