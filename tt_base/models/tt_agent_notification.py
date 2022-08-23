@@ -2,7 +2,7 @@ from dateutil.relativedelta import relativedelta
 from odoo import api,models,fields
 import json
 from ...tools import variables,util,ERR
-from datetime import datetime
+from datetime import datetime, timedelta
 from ...tools.ERR import RequestException
 
 class TtReservationNotification(models.Model):
@@ -68,7 +68,6 @@ class TtReservationNotification(models.Model):
             res.append(notification_book_obj.to_dict())
         return ERR.get_no_error(res)
 
-
     def set_notification_read_api(self, req, context):
         agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
         try:
@@ -93,7 +92,33 @@ class TtReservationNotification(models.Model):
             if len(dom) == 4: ## agent yg read
                 notif_list.is_read = True
             return ERR.get_no_error()
-        return ERR.get_error(500, additional_message='Booking not found')
+        return ERR.get_error(500, additional_message='Notification not found')
+
+    def set_snooze_notification_api(self, req, context):
+        agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
+        try:
+            agent_obj.create_date
+        except:
+            raise RequestException(1008)
+        user_obj = self.env['res.users'].browse(context['co_uid'])
+        try:
+            user_obj.create_date
+        except:
+            raise RequestException(1001)
+
+        if self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
+            dom = []
+        else:
+            dom = [('agent_id', '=', agent_obj.id)]
+        dom.append(('name','=',req['order_number']))
+        dom.append(('description','=',req['description']))
+        dom.append(('active','=',True))
+        notif_list = self.search(dom, limit=1)
+        if notif_list:
+            if len(dom) == 4: ## agent yg read
+                notif_list.snooze_days = req['days']
+            return ERR.get_no_error()
+        return ERR.get_error(500, additional_message='Notification not found')
 
     def set_false_all_record(self):
         self.search([('active', '=', True)]).write({
@@ -106,31 +131,38 @@ class TtReservationNotification(models.Model):
         for provider_type in variables.PROVIDER_TYPE:
             book_objs = self.env['tt.reservation.%s' % provider_type].search([('state', '=', 'booked')])
             for book_obj in book_objs:
-                self.create({
-                    "booking_id": book_obj.id,
-                    "is_read": False,
-                    "active": True,
-                    "agent_id": book_obj.agent_id.id,
-                    "type": 'reservation',
-                    "name": book_obj.name,
-                    "description": "Needs to Issued before %s" % book_obj.hold_date.strftime("%d %b %Y %H:%M"),
-                    "provider_type_id": book_obj.provider_type_id.id,
-                    "pnr": book_obj.pnr
-                })
+                last_record_notif = self.search([('name','=',book_obj.name), ('active','=',False)],limit=1)
+                create_record = True
+                if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=last_record_notif.snooze_days):
+                    create_record = False
+                if create_record:
+                    self.create({
+                        "is_read": False,
+                        "active": True,
+                        "agent_id": book_obj.agent_id.id,
+                        "type": 'reservation',
+                        "name": book_obj.name,
+                        "description": "Please Issued before %s" % book_obj.hold_date.strftime("%d %b %Y %H:%M"),
+                        "provider_type_id": book_obj.provider_type_id.id,
+                        "pnr": book_obj.pnr
+                    })
         ### NOTIF UNTUK INVALID IDENTITY
         provider_types = ['airline']
         for provider_type in provider_types:
             book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('passenger_ids.identity_number', '=', 'P999999'),('state', 'not in', ['draft', 'cancel', 'cancel2'])])
             for book_obj in book_objs:
-                self.create({
-                    "booking_id": book_obj.id,
-                    "is_read": False,
-                    "active": True,
-                    "agent_id": book_obj.agent_id.id,
-                    "type": 'reservation',
-                    "name": book_obj.name,
-                    "description": "Needs to Update Identity",
-                    "provider_type_id": book_obj.provider_type_id.id,
-                    "pnr": book_obj.pnr
-                })
+                create_record = True
+                if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0) + timedelta(days=last_record_notif.snooze_days):
+                    create_record = False
+                if create_record:
+                    self.create({
+                        "is_read": False,
+                        "active": True,
+                        "agent_id": book_obj.agent_id.id,
+                        "type": 'reservation',
+                        "name": book_obj.name,
+                        "description": "Please Update Identity",
+                        "provider_type_id": book_obj.provider_type_id.id,
+                        "pnr": book_obj.pnr
+                    })
         #### TOP UP
