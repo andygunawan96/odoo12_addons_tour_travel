@@ -18,7 +18,8 @@ class TtReservationNotification(models.Model):
     name = fields.Char('Name')  ## untuk nomor AL, nomor TU, DLL
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     pnr = fields.Char('PNR')
-    description = fields.Char('Description') ## action needs to do
+    description_msg = fields.Char('Description Message') ## action needs to do
+    description_datetime = fields.Datetime('Description Datetime')
     snooze_days = fields.Integer('Snooze In Days') ## next update
     last_snooze_date = fields.Date('Last Snooze Date')
 
@@ -29,7 +30,10 @@ class TtReservationNotification(models.Model):
             "is_read": self.is_read,
             "name": self.name,
             "pnr": self.pnr,
-            "description": self.description,
+            "description": {
+                "msg": self.description_msg,
+                "datetime": self.description_datetime
+            },
             "agent_name": self.agent_id.name,
             "provider_type": self.provider_type_id.code,
             "snooze_days": self.snooze_days,
@@ -89,11 +93,10 @@ class TtReservationNotification(models.Model):
         else:
             dom = [('agent_id', '=', agent_obj.id)]
         dom.append(('name','=',req['order_number']))
-        dom.append(('description','=',req['description']))
         dom.append(('active','=',True))
         notif_list = self.search(dom, limit=1)
         if notif_list:
-            if len(dom) == 4: ## agent yg read
+            if len(dom) == 3: ## agent yg read
                 notif_list.is_read = True
             return ERR.get_no_error()
         return ERR.get_error(500, additional_message='Notification not found')
@@ -115,11 +118,10 @@ class TtReservationNotification(models.Model):
         else:
             dom = [('agent_id', '=', agent_obj.id)]
         dom.append(('name','=',req['order_number']))
-        dom.append(('description','=',req['description']))
         dom.append(('active','=',True))
         notif_list = self.search(dom, limit=1)
         if notif_list:
-            if len(dom) == 4: ## agent yg read
+            if len(dom) == 3: ## agent yg read
                 notif_list.snooze_days = req['days']
             return ERR.get_no_error()
         return ERR.get_error(500, additional_message='Notification not found')
@@ -149,7 +151,8 @@ class TtReservationNotification(models.Model):
                         "agent_id": book_obj.agent_id.id,
                         "type": 'reservation',
                         "name": book_obj.name,
-                        "description": "Please Issued before %s" % book_obj.hold_date.strftime("%d %b %Y %H:%M"),
+                        "description_msg": "Please Issued",
+                        "description_datetime": "%s" % book_obj.hold_date.strftime("%Y-%m-%d %H:%M:%S"),
                         "provider_type_id": book_obj.provider_type_id.id,
                         "pnr": book_obj.pnr,
                         "last_snooze_date": book_obj.hold_date.strftime("%Y-%m-%d")
@@ -176,7 +179,8 @@ class TtReservationNotification(models.Model):
                         "agent_id": book_obj.agent_id.id,
                         "type": 'reservation',
                         "name": book_obj.name,
-                        "description": "Please Update Identity",
+                        "description_msg": "Please Update Identity",
+                        "description_datetime": last_snooze_date,
                         "provider_type_id": book_obj.provider_type_id.id,
                         "pnr": book_obj.pnr,
                         "last_snooze_date": last_snooze_date
