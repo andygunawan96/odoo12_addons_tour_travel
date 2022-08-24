@@ -15,7 +15,8 @@
                         </div>
                         <group>
                             <field name="pnr"/>
-                            <field name="description" placeholder="Description"/>
+                            <field name="description_msg" placeholder="Description"/>
+                            <field name="description_datetime" placeholder="Description"/>
                             <field name="snooze_days"/>
                             <field name="type"/>
                             <field name="provider_type_id" attrs="{'invisible': [('type','!=','reservation')]}"/>
@@ -37,7 +38,7 @@
                     <field name="name"/>
                     <field name="pnr"/>
                     <field name="type"/>
-                    <field name="description"/>
+                    <field name="description_msg"/>
                     <field name="agent_id"/>
                     <field name="is_read"/>
                     <field name="active"/>
