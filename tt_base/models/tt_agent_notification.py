@@ -20,6 +20,7 @@ class TtReservationNotification(models.Model):
     pnr = fields.Char('PNR')
     description = fields.Char('Description') ## action needs to do
     snooze_days = fields.Integer('Snooze In Days') ## next update
+    last_snooze_date = fields.Date('Last Snooze Date')
 
 
     def to_dict(self):
@@ -30,7 +31,10 @@ class TtReservationNotification(models.Model):
             "pnr": self.pnr,
             "description": self.description,
             "agent_name": self.agent_id.name,
-            "provider_type": self.provider_type_id.code
+            "provider_type": self.provider_type_id.code,
+            "snooze_days": self.snooze_days,
+            "create_date": self.create_date.strftime('%Y-%m-%d'),
+            "last_snooze_date": self.last_snooze_date.strftime('%Y-%m-%d') if self.last_snooze_date else False
         }
 
     def get_notification_api(self, req, context):
@@ -63,7 +67,7 @@ class TtReservationNotification(models.Model):
         types = ['airline'] ## baru nyala di airline
 
         res = []
-        notification_book_objs = self.search(dom)
+        notification_book_objs = self.search(dom, order='snooze_days desc')
         for notification_book_obj in notification_book_objs:
             res.append(notification_book_obj.to_dict())
         return ERR.get_no_error(res)
@@ -121,9 +125,12 @@ class TtReservationNotification(models.Model):
         return ERR.get_error(500, additional_message='Notification not found')
 
     def set_false_all_record(self):
-        self.search([('active', '=', True)]).write({
-            "active": False
-        })
+        agent_notif_objs = self.search([('active', '=', True)])
+        for agent_notif_obj in agent_notif_objs:
+            if agent_notif_obj.snooze_days == 0 or datetime.now() > agent_notif_obj.create_date.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=agent_notif_obj.snooze_days):
+                agent_notif_obj.write({
+                    "active": False
+                })
 
     def create_notification_record(self):
         self.set_false_all_record()
@@ -131,7 +138,7 @@ class TtReservationNotification(models.Model):
         for provider_type in variables.PROVIDER_TYPE:
             book_objs = self.env['tt.reservation.%s' % provider_type].search([('state', '=', 'booked')])
             for book_obj in book_objs:
-                last_record_notif = self.search([('name','=',book_obj.name), ('active','=',False)],limit=1)
+                last_record_notif = self.search([('name','=',book_obj.name), ('active','=',True), ('snooze_days','!=', 0)],limit=1)
                 create_record = True
                 if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=last_record_notif.snooze_days):
                     create_record = False
@@ -144,7 +151,8 @@ class TtReservationNotification(models.Model):
                         "name": book_obj.name,
                         "description": "Please Issued before %s" % book_obj.hold_date.strftime("%d %b %Y %H:%M"),
                         "provider_type_id": book_obj.provider_type_id.id,
-                        "pnr": book_obj.pnr
+                        "pnr": book_obj.pnr,
+                        "last_snooze_date": book_obj.hold_date.strftime("%Y-%m-%d")
                     })
         ### NOTIF UNTUK INVALID IDENTITY
         provider_types = ['airline']
@@ -152,9 +160,16 @@ class TtReservationNotification(models.Model):
             book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('passenger_ids.identity_number', '=', 'P999999'),('state', 'not in', ['draft', 'cancel', 'cancel2'])])
             for book_obj in book_objs:
                 create_record = True
+                last_record_notif = self.search([('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)], limit=1)
                 if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0) + timedelta(days=last_record_notif.snooze_days):
                     create_record = False
                 if create_record:
+                    last_snooze_date = False
+                    if book_obj.provider_type_id.code in ['airline','train','bus']:
+                        last_snooze_date = book_obj.departure_date - timedelta(days=30)
+                        if datetime.now() > last_snooze_date:
+                            last_snooze_date = False
+
                     self.create({
                         "is_read": False,
                         "active": True,
@@ -163,6 +178,7 @@ class TtReservationNotification(models.Model):
                         "name": book_obj.name,
                         "description": "Please Update Identity",
                         "provider_type_id": book_obj.provider_type_id.id,
-                        "pnr": book_obj.pnr
+                        "pnr": book_obj.pnr,
+                        "last_snooze_date": last_snooze_date
                     })
         #### TOP UP
