@@ -20,7 +20,7 @@ class TtReservationNotification(models.Model):
     pnr = fields.Char('PNR')
     description_msg = fields.Char('Description Message') ## action needs to do
     description_datetime = fields.Datetime('Description Datetime')
-    snooze_days = fields.Integer('Snooze In Days') ## next update
+    snooze_days = fields.Integer('Snooze In Days', default=0) ## next update
     last_snooze_date = fields.Date('Last Snooze Date')
 
 
@@ -71,9 +71,15 @@ class TtReservationNotification(models.Model):
         types = ['airline'] ## baru nyala di airline
 
         res = []
-        notification_book_objs = self.search(dom, order='snooze_days desc')
+        res_snooze = [] ## agar urutan tidak berpindah - pindah
+        notification_book_objs = self.search(dom, order='snooze_days asc, id desc') ## kalau pakai order by snooze_days urutan berubah - ubah jadi pakai 2 list nanti append jadi 1
         for notification_book_obj in notification_book_objs:
-            res.append(notification_book_obj.to_dict())
+            if notification_book_obj.snooze_days != 0:
+                res_snooze.append(notification_book_obj.to_dict())
+            else:
+                res.append(notification_book_obj.to_dict())
+        for rec in res_snooze:
+            res.append(rec)
         return ERR.get_no_error(res)
 
     def set_notification_read_api(self, req, context):
@@ -155,7 +161,8 @@ class TtReservationNotification(models.Model):
                         "description_datetime": "%s" % book_obj.hold_date.strftime("%Y-%m-%d %H:%M:%S"),
                         "provider_type_id": book_obj.provider_type_id.id,
                         "pnr": book_obj.pnr,
-                        "last_snooze_date": book_obj.hold_date.strftime("%Y-%m-%d")
+                        "last_snooze_date": book_obj.hold_date.strftime("%Y-%m-%d"),
+                        "snooze_days": 0
                     })
         ### NOTIF UNTUK INVALID IDENTITY
         provider_types = ['airline']
@@ -183,6 +190,7 @@ class TtReservationNotification(models.Model):
                         "description_datetime": last_snooze_date,
                         "provider_type_id": book_obj.provider_type_id.id,
                         "pnr": book_obj.pnr,
-                        "last_snooze_date": last_snooze_date
+                        "last_snooze_date": last_snooze_date,
+                        "snooze_days": 0
                     })
         #### TOP UP
