@@ -40,8 +40,8 @@ class ReservationAirline(models.Model):
                 payment_acquirer_obj = airline_obj.agent_id.default_acquirer_id
                 # END
 
-                if vals.get('seq_id'):
-                    payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+                if vals.get('acquirer_seq_id'):
+                    payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['acquirer_seq_id'])], limit=1)
                 if not payment_acquirer_obj:
                     return ERR.get_error(1017)
 
@@ -490,8 +490,8 @@ class ReservationAirline(models.Model):
             admin_fee_obj = None
             # END
 
-            if vals.get('seq_id'):
-                payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+            if vals.get('acquirer_seq_id'):
+                payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['acquirer_seq_id'])], limit=1)
             # if not payment_acquirer_obj: #BOOKED TIDAK KIRIM seq_id
             #     return ERR.get_error(1017)
             # if not admin_fee_obj:
