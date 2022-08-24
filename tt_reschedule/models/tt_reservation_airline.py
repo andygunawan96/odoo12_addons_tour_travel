@@ -268,6 +268,15 @@ class ReservationAirline(models.Model):
                     'created_by_api': True,
                 }
                 res_obj = self.env['tt.reschedule'].create(res_vals)
+
+                for rsch_pax in res_obj.passenger_ids:
+                    # fill RS number to pax's reschedule CSCs with empty description
+                    for rsch_p_csc in rsch_pax.channel_service_charge_ids.filtered(lambda x: 'rs' in x.charge_code.split('.')):
+                        if not rsch_p_csc.description:
+                            rsch_p_csc.update({
+                                'description': res_obj.name
+                            })
+
                 # res_obj.confirm_reschedule_from_button()
                 # res_obj.send_reschedule_from_button()
                 # res_obj.validate_reschedule_from_button()
@@ -1240,6 +1249,13 @@ class ReservationAirline(models.Model):
                     # END
                 else:
                     rsch_obj = self.env['tt.reschedule'].create(res_vals)
+                    for rsch_pax in rsch_obj.passenger_ids:
+                        # fill RS number to pax's reschedule CSCs with empty description
+                        for rsch_p_csc in rsch_pax.channel_service_charge_ids.filtered(lambda x: 'rs' in x.charge_code.split('.')):
+                            if not rsch_p_csc.description:
+                                rsch_p_csc.update({
+                                    'description': rsch_obj.name
+                                })
 
                     rsch_line_values = {
                         'reschedule_type': 'reschedule' if new_segment_list else 'addons',
