@@ -125,9 +125,8 @@ class TtCronLog(models.Model):
             self.write_cron_log('auto-expired payment acquirer number')
 
     def cron_create_notification_agent(self):
-        error_list = []
         try:
             self.env['tt.agent.notification'].create_notification_record()
         except:
             self.create_cron_log_folder()
-            self.write_cron_log('cron_auto_create_notification_agent', ''.join(error_list))
+            self.write_cron_log('cron_auto_create_notification_agent')

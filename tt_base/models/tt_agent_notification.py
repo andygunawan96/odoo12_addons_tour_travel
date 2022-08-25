@@ -148,8 +148,40 @@ class TtReservationNotification(models.Model):
             for book_obj in book_objs:
                 last_record_notif = self.search([('name','=',book_obj.name), ('active','=',True), ('snooze_days','!=', 0)],limit=1)
                 create_record = True
+                ## check snooze tidak bikin notif baru
                 if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=last_record_notif.snooze_days):
                     create_record = False
+                    
+                ## check per provider type syarat masuk notif
+                if create_record:
+                    if provider_type in ['airline', 'train', 'bus', 'tour', 'groupbooking']:
+                        if datetime.now() > datetime.strptime(str(book_obj.departure_date), '%Y-%m-%d'):
+                            create_record = False
+                    elif provider_type in ['visa']:
+                        if datetime.now() > datetime.strptime(book_obj.departure_date, '%d/%m/%Y'):
+                            create_record = False
+                    elif provider_type in ['hotel']:
+                        if datetime.now() > datetime.strptime(str(book_obj.checkin_date), '%Y-%m-%d'):
+                            create_record = False
+                    ## untuk offline karena terlalu banyak variant sementara universal pakai hold date
+                    ## event, ppob pakai hold date karena tidak ada tanggal berangkat
+                    elif provider_type in ['offline', 'event', 'ppob']:
+                        if datetime.now() > book_obj.hold_date: ##
+                            create_record = False
+                    elif provider_type in ['activity']:
+                        if book_obj.activity_detail_ids:
+                            if book_obj.activity_detail_ids[0].visit_date:
+                                if datetime.now() > book_obj.activity_detail_ids[0].visit_date:
+                                    create_record = False
+    
+                    elif provider_type in ['periksain', 'phc', 'medical', 'swabexpress', 'labpintar', 'mitrakeluarga', 'sentramedika']:
+                        if datetime.now() > book_obj.test_datetime: ##
+                            create_record = False
+                    elif provider_type in ['insurance']:
+                        if datetime.now() > datetime.strptime(book_obj.start_date, '%Y-%m-%d'):
+                            create_record = False
+
+
                 if create_record:
                     self.create({
                         "is_read": False,
