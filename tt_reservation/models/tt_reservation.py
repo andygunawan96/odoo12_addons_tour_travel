@@ -545,6 +545,7 @@ class TtReservation(models.Model):
         for rec in passenger:
             nationality_id = country_obj.search([('code','=ilike',rec['nationality_code'])],limit=1).id
             identity = rec.get('identity')
+            is_valid_identity = identity and identity.get('is_valid_identity', True) or True
             pax_data = (0,0,{
                 'name': "%s %s" % (rec['first_name'],rec['last_name']),
                 'first_name': rec['first_name'],
@@ -557,7 +558,8 @@ class TtReservation(models.Model):
                 'identity_number': identity and identity['identity_number'] or '',
                 'identity_expdate': identity and identity['identity_expdate'] or False,
                 'identity_country_of_issued_id': identity and country_obj.search([('code','=ilike',identity['identity_country_of_issued_code'])],limit=1).id or False,
-                'sequence': rec['sequence']
+                'sequence': rec['sequence'],
+                'is_valid_identity': is_valid_identity
             })
             identity_passport = rec.get('identity_passport')
             if identity_passport:
@@ -1429,3 +1431,16 @@ class TtReservation(models.Model):
         except Exception as e:
             _logger.info("FIXING PRICES CAUSE %s" % (prices.charge_code))
             _logger.error(traceback.format_exc())
+
+    def unlink_all_printout(self, type='All'):
+        # Untuk Unlink All Printout
+        # Biasane Fungsi def print_, Nma fiel biasane: printout_"XXX"_id
+        for rec in self:
+            rec.printout_ticket_id.unlink()
+            rec.printout_ticket_price_id.unlink()
+            rec.printout_itinerary_id.unlink()
+            rec.printout_ho_invoice_id.unlink()
+            # rec.printout_voucher_id.unlink()
+            # rec.printout_vendor_invoice_id.unlink()
+        return True
+

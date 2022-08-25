@@ -372,7 +372,7 @@ class AccountingConnectorAccurate(models.Model):
             invoice = ''
             for rec in vals['invoice_data']:
                 if invoice != '':
-                    invoice = ', '
+                    invoice += ', '
                 invoice += rec
             pnr_list = {}
             for idx, ledger in enumerate(vals['ledgers'], start=1):
@@ -538,7 +538,7 @@ class AccountingConnectorAccurate(models.Model):
                                 "source": "API",
                                 "use_tax_inclusive": False,
                                 "tax_after_discount": False,
-                                "status": "open"
+                                "status": "approved"
                             }
                         }
                         _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
@@ -597,6 +597,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     desc += "%s; TBC %s; %s;" % (pnr, provider_booking['carrier_name'],
                                                  datetime.strptime(vals['issued_date'][:10],
                                                                    '%Y-%m-%d').strftime('%d %b %Y'))
@@ -610,10 +611,12 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
-                    activity_name = provider_booking[0]['activity_details'][0]['activity']
-                    visit_date = datetime.strptime(provider_booking[0]['activity_details'][0]['visit_date'],
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
+                    activity_name = provider_booking['activity_details'][0]['activity']
+                    visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'],
                                                    '%Y-%m-%d').strftime('%d %b %Y')
                     desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, passenger_data)
+                    vendor_data = provider_booking['provider']
 
                 ## TOUR
                 elif vals['provider_type_name'] == 'Tour':
@@ -623,6 +626,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += rec_ticket['passenger']
                     if desc != '':
                         desc += '; '
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     desc += "%s; TBC %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
 
                 ## VISA PASSPORT
@@ -633,6 +637,7 @@ class AccountingConnectorAccurate(models.Model):
                         passenger_data += pax['passenger']
                     if desc != '':
                         desc += '; '
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     desc += "%s; VISA/ SG Arrival %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
                 passenger_data = ''
 
@@ -689,7 +694,7 @@ class AccountingConnectorAccurate(models.Model):
                     "source": "API",
                     "use_tax_inclusive": False,
                     "tax_after_discount": False,
-                    "status": "open"
+                    "status": "approved"
                 }
             }
             _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
@@ -857,7 +862,7 @@ class AccountingConnectorAccurate(models.Model):
             invoice = ''
             for rec in vals['invoice_data']:
                 if invoice != '':
-                    invoice = ', '
+                    invoice += ', '
                 invoice += rec
             pnr_list = {}
             for idx, segment in enumerate(vals['new_segment'], start=1):
@@ -1037,7 +1042,7 @@ class AccountingConnectorAccurate(models.Model):
                     "source": "API",
                     "use_tax_inclusive": False,
                     "tax_after_discount": False,
-                    "status": "open"
+                    "status": "approved"
                 }
             }
             _logger.info('######REQUEST PURCHASE RESCHEDULE#########\n%s' % json.dumps(data))
@@ -1196,7 +1201,7 @@ class AccountingConnectorAccurate(models.Model):
                         "source": "API",
                         "use_tax_inclusive": False,
                         "tax_after_discount": False,
-                        "status": "open"
+                        "status": "approved"
                     }
                 }
                 _logger.info('######REQUEST SALES RESCHEDULE UPDATE SALES#########\n%s' % json.dumps(data))

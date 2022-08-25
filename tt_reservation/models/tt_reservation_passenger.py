@@ -18,6 +18,7 @@ class TtReservationCustomer(models.Model):
     identity_number = fields.Char('Identity Number')
     identity_expdate = fields.Date('Identity Expire Date')
     identity_country_of_issued_id = fields.Many2one('res.country','Identity Issued  Country')
+    is_valid_identity = fields.Boolean('Is Valid Identity', default=True)
     customer_id = fields.Many2one('tt.customer','Customer Reference')
     sequence = fields.Integer('Sequence')
 
@@ -34,7 +35,8 @@ class TtReservationCustomer(models.Model):
             'identity_type': self.identity_type and self.identity_type or '',
             'identity_number': self.identity_number and self.identity_number or '',
             'identity_expdate': self.identity_expdate and self.identity_expdate.strftime('%Y-%m-%d'),
-            'sequence': self.sequence
+            'sequence': self.sequence,
+            'is_valid_identity': self.is_valid_identity
         }
         return res
 

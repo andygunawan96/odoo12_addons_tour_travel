@@ -40,8 +40,8 @@ class ReservationAirline(models.Model):
                 payment_acquirer_obj = airline_obj.agent_id.default_acquirer_id
                 # END
 
-                if vals.get('seq_id'):
-                    payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+                if vals.get('acquirer_seq_id'):
+                    payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['acquirer_seq_id'])], limit=1)
                 if not payment_acquirer_obj:
                     return ERR.get_error(1017)
 
@@ -268,6 +268,15 @@ class ReservationAirline(models.Model):
                     'created_by_api': True,
                 }
                 res_obj = self.env['tt.reschedule'].create(res_vals)
+
+                for rsch_pax in res_obj.passenger_ids:
+                    # fill RS number to pax's reschedule CSCs with empty description
+                    for rsch_p_csc in rsch_pax.channel_service_charge_ids.filtered(lambda x: 'rs' in x.charge_code.split('.')):
+                        if not rsch_p_csc.description:
+                            rsch_p_csc.update({
+                                'description': res_obj.name
+                            })
+
                 # res_obj.confirm_reschedule_from_button()
                 # res_obj.send_reschedule_from_button()
                 # res_obj.validate_reschedule_from_button()
@@ -481,8 +490,8 @@ class ReservationAirline(models.Model):
             admin_fee_obj = None
             # END
 
-            if vals.get('seq_id'):
-                payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+            if vals.get('acquirer_seq_id'):
+                payment_acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', vals['acquirer_seq_id'])], limit=1)
             # if not payment_acquirer_obj: #BOOKED TIDAK KIRIM seq_id
             #     return ERR.get_error(1017)
             # if not admin_fee_obj:
@@ -1240,6 +1249,13 @@ class ReservationAirline(models.Model):
                     # END
                 else:
                     rsch_obj = self.env['tt.reschedule'].create(res_vals)
+                    for rsch_pax in rsch_obj.passenger_ids:
+                        # fill RS number to pax's reschedule CSCs with empty description
+                        for rsch_p_csc in rsch_pax.channel_service_charge_ids.filtered(lambda x: 'rs' in x.charge_code.split('.')):
+                            if not rsch_p_csc.description:
+                                rsch_p_csc.update({
+                                    'description': rsch_obj.name
+                                })
 
                     rsch_line_values = {
                         'reschedule_type': 'reschedule' if new_segment_list else 'addons',

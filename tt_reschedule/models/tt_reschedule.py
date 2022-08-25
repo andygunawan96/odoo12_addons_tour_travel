@@ -674,10 +674,13 @@ class TtReschedule(models.Model):
         else:
             desc_str += '); '
 
+        additional_price = 0
         if self.passenger_ids:
             desc_str += 'Passengers: '
             for rec in self.passenger_ids:
                 desc_str += rec.title + ' ' + rec.name + ', '
+                for rsch_p_csc in rec.channel_service_charge_ids.filtered(lambda x: x.description == self.name):
+                    additional_price += rsch_p_csc.amount
             desc_str = desc_str[:-2]
             desc_str += ';'
 
@@ -690,11 +693,15 @@ class TtReschedule(models.Model):
 
         invoice_line_id = inv_line_obj.id
 
-        for rec in self.reschedule_line_ids:
+        for idx, rec in enumerate(self.reschedule_line_ids):
+            tot_amt = rec.total_amount
+            # csc RS per pax hanya ditambah ke line pertama (asumsi untuk addons / reschedule dari front end hanya ada 1 RS line)
+            if idx == 0 and additional_price:
+                tot_amt += additional_price
             inv_line_obj.write({
                 'invoice_line_detail_ids': [(0, 0, {
                     'desc': str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)),
-                    'price_unit': rec.total_amount,
+                    'price_unit': tot_amt,
                     'quantity': 1,
                     'invoice_line_id': invoice_line_id,
                 })]

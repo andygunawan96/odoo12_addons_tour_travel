@@ -80,13 +80,17 @@ class AccountingConnectorITM(models.Model):
                                 first_carrier_name = segm['carrier_name']
                             journ_idx += 1
 
-                    for pax in prov['tickets']:
-                        pax_tick = ''
+                    for pax_idx, pax in enumerate(prov['tickets']):
                         if pax.get('ticket_number'):
                             if len(pax['ticket_number']) > 3:
                                 pax_tick = '%s-%s' % (pax['ticket_number'][:3], pax['ticket_number'][3:])
                             else:
                                 pax_tick = pax['ticket_number']
+                        else:
+                            if journey_list and journey_list[0]['CarrierCode'] in ['QG','QZ']:
+                                pax_tick = '%s-%s%s' % (journey_list[0]['CarrierCode'], prov['pnr'], f'{pax_idx+1:06d}')
+                            else:
+                                pax_tick = ''
                         pax_list = [{
                             "PassangerName": pax['passenger'],
                             "TicketNumber": pax_tick,

@@ -399,12 +399,16 @@ class ReservationAirline(models.Model):
 
             #fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
             for idx,rec in enumerate(list_passenger_value):
+                is_valid_identity = True
+                if passengers[idx].get('identity'): ## DARI FRONTEND / BTBO JIKA TANPA IDENTITY TIDAK ADA KEY IDENTITY
+                    is_valid_identity = passengers[idx]['identity'].get('is_valid_identity', True)
                 rec[2].update({
-                    'customer_id': list_customer_id[idx].id
+                    'customer_id': list_customer_id[idx].id,
+                    'is_valid_identity': is_valid_identity,
                 })
 
             for psg in list_passenger_value:
-                util.pop_empty_key(psg[2])
+                util.pop_empty_key(psg[2], ['is_valid_identity'])
 
             values.update({
                 'user_id': context['co_uid'],
@@ -503,6 +507,10 @@ class ReservationAirline(models.Model):
             if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
+            # channel repricing upsell SSR
+            if req.get('repricing_data_ssr'):
+                req['repricing_data_ssr']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(req['repricing_data_ssr'], context)
             ##pengecekan segment kembar airline dengan nama passengers
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)

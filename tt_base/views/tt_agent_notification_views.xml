@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="tt_agent_notification_form_view" model="ir.ui.view">
+            <field name="name">tt.agent.notification.form.view</field>
+            <field name="model">tt.agent.notification</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="pnr"/>
+                            <field name="description_msg" placeholder="Description"/>
+                            <field name="description_datetime" placeholder="Description"/>
+                            <field name="snooze_days"/>
+                            <field name="type"/>
+                            <field name="provider_type_id" attrs="{'invisible': [('type','!=','reservation')]}"/>
+                            <field name="agent_id"/>
+                            <field name="is_read"/>
+                            <field name="active"/>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_agent_notification_tree_view" model="ir.ui.view">
+            <field name="name">tt.agent.notification.tree.view</field>
+            <field name="model">tt.agent.notification</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="pnr"/>
+                    <field name="type"/>
+                    <field name="description_msg"/>
+                    <field name="agent_id"/>
+                    <field name="is_read"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_agent_notification_action_view" model="ir.actions.act_window">
+            <field name="name">Agent Notification</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.agent.notification</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">
+                {
+                    'form_view_ref': 'tt_agent_notification.tt_agent_notification_form_view',
+                    'tree_view_ref': 'tt_agent_notification.tt_agent_notification_tree_view',
+                }
+            </field>
+        </record>
+
+        <menuitem id="submenu_agent_notification"
+                  parent="tt_base.top_tour_travel_customers"
+                  action="tt_agent_notification_action_view"
+                  sequence="13"
+                  name="Agent Notification"/>
+
+    </data>
+</odoo>

@@ -21,6 +21,7 @@
                             <field name="sequence"/>
                         </group>
                         <group>
+                            <field name="is_valid_identity"/>
                             <field name="identity_type"/>
                             <field name="identity_number"/>
                             <field name="identity_expdate"/>

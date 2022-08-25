@@ -551,5 +551,8 @@ class AgentInvoice(models.Model):
                 except Exception as e:
                     _logger.error("%s Error Quick Approve. %s" % (inv.name,traceback.format_exc()))
 
-
+    def unlink_all_printout(self, type='All'):
+        for rec in self:
+            rec.printout_invoice_id.unlink()
+            rec.printout_kwitansi_id.unlink()
 

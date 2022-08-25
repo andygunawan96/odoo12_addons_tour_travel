@@ -509,7 +509,13 @@ class TtAgent(models.Model):
                 dom.append(('booked_date', '<=', req['date_to']))
             if req.get('state'):
                 if req.get('state') != 'all':
-                    dom.append(('state', '=', req['state']))
+                    if req.get('state') == 'is_need_update_identity': ## untuk filter invalid identity
+                        dom.append(('passenger_ids.is_valid_identity', '=', False))
+                        dom.append(('passenger_ids.identity_number', '=', 'P999999'))
+                        dom.append(('state', 'not in', ['draft', 'cancel', 'cancel2']))
+
+                    else:
+                        dom.append(('state', '=', req['state']))
             if util.get_without_empty(context,'co_customer_parent_id'):
                 dom.append(('customer_parent_id','=',context['co_customer_parent_id']))
 
