@@ -30,6 +30,12 @@ class AgentReportRecapTransacion(models.Model):
             """
 
     @staticmethod
+    def _sel_direction():
+        return """
+            ,rsv.direction as direction
+            """
+
+    @staticmethod
     def _sel_ticket_numbers():
         return """
             ,provider_booking.ticket_numbers as ticket_numbers
@@ -205,6 +211,8 @@ class AgentReportRecapTransacion(models.Model):
         query = 'SELECT ' + self._select()
         if provider_type in ['airline', 'train']:
             query += self._sel_ticket_numbers()
+        if provider_type in ['airline', 'train', 'bus']:
+            query += self._sel_direction()
         if provider_type == 'offline':
             query += self._offline()
 
