@@ -1301,6 +1301,8 @@ class TtReservation(models.Model):
 
                 ## add point reward for agent
                 if website_use_point_reward == 'True':
+                    ## ASUMSI point reward didapat dari total harga yg di bayar
+                    ## karena kalau per pnr per pnr 55 rb & rules point reward kelipatan 10 rb agent rugi 1 point
                     self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
 
                 data = {
