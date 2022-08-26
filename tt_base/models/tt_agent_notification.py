@@ -208,7 +208,8 @@ class TtReservationNotification(models.Model):
                 if create_record:
                     last_snooze_date = False
                     if book_obj.provider_type_id.code in ['airline','train','bus']:
-                        last_snooze_date = book_obj.departure_date - timedelta(days=30)
+                        if book_obj.departure_date:
+                            last_snooze_date = datetime.strptime(book_obj.departure_date, '%Y-%m-%d') - timedelta(days=30)
                         if datetime.now() > last_snooze_date:
                             last_snooze_date = False
 
