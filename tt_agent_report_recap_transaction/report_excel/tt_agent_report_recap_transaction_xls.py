@@ -187,10 +187,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     if current_pnr != i['ledger_pnr']:
                         # update current pnr
                         current_pnr = i['ledger_pnr']
-                        # different PNR in one reservation, pop from single PNR list
-                        if not ord_number_popped and len(rt_single_pnr_idx) > 0:
-                            ord_number_popped = True
-                            rt_single_pnr_idx.pop()
+
                         # product total corresponding to particular pnr
                         # filter from service charge data
                         temp_charge = list(
@@ -275,6 +272,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         # and count how many passenger within the reservation
                         if i['provider_type'].lower() == 'airline':
                         # check if reservation is airline
+                            # different PNR in one reservation, pop from single PNR list
+                            if i['direction'] == 'RT' and not ord_number_popped and len(rt_single_pnr_idx) > 0:
+                                ord_number_popped = True
+                                rt_single_pnr_idx.pop()
                             # will return the index of "same" data based on user
                             data_index = next(
                                 (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
