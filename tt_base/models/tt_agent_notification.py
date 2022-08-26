@@ -144,9 +144,25 @@ class TtReservationNotification(models.Model):
         self.set_false_all_record()
         ## create new notif yg booked
         for provider_type in variables.PROVIDER_TYPE:
-            book_objs = self.env['tt.reservation.%s' % provider_type].search([('state', '=', 'booked')])
+            dom = [('state','=','booked')]
+            if provider_type in ['airline', 'train', 'bus', 'tour']:
+                dom.append(('departure_date', '>', datetime.now().strftime('%Y-%m-%d')))
+            elif provider_type in ['groupbooking']:
+                dom.append(('departure_date', '>', datetime.now()))
+            elif provider_type in ['visa']:
+                dom.append(('departure_date', '>', datetime.now().strftime('%d/%m/%Y')))
+            elif provider_type in ['hotel']:
+                dom.append(('checkin_date', '>', datetime.now().strftime('%Y-%m-%d')))
+            elif provider_type in ['offline', 'event', 'ppob']:
+                dom.append(('hold_date', '>', datetime.now()))
+            elif provider_type in ['periksain', 'phc', 'medical', 'swabexpress', 'labpintar', 'mitrakeluarga',
+                                   'sentramedika']:
+                dom.append(('test_datetime', '>', datetime.now()))
+            elif provider_type in ['insurance']:
+                dom.append(('start_date', '>', datetime.now().strftime('%Y-%m-%d')))
+            book_objs = self.env['tt.reservation.%s' % provider_type].search(dom)
             for book_obj in book_objs:
-                last_record_notif = self.search([('name','=',book_obj.name), ('active','=',True), ('snooze_days','!=', 0)],limit=1)
+                last_record_notif = self.search([('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)], limit=1)
                 create_record = True
                 ## check snooze tidak bikin notif baru
                 if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=last_record_notif.snooze_days):
@@ -154,32 +170,33 @@ class TtReservationNotification(models.Model):
                     
                 ## check per provider type syarat masuk notif
                 if create_record:
-                    if provider_type in ['airline', 'train', 'bus', 'tour', 'groupbooking']:
-                        if datetime.now() > datetime.strptime(str(book_obj.departure_date), '%Y-%m-%d'):
-                            create_record = False
-                    elif provider_type in ['visa']:
-                        if datetime.now() > datetime.strptime(book_obj.departure_date, '%d/%m/%Y'):
-                            create_record = False
-                    elif provider_type in ['hotel']:
-                        if datetime.now() > datetime.strptime(str(book_obj.checkin_date), '%Y-%m-%d'):
-                            create_record = False
-                    ## untuk offline karena terlalu banyak variant sementara universal pakai hold date
-                    ## event, ppob pakai hold date karena tidak ada tanggal berangkat
-                    elif provider_type in ['offline', 'event', 'ppob']:
-                        if datetime.now() > book_obj.hold_date: ##
-                            create_record = False
-                    elif provider_type in ['activity']:
+                    # if provider_type in ['airline', 'train', 'bus', 'tour', 'groupbooking']:
+                    #     if datetime.now() > datetime.strptime(str(book_obj.departure_date)[:10], '%Y-%m-%d'):
+                    #         create_record = False
+                    # elif provider_type in ['visa']:
+                    #     if datetime.now() > datetime.strptime(book_obj.departure_date, '%d/%m/%Y'):
+                    #         create_record = False
+                    # elif provider_type in ['hotel']:
+                    #     if datetime.now() > datetime.strptime(str(book_obj.checkin_date), '%Y-%m-%d'):
+                    #         create_record = False
+                    # ## untuk offline karena terlalu banyak variant sementara universal pakai hold date
+                    # ## event, ppob pakai hold date karena tidak ada tanggal berangkat
+                    # elif provider_type in ['offline', 'event', 'ppob']:
+                    #     if datetime.now() > book_obj.hold_date: ##
+                    #         create_record = False
+                    ## PROVIDER_TYPE YG LAIN LANGSUNG DI DOM
+                    if provider_type in ['activity']:
                         if book_obj.activity_detail_ids:
                             if book_obj.activity_detail_ids[0].visit_date:
                                 if datetime.now() > book_obj.activity_detail_ids[0].visit_date:
                                     create_record = False
-    
-                    elif provider_type in ['periksain', 'phc', 'medical', 'swabexpress', 'labpintar', 'mitrakeluarga', 'sentramedika']:
-                        if datetime.now() > book_obj.test_datetime: ##
-                            create_record = False
-                    elif provider_type in ['insurance']:
-                        if datetime.now() > datetime.strptime(book_obj.start_date, '%Y-%m-%d'):
-                            create_record = False
+
+                    # elif provider_type in ['periksain', 'phc', 'medical', 'swabexpress', 'labpintar', 'mitrakeluarga', 'sentramedika']:
+                    #     if datetime.now() > book_obj.test_datetime: ##
+                    #         create_record = False
+                    # elif provider_type in ['insurance']:
+                    #     if datetime.now() > datetime.strptime(book_obj.start_date, '%Y-%m-%d'):
+                    #         create_record = False
 
 
                 if create_record:
@@ -199,10 +216,11 @@ class TtReservationNotification(models.Model):
         ### NOTIF UNTUK INVALID IDENTITY
         provider_types = ['airline']
         for provider_type in provider_types:
-            book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('passenger_ids.identity_number', '=', 'P999999'),('state', 'not in', ['draft', 'cancel', 'cancel2'])])
+            book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('state', 'not in', ['draft', 'cancel', 'cancel2'])])
             for book_obj in book_objs:
                 create_record = True
-                last_record_notif = self.search([('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)], limit=1)
+                dom = [('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)]
+                last_record_notif = self.search(dom, limit=1)
                 if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0) + timedelta(days=last_record_notif.snooze_days):
                     create_record = False
                 if create_record:
