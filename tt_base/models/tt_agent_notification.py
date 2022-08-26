@@ -165,9 +165,12 @@ class TtReservationNotification(models.Model):
                 last_record_notif = self.search([('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)], limit=1)
                 create_record = True
                 ## check snooze tidak bikin notif baru
-                if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=last_record_notif.snooze_days):
-                    create_record = False
-                    
+                if last_record_notif:
+                    if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0,microsecond=0) + timedelta(days=last_record_notif.snooze_days):
+                        create_record = False
+                    else:
+                        last_record_notif.active = False
+
                 ## check per provider type syarat masuk notif
                 if create_record:
                     # if provider_type in ['airline', 'train', 'bus', 'tour', 'groupbooking']:
@@ -221,8 +224,11 @@ class TtReservationNotification(models.Model):
                 create_record = True
                 dom = [('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)]
                 last_record_notif = self.search(dom, limit=1)
-                if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0) + timedelta(days=last_record_notif.snooze_days):
-                    create_record = False
+                if last_record_notif:
+                    if last_record_notif.snooze_days > 0 and datetime.now() < last_record_notif.create_date.replace(hour=0,minute=0,second=0) + timedelta(days=last_record_notif.snooze_days):
+                        create_record = False
+                    else:
+                        last_record_notif.active = False
                 if create_record:
                     last_snooze_date = False
                     if book_obj.provider_type_id.code in ['airline','train','bus']:
