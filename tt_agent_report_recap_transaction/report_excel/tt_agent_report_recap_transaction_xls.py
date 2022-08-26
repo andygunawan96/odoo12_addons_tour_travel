@@ -167,7 +167,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         current_ledger = ''
 
         # to check for single PNR in case of RT
-        pnr_data_dict = {}
+        rt_single_pnr_idx = []
+        ord_number_popped = False
 
         # summary list declaration
         airline_recaps = []
@@ -186,7 +187,10 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     if current_pnr != i['ledger_pnr']:
                         # update current pnr
                         current_pnr = i['ledger_pnr']
-
+                        # different PNR in one reservation, pop from single PNR list
+                        if not ord_number_popped and len(rt_single_pnr_idx) > 0:
+                            ord_number_popped = True
+                            rt_single_pnr_idx.pop()
                         # product total corresponding to particular pnr
                         # filter from service charge data
                         temp_charge = list(
@@ -271,9 +275,6 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         # and count how many passenger within the reservation
                         if i['provider_type'].lower() == 'airline':
                         # check if reservation is airline
-                            # check if reservation is RT and whether or not the current PNR has been added to the current index mark yet
-                            if i['direction'] == 'RT' and pnr_data_dict.get(str(idx)) and current_pnr not in pnr_data_dict[str(idx)]:
-                                pnr_data_dict[str(idx)].append(current_pnr)
                             # will return the index of "same" data based on user
                             data_index = next(
                                 (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
@@ -372,6 +373,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     # set current order number to iterated number
                     temp_order_number = i['order_number']
                     current_pnr = i['ledger_pnr']
+                    ord_number_popped = False
 
                     upsell = 0
                     for svc_csc in channel_pricing:
@@ -572,48 +574,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 # lets recap
                     # see line 189 for code explanation of this if provider airline
                     if i['provider_type'].lower() == 'airline':
-                        # check previous index if it was RT with single PNR
-                        if idx > 0 and pnr_data_dict.get(str(idx - 1)):
-                            if len(pnr_data_dict[str(idx - 1)]) < 2:
-                                # if yes, add pax count once more
-                                data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == datas[idx - 1]['creator_id']), -1)
-                                if data_index >= 0:
-                                    if datas[idx - 1]['provider_name'] and ('amadeus' in datas[idx - 1]['provider_name'] or 'sabre' in datas[idx - 1]['provider_name'] or 'sia' in datas[idx - 1]['provider_name']):
-                                        # asumsi jumlah reservation tidak di hitung lagi kalo RT dgn 1 PNR
-                                        # airline_recaps[data_index]['GDS'] += 1
-                                        airline_recaps[data_index]['pax_GDS'] += datas[idx - 1]['adult']
-                                        airline_recaps[data_index]['pax_GDS'] += datas[idx - 1]['child']
-                                        airline_recaps[data_index]['pax_GDS'] += datas[idx - 1]['infant']
-                                    else:
-                                        # airline_recaps[data_index]['non_GDS'] += 1
-                                        airline_recaps[data_index]['pax_non_GDS'] += datas[idx - 1]['adult']
-                                        airline_recaps[data_index]['pax_non_GDS'] += datas[idx - 1]['child']
-                                        airline_recaps[data_index]['pax_non_GDS'] += datas[idx - 1]['infant']
-                                else:
-                                    temp_dict = {
-                                        'id': datas[idx - 1]['creator_id'],
-                                        'name': datas[idx - 1]['create_by'],
-                                        'GDS': 0,
-                                        'pax_GDS': 0,
-                                        'non_GDS': 0,
-                                        'pax_non_GDS': 0
-                                    }
-                                    airline_recaps.append(temp_dict)
-                                    if datas[idx - 1]['provider_name'] and ('amadeus' in datas[idx - 1]['provider_name'] or 'sabre' in datas[idx - 1]['provider_name'] or 'sia' in datas[idx - 1]['provider_name']):
-                                        # asumsi jumlah reservation tidak di hitung lagi kalo RT dgn 1 PNR
-                                        # airline_recaps[data_index]['GDS'] += 1
-                                        airline_recaps[data_index]['pax_GDS'] += datas[idx - 1]['adult']
-                                        airline_recaps[data_index]['pax_GDS'] += datas[idx - 1]['child']
-                                        airline_recaps[data_index]['pax_GDS'] += datas[idx - 1]['infant']
-                                    else:
-                                        # airline_recaps[data_index]['non_GDS'] += 1
-                                        airline_recaps[data_index]['pax_non_GDS'] += datas[idx - 1]['adult']
-                                        airline_recaps[data_index]['pax_non_GDS'] += datas[idx - 1]['child']
-                                        airline_recaps[data_index]['pax_non_GDS'] += datas[idx - 1]['infant']
                         if i['direction'] == 'RT':
-                            pnr_data_dict.update({
-                                str(idx): [current_pnr]
-                            })
+                            rt_single_pnr_idx.append(idx)
                         data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
                         if data_index >= 0:
                             if i['provider_name'] and ('amadeus' in i['provider_name'] or 'sabre' in i['provider_name'] or 'sia' in i['provider_name']):
@@ -712,6 +674,44 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     'counter': 1
                                 }
                                 hotel_recaps.append(temp_dict)
+
+        # check if there are indexes marked for being RT with single PNR
+        for sing_pnr in rt_single_pnr_idx:
+            # if yes, add pax count once more
+            data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == datas[sing_pnr]['creator_id']), -1)
+            if data_index >= 0:
+                if datas[sing_pnr]['provider_name'] and ('amadeus' in datas[sing_pnr]['provider_name'] or 'sabre' in datas[sing_pnr]['provider_name'] or 'sia' in datas[sing_pnr]['provider_name']):
+                    # asumsi jumlah reservation tidak di hitung lagi kalo RT dgn 1 PNR
+                    # airline_recaps[data_index]['GDS'] += 1
+                    airline_recaps[data_index]['pax_GDS'] += datas[sing_pnr]['adult']
+                    airline_recaps[data_index]['pax_GDS'] += datas[sing_pnr]['child']
+                    airline_recaps[data_index]['pax_GDS'] += datas[sing_pnr]['infant']
+                else:
+                    # airline_recaps[data_index]['non_GDS'] += 1
+                    airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['adult']
+                    airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['child']
+                    airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['infant']
+            else:
+                temp_dict = {
+                    'id': datas[sing_pnr]['creator_id'],
+                    'name': datas[sing_pnr]['create_by'],
+                    'GDS': 0,
+                    'pax_GDS': 0,
+                    'non_GDS': 0,
+                    'pax_non_GDS': 0
+                }
+                airline_recaps.append(temp_dict)
+                if datas[sing_pnr]['provider_name'] and ('amadeus' in datas[sing_pnr]['provider_name'] or 'sabre' in datas[sing_pnr]['provider_name'] or 'sia' in datas[sing_pnr]['provider_name']):
+                    # asumsi jumlah reservation tidak di hitung lagi kalo RT dgn 1 PNR
+                    # airline_recaps[data_index]['GDS'] += 1
+                    airline_recaps[data_index]['pax_GDS'] += datas[sing_pnr]['adult']
+                    airline_recaps[data_index]['pax_GDS'] += datas[sing_pnr]['child']
+                    airline_recaps[data_index]['pax_GDS'] += datas[sing_pnr]['infant']
+                else:
+                    # airline_recaps[data_index]['non_GDS'] += 1
+                    airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['adult']
+                    airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['child']
+                    airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['infant']
 
         row_data += 1
         # this is writing empty string, to print the bottom border
