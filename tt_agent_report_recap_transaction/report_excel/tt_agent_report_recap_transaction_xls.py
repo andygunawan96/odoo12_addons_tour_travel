@@ -313,7 +313,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     airline_recaps[data_index]['pax_non_GDS'] += i['child']
                                     airline_recaps[data_index]['pax_non_GDS'] += i['infant']
 
-                    if i['ledger_transaction_type'] == 3 and current_ledger != i['ledger_id']:
+                    if i['ledger_transaction_type'] in [3, 10] and current_ledger != i['ledger_id']:
                         current_ledger = i['ledger_id']
 
                         row_data += 1
@@ -515,7 +515,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sheet.write(row_data, incr.generate_number(), '', sty_amount)
                     sheet.write(row_data, incr.generate_number(), '', sty_table_data)
 
-                    if i['ledger_transaction_type'] == 3 and current_ledger != i['ledger_id']:
+                    if i['ledger_transaction_type'] in [3, 10] and current_ledger != i['ledger_id']:
                         current_ledger = i['ledger_id']
 
                         row_data += 1
