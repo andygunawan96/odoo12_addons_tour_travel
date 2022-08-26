@@ -18,6 +18,8 @@ LEDGER_TYPE = [
     (7, 'Reschedule'),
     (8, 'Addons'),
     (9, 'Statement Balance'),
+    (10, 'Point Reward'),
+    (11, 'Point Used'),
     (99, 'Others')
 ]
 
