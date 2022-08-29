@@ -380,12 +380,12 @@ class ReservationPpob(models.Model):
             search_req = data['search_RQ']
             inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])),
                                                                        ('customer_number', '=', str(search_req['customer_number'])),
-                                                                       ('state', '=', 'booked')], limit=1)
-            if inq_prov_obj and inq_prov_obj.booking_id and inq_prov_obj.booking_id.agent_id.id == context['co_agent_id']:
+                                                                       ('state', '=', 'booked'), ('booking_id.agent_id.id', '=', context['co_agent_id'])], limit=1)
+            if inq_prov_obj:
                 inq_prov_obj = inq_prov_obj[0]
 
                 is_update_sc = False
-                if inq_prov_obj.total_price != data['data'].get('total'):
+                if data['data'].get('total') and inq_prov_obj.total_price != data['data']['total']:
                     is_update_sc = True
 
                 vals = {
