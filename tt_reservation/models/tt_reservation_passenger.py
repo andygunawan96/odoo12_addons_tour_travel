@@ -106,20 +106,27 @@ class TtReservationCustomer(models.Model):
     def get_channel_service_charges(self):
         total = 0
         total_addons = 0
-        total_rs = 0
+        amt_rs_dict = {}
         currency_code = 'IDR'
+
         for rec in self.channel_service_charge_ids:
             if rec.charge_code == 'csc':
                 total += rec.amount
             elif rec.charge_code == 'csc.addons':
                 total_addons += rec.amount
             else:
-                total_rs += rec.amount
+                if rec.description:
+                    if amt_rs_dict.get(rec.description):
+                        amt_rs_dict[rec.description] += rec.amount
+                    else:
+                        amt_rs_dict.update({
+                            rec.description: rec.amount
+                        })
             currency_code = rec.currency_id.name
 
         return {
             'amount': total,
             'amount_addons': total_addons,
-            'amount_rs': total_rs,
+            'amount_rs': amt_rs_dict,
             'currency_code': currency_code
         }
