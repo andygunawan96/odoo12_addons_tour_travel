@@ -39,14 +39,6 @@ class AccountingConnectorAccurate(models.Model):
         if not client_secret_obj:
             raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
 
-        email_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('variable_name', '=', 'email')], limit=1)
-        if not email_obj:
-            raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
-
-        password_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('variable_name', '=', 'password')], limit=1)
-        if not password_obj:
-            raise Exception('Please provide a variable with the name "url_redirect_web" in Accurate Accounting Setup!')
-
         access_token_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('variable_name', '=', 'access_token')],limit=1)
         if not access_token_obj:
             raise Exception('Please provide a variable with the name "access_token" in Accurate Accounting Setup!')
@@ -59,8 +51,6 @@ class AccountingConnectorAccurate(models.Model):
         url_web = url_web_obj.variable_value
         client_id = client_id_obj.variable_value ##dari https://developer.jurnal.id/developers/credentials
         client_secret = client_secret_obj.variable_value ##dari https://developer.jurnal.id/developers/credentials
-        email = email_obj.variable_value
-        password = password_obj.variable_value
         access_token = access_token_obj.variable_value
         api_key = api_key_obj.variable_value
 
@@ -509,6 +499,7 @@ class AccountingConnectorAccurate(models.Model):
                                         "description": desc
                                     })
                                 else:
+                                    desc = ''
                                     for list_desc_data in list_desc:
                                         transaction_lines_attributes_list.append({
                                             "quantity": 1,
@@ -517,6 +508,9 @@ class AccountingConnectorAccurate(models.Model):
                                             "product_name": product,
                                             "description": list_desc_data['desc']
                                         })
+                                        if desc:
+                                            desc += '; '
+                                        desc += list_desc_data['desc']
                                 send = True
                     if send:
                         product = self.get_product(data_login, product_name)
@@ -589,7 +583,7 @@ class AccountingConnectorAccurate(models.Model):
                         if pnr == room['prov_issued_code']:
                             desc = "%s; %s; %s-%s; %s; %s; Atas Nama: %s" % (pnr, provider_booking['hotel_name'], datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'),datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'), room['room_name'], room['meal_type'], passenger_data)
                             list_desc.append({
-                                "price": room['room_rate'] + (provider_booking['total_channel_upsell']/len(provider_booking['rooms'])) - (vals['total_discount']/provider_booking['rooms']),
+                                "price": room['room_rate'] + (vals['total_channel_upsell']/(len(provider_booking['rooms'] * len(vals['provider_bookings'])))) - (vals['total_discount']/len(provider_booking['rooms'])),
                                 "desc": desc
                             })
                     desc = ''
@@ -689,6 +683,7 @@ class AccountingConnectorAccurate(models.Model):
             product = self.get_product(data_login, product_name)
             transaction_lines_attributes_lines = []
             if len(list_desc) > 0:
+                desc = ''
                 for list_desc_data in list_desc:
                     transaction_lines_attributes_lines.append({
                         "quantity": 1,
@@ -697,6 +692,9 @@ class AccountingConnectorAccurate(models.Model):
                         "product_name": product,
                         "description": list_desc_data['desc']
                     })
+                    if desc:
+                        desc += '; '
+                    desc += list_desc_data['desc']
             else:
                 transaction_lines_attributes_lines.append({
                     "quantity": 1,
