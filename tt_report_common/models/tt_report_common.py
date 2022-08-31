@@ -88,7 +88,7 @@ class TtReportCommonSetting(models.Model):
 
     def get_footer(self, code, agent_id):
         if agent_id != False:
-            html = self.env['tt.report.common.setting'].sudo().search([('code', '=', code), ('agent_id','=', agent_id.id)], limit=1)
+            html = self.search([('code', '=', code), ('agent_id','=', agent_id.id)], limit=1)
             if html:
                 return html
-        return self.env['tt.report.common.setting'].sudo().search([('code', '=', code)], limit=1)
+        return self.search([('code', '=', code), ('agent_id','=', self.env.ref('tt_base.rodex_ho').id)], limit=1)
