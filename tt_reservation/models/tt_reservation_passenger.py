@@ -42,6 +42,7 @@ class TtReservationCustomer(models.Model):
 
     def create_channel_pricing(self,channel_prices,type=''):
         is_post_issued = False
+        # jangan pakai .rs. lagi karena ada pengecekan if rs in charge_code.split('.') untuk csc reschedule post-issued
         if type == 'request_new':
             ch_code = 'csc.addons'
         elif len(type.split('~')) > 1:
