@@ -385,6 +385,12 @@ class ReservationAirline(models.Model):
         is_halt_process = req.get('halt_process', False)
         # END
 
+        ## 31 AGUSTUS 2022 - IVAN
+        ## RETRIEVE DATA TEMPORARY IDENTITY (identity_from_api) JIKA ADA UNTUK DI SIMPAN DI BACKEND
+        for rec_pax in passengers:
+            if rec_pax.get('identity_from_api'):
+                rec_pax['identity'] = rec_pax['identity_from_api']
+
         try:
             values = self._prepare_booking_api(search_RQ,context)
             booker_obj = self.create_booker_api(booker,context)
