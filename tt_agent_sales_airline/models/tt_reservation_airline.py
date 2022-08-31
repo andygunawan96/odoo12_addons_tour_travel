@@ -79,7 +79,7 @@ class ReservationAirline(models.Model):
                     price_unit += cost_charge.amount
                 elif cost_charge.charge_type == 'DISC':
                     discount += cost_charge.amount
-            for channel_charge in psg.channel_service_charge_ids:
+            for channel_charge in psg.channel_service_charge_ids.filtered(lambda x: 'rs' not in x.charge_code.split('.')):
                 price_unit += channel_charge.amount
 
             inv_line_obj.write({
