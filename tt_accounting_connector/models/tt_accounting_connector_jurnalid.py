@@ -587,6 +587,21 @@ class AccountingConnectorAccurate(models.Model):
                     pnr = provider_booking['pnr']
                     for room in provider_booking['rooms']:
                         if pnr == room['prov_issued_code']:
+                            desc = "%s; %s; %s-%s; %s; %s; Atas Nama: %s" % (pnr, provider_booking['hotel_name'], datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'),datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'), room['room_name'], room['meal_type'], passenger_data)
+                            list_desc.append({
+                                "price": room['room_rate'] + (provider_booking['total_channel_upsell']/len(provider_booking['rooms'])) - (vals['total_discount']/provider_booking['rooms']),
+                                "desc": desc
+                            })
+                    desc = ''
+
+
+                    for rec_ticket in provider_booking['passengers']:
+                        if passenger_data != '':
+                            passenger_data += ', '
+                        passenger_data += rec_ticket['name']
+                    pnr = provider_booking['pnr']
+                    for room in provider_booking['rooms']:
+                        if pnr == room['prov_issued_code']:
                             if desc != '':
                                 desc += '; '
                             desc += "%s; Voucher Hotel %s-%s; %sRoom; Atas Nama: %s" % (
@@ -630,7 +645,7 @@ class AccountingConnectorAccurate(models.Model):
                             passenger_data += ', '
                         desc = "%s; %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, rec_ticket['passenger'])
                         list_desc.append({
-                            "price": rec_ticket['total_nta'],
+                            "price": rec_ticket['total_nta'] + rec_ticket['total_channel_upsell'] - (vals['total_discount']/len(provider_booking['tickets'])),
                             "desc": desc
                         })
                     desc = ''
@@ -672,20 +687,30 @@ class AccountingConnectorAccurate(models.Model):
             elif vals['provider_type_name'] == 'Passport':
                 product_name = 'Paspor'
             product = self.get_product(data_login, product_name)
+            transaction_lines_attributes_lines = []
+            if len(list_desc) > 0:
+                for list_desc_data in list_desc:
+                    transaction_lines_attributes_lines.append({
+                        "quantity": 1,
+                        "rate": list_desc_data['price'],
+                        "discount": 0,
+                        "product_name": product,
+                        "description": list_desc_data['desc']
+                    })
+            else:
+                transaction_lines_attributes_lines.append({
+                    "quantity": 1,
+                    "rate": vals['total'] + vals['total_channel_upsell'] - vals['total_discount'],
+                    "discount": 0,
+                    "product_name": product,
+                    "description": desc
+                })
             due_date = (datetime.strptime(vals['issued_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%Y-%m-%d')
             issued_date = vals['issued_date'].split(' ')[0]
             data = {
                 "sales_invoice": {
                     "transaction_date": issued_date,
-                    "transaction_lines_attributes": [
-                        {
-                            "quantity": 1,
-                            "rate": vals['total'] + vals['total_channel_upsell'] - vals['total_discount'],
-                            "discount": 0,
-                            "product_name": product,
-                            "description": desc
-                        }
-                    ],
+                    "transaction_lines_attributes": transaction_lines_attributes_lines,
                     "shipping_date": issued_date,
                     "shipping_price": 0,
                     "shipping_address": "",
