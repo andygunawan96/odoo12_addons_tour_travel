@@ -502,6 +502,11 @@ class ReservationAirline(models.Model):
             pax_type_dict = {}
             for commit_data in vals['provider_bookings']:
                 if commit_data['status'] == 'FAILED':
+                    if 'reschedule_id' in commit_data:
+                        rsch_obj = self.env['tt.reschedule'].browse(commit_data['reschedule_id'])
+                        rsch_obj.write({
+                            'notes': commit_data.get('error_msg', '')
+                        })
                     continue
 
                 # TODO HERE NEW
@@ -1652,9 +1657,12 @@ class ReservationAirline(models.Model):
                 if total_amount < 0:
                     total_amount = 0
 
+                # August 30, 2022 - SAM
+                # TODO sementara reschedule type diasumsikan reschedule kalau ada admin charge
                 admin_fee_obj = None
-
+                reschedule_type = 'addons'
                 if is_admin_charge:
+                    reschedule_type = 'reschedule'
                     admin_fee_obj = self.env['tt.reschedule'].get_reschedule_admin_fee_rule(airline_obj.agent_id.id)
 
                 res_vals = {
@@ -1678,7 +1686,7 @@ class ReservationAirline(models.Model):
                 rsch_obj = self.env['tt.reschedule'].create(res_vals)
 
                 rsch_line_values = {
-                    'reschedule_type': 'reschedule',
+                    'reschedule_type': reschedule_type,
                     'reschedule_amount': total_amount,
                     'reschedule_amount_ho': total_amount,
                     'real_reschedule_amount': total_amount,
