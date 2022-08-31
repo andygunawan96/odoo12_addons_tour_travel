@@ -646,6 +646,10 @@ class TtProviderAirline(models.Model):
                             'ticket_number': psg.get('ticket_number', ''),
                             'ff_number': psg.get('ff_number', ''),
                         }
+                        if not ticket.pax_type or (psg.get('pax_type') and psg['pax_type'] != ticket.pax_type):
+                            ticket_values.update({
+                                'pax_type': psg['pax_type']
+                            })
                         # if ticket_values['ff_code']:
                         #     loyalty_id = self.env['tt.loyalty.program'].sudo().get_id(ticket_values['ff_code'])
                         #     if loyalty_id:
