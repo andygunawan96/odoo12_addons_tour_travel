@@ -2197,6 +2197,21 @@ class ReservationAirline(models.Model):
                 dest2 = data[count][2]['destination_id']
             return count
 
+    def pick_destination_no_param(self):
+        org1 = self.segment_ids[0].origin_id.id
+        dest1 = self.segment_ids[0].destination_id.id
+
+        segment_len = len(self.segment_ids)
+        if segment_len == 1:
+            return 0
+        else:
+            dest2 = org1
+            count = 0
+            while (org1 == dest2 or dest1 == dest2 and abs(count) < segment_len):
+                count -= 1
+                dest2 = self.segment_ids[count]['destination_id']
+            return count
+
     def calculate_pnr_provider_carrier(self):
         pnr_name = ''
         provider_name = ''
