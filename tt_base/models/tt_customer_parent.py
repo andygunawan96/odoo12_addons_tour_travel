@@ -1,6 +1,6 @@
 from odoo import fields,api,models
 import json,traceback,logging
-from ...tools import ERR
+from ...tools import ERR, util
 from ...tools.ERR import RequestException
 from odoo.exceptions import UserError
 from datetime import datetime
@@ -303,6 +303,8 @@ class TtCustomerParent(models.Model):
     def check_credit_limit_usage(self):
         current_perc = self.actual_balance / self.credit_limit * 100
         if 100-current_perc >= self.limit_usage_notif:
-            return 'You have used more than %s percent of your credit limit. Remaining Credit: %s / %s' % (self.limit_usage_notif, self.actual_balance, self.credit_limit)
+            return 'You have used more than %s percent of your credit limit. Remaining Credit: %s %s / %s %s' % (self.limit_usage_notif, self.currency_id.name,
+                                                                                                                 util.get_rupiah(self.actual_balance), self.currency_id.name,
+                                                                                                                 util.get_rupiah(self.credit_limit))
         else:
-            return 'Remaining Credit: %s / %s' % (self.actual_balance, self.credit_limit)
+            return 'Remaining Credit: %s %s / %s %s' % (self.currency_id.name, util.get_rupiah(self.actual_balance), self.currency_id.name, util.get_rupiah(self.credit_limit))
