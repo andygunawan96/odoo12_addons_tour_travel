@@ -115,7 +115,15 @@ class TtRefundLineCustomer(models.Model):
             'currency': self.currency_id.name,
             'refund_amount': self.refund_amount,
             'admin_fee': self.citra_fee,
-            'total_amount': self.total_amount
+            'total_amount': self.total_amount,
+            'payment_acquirer': self.acquirer_id and {
+                'seq_id': self.acquirer_id.seq_id or '',
+                'name': self.acquirer_id.name or '',
+                'accounting_name': self.acquirer_id.jasaweb_name or '',
+                'account_number': self.acquirer_id.account_number or '',
+                'account_name': self.acquirer_id.account_name or '',
+                'bank': self.acquirer_id.bank_id and self.acquirer_id.bank_id.name or ''
+            } or {}
         }
         return res
 
@@ -264,6 +272,7 @@ class TtRefund(models.Model):
             'refund_date': self.refund_date and self.refund_date.strftime('%Y-%m-%d') or '',
             'real_refund_date': self.real_refund_date and self.real_refund_date.strftime('%Y-%m-%d') or '',
             'refund_lines': [line.to_dict() for line in self.refund_line_ids],
+            'refund_to_cust_lines': [line_cust.to_dict() for line_cust in self.refund_line_cust_ids]
         }
 
     @api.depends('refund_line_ids')
