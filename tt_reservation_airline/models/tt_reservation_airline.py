@@ -2209,7 +2209,7 @@ class ReservationAirline(models.Model):
             count = 0
             while (org1 == dest2 or dest1 == dest2 and abs(count) < segment_len):
                 count -= 1
-                dest2 = self.segment_ids[count]['destination_id']
+                dest2 = self.segment_ids[count].destination_id.id
             return count
 
     def calculate_pnr_provider_carrier(self):
