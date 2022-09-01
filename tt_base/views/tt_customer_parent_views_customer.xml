@@ -38,6 +38,7 @@
                             <field name="balance"/>
                             <field name="credit_limit" attrs="{'readonly':[('state','!=','draft')]}"/>
                             <field name="currency_id"/>
+                            <field name="limit_usage_notif"/>
                         </group>
                     </group>
                     <group>
