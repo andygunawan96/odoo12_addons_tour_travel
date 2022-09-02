@@ -308,3 +308,26 @@ def convert_timezone(str_date,origin_tz,dest_tz): ##str_date = '2022-01-18'
                                  ,day=int(str_date_list[2])) #don't construct datetime object with tzinfo, pytz normalize will be off by 7 seconds
     date_aware_object = pytz.timezone(origin_tz).localize(date_object)
     return pytz.timezone(dest_tz).normalize(date_aware_object)
+
+def get_rupiah(price):
+    try:
+        if price:
+            positif = price > -1 and True or False
+            temp = abs(int(price))
+
+            temp = str(temp)
+            temp = temp.split('-')[-1]
+            pj = len(temp)
+            priceshow = ''
+            for x in range(pj):
+                if (pj - x) % 3 == 0 and x != 0:
+                    priceshow += ','
+                priceshow += temp[x]
+
+            if not positif:
+                priceshow = '-' + priceshow
+            return priceshow
+        else:
+            return ''
+    except Exception as e:
+        return price

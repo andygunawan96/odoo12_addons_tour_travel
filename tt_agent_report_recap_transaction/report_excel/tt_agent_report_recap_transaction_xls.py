@@ -623,12 +623,14 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         # we only need to update the data
                         if data_index >= 0:
                             hotel_recaps[data_index]['counter'] += 1
+                            hotel_recaps[data_index]['room_night'] += i.get('room_count', 0) * i.get('nights', 0)
                         else:
                             # if data is not yet exist then create some temp dictionary
                             temp_dict = {
                                 'id': i['creator_id'],
                                 'name': i['create_by'],
-                                'counter': 1
+                                'counter': 1,
+                                'room_night': i.get('room_count', 0) * i.get('nights', 0)
                             }
                             # and add to hotel recaps list
                             hotel_recaps.append(temp_dict)
@@ -668,11 +670,13 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 (index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['creator_id']), -1)
                             if data_index >= 0:
                                 hotel_recaps[data_index]['counter'] += 1
+                                hotel_recaps[data_index]['room_night'] += i.get('room_count', 0) * i.get('nights', 0)
                             else:
                                 temp_dict = {
                                     'id': i['creator_id'],
                                     'name': i['create_by'],
-                                    'counter': 1
+                                    'counter': 1,
+                                    'room_night': i.get('room_count', 0) * i.get('nights', 0)
                                 }
                                 hotel_recaps.append(temp_dict)
 
@@ -779,10 +783,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
             sheet.write(row_data, 0, 'HOTELS', style.table_head_center)
             sheet.write(row_data, 1, 'Nama', style.table_head_center)
             sheet.write(row_data, 2, 'Number of booked', style.table_head_center)
+            sheet.write(row_data, 3, 'Total Room x Night', style.table_head_center)
             for i in hotel_recaps:
                 row_data += 1
                 sheet.write(row_data, 1, i['name'], sty_table_data)
                 sheet.write(row_data, 2, i['counter'], sty_table_data)
+                sheet.write(row_data, 3, i['room_night'], sty_table_data)
             #proceed
 
         # close the file

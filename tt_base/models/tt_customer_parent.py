@@ -1,6 +1,6 @@
 from odoo import fields,api,models
 import json,traceback,logging
-from ...tools import ERR
+from ...tools import ERR, util
 from ...tools.ERR import RequestException
 from odoo.exceptions import UserError
 from datetime import datetime
@@ -24,6 +24,7 @@ class TtCustomerParent(models.Model):
     actual_balance = fields.Monetary(string="Actual Balance", readonly=True, compute="_compute_actual_balance")
     credit_limit = fields.Monetary(string="Credit Limit")
     unprocessed_amount = fields.Monetary(string="Unprocessed Amount", readonly=True, compute="_compute_unprocessed_amount")
+    limit_usage_notif = fields.Integer(string="Limit Usage Notification (%)", default=60, help="Send Email Notification when credit limit usage reaches certain percentage.")
 
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     email = fields.Char(string="Email")
@@ -298,3 +299,12 @@ class TtCustomerParent(models.Model):
 
     #ledger history
     #booking History
+
+    def check_credit_limit_usage(self):
+        current_perc = self.actual_balance / self.credit_limit * 100
+        if 100-current_perc >= self.limit_usage_notif:
+            return 'You have used more than %s percent of your credit limit. Remaining Credit: %s %s / %s %s' % (self.limit_usage_notif, self.currency_id.name,
+                                                                                                                 util.get_rupiah(self.actual_balance), self.currency_id.name,
+                                                                                                                 util.get_rupiah(self.credit_limit))
+        else:
+            return 'Remaining Credit: %s %s / %s %s' % (self.currency_id.name, util.get_rupiah(self.actual_balance), self.currency_id.name, util.get_rupiah(self.credit_limit))
