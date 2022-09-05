@@ -106,6 +106,12 @@ class TtProviderPPOB(models.Model):
         if self.state == 'issued':
             raise UserError("Has been Issued.")
 
+        # set PNR disini karena sebelum create ledger harus ada PNRnya, kalau set to issued antara ledger sudah pernah ke create atau tidak ada ledger
+        if not self.pnr and self.booking_id:
+            self.write({
+                'pnr': self.booking_id.name
+            })
+
         req = {
             'book_id': self.booking_id.id,
             'member': payment_data.get('member'),
