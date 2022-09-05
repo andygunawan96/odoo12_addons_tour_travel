@@ -384,7 +384,7 @@ class TtReportDashboard(models.Model):
                 'is_ho': 1,
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])]).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'from_data': data
