@@ -1031,8 +1031,9 @@ class AccountingConnectorAccurate(models.Model):
                 issued_date = "-".join(issued_date)
                 transaction_line_list = []
                 tag_list = []
-                for rec in booking_reservation_list['tags']:
-                    tag_list.append(rec['name'])
+                if type(booking_reservation_list['tags']) is dict:
+                    for rec in booking_reservation_list['tags']:
+                        tag_list.append(rec['name'])
                 tag_list.append(tag_name)
                 for rec in booking_reservation_list['transaction_lines_attributes']:
                     transaction_line_list.append({
@@ -1194,8 +1195,9 @@ class AccountingConnectorAccurate(models.Model):
                     due_date = "-".join(due_date)
                     transaction_line_list = []
                     tag_list = []
-                    for rec in booking_reservation_list['tags']:
-                        tag_list.append(rec['name'])
+                    if type(booking_reservation_list['tags']) is dict:
+                        for rec in booking_reservation_list['tags']:
+                            tag_list.append(rec['name'])
                     tag_list.append(tag_name)
                     for rec in booking_reservation_list['transaction_lines_attributes']:
                         transaction_line_list.append({
