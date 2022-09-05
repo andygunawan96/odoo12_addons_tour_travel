@@ -394,13 +394,35 @@ class AccountingConnectorAccurate(models.Model):
                     ##AIRLINE TRAIN BUS
                     elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                         if pnr == provider_booking['pnr']:
+                            # for rec_ticket in provider_booking['tickets']:
+                            #     if passenger_data != '':
+                            #         passenger_data += ', '
+                            #     passenger_data += rec_ticket['passenger']
+                            # if desc != '':
+                            #     desc += '; '
+                            # desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'], provider_booking['departure_date'].split(' ')[0], passenger_data)
+
+                            journey_type = ''
+                            journey_text = ''
+                            for idx, journey in enumerate(provider_booking['journeys']):
+                                if idx == 0:
+                                    journey_text += '%s-%s %s' % (journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                                    journey_type = 'ONEWAY'
+                                else:
+                                    journey_text += ';%s-%s %s' % (journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                                    if journey_text.split('-')[-1:] == journey['destination']:
+                                        journey_type = 'MULTICITY'
+                                    else:
+                                        journey_type = 'RETURN'
+
+
                             for rec_ticket in provider_booking['tickets']:
-                                if passenger_data != '':
-                                    passenger_data += ', '
-                                passenger_data += rec_ticket['passenger']
-                            if desc != '':
-                                desc += '; '
-                            desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'], provider_booking['departure_date'].split(' ')[0], passenger_data)
+                                desc += "%s; Tiket Perjalanan %s %s; Atas Nama: %s" % (pnr, journey_type, journey_text, rec_ticket['passenger'])
+                                list_desc.append({
+                                    "price": rec_ticket['total_nta'],
+                                    "desc": desc
+                                })
+                            desc = ''
                             vendor_data = provider_booking['provider']
                     ## PPOB
                     elif vals['provider_type_name'] == 'PPOB':
@@ -605,16 +627,43 @@ class AccountingConnectorAccurate(models.Model):
                             break
                 ##AIRLINE TRAIN BUS
                 elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
-                    for rec_ticket in provider_booking['tickets']:
-                        if passenger_data != '':
-                            passenger_data += ', '
-                        passenger_data += rec_ticket['passenger']
                     pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
-                    if desc != '':
-                        desc += '; '
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
-                    pnr, provider_booking['origin'], provider_booking['destination'],
-                    provider_booking['departure_date'].split(' ')[0], passenger_data)
+                    journey_type = ''
+                    journey_text = ''
+                    for idx, journey in enumerate(provider_booking['journeys']):
+                        if idx == 0:
+                            journey_text += '%s-%s %s' % (
+                            journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                            journey_type = 'ONEWAY'
+                        else:
+                            journey_text += ';%s-%s %s' % (
+                            journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                            if journey_text.split('-')[-1:] == journey['destination']:
+                                journey_type = 'MULTICITY'
+                            else:
+                                journey_type = 'RETURN'
+
+                    for rec_ticket in provider_booking['tickets']:
+                        desc = "%s; Tiket Perjalanan %s %s; Atas Nama: %s" % (pnr, journey_type, journey_text, rec_ticket['passenger'])
+                        list_desc.append({
+                            "price": rec_ticket['total_nta'] + rec_ticket['total_channel_upsell'] - (
+                                        vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets']))),
+                            "desc": desc
+                        })
+                    desc = ''
+                    vendor_data = provider_booking['provider']
+
+
+                    # for rec_ticket in provider_booking['tickets']:
+                    #     if passenger_data != '':
+                    #         passenger_data += ', '
+                    #     passenger_data += rec_ticket['passenger']
+                    # pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
+                    # if desc != '':
+                    #     desc += '; '
+                    # desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
+                    # pnr, provider_booking['origin'], provider_booking['destination'],
+                    # provider_booking['departure_date'].split(' ')[0], passenger_data)
                 ## PPOB
                 elif vals['provider_type_name'] == 'PPOB':
                     for rec_ticket in provider_booking['tickets']:
@@ -635,8 +684,6 @@ class AccountingConnectorAccurate(models.Model):
                     visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'],'%Y-%m-%d').strftime('%d %b %Y')
                     pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     for rec_ticket in provider_booking['tickets']:
-                        if passenger_data != '':
-                            passenger_data += ', '
                         desc = "%s; %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, rec_ticket['passenger'])
                         list_desc.append({
                             "price": rec_ticket['total_nta'] + rec_ticket['total_channel_upsell'] - (vals['total_discount']/len(provider_booking['tickets'])),
