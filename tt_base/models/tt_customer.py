@@ -321,6 +321,12 @@ class TtCustomer(models.Model):
                         if rec_book.customer_id.id not in cust_dom_ids:
                             cust_dom_ids.append(rec_book.customer_id.id)
                     dom.append(('id', 'in', cust_dom_ids))
+                elif util.get_without_empty(req,'search_type') == 'mobile':
+                    dom.append(('phone_ids.phone_number', '=', req['name']))
+                elif util.get_without_empty(req,'search_type') == 'email':
+                    dom.append(('email', '=', req['name']))
+                elif util.get_without_empty(req,'search_type') == 'identity_type':
+                    dom.append(('identity_ids.identity_number', '=', req['name']))
                 else:
                     dom.append(('name','ilike',req['name']))
             if req.get('email'):
@@ -338,7 +344,8 @@ class TtCustomer(models.Model):
                 # dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
                 dom.append(('id','in',cust_dom_ids))
             customer_list_obj = self.search(dom,limit=100)
-
+            ## CASE IN TIDAK KELUAR TETAPI INF KELUAR
+            ## KARENA RECORD YG INF TIDAK MASUK KE CUSTOMER_LIST_OBJ, KENA LIMIT JADI RECORD
             customer_list = []
             lower = date.today() - relativedelta(years=req.get('lower',12))
             upper = date.today() - relativedelta(years=req.get('upper',200))

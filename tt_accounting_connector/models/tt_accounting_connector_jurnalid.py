@@ -1346,7 +1346,7 @@ class AccountingConnectorAccurate(models.Model):
 
     def response_parser(self):
         res = {
-            'status_code': 'success',
+            'status': 'success',
             'content': ''
         }
         return res
