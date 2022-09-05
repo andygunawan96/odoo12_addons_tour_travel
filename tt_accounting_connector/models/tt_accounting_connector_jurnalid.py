@@ -883,7 +883,7 @@ class AccountingConnectorAccurate(models.Model):
         }
 
         index_page = 1
-        page_size = 10000000
+        page_size = 10000
         while True:
             data = {
                 "page": index_page,
@@ -915,7 +915,7 @@ class AccountingConnectorAccurate(models.Model):
         }
 
         index_page = 1
-        page_size = 10000000
+        page_size = 10000
         while True:
             data = {
                 "page": index_page,
