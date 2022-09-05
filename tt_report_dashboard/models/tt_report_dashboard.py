@@ -724,10 +724,11 @@ class TtReportDashboard(models.Model):
                     summary_customer.append(temp_dict)
                 else:
                     # data is exist, so we only need to update existing data yey
-                    summary_customer[customer_index]['revenue'] += i['amount'] + i['channel_profit']
+                    summary_customer[customer_index]['revenue'] += i['amount']
                     summary_customer[customer_index]['reservation'] += 1
                     if current_id not in passed_resv_id_list:
                         summary_customer[customer_index]['profit'] += i['channel_profit']
+                        summary_customer[customer_index]['revenue'] += i['channel_profit']
                         passed_resv_id_list.append(current_id)
 
                 # looking for index of particular customer group (FPO and such)
