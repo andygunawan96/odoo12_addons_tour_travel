@@ -606,9 +606,9 @@ class AccountingConnectorAccurate(models.Model):
                             desc = "%s; %s; %s-%s; %s; %s; Atas Nama: %s" % (pnr, provider_booking['hotel_name'], datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'),datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'), room['room_name'], room['meal_type'], passenger_data)
                             price = 0
                             if is_user_ho:
-                                price = (room['room_rate'] / len(room['dates'])) + (vals['total_channel_upsell'] / (len(provider_booking['rooms'] * len(vals['provider_bookings']))) * len(room['dates'])) - (vals['total_discount'] / len(provider_booking['rooms']))
+                                price = (room['room_rate'] / len(room['dates'])) + (vals['total_channel_upsell'] / ((len(provider_booking['rooms'] * len(vals['provider_bookings']))) * len(room['dates']))) - (vals['total_discount'] / len(provider_booking['rooms']))
                             else:
-                                price = (room['room_rate'] / len(room['dates']))  - (vals['total_discount'] / len(provider_booking['rooms']))
+                                price = (room['room_rate'] / len(room['dates'])) - (vals['total_discount'] / len(provider_booking['rooms']))
                             list_desc.append({
                                 "price": price,
                                 "desc": desc,
