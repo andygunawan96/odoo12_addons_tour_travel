@@ -915,15 +915,17 @@ class TtSplitReservationWizard(models.TransientModel):
             new_book_obj.calculate_service_charge()
 
             if book_obj.segment_ids:
+                segm_idx1 = book_obj.pick_destination_no_param()
                 book_obj.sudo().write({
                     'origin_id': book_obj.segment_ids[0].origin_id.id,
-                    'destination_id': book_obj.segment_ids[-1].destination_id.id
+                    'destination_id': book_obj.segment_ids[segm_idx1].destination_id.id
                 })
 
             if new_book_obj.segment_ids:
+                segm_idx2 = new_book_obj.pick_destination_no_param()
                 new_book_obj.sudo().write({
                     'origin_id': new_book_obj.segment_ids[0].origin_id.id,
-                    'destination_id': new_book_obj.segment_ids[-1].destination_id.id
+                    'destination_id': new_book_obj.segment_ids[segm_idx2].destination_id.id
                 })
 
             provider_state_context = {

@@ -203,12 +203,15 @@ class TtReservationNotification(models.Model):
 
 
                 if create_record:
+                    # passenger_data = [rec.name for rec in book_obj.passenger_ids]
+
                     self.create({
                         "is_read": False,
                         "active": True,
                         "agent_id": book_obj.agent_id.id,
                         "type": 'reservation',
                         "name": book_obj.name,
+                        # "description_msg": "Passengers\n%s\nPlease Issued" % ", ".join(passenger_data),
                         "description_msg": "Please Issued",
                         "description_datetime": "%s" % book_obj.hold_date.strftime("%Y-%m-%d %H:%M:%S"),
                         "provider_type_id": book_obj.provider_type_id.id,
@@ -237,13 +240,15 @@ class TtReservationNotification(models.Model):
                         if datetime.now() > last_snooze_date:
                             last_snooze_date = False
 
+                    passenger_data = [rec.name for rec in book_obj.passenger_ids]
+
                     self.create({
                         "is_read": False,
                         "active": True,
                         "agent_id": book_obj.agent_id.id,
                         "type": 'reservation',
                         "name": book_obj.name,
-                        "description_msg": "Please Update Identity",
+                        "description_msg": "Passengers\n%s\nPlease Update Identity" % ",".join(passenger_data),
                         "description_datetime": last_snooze_date,
                         "provider_type_id": book_obj.provider_type_id.id,
                         "pnr": book_obj.pnr,
