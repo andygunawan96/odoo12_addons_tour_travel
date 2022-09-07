@@ -204,8 +204,9 @@ ADJUSTMENT_TYPE = []
 ACQUIRER_TYPE = [
     ('cash', 'Cash'),
     ('transfer', 'Transfer'),
-    ('debit', 'Debit Card'),
-    ('credit', 'Credit Card'),
+    ('edc','EDC'),
+    ('marketplace','Marketplace'),
+    ('payment_link','Payment Link'),
     ('va', 'Virtual Account'),##open
     ('payment_gateway', 'Payment Gateway')##closed
 ]
