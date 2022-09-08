@@ -36,6 +36,12 @@ class AgentReportRecapTransacion(models.Model):
             """
 
     @staticmethod
+    def _sel_room_night():
+        return """
+            ,rsv.nights as nights, rsv.room_count as room_count
+            """
+
+    @staticmethod
     def _sel_ticket_numbers():
         return """
             ,provider_booking.ticket_numbers as ticket_numbers
@@ -213,6 +219,8 @@ class AgentReportRecapTransacion(models.Model):
             query += self._sel_ticket_numbers()
         if provider_type in ['airline', 'train', 'bus']:
             query += self._sel_direction()
+        if provider_type == 'hotel':
+            query += self._sel_room_night()
         if provider_type == 'offline':
             query += self._offline()
 

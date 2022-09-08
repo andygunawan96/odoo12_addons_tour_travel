@@ -39,14 +39,6 @@ class AccountingConnectorAccurate(models.Model):
         if not client_secret_obj:
             raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
 
-        email_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('variable_name', '=', 'email')], limit=1)
-        if not email_obj:
-            raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
-
-        password_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('variable_name', '=', 'password')], limit=1)
-        if not password_obj:
-            raise Exception('Please provide a variable with the name "url_redirect_web" in Accurate Accounting Setup!')
-
         access_token_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('variable_name', '=', 'access_token')],limit=1)
         if not access_token_obj:
             raise Exception('Please provide a variable with the name "access_token" in Accurate Accounting Setup!')
@@ -59,8 +51,6 @@ class AccountingConnectorAccurate(models.Model):
         url_web = url_web_obj.variable_value
         client_id = client_id_obj.variable_value ##dari https://developer.jurnal.id/developers/credentials
         client_secret = client_secret_obj.variable_value ##dari https://developer.jurnal.id/developers/credentials
-        email = email_obj.variable_value
-        password = password_obj.variable_value
         access_token = access_token_obj.variable_value
         api_key = api_key_obj.variable_value
 
@@ -264,7 +254,7 @@ class AccountingConnectorAccurate(models.Model):
         return vendor_name
 
     ############
-    def get_product(self, data_login, product_name):
+    def get_product(self, data_login, product_name, unit_product="Paket"):
         headers = {
             "Content-Type": "application/json",
             "Authorization": "bearer %s" % data_login['access_token'],
@@ -281,10 +271,10 @@ class AccountingConnectorAccurate(models.Model):
         if len(product_name_data) > 0:
             product_name = product_name_data[0]
         else:
-            product_name = self.add_product(data_login, product_name)
+            product_name = self.add_product(data_login, product_name, unit_product)
         return product_name
 
-    def add_product(self, data_login, product_name):
+    def add_product(self, data_login, product_name, unit_name):
         url = "%s/partner/core/api/v1/products" % data_login['url_api']
         headers = {
             "Content-Type": "application/json",
@@ -295,7 +285,7 @@ class AccountingConnectorAccurate(models.Model):
             "product": {
                 "name": product_name,
                 "taxable_buy": True,
-                "unit_name": "Paket",
+                "unit_name": unit_name,
                 "sell_price_per_unit": "0",
                 "custom_id": "",
                 "track_inventory": "false",
@@ -384,6 +374,7 @@ class AccountingConnectorAccurate(models.Model):
             for pnr in pnr_list:
                 passenger_data = ''
                 desc = ''
+                list_desc = []
                 for provider_booking in vals['provider_bookings']:
                     ## HOTEL
                     if vals['provider_type_name'] == 'Hotel':
@@ -393,46 +384,71 @@ class AccountingConnectorAccurate(models.Model):
                             passenger_data += rec_ticket['name']
                         for room in provider_booking['rooms']:
                             if pnr == room['prov_issued_code']:
-                                if desc != '':
-                                    desc += '; '
-                                desc += "%s; Voucher Hotel %s-%s; %sRoom; Atas Nama: %s" % (pnr, datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'), len(provider_booking['rooms']), passenger_data)
-                                break
+                                desc = "%s; %s; %s-%s; %s; %s; Atas Nama: %s" % (pnr, provider_booking['hotel_name'], datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'),room['room_name'], room['meal_type'], passenger_data)
+                                list_desc.append({
+                                    "price": room['room_rate'] / len(room['dates']),
+                                    "desc": desc,
+                                    "quantity": len(room['dates'])
+                                })
+                        desc = ''
                         vendor_data = provider_booking['provider_name']
                     ##AIRLINE TRAIN BUS
                     elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                         if pnr == provider_booking['pnr']:
+                            # for rec_ticket in provider_booking['tickets']:
+                            #     if passenger_data != '':
+                            #         passenger_data += ', '
+                            #     passenger_data += rec_ticket['passenger']
+                            # if desc != '':
+                            #     desc += '; '
+                            # desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'], provider_booking['departure_date'].split(' ')[0], passenger_data)
+
+                            journey_type = ''
+                            journey_text = ''
+                            for idx, journey in enumerate(provider_booking['journeys']):
+                                if idx == 0:
+                                    journey_text += '%s-%s %s' % (journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                                    journey_type = 'ONEWAY'
+                                else:
+                                    journey_text += ';%s-%s %s' % (journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                                    if journey_text.split('-')[-1:] == journey['destination']:
+                                        journey_type = 'MULTICITY'
+                                    else:
+                                        journey_type = 'RETURN'
+
+
                             for rec_ticket in provider_booking['tickets']:
-                                if passenger_data != '':
-                                    passenger_data += ', '
-                                passenger_data += rec_ticket['passenger']
-                            if desc != '':
-                                desc += '; '
-                            desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (pnr, provider_booking['origin'], provider_booking['destination'], provider_booking['departure_date'].split(' ')[0], passenger_data)
+                                desc += "%s; Tiket Perjalanan %s %s; Atas Nama: %s" % (pnr, journey_type, journey_text, rec_ticket['passenger'])
+                                list_desc.append({
+                                    "price": rec_ticket['total_nta'],
+                                    "desc": desc,
+                                    "quantity": 1
+                                })
+                            desc = ''
                             vendor_data = provider_booking['provider']
                     ## PPOB
                     elif vals['provider_type_name'] == 'PPOB':
                         if pnr == provider_booking['pnr']:
-                            for rec_ticket in provider_booking['tickets']:
-                                if passenger_data != '':
-                                    passenger_data += ', '
-                                passenger_data += rec_ticket['passenger']
                             if desc != '':
                                 desc += '; '
-                            desc += "%s; TBC %s; %s;" % (pnr, provider_booking['carrier_name'], datetime.strptime(vals['issued_date'][:10], '%Y-%m-%d').strftime('%d %b %Y'))
+                            desc += "%s; %s; %s; %s;" % (provider_booking['customer_number'], provider_booking['carrier_name'], provider_booking['transaction_code'], datetime.strptime(vals['issued_date'][:10], '%Y-%m-%d').strftime('%d %b %Y'))
                             vendor_data = provider_booking['provider']
 
                     ## ACTIVITY
                     elif vals['provider_type_name'] == 'Activity':
                         if pnr == provider_booking['pnr']:
+                            activity_name = provider_booking['activity_details'][0]['activity']
+                            visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'],'%Y-%m-%d').strftime('%d %b %Y')
                             for rec_ticket in provider_booking['tickets']:
                                 if passenger_data != '':
                                     passenger_data += ', '
-                                passenger_data += rec_ticket['passenger']
-                            if desc != '':
-                                desc += '; '
-                            activity_name = provider_booking['activity_details'][0]['activity']
-                            visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'], '%Y-%m-%d').strftime('%d %b %Y')
-                            desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, passenger_data)
+                                desc = "%s; %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, rec_ticket['passenger'])
+                                list_desc.append({
+                                    "price": rec_ticket['total_nta'],
+                                    "desc": desc,
+                                    "quantity": 1
+                                })
+                            desc = ''
                             vendor_data = provider_booking['provider']
 
                     ## TOUR
@@ -456,7 +472,7 @@ class AccountingConnectorAccurate(models.Model):
                                 passenger_data += pax['passenger']
                             if desc != '':
                                 desc += '; '
-                            desc += "%s; VISA/ SG Arrival %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'], datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
+                            desc += "%s; VISA %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'], datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
                             vendor_data = provider_booking['provider']
                     passenger_data = ''
 
@@ -470,6 +486,8 @@ class AccountingConnectorAccurate(models.Model):
                 for idy,ledger in enumerate(pnr_list[pnr], start=1):
                     send = False
                     price = 0
+                    transaction_lines_attributes_list = []
+                    unit_product = 'Paket'
                     if vals['agent_id'] == ledger['agent_id']:
                         if ledger['debit'] != 0:
                             product_name = 'Tiket Perjalanan'
@@ -482,7 +500,8 @@ class AccountingConnectorAccurate(models.Model):
                                     provider_booking['is_sent'] = True
                             if price != 0:
                                 if vals['provider_type_name'] == 'Hotel':
-                                    product_name = 'Voucher Hotel'
+                                    product_name = 'Hotel'
+                                    unit_product = 'Room'
                                 elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                                     product_name = 'Tiket Perjalanan'
                                 elif vals['provider_type_name'] in ['PPOB', 'Tour']:
@@ -490,26 +509,40 @@ class AccountingConnectorAccurate(models.Model):
                                 elif vals['provider_type_name'] == 'Activity':
                                     product_name = 'Jasa Lainnya'
                                 elif vals['provider_type_name'] == 'Visa':
-                                    product_name = 'VISA/ SG Arrival'
+                                    product_name = 'VISA'
                                 elif vals['provider_type_name'] == 'Passport':
                                     product_name = 'Paspor'
-                                send = True
-                    if send:
-                        product = self.get_product(data_login, product_name)
-                        ###################################
-                        issued_date = vals['issued_date'].split(' ')[0]
-                        data = {
-                            "purchase_invoice": {
-                                "transaction_date": issued_date,
-                                "transaction_lines_attributes": [
-                                    {
+                                product = self.get_product(data_login, product_name, unit_product)
+                                if len(list_desc) == 0:
+                                    transaction_lines_attributes_list.append({
                                         "quantity": 1,
                                         "rate": price,
                                         "discount": 0,
                                         "product_name": product,
                                         "description": desc
-                                    }
-                                ],
+                                    })
+                                else:
+                                    desc = ''
+                                    for list_desc_data in list_desc:
+                                        transaction_lines_attributes_list.append({
+                                            "quantity": list_desc_data['quantity'],
+                                            "rate": list_desc_data['price'],
+                                            "discount": 0,
+                                            "product_name": product,
+                                            "description": list_desc_data['desc']
+                                        })
+                                        if desc:
+                                            desc += '; '
+                                        desc += list_desc_data['desc']
+                                send = True
+                    if send:
+                        product = self.get_product(data_login, product_name, unit_product)
+                        ###################################
+                        issued_date = vals['issued_date'].split(' ')[0]
+                        data = {
+                            "purchase_invoice": {
+                                "transaction_date": issued_date,
+                                "transaction_lines_attributes": transaction_lines_attributes_list,
                                 "shipping_date": issued_date,
                                 "shipping_price": 0,
                                 "shipping_address": "",
@@ -559,6 +592,8 @@ class AccountingConnectorAccurate(models.Model):
             }
             passenger_data = ''
             desc = ''
+            list_desc = []
+            is_user_ho = int(vals.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id
             ## AIRLINE & TRAIN
             for provider_booking in vals['provider_bookings']:
                 ## HOTEL
@@ -570,52 +605,87 @@ class AccountingConnectorAccurate(models.Model):
                     pnr = provider_booking['pnr']
                     for room in provider_booking['rooms']:
                         if pnr == room['prov_issued_code']:
-                            if desc != '':
-                                desc += '; '
-                            desc += "%s; Voucher Hotel %s-%s; %sRoom; Atas Nama: %s" % (
-                            pnr, datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'),
-                            datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'),
-                            len(provider_booking['rooms']), passenger_data)
-                            break
+                            desc = "%s; %s; %s-%s; %s; %s; Atas Nama: %s" % (pnr, provider_booking['hotel_name'], datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'),datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'), room['room_name'], room['meal_type'], passenger_data)
+                            price = 0
+                            if is_user_ho:
+                                price = (room['room_rate'] / len(room['dates'])) + (vals['total_channel_upsell'] / ((len(provider_booking['rooms'] * len(vals['provider_bookings']))) * len(room['dates']))) - (vals['total_discount'] / len(provider_booking['rooms']))
+                            else:
+                                price = (room['room_rate'] / len(room['dates'])) - (vals['total_discount'] / len(provider_booking['rooms']))
+                            list_desc.append({
+                                "price": price,
+                                "desc": desc,
+                                "quantity": len(room['dates'])
+                            })
+                    desc = ''
+
                 ##AIRLINE TRAIN BUS
                 elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
-                    for rec_ticket in provider_booking['tickets']:
-                        if passenger_data != '':
-                            passenger_data += ', '
-                        passenger_data += rec_ticket['passenger']
                     pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
-                    if desc != '':
-                        desc += '; '
-                    desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
-                    pnr, provider_booking['origin'], provider_booking['destination'],
-                    provider_booking['departure_date'].split(' ')[0], passenger_data)
+                    journey_type = ''
+                    journey_text = ''
+                    for idx, journey in enumerate(provider_booking['journeys']):
+                        if idx == 0:
+                            journey_text += '%s-%s %s' % (
+                            journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                            journey_type = 'ONEWAY'
+                        else:
+                            journey_text += ';%s-%s %s' % (
+                            journey['origin'], journey['destination'], journey['departure_date'].split(' ')[0])
+                            if journey_text.split('-')[-1:] == journey['destination']:
+                                journey_type = 'MULTICITY'
+                            else:
+                                journey_type = 'RETURN'
+
+                    for rec_ticket in provider_booking['tickets']:
+                        desc = "%s; Tiket Perjalanan %s %s; Atas Nama: %s" % (pnr, journey_type, journey_text, rec_ticket['passenger'])
+                        price = 0
+                        if is_user_ho:
+                            price = rec_ticket['total_nta'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
+                        else:
+                            price = rec_ticket['total_nta'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
+                        list_desc.append({
+                            "price": price,
+                            "desc": desc,
+                            "quantity": 1
+                        })
+                    desc = ''
+                    vendor_data = provider_booking['provider']
+
+
+                    # for rec_ticket in provider_booking['tickets']:
+                    #     if passenger_data != '':
+                    #         passenger_data += ', '
+                    #     passenger_data += rec_ticket['passenger']
+                    # pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
+                    # if desc != '':
+                    #     desc += '; '
+                    # desc += "%s; Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
+                    # pnr, provider_booking['origin'], provider_booking['destination'],
+                    # provider_booking['departure_date'].split(' ')[0], passenger_data)
                 ## PPOB
                 elif vals['provider_type_name'] == 'PPOB':
-                    for rec_ticket in provider_booking['tickets']:
-                        if passenger_data != '':
-                            passenger_data += ', '
-                        passenger_data += rec_ticket['passenger']
-                    if desc != '':
-                        desc += '; '
                     pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
-                    desc += "%s; TBC %s; %s;" % (pnr, provider_booking['carrier_name'],
-                                                 datetime.strptime(vals['issued_date'][:10],
-                                                                   '%Y-%m-%d').strftime('%d %b %Y'))
+                    desc += "%s; %s; %s; %s;" % (provider_booking['customer_number'], provider_booking['carrier_name'],provider_booking['transaction_code'],datetime.strptime(vals['issued_date'][:10], '%Y-%m-%d').strftime('%d %b %Y'))
                     vendor_data = provider_booking['provider']
 
                 ## ACTIVITY
                 elif vals['provider_type_name'] == 'Activity':
-                    for rec_ticket in provider_booking['tickets']:
-                        if passenger_data != '':
-                            passenger_data += ', '
-                        passenger_data += rec_ticket['passenger']
-                    if desc != '':
-                        desc += '; '
-                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     activity_name = provider_booking['activity_details'][0]['activity']
-                    visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'],
-                                                   '%Y-%m-%d').strftime('%d %b %Y')
-                    desc += "%s; Jasa Lainnya %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, passenger_data)
+                    visit_date = datetime.strptime(provider_booking['activity_details'][0]['visit_date'],'%Y-%m-%d').strftime('%d %b %Y')
+                    pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
+                    for rec_ticket in provider_booking['tickets']:
+                        desc = "%s; %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, rec_ticket['passenger'])
+                        price = 0
+                        if is_user_ho:
+                            price = rec_ticket['total_nta'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / len(provider_booking['tickets']))
+                        else:
+                            price = rec_ticket['total_nta'] - (vals['total_discount']/len(provider_booking['tickets']))
+                        list_desc.append({
+                            "price": price,
+                            "desc": desc,
+                            "quantity": 1
+                        })
+                    desc = ''
                     vendor_data = provider_booking['provider']
 
                 ## TOUR
@@ -638,11 +708,12 @@ class AccountingConnectorAccurate(models.Model):
                     if desc != '':
                         desc += '; '
                     pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
-                    desc += "%s; VISA/ SG Arrival %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
+                    desc += "%s; VISA %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
                 passenger_data = ''
-
+            unit_product = 'Paket'
             if vals['provider_type_name'] == 'Hotel':
-                product_name = 'Voucher Hotel'
+                product_name = 'Hotel'
+                unit_product = 'Room'
             elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                 product_name = 'Tiket Perjalanan'
             elif vals['provider_type_name'] in ['PPOB', 'Tour']:
@@ -650,24 +721,43 @@ class AccountingConnectorAccurate(models.Model):
             elif vals['provider_type_name'] == 'Activity':
                 product_name = 'Jasa Lainnya'
             elif vals['provider_type_name'] == 'Visa':
-                product_name = 'VISA/ SG Arrival'
+                product_name = 'VISA'
             elif vals['provider_type_name'] == 'Passport':
                 product_name = 'Paspor'
-            product = self.get_product(data_login, product_name)
+            product = self.get_product(data_login, product_name, unit_product)
+            transaction_lines_attributes_lines = []
+            if len(list_desc) > 0:
+                desc = ''
+                for list_desc_data in list_desc:
+                    transaction_lines_attributes_lines.append({
+                        "quantity": list_desc_data['quantity'],
+                        "rate": list_desc_data['price'],
+                        "discount": 0,
+                        "product_name": product,
+                        "description": list_desc_data['desc']
+                    })
+                    if desc:
+                        desc += '; '
+                    desc += list_desc_data['desc']
+            else:
+                price = 0
+                if is_user_ho:
+                    price = vals['total'] + vals['total_channel_upsell'] - vals['total_discount']
+                else:
+                    price = vals['total'] - vals['total_discount']
+                transaction_lines_attributes_lines.append({
+                    "quantity": 1,
+                    "rate": price,
+                    "discount": 0,
+                    "product_name": product,
+                    "description": desc
+                })
             due_date = (datetime.strptime(vals['issued_date'].split(' ')[0],'%Y-%m-%d') + timedelta(days=vals['billing_due_date'])).strftime('%Y-%m-%d')
             issued_date = vals['issued_date'].split(' ')[0]
             data = {
                 "sales_invoice": {
                     "transaction_date": issued_date,
-                    "transaction_lines_attributes": [
-                        {
-                            "quantity": 1,
-                            "rate": vals['total'] + vals['total_channel_upsell'] - vals['total_discount'],
-                            "discount": 0,
-                            "product_name": product,
-                            "description": desc
-                        }
-                    ],
+                    "transaction_lines_attributes": transaction_lines_attributes_lines,
                     "shipping_date": issued_date,
                     "shipping_price": 0,
                     "shipping_address": "",
@@ -795,7 +885,7 @@ class AccountingConnectorAccurate(models.Model):
         }
 
         index_page = 1
-        page_size = 10000000
+        page_size = 10000
         while True:
             data = {
                 "page": index_page,
@@ -827,7 +917,7 @@ class AccountingConnectorAccurate(models.Model):
         }
 
         index_page = 1
-        page_size = 10000000
+        page_size = 10000
         while True:
             data = {
                 "page": index_page,
@@ -943,8 +1033,9 @@ class AccountingConnectorAccurate(models.Model):
                 issued_date = "-".join(issued_date)
                 transaction_line_list = []
                 tag_list = []
-                for rec in booking_reservation_list['tags']:
-                    tag_list.append(rec['name'])
+                if type(booking_reservation_list['tags']) is dict:
+                    for rec in booking_reservation_list['tags']:
+                        tag_list.append(rec['name'])
                 tag_list.append(tag_name)
                 for rec in booking_reservation_list['transaction_lines_attributes']:
                     transaction_line_list.append({
@@ -1106,8 +1197,9 @@ class AccountingConnectorAccurate(models.Model):
                     due_date = "-".join(due_date)
                     transaction_line_list = []
                     tag_list = []
-                    for rec in booking_reservation_list['tags']:
-                        tag_list.append(rec['name'])
+                    if type(booking_reservation_list['tags']) is dict:
+                        for rec in booking_reservation_list['tags']:
+                            tag_list.append(rec['name'])
                     tag_list.append(tag_name)
                     for rec in booking_reservation_list['transaction_lines_attributes']:
                         transaction_line_list.append({
@@ -1289,13 +1381,13 @@ class AccountingConnectorAccurate(models.Model):
                 ##### VENDOR TO HEAD OFFICE #######
                 account_vendor = self.get_account(data_login, vendor_name)
                 account_ho = self.get_account(data_login, "Cash")
-                tag_name = self.search_tags(data_login, 'Refund From Vendor')
+                tag_name = self.search_tags(data_login, 'Refund Tiket')
                 self.create_journal(data_login, vals, account_vendor, account_ho, desc, vals['real_refund_date'], vals['refund_amount'], tag_name)
 
 
                 ##### HEAD OFFICE TO AGENT ########
                 account_customer = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
-                tag_name = self.search_tags(data_login, 'Refund To Customer')
+                tag_name = self.search_tags(data_login, 'Refund Tiket')
                 self.create_journal(data_login, vals, account_ho, account_customer, desc, vals['refund_date'], vals['total_amount'], tag_name)
 
             else:
@@ -1305,7 +1397,7 @@ class AccountingConnectorAccurate(models.Model):
 
     def response_parser(self):
         res = {
-            'status_code': 'success',
+            'status': 'success',
             'content': ''
         }
         return res

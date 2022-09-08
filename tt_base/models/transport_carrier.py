@@ -32,6 +32,7 @@ class TransportCarrier(models.Model):
     is_adult_birth_date_required = fields.Boolean('Is Adult Birth Date Required', default=True)
     required_identity_required_domestic = fields.Boolean('Is Identity Required Domestic', default=False)
     required_identity_required_international = fields.Boolean('Is Identity Required International', default=False)
+    is_identity_can_be_expired = fields.Boolean('Is Identity Can Be Expired', default=False)
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
@@ -74,6 +75,7 @@ class TransportCarrier(models.Model):
             'is_adult_birth_date_required': self.is_adult_birth_date_required,
             'required_identity_required_domestic': self.required_identity_required_domestic,
             'required_identity_required_international': self.required_identity_required_international,
+            'is_identity_can_be_expired': self.is_identity_can_be_expired,
             'active': self.active,
         }
 
@@ -91,6 +93,7 @@ class TransportCarrier(models.Model):
             'is_adult_birth_date_required': self.is_adult_birth_date_required,
             'required_identity_required_domestic': self.required_identity_required_domestic,
             'required_identity_required_international': self.required_identity_required_international,
+            'is_identity_can_be_expired': self.is_identity_can_be_expired,
             'active': self.active,
         }
         return res

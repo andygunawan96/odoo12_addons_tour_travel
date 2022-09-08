@@ -203,12 +203,15 @@ class TtReservationNotification(models.Model):
 
 
                 if create_record:
+                    # passenger_data = [rec.name for rec in book_obj.passenger_ids]
+
                     self.create({
                         "is_read": False,
                         "active": True,
                         "agent_id": book_obj.agent_id.id,
                         "type": 'reservation',
                         "name": book_obj.name,
+                        # "description_msg": "Passengers\n%s\nPlease Issued" % ", ".join(passenger_data),
                         "description_msg": "Please Issued",
                         "description_datetime": "%s" % book_obj.hold_date.strftime("%Y-%m-%d %H:%M:%S"),
                         "provider_type_id": book_obj.provider_type_id.id,
@@ -219,7 +222,7 @@ class TtReservationNotification(models.Model):
         ### NOTIF UNTUK INVALID IDENTITY
         provider_types = ['airline']
         for provider_type in provider_types:
-            book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('state', 'not in', ['draft', 'cancel', 'cancel2'])])
+            book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('state', 'in', ['booked', 'issued', 'done', 'partial_booked', 'issued_pending', 'partial_issued', 'partial_refund', 'rescheduled', 'partial_rescheduled'])]) ## hanya state yg aktif yg di notif
             for book_obj in book_objs:
                 create_record = True
                 dom = [('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)]
@@ -237,13 +240,15 @@ class TtReservationNotification(models.Model):
                         if datetime.now() > last_snooze_date:
                             last_snooze_date = False
 
+                    passenger_data = [rec.name for rec in book_obj.passenger_ids]
+
                     self.create({
                         "is_read": False,
                         "active": True,
                         "agent_id": book_obj.agent_id.id,
                         "type": 'reservation',
                         "name": book_obj.name,
-                        "description_msg": "Please Update Identity",
+                        "description_msg": "Passengers\n%s\nPlease Update Identity" % ",".join(passenger_data),
                         "description_datetime": last_snooze_date,
                         "provider_type_id": book_obj.provider_type_id.id,
                         "pnr": book_obj.pnr,
