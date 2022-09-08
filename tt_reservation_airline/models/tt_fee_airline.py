@@ -1,9 +1,14 @@
 from odoo import api,models,fields
 import json
+from datetime import datetime, timedelta
+import logging, traceback
+
+_logger = logging.getLogger(__name__)
 
 class TtSsrAirline(models.Model):
     _name = 'tt.fee.airline'
     _description = 'Fee Airline Model'
+    _order = 'departure_date_utc'
 
     name = fields.Char("Name")
     type = fields.Char("Type")
@@ -19,6 +24,7 @@ class TtSsrAirline(models.Model):
     # May 18, 2020 - SAM
     provider_id = fields.Many2one('tt.provider.airline', 'Provider', default=None)
     journey_code = fields.Char('Journey Code', default='')
+    departure_date_utc = fields.Datetime('Departure Date (UTC)', compute='_compute_departure_date_utc', store=True, readonly=1)
     # END
 
     @api.depends('category')
@@ -56,6 +62,28 @@ class TtSsrAirline(models.Model):
             'journey_code': self.journey_code and self.journey_code or '',
             'pnr': self.provider_id and self.provider_id.pnr or '',
         }
+
+    @api.depends('journey_code')
+    def _compute_departure_date_utc(self):
+        for rec in self:
+            try:
+                journey_code = rec.journey_code.split(',')
+                departure_date = journey_code[3]
+                dept_time_obj = None
+                try:
+                    dept_time_obj = datetime.strptime(departure_date, '%Y-%m-%d %H:%M:%S')
+                except:
+                    departure_date = None
+                origin_obj = self.env['tt.destinations'].search([('code','=',journey_code[2]),('provider_type_id.code','=','airline')], limit=1)
+                # origin_obj = journey_code[2]
+                if not origin_obj or not dept_time_obj:
+                    rec.departure_date_utc = departure_date
+                    continue
+
+                utc_time = origin_obj.timezone_hour
+                rec.departure_date_utc = dept_time_obj - timedelta(hours=utc_time)
+            except Exception as e:
+                _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
 
 class TtProviderAirlineInherit(models.Model):
