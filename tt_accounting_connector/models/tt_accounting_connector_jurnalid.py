@@ -501,7 +501,7 @@ class AccountingConnectorAccurate(models.Model):
                             if price != 0:
                                 if vals['provider_type_name'] == 'Hotel':
                                     product_name = 'Hotel'
-                                    unit_product = 'Room'
+                                    unit_product = 'Night'
                                 elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                                     product_name = 'Tiket Perjalanan'
                                 elif vals['provider_type_name'] in ['PPOB', 'Tour']:
@@ -713,7 +713,7 @@ class AccountingConnectorAccurate(models.Model):
             unit_product = 'Paket'
             if vals['provider_type_name'] == 'Hotel':
                 product_name = 'Hotel'
-                unit_product = 'Room'
+                unit_product = 'Night'
             elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                 product_name = 'Tiket Perjalanan'
             elif vals['provider_type_name'] in ['PPOB', 'Tour']:
