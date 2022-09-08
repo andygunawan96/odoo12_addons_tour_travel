@@ -254,7 +254,7 @@ class AccountingConnectorAccurate(models.Model):
         return vendor_name
 
     ############
-    def get_product(self, data_login, product_name):
+    def get_product(self, data_login, product_name, unit_product="Paket"):
         headers = {
             "Content-Type": "application/json",
             "Authorization": "bearer %s" % data_login['access_token'],
@@ -271,10 +271,10 @@ class AccountingConnectorAccurate(models.Model):
         if len(product_name_data) > 0:
             product_name = product_name_data[0]
         else:
-            product_name = self.add_product(data_login, product_name)
+            product_name = self.add_product(data_login, product_name, unit_product)
         return product_name
 
-    def add_product(self, data_login, product_name):
+    def add_product(self, data_login, product_name, unit_name):
         url = "%s/partner/core/api/v1/products" % data_login['url_api']
         headers = {
             "Content-Type": "application/json",
@@ -285,7 +285,7 @@ class AccountingConnectorAccurate(models.Model):
             "product": {
                 "name": product_name,
                 "taxable_buy": True,
-                "unit_name": "Paket",
+                "unit_name": unit_name,
                 "sell_price_per_unit": "0",
                 "custom_id": "",
                 "track_inventory": "false",
@@ -487,6 +487,7 @@ class AccountingConnectorAccurate(models.Model):
                     send = False
                     price = 0
                     transaction_lines_attributes_list = []
+                    unit_product = 'Paket'
                     if vals['agent_id'] == ledger['agent_id']:
                         if ledger['debit'] != 0:
                             product_name = 'Tiket Perjalanan'
@@ -500,6 +501,7 @@ class AccountingConnectorAccurate(models.Model):
                             if price != 0:
                                 if vals['provider_type_name'] == 'Hotel':
                                     product_name = 'Hotel'
+                                    unit_product = 'Room'
                                 elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                                     product_name = 'Tiket Perjalanan'
                                 elif vals['provider_type_name'] in ['PPOB', 'Tour']:
@@ -510,7 +512,7 @@ class AccountingConnectorAccurate(models.Model):
                                     product_name = 'VISA'
                                 elif vals['provider_type_name'] == 'Passport':
                                     product_name = 'Paspor'
-                                product = self.get_product(data_login, product_name)
+                                product = self.get_product(data_login, product_name, unit_product)
                                 if len(list_desc) == 0:
                                     transaction_lines_attributes_list.append({
                                         "quantity": 1,
@@ -534,7 +536,7 @@ class AccountingConnectorAccurate(models.Model):
                                         desc += list_desc_data['desc']
                                 send = True
                     if send:
-                        product = self.get_product(data_login, product_name)
+                        product = self.get_product(data_login, product_name, unit_product)
                         ###################################
                         issued_date = vals['issued_date'].split(' ')[0]
                         data = {
@@ -708,9 +710,10 @@ class AccountingConnectorAccurate(models.Model):
                     pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
                     desc += "%s; VISA %s; Departure Date: %s; Atas Nama: %s" % (pnr, provider_booking['country'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%d/%m/%Y').strftime('%d %b %Y'), passenger_data)
                 passenger_data = ''
-
+            unit_product = 'Paket'
             if vals['provider_type_name'] == 'Hotel':
                 product_name = 'Hotel'
+                unit_product = 'Room'
             elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                 product_name = 'Tiket Perjalanan'
             elif vals['provider_type_name'] in ['PPOB', 'Tour']:
@@ -721,7 +724,7 @@ class AccountingConnectorAccurate(models.Model):
                 product_name = 'VISA'
             elif vals['provider_type_name'] == 'Passport':
                 product_name = 'Paspor'
-            product = self.get_product(data_login, product_name)
+            product = self.get_product(data_login, product_name, unit_product)
             transaction_lines_attributes_lines = []
             if len(list_desc) > 0:
                 desc = ''
