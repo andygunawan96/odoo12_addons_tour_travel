@@ -146,6 +146,12 @@ class AgentReportRecapAfterSales(models.Model):
         }
         lines = []
         if after_sales_type != 'all':
+            if after_sales_type == 'after_sales':
+                try:
+                    self.env['tt.reschedule']
+                except:
+                    _logger.info('After Sales module is not installed.')
+                    raise Exception('After Sales module is not installed.')
             lines = self._lines(date_from, date_to, agent_id, after_sales_type, state)
             lines = self._convert_data(lines, after_sales_type)
             lines = self._convert_data_commission(lines, after_sales_type)
@@ -153,6 +159,11 @@ class AgentReportRecapAfterSales(models.Model):
                 line['after_sales_type'] = after_sales_type_dict.get(after_sales_type, '')
         else:
             after_sales_types = ['refund', 'after_sales']
+            try:
+                self.env['tt.reschedule']
+            except:
+                after_sales_types.remove('after_sales')
+                _logger.info('After Sales module is not installed.')
             for after_sales_type in after_sales_types:
                 report_lines = self._lines(date_from, date_to, agent_id, after_sales_type, state)
                 report_lines = self._convert_data(report_lines, after_sales_type)
