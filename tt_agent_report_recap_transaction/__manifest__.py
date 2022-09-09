@@ -19,8 +19,11 @@ Key Features
     'data': [
         'security/ir.model.access.csv',
         'wizard/tt_agent_report_recap_transaction_view.xml',
+        'wizard/tt_agent_report_recap_aftersales_view.xml',
         'report/tt_agent_report_recap_transaction_menu.xml',
-        'report/tt_agent_report_recap_transaction_template.xml'
+        'report/tt_agent_report_recap_transaction_template.xml',
+        'report/tt_agent_report_recap_aftersales_menu.xml',
+        'report/tt_agent_report_recap_aftersales_template.xml'
     ],
     'demo': [],
     'qweb': [],

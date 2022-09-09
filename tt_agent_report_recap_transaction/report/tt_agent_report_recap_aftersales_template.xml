@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="agent_report_recap">
+            <t t-call="web.html_container">
+                <t t-call="web.internal_layout">
+                    <t t-set="line_index" t-value="0"/>
+                    <t t-set="total" t-value="0"/>
+                    <div class="page">
+                        <!--========= TITLE & SUBTITLE ===========-->
+                        <div style="text-align:center;">
+                            <h4>
+                                <span t-esc="data_form['title']"/>
+                            </h4>
+                        </div>
+                        <div style="text-align:center;">
+                            <strong>
+                                <span t-esc="data_form['subtitle']"/>
+                            </strong>
+                        </div>
+
+                        <table class="table table-condensed">
+                            <col width="100"/>
+                            <col width="150"/>
+                            <thead>
+                                <tr>
+<!--                                    <th rowspan="2" style="padding: 2px; font-size: 18px; text-align: center">Date</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Order Number</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent's Name</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent's Type</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Provider</th>-->
+<!--                                    <th class="text-right" style="padding: 2px; font-size: 18px; text-align: center">Total</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">State</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">Type</th>-->
+<!--                                    <th style="padding: 2px; font-size: 18px; text-align: center">PNR</th>-->
+<!--                                    -->
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">After Sales Type</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Category</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent Type</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent Name</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Customer Parent Type</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Customer Parent Name</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Date</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Create By</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Finalized Date</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Finalized By</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent Email</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">After Sales Number</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Referenced Order Number</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Referenced PNR</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">New PNR</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Ledger Reference</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">State</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Currency</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Expected Amount</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Admin Fee</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Agent Commission</th>
+                                    <th style="padding: 2px; font-size: 18px; text-align: center">Grand Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="index" t-value="0"/>
+<!--                                <t t-set="total" t-value="0"/>-->
+                                <tr t-foreach="docs['lines']" t-as="line">
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['create_date']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['order_number']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_name']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_type']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider']"/></td>-->
+<!--                                    <td class="text-right" style="white-space: nowrap; padding: 6px 6px 6px 6px;"><span t-esc="line['total']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['state']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['provider_type']"/></td>-->
+<!--                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['pnr']"/></td>-->
+
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['after_sales_type']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['after_sales_category']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_type_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['customer_parent_type_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['customer_parent_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['create_date']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['create_by']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['finalized_date']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['finalized_by']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_email']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['after_sales_number']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['referenced_document']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['referenced_pnr']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line.get('pnr', '')"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['ledger_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['state']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['currency_name']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['expected_amount']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['admin_fee']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['agent_commission']"/></td>
+                                    <td style="padding: 6px 6px 6px 6px;"><span t-esc="line['total_amount']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-8">
+
+                            </div>
+                            <div class="col-3 text-right">
+                                Grand Total Page <span class="page"/> : <span t-esc="total"/>
+                            </div>
+                            <div class="col-1 text-right">
+                                <span class="page"/> / <span class="topage"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
