@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="detail_recap_aftersales_form">
+            <field name="name">Detail Recap After Sales Form</field>
+            <field name="model">tt.agent.report.recap.aftersales.wizard</field>
+            <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
+            <field name="arch" type="xml">
+                <field name="all_agent" position="before">
+                    <field name="after_sales_type"/>
+<!--                    <field name="state" required="1"/>-->
+                </field>
+            </field>
+        </record>
+
+        <record id="action_agent_report_recap_aftersales_wz" model="ir.actions.act_window">
+            <field name="name">Recap After Sales Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">tt.agent.report.recap.aftersales.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="detail_recap_aftersales_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="top_transaction_reports" parent="tt_base.main_transaction"
+                  name="Reports" sequence='999'
+                  groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+
+        <menuitem
+            id="menu_agent_report_recap_aftersales"
+            name="Recap After Sales Report"
+            parent="tt_agent_report_recap_transaction.top_transaction_reports"
+            action="action_agent_report_recap_aftersales_wz"
+            sequence="20"
+            groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+        />
+    </data>
+</odoo>

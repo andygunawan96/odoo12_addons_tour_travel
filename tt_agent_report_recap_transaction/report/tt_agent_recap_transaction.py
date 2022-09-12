@@ -18,7 +18,8 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _select():
         return """
-            rsv.id, rsv.name as order_number, rsv.state, creates.id as creator_id, creates_partner.name as create_by, issued_partner.name as issued_by, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
+            rsv.id, rsv.name as order_number, rsv.state, creates.id as creator_id, creates_partner.name as create_by, 
+            issued.id as issued_uid, issued_partner.name as issued_by, rsv.issued_date as issued_date, rsv.adult, rsv.child, rsv.infant, rsv.pnr,
             rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
             provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
             currency.name as currency_name, rsv.carrier_name as carrier_name, customer_parent.name as customer_parent_name, 
