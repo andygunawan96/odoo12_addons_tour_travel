@@ -30,9 +30,10 @@ class TransportCarrier(models.Model):
     child_length_name = fields.Integer('Child Length Name', default=30, help='Child length name')
     infant_length_name = fields.Integer('Infant Length Name', default=16, help='Infant length name')
     is_adult_birth_date_required = fields.Boolean('Is Adult Birth Date Required', default=True)
-    required_identity_required_domestic = fields.Boolean('Is Identity Required Domestic', default=False)
-    required_identity_required_international = fields.Boolean('Is Identity Required International', default=False)
-    is_identity_can_be_expired = fields.Boolean('Is Identity Can Be Expired', default=False)
+    required_identity_required_domestic = fields.Boolean('Is Identity Required Domestic', default=False) ## must be input before flight and for notif purpose
+    required_identity_required_international = fields.Boolean('Is Identity Required International', default=False) ## must be input before flight and for notif purpose
+    is_identity_can_be_expired = fields.Boolean('Is Identity Can Be Expired', help="For input to vendor", default=False)
+    is_identity_can_be_empty = fields.Boolean('Is Identity Can Be Empty', help="For input to vendor", default=False)
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
@@ -76,6 +77,7 @@ class TransportCarrier(models.Model):
             'required_identity_required_domestic': self.required_identity_required_domestic,
             'required_identity_required_international': self.required_identity_required_international,
             'is_identity_can_be_expired': self.is_identity_can_be_expired,
+            'is_identity_can_be_empty': self.is_identity_can_be_empty,
             'active': self.active,
         }
 
@@ -94,6 +96,7 @@ class TransportCarrier(models.Model):
             'required_identity_required_domestic': self.required_identity_required_domestic,
             'required_identity_required_international': self.required_identity_required_international,
             'is_identity_can_be_expired': self.is_identity_can_be_expired,
+            'is_identity_can_be_empty': self.is_identity_can_be_empty,
             'active': self.active,
         }
         return res
