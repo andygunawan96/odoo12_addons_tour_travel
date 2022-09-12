@@ -8,8 +8,13 @@
             <field name="icao">SIA</field>
             <field name="call_sign">SINGAPORE</field>
             <field name="active">1</field>
-            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+
         </record>
 
 
@@ -19,6 +24,11 @@
             <field name="icao">CPA</field>
             <field name="call_sign">CATHAY</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -31,6 +41,11 @@
             <field name="adult_length_name">25</field>
             <field name="child_length_name">25</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -42,6 +57,10 @@
             <field name="call_sign">INDONESIA</field>
             <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -52,6 +71,11 @@
             <field name="icao">TGW</field>
             <field name="call_sign">SCOOTER</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -62,6 +86,11 @@
             <field name="icao">SLK</field>
             <field name="call_sign">SilkAir</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -75,7 +104,11 @@
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
-            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -86,6 +119,11 @@
             <field name="icao">HDA</field>
             <field name="call_sign">DRAGON</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -96,6 +134,11 @@
             <field name="icao">RBA</field>
             <field name="call_sign">BRUNEI</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -106,6 +149,11 @@
             <field name="icao">THY</field>
             <field name="call_sign">TURKAIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -116,6 +164,11 @@
             <field name="icao">EVA</field>
             <field name="call_sign">Eva</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -126,6 +179,11 @@
             <field name="icao">CSN</field>
             <field name="call_sign">CHINA SOUTHERN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -136,6 +194,11 @@
             <field name="icao">AAL</field>
             <field name="call_sign">AMERICAN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -146,6 +209,11 @@
             <field name="icao">ANG</field>
             <field name="call_sign">NIUGINI</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -156,6 +224,11 @@
             <field name="icao">DAL</field>
             <field name="call_sign">DELTA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -166,6 +239,11 @@
             <field name="icao">MSR</field>
             <field name="call_sign">EGYPTAIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -176,6 +254,11 @@
             <field name="icao">HAL</field>
             <field name="call_sign">HAWAIIAN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -186,6 +269,11 @@
             <field name="icao">FJI</field>
             <field name="call_sign">PACIFIC</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -206,6 +294,11 @@
             <field name="icao">AUI</field>
             <field name="call_sign">UKRAINE INTERNATIONAL</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -216,6 +309,11 @@
             <field name="icao">MXD</field>
             <field name="call_sign">MALINDO</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -226,6 +324,11 @@
             <field name="icao">MAS</field>
             <field name="call_sign">MALAYSIAN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -236,6 +339,11 @@
             <field name="icao">PAL</field>
             <field name="call_sign">PHILIPPINE</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -246,6 +354,11 @@
             <field name="icao">QTR</field>
             <field name="call_sign">QATARI</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -256,6 +369,11 @@
             <field name="icao">UAE</field>
             <field name="call_sign">EMIRATES</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -266,6 +384,11 @@
             <field name="icao">AUA</field>
             <field name="call_sign">AUSTRIAN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -276,6 +399,11 @@
             <field name="icao">ETH</field>
             <field name="call_sign">ETHIOPIAN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -286,6 +414,11 @@
             <field name="icao">ETD</field>
             <field name="call_sign">Etihad</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -296,6 +429,11 @@
             <field name="icao">ANA</field>
             <field name="call_sign">ALL NIPPON</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -306,6 +444,11 @@
             <field name="icao">KAL</field>
             <field name="call_sign">KOREAN AIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -316,6 +459,11 @@
             <field name="icao">CES</field>
             <field name="call_sign">CHINA EASTERN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -324,6 +472,11 @@
             <field name="name">Flex Flight</field>
             <field name="code">W2</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -334,6 +487,11 @@
             <field name="icao">JJA</field>
             <field name="call_sign">JEJUAIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -344,6 +502,11 @@
             <field name="icao">QFA</field>
             <field name="call_sign">QANTAS</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -354,6 +517,11 @@
             <field name="icao">HVN</field>
             <field name="call_sign">VIET NAM AIRLINES</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -364,6 +532,11 @@
             <field name="icao">HHN</field>
             <field name="call_sign">ROOSTER</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -374,6 +547,11 @@
             <field name="icao">THA</field>
             <field name="call_sign">THAI</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -384,6 +562,11 @@
             <field name="icao">VOZ</field>
             <field name="call_sign">VELOCITY</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -394,6 +577,11 @@
             <field name="icao">CXA</field>
             <field name="call_sign">XIAMEN AIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -404,6 +592,11 @@
             <field name="icao">AAR</field>
             <field name="call_sign">ASIANA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -414,6 +607,11 @@
             <field name="icao">ACA</field>
             <field name="call_sign">AIR CANADA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -424,6 +622,11 @@
             <field name="icao">DLH</field>
             <field name="call_sign">LUFTHANSA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -434,6 +637,11 @@
             <field name="icao">JAL</field>
             <field name="call_sign">JAPANAIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -444,6 +652,11 @@
             <field name="icao">ANZ</field>
             <field name="call_sign">NEW ZEALAND</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -454,6 +667,11 @@
             <field name="icao">CTV</field>
             <field name="call_sign">SUPERGREEN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -464,6 +682,11 @@
             <field name="icao">TNU</field>
             <field name="call_sign">TRANSNUSA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -474,6 +697,11 @@
             <field name="icao">TGN</field>
             <field name="call_sign">TRIGANA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -484,7 +712,11 @@
             <field name="icao">SJY</field>
             <field name="call_sign">SRIWIJAYA</field>
             <field name="active">1</field>
-            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -495,6 +727,11 @@
             <field name="icao">LKN</field>
             <field name="call_sign">NAMAIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -505,6 +742,11 @@
             <field name="icao">AXM</field>
             <field name="call_sign">RED CAP</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -515,6 +757,11 @@
             <field name="icao">XAX</field>
             <field name="call_sign">XANADU</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -525,6 +772,11 @@
             <field name="icao">AIQ</field>
             <field name="call_sign">THAI ASIA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -535,6 +787,11 @@
             <field name="icao">AWQ</field>
             <field name="call_sign">WAGON AIR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -545,6 +802,11 @@
             <field name="icao">APG</field>
             <field name="call_sign">COOL RED</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -555,6 +817,11 @@
             <field name="icao">WAJ</field>
             <field name="call_sign">WING ASIA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -565,6 +832,11 @@
             <field name="icao">TAX</field>
             <field name="call_sign">EXPRESS WING</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -575,6 +847,11 @@
             <field name="icao">IAD</field>
             <field name="call_sign">RED KNIGHT</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -585,6 +862,11 @@
             <field name="icao">JSA</field>
             <field name="call_sign">JETSTAR ASIA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -595,6 +877,11 @@
             <field name="icao">JST</field>
             <field name="call_sign">JETSTAR</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -605,6 +892,11 @@
             <field name="icao">JJP</field>
             <field name="call_sign">ORANGE LINER</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -618,7 +910,11 @@
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
-            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -632,7 +928,11 @@
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
-            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -646,7 +946,11 @@
             <field name="adult_length_name">80</field>
             <field name="child_length_name">80</field>
             <field name="infant_length_name">80</field>
-            <field name="is_adult_birth_date_required" eval="False"/>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -657,6 +961,11 @@
             <field name="icao">AEE</field>
             <field name="call_sign">AEGEAN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -667,6 +976,11 @@
             <field name="icao">EZD</field>
             <field name="call_sign">COOL RED</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -676,6 +990,11 @@
             <field name="icao">XAR</field>
             <field name="call_sign">XPRESS</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -685,6 +1004,11 @@
             <field name="icao">CEB</field>
             <field name="call_sign">CEBU</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -694,6 +1018,11 @@
             <field name="icao">ALK</field>
             <field name="call_sign">SRILANKAN</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -703,6 +1032,11 @@
             <field name="icao">LOT</field>
             <field name="call_sign">POLLOT</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -712,6 +1046,11 @@
             <field name="icao">DTA</field>
             <field name="call_sign">DTA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -721,6 +1060,11 @@
             <field name="icao">RIV</field>
             <field name="call_sign">RIVIERA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -730,6 +1074,11 @@
             <field name="icao">CDG</field>
             <field name="call_sign">SHANDONG</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -739,6 +1088,11 @@
             <field name="icao">ASA</field>
             <field name="call_sign">ALASKA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -748,6 +1102,11 @@
             <field name="icao">VTI</field>
             <field name="call_sign">VISTARA</field>
             <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -757,6 +1116,11 @@
             <field name="icao">SVA</field>
             <field name="call_sign">SAUDIA</field>
             <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -766,6 +1130,11 @@
             <field name="icao">OMA</field>
             <field name="call_sign">OMAN AIR</field>
             <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -776,6 +1145,11 @@
             <field name="icao">JBU</field>
             <field name="call_sign">JETBLUE</field>
             <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -785,6 +1159,11 @@
             <field name="icao">UAL</field>
             <field name="call_sign">UNITED</field>
             <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="True"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
     </data>

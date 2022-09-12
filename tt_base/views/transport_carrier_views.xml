@@ -30,6 +30,7 @@
                             <field name="required_identity_required_domestic"/>
                             <field name="required_identity_required_international"/>
                             <field name="is_identity_can_be_expired"/>
+                            <field name="is_identity_can_be_empty"/>
                         </group>
                     </group>
                 </sheet>
