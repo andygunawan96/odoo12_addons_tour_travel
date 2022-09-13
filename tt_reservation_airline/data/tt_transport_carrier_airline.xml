@@ -28,7 +28,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -45,7 +45,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -60,7 +60,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -75,7 +75,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -90,7 +90,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -123,7 +123,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -138,7 +138,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -153,7 +153,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -168,7 +168,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -183,7 +183,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -198,7 +198,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -213,7 +213,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -228,7 +228,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -243,7 +243,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -258,7 +258,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -273,7 +273,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -298,7 +298,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -328,7 +328,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -343,7 +343,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -358,7 +358,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -373,7 +373,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -388,7 +388,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -403,7 +403,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -418,7 +418,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -433,7 +433,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -448,7 +448,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -463,7 +463,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -476,7 +476,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -491,7 +491,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -506,7 +506,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -521,7 +521,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -536,7 +536,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -566,7 +566,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -581,7 +581,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -596,7 +596,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -611,7 +611,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -626,7 +626,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -641,7 +641,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -656,7 +656,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -671,7 +671,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -746,7 +746,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -761,7 +761,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -776,7 +776,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -791,7 +791,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -806,7 +806,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -821,7 +821,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -836,7 +836,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -851,7 +851,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -866,7 +866,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -881,7 +881,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -896,7 +896,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -965,7 +965,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -980,7 +980,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -994,7 +994,7 @@
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1008,7 +1008,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1022,7 +1022,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1036,7 +1036,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1050,7 +1050,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1064,7 +1064,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1078,7 +1078,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1092,7 +1092,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1106,7 +1106,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1120,7 +1120,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1134,7 +1134,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1149,7 +1149,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1163,7 +1163,7 @@
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
-            <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
     </data>

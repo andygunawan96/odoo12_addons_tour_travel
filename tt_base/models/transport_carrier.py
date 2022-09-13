@@ -33,7 +33,7 @@ class TransportCarrier(models.Model):
     required_identity_required_domestic = fields.Boolean('Is Identity Required Domestic', default=False) ## must be input before flight and for notif purpose
     required_identity_required_international = fields.Boolean('Is Identity Required International', default=False) ## must be input before flight and for notif purpose
     is_identity_can_be_expired = fields.Boolean('Is Identity Can Be Expired', help="For input to vendor", default=False)
-    is_identity_can_be_empty = fields.Boolean('Is Identity Can Be Empty', help="For input to vendor", default=True)
+    is_identity_can_be_empty = fields.Boolean('Is Identity Can Be Empty', help="For input to vendor", default=False)
     active = fields.Boolean('Active', default=True)
     # country_id = fields.Many2one('res.country', 'Country') masihbutuh?
 
