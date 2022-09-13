@@ -158,11 +158,11 @@ class TtRefund(models.Model):
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True,
                                default=lambda self: self.env.user.agent_id)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
-                                    readonly=True)
+                                    readonly=True, store=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', readonly=True)
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', related='customer_parent_id.customer_parent_type_id',
-                                              readonly=True)
+                                              store=True, readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
     currency_id = fields.Many2one('res.currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -191,8 +191,8 @@ class TtRefund(models.Model):
     admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
     refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
     real_refund_amount = fields.Monetary('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')
-    total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount")
-    total_amount_cust = fields.Monetary('Total Amount (Customer)', default=0, readonly=True, compute="_compute_total_amount_cust")
+    total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount", store=True)
+    total_amount_cust = fields.Monetary('Total Amount (Customer)', default=0, readonly=True, compute="_compute_total_amount_cust", store=True)
     final_admin_fee = fields.Monetary('Admin Fee Amount', default=0, readonly=True)
     final_admin_fee_ho = fields.Monetary('Admin Fee Amount (HO)', default=0, readonly=True)
     final_admin_fee_agent = fields.Monetary('Admin Fee Amount (Agent)', default=0, readonly=True)

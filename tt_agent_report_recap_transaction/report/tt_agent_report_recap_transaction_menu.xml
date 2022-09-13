@@ -5,7 +5,7 @@
         <report
             id="action_agent_report_recap_transaction"
             model="tt.agent.report.recap.transaction.wizard"
-            string="Recap Reservation Report"
+            string="Recap Transaction Report"
             report_type="qweb-html"
             name="tt_agent_report_recap_transaction.agent_report_recap"
             file="tt_agent_report_recap_transaction.agent_report_recap"

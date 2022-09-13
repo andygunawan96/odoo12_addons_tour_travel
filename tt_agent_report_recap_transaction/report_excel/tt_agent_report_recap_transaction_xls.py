@@ -278,7 +278,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 rt_single_pnr_idx.pop()
                             # will return the index of "same" data based on user
                             data_index = next(
-                                (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
+                                (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['issued_uid']), -1)
                             # if data is bigger than 0 = there's data within airline recaps
                             if data_index >= 0:
                                 # then lets update the data, by adding
@@ -294,8 +294,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 # if data is not yet exist
                                 # we'll declare the data first then we'll add to airline recaps list
                                 temp_dict = {
-                                    'id': i['creator_id'],
-                                    'name': i['create_by'],
+                                    'id': i['issued_uid'],
+                                    'name': i['issued_by'],
                                     'GDS': 0,
                                     'pax_GDS': 0,
                                     'non_GDS': 0,
@@ -577,7 +577,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     if i['provider_type'].lower() == 'airline':
                         if i['direction'] == 'RT':
                             rt_single_pnr_idx.append(idx)
-                        data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
+                        data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == i['issued_uid']), -1)
                         if data_index >= 0:
                             if i['provider_name'] and ('amadeus' in i['provider_name'] or 'sabre' in i['provider_name'] or 'sia' in i['provider_name']):
                                 airline_recaps[data_index]['GDS'] += 1
@@ -591,8 +591,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 airline_recaps[data_index]['pax_non_GDS'] += i['infant']
                         else:
                             temp_dict = {
-                                'id': i['creator_id'],
-                                'name': i['create_by'],
+                                'id': i['issued_uid'],
+                                'name': i['issued_by'],
                                 'GDS': 0,
                                 'pax_GDS': 0,
                                 'non_GDS': 0,
@@ -617,7 +617,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     if i['provider_type'].lower() == 'hotel':
                         # using the same logic of getting user in a list, but this time is hotel recaps list
                         # instead of airline_recaps list
-                        data_index = next((index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['creator_id']),-1)
+                        data_index = next((index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['issued_uid']),-1)
 
                         # if data index >= 0 then there's data with match user
                         # we only need to update the data
@@ -627,8 +627,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         else:
                             # if data is not yet exist then create some temp dictionary
                             temp_dict = {
-                                'id': i['creator_id'],
-                                'name': i['create_by'],
+                                'id': i['issued_uid'],
+                                'name': i['issued_by'],
                                 'counter': 1,
                                 'room_night': i.get('room_count', 0) * i.get('nights', 0)
                             }
@@ -643,7 +643,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         # see line 189 for explanation of airline code explanation
                         if i['offline_provider'].lower() == 'airline':
                             data_index = next(
-                                (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['creator_id']), -1)
+                                (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['issued_uid']), -1)
                             if data_index >= 0:
                                 if i['provider_name'] and ('amadeus' in i['provider_name'] or 'sabre' in i['provider_name'] or 'sia' in i['provider_name']):
                                     airline_recaps[data_index]['GDS'] += 1
@@ -651,8 +651,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     airline_recaps[data_index]['non_GDS'] += 1
                             else:
                                 temp_dict = {
-                                    'id': i['creator_id'],
-                                    'name': i['create_by'],
+                                    'id': i['issued_uid'],
+                                    'name': i['issued_by'],
                                     'pax_GDS': 0,
                                     'GDS': 0,
                                     'non_GDS': 0,
@@ -667,14 +667,14 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         # and see line 460 for if hotel code explanation
                         if i['provider_type'].lower() == 'hotel':
                             data_index = next(
-                                (index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['creator_id']), -1)
+                                (index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['issued_uid']), -1)
                             if data_index >= 0:
                                 hotel_recaps[data_index]['counter'] += 1
                                 hotel_recaps[data_index]['room_night'] += i.get('room_count', 0) * i.get('nights', 0)
                             else:
                                 temp_dict = {
-                                    'id': i['creator_id'],
-                                    'name': i['create_by'],
+                                    'id': i['issued_uid'],
+                                    'name': i['issued_by'],
                                     'counter': 1,
                                     'room_night': i.get('room_count', 0) * i.get('nights', 0)
                                 }
@@ -683,7 +683,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         # check if there are indexes marked for being RT with single PNR
         for sing_pnr in rt_single_pnr_idx:
             # if yes, add pax count once more
-            data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == datas[sing_pnr]['creator_id']), -1)
+            data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == datas[sing_pnr]['issued_uid']), -1)
             if data_index >= 0:
                 if datas[sing_pnr]['provider_name'] and ('amadeus' in datas[sing_pnr]['provider_name'] or 'sabre' in datas[sing_pnr]['provider_name'] or 'sia' in datas[sing_pnr]['provider_name']):
                     # asumsi jumlah reservation tidak di hitung lagi kalo RT dgn 1 PNR
@@ -698,8 +698,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['infant']
             else:
                 temp_dict = {
-                    'id': datas[sing_pnr]['creator_id'],
-                    'name': datas[sing_pnr]['create_by'],
+                    'id': datas[sing_pnr]['issued_uid'],
+                    'name': datas[sing_pnr]['issued_by'],
                     'GDS': 0,
                     'pax_GDS': 0,
                     'non_GDS': 0,

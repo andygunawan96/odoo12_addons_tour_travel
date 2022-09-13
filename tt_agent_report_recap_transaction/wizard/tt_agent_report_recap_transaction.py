@@ -4,7 +4,7 @@ STATES = [
     ('issued', 'Issued')
 ]
 
-class AgentReportRecapReservation(models.TransientModel):
+class AgentReportRecapTransaction(models.TransientModel):
     _inherit = "tt.agent.report.common.wizard"
     _name = 'tt.agent.report.recap.transaction.wizard'
 
