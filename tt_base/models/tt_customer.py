@@ -343,7 +343,8 @@ class TtCustomer(models.Model):
                 dom.append(('customer_parent_ids','=',context['co_customer_parent_id']))
                 # dom.append(('booker_parent_ids','=',context['co_customer_parent_id']))
                 dom.append(('id','in',cust_dom_ids))
-            customer_list_obj = self.search(dom,limit=100)
+            # customer_list_obj = self.search(dom,limit=100)
+            customer_list_obj = self.search(dom)
             ## CASE IN TIDAK KELUAR TETAPI INF KELUAR
             ## KARENA RECORD YG INF TIDAK MASUK KE CUSTOMER_LIST_OBJ, KENA LIMIT JADI RECORD
             customer_list = []
