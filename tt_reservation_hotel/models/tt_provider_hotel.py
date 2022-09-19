@@ -288,12 +288,13 @@ class TransportBookingProvider(models.Model):
         passengers = self.env['test.search'].prepare_passengers(self.booking_id.passenger_ids)
         res = {
             "rooms": room_obj,
-            "provider_name": self.booking_id.provider_name,
+            "provider_name": self.provider_id.name,
+            "provider": self.provider_id.alias,
             "passengers": passengers,
             "hotel_name": self.booking_id.hotel_name,
-            "checkin_date": str(self.booking_id.checkin_date)[:10],
-            "checkout_date": str(self.booking_id.checkout_date)[:10],
-            "pnr": room_obj[0]['prov_issued_code'],
+            "checkin_date": str(self.checkin_date)[:10],
+            "checkout_date": str(self.checkout_date)[:10],
+            "pnr": self.pnr,
             "total_price": self.total_price
         }
         return res

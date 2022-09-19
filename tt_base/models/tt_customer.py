@@ -327,6 +327,8 @@ class TtCustomer(models.Model):
                     dom.append(('email', '=', req['name']))
                 elif util.get_without_empty(req,'search_type') == 'identity_type':
                     dom.append(('identity_ids.identity_number', '=', req['name']))
+                elif util.get_without_empty(req,'search_type') == 'birth_date':
+                    dom.append(('birth_date', '=', datetime.strptime(req['name'],'%Y-%m-%d')))
                 else:
                     dom.append(('name','ilike',req['name']))
             if req.get('email'):

@@ -944,6 +944,9 @@ class TestSearch(models.Model):
                         "amount": svc_csc[pnr]['CSC']['amount'],
                         "currency": svc_csc[pnr]['CSC']['currency']
                     }
+            provider_bookings = []
+            for provider_booking in resv_obj.provider_booking_ids:
+                provider_bookings.append(provider_booking.to_dict())
             vals = {
                 'adult': resv_obj.adult,
                 'checkin_date': resv_obj.checkin_date,
@@ -1004,6 +1007,7 @@ class TestSearch(models.Model):
                 'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
                 'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
                 'currency': resv_obj.currency_id.name,
+                'provider_bookings': provider_bookings,
                 'total': resv_obj.total,
             })
             # else:
