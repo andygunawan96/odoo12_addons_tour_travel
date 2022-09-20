@@ -842,9 +842,46 @@ class ReservationAirline(models.Model):
                     journey_prov_data = resv_journey_dict[journey_key]
                     commit_segment_total = len(journey['segments'])
                     prov_data_segment_total = len(journey_prov_data.segment_ids)
-                    if journey_prov_data.departure_date == orig_segment['departure_date'] and journey_prov_data.arrival_date == dest_segment['arrival_date']:
-                        if commit_segment_total == prov_data_segment_total:
-                            continue
+
+                    # September 15, 2022 - SAM
+                    # Menambahkan pengecekkan
+                    is_same_departure = True if journey_prov_data.departure_date == orig_segment['departure_date'] else False
+                    is_same_arrival = True if journey_prov_data.arrival_date == dest_segment['arrival_date'] else False
+                    is_same_segment_total = True if commit_segment_total == prov_data_segment_total else False
+                    is_same_class_of_service = False
+                    is_same_fare_basis_code = False
+                    try:
+                        if is_same_segment_total:
+                            class_of_service_flag_list = []
+                            fare_basis_code_flag_list = []
+                            for seg_idx, seg_obj in enumerate(journey_prov_data.segment_ids):
+                                seg_data = journey['segments'][seg_idx]
+                                for fare in seg_data.get('fares', []):
+                                    fare_cos = fare.get('class_of_service', '')
+                                    fare_fbc = fare.get('fare_basis_code', '')
+                                    if seg_obj.class_of_service == fare_cos:
+                                        class_of_service_flag_list.append(True)
+                                    else:
+                                        class_of_service_flag_list.append(False)
+                                    if seg_obj.fare_basis_code == fare_fbc:
+                                        fare_basis_code_flag_list.append(True)
+                                    else:
+                                        fare_basis_code_flag_list.append(False)
+
+                            if class_of_service_flag_list and all(flag == True for flag in class_of_service_flag_list):
+                                is_same_class_of_service = True
+                            if fare_basis_code_flag_list and all(flag == True for flag in fare_basis_code_flag_list):
+                                is_same_fare_basis_code = True
+                    except:
+                        _logger.error('Error compare class of service in segments')
+                    # END
+
+                    # if journey_prov_data.departure_date == orig_segment['departure_date'] and journey_prov_data.arrival_date == dest_segment['arrival_date']:
+                    #     if commit_segment_total == prov_data_segment_total:
+                    #         continue
+
+                    if is_same_departure and is_same_arrival and is_same_segment_total and is_same_class_of_service and is_same_fare_basis_code:
+                        continue
 
                     for seg_obj in journey_prov_data.segment_ids:
                         seg_obj.write({
