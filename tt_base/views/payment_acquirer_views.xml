@@ -70,15 +70,15 @@
                             <group name="acquirer_right">
                                 <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}"/>
                                 <field name="provider_id" attrs="{'invisible': [('type','not in',['va'])]}"/>
-                                <field name="account_number" attrs="{'invisible': [('type','not in',['payment_gateway','transfer','debit','credit','va'])]}"/>
-                                <field name="account_name" attrs="{'invisible': [('type','not in',['payment_gateway','transfer','debit','credit','va'])]}"/>
-                                <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
-                                <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}"/>
+                                <field name="account_number" attrs="{'invisible': [('type','not in',['payment_gateway','transfer','edc','va'])]}"/>
+                                <field name="account_name" attrs="{'invisible': [('type','not in',['payment_gateway','transfer','edc','va'])]}"/>
+                                <field name="cust_fee" attrs="{'invisible': [('type','not in',['edc'])]}"/>
+                                <field name="bank_fee" attrs="{'invisible': [('type','not in',['edc'])]}"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
-                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
-                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
-                                <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
-                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
+                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
+                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
+                                <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
+                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
@@ -145,15 +145,15 @@
                             <group name="acquirer_right">
                                 <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}" readonly="1"/>
                                 <field name="provider_id" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
-                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
-                                <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','debit','credit','va','payment_gateway'])]}" readonly="1"/>
-                                <field name="cust_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
+                                <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','edc','va','payment_gateway'])]}" readonly="1"/>
+                                <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','edc','va','payment_gateway'])]}" readonly="1"/>
+                                <field name="cust_fee" attrs="{'invisible': [('type','not in',['edc'])]}" readonly="1"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
-                                <field name="bank_fee" attrs="{'invisible': [('type','not in',['debit','credit'])]}" readonly="1"/>
-                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
-                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
-                                <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}"/>
-                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'credit'])]}" readonly="1"/>
+                                <field name="bank_fee" attrs="{'invisible': [('type','not in',['edc'])]}" readonly="1"/>
+                                <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}" readonly="1"/>
+                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}" readonly="1"/>
+                                <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
+                                <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}" readonly="1"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
