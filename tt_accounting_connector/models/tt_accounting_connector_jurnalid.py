@@ -460,7 +460,7 @@ class AccountingConnectorAccurate(models.Model):
                                 passenger_data += rec_ticket['passenger']
                             if desc != '':
                                 desc += '; '
-                            desc += "%s; TBC %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'], datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
+                            desc += "%s; Tour %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'], datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
                             vendor_data = provider_booking['provider']
 
                     ## VISA PASSPORT
@@ -504,8 +504,10 @@ class AccountingConnectorAccurate(models.Model):
                                     unit_product = 'Night'
                                 elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                                     product_name = 'Tiket Perjalanan'
-                                elif vals['provider_type_name'] in ['PPOB', 'Tour']:
-                                    product_name = 'TBC'
+                                elif vals['provider_type_name'] in ['PPOB']:
+                                    product_name = 'PPOB'
+                                elif vals['provider_type_name'] in ['Tour']:
+                                    product_name = 'TOUR'
                                 elif vals['provider_type_name'] == 'Activity':
                                     product_name = 'Jasa Lainnya'
                                 elif vals['provider_type_name'] == 'Visa':
@@ -697,7 +699,7 @@ class AccountingConnectorAccurate(models.Model):
                     if desc != '':
                         desc += '; '
                     pnr = provider_booking['pnr'] if provider_booking['pnr'] else provider_booking['pnr2']
-                    desc += "%s; TBC %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
+                    desc += "%s; TOUR %s; %s - %s; Atas Nama: %s" % (pnr, provider_booking['tour_name'],datetime.strptime(str(provider_booking['departure_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(str(provider_booking['arrival_date'])[:10], '%Y-%m-%d').strftime('%d %b %Y'), passenger_data)
 
                 ## VISA PASSPORT
                 elif vals['provider_type_name'] == 'Visa':
@@ -716,8 +718,10 @@ class AccountingConnectorAccurate(models.Model):
                 unit_product = 'Night'
             elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                 product_name = 'Tiket Perjalanan'
-            elif vals['provider_type_name'] in ['PPOB', 'Tour']:
-                product_name = 'TBC'
+            elif vals['provider_type_name'] in ['PPOB']:
+                product_name = 'PPOB'
+            elif vals['provider_type_name'] in ['Tour']:
+                product_name = 'Tour'
             elif vals['provider_type_name'] == 'Activity':
                 product_name = 'Jasa Lainnya'
             elif vals['provider_type_name'] == 'Visa':
