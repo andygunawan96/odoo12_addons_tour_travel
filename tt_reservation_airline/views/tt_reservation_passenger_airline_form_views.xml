@@ -6,9 +6,6 @@
         <field name="mode">primary</field>
         <field name="inherit_id" ref="tt_reservation.tt_reservation_passenger_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='is_valid_identity']" position="after">
-                <field name="is_request_wheelchair"/>
-            </xpath>
             <xpath expr="//group[@name='basic_info']" position="after">
                 <separator string="Frequent Flyers"/>
                 <field name="frequent_flyer_ids"/>
