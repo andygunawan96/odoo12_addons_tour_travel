@@ -411,6 +411,7 @@ class ReservationAirline(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id,
                     'is_valid_identity': is_valid_identity,
+                    'is_request_wheelchair': passengers[idx].get('is_request_wheelchair', False),
                 })
 
             for psg in list_passenger_value:
