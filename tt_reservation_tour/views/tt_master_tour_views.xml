@@ -280,6 +280,7 @@
                                                     <field name="sequence" widget="handle"/>
                                                     <field name="timeslot"/>
                                                     <field name="name"/>
+                                                    <field name="hyperlink"/>
                                                     <field name="description"/>
                                                 </tree>
                                                 <form>
@@ -288,6 +289,7 @@
                                                             <group>
                                                                 <field name="sequence"/>
                                                                 <field name="name"/>
+                                                                <field name="hyperlink"/>
                                                                 <field name="description"/>
                                                             </group>
                                                             <group>
