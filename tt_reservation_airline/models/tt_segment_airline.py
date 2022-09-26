@@ -64,6 +64,11 @@ class TtSegmentAirline(models.Model):
     cabin_class_str = fields.Char('Cabin Class String', compute='_compute_cabin_class_str', default='', store=True)
     # END
 
+    # September 20, 2022 - SAM
+    description = fields.Char('Description Data', default='')
+    description_text = fields.Char('Description Text', default='', compute='_compute_description_text', store=True)
+    # END
+
     @api.depends('departure_date', 'origin_id')
     def _compute_departure_date_utc(self):
         for rec in self:
@@ -98,6 +103,18 @@ class TtSegmentAirline(models.Model):
             cabin_class_str = lib.get(rec.cabin_class, '')
             rec.cabin_class_str = cabin_class_str
 
+    @api.depends('description')
+    def _compute_description_text(self):
+        for rec in self:
+            try:
+                if not rec.description:
+                    rec.description_text = ''
+                    continue
+
+                desc_list = json.loads(rec.description)
+                rec.description_text = ', '.join(desc_list)
+            except:
+                rec.description_text = ''
 
     @api.multi
     @api.depends('carrier_id')
@@ -145,5 +162,16 @@ class TtSegmentAirline(models.Model):
             # April 12, 2022 - SAM
             'operating_airline_code': self.operating_airline_code and self.operating_airline_code or '',
             # END
+            'description': [],
         }
+        # September 20, 2022 - SAM
+        try:
+            if self.description:
+                desc_list = json.loads(self.description)
+                res.update({
+                    'description': desc_list
+                })
+        except:
+            pass
+        # END
         return res
