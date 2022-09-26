@@ -109,10 +109,14 @@ class CountryState(models.Model):
     other_name_ids = fields.One2many('tt.destination.alias', 'state_id', 'Dest. Alias', help='Destination Alias or Other Name')
     address_detail_ids = fields.One2many('address.detail', 'state_id', string='Addresses')
 
-    def find_state_by_name(self, str_name, limit=1):
+    def find_state_by_name(self, str_name, limit=1, country_id=None):
         if str_name:
             str_name = str_name.rstrip()
-            found = self.search([('name', '=ilike', str_name)], limit=limit)
+            dom = []
+            dom.append(('name', '=ilike', str_name))
+            if country_id:
+                dom.append(('country_id', '=', country_id))
+            found = self.search(dom, limit=limit)
             if len(found) < limit:
                 for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('state_id','!=',False)], limit=limit-len(found)):
                     found += rec.country_id
@@ -137,13 +141,15 @@ class CountryCity(models.Model):
     longitude = fields.Float('Longitude Degree', digits=(3, 7))
     city_alias_name = fields.Char('Alias Name', compute='city_search_name', store=True)
 
-    def find_city_by_name(self, str_name, limit=1, country_id=None):
+    def find_city_by_name(self, str_name, limit=1, country_id=None, state_id=None):
         if str_name:
             str_name = str_name.rstrip()
             dom = []
             dom.append(('name', '=ilike', str_name))
             if country_id:
                 dom.append(('country_id','=',country_id))
+            if state_id:
+                dom.append(('state_id','=',state_id))
             found = self.search(dom, limit=limit)
             if len(found) < limit:
                 for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):

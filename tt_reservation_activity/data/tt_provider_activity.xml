@@ -15,13 +15,13 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_activity"/>
         </record>
-<!--        <record id="tt_provider_activity_globaltix" model="tt.provider">-->
-<!--            <field name="name">Globaltix</field>-->
-<!--            <field name="code">globaltix</field>-->
-<!--            <field name="alias">GTAC</field>-->
-<!--            <field name="active" eval="True"/>-->
-<!--            <field name="provider_type_id" ref="tt_provider_type_activity"/>-->
-<!--        </record>-->
+        <record id="tt_provider_activity_globaltix" model="tt.provider">
+            <field name="name">Globaltix</field>
+            <field name="code">globaltix</field>
+            <field name="alias">GTAC</field>
+            <field name="active" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_activity"/>
+        </record>
         <record id="tt_provider_activity_rodextrip_activity" model="tt.provider">
             <field name="name">Rodextrip Activity</field>
             <field name="code">rodextrip_activity</field>
