@@ -1480,6 +1480,17 @@ class ReservationAirline(models.Model):
                     if segment.get('fares'):
                         fare_data = segment['fares'][0]
 
+                        # September 20, 2022 - SAM
+                        description = fare_data.get('description', '')
+                        if type(description) == list:
+                            description = json.dumps(description)
+                        else:
+                            description = ''
+                        fare_data.update({
+                            'description': description
+                        })
+                        # END
+
                         # January 10, 2022 - SAM
                         if 'pricing_data' in fare_data:
                             pricing_data = fare_data['pricing_data']
