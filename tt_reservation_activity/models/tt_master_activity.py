@@ -538,12 +538,14 @@ class MasterActivity(models.Model):
                                 self.env.cr.commit()
                             temp2.append(new_loc.id)
 
-                types_temp = []
                 if provider == 'klook':
+                    types_temp = []
                     for type_temp in rec['product']['type']:
                         tipe = self.env['tt.activity.category'].search([('name', '=', type_temp['category']), ('type', '=', 'type')])
                         for tip in tipe:
                             types_temp.append(tip.id)
+                else:
+                    types_temp = temp
 
                 if rec['product'].get('currency'):
                     cur_obj = self.env['res.currency'].search([('name', '=', rec['product']['currency'])], limit=1)
@@ -585,7 +587,7 @@ class MasterActivity(models.Model):
                     vals = {
                         'uuid': rec['product']['uuid'],
                         'name': rec['product']['title'],
-                        'type_ids': [(6, 0, temp)],
+                        'type_ids': [(6, 0, types_temp)],
                         'category_ids': [(6, 0, temp)],
                         'location_ids': [(6, 0, temp2)],
                         'currency_id': cur_obj and cur_obj[0].id or False,
