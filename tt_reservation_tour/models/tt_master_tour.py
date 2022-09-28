@@ -71,6 +71,7 @@ class TourItineraryItem(models.Model):
     timeslot = fields.Char('Timeslot')
     image_id = fields.Many2one('tt.upload.center', 'Image')
     itinerary_id = fields.Many2one('tt.reservation.tour.itinerary', 'Tour Itinerary')
+    hyperlink = fields.Char('Hyperlink')
     sequence = fields.Integer('Sequence', required=True, default=50)
 
 
@@ -1133,6 +1134,7 @@ class MasterTour(models.Model):
                     'description': item.description,
                     'timeslot': item.timeslot,
                     'image': item.image_id.url,
+                    'hyperlink': item.hyperlink,
                     'image_file_name': item.image_id.filename,
                     'sequence': item.sequence,
                 })

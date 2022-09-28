@@ -90,7 +90,6 @@ class ReservationActivity(models.Model):
     booking_uuid = fields.Char('Booking UUID')
 
     user_id = fields.Many2one('res.users', 'User')
-    senior = fields.Integer('Senior')
 
     acceptance_date = fields.Datetime('Acceptance Date')
     rejected_date = fields.Datetime('Rejected Date')
@@ -601,7 +600,7 @@ class ReservationActivity(models.Model):
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
-                'senior': senior,
+                'elder': senior,
                 'adult': adult,
                 'child': child,
                 'infant': infant,
@@ -762,16 +761,15 @@ class ReservationActivity(models.Model):
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)
             attachment_objs = []
             for idx, rec in enumerate(res2['response']['ticket']):
-                if res2['response']['provider'] in ['bemyguest', 'rodextrip_activity']:
-                    attachment_value = {
-                        'filename': 'Activity_Ticket.pdf',
-                        'file_reference': str(obj.name) + ' ' + str(idx+1),
-                        'file': rec,
-                        'delete_date': visit_date + timedelta(days=7)
-                    }
-                    attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
-                    if attachment_obj['error_code'] == 0:
-                        attachment_objs.append(attachment_obj['response'])
+                attachment_value = {
+                    'filename': 'Activity_Ticket.pdf',
+                    'file_reference': str(obj.name) + ' ' + str(idx+1),
+                    'file': rec,
+                    'delete_date': visit_date + timedelta(days=7)
+                }
+                attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
+                if attachment_obj['error_code'] == 0:
+                    attachment_objs.append(attachment_obj['response'])
 
             new_vouch_objs = []
             for rec in attachment_objs:
@@ -1001,6 +999,7 @@ class ReservationActivity(models.Model):
                     'pnr': book_obj.pnr,
                     'order_number': book_obj.name,
                     'book_id': book_obj.id,
+                    'state': book_obj.state
                 }
                 result = ERR.get_no_error(req)
             else:
