@@ -758,18 +758,19 @@ class ReservationActivity(models.Model):
                 'pnr': obj.pnr,
                 'provider': provider
             }
-            res2 = self.env['tt.activity.api.con'].get_vouchers(req)
             attachment_objs = []
-            for idx, rec in enumerate(res2['response']['ticket']):
-                attachment_value = {
-                    'filename': 'Activity_Ticket.pdf',
-                    'file_reference': str(obj.name) + ' ' + str(idx+1),
-                    'file': rec,
-                    'delete_date': visit_date + timedelta(days=7)
-                }
-                attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
-                if attachment_obj['error_code'] == 0:
-                    attachment_objs.append(attachment_obj['response'])
+            res2 = self.env['tt.activity.api.con'].get_vouchers(req)
+            if res2['error_code'] == 0:
+                for idx, rec in enumerate(res2['response']['ticket']):
+                    attachment_value = {
+                        'filename': 'Activity_Ticket.pdf',
+                        'file_reference': str(obj.name) + ' ' + str(idx+1),
+                        'file': rec,
+                        'delete_date': visit_date + timedelta(days=7)
+                    }
+                    attachment_obj = self.env['tt.upload.center.wizard'].upload_file_api(attachment_value, context)
+                    if attachment_obj['error_code'] == 0:
+                        attachment_objs.append(attachment_obj['response'])
 
             new_vouch_objs = []
             for rec in attachment_objs:

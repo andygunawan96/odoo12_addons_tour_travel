@@ -615,20 +615,6 @@ class MasterActivity(models.Model):
                         'provider_id': provider_id.id,
                     }
                     product_obj = self.env['tt.master.activity'].sudo().create(vals)
-                    if rec['product']['provider'] == 'bemyguest':
-                        try:
-                            uuid = rec['product']['uuid']
-                            base_url = request.env['ir.config_parameter'].get_param('web.base.url')
-                            product_an_req = {
-                                'uuid': uuid,
-                                'provider': rec['product']['provider'],
-                                'productUrl': base_url + '/agent/activity/product_details?uuid=' + uuid,
-                                'environment': 'live',
-                                'platform': 'web',
-                            }
-                            res = self.env['tt.master.activity.api.con'].send_product_analytics(product_an_req)
-                        except Exception as e:
-                            _logger.error('Error: Failed to send Product Analytics. \n %s : %s' % (traceback.format_exc(), str(e)))
                     self.env.cr.commit()
 
                 images = self.env['tt.activity.master.images'].search([('activity_id', '=', product_obj.id)])
