@@ -20,6 +20,7 @@
 						<button string="Configure Products" name="config_product" type="object" class="btn-primary" />
 						<button string="Generate JSON" name="generate_json" type="object" class="btn-primary" />
 						<button string="Sync Products" name="sync_product" type="object" class="btn-primary" />
+						<button string="Check JSON Length" name="check_json_length" type="object" class="btn-default" />
 						<button string="Deactivate Products" name="deactivate_product" type="object" class="btn-default" confirm="Deactivate all Activity Products of this provider?" />
 						<button string="Cancel" class="btn-default" special="cancel" />
 					</footer>
