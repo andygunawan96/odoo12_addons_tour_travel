@@ -164,11 +164,11 @@ class MasterEvent(models.Model):
 
     def search_event_api(self, req, context):
         try:
-            name = req.get('event_name') and req['event_name'] or ''
-            city = req.get('city') and req['city'] or ''
-            category = req.get('category') and req['category'] or ''
-            online = req.get('online') and req['online'] or ''
-            vendor = req.get('vendor') and int(req['vendor']) or ''
+            name = req.get('event_name') or ''
+            city = req.get('city') or ''
+            category = req.get('category') or ''
+            online = req.get('online') or ''
+            vendor = req.get('vendor') or ''
 
             limitation = [('state', 'in', ['confirm', 'sold-out', 'expired'])]
             if name != '': #Check by name jika category tidak di kirim

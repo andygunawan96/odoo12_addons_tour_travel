@@ -52,3 +52,12 @@ class TtCronLogInhResv(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('Update ' + mail_type)
 
+    def cron_mail_hotel_retrieve_booking(self):
+        list_provider = ['TBO Holidays']
+        try:
+            for to_send in self.env['tt.reservation.hotel'].sudo().search([('create_date', '<=', datetime.today() - timedelta(minutes=2)),('create_date', '>', datetime.today() - timedelta(minutes=10)),('provider_name', 'in', list_provider)]):
+                to_send.check_booking_status()
+
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('Retrieve Booking Hotel : TBO')

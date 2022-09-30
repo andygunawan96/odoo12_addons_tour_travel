@@ -1035,15 +1035,15 @@
             <span style="font-size: 24px; font-weight: 730">INVOICE DETAILS</span><br/>
         </div>
         <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; table-layout: fixed;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
-            <tr t-att-style="'background-color: ' + base_color + '; padding-top: 5px; padding-bottom: 5px; font-size: 16px'">
-                <th style="width: 15%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word; text-align: center; vertical-align: middle;">
+            <tr t-att-style="'background-color: ' + base_color + '; font-size: 16px; color: white; font-weight: 800; overflow-wrap:break-word; text-align: center; border-top: 1px solid #CCC;'">
+                <th style="width: 15%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-left-radius: 20px; vertical-align: middle;">
                     <span>Ref. Number</span>
                 </th>
-                <th style="width: 40%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; color: white; font-weight: 800; overflow-wrap:break-word; text-align: right; vertical-align: middle;">
+                <th style="width: 40%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; text-align: right; vertical-align: middle;">
                     <span>Descriptions</span>
                 </th>
                 <th style="width: 20%;"/>
-                <th style="width: 25%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-right-radius: 20px; color: white; font-weight: 800; overflow-wrap:break-word; text-align: center; vertical-align: middle;">
+                <th style="width: 25%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; border-top-right-radius: 20px; vertical-align: middle;">
                     <span>Total (Tax Inc.)</span>
                 </th>
             </tr>

@@ -8,7 +8,7 @@
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now().isoformat())"/>
-            <field name="active">True</field>
+            <field name="active">False</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_mail_hotel_confirmation()</field>
@@ -21,10 +21,23 @@
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now().isoformat())"/>
-            <field name="active">True</field>
+            <field name="active">False</field>
             <field name="state">code</field>
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_mail_hotel_spc_request()</field>
+        </record>
+
+        <record model="ir.cron" id="cron_mail_hotel_retrieve_booking">
+            <field name="name">Hotel Retrieve Booking</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">2</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="(datetime.now().isoformat())"/>
+            <field name="active">False</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_mail_hotel_retrieve_booking()</field>
         </record>
     </data>
 </odoo>
