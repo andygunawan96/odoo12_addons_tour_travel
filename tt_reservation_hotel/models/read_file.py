@@ -6,7 +6,7 @@ from .ApiConnector_Hotel import ApiConnectorHotels
 import csv, glob, os
 from lxml import html
 from ...tools import xmltodict
-import csv
+import csv, math
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -2259,7 +2259,7 @@ class HotelInformation(models.Model):
                     'lat': hotel.get('lat'),
                     'long': hotel.get('long'),
                     'state': 'confirm',
-                    'external_code': {self.masking_provider(provider): str(hotel.get('id',''))},
+                    'external_code': {self.masking_provider(provider): str(hotel.get('id') or hotel.get('code'))},
                     'near_by_facility': [],
                     'images': hotel.get('images') or hotel.get('image'),
                     'facilities': hotel.get('facilities'),
@@ -2352,11 +2352,13 @@ class HotelInformation(models.Model):
         # 1. Set to lower
         # 2. Split using " "
         fmt_hotel_name = hotel_name.lower()
-        for param in ['-', '_', '+', ',', '.', ';']:
+        for param in ['-', '_', '+', ',', '.', ';', '(', ')']:
             fmt_hotel_name = fmt_hotel_name.replace(param, ' ')
         fmt_hotel_name = fmt_hotel_name.replace('@', 'at ')
         fmt_hotel_name = fmt_hotel_name.replace('   ', ' ')
         fmt_hotel_name = fmt_hotel_name.replace('  ', ' ')
+        fmt_hotel_name = fmt_hotel_name.replace('&Amp;', '&')
+        fmt_hotel_name = fmt_hotel_name.replace('&amp;', '&')
         fmt_hotel_name = fmt_hotel_name.split(' ')
         # 3. Remove Selected String (Hotel, Motel, Apartement , dsb)
         ext_param = ['hotel', 'motel', 'villa', 'villas', 'apartment', 'and', '&', '&amp;']
@@ -2379,9 +2381,29 @@ class HotelInformation(models.Model):
                 return [rec,]
         return False
 
+    def calc_similarity(self, fmt_hotel_name, fmt_hotel_master, city_name):
+        if len(fmt_hotel_name) >= 3:
+            similarity = 0
+            for elem in fmt_hotel_name:
+                if elem in fmt_hotel_master:
+                    similarity += 1
+
+            len_const = math.floor(max(len(fmt_hotel_name), len(fmt_hotel_master)))
+            if similarity >= len_const/2:
+                return True
+            elif filter(lambda x:x in ['formerly', 'ex'], fmt_hotel_name) and similarity >= len_const/4:
+                return True
+        else:
+            if all(elem in " ".join(fmt_hotel_master) for elem in fmt_hotel_name):
+                return True
+        return False
+
     def advance_find_similar_name_from_database(self, hotel_name, city_name, city_ids, destination_id, new_hotel_id, limit=20):
         fmt_hotel_name = self.formatting_hotel_name(hotel_name, city_name)
         temp = []
+
+        if any(x != fmt_hotel_name for x in ['oyo', 'reddoors', 'zen']):
+            limit = 80
 
         # TYPE 1: cek by city dulu klo masih kurang => destination
         if city_ids:
@@ -2390,14 +2412,19 @@ class HotelInformation(models.Model):
             for rec in self.env['tt.hotel.master'].search([('city_id', 'in', city_ids)]):
                 if len(temp) > limit:
                     return temp
-                if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
-                    temp.append(rec)
+
+                if rec not in temp:
+                    fmt_hotel_master = self.formatting_hotel_name(rec.name, city_name)
+                    if self.calc_similarity(fmt_hotel_name, fmt_hotel_master, city_name):
+                        temp.append(rec)
+
         if destination_id and len(temp) < limit:
             for rec in self.env['tt.hotel.master'].search([('destination_id', '=', destination_id)]):
                 if len(temp) > limit:
                     return temp
-                if all(elem in " ".join(self.formatting_hotel_name(rec.name)) for elem in fmt_hotel_name):
-                    if rec not in temp:
+                if rec not in temp:
+                    fmt_hotel_master = self.formatting_hotel_name(rec.name, city_name)
+                    if self.calc_similarity(fmt_hotel_name, fmt_hotel_master, city_name):
                         temp.append(rec)
         # Klo Blum nemu dri nama tpi cmn cari 1 aja
         if len(temp) == 0:
@@ -3661,8 +3688,14 @@ class HotelInformation(models.Model):
                 _logger.info(msg=str(x+1) + '. ' + rec.hotel_id.name + ' => ' + rec.comp_hotel_id.name + ' Score:' + str(rec.score))
             else:
                 _logger.info(msg=str(x + 1) + '. ' + rec.hotel_id.name + ' (New)')
-            rec.merge_hotel()
-            x += 1
+            try:
+                rec.merge_hotel()
+                x += 1
+            except:
+                # Error disin biasane karena hotel raw tdak ada provider codenya
+                # Asumsi jika error disini maka data yg error blum brubah jadi masih tobe_merge g susah tracing nya
+                _logger.info(msg='Error Merge: ' + rec.hotel_id.name)
+                continue
 
             if x % 15 == 0:
                 _logger.info(msg='=======================================')
@@ -3770,6 +3803,16 @@ class HotelInformation(models.Model):
         f2 = f2.read()
         catalog = json.loads(f2)
 
+        try:
+            file = open('/var/log/tour_travel/cache_hotel/cache_hotel_partial.txt', 'r')
+            content = file.read()
+            content = json.loads(content)
+            cache_data_id = [x['id'] for x in content]
+            file.close()
+        except:
+            content = []
+            cache_data_id = []
+
         _logger.info(msg='============== Render Start ==============')
         catalog.sort(key=lambda k: k['index'])
         rewrite_city = self.env['ir.config_parameter'].sudo().get_param('rewrite.city')
@@ -3778,24 +3821,33 @@ class HotelInformation(models.Model):
                 if city['destination_name'].lower() != rewrite_city_name:
                 # if city['city_name'].lower() not in rewrite_city.split(','): #Old Version
                     continue
-                content = []
+                # content = []
                 # Search all Mapped Data from hotel.master
 
                 render_idx = 0
                 for hotel in self.env['tt.hotel.master'].search(['|',('city_id','=',city['city_id']),('destination_id','=',city['destination_id'])]):
                 # for hotel in self.env['tt.hotel'].search([('city_id','=',city['city_id'])]):  #Old Version
+                    if hotel.internal_code in cache_data_id:
+                        continue
                     content.append(hotel.fmt_read(city_idx=city['index']))
                     _logger.info(msg='Adding Hotel ' + hotel.name)
 
                     render_idx += 1
                     if render_idx % 300 == 0:
                         _logger.info(msg='============ Save Cache ============')
-                        self.env.cr.commit()
+                        file = open('/var/log/tour_travel/cache_hotel/cache_hotel_partial.txt', 'w')
+                        file.write(json.dumps(content))
+                        file.close()
                 try:
                     # with open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'r') as f2:
                     #     record = f2.read()
                     #     old_rec = json.loads(record)
                     # content += old_rec
+
+                    file = open('/var/log/tour_travel/cache_hotel/cache_hotel_partial.txt', 'w')
+                    file.write(json.dumps([]))
+                    file.close()
+                    _logger.info(msg='=== Clear Partial Done ===')
 
                     file = open('/var/log/tour_travel/cache_hotel/cache_hotel_' + str(city['index']) + '.txt', 'w')
                     file.write(json.dumps(content))
@@ -3846,7 +3898,10 @@ class HotelInformation(models.Model):
     # Todo: Pertimbangkan saat new hotel pnya meal type code & facility code yg tidak terdaftar
     # Notes: Control datane disini biar next search dia tidak kosongan / gagal di tampilin
     def v2_receive_data_from_gateway(self):
-        render_city = 'Singapore'
+        # render_city = 'Surabaya'
+        render_city = self.env['ir.config_parameter'].sudo().get_param('rewrite.city')
+        render_city = render_city.split(',')[0]
+        render_city = render_city.capitalize()
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
         city_file_url = base_cache_directory + 'from_cache/'+ render_city +'.json'
         f2 = open(city_file_url, 'r')
