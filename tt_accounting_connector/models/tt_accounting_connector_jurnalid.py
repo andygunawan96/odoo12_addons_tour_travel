@@ -643,7 +643,7 @@ class AccountingConnectorAccurate(models.Model):
                         desc = "%s; Tiket Perjalanan %s %s; Atas Nama: %s" % (pnr, journey_type, journey_text, rec_ticket['passenger'])
                         price = 0
                         if is_user_ho:
-                            price = rec_ticket['agent_nta'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
+                            price = rec_ticket['agent_nta'] + rec_ticket['total_commission'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
                         else:
                             price = rec_ticket['total_nta'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets']))) + (rec_ticket['ho_commission'])
                         list_desc.append({
