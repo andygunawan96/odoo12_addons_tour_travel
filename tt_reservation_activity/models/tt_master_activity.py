@@ -9,6 +9,7 @@ import pickle
 from datetime import datetime
 import csv
 import os
+import re
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -29,6 +30,13 @@ class ActivitySyncProducts(models.TransientModel):
     provider_code = fields.Char('Provider Code')
     start_num = fields.Char('Start Number', default='1')
     end_num = fields.Char('End Number', default='1')
+
+    def check_json_length(self):
+        if self.provider_id.code == 'klook':
+            file_ext = 'csv'
+        else:
+            file_ext = 'json'
+        self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext)
 
     def generate_json(self):
         self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
@@ -141,6 +149,24 @@ class MasterActivity(models.Model):
                 file.close()
         else:
             self.sync_config(provider_code)
+
+    def action_check_json_length(self, provider_code, file_ext='json'):
+        search_dir = "/var/log/tour_travel/%s_master_data/" % provider_code
+        file_prefix = "%s_master_data" % provider_code
+        try:
+            list_of_files = [filename for filename in os.listdir(search_dir) if os.path.isfile(os.path.join(search_dir, filename)) and file_prefix in filename]
+        except:
+            raise UserError('Files are not generated yet.')
+
+        if not list_of_files:
+            raise UserError('Files are not generated yet.')
+
+        def extract_number(f):
+            s = re.findall("(\d+).%s" % file_ext, f)
+            return int(s[0]) if s else -1, f
+
+        max_file = max(list_of_files, key=extract_number)
+        raise UserError('Latest file is: %s' % max_file)
 
     def action_generate_json(self, provider_code):
         if provider_code == 'bemyguest':
@@ -615,20 +641,6 @@ class MasterActivity(models.Model):
                         'provider_id': provider_id.id,
                     }
                     product_obj = self.env['tt.master.activity'].sudo().create(vals)
-                    if rec['product']['provider'] == 'bemyguest':
-                        try:
-                            uuid = rec['product']['uuid']
-                            base_url = request.env['ir.config_parameter'].get_param('web.base.url')
-                            product_an_req = {
-                                'uuid': uuid,
-                                'provider': rec['product']['provider'],
-                                'productUrl': base_url + '/agent/activity/product_details?uuid=' + uuid,
-                                'environment': 'live',
-                                'platform': 'web',
-                            }
-                            res = self.env['tt.master.activity.api.con'].send_product_analytics(product_an_req)
-                        except Exception as e:
-                            _logger.error('Error: Failed to send Product Analytics. \n %s : %s' % (traceback.format_exc(), str(e)))
                     self.env.cr.commit()
 
                 images = self.env['tt.activity.master.images'].search([('activity_id', '=', product_obj.id)])

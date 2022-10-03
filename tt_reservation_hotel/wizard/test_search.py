@@ -947,42 +947,6 @@ class TestSearch(models.Model):
             provider_bookings = []
             for provider_booking in resv_obj.provider_booking_ids:
                 provider_bookings.append(provider_booking.to_dict())
-            vals = {
-                'adult': resv_obj.adult,
-                'checkin_date': resv_obj.checkin_date,
-                'checkout_date': resv_obj.checkout_date,
-                'child': resv_obj.child,
-                'room_count': resv_obj.room_count,
-                'booking_id': resv_obj.id,
-                'booking_name': resv_obj.name,
-                'os_res_no': resv_obj.name, #resv_obj.number,
-                'status': resv_obj.state,
-                'total': resv_obj.total,
-                'currency': resv_obj.currency_id.name,
-                'voucher_no': '',
-                'commission': resv_obj.total_commission,
-                'issued_date': resv_obj.issued_date,
-                'from_date': resv_obj.checkin_date,
-                'to_date': resv_obj.checkout_date,
-                'agent_id': resv_obj.agent_id.id,
-                'hotel_id': resv_obj.hotel_id.id,
-                'hotel_name': resv_obj.hotel_name,
-                'hotel_address': resv_obj.hotel_address,
-                'hotel_phone': resv_obj.hotel_phone,
-                'hotel_city_name': resv_obj.hotel_city,
-                'hotel_rooms': rooms,
-                'passengers': passengers,
-                'sid_booked': resv_obj.sid_booked,
-                'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
-                'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
-                'hotel_rating': 0,
-                'images': [],
-                'cancellation_policy': [],
-                'lat': '',
-                'long': '',
-                'bookers': bookers,
-                # 'sale_service_charge': self.prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr),
-            }
             new_vals = resv_obj.to_dict()
             for a in ['arrival_date', 'departure_date']:
                 new_vals.pop(a)
@@ -1006,6 +970,8 @@ class TestSearch(models.Model):
                 'sid_booked': resv_obj.sid_booked,
                 'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
                 'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
+                'cancellation_policy_str': resv_obj.cancellation_policy_str,
+                'special_request': resv_obj.special_req,
                 'currency': resv_obj.currency_id.name,
                 'provider_bookings': provider_bookings,
                 'total': resv_obj.total,

@@ -943,15 +943,21 @@ class HotelReservation(models.Model):
         }
 
     def check_booking_status(self):
-        api_context = {
-            'co_uid': self.env.user.agent_id.id
-        }
-        res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
-                                                        'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
-                                                        'booking_id': self.id,
-                                                        'booked_name': self.room_detail_ids[0].name,
-                                                        'issued_name': self.room_detail_ids[0].issued_name,
-                                                        }, api_context)
+        # api_context = {
+        #     'co_uid': self.env.user.id
+        # }
+        # res = API_CN_HOTEL.check_booking_status_by_api({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
+        #                                                 'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
+        #                                                 'booking_id': self.id,
+        #                                                 'booked_name': self.room_detail_ids[0].name,
+        #                                                 'issued_name': self.room_detail_ids[0].issued_name,
+        #                                                 }, api_context)
+        self.env['tt.hotel.api.con'].check_booking_status({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
+                                                           'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
+                                                           'booking_id': self.id,
+                                                           'booked_name': self.room_detail_ids[0].name,
+                                                           'issued_name': self.room_detail_ids[0].issued_name,
+                                                           })
         if res['error_code'] != 0:
             raise ('Error')
         else:

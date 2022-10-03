@@ -125,6 +125,16 @@ class HotelInformationCompare(models.Model):
     def get_compared_param(self):
         return ['name','rating','address','address2','address3','lat','long','email','destination_id','city_id','phone','state_id','country_id','provider']
 
+    def get_length(self, target_obj, param):
+        if getfield(target_obj, param):
+            try:
+                # Itank kadang return lat long 0.000000
+                return len(str(float(getfield(target_obj, param))))
+            except:
+                return len(str(getfield(target_obj, param)))
+        else:
+            return 0
+
     def collect_hotel(self, params):
         for param in params:
             self.env['tt.hotel.compare.line'].create({
@@ -132,7 +142,7 @@ class HotelInformationCompare(models.Model):
                 'params': param,
                 'value_1': getfield(self.hotel_id, param),
                 'value_2': getfield(self.comp_hotel_id, param),
-                'is_value_1': getfield(self.hotel_id, param) and len(str(getfield(self.hotel_id, param))) > len(str(getfield(self.comp_hotel_id, param))) if getfield(self.comp_hotel_id, param) else True or False
+                'is_value_1': self.get_length(self.hotel_id, param) > self.get_length(self.comp_hotel_id, param)
             })
 
     def empty_compare_line(self):
@@ -207,6 +217,8 @@ class HotelInformationCompare(models.Model):
             return const - 1, temp_result * const
         elif record.params in ['lat', 'long']:
             const = 1
+            temp_rec_1 = temp_rec_1.replace("'", '').replace('"', '')
+            temp_rec_2 = temp_rec_2.replace("'", '').replace('"', '')
             try:
                 temp_rec_1 = float(temp_rec_1)
                 temp_rec_2 = float(temp_rec_2)
@@ -263,6 +275,14 @@ class HotelInformationCompare(models.Model):
                     rec.similarity_value = score_cou
                     rec.max_value = 1
                 max_score += 1
+            # Part ini untuk field yg mesti ada (bisa jadi name mirip tpi yg 1 alamate kosong sehingga angkane tinggi)
+            # Name 1: Grand Kamala Lagoon By Veeroom, Name 2: Superior @ Grand Kamala Lagoon By Eha Room
+            # Almat 1 kosong total score: 73
+            elif rec.params in ['name', 'address']:
+                max_score += 5
+                rec.similarity_value = 0
+                rec.max_value = 5
+
 
         self.score = score and score * 100 / max_score or 0
 
@@ -410,6 +430,9 @@ class HotelInformationCompare(models.Model):
             self.similar_id = self.env['tt.hotel.master'].create(hotel_dict)
             self.similar_id.state = 'draft'
         else:
+            if not self.hotel_id.provider_hotel_ids:
+                # Logger g bis proses soaale hotel yg mau di mapping g ada provider e
+                return False
             self.similar_id = self.comp_hotel_id
             for rec in self.line_ids:
                 if rec.params == 'rating':

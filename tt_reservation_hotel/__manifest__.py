@@ -16,6 +16,7 @@ Key Features
     'website': 'rodextravel.tours',
     'depends': ['base_setup','tt_base','tt_reservation','base_address_city', 'tt_merge_record'],
     'data': [
+        'data/ir_cron_data.xml',
         'data/provider_type_data.xml',
         'data/ir_sequence_data.xml',
         'data/hotel_type_data.xml',

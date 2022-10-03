@@ -25,3 +25,8 @@ class TtHotelApiCon(models.Model):
     def get_balance(self, provider):
         return self.send_request_to_gateway('%s/account/hotel' % (self.url), {'provider': provider}, 'get_vendor_balance')
 
+    def check_booking_status(self, data):
+        return self.send_request_to_gateway('%s/booking/hotel' % (self.url), data, 'check_booking_status')
+
+    def cancel_booking(self, data):
+        return self.send_request_to_gateway('%s/booking/hotel' % (self.url), data, 'cancel_booking')

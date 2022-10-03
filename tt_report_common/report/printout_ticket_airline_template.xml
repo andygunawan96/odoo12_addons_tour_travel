@@ -92,7 +92,15 @@
                 <t t-foreach="segment_obj.segment_addons_ids" t-as="addons_obj">
                     <t t-if="psg['pax_type'] in addons_obj.get_pax_type()">
                         <t t-set="any_ssr" t-value="1"/>
-                        <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/></i><br/>
+                        <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/>
+                        <i style="margin-right:3px;" class="fa fa-suitcase">
+                            <t t-if="addons_obj.detail_name">
+                                <span t-field="addons_obj.detail_name"/>
+                            </t>
+                            <t t-else="">
+                                <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/>
+                            </t>
+                        </i><br/>
                     </t>
                 </t>
             </t>
@@ -235,12 +243,12 @@
                                     </t>
                                 </t>
                                 <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>
-                                <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>
+                                <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class_str"/></span><br/>
                             </div>
                             <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding: 10px 25px; margin-left: -10px;">
                                 <div class="row">
                                     <div class="col-5" style="margin-right: 0px">
-                                        <div style="height: 75px; max-height: 150px">
+                                        <div style="min-height: 75px; max-height: 150px">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.origin_id.city"/> (<span t-field="segment_obj.origin_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.origin_id.name"/></span><br/>
                                             <span style="font-size: 16px; font-weight:200"><t t-if="segment_obj.origin_terminal">Terminal <span t-field="segment_obj.origin_terminal"/></t></span>
@@ -255,7 +263,7 @@
                                         <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                     </div>
                                     <div class="col-5">
-                                        <div style="height: 75px; max-height: 150px">
+                                        <div style="min-height: 75px; max-height: 150px">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.destination_id.city"/> (<span t-field="segment_obj.destination_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.destination_id.name"/></span><br/>
                                             <span style="font-size: 16px; font-weight:200"><t t-if="segment_obj.destination_terminal">Terminal <span t-field="segment_obj.destination_terminal"/></t></span>
