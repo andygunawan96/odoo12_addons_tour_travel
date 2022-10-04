@@ -1099,7 +1099,7 @@ class ReservationAirline(models.Model):
                                 'carrier_number': seg['carrier_number'],
                                 'origin_terminal': seg['origin_terminal'],
                                 'destination_terminal': seg['destination_terminal'],
-                                'departure_date': seg['departure_date'],
+                                'departure_date': seg['departure_date'][:10],
                                 'arrival_date': seg['arrival_date'],
                                 'class_of_service': '',
                                 'cabin_class': '',
