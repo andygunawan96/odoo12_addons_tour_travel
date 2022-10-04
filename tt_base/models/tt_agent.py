@@ -608,7 +608,7 @@ class TtAgent(models.Model):
                 if req.get('ref_r_n'):
                     usage_pnr_quota = req.get('ref_r_n') * len(req.get('ref_pnrs').split(','))
                 elif req.get('ref_pax'):
-                    usage_pnr_quota = req.get('ref_r_n') * len(req.get('ref_pnrs').split(','))
+                    usage_pnr_quota = req.get('ref_pax') * len(req.get('ref_pnrs').split(','))
             if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
                 amount = 0
             elif self.quota_package_id.free_usage > total_quota_pnr_used:
