@@ -1099,7 +1099,7 @@ class ReservationAirline(models.Model):
                                 'carrier_number': seg['carrier_number'],
                                 'origin_terminal': seg['origin_terminal'],
                                 'destination_terminal': seg['destination_terminal'],
-                                'departure_date': seg['departure_date'][:10],
+                                'departure_date': seg['departure_date'],
                                 'arrival_date': seg['arrival_date'],
                                 'class_of_service': '',
                                 'cabin_class': '',
@@ -1918,7 +1918,7 @@ class ReservationAirline(models.Model):
                 'adult': adult,
                 'child': child,
                 'infant': infant,
-                'departure_date': airline_obj.journey_ids[0].departure_date,
+                'departure_date': airline_obj.journey_ids[0].departure_date[:10],
             })
             airline_obj.calculate_service_charge()
 
