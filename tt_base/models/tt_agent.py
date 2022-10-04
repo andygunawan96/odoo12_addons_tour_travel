@@ -601,14 +601,10 @@ class TtAgent(models.Model):
             if req['inventory'] == 'external':
                 calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
                 amount = calculate_price_dict['amount']
-                usage_pnr_quota = calculate_price_dict['usage_quota']
+                usage_pnr_quota = calculate_price_dict['usage_quota'] ## hanya untuk product milik btbo2 karena tidak sharing profit
             else:
                 amount = req.get('amount')
-                usage_pnr_quota = 0
-                if req.get('ref_r_n'):
-                    usage_pnr_quota = req.get('ref_r_n') * len(req.get('ref_pnrs').split(','))
-                elif req.get('ref_pax'):
-                    usage_pnr_quota = req.get('ref_pax') * len(req.get('ref_pnrs').split(','))
+                usage_pnr_quota = 0 ## untuk inventory internal tidak potong quota karena sudah sharing profit
             if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
                 amount = 0
             elif self.quota_package_id.free_usage > total_quota_pnr_used:
