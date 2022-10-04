@@ -18,7 +18,7 @@ class TtPnrQuota(models.Model):
     _order = 'id desc'
 
     name = fields.Char('Name')
-    used_amount = fields.Integer('Used Amount', compute='_compute_used_amount',store=True)
+    used_amount = fields.Integer('Usage Quota', compute='_compute_used_amount',store=True) ## harus nya usage_quota
     amount = fields.Integer('Amount', store=True)
     currency_id = fields.Many2one('res.currency', string='Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -53,7 +53,10 @@ class TtPnrQuota(models.Model):
     @api.depends('usage_ids', 'usage_ids.active')
     def _compute_used_amount(self):
         for rec in self:
-            rec.used_amount = len(rec.usage_ids.ids)
+            usage_pnr = 0
+            for usage_obj in rec.usage_ids:
+                usage_pnr += usage_obj.usage_quota
+            rec.used_amount = usage_pnr
 
     # @api.depends('price_list_id')
     # def _compute_amount(self):
@@ -211,6 +214,7 @@ class TtPnrQuota(models.Model):
 
     def calculate_price(self, quota_list, req):
         price = 0
+        quota_pnr_usage = 0
         try:
             carriers = req.get('ref_carriers').split(', ') # dari api
             pnr = req.get('ref_pnrs').split(', ') # dari api
@@ -229,16 +233,27 @@ class TtPnrQuota(models.Model):
                     if price_list_obj.carrier_access_type == 'all':
                         if price_list_obj.price_type == 'pnr':
                             price += price_list_obj.price * len(pnr)
+                            try:
+                                quota_pnr_usage += len(pnr) * req.get('ref_pax')
+                            except:
+                                try:
+                                    quota_pnr_usage += len(pnr) * req.ref_pax  # recalculate
+                                except:
+                                    pass
                         elif price_list_obj.price_type == 'r/n':
                             try:
                                 price += price_list_obj.price * req.get('ref_r_n')  # dari api
+                                quota_pnr_usage += req.get('ref_r_n')
                             except:
                                 price += price_list_obj.price * req.ref_r_n  # recalculate
+                                quota_pnr_usage += req.ref_r_n  # recalculate
                         elif price_list_obj.price_type == 'pax':
                             try:
                                 price += price_list_obj.price * req.get('ref_pax')  # dari api
+                                quota_pnr_usage += req.get('ref_pax')  # dari api
                             except:
                                 price += price_list_obj.price * req.ref_pax  # recalculate
+                                quota_pnr_usage += req.ref_pax  # recalculate
                     else:
                         price_add = True
                         for carrier in carriers:
@@ -247,24 +262,39 @@ class TtPnrQuota(models.Model):
                         if price_add == True:
                             if price_list_obj.price_type == 'pnr':
                                 price += price_list_obj.price * len(pnr)
+                                try:
+                                    quota_pnr_usage += len(pnr) * req.get('ref_pax')
+                                except:
+                                    try:
+                                        quota_pnr_usage += len(pnr) * req.ref_pax  # recalculate
+                                    except:
+                                        pass
                             elif price_list_obj.price_type == 'r/n':
                                 try:
                                     price += price_list_obj.price * req.get('ref_r_n') #dari api
+                                    quota_pnr_usage += req.get('ref_r_n') #dari api
                                 except:
                                     price += price_list_obj.price * req.ref_r_n  # recalculate
+                                    quota_pnr_usage += req.ref_r_n  # recalculate
                             elif price_list_obj.price_type == 'pax':
                                 try:
                                     price += price_list_obj.price * req.get('ref_pax') #dari api
+                                    quota_pnr_usage += req.get('ref_pax') #dari api
                                 except:
                                     price += price_list_obj.price * req.ref_pax #recalculate
-        return price
+                                    quota_pnr_usage += req.ref_pax #recalculate
+        return {
+            "price": price,
+            "quota_pnr_usage": quota_pnr_usage
+        }
 
     def recompute_wrong_value_amount(self):
         self.amount = int(self.price_package_id.minimum_fee)
         for rec in self.usage_ids:
             if rec.inventory == 'external':
-                price = self.calculate_price(self.price_package_id.available_price_list_ids, rec)
-                rec.amount = price
+                calculate_price_dict = self.calculate_price(self.price_package_id.available_price_list_ids, rec)
+                rec.amount = calculate_price_dict['price']
+                rec.usage_quota = calculate_price_dict['usage_quota']
 
     def print_report_excel(self):
         datas = {'id': self.id}
