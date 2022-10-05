@@ -599,20 +599,20 @@ class TtAgent(models.Model):
             #ambl yg index 0, terbaru
             quota_obj = quota_obj_list[0]
             total_quota_pnr_used = quota_obj.usage_quota
-            _logger.info('CHECK QUOTA PNR HERE')
-            _logger.info(json.dumps(req))
+            type_price = 'pax'
             if req['inventory'] == 'external':
                 calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
-                _logger.info(json.dumps(calculate_price_dict))
                 amount = calculate_price_dict['price']
                 usage_pnr_quota = calculate_price_dict['quota_pnr_usage'] ## hanya untuk product milik btbo2 karena tidak sharing profit
+                type_price = calculate_price_dict['type_price']
             else:
                 amount = req.get('amount')
                 usage_pnr_quota = 0 ## untuk inventory internal tidak potong quota karena sudah sharing profit
             if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
                 amount = 0
             elif self.quota_package_id.free_usage > total_quota_pnr_used:
-                amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
+                if type_price != 'pnr':
+                    amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
             self.env['tt.pnr.quota.usage'].create({
                 'res_model_resv': req.get('res_model_resv'),
                 'res_id_resv': req.get('res_id_resv'),

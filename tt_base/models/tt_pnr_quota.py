@@ -223,6 +223,7 @@ class TtPnrQuota(models.Model):
     def calculate_price(self, quota_list, req):
         price = 0
         quota_pnr_usage = 0
+        type_price = 'pnr'
         try:
             carriers = req.get('ref_carriers').split(', ') # dari api
             pnr = req.get('ref_pnrs').split(', ') # dari api
@@ -239,16 +240,19 @@ class TtPnrQuota(models.Model):
             if provider_type == price_list_obj.provider_type_id.code:
                 if price_list_obj.provider_access_type == 'all' or price_list_obj.provider_access_type == 'allow' and provider == price_list_obj.provider_id.code or price_list_obj.provider_access_type == 'restrict' and provider != price_list_obj.provider_id.code:
                     if price_list_obj.carrier_access_type == 'all':
+                        price_add = True
+                    else:
+                        price_add = True
+                        for carrier in carriers:
+                            if price_list_obj.carrier_access_type == 'restrict' and price_list_obj.carrier_id.name == carrier or price_list_obj.carrier_id.name != carrier:
+                                price_add = False
+                    if price_add:
                         if price_list_obj.price_type == 'pnr':
                             price += price_list_obj.price * len(pnr)
-                            try:
-                                quota_pnr_usage += len(pnr) * req.get('ref_pax')
-                            except:
-                                try:
-                                    quota_pnr_usage += len(pnr) * req.ref_pax  # recalculate
-                                except:
-                                    pass
+                            type_price = 'pnr'
+                            quota_pnr_usage += len(pnr)
                         elif price_list_obj.price_type == 'r/n':
+                            type_price = 'r/n'
                             try:
                                 price += price_list_obj.price * req.get('ref_r_n')  # dari api
                                 quota_pnr_usage += req.get('ref_r_n')
@@ -256,44 +260,25 @@ class TtPnrQuota(models.Model):
                                 price += price_list_obj.price * req.ref_r_n  # recalculate
                                 quota_pnr_usage += req.ref_r_n  # recalculate
                         elif price_list_obj.price_type == 'pax':
+                            type_price = 'pax'
                             try:
                                 price += price_list_obj.price * req.get('ref_pax')  # dari api
                                 quota_pnr_usage += req.get('ref_pax')  # dari api
                             except:
                                 price += price_list_obj.price * req.ref_pax  # recalculate
                                 quota_pnr_usage += req.ref_pax  # recalculate
-                    else:
-                        price_add = True
-                        for carrier in carriers:
-                            if price_list_obj.carrier_access_type == 'restrict' and price_list_obj.carrier_id.name == carrier or price_list_obj.carrier_id.name != carrier:
-                                price_add = False
-                        if price_add == True:
-                            if price_list_obj.price_type == 'pnr':
-                                price += price_list_obj.price * len(pnr)
-                                try:
-                                    quota_pnr_usage += len(pnr) * req.get('ref_pax')
-                                except:
-                                    try:
-                                        quota_pnr_usage += len(pnr) * req.ref_pax  # recalculate
-                                    except:
-                                        pass
-                            elif price_list_obj.price_type == 'r/n':
-                                try:
-                                    price += price_list_obj.price * req.get('ref_r_n') #dari api
-                                    quota_pnr_usage += req.get('ref_r_n') #dari api
-                                except:
-                                    price += price_list_obj.price * req.ref_r_n  # recalculate
-                                    quota_pnr_usage += req.ref_r_n  # recalculate
-                            elif price_list_obj.price_type == 'pax':
-                                try:
-                                    price += price_list_obj.price * req.get('ref_pax') #dari api
-                                    quota_pnr_usage += req.get('ref_pax') #dari api
-                                except:
-                                    price += price_list_obj.price * req.ref_pax #recalculate
-                                    quota_pnr_usage += req.ref_pax #recalculate
+                        elif price_list_obj.price_type == 'pnr/pax':
+                            type_price = 'pnr/pax'
+                            try:
+                                price += price_list_obj.price * (req.get('ref_pax') * len(pnr))  # dari api
+                                quota_pnr_usage += (req.get('ref_pax') * len(pnr))  # dari api
+                            except:
+                                price += price_list_obj.price * (req.ref_pax * len(pnr))  # recalculate
+                                quota_pnr_usage += (req.ref_pax * len(pnr))  # recalculate
         return {
             "price": price,
-            "quota_pnr_usage": quota_pnr_usage
+            "quota_pnr_usage": quota_pnr_usage,
+            "type_price": type_price
         }
 
     def recompute_wrong_value_amount(self):
@@ -307,7 +292,7 @@ class TtPnrQuota(models.Model):
             rec.usage_quota = calculate_price_dict['quota_pnr_usage']
             if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
                 rec.amount = 0
-            elif free_pnr_quota > quota_pnr_usage:
+            elif free_pnr_quota > quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
                 rec.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
             else:
                 rec.amount = calculate_price_dict['price']
