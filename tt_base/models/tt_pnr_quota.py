@@ -302,7 +302,7 @@ class TtPnrQuota(models.Model):
             if rec.inventory == 'external':
                 calculate_price_dict = self.calculate_price(self.price_package_id.available_price_list_ids, rec)
                 rec.amount = calculate_price_dict['price']
-                rec.usage_quota = calculate_price_dict['usage_quota']
+                rec.usage_quota = calculate_price_dict['quota_pnr_usage']
 
     def print_report_excel(self):
         datas = {'id': self.id}
