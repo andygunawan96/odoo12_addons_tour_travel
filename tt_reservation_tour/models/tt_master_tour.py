@@ -1240,6 +1240,7 @@ class MasterTour(models.Model):
                 'tour_type_str': dict(tour_obj._fields['tour_type'].selection).get(tour_obj.tour_type),
                 'tour_lines': tour_line_list,
                 'carrier_code': tour_obj.carrier_id.code,
+                'carrier_data': tour_obj.carrier_id.to_dict(),
                 'accommodations': accommodations,
                 'currency_code': tour_obj.currency_id.name,
                 'est_starting_price': tour_obj.est_starting_price,

@@ -2123,6 +2123,11 @@ class MasterActivity(models.Model):
             res.update({
                 'activity_lines': temp
             })
+            activity_carrier = self.env['tt.transport.carrier'].search([('code', '=', 'ACT')], limit=1)
+            if activity_carrier:
+                res.update({
+                    'carrier_data': activity_carrier[0].to_dict()
+                })
             return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())

@@ -1918,7 +1918,7 @@ class ReservationAirline(models.Model):
                 'adult': adult,
                 'child': child,
                 'infant': infant,
-                'departure_date': airline_obj.journey_ids[0].departure_date,
+                'departure_date': airline_obj.journey_ids[0].departure_date[:10],
             })
             airline_obj.calculate_service_charge()
 
