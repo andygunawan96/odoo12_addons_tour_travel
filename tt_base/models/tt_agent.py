@@ -597,7 +597,7 @@ class TtAgent(models.Model):
 
             #ambl yg index 0, terbaru
             quota_obj = quota_obj_list[0]
-            total_quota_pnr_used = quota_obj.used_amount
+            total_quota_pnr_used = quota_obj.usage_quota
             if req['inventory'] == 'external':
                 calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
                 amount = calculate_price_dict['amount']

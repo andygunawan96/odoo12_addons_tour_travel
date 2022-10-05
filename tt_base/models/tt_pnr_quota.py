@@ -18,7 +18,8 @@ class TtPnrQuota(models.Model):
     _order = 'id desc'
 
     name = fields.Char('Name')
-    used_amount = fields.Integer('Usage Quota', compute='_compute_used_amount',store=True) ## harus nya usage_quota
+    used_amount = fields.Integer('Total Transaction', compute='_compute_used_amount',store=True) ## harus nya total transaction
+    usage_quota = fields.Integer('Usage Quota', compute='_compute_usage_quota',store=True) ## quota external
     amount = fields.Integer('Amount', store=True)
     currency_id = fields.Many2one('res.currency', string='Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -53,10 +54,16 @@ class TtPnrQuota(models.Model):
     @api.depends('usage_ids', 'usage_ids.active')
     def _compute_used_amount(self):
         for rec in self:
+            rec.used_amount = len(rec.usage_ids.ids)
+
+    @api.onchange('usage_ids', 'usage_ids.active')
+    @api.depends('usage_ids', 'usage_ids.active')
+    def _compute_usage_quota(self):
+        for rec in self:
             usage_pnr = 0
-            for usage_obj in rec.usage_ids:
+            for usage_obj in rec.usage_ids.filtered(lambda x: x.inventory == 'external'):
                 usage_pnr += usage_obj.usage_quota
-            rec.used_amount = usage_pnr
+            rec.usage_quota = usage_pnr
 
     # @api.depends('price_list_id')
     # def _compute_amount(self):
@@ -81,6 +88,7 @@ class TtPnrQuota(models.Model):
         return {
             'name': self.name,
             'used_amount': self.used_amount,
+            'usage_quota': self.usage_quota,
             'amount': self.amount,
             'expired_date': self.expired_date,
             'state': self.state

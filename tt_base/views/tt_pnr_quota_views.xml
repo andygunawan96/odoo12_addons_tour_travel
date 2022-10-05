@@ -30,7 +30,8 @@
                             </group>
                             <group>
                                 <field name="currency_id"/>
-                                <field name="used_amount" string="Total Transaction"/>
+                                <field name="used_amount"/>
+                                <field name="usage_quota"/>
                                 <field name="transaction_amount_internal"/>
                                 <field name="transaction_amount_external"/>
                                 <field name="total_amount" string="Agent Fee"/>
