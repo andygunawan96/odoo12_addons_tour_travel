@@ -40,3 +40,4 @@ from . import tt_bus_api
 from . import tt_insurance_api
 from . import tt_accounting_connector_api
 from . import tt_email_credential
+from . import tt_hotel_api

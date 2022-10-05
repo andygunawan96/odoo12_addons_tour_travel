@@ -118,11 +118,11 @@ class HotelInformation(models.Model):
                 # 'provider_ext_code': rec_provider_ext_code,
             })
 
-            x += 1
-            if x % 20 == 0:
-                self.env.cr.commit()
-            if x % 2000 == 0:
-                return True
+            # x += 1
+            # if x % 20 == 0:
+            #     self.env.cr.commit()
+            # if x % 2000 == 0:
+            #     return True
 
     def calc_get_provider_name(self):
         for rec in self.search([('city_id', '=', self.city_id.id)]):
@@ -291,7 +291,7 @@ class HotelInformation(models.Model):
 
             if comparer:
                 for rec in comparer:
-                    if rec.score > 55:
+                    if rec.score > 55 and 'stay later' not in rec.hotel_id.name.lower():
                         rec.merge_hotel()
             else:
                 comparing_id = self.env['tt.hotel.compare'].create({

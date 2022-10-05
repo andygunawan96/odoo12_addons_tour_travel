@@ -391,7 +391,7 @@ class AccountingConnectorAccurate(models.Model):
                                     "quantity": len(room['dates'])
                                 })
                         desc = ''
-                        vendor_data = provider_booking['provider_name']
+                        vendor_data = provider_booking['provider_code']
                     ##AIRLINE TRAIN BUS
                     elif vals['provider_type_name'] in ['Airline', 'Train', 'Bus']:
                         if pnr == provider_booking['pnr']:
@@ -612,7 +612,8 @@ class AccountingConnectorAccurate(models.Model):
                             if is_user_ho:
                                 price = (room['room_rate'] / len(room['dates'])) + (vals['total_channel_upsell'] / ((len(provider_booking['rooms'] * len(vals['provider_bookings']))) * len(room['dates']))) - (vals['total_discount'] / len(provider_booking['rooms']))
                             else:
-                                price = (room['room_rate'] / len(room['dates'])) - (vals['total_discount'] / len(provider_booking['rooms']))
+                                ## - total commission + commission HO karena dapet harga full
+                                price = (room['room_rate'] / len(room['dates'])) - (vals['total_discount'] / len(provider_booking['rooms'])) + ((provider_booking['ho_commission'] - provider_booking['total_commission']) / len(provider_booking['rooms']))
                             list_desc.append({
                                 "price": price,
                                 "desc": desc,
@@ -642,9 +643,9 @@ class AccountingConnectorAccurate(models.Model):
                         desc = "%s; Tiket Perjalanan %s %s; Atas Nama: %s" % (pnr, journey_type, journey_text, rec_ticket['passenger'])
                         price = 0
                         if is_user_ho:
-                            price = rec_ticket['total_nta'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
+                            price = rec_ticket['agent_nta'] + rec_ticket['total_commission'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
                         else:
-                            price = rec_ticket['total_nta'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
+                            price = rec_ticket['total_nta'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets']))) + (rec_ticket['ho_commission'])
                         list_desc.append({
                             "price": price,
                             "desc": desc,
@@ -679,9 +680,9 @@ class AccountingConnectorAccurate(models.Model):
                         desc = "%s; %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, rec_ticket['passenger'])
                         price = 0
                         if is_user_ho:
-                            price = rec_ticket['total_nta'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / len(provider_booking['tickets']))
+                            price = rec_ticket['agent_nta'] + rec_ticket['total_commission'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / len(provider_booking['tickets']))
                         else:
-                            price = rec_ticket['total_nta'] - (vals['total_discount']/len(provider_booking['tickets']))
+                            price = rec_ticket['total_nta'] - (vals['total_discount']/len(provider_booking['tickets'])) + (rec_ticket['ho_commission'])
                         list_desc.append({
                             "price": price,
                             "desc": desc,
@@ -748,7 +749,7 @@ class AccountingConnectorAccurate(models.Model):
                 if is_user_ho:
                     price = vals['total'] + vals['total_channel_upsell'] - vals['total_discount']
                 else:
-                    price = vals['total'] - vals['total_discount']
+                    price = vals['total_nta'] - vals['total_discount'] + vals['ho_commission']
                 transaction_lines_attributes_lines.append({
                     "quantity": 1,
                     "rate": price,

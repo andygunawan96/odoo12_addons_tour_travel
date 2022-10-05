@@ -45,6 +45,7 @@
                             <field name="provider_id"/>
                             <field name="cabin_class"/>
                             <field name="cabin_class_str"/>
+                            <field name="description_text"/>
                         </group>
                         <group>
                             <field name="class_of_service"/>

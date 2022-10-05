@@ -86,7 +86,7 @@
                 <field name="booking_uuid" readonly="1" attrs="{'invisible': [('booking_uuid', '=', False)]}"/>
             </field>
             <field name="adult" position="after">
-                <field name="senior" readonly="1"/>
+                <field name="elder" readonly="1"/>
             </field>
             <field name="agent_nta" position="after">
                 <field name="total_channel_upsell" class="oe_subtotal_footer_separator"/>
