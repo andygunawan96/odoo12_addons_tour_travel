@@ -62,7 +62,7 @@
                         <separator string="Variables"/>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'jasaweb')]}">Jasaweb: Provide 'url', 'usr', 'pwd'.</p>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'accurate')]}">Accurate: Provide 'url', 'client_id', 'client_secret', 'url_redirect_web', 'username', 'password', 'database_id'.</p>
-                        <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Provide 'url', 'live_id'.</p>
+                        <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Provide 'url', 'live_id', '{provider_type_code}_vat_var', '{provider_type_code}_vat_percentage'.</p>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'jurnalid')]}">Jurnal ID: Provide 'url_api', 'url_web', 'client_id', 'client_secret', 'access_token', 'api_key'.</p>
                         <field name="variable_ids"/>
                         <separator string="Provider Suppliers" attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}"/>
