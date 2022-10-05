@@ -2048,7 +2048,18 @@ class ReservationGroupBooking(models.Model):
             raise RequestException(1008)
         booker_obj = self.create_booker_api(data['booker'], context)  # create booker
         if book_obj.contact_id:
-            contact_obj = self.create_contact_api(data['contacts'][0], booker_obj, context)
+            data_contact = {
+                "title": book_obj.contact_id.title,
+                "first_name": book_obj.contact_id.first_name,
+                "last_name": book_obj.contact_id.last_name,
+                "email": book_obj.contact_id.email,
+                "calling_code": book_obj.contact_id.phone_ids[0].calling_code,
+                "mobile": book_obj.contact_id.phone_ids[0].calling_number,
+                "contact_seq_id": book_obj.contact_id.seq_id,
+                "is_also_booker": False,
+                "nationality_code": book_obj.contact_id.nationality_id.code
+            }
+            contact_obj = self.create_contact_api(data_contact, booker_obj, context)
             book_obj.update({
                 'contact_id': contact_obj.id,
                 'contact_title': data['contacts'][0]['title'],
