@@ -1026,12 +1026,7 @@ class TtReservation(models.Model):
                 book_obj = self.env['tt.reservation.%s' % (req['table_name'])].search([('name', '=', req.get('order_number'))],
                                                                                limit=1)
             _logger.error(json.dumps(req))
-            if req.get('is_sync_reservation'):
-                if not req['is_sync_reservation']:
-                    _logger.error('UPDATE SYNC RESV FALSE HERE')
-                book_obj.sync_reservation = req['is_sync_reservation']
-            else:
-                book_obj.sync_reservation = True
+            book_obj.sync_reservation = req['is_sync_reservation']
             return ERR.get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -1313,7 +1308,8 @@ class TtReservation(models.Model):
 
                 data = {
                     'order_number': book_obj.name,
-                    'table_name': table_name
+                    'table_name': table_name,
+                    'is_sync_reservation': True
                 }
                 self.set_sync_reservation_api(data, context)
                 return ERR.get_no_error()
