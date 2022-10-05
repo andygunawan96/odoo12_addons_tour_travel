@@ -1025,7 +1025,10 @@ class TtReservation(models.Model):
             else:
                 book_obj = self.env['tt.reservation.%s' % (req['table_name'])].search([('name', '=', req.get('order_number'))],
                                                                                limit=1)
-            book_obj.sync_reservation = True
+            if req.get('is_sync_reservation'):
+                book_obj.sync_reservation = req.get('is_sync_reservation')
+            else:
+                book_obj.sync_reservation = True
             return ERR.get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc())
