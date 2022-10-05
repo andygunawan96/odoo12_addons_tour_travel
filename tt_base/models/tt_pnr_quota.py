@@ -298,11 +298,21 @@ class TtPnrQuota(models.Model):
 
     def recompute_wrong_value_amount(self):
         self.amount = int(self.price_package_id.minimum_fee)
-        for rec in self.usage_ids:
-            if rec.inventory == 'external':
-                calculate_price_dict = self.calculate_price(self.price_package_id.available_price_list_ids, rec)
+        package_obj = self.price_package_id
+        free_pnr_quota = package_obj.free_usage
+        quota_pnr_usage = 0
+        for rec in self.usage_ids.filtered(lambda x: x.inventory == 'external')[::-1]: ## reverse paling bawah duluan agar urutan free pnr tidak berubah
+            ##check free juga
+            calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, rec)
+            rec.usage_quota = calculate_price_dict['quota_pnr_usage']
+            if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
+                rec.amount = 0
+            elif free_pnr_quota > quota_pnr_usage:
+                rec.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
+            else:
                 rec.amount = calculate_price_dict['price']
-                rec.usage_quota = calculate_price_dict['quota_pnr_usage']
+            rec.usage_quota = calculate_price_dict['quota_pnr_usage']
+            quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
 
     def print_report_excel(self):
         datas = {'id': self.id}

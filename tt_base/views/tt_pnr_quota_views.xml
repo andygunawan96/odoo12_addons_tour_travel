@@ -58,6 +58,7 @@
                 <tree string="PNR Quota">
                     <field name="name"/>
                     <field name="used_amount"/>
+                    <field name="usage_quota"/>
                     <field name="expired_date"/>
                     <field name="state"/>
                 </tree>
