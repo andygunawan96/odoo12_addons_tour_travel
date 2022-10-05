@@ -601,7 +601,7 @@ class TtAgent(models.Model):
             total_quota_pnr_used = quota_obj.usage_quota
             if req['inventory'] == 'external':
                 calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
-                amount = calculate_price_dict['price']
+                amount = calculate_price_dict['amount']
                 usage_pnr_quota = calculate_price_dict['usage_quota'] ## hanya untuk product milik btbo2 karena tidak sharing profit
             else:
                 amount = req.get('amount')
