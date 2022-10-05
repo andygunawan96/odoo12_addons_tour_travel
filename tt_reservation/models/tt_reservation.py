@@ -1025,6 +1025,7 @@ class TtReservation(models.Model):
             else:
                 book_obj = self.env['tt.reservation.%s' % (req['table_name'])].search([('name', '=', req.get('order_number'))],
                                                                                limit=1)
+            _logger.error(json.dumps(req))
             if req.get('is_sync_reservation'):
                 if not req['is_sync_reservation']:
                     _logger.error('UPDATE SYNC RESV FALSE HERE')
