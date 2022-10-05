@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 from datetime import datetime,timedelta
 from ...tools.ERR import RequestException
 import uuid
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -600,6 +601,7 @@ class TtAgent(models.Model):
             total_quota_pnr_used = quota_obj.usage_quota
             if req['inventory'] == 'external':
                 calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
+                _logger.info(json.dumps(calculate_price_dict))
                 amount = calculate_price_dict['amount']
                 usage_pnr_quota = calculate_price_dict['usage_quota'] ## hanya untuk product milik btbo2 karena tidak sharing profit
             else:
