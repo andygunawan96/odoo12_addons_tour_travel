@@ -23,6 +23,7 @@
                             </h3>
                         </div>
                         <group>
+                            <field name="free_usage"/>
                             <field name="minimum_fee"/>
                             <field name="fix_profit_share"/>
                             <field name="validity"/>
