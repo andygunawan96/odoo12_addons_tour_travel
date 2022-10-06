@@ -48,6 +48,7 @@
                     <field name="ref_pnrs"/>
                     <field name="ref_carriers"/>
                     <field name="pnr_quota_id"/>
+                    <field name="usage_quota"/>
                     <field name="amount"/>
                     <field name="inventory"/>
                     <field name="active"/>
