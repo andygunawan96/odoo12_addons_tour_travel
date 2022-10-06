@@ -575,6 +575,10 @@ class ReservationEvent(models.Model):
                 'order_number': book_obj.name,
                 'state': book_obj.state,
                 'pnr': book_obj.pnr,
+                'ADT': book_obj.adult,
+                'CHD': book_obj.child,
+                'INF': book_obj.infant,
+                'YCD': book_obj.senior,
                 'provider': [{
                     'provider': opt.event_option_id.event_id.provider_id.code or 'event_internal',
                     'booking_code': opt.event_option_id.event_id.provider_id.code,
