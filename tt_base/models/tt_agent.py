@@ -597,11 +597,21 @@ class TtAgent(models.Model):
 
             #ambl yg index 0, terbaru
             quota_obj = quota_obj_list[0]
-
+            total_quota_pnr_used = quota_obj.usage_quota
+            type_price = 'pax'
             if req['inventory'] == 'external':
-                amount = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
+                calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
+                amount = calculate_price_dict['price']
+                usage_pnr_quota = calculate_price_dict['quota_pnr_usage'] ## hanya untuk product milik btbo2 karena tidak sharing profit
+                type_price = calculate_price_dict['type_price']
             else:
                 amount = req.get('amount')
+                usage_pnr_quota = 0 ## untuk inventory internal tidak potong quota karena sudah sharing profit
+            if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
+                amount = 0
+            elif self.quota_package_id.free_usage > total_quota_pnr_used:
+                if type_price != 'pnr':
+                    amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
             self.env['tt.pnr.quota.usage'].create({
                 'res_model_resv': req.get('res_model_resv'),
                 'res_id_resv': req.get('res_id_resv'),
@@ -616,7 +626,8 @@ class TtAgent(models.Model):
                 'ref_pax': req.get('ref_pax') and int(req.get('ref_pax')) or 0,
                 'ref_r_n': req.get('ref_r_n') and int(req.get('ref_r_n')) or 0,
                 'amount': amount,
-                'inventory': req['inventory']
+                'inventory': req['inventory'],
+                'usage_quota': usage_pnr_quota
             })
 
     def get_available_pnr_price_list_api(self,context):

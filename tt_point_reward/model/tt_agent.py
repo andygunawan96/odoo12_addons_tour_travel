@@ -21,8 +21,7 @@ class TtAgent(models.Model):
             rec._compute_actual_point_reward_agent()
 
     def _compute_actual_point_reward_agent(self):
-        for rec in self:
-            rec.actual_point_reward = rec.point_reward - rec.unprocessed_point_reward
+        self.actual_point_reward = self.point_reward - self.unprocessed_point_reward
 
     #_compute_unprocessed_point_reward
     def _compute_all_unprocessed_point_reward(self):
@@ -46,7 +45,7 @@ class TtAgent(models.Model):
         point_reward = 0
         for rec in self:
             if len(rec.ledger_ids)>0:
-                for ledger_points_obj in rec.ledger_ids.search([('source_of_funds_type','=','point')]): ## source_of_funds_type 1 untuk points
+                for ledger_points_obj in rec.ledger_ids.filtered(lambda x: x.source_of_funds_type == 'point'): ## source_of_funds_type 1 untuk points
                     point_reward += ledger_points_obj.debit - ledger_points_obj.credit
             rec.point_reward = point_reward
 

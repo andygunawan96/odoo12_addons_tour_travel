@@ -28,6 +28,7 @@
                             <field name="pnr_quota_state" invisible="1"/>
                             <field name="ref_pax"/>
                             <field name="ref_r_n"/>
+                            <field name="usage_quota"/>
                             <field name="currency_id"/>
                             <field name="amount"/>
                             <field name="inventory"/>
@@ -48,6 +49,7 @@
                     <field name="ref_carriers"/>
                     <field name="pnr_quota_id"/>
                     <field name="amount"/>
+                    <field name="inventory"/>
                     <field name="active"/>
                     <button name="open_reservation" string="Go to reference" type="object"/>
                 </tree>
