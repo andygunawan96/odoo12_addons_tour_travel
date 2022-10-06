@@ -319,7 +319,7 @@ CABIN_CLASS = [
 ACCOUNTING_VENDOR = [
     ('jasaweb', 'Jasa Web'),
     ('accurate', 'Accurate'),
-    ('itm', 'ITM (Airline Only)'),
+    ('itm', 'ITM'),
     ('jurnalid', 'Jurnal Id')
 ]
 

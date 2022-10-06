@@ -5,6 +5,9 @@
         <record id="tt_transport_carrier_activity_act" model="tt.transport.carrier">
             <field name="name">Activity</field>
             <field name="code">ACT</field>
+            <field name="adult_length_name">60</field>
+            <field name="child_length_name">60</field>
+            <field name="infant_length_name">60</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_activity.tt_provider_type_activity"/>
         </record>

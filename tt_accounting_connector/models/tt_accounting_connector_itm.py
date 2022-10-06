@@ -52,15 +52,13 @@ class AccountingConnectorITM(models.Model):
             supplier_list = []
             idx = 0
             for prov in request['provider_bookings']:
+                supplier_obj = self.env['tt.accounting.setup.suppliers'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('provider_id.code', '=', prov['provider'])], limit=1)
+                if supplier_obj:
+                    supplier_list.append({
+                        'supplier_code': supplier_obj.supplier_code or '',
+                        'supplier_name': supplier_obj.supplier_name or ''
+                    })
                 if request['provider_type'] == 'airline':
-                    supplier_obj = self.env['tt.accounting.setup.suppliers'].search(
-                        [('accounting_setup_id.accounting_provider', '=', 'itm'),
-                         ('provider_id.code', '=', prov['provider'])], limit=1)
-                    if supplier_obj:
-                        supplier_list.append({
-                            'supplier_code': supplier_obj.supplier_code or '',
-                            'supplier_name': supplier_obj.supplier_name or ''
-                        })
                     journey_list = []
                     journ_idx = 0
                     first_carrier_name = ''
@@ -103,6 +101,20 @@ class AccountingConnectorITM(models.Model):
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
 
+                        pax_setup = {
+                            'ho_profit': ho_prof,
+                            'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
+                            'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
+                        }
+
+                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                        if not vat_var_obj or not vat_perc_obj:
+                            _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
+
+                        temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
+                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+
                         # total cost = Total NTA
                         # total sales = Agent NTA
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
@@ -114,19 +126,149 @@ class AccountingConnectorITM(models.Model):
                             "CArrierName": first_carrier_name or '',
                             "Description": prov['pnr'],
                             "Quantity": 1,
-                            "Cost": pax.get('total_nta', 0),
-                            "Profit": ho_prof - round(ho_prof * 9.9099 / 100),
+                            "Cost": pax_setup['total_nta'],
+                            "Profit": ho_prof - vat,
                             "ServiceFee": 0,
-                            "VAT": round(ho_prof * 9.9099 / 100),
-                            "Sales": pax.get('agent_nta', 0),
+                            "VAT": vat,
+                            "Sales": pax_setup['agent_nta'],
                             "Itin": journey_list,
                             "Pax": pax_list
                         })
-
                         idx += 1
+
+                elif request['provider_type'] == 'train':
+                    journey_list = []
+                    journ_idx = 0
+                    first_carrier_name = ''
+                    for journ in prov['journeys']:
+                        journey_list.append({
+                            "itin": journ_idx + 1,
+                            "CarrierCode": journ['carrier_code'],
+                            "FlightNumber": journ['carrier_number'],
+                            "DateTimeDeparture": journ['departure_date'],
+                            "DateTimeArrival": journ['arrival_date'],
+                            "Departure": journ['origin'],
+                            "ClassNumber": journ['cabin_class'],
+                            "Arrival": journ['destination']
+                        })
+                        if not first_carrier_name:
+                            first_carrier_name = journ['carrier_name']
+                        journ_idx += 1
+
+                    for pax_idx, pax in enumerate(prov['tickets']):
+                        pax_list = [{
+                            "PassangerName": pax['passenger'],
+                            "TicketNumber": pax.get('ticket_number') and pax['ticket_number'] or '',
+                            "Gender": 1,
+                            "Nationality": "ID"
+                        }]
+
+                        if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
+                        else:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
+
+                        pax_setup = {
+                            'ho_profit': ho_prof,
+                            'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
+                            'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
+                        }
+
+                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                        if not vat_var_obj or not vat_perc_obj:
+                            _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
+
+                        temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
+                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+
+                        # total cost = Total NTA
+                        # total sales = Agent NTA
+                        # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
+                        provider_list.append({
+                            "ItemNo": idx+1,
+                            "ProductCode": supplier_obj.product_code or '',
+                            "ProductName": supplier_obj.product_name or '',
+                            "CarrierCode": journey_list and journey_list[0]['CarrierCode'] or '',
+                            "CArrierName": first_carrier_name or '',
+                            "Description": prov['pnr'],
+                            "Quantity": 1,
+                            "Cost": pax_setup['total_nta'],
+                            "Profit": ho_prof - vat,
+                            "ServiceFee": 0,
+                            "VAT": vat,
+                            "Sales": pax_setup['agent_nta'],
+                            "Itin": journey_list,
+                            "Pax": pax_list
+                        })
+                        idx += 1
+
+                elif request['provider_type'] == 'hotel':
+                    journey_list = [{
+                        "itin": 1,
+                        "CarrierCode": prov['provider_code'],
+                        "FlightNumber": prov['hotel_name'],
+                        "DateTimeDeparture": prov['checkin_date'],
+                        "DateTimeArrival": prov['checkout_date'],
+                        "Departure": '',
+                        "ClassNumber": '',
+                        "Arrival": ''
+                    }]
+
+                    for pax_idx, pax in enumerate(prov['passengers']):
+                        pax_list = [{
+                            "PassangerName": pax['name'],
+                            "TicketNumber": '',
+                            "Gender": 1,
+                            "Nationality": pax['nationality_code']
+                        }]
+
+                        if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
+                        else:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
+
+                        pax_setup = {
+                            'ho_profit': ho_prof,
+                            'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
+                            'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
+                        }
+
+                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                        if not vat_var_obj or not vat_perc_obj:
+                            _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
+
+                        temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
+                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+
+                        # total cost = Total NTA
+                        # total sales = Agent NTA
+                        # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
+                        provider_list.append({
+                            "ItemNo": idx+1,
+                            "ProductCode": supplier_obj.product_code or '',
+                            "ProductName": supplier_obj.product_name or '',
+                            "CarrierCode": journey_list and journey_list[0]['CarrierCode'] or '',
+                            "CArrierName": prov['provider_name'],
+                            "Description": prov['pnr'],
+                            "Hotel_RoomType": '',
+                            "Hotel_ServiceType": '',
+                            "Hotel_CityCD": '',
+                            "Quantity": 1,
+                            "Cost": pax_setup['total_nta'],
+                            "Profit": ho_prof - vat,
+                            "ServiceFee": 0,
+                            "VAT": vat,
+                            "Sales": pax_setup['agent_nta'],
+                            "Itin": journey_list,
+                            "Pax": pax_list
+                        })
+                        idx += 1
+
             total_sales = request.get('agent_nta', 0)
             if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                total_sales += request.get('total_channel_upsell', 0)
+                total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
 
             req = {
                 "LiveID": live_id,
