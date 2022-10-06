@@ -237,7 +237,7 @@ class TtRefund(models.Model):
     done_uid = fields.Many2one('res.users', 'Done by', readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Canceled by', readonly=True)
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
-    cancel_message = fields.Text('Cancelation Message', required=False, readonly=True, states={'validate': [('readonly', False)], 'final': [('readonly', False)]})
+    cancel_message = fields.Text('Cancelation Message', required=False, readonly=True, states={'validate': [('readonly', False)], 'final': [('readonly', False)], 'done': [('readonly', False)]})
 
     printout_refund_ho_id = fields.Many2one('tt.upload.center', 'Refund Printout HO', readonly=True)
     printout_refund_ho_cust_id = fields.Many2one('tt.upload.center', 'Refund Printout HO Cust', readonly=True)

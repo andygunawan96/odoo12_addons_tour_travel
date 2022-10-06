@@ -127,7 +127,7 @@ class AccountingConnectorITM(models.Model):
                             "Description": prov['pnr'],
                             "Quantity": 1,
                             "Cost": pax_setup['total_nta'],
-                            "Profit": ho_prof - vat,
+                            "Profit": pax_setup['ho_profit'] - vat,
                             "ServiceFee": 0,
                             "VAT": vat,
                             "Sales": pax_setup['agent_nta'],
@@ -194,7 +194,7 @@ class AccountingConnectorITM(models.Model):
                             "Description": prov['pnr'],
                             "Quantity": 1,
                             "Cost": pax_setup['total_nta'],
-                            "Profit": ho_prof - vat,
+                            "Profit": pax_setup['ho_profit'] - vat,
                             "ServiceFee": 0,
                             "VAT": vat,
                             "Sales": pax_setup['agent_nta'],
@@ -204,6 +204,37 @@ class AccountingConnectorITM(models.Model):
                         idx += 1
 
                 elif request['provider_type'] == 'hotel':
+                    pax_setup = {
+                        'ho_profit': 0,
+                        'total_nta': 0,
+                        'agent_nta': 0
+                    }
+                    pax_list = []
+                    for pax_idx, pax in enumerate(prov['passengers']):
+                        pax_list.append({
+                            "PassangerName": pax['name'],
+                            "TicketNumber": '',
+                            "Gender": 1,
+                            "Nationality": pax['nationality_code']
+                        })
+
+                        if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
+                        else:
+                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
+
+                        pax_setup['ho_profit'] += ho_prof
+                        pax_setup['total_nta'] += pax.get('total_nta') and pax['total_nta'] or 0
+                        pax_setup['agent_nta'] += pax.get('agent_nta') and pax['agent_nta'] or 0
+
+                    vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                    vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                    if not vat_var_obj or not vat_perc_obj:
+                        _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
+
+                    temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
+                    vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+
                     journey_list = [{
                         "itin": 1,
                         "CarrierCode": prov['provider_code'],
@@ -214,50 +245,20 @@ class AccountingConnectorITM(models.Model):
                         "ClassNumber": '',
                         "Arrival": ''
                     }]
-
-                    for pax_idx, pax in enumerate(prov['passengers']):
-                        pax_list = [{
-                            "PassangerName": pax['name'],
-                            "TicketNumber": '',
-                            "Gender": 1,
-                            "Nationality": pax['nationality_code']
-                        }]
-
-                        if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
-                        else:
-                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
-
-                        pax_setup = {
-                            'ho_profit': ho_prof,
-                            'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
-                            'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
-                        }
-
-                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
-                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
-                        if not vat_var_obj or not vat_perc_obj:
-                            _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
-
-                        temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
-                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
-
-                        # total cost = Total NTA
-                        # total sales = Agent NTA
-                        # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
+                    for room_idx, room in enumerate(prov['rooms']):
                         provider_list.append({
-                            "ItemNo": idx+1,
+                            "ItemNo": idx + 1,
                             "ProductCode": supplier_obj.product_code or '',
                             "ProductName": supplier_obj.product_name or '',
                             "CarrierCode": journey_list and journey_list[0]['CarrierCode'] or '',
                             "CArrierName": prov['provider_name'],
                             "Description": prov['pnr'],
-                            "Hotel_RoomType": '',
-                            "Hotel_ServiceType": '',
-                            "Hotel_CityCD": '',
+                            "Hotel_RoomType": room.get('room_type') and room['room_type'] or '',
+                            "Hotel_ServiceType": room.get('meal_type') and room['meal_type'] or '',
+                            "Hotel_CityCD": prov.get('hotel_city') and prov['hotel_city'] or '',
                             "Quantity": 1,
                             "Cost": pax_setup['total_nta'],
-                            "Profit": ho_prof - vat,
+                            "Profit": pax_setup['ho_profit'] - vat,
                             "ServiceFee": 0,
                             "VAT": vat,
                             "Sales": pax_setup['agent_nta'],

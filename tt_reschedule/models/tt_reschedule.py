@@ -637,7 +637,7 @@ class TtReschedule(models.Model):
     # END
 
     def cancel_reschedule_from_button(self):
-        if self.state in ['validate', 'final']:
+        if self.state in ['validate', 'final', 'done']:
             if not self.cancel_message:
                 raise UserError("Please fill the cancellation message!")
             for rec in self.ledger_ids:
