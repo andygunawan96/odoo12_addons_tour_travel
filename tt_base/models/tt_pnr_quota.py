@@ -318,22 +318,22 @@ class TtPnrQuota(models.Model):
             co_agent_id = self.env.user.agent_id.id
 
         co_uid = self.env.user.id
-
-        excel_bytes = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
-        res = self.env['tt.upload.center.wizard'].upload_file_api(
-            {
-                'filename': "PNR Quota Report %s.xlsx" % self.name,
-                'file_reference': 'PNR Quota',
-                'file': base64.b64encode(excel_bytes['value']),
-                'delete_date': datetime.today() + timedelta(minutes=10)
-            },
-            {
-                'co_agent_id': co_agent_id,
-                'co_uid': co_uid
-            }
-        )
-        upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-        self.pnr_quota_excel_id = upc_id.id
+        if self.pnr_quota_excel_id:
+            excel_bytes = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': "PNR Quota Report %s.xlsx" % self.name,
+                    'file_reference': 'PNR Quota',
+                    'file': base64.b64encode(excel_bytes['value']),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.pnr_quota_excel_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
