@@ -27,7 +27,7 @@ ${object.get_voucher_details_email() | safe}
 <br/>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>
@@ -57,7 +57,7 @@ ${object.get_voucher_details_email() | safe}
 <br/>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>
@@ -82,7 +82,7 @@ ${object.get_voucher_details_email() | safe}
 <br/>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>
@@ -107,7 +107,7 @@ ${object.get_voucher_details_email() | safe}
 <br/>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>

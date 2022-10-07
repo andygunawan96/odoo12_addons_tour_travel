@@ -1,5 +1,5 @@
 from odoo import api,fields,models
-from datetime import datetime
+from datetime import datetime, timedelta
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import json,logging,traceback,pytz
@@ -32,8 +32,7 @@ class TtPnrQuota(models.Model):
     transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
     transaction_amount_external = fields.Monetary('Transaction Amount External', copy=False, readonly=True)
     total_amount = fields.Monetary('Total Amount', copy=False, readonly=True)
-
-    excel_file = fields.Binary('Excel File')
+    pnr_quota_excel_id = fields.Many2one('tt.upload.center', 'PNR Quota Excel', readonly=True)
 
     @api.model
     def create(self, vals_list):
@@ -42,7 +41,7 @@ class TtPnrQuota(models.Model):
             exp_date = datetime.now() + relativedelta(months=package_obj.validity)
             now = datetime.now(pytz.timezone('Asia/Jakarta'))
             vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
-            vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, calendar.monthrange(exp_date.year, exp_date.month)[1])
+            vals_list['expired_date'] = "%s-%s-01" % (exp_date.year, exp_date.month)
             vals_list['start_date'] = "%s-%s-%s" % (now.year, now.month, now.day)
             vals_list['state'] = 'active'
             vals_list['amount'] = int(package_obj.minimum_fee)
@@ -129,7 +128,7 @@ class TtPnrQuota(models.Model):
 
     def payment_pnr_quota_api(self):
         for rec in self:
-            if rec.agent_id.balance >= rec.total_amount:
+            if rec.agent_id.is_payment_by_system and rec.agent_id.balance >= rec.total_amount:
                 # bikin ledger
                 self.env['tt.ledger'].create_ledger_vanilla(rec._name,
                                                             rec.id,
@@ -160,6 +159,14 @@ class TtPnrQuota(models.Model):
                                                             description='Buying PNR Quota for %s' % (rec.agent_id.name)
                                                             )
                 rec.state = 'done'
+            else:
+                rec.state = 'done'
+
+    def set_to_waiting_pnr_quota(self):
+        ledgers_obj = self.ledger_ids.filtered(lambda x: x.is_reversed == False)
+        for ledger_obj in ledgers_obj:
+            ledger_obj.reverse_ledger()
+        self.state = 'waiting'
 
 
     def get_pnr_quota_api(self,data,context):
@@ -304,9 +311,45 @@ class TtPnrQuota(models.Model):
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        url = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
-        self.sudo().excel_file = base64.encodebytes(url['value'])
+
+        if self.agent_id:
+            co_agent_id = self.agent_id.id
+        else:
+            co_agent_id = self.env.user.agent_id.id
+
+        co_uid = self.env.user.id
+
+        excel_bytes = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
+        res = self.env['tt.upload.center.wizard'].upload_file_api(
+            {
+                'filename': "PNR Quota Report %s.xlsx" % self.name,
+                'file_reference': 'PNR Quota',
+                'file': base64.b64encode(excel_bytes['value']),
+                'delete_date': datetime.today() + timedelta(minutes=10)
+            },
+            {
+                'co_agent_id': co_agent_id,
+                'co_uid': co_uid
+            }
+        )
+        upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+        self.pnr_quota_excel_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': self.pnr_quota_excel_id.url,
+            'path': self.pnr_quota_excel_id.path
+        }
         return url
+
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name
+
+    def get_last_payment_date(self):
+        date_str = "%s-15" % str(self.expired_date)[:7]
+        return date_str
 
 class PrintoutPnrQuotaUsage(models.AbstractModel):
     _name = 'tt.report.printout.pnr.quota.usage'

@@ -26,7 +26,7 @@
 <p>Your refund request has been attached in this E-mail. We will inform you once we start to process your request. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>
@@ -55,7 +55,7 @@
 <p>Your refund details has been attached in this E-mail. We will inform you after the process got completed. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>
@@ -84,7 +84,7 @@
 <p>Your refund details has been attached in this E-mail, and the refunded amount has been added to your Rodextrip balance. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>

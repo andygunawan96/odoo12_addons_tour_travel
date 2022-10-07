@@ -1447,3 +1447,6 @@ class TtReservation(models.Model):
             # rec.printout_vendor_invoice_id.unlink()
         return True
 
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name

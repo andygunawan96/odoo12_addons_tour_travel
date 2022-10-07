@@ -79,6 +79,25 @@ class TtEmailQueue(models.Model):
                 })
             else:
                 raise RequestException(1001)
+
+        elif data.get('provider_type') == 'quota_pnr':
+            try:
+                self.env.get('tt.pnr.quota')._name
+            except:
+                raise Exception('Module tt.billing.statement not found!')
+
+            resv = self.env['tt.pnr.quota'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
+            if resv:
+                template = self.env.ref('tt_base.template_mail_pnr_quota').id
+                self.env['tt.email.queue'].sudo().create({
+                    'name': 'Pnr quota e-Billing for ' + resv.agent_id.name,
+                    'type': 'quota_pnr',
+                    'template_id': template,
+                    'res_model': resv._name,
+                    'res_id': resv.id,
+                })
+            else:
+                raise RequestException(1001)
         elif data.get('provider_type') == 'refund':
             try:
                 self.env.get('tt.refund')._name
@@ -356,6 +375,33 @@ class TtEmailQueue(models.Model):
         else:
             raise Exception(_('Billing is already cancelled!'))
 
+    def prepare_attachment_pnr_quota(self):
+        attachment_id_list = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        if ref_obj.state != 'cancel':
+            ticket_data = ref_obj.print_report_excel()
+            if ticket_data.get('url'):
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                upload_data = util.send_request(ticket_data['url'], data={}, headers=headers, method='GET',
+                                                content_type='content', timeout=600)
+                if upload_data['error_code'] == 0:
+                    attachment_obj = self.env['ir.attachment'].create({
+                        'name': "PNR Quota Report %s " % ref_obj.name,
+                        'datas_fname': "PNR Quota Report %s " % ref_obj.name,
+                        'datas': upload_data['response'],
+                    })
+                    attachment_id_list.append(attachment_obj.id)
+                else:
+                    _logger.info(upload_data['error_msg'])
+                    raise Exception(_('Failed to convert billing attachment!'))
+            else:
+                raise Exception(_('Failed to get billing attachment!'))
+            self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+        else:
+            raise Exception(_('Billing is already cancelled!'))
+
     def prepare_attachment_refund(self):
         attachment_id_list = []
         ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
@@ -417,6 +463,8 @@ class TtEmailQueue(models.Model):
                 self.prepare_attachment_reservation_issued()
             elif self.type == 'billing_statement':
                 self.prepare_attachment_billing_statement()
+            elif self.type == 'quota_pnr':
+                self.prepare_attachment_pnr_quota()
             elif self.type in ['refund_confirmed', 'refund_finalized', 'refund_done']:
                 self.prepare_attachment_refund()
             elif self.type == 'voucher_created':

@@ -8,6 +8,8 @@
                 <form string="PNR Quota">
                     <header>
                         <button name="recompute_wrong_value_amount" string="Recompute" type="object" groups="tt_base.group_pnr_quota_level_3"/>
+                        <button name="payment_pnr_quota_api" string="Payment" type="object" groups="tt_base.group_pnr_quota_level_3" attrs="{'invisible': [('state','not in', 'waiting')]}"/>
+                        <button name="set_to_waiting_pnr_quota" string="Set To Waiting" type="object" groups="tt_base.group_pnr_quota_level_3" attrs="{'invisible': [('state', 'not in' ,'done')]}"/>
                         <field name="state" widget="statusbar" statusbar_visible="active,expired"/>
                     </header>
                     <sheet>
