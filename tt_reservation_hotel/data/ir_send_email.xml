@@ -26,7 +26,7 @@
 <p>Your E-Ticket and Invoice are attached in this E-mail. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>
@@ -54,7 +54,7 @@
 <p>Please complete your payment by ${object.get_btc_hold_date()}, otherwise your reservation will be expired. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
-<p>Rodex Tours and Travel</p>
+<p>${object.get_company_name()}</p>
 ]]>
 			</field>
 		</record>
