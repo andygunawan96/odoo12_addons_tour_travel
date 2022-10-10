@@ -1710,6 +1710,7 @@
     </template>
 
     <template id="itinerary_signature">
+        <t t-if="doc_model != 'tt.reservation.hotel'">
         <div class="row">
             <div class="col-12">
                 List of bank:<br/>
@@ -1729,6 +1730,7 @@
                 </ul>
             </div>
         </div>
+        </t>
         <div class="row">
             <span t-raw="printout_itinerary_footer"/>
         </div>
