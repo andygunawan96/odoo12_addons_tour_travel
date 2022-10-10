@@ -59,7 +59,7 @@ class TtAgentThirdPartyKey(models.Model):
     def external_payment_api(self,req,context):
         key_obj = self.validate_key(req)
         if key_obj:
-            if key_obj.agent_id.balance >= req['payment_amount']:
+            if key_obj.agent_id.balance + key_obj.agent_id.credit_limit >= req['payment_amount']:
                 next_seq = self.env['ir.sequence'].next_by_code('tt.agent.third.party.key.payment')
                 new_ledger = self.env['tt.ledger'].create_ledger_vanilla(
                     'tt.agent.third.party.key',

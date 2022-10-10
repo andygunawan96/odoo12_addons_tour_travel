@@ -2681,6 +2681,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_train(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -2757,6 +2760,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -2781,272 +2785,343 @@ class TtReportDashboard(models.Model):
             current_id = {}
             current_journey = ''
 
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
+
             # proceed invoice with the assumption of create date = issued date
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             # set journey to current journey (id)
+            #             current_journey = i['journey_id']
+            #
+            #             # search for month index within summary issued
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 # add the first profit if ledger type is 3 a.k.a commission
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #         except:
+            #             pass
+            #
+            #         # ============= Summary by Domestic/International ============
+            #         # this summary basically make table to create international and domestic by direction
+            #         # like one way, return or even multi city
+            #         if i['reservation_sector'] == 'International':
+            #             # for every reservation with international destination
+            #             # valuation = revenue
+            #             sector_dictionary[0]['valuation'] += float(i['amount'])
+            #             # counter = # of reservation
+            #             sector_dictionary[0]['counter'] += 1
+            #             if i['reservation_direction'] == 'OW':
+            #                 # OW = one way
+            #                 sector_dictionary[0]['one_way'] += 1
+            #             elif i['reservation_direction'] == 'RT':
+            #                 # rt = return
+            #                 sector_dictionary[0]['return'] += 1
+            #             else:
+            #                 # else considered as multicity as of today 2020-12-08
+            #                 sector_dictionary[0]['multi_city'] += 1
+            #                 # adding total passenger in international section
+            #             sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+            #         elif i['reservation_sector'] == 'Domestic':
+            #             # for every reservation with domestic destination
+            #             sector_dictionary[1]['valuation'] += float(i['amount'])
+            #             sector_dictionary[1]['counter'] += 1
+            #             if i['reservation_direction'] == 'OW':
+            #                 sector_dictionary[1]['one_way'] += 1
+            #             elif i['reservation_direction'] == 'RT':
+            #                 sector_dictionary[1]['return'] += 1
+            #             else:
+            #                 sector_dictionary[1]['multi_city'] += 1
+            #             sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+            #         else:
+            #             # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
+            #             sector_dictionary[2]['valuation'] += float(i['amount'])
+            #             sector_dictionary[2]['counter'] += 1
+            #             if i['reservation_direction'] == 'OW':
+            #                 sector_dictionary[2]['one_way'] += 1
+            #             elif i['reservation_direction'] == 'RT':
+            #                 sector_dictionary[2]['return'] += 1
+            #             else:
+            #                 sector_dictionary[2]['multi_city'] += 1
+            #             sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+            #
+            #         # issued depart days difference
+            #         # ============= Issued compareed to depart date ==============
+            #         # filter the data, resulting all of the data with respected order number
+            #         filter_data = list(
+            #             filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
+            #                    issued_values['lines']))
+            #
+            #         # look for the nearest departure date from issued date
+            #         depart_index = 0
+            #         if len(filter_data) > 1:
+            #             earliest_depart = filter_data[0]['journey_departure_date']
+            #             for j, dic in enumerate(filter_data):
+            #                 if earliest_depart > dic['journey_departure_date']:
+            #                     depart_index = j
+            #         # lets count
+            #         if filter_data[0]['reservation_issued_date_og']:
+            #             # conver journey date (string) to datetime
+            #             date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M')
+            #             # check if reservation has issued dates
+            #             # this should be quite obselete since this function only calls for issued reservation
+            #             # but this function also written in more general function so.. there's that
+            #             if filter_data[0]['reservation_issued_date_og']:
+            #                 # actually counting the day difference between each date
+            #                 date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+            #                 if date_count.days < 0:
+            #                     # if for some whatever reason the date result in negative
+            #                     # just print to logger, maybe if someday needed to be check there's the data in logger
+            #                     _logger.error("please check {}".format(i['reservation_order_number']))
+            #             else:
+            #                 date_count = 0
+            #
+            #             # check for index in issued depart summary
+            #             issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
+            #             # if no index found a.k.a -1 then we'll create and add the data
+            #             if issued_depart_index == -1:
+            #                 temp_dict = {
+            #                     "day": date_count.days,
+            #                     "counter": 1,
+            #                     'passenger': filter_data[0]['reservation_passenger']
+            #                 }
+            #                 issued_depart_summary.append(temp_dict)
+            #             else:
+            #                 # if data exist then we only need to update existing data
+            #                 issued_depart_summary[issued_depart_index]['counter'] += 1
+            #                 issued_depart_summary[issued_depart_index]['passenger'] += \
+            #                 filter_data[0][
+            #                     'reservation_passenger']
+            #
+            #         # ============= end of Issued compareed to depart date ==============
+            #
+            #
+            #         if i['reservation_state'] == 'issued':
+            #             # total += i['amount']
+            #             # num_data += 1
+            #
+            #             # ============= Search best for every sector ==================
+            #             # in this section we only compare how many reservation is actually for international destination
+            #             # and how many domestic reservation
+            #             # just to make is useful this report also sumarize passenger count, and reservation count
+            #             returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
+            #             # once again as always we check for index then create and add if not exist, update if data already exist
+            #              i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+            #             if returning_index == -1:
+            #                 new_dict = {
+            #                     'sector': i['reservation_sector'],
+            #                     'departure': i['departure'],
+            #                     'destination': i['destination'],
+            #                     'counter': 1,
+            #                     'elder_count': i['reservation_elder'],
+            #                     'adult_count': i['reservation_adult'],
+            #                     'child_count': i['reservation_child'],
+            #                     'infant_count': i['reservation_infant'],
+            #                     'passenger_count': i['reservation_passenger']
+            #                 }
+            #                 destination_sector_summary.append(new_dict)
+            #             else:
+            #                 destination_sector_summary[returning_index]['counter'] += 1
+            #                 destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+            #                 destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+            #                 destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+            #                 destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+            #                 destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+            #
+            #             # ============= Search for best 50 routes ====================
+            #             # in this section we want to extract top i dunno like 15 route of each sector
+            #             # this code can produce more than 15, but will be trim later down the line
+            #             # to make it insightful i add revenue data, and passenger count
+            #             returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+            #
+            #             if returning_index == -1:
+            #                 new_dict = {
+            #                     'direction': i['reservation_direction'],
+            #                     'departure': i['departure'],
+            #                     'destination': i['destination'],
+            #                     'sector': i['reservation_sector'],
+            #                     'counter': 1,
+            #                     'elder_count': i['reservation_elder'],
+            #                     'adult_count': i['reservation_adult'],
+            #                     'child_count': i['reservation_child'],
+            #                     'infant_count': i['reservation_infant'],
+            #                     'passenger_count': i['reservation_passenger']
+            #                 }
+            #                 destination_direction_summary.append(new_dict)
+            #             else:
+            #                 destination_direction_summary[returning_index]['counter'] += 1
+            #                 destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+            #                 destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+            #                 destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+            #                 destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+            #                 destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+            #
+            #         # update current id
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         # els in here means iterate data has the same order number as previous lines
+            #         # with that we only need to update ledger count
+            #         # no more filtering for smaller overview
+            #
+            #         # in order not to double count, this if condition is needed
+            #         if current_journey == i['journey_id']:
+            #             if i['ledger_transaction_type'] == 3:
+            #                 # get index of particular year and month
+            #                 month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #                 # split date to extract day
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 # get day
+            #                 day_index = int(splits[2]) - 1
+            #                 # add profit to respected array
+            #                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                 # if HQ guy asking then we'll count everything
+            #                 # if not HQ guy then we'll only count respected agent
+            #                 if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     profit_total += i['debit'] - i['credit']
+            #                     profit_ho += i['debit'] - i['credit']
+            #                 # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                 #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 #     profit_total += i['debit'] - i['credit']
+            #                 #     profit_ho += i['debit'] - i['credit']
+            #                 # elif i['ledger_agent_type_name'] != 'HO':
+            #                 #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 #     profit_total += i['debit'] - i['credit']
+            #                 #     profit_agent += i['debit'] - i['credit']
 
-                        # set journey to current journey (id)
-                        current_journey = i['journey_id']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        # search for month index within summary issued
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                            }
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
 
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            # add the first profit if ledger type is 3 a.k.a commission
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
 
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-                    except:
-                        pass
-
-                    # ============= Summary by Domestic/International ============
-                    # this summary basically make table to create international and domestic by direction
-                    # like one way, return or even multi city
-                    if i['reservation_sector'] == 'International':
-                        # for every reservation with international destination
-                        # valuation = revenue
-                        sector_dictionary[0]['valuation'] += float(i['amount'])
-                        # counter = # of reservation
-                        sector_dictionary[0]['counter'] += 1
-                        if i['reservation_direction'] == 'OW':
-                            # OW = one way
-                            sector_dictionary[0]['one_way'] += 1
-                        elif i['reservation_direction'] == 'RT':
-                            # rt = return
-                            sector_dictionary[0]['return'] += 1
-                        else:
-                            # else considered as multicity as of today 2020-12-08
-                            sector_dictionary[0]['multi_city'] += 1
-                            # adding total passenger in international section
-                        sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
-                    elif i['reservation_sector'] == 'Domestic':
-                        # for every reservation with domestic destination
-                        sector_dictionary[1]['valuation'] += float(i['amount'])
-                        sector_dictionary[1]['counter'] += 1
-                        if i['reservation_direction'] == 'OW':
-                            sector_dictionary[1]['one_way'] += 1
-                        elif i['reservation_direction'] == 'RT':
-                            sector_dictionary[1]['return'] += 1
-                        else:
-                            sector_dictionary[1]['multi_city'] += 1
-                        sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
                     else:
-                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
-                        sector_dictionary[2]['valuation'] += float(i['amount'])
-                        sector_dictionary[2]['counter'] += 1
-                        if i['reservation_direction'] == 'OW':
-                            sector_dictionary[2]['one_way'] += 1
-                        elif i['reservation_direction'] == 'RT':
-                            sector_dictionary[2]['return'] += 1
-                        else:
-                            sector_dictionary[2]['multi_city'] += 1
-                        sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+                        # data exist
 
-                    # issued depart days difference
-                    # ============= Issued compareed to depart date ==============
-                    # filter the data, resulting all of the data with respected order number
-                    filter_data = list(
-                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
-                               issued_values['lines']))
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
-                    # look for the nearest departure date from issued date
-                    depart_index = 0
-                    if len(filter_data) > 1:
-                        earliest_depart = filter_data[0]['journey_departure_date']
-                        for j, dic in enumerate(filter_data):
-                            if earliest_depart > dic['journey_departure_date']:
-                                depart_index = j
-                    # lets count
-                    if filter_data[0]['reservation_issued_date_og']:
-                        # conver journey date (string) to datetime
-                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M')
-                        # check if reservation has issued dates
-                        # this should be quite obselete since this function only calls for issued reservation
-                        # but this function also written in more general function so.. there's that
-                        if filter_data[0]['reservation_issued_date_og']:
-                            # actually counting the day difference between each date
-                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
-                            if date_count.days < 0:
-                                # if for some whatever reason the date result in negative
-                                # just print to logger, maybe if someday needed to be check there's the data in logger
-                                _logger.error("please check {}".format(i['reservation_order_number']))
-                        else:
-                            date_count = 0
-
-                        # check for index in issued depart summary
-                        issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
-                        # if no index found a.k.a -1 then we'll create and add the data
-                        if issued_depart_index == -1:
-                            temp_dict = {
-                                "day": date_count.days,
-                                "counter": 1,
-                                'passenger': filter_data[0]['reservation_passenger']
-                            }
-                            issued_depart_summary.append(temp_dict)
-                        else:
-                            # if data exist then we only need to update existing data
-                            issued_depart_summary[issued_depart_index]['counter'] += 1
-                            issued_depart_summary[issued_depart_index]['passenger'] += \
-                            filter_data[0][
-                                'reservation_passenger']
-
-                    # ============= end of Issued compareed to depart date ==============
-
-
-                    if i['reservation_state'] == 'issued':
-                        # total += i['amount']
-                        # num_data += 1
-
-                        # ============= Search best for every sector ==================
-                        # in this section we only compare how many reservation is actually for international destination
-                        # and how many domestic reservation
-                        # just to make is useful this report also sumarize passenger count, and reservation count
-                        returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
-                        # once again as always we check for index then create and add if not exist, update if data already exist
-                         i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
-                        if returning_index == -1:
-                            new_dict = {
-                                'sector': i['reservation_sector'],
-                                'departure': i['departure'],
-                                'destination': i['destination'],
-                                'counter': 1,
-                                'elder_count': i['reservation_elder'],
-                                'adult_count': i['reservation_adult'],
-                                'child_count': i['reservation_child'],
-                                'infant_count': i['reservation_infant'],
-                                'passenger_count': i['reservation_passenger']
-                            }
-                            destination_sector_summary.append(new_dict)
-                        else:
-                            destination_sector_summary[returning_index]['counter'] += 1
-                            destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
-                            destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
-                            destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
-                            destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
-                            destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
-
-                        # ============= Search for best 50 routes ====================
-                        # in this section we want to extract top i dunno like 15 route of each sector
-                        # this code can produce more than 15, but will be trim later down the line
-                        # to make it insightful i add revenue data, and passenger count
-                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
-
-                        if returning_index == -1:
-                            new_dict = {
-                                'direction': i['reservation_direction'],
-                                'departure': i['departure'],
-                                'destination': i['destination'],
-                                'sector': i['reservation_sector'],
-                                'counter': 1,
-                                'elder_count': i['reservation_elder'],
-                                'adult_count': i['reservation_adult'],
-                                'child_count': i['reservation_child'],
-                                'infant_count': i['reservation_infant'],
-                                'passenger_count': i['reservation_passenger']
-                            }
-                            destination_direction_summary.append(new_dict)
-                        else:
-                            destination_direction_summary[returning_index]['counter'] += 1
-                            destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
-                            destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
-                            destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
-                            destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
-                            destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
-
-                    # update current id
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    # els in here means iterate data has the same order number as previous lines
-                    # with that we only need to update ledger count
-                    # no more filtering for smaller overview
-
-                    # in order not to double count, this if condition is needed
-                    if current_journey == i['journey_id']:
-                        if i['ledger_transaction_type'] == 3:
-                            # get index of particular year and month
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                            # split date to extract day
-                            splits = i['reservation_issued_date'].split("-")
-                            # get day
-                            day_index = int(splits[2]) - 1
-                            # add profit to respected array
-                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                            # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agent
-                            if is_ho or agent_name_context == i['ledger_agent_name']:
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                                profit_ho += i['debit'] - i['credit']
-                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            #     profit_total += i['debit'] - i['credit']
-                            #     profit_ho += i['debit'] - i['credit']
-                            # elif i['ledger_agent_type_name'] != 'HO':
-                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            #     profit_total += i['debit'] - i['credit']
-                            #     profit_agent += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
 
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
@@ -3207,6 +3282,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -3253,6 +3329,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_hotel(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -3298,6 +3377,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -3322,195 +3402,266 @@ class TtReportDashboard(models.Model):
             # declare current id
             current_id = {}
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #         except:
+            #             pass
+            #
+            #         try:
+            #             # this section responsible to build overview in hotel
+            #             # the overview group the data by city, and adding like top 10 hotel within the city
+            #             # code below is searching for index of city within location_overview
+            #             location_index = self.check_location(location_overview, {'city': i['hotel_city']})
+            #
+            #             # if city cannot be found in location_overview, index will return as -1
+            #             # hence we need to create and append the data
+            #             if location_index == -1:
+            #                 # build a temporary dictionary
+            #                 temp_dict = {
+            #                     'country': i['country_name'] if i['country_name'] else '',
+            #                     'city': i['hotel_city'],
+            #                     'counter': 1,
+            #                     'revenue': i['amount'],
+            #                     'passenger': i['reservation_passenger'],
+            #                     'hotel': [{
+            #                         'name': i['reservation_hotel_name'],
+            #                         'counter': 1,
+            #                         'passenger': i['reservation_passenger'],
+            #                         'revenue': i['amount']
+            #                     }]
+            #                 }
+            #                 # append to location_overview
+            #                 location_overview.append(temp_dict)
+            #             else:
+            #                 # if city is exist, then we only need to look out for specific hotel
+            #                 # if hotel not found same drill as city, and if exist then we only need to update the data
+            #                 hotel_index = self.check_hotel_index(location_overview[location_index]['hotel'], {'name': i['reservation_hotel_name']})
+            #
+            #                 if hotel_index == -1:
+            #                     temp_dict = {
+            #                         'name': i['reservation_hotel_name'],
+            #                         'counter': 1,
+            #                         'passenger': i['reservation_passenger'],
+            #                         'revenue': i['amount']
+            #                     }
+            #                     location_overview[location_index]['hotel'].append(temp_dict)
+            #                 else:
+            #                     # this only update the data
+            #                     location_overview[location_index]['hotel'][hotel_index]['counter'] += 1
+            #                     location_overview[location_index]['hotel'][hotel_index]['passenger'] += i['reservation_passenger']
+            #                 # this update the data for the city
+            #                 location_overview[location_index]['counter'] += 1
+            #                 location_overview[location_index]['revenue'] += i['amount']
+            #                 location_overview[location_index]['passenger'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #
+            #         # issued to check in days difference
+            #         # have the same logic as issued to depart in airline and train
+            #         # ============= Issued compareed to depart date ==============
+            #         # filter the data, resulting all of the data with respected order number
+            #         filter_data = list(
+            #             filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
+            #                    issued_values['lines']))
+            #
+            #         # look for the nearest departure date from issued date
+            #         depart_index = 0
+            #         if len(filter_data) > 1:
+            #             earliest_depart = filter_data[0]['reservation_check_in_date']
+            #             for j, dic in enumerate(filter_data):
+            #                 if earliest_depart > dic['reservation_check_in_date']:
+            #                     depart_index = j
+            #         # lets count
+            #         if filter_data[0]['reservation_issued_date_og']:
+            #             date_time_convert = datetime(filter_data[depart_index]['reservation_check_in_date'].year, filter_data[depart_index]['reservation_check_in_date'].month, filter_data[depart_index]['reservation_check_in_date'].day)
+            #             if filter_data[0]['reservation_issued_date_og']:
+            #                 date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+            #                 if date_count.days < 0:
+            #                     _logger.error("please check {}".format(i['reservation_order_number']))
+            #             else:
+            #                 date_count = 0
+            #
+            #             issued_depart_index = self.check_index(issued_depart_summary, "day",
+            #                                                    date_count.days)
+            #             if issued_depart_index == -1:
+            #                 temp_dict = {
+            #                     "day": date_count.days,
+            #                     "counter": 1,
+            #                     'passenger': filter_data[0]['reservation_passenger']
+            #                 }
+            #                 issued_depart_summary.append(temp_dict)
+            #             else:
+            #                 issued_depart_summary[issued_depart_index]['counter'] += 1
+            #                 issued_depart_summary[issued_depart_index]['passenger'] += \
+            #                     filter_data[0][
+            #                         'reservation_passenger']
+            #
+            #         # ============= end of Issued compareed to depart date ==============
+            #
+            #         # update current id to reservation id of current iteration
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agennt
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                            }
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-                    except:
-                        pass
-
-                    try:
-                        # this section responsible to build overview in hotel
-                        # the overview group the data by city, and adding like top 10 hotel within the city
-                        # code below is searching for index of city within location_overview
-                        location_index = self.check_location(location_overview, {'city': i['hotel_city']})
-
-                        # if city cannot be found in location_overview, index will return as -1
-                        # hence we need to create and append the data
-                        if location_index == -1:
-                            # build a temporary dictionary
-                            temp_dict = {
-                                'country': i['country_name'] if i['country_name'] else '',
-                                'city': i['hotel_city'],
-                                'counter': 1,
-                                'revenue': i['amount'],
-                                'passenger': i['reservation_passenger'],
-                                'hotel': [{
-                                    'name': i['reservation_hotel_name'],
-                                    'counter': 1,
-                                    'passenger': i['reservation_passenger'],
-                                    'revenue': i['amount']
-                                }]
-                            }
-                            # append to location_overview
-                            location_overview.append(temp_dict)
-                        else:
-                            # if city is exist, then we only need to look out for specific hotel
-                            # if hotel not found same drill as city, and if exist then we only need to update the data
-                            hotel_index = self.check_hotel_index(location_overview[location_index]['hotel'], {'name': i['reservation_hotel_name']})
-
-                            if hotel_index == -1:
-                                temp_dict = {
-                                    'name': i['reservation_hotel_name'],
-                                    'counter': 1,
-                                    'passenger': i['reservation_passenger'],
-                                    'revenue': i['amount']
-                                }
-                                location_overview[location_index]['hotel'].append(temp_dict)
-                            else:
-                                # this only update the data
-                                location_overview[location_index]['hotel'][hotel_index]['counter'] += 1
-                                location_overview[location_index]['hotel'][hotel_index]['passenger'] += i['reservation_passenger']
-                            # this update the data for the city
-                            location_overview[location_index]['counter'] += 1
-                            location_overview[location_index]['revenue'] += i['amount']
-                            location_overview[location_index]['passenger'] += i['reservation_passenger']
-                    except:
-                        pass
-
-                    # issued to check in days difference
-                    # have the same logic as issued to depart in airline and train
-                    # ============= Issued compareed to depart date ==============
-                    # filter the data, resulting all of the data with respected order number
-                    filter_data = list(
-                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
-                               issued_values['lines']))
-
-                    # look for the nearest departure date from issued date
-                    depart_index = 0
-                    if len(filter_data) > 1:
-                        earliest_depart = filter_data[0]['reservation_check_in_date']
-                        for j, dic in enumerate(filter_data):
-                            if earliest_depart > dic['reservation_check_in_date']:
-                                depart_index = j
-                    # lets count
-                    if filter_data[0]['reservation_issued_date_og']:
-                        date_time_convert = datetime(filter_data[depart_index]['reservation_check_in_date'].year, filter_data[depart_index]['reservation_check_in_date'].month, filter_data[depart_index]['reservation_check_in_date'].day)
-                        if filter_data[0]['reservation_issued_date_og']:
-                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
-                            if date_count.days < 0:
-                                _logger.error("please check {}".format(i['reservation_order_number']))
-                        else:
-                            date_count = 0
-
-                        issued_depart_index = self.check_index(issued_depart_summary, "day",
-                                                               date_count.days)
-                        if issued_depart_index == -1:
-                            temp_dict = {
-                                "day": date_count.days,
-                                "counter": 1,
-                                'passenger': filter_data[0]['reservation_passenger']
-                            }
-                            issued_depart_summary.append(temp_dict)
-                        else:
-                            issued_depart_summary[issued_depart_index]['counter'] += 1
-                            issued_depart_summary[issued_depart_index]['passenger'] += \
-                                filter_data[0][
-                                    'reservation_passenger']
-
-                    # ============= end of Issued compareed to depart date ==============
-
-                    # update current id to reservation id of current iteration
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agennt
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
 
             # for every section in summary
             for i in summary_issued:
@@ -3754,6 +3905,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_tour(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -3796,6 +3950,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -3819,132 +3974,200 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[
+            #                                                                      int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #         except:
+            #             pass
+            #
+            #         # ============= product summary =====================================
+            #         product_index = self.check_index(product_summary, 'product', i['tour_name'])
+            #         if product_index == -1:
+            #             temp_dict = {
+            #                 'product': i['tour_name'],
+            #                 'product_type': i['tour_type'],
+            #                 'counter': 1,
+            #                 'elder_count': i['reservation_elder'],
+            #                 'adult_count': i['reservation_adult'],
+            #                 'child_count': i['reservation_child'],
+            #                 'infant_count': i['reservation_infant'],
+            #                 'passenger': i['reservation_passenger'],
+            #                 'amount': i['amount']
+            #             }
+            #             product_summary.append(temp_dict)
+            #         else:
+            #             product_summary[product_index]['counter'] += 1
+            #             product_summary[product_index]['passenger'] += i['reservation_passenger']
+            #             product_summary[product_index]['amount'] += i['amount']
+            #             product_summary[product_index]['elder_count'] += i['reservation_elder']
+            #             product_summary[product_index]['adult_count'] += i['reservation_adult']
+            #             product_summary[product_index]['child_count'] += i['reservation_child']
+            #             product_summary[product_index]['infant_count'] += i['reservation_infant']
+            #         # ============= end of product summary ==============================
+            #
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[
+            #                                                                      int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[
-                                                                                 int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-                    except:
-                        pass
-
-                    # ============= product summary =====================================
-                    product_index = self.check_index(product_summary, 'product', i['tour_name'])
-                    if product_index == -1:
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
                         temp_dict = {
-                            'product': i['tour_name'],
-                            'product_type': i['tour_type'],
-                            'counter': 1,
-                            'elder_count': i['reservation_elder'],
-                            'adult_count': i['reservation_adult'],
-                            'child_count': i['reservation_child'],
-                            'infant_count': i['reservation_infant'],
-                            'passenger': i['reservation_passenger'],
-                            'amount': i['amount']
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
                         }
-                        product_summary.append(temp_dict)
-                    else:
-                        product_summary[product_index]['counter'] += 1
-                        product_summary[product_index]['passenger'] += i['reservation_passenger']
-                        product_summary[product_index]['amount'] += i['amount']
-                        product_summary[product_index]['elder_count'] += i['reservation_elder']
-                        product_summary[product_index]['adult_count'] += i['reservation_adult']
-                        product_summary[product_index]['child_count'] += i['reservation_child']
-                        product_summary[product_index]['infant_count'] += i['reservation_infant']
-                    # ============= end of product summary ==============================
-
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[
-                                                                                 int(i['issued_month']) - 1]})
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -4088,6 +4311,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': product_summary
             }
 
@@ -4126,6 +4350,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_activity(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -4168,6 +4395,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -4191,129 +4419,197 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #         except:
+            #             pass
+            #
+            #         # ============= product summary =====================================
+            #         product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
+            #         if product_index == -1:
+            #             temp_dict = {
+            #                 'product': i['reservation_activity_name'],
+            #                 'counter': 1,
+            #                 'elder_count': i['reservation_elder'],
+            #                 'adult_count': i['reservation_adult'],
+            #                 'child_count': i['reservation_child'],
+            #                 'infant_count': i['reservation_infant'],
+            #                 'passenger': i['reservation_passenger'],
+            #                 'amount': i['amount']
+            #             }
+            #             product_summary.append(temp_dict)
+            #         else:
+            #             product_summary[product_index]['counter'] += 1
+            #             product_summary[product_index]['passenger'] += i['reservation_passenger']
+            #             product_summary[product_index]['amount'] += i['amount']
+            #             product_summary[product_index]['elder_count'] += i['reservation_elder']
+            #             product_summary[product_index]['adult_count'] += i['reservation_adult']
+            #             product_summary[product_index]['child_count'] += i['reservation_child']
+            #             product_summary[product_index]['infant_count'] += i['reservation_infant']
+            #         # ============= end of product summary ==============================
+            #
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-                    except:
-                        pass
-
-                    # ============= product summary =====================================
-                    product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
-                    if product_index == -1:
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
                         temp_dict = {
-                            'product': i['reservation_activity_name'],
-                            'counter': 1,
-                            'elder_count': i['reservation_elder'],
-                            'adult_count': i['reservation_adult'],
-                            'child_count': i['reservation_child'],
-                            'infant_count': i['reservation_infant'],
-                            'passenger': i['reservation_passenger'],
-                            'amount': i['amount']
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
                         }
-                        product_summary.append(temp_dict)
-                    else:
-                        product_summary[product_index]['counter'] += 1
-                        product_summary[product_index]['passenger'] += i['reservation_passenger']
-                        product_summary[product_index]['amount'] += i['amount']
-                        product_summary[product_index]['elder_count'] += i['reservation_elder']
-                        product_summary[product_index]['adult_count'] += i['reservation_adult']
-                        product_summary[product_index]['child_count'] += i['reservation_child']
-                        product_summary[product_index]['infant_count'] += i['reservation_infant']
-                    # ============= end of product summary ==============================
-
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -4457,6 +4753,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': product_summary
             }
 
@@ -4495,6 +4792,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_event(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -4537,6 +4837,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -4560,126 +4861,194 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             product_index = self.check_index(product_summary, 'product', i['reservation_event_name'])
+            #             if product_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['reservation_event_name'],
+            #                     'counter': 1,
+            #                     'elder_count': i['reservation_elder'],
+            #                     'adult_count': i['reservation_adult'],
+            #                     'child_count': i['reservation_child'],
+            #                     'infant_count': i['reservation_infant'],
+            #                     'passenger': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 product_summary.append(temp_dict)
+            #             else:
+            #                 product_summary[product_index]['counter'] += 1
+            #                 product_summary[product_index]['passenger'] += i['reservation_passenger']
+            #                 product_summary[product_index]['amount'] += i['amount']
+            #                 product_summary[product_index]['elder_count'] += i['reservation_elder']
+            #                 product_summary[product_index]['adult_count'] += i['reservation_adult']
+            #                 product_summary[product_index]['child_count'] += i['reservation_child']
+            #                 product_summary[product_index]['infant_count'] += i['reservation_infant']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        product_index = self.check_index(product_summary, 'product', i['reservation_event_name'])
-                        if product_index == -1:
-                            temp_dict = {
-                                'product': i['reservation_event_name'],
-                                'counter': 1,
-                                'elder_count': i['reservation_elder'],
-                                'adult_count': i['reservation_adult'],
-                                'child_count': i['reservation_child'],
-                                'infant_count': i['reservation_infant'],
-                                'passenger': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            product_summary.append(temp_dict)
-                        else:
-                            product_summary[product_index]['counter'] += 1
-                            product_summary[product_index]['passenger'] += i['reservation_passenger']
-                            product_summary[product_index]['amount'] += i['amount']
-                            product_summary[product_index]['elder_count'] += i['reservation_elder']
-                            product_summary[product_index]['adult_count'] += i['reservation_adult']
-                            product_summary[product_index]['child_count'] += i['reservation_child']
-                            product_summary[product_index]['infant_count'] += i['reservation_infant']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -4862,6 +5231,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_visa(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -4904,6 +5276,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -4927,121 +5300,189 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # ============= Country summary Report =======================
+            #             country_index = self.check_index(country_summary, 'country', i['country_name'])
+            #             if country_index == -1:
+            #                 temp_dict = {
+            #                     'country': i['country_name'],
+            #                     'counter': 1,
+            #                     'passenger': i['reservation_passenger']
+            #                 }
+            #                 country_summary.append(temp_dict)
+            #             else:
+            #                 country_summary[country_index]['counter'] += 1
+            #                 country_summary[country_index]['passenger'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # ============= Country summary Report =======================
-                        country_index = self.check_index(country_summary, 'country', i['country_name'])
-                        if country_index == -1:
-                            temp_dict = {
-                                'country': i['country_name'],
-                                'counter': 1,
-                                'passenger': i['reservation_passenger']
-                            }
-                            country_summary.append(temp_dict)
-                        else:
-                            country_summary[country_index]['counter'] += 1
-                            country_summary[country_index]['passenger'] += i['reservation_passenger']
-                    except:
-                        pass
-
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -5185,6 +5626,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': country_summary
             }
 
@@ -5223,6 +5665,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_offline(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -5265,6 +5710,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -5288,122 +5734,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # group data by offline provider type (airline, train, etc)
+            #             offline_index = self.check_index(offline_summary, 'provider_type', i['reservation_offline_provider_type'])
+            #             if offline_index == -1:
+            #                 temp_dict = {
+            #                     'category': 'Offline',
+            #                     'provider_type': i['reservation_offline_provider_type'],
+            #                     'counter': 1,
+            #                     'amount': i['amount']
+            #                 }
+            #                 offline_summary.append(temp_dict)
+            #             else:
+            #                 offline_summary[offline_index]['counter'] += 1
+            #                 offline_summary[offline_index]['amount'] += i['amount']
+            #         except:
+            #             pass
+            #
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # group data by offline provider type (airline, train, etc)
-                        offline_index = self.check_index(offline_summary, 'provider_type', i['reservation_offline_provider_type'])
-                        if offline_index == -1:
-                            temp_dict = {
-                                'category': 'Offline',
-                                'provider_type': i['reservation_offline_provider_type'],
-                                'counter': 1,
-                                'amount': i['amount']
-                            }
-                            offline_summary.append(temp_dict)
-                        else:
-                            offline_summary[offline_index]['counter'] += 1
-                            offline_summary[offline_index]['amount'] += i['amount']
-                    except:
-                        pass
-
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -5548,6 +6062,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': offline_summary
             }
 
@@ -5586,6 +6101,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_ppob(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -5628,6 +6146,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -5650,122 +6169,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate ppob_summary
+            #             ppob_index = self.check_index(ppob_summary, 'product', i['carrier_name'])
+            #             if ppob_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 ppob_summary.append(temp_dict)
+            #             else:
+            #                 ppob_summary[ppob_index]['counter'] += 1
+            #                 ppob_summary[ppob_index]['amount'] += i['amount']
+            #                 ppob_summary[ppob_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate ppob_summary
-                        ppob_index = self.check_index(ppob_summary, 'product', i['carrier_name'])
-                        if ppob_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            ppob_summary.append(temp_dict)
-                        else:
-                            ppob_summary[ppob_index]['counter'] += 1
-                            ppob_summary[ppob_index]['amount'] += i['amount']
-                            ppob_summary[ppob_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -5909,6 +6496,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': ppob_summary
             }
 
@@ -5947,6 +6535,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_passport(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -5987,6 +6578,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             # count the date difference
             delta = end_date - start_date
 
@@ -6020,111 +6612,179 @@ class TtReportDashboard(models.Model):
             summary_issued = []
             passport_summary = []
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
             # declare current id
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate passport_summary
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             if i['ledger_transaction_type'] == 3:
+            #                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                 # if HQ guy asking then we'll count everything
+            #                 # if not HQ guy then we'll only count respected agent
+            #                 if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     profit_total += i['debit'] - i['credit']
+            #                     profit_ho += i['debit'] - i['credit']
+            #                 # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                 #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 #     profit_total += i['debit'] - i['credit']
+            #                 #     profit_ho += i['debit'] - i['credit']
+            #                 # elif i['ledger_agent_type_name'] != 'HO':
+            #                 #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 #     profit_total += i['debit'] - i['credit']
+            #                 #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate passport_summary
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        if i['ledger_transaction_type'] == 3:
-                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                            # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agent
-                            if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                                profit_ho += i['debit'] - i['credit']
-                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            #     profit_total += i['debit'] - i['credit']
-                            #     profit_ho += i['debit'] - i['credit']
-                            # elif i['ledger_agent_type_name'] != 'HO':
-                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            #     profit_total += i['debit'] - i['credit']
-                            #     profit_agent += i['debit'] - i['credit']
-
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -6269,6 +6929,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': passport_summary
             }
 
@@ -6304,6 +6965,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_phc(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -6346,6 +7010,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -6368,123 +7033,191 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agennt
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i[
+            #                             'credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate phc_summary
+            #             phc_index = self.check_index(phc_summary, 'product', i['carrier_name'])
+            #             if phc_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 phc_summary.append(temp_dict)
+            #             else:
+            #                 phc_summary[phc_index]['counter'] += 1
+            #                 phc_summary[phc_index]['amount'] += i['amount']
+            #                 phc_summary[phc_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i[
-                                        'credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate phc_summary
-                        phc_index = self.check_index(phc_summary, 'product', i['carrier_name'])
-                        if phc_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            phc_summary.append(temp_dict)
-                        else:
-                            phc_summary[phc_index]['counter'] += 1
-                            phc_summary[phc_index]['amount'] += i['amount']
-                            phc_summary[phc_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -6628,6 +7361,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': phc_summary
             }
 
@@ -6663,6 +7397,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_periksain(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -6705,6 +7442,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -6727,122 +7465,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate periksain_summary
+            #             periksain_index = self.check_index(periksain_summary, 'product', i['carrier_name'])
+            #             if periksain_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 periksain_summary.append(temp_dict)
+            #             else:
+            #                 periksain_summary[periksain_index]['counter'] += 1
+            #                 periksain_summary[periksain_index]['amount'] += i['amount']
+            #                 periksain_summary[periksain_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate periksain_summary
-                        periksain_index = self.check_index(periksain_summary, 'product', i['carrier_name'])
-                        if periksain_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            periksain_summary.append(temp_dict)
-                        else:
-                            periksain_summary[periksain_index]['counter'] += 1
-                            periksain_summary[periksain_index]['amount'] += i['amount']
-                            periksain_summary[periksain_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -6986,6 +7792,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': periksain_summary
             }
 
@@ -7021,6 +7828,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_medical(self, data, is_ho, context = {}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -7063,6 +7873,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -7085,122 +7896,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate medical_summary
+            #             medical_index = self.check_index(medical_summary, 'product', i['carrier_name'])
+            #             if medical_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 medical_summary.append(temp_dict)
+            #             else:
+            #                 medical_summary[medical_index]['counter'] += 1
+            #                 medical_summary[medical_index]['amount'] += i['amount']
+            #                 medical_summary[medical_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate medical_summary
-                        medical_index = self.check_index(medical_summary, 'product', i['carrier_name'])
-                        if medical_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            medical_summary.append(temp_dict)
-                        else:
-                            medical_summary[medical_index]['counter'] += 1
-                            medical_summary[medical_index]['amount'] += i['amount']
-                            medical_summary[medical_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -7344,6 +8223,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': medical_summary
             }
 
@@ -7379,6 +8259,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_bus(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT 0
@@ -7455,6 +8338,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
 
             reservation_ids = []
             for i in issued_values['lines']:
@@ -7478,274 +8362,342 @@ class TtReportDashboard(models.Model):
             # declare current id
             current_id = {}
             current_journey = ''
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
             # proceed invoice with the assumption of create date = issued date
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             # set journey to current journey (id)
+            #             current_journey = i['journey_id']
+            #
+            #             # search for month index within summary issued
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 # add the first profit if ledger type is 3 a.k.a commission
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #         except:
+            #             pass
+            #
+            #         # ============= Summary by Domestic/International ============
+            #         # this summary basically make table to create international and domestic by direction
+            #         # like one way, return or even multi city
+            #         if i['reservation_sector'] == 'International':
+            #             # for every reservation with international destination
+            #             # valuation = revenue
+            #             sector_dictionary[0]['valuation'] += float(i['amount'])
+            #             # counter = # of reservation
+            #             sector_dictionary[0]['counter'] += 1
+            #             if i['reservation_direction'] == 'OW':
+            #                 # OW = one way
+            #                 sector_dictionary[0]['one_way'] += 1
+            #             elif i['reservation_direction'] == 'RT':
+            #                 # rt = return
+            #                 sector_dictionary[0]['return'] += 1
+            #             else:
+            #                 # else considered as multicity as of today 2020-12-08
+            #                 sector_dictionary[0]['multi_city'] += 1
+            #                 # adding total passenger in international section
+            #             sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+            #         elif i['reservation_sector'] == 'Domestic':
+            #             # for every reservation with domestic destination
+            #             sector_dictionary[1]['valuation'] += float(i['amount'])
+            #             sector_dictionary[1]['counter'] += 1
+            #             if i['reservation_direction'] == 'OW':
+            #                 sector_dictionary[1]['one_way'] += 1
+            #             elif i['reservation_direction'] == 'RT':
+            #                 sector_dictionary[1]['return'] += 1
+            #             else:
+            #                 sector_dictionary[1]['multi_city'] += 1
+            #             sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+            #         else:
+            #             # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
+            #             sector_dictionary[2]['valuation'] += float(i['amount'])
+            #             sector_dictionary[2]['counter'] += 1
+            #             if i['reservation_direction'] == 'OW':
+            #                 sector_dictionary[2]['one_way'] += 1
+            #             elif i['reservation_direction'] == 'RT':
+            #                 sector_dictionary[2]['return'] += 1
+            #             else:
+            #                 sector_dictionary[2]['multi_city'] += 1
+            #             sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+            #
+            #         # issued depart days difference
+            #         # ============= Issued compareed to depart date ==============
+            #         # filter the data, resulting all of the data with respected order number
+            #         filter_data = list(
+            #             filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
+            #                    issued_values['lines']))
+            #
+            #         # look for the nearest departure date from issued date
+            #         depart_index = 0
+            #         if len(filter_data) > 1:
+            #             earliest_depart = filter_data[0]['journey_departure_date']
+            #             for j, dic in enumerate(filter_data):
+            #                 if earliest_depart > dic['journey_departure_date']:
+            #                     depart_index = j
+            #         # lets count
+            #         if filter_data[0]['reservation_issued_date_og']:
+            #             # conver journey date (string) to datetime
+            #             date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M:%S')
+            #             # check if reservation has issued dates
+            #             # this should be quite obselete since this function only calls for issued reservation
+            #             # but this function also written in more general function so.. there's that
+            #             if filter_data[0]['reservation_issued_date_og']:
+            #                 # actually counting the day difference between each date
+            #                 date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+            #                 if date_count.days < 0:
+            #                     # if for some whatever reason the date result in negative
+            #                     # just print to logger, maybe if someday needed to be check there's the data in logger
+            #                     _logger.error("please check {}".format(i['reservation_order_number']))
+            #             else:
+            #                 date_count = 0
+            #
+            #             # check for index in issued depart summary
+            #             issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
+            #             # if no index found a.k.a -1 then we'll create and add the data
+            #             if issued_depart_index == -1:
+            #                 temp_dict = {
+            #                     "day": date_count.days,
+            #                     "counter": 1,
+            #                     'passenger': filter_data[0]['reservation_passenger']
+            #                 }
+            #                 issued_depart_summary.append(temp_dict)
+            #             else:
+            #                 # if data exist then we only need to update existing data
+            #                 issued_depart_summary[issued_depart_index]['counter'] += 1
+            #                 issued_depart_summary[issued_depart_index]['passenger'] += \
+            #                 filter_data[0][
+            #                     'reservation_passenger']
+            #
+            #         # ============= end of Issued compareed to depart date ==============
+            #
+            #
+            #         if i['reservation_state'] == 'issued':
+            #             # total += i['amount']
+            #             # num_data += 1
+            #
+            #             # ============= Search best for every sector ==================
+            #             # in this section we only compare how many reservation is actually for international destination
+            #             # and how many domestic reservation
+            #             # just to make is useful this report also sumarize passenger count, and reservation count
+            #             returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
+            #             # once again as always we check for index then create and add if not exist, update if data already exist
+            #             i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+            #             if returning_index == -1:
+            #                 new_dict = {
+            #                     'sector': i['reservation_sector'],
+            #                     'departure': i['departure'],
+            #                     'destination': i['destination'],
+            #                     'counter': 1,
+            #                     'elder_count': i['reservation_elder'],
+            #                     'adult_count': i['reservation_adult'],
+            #                     'child_count': i['reservation_child'],
+            #                     'infant_count': i['reservation_infant'],
+            #                     'passenger_count': i['reservation_passenger']
+            #                 }
+            #                 destination_sector_summary.append(new_dict)
+            #             else:
+            #                 destination_sector_summary[returning_index]['counter'] += 1
+            #                 destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+            #                 destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+            #                 destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+            #                 destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+            #                 destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+            #
+            #             # ============= Search for best 50 routes ====================
+            #             # in this section we want to extract top i dunno like 15 route of each sector
+            #             # this code can produce more than 15, but will be trim later down the line
+            #             # to make it insightful i add revenue data, and passenger count
+            #             returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+            #
+            #             if returning_index == -1:
+            #                 new_dict = {
+            #                     'direction': i['reservation_direction'],
+            #                     'departure': i['departure'],
+            #                     'destination': i['destination'],
+            #                     'sector': i['reservation_sector'],
+            #                     'counter': 1,
+            #                     'elder_count': i['reservation_elder'],
+            #                     'adult_count': i['reservation_adult'],
+            #                     'child_count': i['reservation_child'],
+            #                     'infant_count': i['reservation_infant'],
+            #                     'passenger_count': i['reservation_passenger']
+            #                 }
+            #                 destination_direction_summary.append(new_dict)
+            #             else:
+            #                 destination_direction_summary[returning_index]['counter'] += 1
+            #                 destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+            #                 destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+            #                 destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+            #                 destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+            #                 destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+            #
+            #         # update current id
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         # els in here means iterate data has the same order number as previous lines
+            #         # with that we only need to update ledger count
+            #         # no more filtering for smaller overview
+            #
+            #         # in order not to double count, this if condition is needed
+            #         if current_journey == i['journey_id']:
+            #             if i['ledger_transaction_type'] == 3:
+            #                 # get index of particular year and month
+            #                 month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+            #                 # split date to extract day
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 # get day
+            #                 day_index = int(splits[2]) - 1
+            #                 # add profit to respected array
+            #                 # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                 # if HQ guy asking then we'll count everything
+            #                 # if not HQ guy then we'll only count respected agent
+            #                 if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     profit_total += i['debit'] - i['credit']
+            #                     profit_ho += i['debit'] - i['credit']
+            #                 # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                 #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 #     profit_total += i['debit'] - i['credit']
+            #                 #     profit_ho += i['debit'] - i['credit']
+            #                 # elif i['ledger_agent_type_name'] != 'HO':
+            #                 #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 #     profit_total += i['debit'] - i['credit']
+            #                 #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        # set journey to current journey (id)
-                        current_journey = i['journey_id']
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        # search for month index within summary issued
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
-                            }
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
 
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            # add the first profit if ledger type is 3 a.k.a commission
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-                    except:
-                        pass
-
-                    # ============= Summary by Domestic/International ============
-                    # this summary basically make table to create international and domestic by direction
-                    # like one way, return or even multi city
-                    if i['reservation_sector'] == 'International':
-                        # for every reservation with international destination
-                        # valuation = revenue
-                        sector_dictionary[0]['valuation'] += float(i['amount'])
-                        # counter = # of reservation
-                        sector_dictionary[0]['counter'] += 1
-                        if i['reservation_direction'] == 'OW':
-                            # OW = one way
-                            sector_dictionary[0]['one_way'] += 1
-                        elif i['reservation_direction'] == 'RT':
-                            # rt = return
-                            sector_dictionary[0]['return'] += 1
-                        else:
-                            # else considered as multicity as of today 2020-12-08
-                            sector_dictionary[0]['multi_city'] += 1
-                            # adding total passenger in international section
-                        sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
-                    elif i['reservation_sector'] == 'Domestic':
-                        # for every reservation with domestic destination
-                        sector_dictionary[1]['valuation'] += float(i['amount'])
-                        sector_dictionary[1]['counter'] += 1
-                        if i['reservation_direction'] == 'OW':
-                            sector_dictionary[1]['one_way'] += 1
-                        elif i['reservation_direction'] == 'RT':
-                            sector_dictionary[1]['return'] += 1
-                        else:
-                            sector_dictionary[1]['multi_city'] += 1
-                        sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
                     else:
-                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
-                        sector_dictionary[2]['valuation'] += float(i['amount'])
-                        sector_dictionary[2]['counter'] += 1
-                        if i['reservation_direction'] == 'OW':
-                            sector_dictionary[2]['one_way'] += 1
-                        elif i['reservation_direction'] == 'RT':
-                            sector_dictionary[2]['return'] += 1
-                        else:
-                            sector_dictionary[2]['multi_city'] += 1
-                        sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+                        # data exist
 
-                    # issued depart days difference
-                    # ============= Issued compareed to depart date ==============
-                    # filter the data, resulting all of the data with respected order number
-                    filter_data = list(
-                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
-                               issued_values['lines']))
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
-                    # look for the nearest departure date from issued date
-                    depart_index = 0
-                    if len(filter_data) > 1:
-                        earliest_depart = filter_data[0]['journey_departure_date']
-                        for j, dic in enumerate(filter_data):
-                            if earliest_depart > dic['journey_departure_date']:
-                                depart_index = j
-                    # lets count
-                    if filter_data[0]['reservation_issued_date_og']:
-                        # conver journey date (string) to datetime
-                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M:%S')
-                        # check if reservation has issued dates
-                        # this should be quite obselete since this function only calls for issued reservation
-                        # but this function also written in more general function so.. there's that
-                        if filter_data[0]['reservation_issued_date_og']:
-                            # actually counting the day difference between each date
-                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
-                            if date_count.days < 0:
-                                # if for some whatever reason the date result in negative
-                                # just print to logger, maybe if someday needed to be check there's the data in logger
-                                _logger.error("please check {}".format(i['reservation_order_number']))
-                        else:
-                            date_count = 0
-
-                        # check for index in issued depart summary
-                        issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
-                        # if no index found a.k.a -1 then we'll create and add the data
-                        if issued_depart_index == -1:
-                            temp_dict = {
-                                "day": date_count.days,
-                                "counter": 1,
-                                'passenger': filter_data[0]['reservation_passenger']
-                            }
-                            issued_depart_summary.append(temp_dict)
-                        else:
-                            # if data exist then we only need to update existing data
-                            issued_depart_summary[issued_depart_index]['counter'] += 1
-                            issued_depart_summary[issued_depart_index]['passenger'] += \
-                            filter_data[0][
-                                'reservation_passenger']
-
-                    # ============= end of Issued compareed to depart date ==============
-
-
-                    if i['reservation_state'] == 'issued':
-                        # total += i['amount']
-                        # num_data += 1
-
-                        # ============= Search best for every sector ==================
-                        # in this section we only compare how many reservation is actually for international destination
-                        # and how many domestic reservation
-                        # just to make is useful this report also sumarize passenger count, and reservation count
-                        returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
-                        # once again as always we check for index then create and add if not exist, update if data already exist
-                        i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
-                        if returning_index == -1:
-                            new_dict = {
-                                'sector': i['reservation_sector'],
-                                'departure': i['departure'],
-                                'destination': i['destination'],
-                                'counter': 1,
-                                'elder_count': i['reservation_elder'],
-                                'adult_count': i['reservation_adult'],
-                                'child_count': i['reservation_child'],
-                                'infant_count': i['reservation_infant'],
-                                'passenger_count': i['reservation_passenger']
-                            }
-                            destination_sector_summary.append(new_dict)
-                        else:
-                            destination_sector_summary[returning_index]['counter'] += 1
-                            destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
-                            destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
-                            destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
-                            destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
-                            destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
-
-                        # ============= Search for best 50 routes ====================
-                        # in this section we want to extract top i dunno like 15 route of each sector
-                        # this code can produce more than 15, but will be trim later down the line
-                        # to make it insightful i add revenue data, and passenger count
-                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
-
-                        if returning_index == -1:
-                            new_dict = {
-                                'direction': i['reservation_direction'],
-                                'departure': i['departure'],
-                                'destination': i['destination'],
-                                'sector': i['reservation_sector'],
-                                'counter': 1,
-                                'elder_count': i['reservation_elder'],
-                                'adult_count': i['reservation_adult'],
-                                'child_count': i['reservation_child'],
-                                'infant_count': i['reservation_infant'],
-                                'passenger_count': i['reservation_passenger']
-                            }
-                            destination_direction_summary.append(new_dict)
-                        else:
-                            destination_direction_summary[returning_index]['counter'] += 1
-                            destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
-                            destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
-                            destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
-                            destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
-                            destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
-
-                    # update current id
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    # els in here means iterate data has the same order number as previous lines
-                    # with that we only need to update ledger count
-                    # no more filtering for smaller overview
-
-                    # in order not to double count, this if condition is needed
-                    if current_journey == i['journey_id']:
-                        if i['ledger_transaction_type'] == 3:
-                            # get index of particular year and month
-                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
-                            # split date to extract day
-                            splits = i['reservation_issued_date'].split("-")
-                            # get day
-                            day_index = int(splits[2]) - 1
-                            # add profit to respected array
-                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                            # if HQ guy asking then we'll count everything
-                            # if not HQ guy then we'll only count respected agent
-                            if is_ho or agent_name_context == i['ledger_agent_name']:
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_ho += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
                                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                                 profit_total += i['debit'] - i['credit']
-                                profit_ho += i['debit'] - i['credit']
-                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            #     profit_total += i['debit'] - i['credit']
-                            #     profit_ho += i['debit'] - i['credit']
-                            # elif i['ledger_agent_type_name'] != 'HO':
-                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                            #     profit_total += i['debit'] - i['credit']
-                            #     profit_agent += i['debit'] - i['credit']
-
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # grouping data
             international_filter = list(filter(lambda x: x['sector'] == 'International', destination_sector_summary))
             domestic_filter = list(filter(lambda x: x['sector'] == 'Domestic', destination_sector_summary))
@@ -7905,6 +8857,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': {
                     'sector_summary': sector_dictionary,
                     'international': international_filter[:20],
@@ -7948,6 +8901,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_insurance(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -7990,6 +8946,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -8012,122 +8969,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate insurance_summary
+            #             insurance_index = self.check_index(insurance_summary, 'product', i['carrier_name'])
+            #             if insurance_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 insurance_summary.append(temp_dict)
+            #             else:
+            #                 insurance_summary[insurance_index]['counter'] += 1
+            #                 insurance_summary[insurance_index]['amount'] += i['amount']
+            #                 insurance_summary[insurance_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate insurance_summary
-                        insurance_index = self.check_index(insurance_summary, 'product', i['carrier_name'])
-                        if insurance_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            insurance_summary.append(temp_dict)
-                        else:
-                            insurance_summary[insurance_index]['counter'] += 1
-                            insurance_summary[insurance_index]['amount'] += i['amount']
-                            insurance_summary[insurance_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -8271,6 +9296,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': insurance_summary
             }
 
@@ -8306,6 +9332,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_swabexpress(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -8348,6 +9377,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -8370,122 +9400,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agennt
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate swabexpress_summary
+            #             swabexpress_index = self.check_index(swabexpress_summary, 'product', i['carrier_name'])
+            #             if swabexpress_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 swabexpress_summary.append(temp_dict)
+            #             else:
+            #                 swabexpress_summary[swabexpress_index]['counter'] += 1
+            #                 swabexpress_summary[swabexpress_index]['amount'] += i['amount']
+            #                 swabexpress_summary[swabexpress_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agennt
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate swabexpress_summary
-                        swabexpress_index = self.check_index(swabexpress_summary, 'product', i['carrier_name'])
-                        if swabexpress_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            swabexpress_summary.append(temp_dict)
-                        else:
-                            swabexpress_summary[swabexpress_index]['counter'] += 1
-                            swabexpress_summary[swabexpress_index]['amount'] += i['amount']
-                            swabexpress_summary[swabexpress_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -8629,6 +9727,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': swabexpress_summary
             }
 
@@ -8664,6 +9763,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_labpintar(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -8706,6 +9808,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -8728,122 +9831,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate labpintar_summary
+            #             labpintar_index = self.check_index(labpintar_summary, 'product', i['carrier_name'])
+            #             if labpintar_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 labpintar_summary.append(temp_dict)
+            #             else:
+            #                 labpintar_summary[labpintar_index]['counter'] += 1
+            #                 labpintar_summary[labpintar_index]['amount'] += i['amount']
+            #                 labpintar_summary[labpintar_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate labpintar_summary
-                        labpintar_index = self.check_index(labpintar_summary, 'product', i['carrier_name'])
-                        if labpintar_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            labpintar_summary.append(temp_dict)
-                        else:
-                            labpintar_summary[labpintar_index]['counter'] += 1
-                            labpintar_summary[labpintar_index]['amount'] += i['amount']
-                            labpintar_summary[labpintar_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -8987,6 +10158,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': labpintar_summary
             }
 
@@ -9022,6 +10194,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_mitrakeluarga(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -9064,6 +10239,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -9086,122 +10262,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate mitrakeluarga_summary
+            #             mitrakeluarga_index = self.check_index(mitrakeluarga_summary, 'product', i['carrier_name'])
+            #             if mitrakeluarga_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 mitrakeluarga_summary.append(temp_dict)
+            #             else:
+            #                 mitrakeluarga_summary[mitrakeluarga_index]['counter'] += 1
+            #                 mitrakeluarga_summary[mitrakeluarga_index]['amount'] += i['amount']
+            #                 mitrakeluarga_summary[mitrakeluarga_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate mitrakeluarga_summary
-                        mitrakeluarga_index = self.check_index(mitrakeluarga_summary, 'product', i['carrier_name'])
-                        if mitrakeluarga_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            mitrakeluarga_summary.append(temp_dict)
-                        else:
-                            mitrakeluarga_summary[mitrakeluarga_index]['counter'] += 1
-                            mitrakeluarga_summary[mitrakeluarga_index]['amount'] += i['amount']
-                            mitrakeluarga_summary[mitrakeluarga_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -9345,6 +10589,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': mitrakeluarga_summary
             }
 
@@ -9380,6 +10625,9 @@ class TtReportDashboard(models.Model):
     def get_report_overall_sentramedika(self, data, is_ho, context={}):
         try:
             agent_name_context = None
+            agent_seq_id_name = None
+            if data['agent_seq_id']:
+                agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
             # process datetime to GMT
@@ -9422,6 +10670,7 @@ class TtReportDashboard(models.Model):
             profit_ho = 0
             profit_agent = 0
             invoice_total = 0
+            profit_agent_parent = 0
             reservation_ids = []
             for i in issued_values['lines']:
                 reservation_ids.append((i['reservation_id'], i['provider_type_name']))
@@ -9444,122 +10693,190 @@ class TtReportDashboard(models.Model):
 
             # declare current id
             current_id = {}
+            ledger_id_list = {}
+            reservation_id_list = {}  # dict of list provider agar id kembar tidak tertumpuk
 
-            for i in issued_values['lines']:
-                if not current_id.get(i['provider_type_name']):
-                    current_id[i['provider_type_name']] = []
-                if i['reservation_id'] not in current_id[i['provider_type_name']]:
-                    try:
-                        profit_total += i['channel_profit']
-                        profit_agent += i['channel_profit']
+            # for i in issued_values['lines']:
+            #     if not current_id.get(i['provider_type_name']):
+            #         current_id[i['provider_type_name']] = []
+            #     if i['reservation_id'] not in current_id[i['provider_type_name']]:
+            #         try:
+            #             profit_total += i['channel_profit']
+            #             profit_agent += i['channel_profit']
+            #
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #
+            #             if month_index == -1:
+            #                 # if year and month with details doens't exist yet
+            #                 # create a temp dict
+            #                 temp_dict = {
+            #                     'year': i['issued_year'],
+            #                     'month_index': int(i['issued_month']),
+            #                     'month': month[int(i['issued_month']) - 1],
+            #                     'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
+            #                     'reservation': 0,
+            #                     'revenue': 0,
+            #                     'profit': 0
+            #                 }
+            #
+            #                 # add the first data
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 temp_dict['detail'][day_index]['reservation'] += 1
+            #                 temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #                 # add to the big list
+            #                 summary_issued.append(temp_dict)
+            #             else:
+            #                 # if "summary" already exist
+            #                 # update existing summary
+            #                 splits = i['reservation_issued_date'].split("-")
+            #                 day_index = int(splits[2]) - 1
+            #                 summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+            #                 summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+            #                 total += i['amount'] + i['channel_profit']
+            #                 num_data += 1
+            #                 if i['ledger_transaction_type'] == 3:
+            #                     # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #                     # if HQ guy asking then we'll count everything
+            #                     # if not HQ guy then we'll only count respected agent
+            #                     if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                         summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                         profit_total += i['debit'] - i['credit']
+            #                         profit_ho += i['debit'] - i['credit']
+            #                     # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_ho += i['debit'] - i['credit']
+            #                     # elif i['ledger_agent_type_name'] != 'HO':
+            #                     #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                     #     profit_total += i['debit'] - i['credit']
+            #                     #     profit_agent += i['debit'] - i['credit']
+            #
+            #             # populate sentramedika_summary
+            #             sentramedika_index = self.check_index(sentramedika_summary, 'product', i['carrier_name'])
+            #             if sentramedika_index == -1:
+            #                 temp_dict = {
+            #                     'product': i['carrier_name'],
+            #                     'counter': 1,
+            #                     'passenger_count': i['reservation_passenger'],
+            #                     'amount': i['amount']
+            #                 }
+            #                 sentramedika_summary.append(temp_dict)
+            #             else:
+            #                 sentramedika_summary[sentramedika_index]['counter'] += 1
+            #                 sentramedika_summary[sentramedika_index]['amount'] += i['amount']
+            #                 sentramedika_summary[sentramedika_index]['passenger_count'] += i['reservation_passenger']
+            #         except:
+            #             pass
+            #         current_id[i['provider_type_name']].append(i['reservation_id'])
+            #     else:
+            #         if i['ledger_transaction_type'] == 3:
+            #             month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
+            #                                                                  'month': month[int(i['issued_month']) - 1]})
+            #             splits = i['reservation_issued_date'].split("-")
+            #             day_index = int(splits[2]) - 1
+            #             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+            #             # if HQ guy asking then we'll count everything
+            #             # if not HQ guy then we'll only count respected agent
+            #             if is_ho or agent_name_context == i['ledger_agent_name']:
+            #                 summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #                 profit_total += i['debit'] - i['credit']
+            #                 profit_ho += i['debit'] - i['credit']
+            #             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_ho += i['debit'] - i['credit']
+            #             # elif i['ledger_agent_type_name'] != 'HO':
+            #             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+            #             #     profit_total += i['debit'] - i['credit']
+            #             #     profit_agent += i['debit'] - i['credit']
+            for idx,i in enumerate(issued_values['lines']):
+                # if for some reason current reservation_id is the same as current_id (previous iteration id)
+                # then continue
+                if not reservation_id_list.get(i['provider_type_name']):
+                    reservation_id_list[i['provider_type_name']] = []
+                if not ledger_id_list.get(i['provider_type_name']):
+                    ledger_id_list[i['provider_type_name']] = []
 
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
+                    profit_total += i['channel_profit']
+                    profit_agent += i['channel_profit']
+                    month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
-                        if month_index == -1:
-                            # if year and month with details doens't exist yet
-                            # create a temp dict
-                            temp_dict = {
-                                'year': i['issued_year'],
-                                'month_index': int(i['issued_month']),
-                                'month': month[int(i['issued_month']) - 1],
-                                'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month'])),
-                                'reservation': 0,
-                                'revenue': 0,
-                                'profit': 0
-                            }
-
-                            # add the first data
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            temp_dict['detail'][day_index]['reservation'] += 1
-                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     temp_dict['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                            # add to the big list
-                            summary_issued.append(temp_dict)
-                        else:
-                            # if "summary" already exist
-                            # update existing summary
-                            splits = i['reservation_issued_date'].split("-")
-                            day_index = int(splits[2]) - 1
-                            summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                            total += i['amount'] + i['channel_profit']
-                            num_data += 1
-                            if i['ledger_transaction_type'] == 3:
-                                # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                                # if HQ guy asking then we'll count everything
-                                # if not HQ guy then we'll only count respected agent
-                                if is_ho or agent_name_context == i['ledger_agent_name']:
-                                    summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                    profit_total += i['debit'] - i['credit']
-                                    profit_ho += i['debit'] - i['credit']
-                                # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_ho += i['debit'] - i['credit']
-                                # elif i['ledger_agent_type_name'] != 'HO':
-                                #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                #     profit_total += i['debit'] - i['credit']
-                                #     profit_agent += i['debit'] - i['credit']
-
-                        # populate sentramedika_summary
-                        sentramedika_index = self.check_index(sentramedika_summary, 'product', i['carrier_name'])
-                        if sentramedika_index == -1:
-                            temp_dict = {
-                                'product': i['carrier_name'],
-                                'counter': 1,
-                                'passenger_count': i['reservation_passenger'],
-                                'amount': i['amount']
-                            }
-                            sentramedika_summary.append(temp_dict)
-                        else:
-                            sentramedika_summary[sentramedika_index]['counter'] += 1
-                            sentramedika_summary[sentramedika_index]['amount'] += i['amount']
-                            sentramedika_summary[sentramedika_index]['passenger_count'] += i['reservation_passenger']
-                    except:
-                        pass
-                    current_id[i['provider_type_name']].append(i['reservation_id'])
-                else:
-                    if i['ledger_transaction_type'] == 3:
-                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],
-                                                                             'month': month[int(i['issued_month']) - 1]})
+                    if month_index == -1:
+                        # data is not exist
+                        # create data
+                        temp_dict = {
+                            'year': i['issued_year'],
+                            'month_index': int(i['issued_month']),
+                            'month': month[int(i['issued_month']) - 1],
+                            'detail': self.add_issued_month_detail(int(i['issued_year']), int(i['issued_month']))
+                        }
+                        # add the first data
+                        # seperate string date to extract day date
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
-                        # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
-                        # if HQ guy asking then we'll count everything
-                        # if not HQ guy then we'll only count respected agent
-                        if is_ho or agent_name_context == i['ledger_agent_name']:
+
+                        # assign the first value to temp dict
+                        temp_dict['detail'][day_index]['reservation'] += 1
+                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+
+                        # add to global variable
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                        # add to final list
+                        summary_issued.append(temp_dict)
+                    else:
+                        # data exist
+
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        summary_issued[month_index]['detail'][day_index]['reservation'] += 1
+                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        total += i['amount'] + i['channel_profit']
+                        num_data += 1
+                    reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
+                    # proceed profit first graph
+                    if i['ledger_transaction_type'] == 3:
+                        month_index = self.check_date_index(summary_issued, {'year': i['issued_year'],'month': month[int(i['issued_month']) - 1]})
+                        splits = i['reservation_issued_date'].split("-")
+                        day_index = int(splits[2]) - 1
+                        if is_ho and i['ledger_agent_type_name'] == 'HO':
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_ho += i['debit'] - i['credit']
-                        # elif i['ledger_agent_type_name'] != 'HO':
-                        #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                        #     profit_total += i['debit'] - i['credit']
-                        #     profit_agent += i['debit'] - i['credit']
-
+                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                            summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            profit_total += i['debit'] - i['credit']
+                            profit_agent += i['debit'] - i['credit']
+                        elif i['ledger_agent_type_name'] != 'HO':  # BUAT PARENT AGENT
+                            if is_ho:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                            profit_agent_parent += i['debit'] - i['credit']
+                    ledger_id_list[i['provider_type_name']].append(i['ledger_id'])
             # for every section in summary
             for i in summary_issued:
                 # for every detail in section
@@ -9703,6 +11020,7 @@ class TtReportDashboard(models.Model):
                 'profit_total': profit_total,
                 'profit_ho': profit_ho,
                 'profit_agent': profit_agent,
+                'profit_agent_parent': profit_agent_parent,
                 'first_overview': sentramedika_summary
             }
 

@@ -306,7 +306,7 @@ class TtAgent(models.Model):
 
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        return self.balance >= amount
+        return self.balance + self.credit_limit >= amount
 
     def check_balance_limit_api(self, agent_id, amount):
         partner_obj = self.env['tt.agent']
