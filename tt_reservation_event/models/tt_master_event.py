@@ -205,6 +205,7 @@ class MasterEvent(models.Model):
                     'includes': i.includes,
                     'excludes': i.excludes,
                     'provider': i.provider_id.name,
+                    'provider_code': i.provider_id.code, ## utk ambil passenger max length
                     'option': i.state not in ['expired',] and [i.format_api_option(opt.id) for opt in i.option_ids] or [],
                     'vendor_obj': {
                         'vendor_id': i.event_vendor_id.id,

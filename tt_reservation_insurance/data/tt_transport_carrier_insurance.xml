@@ -64,5 +64,28 @@
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
         </record>
+
+
+        <record id="tt_transport_carrier_insurance_bca" model="tt.transport.carrier">
+            <field name="name">BCA Insurance</field>
+            <field name="code">bcainsurance</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">60</field>
+            <field name="child_length_name">60</field>
+            <field name="infant_length_name">60</field>
+            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
+        </record>
+
+        <record id="tt_transport_carrier_insurance_zurich" model="tt.transport.carrier">
+            <field name="name">Zurich</field>
+            <field name="code">zurich</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">60</field>
+            <field name="child_length_name">60</field>
+            <field name="infant_length_name">60</field>
+            <field name="provider_type_id" ref="tt_reservation_insurance.tt_provider_type_insurance"/>
+        </record>
     </data>
 </odoo>
