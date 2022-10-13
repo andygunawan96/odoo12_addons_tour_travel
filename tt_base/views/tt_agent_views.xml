@@ -138,6 +138,14 @@
                             </group>
                             <field name="quota_ids"/>
                         </page>
+                        <page string="Credit Limit" attrs="{'invisible': [('credit_limit','=',0)]}">
+                            <group>
+                                <field name="agent_credit_limit_provider_type_access_type"/>
+                                <field name="agent_credit_limit_provider_type_eligibility_ids"/>
+                                <field name="agent_credit_limit_provider_access_type"/>
+                                <field name="agent_credit_limit_provider_eligibility_ids"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
