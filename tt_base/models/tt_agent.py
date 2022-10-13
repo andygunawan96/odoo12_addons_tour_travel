@@ -26,6 +26,14 @@ class TtAgent(models.Model):
     annual_profit_target = fields.Monetary(string="Annual Profit Target", default=0)
     # target_ids = fields.One2many('tt.agent.target', 'agent_id', string='Target(s)')
     credit_limit = fields.Monetary(string="Credit Limit",  required=False, )
+
+    ## UNTUK CREDIT LIMIT ##
+    agent_credit_limit_provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Type Access Type', default='all')
+    agent_credit_limit_provider_type_eligibility_ids = fields.Many2many("tt.provider.type","tt_provider_type_tt_agent_rel","tt_agent_id", "tt_provider_type_id","Provider Type")  # what product this voucher can be applied
+    agent_credit_limit_provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Access Type', default='all')
+    agent_credit_limit_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_agent_rel","tt_agent_id", "tt_provier_id","Provider ID")  # what provider this voucher can be applied
+    ## UNTUK CREDIT LIMIT ##
+
     npwp = fields.Char(string="NPWP", required=False, )
     est_date = fields.Datetime(string="Est. Date", required=False, )
     # mou_start = fields.Datetime(string="Mou. Start", required=False, )
@@ -231,10 +239,10 @@ class TtAgent(models.Model):
             customer_parent_balance = 0
             currency_code = agent_obj.currency_id.name
             customer_parent_currency_code = ''
-            credit_limit = 0
+            credit_limit = agent_obj.credit_limit
             is_show_balance = True
             is_show_customer_parent_balance = False
-            is_show_credit_limit = False
+            is_show_credit_limit = True if agent_obj.credit_limit > 0 else False
             point_reward = 0
             is_show_point_reward = False
             website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
@@ -293,7 +301,7 @@ class TtAgent(models.Model):
             res = ERR.get_error()
         return res
 
-    def check_balance_limit(self, amount):
+    def check_balance_limit(self, amount, is_use_credit_limit):
         # if not self.ensure_one():
         #     raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         # sql_query = 'select id,balance from tt_ledger where agent_id = %s order by id desc limit 1;' % (self.id)
@@ -306,9 +314,12 @@ class TtAgent(models.Model):
 
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        return self.balance + self.credit_limit >= amount
+        if is_use_credit_limit:
+            return self.balance + self.credit_limit >= amount
+        else:
+            return self.balance >= amount
 
-    def check_balance_limit_api(self, agent_id, amount):
+    def check_balance_limit_api(self, agent_id, amount, is_use_credit_limit=False):
         partner_obj = self.env['tt.agent']
         if type(agent_id) == int:
             partner_obj = self.env['tt.agent'].browse(agent_id)
@@ -317,7 +328,7 @@ class TtAgent(models.Model):
 
         if not partner_obj:
             return ERR.get_error(1008)
-        if not partner_obj.check_balance_limit(amount):
+        if not partner_obj.check_balance_limit(amount, is_use_credit_limit):
             return ERR.get_error(1007)
         else:
             return ERR.get_no_error()

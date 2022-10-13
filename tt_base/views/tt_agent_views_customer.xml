@@ -35,6 +35,7 @@
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
                             <!--                            <field name="credit_limit"/>-->
+                            <field name="credit_limit" readonly="1"/>
                             <field name="is_using_pnr_quota" groups="tt_base.group_agent_level_4"
                                    invisible="1"/>
                             <field name="is_send_email_cust" groups="tt_base.group_agent_level_4"/>
@@ -92,6 +93,14 @@
                                 <field name="quota_total_duration"/>
                             </group>
                             <field name="quota_ids"/>
+                        </page>
+                        <page string="Credit Limit" attrs="{'invisible': [('credit_limit','=',0)]}">
+                            <group>
+                                <field name="agent_credit_limit_provider_type_access_type" readonly="1"/>
+                                <field name="agent_credit_limit_provider_type_eligibility_ids" readonly="1"/>
+                                <field name="agent_credit_limit_provider_access_type" readonly="1"/>
+                                <field name="agent_credit_limit_provider_eligibility_ids" readonly="1"/>
+                            </group>
                         </page>
                     </notebook>
                 </sheet>
