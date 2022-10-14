@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record model="tt.api.webhook.data" id="api_webhook_data_sync_refund_request_offline">
-        <field name='name'>Refund Request Webhook</field>
+        <field name='name'>Refund Request Webhook</field> <!-- untuk refund manual airline -->
         <field name='provider_type_id' ref='tt_reservation_offline.tt_provider_type_offline'/>
         <field name='action'>sync</field>
     </record>
