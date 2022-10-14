@@ -38,10 +38,10 @@ class ApiWebhookData(models.Model):
                 if req.get('child_id'):
                     children_list = webhook_data_obj[0].webhook_rel_ids.filtered(lambda x: x.credential_data_id.user_id.id == req['child_id'])
                 else:
-                    children_list = webhook_data_obj[0].webhook_rel_ids
+                    children_list = webhook_data_obj[0].webhook_rel_ids.filtered(lambda x: x.active == True)
                 for rec in children_list:
                     send_limit = 1 # tiap child punya jatah 3x fail
-                    while send_limit <= 3:
+                    while send_limit <= req.get('fail_send_limit',3):
                         try:
                             _logger.info("children name %s" % rec.credential_data_id.user_id.name)
                             if rec.id not in sent_data:
