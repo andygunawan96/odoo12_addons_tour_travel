@@ -600,7 +600,7 @@ class TtRefund(models.Model):
 
     def send_webhook_refund(self, data, action, child_id):
         vals = {
-            'provider_type': 'offline',
+            'provider_type': 'offline', ## seharusnya untuk airline tetapi di btbo2 bikin offline
             'action': action,
             'data': data,
             'child_id': child_id
