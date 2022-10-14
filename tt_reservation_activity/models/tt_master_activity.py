@@ -2836,6 +2836,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
                 'provider_type': 'activity',
                 'action': 'sync_products_to_children',
                 'data': activity_data_list,
+                'fail_send_limit': 1, #1 x saja supaya tidak ulang ulang proses di btbo2
                 'timeout': gw_timeout
             }
             self.env['tt.api.webhook.data'].notify_subscriber(vals)
