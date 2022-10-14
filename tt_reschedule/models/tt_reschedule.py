@@ -279,7 +279,7 @@ class TtReschedule(models.Model):
     passenger_ids = fields.Many2many('tt.reservation.passenger.airline', 'tt_reschedule_passenger_rel', 'reschedule_id', 'passenger_id',
                                      readonly=True)
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]", readonly=False, states={'done': [('readonly', True)]})
-    reschedule_amount = fields.Monetary('Expected After Sales Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount')
+    reschedule_amount = fields.Monetary('Expected After Sales Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount', store=True)
     real_reschedule_amount = fields.Monetary('Real After Sales Amount from Vendor', default=0, readonly=True,
                                          compute='_compute_real_reschedule_amount')
     reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
@@ -637,7 +637,7 @@ class TtReschedule(models.Model):
     # END
 
     def cancel_reschedule_from_button(self):
-        if self.state in ['validate', 'final']:
+        if self.state in ['validate', 'final', 'done']:
             if not self.cancel_message:
                 raise UserError("Please fill the cancellation message!")
             for rec in self.ledger_ids:

@@ -1,5 +1,5 @@
 from odoo import api,fields,models
-from datetime import datetime
+from datetime import datetime, timedelta
 from ...tools import ERR
 from ...tools.ERR import RequestException
 import json,logging,traceback,pytz
@@ -18,7 +18,8 @@ class TtPnrQuota(models.Model):
     _order = 'id desc'
 
     name = fields.Char('Name')
-    used_amount = fields.Integer('Used Amount', compute='_compute_used_amount',store=True)
+    used_amount = fields.Integer('Total Transaction', compute='_compute_used_amount',store=True) ## harus nya total transaction
+    usage_quota = fields.Integer('Usage Quota', compute='_compute_usage_quota',store=True) ## quota external
     amount = fields.Integer('Amount', store=True)
     currency_id = fields.Many2one('res.currency', string='Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -31,8 +32,7 @@ class TtPnrQuota(models.Model):
     transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
     transaction_amount_external = fields.Monetary('Transaction Amount External', copy=False, readonly=True)
     total_amount = fields.Monetary('Total Amount', copy=False, readonly=True)
-
-    excel_file = fields.Binary('Excel File')
+    pnr_quota_excel_id = fields.Many2one('tt.upload.center', 'PNR Quota Excel', readonly=True)
 
     @api.model
     def create(self, vals_list):
@@ -41,7 +41,7 @@ class TtPnrQuota(models.Model):
             exp_date = datetime.now() + relativedelta(months=package_obj.validity)
             now = datetime.now(pytz.timezone('Asia/Jakarta'))
             vals_list['name'] = self.env['ir.sequence'].next_by_code('tt.pnr.quota')
-            vals_list['expired_date'] = "%s-%s-%s" % (exp_date.year, exp_date.month, calendar.monthrange(exp_date.year, exp_date.month)[1])
+            vals_list['expired_date'] = "%s-%s-01" % (exp_date.year, exp_date.month)
             vals_list['start_date'] = "%s-%s-%s" % (now.year, now.month, now.day)
             vals_list['state'] = 'active'
             vals_list['amount'] = int(package_obj.minimum_fee)
@@ -54,6 +54,15 @@ class TtPnrQuota(models.Model):
     def _compute_used_amount(self):
         for rec in self:
             rec.used_amount = len(rec.usage_ids.ids)
+
+    @api.onchange('usage_ids', 'usage_ids.active')
+    @api.depends('usage_ids', 'usage_ids.active')
+    def _compute_usage_quota(self):
+        for rec in self:
+            usage_pnr = 0
+            for usage_obj in rec.usage_ids.filtered(lambda x: x.inventory == 'external'):
+                usage_pnr += usage_obj.usage_quota
+            rec.usage_quota = usage_pnr
 
     # @api.depends('price_list_id')
     # def _compute_amount(self):
@@ -78,6 +87,7 @@ class TtPnrQuota(models.Model):
         return {
             'name': self.name,
             'used_amount': self.used_amount,
+            'usage_quota': self.usage_quota,
             'amount': self.amount,
             'expired_date': self.expired_date,
             'state': self.state
@@ -118,7 +128,7 @@ class TtPnrQuota(models.Model):
 
     def payment_pnr_quota_api(self):
         for rec in self:
-            if rec.agent_id.balance >= rec.total_amount:
+            if rec.agent_id.is_payment_by_system and rec.agent_id.balance >= rec.total_amount:
                 # bikin ledger
                 self.env['tt.ledger'].create_ledger_vanilla(rec._name,
                                                             rec.id,
@@ -149,6 +159,14 @@ class TtPnrQuota(models.Model):
                                                             description='Buying PNR Quota for %s' % (rec.agent_id.name)
                                                             )
                 rec.state = 'done'
+            else:
+                rec.state = 'done'
+
+    def set_to_waiting_pnr_quota(self):
+        ledgers_obj = self.ledger_ids.filtered(lambda x: x.is_reversed == False)
+        for ledger_obj in ledgers_obj:
+            ledger_obj.reverse_ledger()
+        self.state = 'waiting'
 
 
     def get_pnr_quota_api(self,data,context):
@@ -211,6 +229,8 @@ class TtPnrQuota(models.Model):
 
     def calculate_price(self, quota_list, req):
         price = 0
+        quota_pnr_usage = 0
+        type_price = 'pnr'
         try:
             carriers = req.get('ref_carriers').split(', ') # dari api
             pnr = req.get('ref_pnrs').split(', ') # dari api
@@ -227,53 +247,109 @@ class TtPnrQuota(models.Model):
             if provider_type == price_list_obj.provider_type_id.code:
                 if price_list_obj.provider_access_type == 'all' or price_list_obj.provider_access_type == 'allow' and provider == price_list_obj.provider_id.code or price_list_obj.provider_access_type == 'restrict' and provider != price_list_obj.provider_id.code:
                     if price_list_obj.carrier_access_type == 'all':
-                        if price_list_obj.price_type == 'pnr':
-                            price += price_list_obj.price * len(pnr)
-                        elif price_list_obj.price_type == 'r/n':
-                            try:
-                                price += price_list_obj.price * req.get('ref_r_n')  # dari api
-                            except:
-                                price += price_list_obj.price * req.ref_r_n  # recalculate
-                        elif price_list_obj.price_type == 'pax':
-                            try:
-                                price += price_list_obj.price * req.get('ref_pax')  # dari api
-                            except:
-                                price += price_list_obj.price * req.ref_pax  # recalculate
+                        price_add = True
                     else:
                         price_add = True
                         for carrier in carriers:
                             if price_list_obj.carrier_access_type == 'restrict' and price_list_obj.carrier_id.name == carrier or price_list_obj.carrier_id.name != carrier:
                                 price_add = False
-                        if price_add == True:
-                            if price_list_obj.price_type == 'pnr':
-                                price += price_list_obj.price * len(pnr)
-                            elif price_list_obj.price_type == 'r/n':
-                                try:
-                                    price += price_list_obj.price * req.get('ref_r_n') #dari api
-                                except:
-                                    price += price_list_obj.price * req.ref_r_n  # recalculate
-                            elif price_list_obj.price_type == 'pax':
-                                try:
-                                    price += price_list_obj.price * req.get('ref_pax') #dari api
-                                except:
-                                    price += price_list_obj.price * req.ref_pax #recalculate
-        return price
+                    if price_add:
+                        if price_list_obj.price_type == 'pnr':
+                            price += price_list_obj.price * len(pnr)
+                            type_price = 'pnr'
+                            quota_pnr_usage += len(pnr)
+                        elif price_list_obj.price_type == 'r/n':
+                            type_price = 'r/n'
+                            try:
+                                price += price_list_obj.price * req.get('ref_r_n')  # dari api
+                                quota_pnr_usage += req.get('ref_r_n')
+                            except:
+                                price += price_list_obj.price * req.ref_r_n  # recalculate
+                                quota_pnr_usage += req.ref_r_n  # recalculate
+                        elif price_list_obj.price_type == 'pax':
+                            type_price = 'pax'
+                            try:
+                                price += price_list_obj.price * req.get('ref_pax')  # dari api
+                                quota_pnr_usage += req.get('ref_pax')  # dari api
+                            except:
+                                price += price_list_obj.price * req.ref_pax  # recalculate
+                                quota_pnr_usage += req.ref_pax  # recalculate
+                        elif price_list_obj.price_type == 'pnr/pax':
+                            type_price = 'pnr/pax'
+                            try:
+                                price += price_list_obj.price * (req.get('ref_pax') * len(pnr))  # dari api
+                                quota_pnr_usage += (req.get('ref_pax') * len(pnr))  # dari api
+                            except:
+                                price += price_list_obj.price * (req.ref_pax * len(pnr))  # recalculate
+                                quota_pnr_usage += (req.ref_pax * len(pnr))  # recalculate
+        return {
+            "price": price,
+            "quota_pnr_usage": quota_pnr_usage,
+            "type_price": type_price
+        }
 
     def recompute_wrong_value_amount(self):
         self.amount = int(self.price_package_id.minimum_fee)
-        for rec in self.usage_ids:
-            if rec.inventory == 'external':
-                price = self.calculate_price(self.price_package_id.available_price_list_ids, rec)
-                rec.amount = price
+        package_obj = self.price_package_id
+        free_pnr_quota = package_obj.free_usage
+        quota_pnr_usage = 0
+        for rec in self.usage_ids.filtered(lambda x: x.inventory == 'external')[::-1]: ## reverse paling bawah duluan agar urutan free pnr tidak berubah
+            ##check free juga
+            calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, rec)
+            rec.usage_quota = calculate_price_dict['quota_pnr_usage']
+            if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
+                rec.amount = 0
+            elif free_pnr_quota > quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
+                rec.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
+            else:
+                rec.amount = calculate_price_dict['price']
+            rec.usage_quota = calculate_price_dict['quota_pnr_usage']
+            quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
 
     def print_report_excel(self):
         datas = {'id': self.id}
         res = self.read()
         res = res and res[0] or {}
         datas['form'] = res
-        url = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
-        self.sudo().excel_file = base64.encodebytes(url['value'])
+
+        if self.agent_id:
+            co_agent_id = self.agent_id.id
+        else:
+            co_agent_id = self.env.user.agent_id.id
+
+        co_uid = self.env.user.id
+        if self.pnr_quota_excel_id:
+            excel_bytes = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': "PNR Quota Report %s.xlsx" % self.name,
+                    'file_reference': 'PNR Quota',
+                    'file': base64.b64encode(excel_bytes['value']),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            self.pnr_quota_excel_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': self.pnr_quota_excel_id.url,
+            'path': self.pnr_quota_excel_id.path
+        }
         return url
+
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name
+
+    def get_last_payment_date(self):
+        date_str = "%s-15" % str(self.expired_date)[:7]
+        return date_str
 
 class PrintoutPnrQuotaUsage(models.AbstractModel):
     _name = 'tt.report.printout.pnr.quota.usage'

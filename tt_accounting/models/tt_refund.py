@@ -189,7 +189,7 @@ class TtRefund(models.Model):
     admin_fee = fields.Monetary('Total Admin Fee', default=0, readonly=True, compute="_compute_admin_fee", store=True)
     admin_fee_ho = fields.Monetary('Admin Fee (HO)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
     admin_fee_agent = fields.Monetary('Admin Fee (Agent)', default=0, readonly=True, compute="_compute_admin_fee", store=True)
-    refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', related='')
+    refund_amount = fields.Monetary('Expected Refund Amount', default=0, required=True, readonly=True, compute='_compute_refund_amount', store=True)
     real_refund_amount = fields.Monetary('Real Refund Amount from Vendor', default=0, readonly=True, compute='_compute_real_refund_amount')
     total_amount = fields.Monetary('Total Amount', default=0, readonly=True, compute="_compute_total_amount", store=True)
     total_amount_cust = fields.Monetary('Total Amount (Customer)', default=0, readonly=True, compute="_compute_total_amount_cust", store=True)
@@ -237,7 +237,7 @@ class TtRefund(models.Model):
     done_uid = fields.Many2one('res.users', 'Done by', readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Canceled by', readonly=True)
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
-    cancel_message = fields.Text('Cancelation Message', required=False, readonly=True, states={'validate': [('readonly', False)], 'final': [('readonly', False)]})
+    cancel_message = fields.Text('Cancelation Message', required=False, readonly=True, states={'validate': [('readonly', False)], 'final': [('readonly', False)], 'done': [('readonly', False)]})
 
     printout_refund_ho_id = fields.Many2one('tt.upload.center', 'Refund Printout HO', readonly=True)
     printout_refund_ho_cust_id = fields.Many2one('tt.upload.center', 'Refund Printout HO Cust', readonly=True)
@@ -356,29 +356,40 @@ class TtRefund(models.Model):
             'admin_fee': admin_fee,
         }
 
+    # temporary function
+    def compute_all_admin_fee(self):
+        all_refunds = self.search([])
+        for rec in all_refunds:
+            rec._compute_admin_fee()
+
     @api.depends('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     @api.onchange('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     def _compute_admin_fee(self):
         for rec in self:
             if rec.admin_fee_id and rec.res_model and rec.res_id:
-                book_obj = self.env[rec.res_model].browse(int(rec.res_id))
-                pnr_amount = 0
-                journey_amount = 0
-                for rec2 in book_obj.provider_booking_ids:
-                    pnr_amount += 1
-                    if rec.res_model == 'tt.reservation.airline':
-                        for rec3 in rec2.journey_ids:
-                            journey_amount += 1
-                    else:
-                        journey_amount = 1
+                try:
+                    book_obj = self.env[rec.res_model].browse(int(rec.res_id))
+                    pnr_amount = 0
+                    journey_amount = 0
+                    for rec2 in book_obj.provider_booking_ids:
+                        pnr_amount += 1
+                        if rec.res_model == 'tt.reservation.airline':
+                            for rec3 in rec2.journey_ids:
+                                journey_amount += 1
+                        else:
+                            journey_amount = 1
 
-                pax_amount = 0
-                for rec2 in book_obj.passenger_ids:
-                    pax_amount += 1
+                    pax_amount = 0
+                    for rec2 in book_obj.passenger_ids:
+                        pax_amount += 1
 
-                rec.admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.refund_amount, pnr_amount, pax_amount, journey_amount)
-                rec.admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.refund_amount, pnr_amount, pax_amount, journey_amount)
-                rec.admin_fee = rec.admin_fee_ho + rec.admin_fee_agent
+                    rec.admin_fee_ho = rec.admin_fee_id.get_final_adm_fee_ho(rec.refund_amount, pnr_amount, pax_amount, journey_amount)
+                    rec.admin_fee_agent = rec.admin_fee_id.get_final_adm_fee_agent(rec.refund_amount, pnr_amount, pax_amount, journey_amount)
+                    rec.admin_fee = rec.admin_fee_ho + rec.admin_fee_agent
+                except:
+                    rec.admin_fee_ho = rec.admin_fee_ho and rec.admin_fee_ho or 0
+                    rec.admin_fee_agent = rec.admin_fee_agent and rec.admin_fee_agent or 0
+                    rec.admin_fee = rec.admin_fee and rec.admin_fee or 0
             else:
                 rec.admin_fee_ho = 0
                 rec.admin_fee_agent = 0

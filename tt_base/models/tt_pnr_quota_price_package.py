@@ -13,6 +13,7 @@ class TtPnrQuotaPricePackage(models.Model):
                                            'Available Price List')
     minimum_fee = fields.Monetary('Minimum Fee',default=0)
     validity = fields.Integer('Validity Month', default=1)
+    free_usage = fields.Integer('Free Usage', default=1000)
     fix_profit_share = fields.Boolean('Fix Profit Share', default=True)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     active = fields.Boolean('Active', default=True)

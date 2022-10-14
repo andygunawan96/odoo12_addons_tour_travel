@@ -64,6 +64,17 @@ class TtCronLog(models.Model):
                 rec.calc_amount_internal()
                 rec.calc_amount_external()
                 rec.calc_amount_total()
+                
+                ## CREATE EMAIL QUEUE
+                temp_data = {
+                    'provider_type': 'quota_pnr',
+                    'order_number': rec.name,
+                }
+                temp_context = {
+                    'co_agent_id': rec.agent_id.id
+                }
+                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+
             self.env.cr.commit()
             agent_obj = self.env['tt.agent'].search([('is_using_pnr_quota', '=', True), ('quota_total_duration', '=', False)])
             for rec in agent_obj:
@@ -87,10 +98,16 @@ class TtCronLog(models.Model):
         try:
             pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'waiting')])
             for rec in pnr_quota_obj:
-                rec.payment_pnr_quota_api()
-                if rec.state != 'done':
-                    rec.agent_id.ban_user_api()
-                    rec.state = 'failed'
+                if rec.agent_id.is_payment_by_system:
+                    rec.payment_pnr_quota_api()
+                    if rec.state != 'done':
+                        rec.agent_id.ban_user_api()
+                        rec.state = 'failed'
+                else:
+                    ## agent bill manual jika belum bayar saat cron jalan ban agent
+                    if rec.state != 'done':
+                        rec.agent_id.ban_user_api()
+                        rec.state = 'failed'
         except Exception as e:
             _logger.error(traceback.format_exc())
             self.create_cron_log_folder()

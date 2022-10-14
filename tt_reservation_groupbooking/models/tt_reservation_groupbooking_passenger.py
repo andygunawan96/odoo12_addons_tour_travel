@@ -10,7 +10,7 @@ class TtReservationCustomer(models.Model):
     _description = 'Reservation Passenger Group Booking'
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_groupbooking_cost_charges_rel', 'passenger_id', 'service_charge_id', 'Cost Service Charges')
-    channel_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_groupbooking_channel_charges_rel', 'passenger_id', 'service_charge_id', 'Channel Service Charges')
+    channel_service_charge_ids = fields.Many2many('tt.service.charge','tt_reservation_groupbooking_channel_charge_rel', 'passenger_id', 'service_charge_id', 'Channel Service Charges')
     booking_id = fields.Many2one('tt.reservation.groupbooking')
     pax_type = fields.Selection([('ADT', 'Adult'), ('CHD', 'Child'), ('INF', 'Infant')])
     is_ticketed = fields.Boolean('Ticketed')

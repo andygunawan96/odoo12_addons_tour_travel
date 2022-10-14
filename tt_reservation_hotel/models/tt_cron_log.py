@@ -10,7 +10,8 @@ class TtCronLogInhResv(models.Model):
 
     def cron_mail_hotel_confirmation(self):
         mail_type = 'hotel_confirmation'
-        list_provider = ['test_internal']
+        # list_provider = ['test_internal']
+        list_provider = ['Quantum']
         try:
             for to_send in self.env['tt.reservation.hotel'].sudo().search([('create_date', '<=', datetime.today() - timedelta(days=1)),('create_date', '>', datetime.today() - timedelta(days=2)),('provider_name', 'in', list_provider)]):
             # for to_send in self.env['tt.reservation.hotel'].sudo().search([('create_date', '<=', datetime.today() - timedelta(days=1)),('provider_name', 'in', list_provider)]):
@@ -32,8 +33,8 @@ class TtCronLogInhResv(models.Model):
 
     def cron_mail_hotel_spc_request(self):
         mail_type = 'hotel_spc_request'
-        list_provider = ['test_internal']
-        # list_provider = ['Quantum']
+        # list_provider = ['test_internal']
+        list_provider = ['Quantum']
         try:
             for to_send in self.env['tt.reservation.hotel'].sudo().search([('create_date', '<=', datetime.today() - timedelta(days=1)),('create_date', '>', datetime.today() - timedelta(days=2)),('provider_name', 'in', list_provider)]):
                 mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test': False}).search([('res_id', '=', to_send.id), ('res_model', '=', to_send._name),('type', '=', mail_type)], limit=1)
@@ -55,7 +56,7 @@ class TtCronLogInhResv(models.Model):
     def cron_mail_hotel_retrieve_booking(self):
         list_provider = ['TBO Holidays']
         try:
-            for to_send in self.env['tt.reservation.hotel'].sudo().search([('create_date', '<=', datetime.today() - timedelta(minutes=2)),('create_date', '>', datetime.today() - timedelta(minutes=10)),('provider_name', 'in', list_provider)]):
+            for to_send in self.env['tt.reservation.hotel'].sudo().search([('create_date', '<=', datetime.today() - timedelta(minutes=2)),('create_date', '>', datetime.today() - timedelta(minutes=4)),('provider_name', 'in', list_provider)]):
                 to_send.check_booking_status()
 
         except Exception as e:
