@@ -4,6 +4,7 @@ PRICE_TYPE = [
     ('pnr', 'PNR'),
     ('r/n', 'R/N'),
     ('pax', 'Passenger'),
+    ('pnr/pax', 'PNR/PAX')
 ]
 
 class TtPnrQuotaPriceList(models.Model):

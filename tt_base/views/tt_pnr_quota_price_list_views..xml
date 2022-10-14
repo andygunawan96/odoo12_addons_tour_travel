@@ -44,6 +44,7 @@
             <field name="arch" type="xml">
                 <tree string="PNR Quota Price List">
                     <field name="name"/>
+                    <field name="price_type"/>
                     <field name="price"/>
                     <field name="provider_type_id"/>
                     <field name="provider_id"/>

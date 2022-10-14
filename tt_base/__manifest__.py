@@ -25,6 +25,7 @@ Key Features
         'data/tt.bank.csv',
         'data/tt.error.api.csv',
         'data/ir_cron_data.xml',
+        'data/ir_send_email.xml',
 
         'data/res.social.media.type.csv',
         'data/tt_pnr_quota_price_list.xml',

@@ -26,6 +26,14 @@ class TtAgent(models.Model):
     annual_profit_target = fields.Monetary(string="Annual Profit Target", default=0)
     # target_ids = fields.One2many('tt.agent.target', 'agent_id', string='Target(s)')
     credit_limit = fields.Monetary(string="Credit Limit",  required=False, )
+
+    ## UNTUK CREDIT LIMIT ##
+    agent_credit_limit_provider_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Type Access Type', default='all')
+    agent_credit_limit_provider_type_eligibility_ids = fields.Many2many("tt.provider.type","tt_provider_type_tt_agent_rel","tt_agent_id", "tt_provider_type_id","Provider Type")  # what product this voucher can be applied
+    agent_credit_limit_provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Access Type', default='all')
+    agent_credit_limit_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_agent_rel","tt_agent_id", "tt_provier_id","Provider ID")  # what provider this voucher can be applied
+    ## UNTUK CREDIT LIMIT ##
+
     npwp = fields.Char(string="NPWP", required=False, )
     est_date = fields.Datetime(string="Est. Date", required=False, )
     # mou_start = fields.Datetime(string="Mou. Start", required=False, )
@@ -62,6 +70,7 @@ class TtAgent(models.Model):
     quota_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Package', readonly=True)
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
+    is_payment_by_system = fields.Boolean('Payment By System', default=False)
     is_send_email_cust = fields.Boolean('Send Notification Email to Customer', default=False)
     is_share_cust_ho = fields.Boolean('Share Customers with HO', default=False)
 
@@ -230,10 +239,10 @@ class TtAgent(models.Model):
             customer_parent_balance = 0
             currency_code = agent_obj.currency_id.name
             customer_parent_currency_code = ''
-            credit_limit = 0
+            credit_limit = agent_obj.credit_limit
             is_show_balance = True
             is_show_customer_parent_balance = False
-            is_show_credit_limit = False
+            is_show_credit_limit = True if agent_obj.credit_limit > 0 else False
             point_reward = 0
             is_show_point_reward = False
             website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
@@ -292,7 +301,7 @@ class TtAgent(models.Model):
             res = ERR.get_error()
         return res
 
-    def check_balance_limit(self, amount):
+    def check_balance_limit(self, amount, is_use_credit_limit):
         # if not self.ensure_one():
         #     raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         # sql_query = 'select id,balance from tt_ledger where agent_id = %s order by id desc limit 1;' % (self.id)
@@ -305,9 +314,12 @@ class TtAgent(models.Model):
 
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        return self.balance >= amount
+        if is_use_credit_limit:
+            return self.balance + self.credit_limit >= amount
+        else:
+            return self.balance >= amount
 
-    def check_balance_limit_api(self, agent_id, amount):
+    def check_balance_limit_api(self, agent_id, amount, is_use_credit_limit=False):
         partner_obj = self.env['tt.agent']
         if type(agent_id) == int:
             partner_obj = self.env['tt.agent'].browse(agent_id)
@@ -316,7 +328,7 @@ class TtAgent(models.Model):
 
         if not partner_obj:
             return ERR.get_error(1008)
-        if not partner_obj.check_balance_limit(amount):
+        if not partner_obj.check_balance_limit(amount, is_use_credit_limit):
             return ERR.get_error(1007)
         else:
             return ERR.get_no_error()
@@ -597,11 +609,21 @@ class TtAgent(models.Model):
 
             #ambl yg index 0, terbaru
             quota_obj = quota_obj_list[0]
-
+            total_quota_pnr_used = quota_obj.usage_quota
+            type_price = 'pax'
             if req['inventory'] == 'external':
-                amount = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
+                calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
+                amount = calculate_price_dict['price']
+                usage_pnr_quota = calculate_price_dict['quota_pnr_usage'] ## hanya untuk product milik btbo2 karena tidak sharing profit
+                type_price = calculate_price_dict['type_price']
             else:
                 amount = req.get('amount')
+                usage_pnr_quota = 0 ## untuk inventory internal tidak potong quota karena sudah sharing profit
+            if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
+                amount = 0
+            elif self.quota_package_id.free_usage > total_quota_pnr_used:
+                if type_price != 'pnr':
+                    amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
             self.env['tt.pnr.quota.usage'].create({
                 'res_model_resv': req.get('res_model_resv'),
                 'res_id_resv': req.get('res_id_resv'),
@@ -616,7 +638,8 @@ class TtAgent(models.Model):
                 'ref_pax': req.get('ref_pax') and int(req.get('ref_pax')) or 0,
                 'ref_r_n': req.get('ref_r_n') and int(req.get('ref_r_n')) or 0,
                 'amount': amount,
-                'inventory': req['inventory']
+                'inventory': req['inventory'],
+                'usage_quota': usage_pnr_quota
             })
 
     def get_available_pnr_price_list_api(self,context):

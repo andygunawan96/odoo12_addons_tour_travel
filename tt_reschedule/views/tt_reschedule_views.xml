@@ -62,7 +62,7 @@
                     <button name="finalize_reschedule_from_button" string="Finalize" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'validate')]}"/>
                     <button name="action_done" string="Approve (Done)" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','!=', 'final')]}"/>
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
-                    <button name="cancel_reschedule_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['done', 'cancel'])]}" confirm="Are you sure you want to cancel?"/>
+                    <button name="cancel_reschedule_from_button" string="Cancel (Reverse Ledger)" type="object" attrs="{'invisible':[('state','in', ['expired', 'cancel'])]}" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_adjustment_level_3"
                             context="{

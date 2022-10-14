@@ -44,7 +44,7 @@ class Country(models.Model):
         return res
 
     def get_country_list(self):
-        _obj = self.sudo().search([('active', '=', True)])
+        _obj = self.sudo().search([('active', '=', True), ('code', '!=', False)])
         res = [rec.get_country_data() for rec in _obj]
         return res
 

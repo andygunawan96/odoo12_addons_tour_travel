@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="tt_transport_carrier_visa_internal" model="tt.transport.carrier">
+            <field name="name">Visa</field>
+            <field name="code">VISA</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">60</field>
+            <field name="child_length_name">60</field>
+            <field name="infant_length_name">60</field>
+            <field name="provider_type_id" ref="tt_reservation_visa.tt_provider_type_visa"/>
+        </record>
+    </data>
+</odoo>
+    

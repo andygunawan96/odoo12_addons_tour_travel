@@ -1025,7 +1025,7 @@ class TtReservation(models.Model):
             else:
                 book_obj = self.env['tt.reservation.%s' % (req['table_name'])].search([('name', '=', req.get('order_number'))],
                                                                                limit=1)
-            book_obj.sync_reservation = True
+            book_obj.sync_reservation = req['is_sync_reservation']
             return ERR.get_no_error()
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -1234,8 +1234,26 @@ class TtReservation(models.Model):
                     if total_use_point:
                         ### check agent amount minimal saldo yg di punya oleh agent yg setelah di kurang point
                         agent_check_amount -= total_use_point
-
-                balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount)
+                can_use_credit_limit = False
+                if agent_obj.credit_limit > 0:
+                    try:
+                        can_use_credit_limit = False
+                        is_provider_type = True
+                        is_provider = True
+                        ## asumsi kalau all pasti True
+                        if agent_obj.agent_credit_limit_provider_type_access_type == 'allow' and book_obj.provider_type_id not in agent_obj.agent_credit_limit_provider_type_eligibility_ids or \
+                            agent_obj.agent_credit_limit_provider_type_access_type == 'restrict' and book_obj.provider_type_id in agent_obj.agent_credit_limit_provider_type_eligibility_ids:
+                            is_provider_type = False
+                        for provider_booking in book_obj.provider_booking_ids:
+                            if agent_obj.agent_credit_limit_provider_access_type == 'allow' and provider_booking.provider_id not in agent_obj.agent_credit_limit_provider_eligibility_ids or \
+                                agent_obj.agent_credit_limit_provider_access_type == 'restrict' and provider_booking.provider_id in agent_obj.agent_credit_limit_provider_eligibility_ids:
+                                is_provider = False
+                                break
+                        if is_provider_type and is_provider:
+                            can_use_credit_limit = True
+                    except Exception as e:
+                        _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+                balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount, can_use_credit_limit)
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
                     raise RequestException(1007,additional_message="agent balance")
@@ -1307,7 +1325,8 @@ class TtReservation(models.Model):
 
                 data = {
                     'order_number': book_obj.name,
-                    'table_name': table_name
+                    'table_name': table_name,
+                    'is_sync_reservation': True
                 }
                 self.set_sync_reservation_api(data, context)
                 return ERR.get_no_error()
@@ -1446,3 +1465,6 @@ class TtReservation(models.Model):
             # rec.printout_vendor_invoice_id.unlink()
         return True
 
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name

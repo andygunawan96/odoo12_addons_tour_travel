@@ -29,6 +29,7 @@ Key Features
         'data/tt.master.visa.handling.csv',
         'data/tt_api_webhook_data.xml',
         'data/tt_pricing_agent_visa_data.xml',
+        'data/tt_transport_carrier_visa.xml',
 
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',
