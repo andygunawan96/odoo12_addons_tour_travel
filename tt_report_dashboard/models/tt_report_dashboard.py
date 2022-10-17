@@ -2364,6 +2364,420 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # Departure
+                    try:
+                        # seperate city of departure
+                        depart = i['departure'].split(" - ")
+                        start_point_summary[depart[0]] += 1
+                    except:
+                        # seperate city of departure
+                        depart = i['departure'].split(" - ")
+                        start_point_summary[depart[0]] = 1
+
+                    # Destination
+                    try:
+                        # seperate city of destination
+                        desti = i['destination'].split(" - ")
+                        end_point_summary[desti[0]] += 1
+                    except:
+                        # seperate city of destination
+                        desti = i['destination'].split(" - ")
+                        end_point_summary[desti[0]] = 1
+
+                    # Top Carrier
+                    try:
+                        carrier_index = self.check_carrier(top_carrier, {'carrier_name': i['airline']})
+
+                        if carrier_index == -1:
+                            # filter service charge
+                            # product total corresponding to particular pnr
+                            # filter from service charge data
+                            temp_charge = list(
+                                filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] == i['reservation_order_number'], service_charge))
+
+                            nta_total = 0
+                            commission = 0
+                            for k in temp_charge:
+                                if k['booking_charge_type'] == 'RAC':
+                                    commission -= k['booking_charge_total']
+                                    nta_total += k['booking_charge_total']
+                                else:
+                                    if k['booking_charge_type'] != '' and k['booking_charge_total']:
+                                        nta_total += k['booking_charge_total']
+                            grand_total = nta_total + commission
+
+                            # carrier is not exist yet
+                            # declare a temporary dictionary
+                            temp_dict = {
+                                'carrier_name': i['airline'],
+                                'counter': 1,
+                                'revenue': grand_total,
+                                'passenger': i['reservation_passenger'],
+                                'route': [{
+                                    'departure': i['departure'],
+                                    'destination': i['destination'],
+                                    'counter': 1,
+                                    'passenger': i['reservation_passenger']
+                                }]
+                            }
+                            # add to main list
+                            top_carrier.append(temp_dict)
+                        else:
+                            # check index of route within top_carrier dictionary
+                            carrier_route_index = self.check_carrier_route(top_carrier[carrier_index]['route'], {'departure': i['departure'], 'destination': i['destination']})
+
+                            # filter service charge
+                            # product total corresponding to particular pnr
+                            # filter from service charge data
+                            temp_charge = list(
+                                filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] == i[
+                                    'reservation_order_number'], service_charge))
+
+                            # this section below is to count total revenue group by carrier/airline
+                            # so no more provider like amadeus, or altea
+                            # and no more multi carrier i.e Garuda,Lion
+                            nta_total = 0
+                            commission = 0
+                            for k in temp_charge:
+                                if k['booking_charge_type'] == 'RAC':
+                                    commission -= k['booking_charge_total']
+                                    nta_total += k['booking_charge_total']
+                                else:
+                                    if k['booking_charge_type'] != '' and k['booking_charge_total']:
+                                        nta_total += k['booking_charge_total']
+                            grand_total = nta_total + commission
+
+                            # each carrier will also have top 10 route by that particular Airline
+                            # this code below responsible for that
+                            if carrier_route_index == -1:
+                                # route is not exist yet
+                                # create temporary dict
+                                temp_dict = {
+                                    'departure': i['departure'],
+                                    'destination': i['destination'],
+                                    'counter': 1,
+                                    'passenger': int(i['reservation_passenger'])
+                                }
+                                # add to list
+                                top_carrier[carrier_index]['route'].append(temp_dict)
+                            else:
+                                # if exist then only add counter
+                                top_carrier[carrier_index]['route'][carrier_route_index]['counter'] += 1
+                                top_carrier[carrier_index]['route'][carrier_route_index]['passenger'] += int(i['reservation_passenger'])
+                            # add carrier counter
+                            top_carrier[carrier_index]['counter'] += 1
+                            top_carrier[carrier_index]['revenue'] += grand_total
+                            top_carrier[carrier_index]['passenger'] += i['reservation_passenger']
+                    except:
+                        pass
+
+                    # ============= Summary by Domestic/International ============
+                    # this summary basically make table to create international and domestic by direction
+                    # like one way, return or even multi city
+                    if i['reservation_sector'] == 'International':
+                        # for every reservation with international destination
+                        # valuation = revenue
+                        sector_dictionary[0]['valuation'] += float(i['amount'])
+                        # counter = # of reservation
+                        sector_dictionary[0]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            # OW = one way
+                            sector_dictionary[0]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            # rt = return
+                            sector_dictionary[0]['return'] += 1
+                        else:
+                            # else considered as multicity as of today 2020-12-08
+                            sector_dictionary[0]['multi_city'] += 1
+                        # adding total passenger in international section
+                        sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+                    elif i['reservation_sector'] == 'Domestic':
+                        # for every reservation with domestic destination
+                        sector_dictionary[1]['valuation'] += float(i['amount'])
+                        sector_dictionary[1]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            sector_dictionary[1]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            sector_dictionary[1]['return'] += 1
+                        else:
+                            sector_dictionary[1]['multi_city'] += 1
+                        sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                    else:
+                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
+                        sector_dictionary[2]['valuation'] += float(i['amount'])
+                        sector_dictionary[2]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            sector_dictionary[2]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            sector_dictionary[2]['return'] += 1
+                        else:
+                            sector_dictionary[2]['multi_city'] += 1
+                        sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+
+                    # ============= end of Summary by Domestic/International ============
+
+                    # issued depart days difference
+                    # ============= Issued compareed to depart date ==============
+                    # filter the data, resulting all of the data with respected order number
+                    filter_data = list(
+                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'], issued_values['lines']))
+
+                    # look for the nearest departure date from issued date
+                    depart_index = 0
+                    if len(filter_data) > 1:
+                        earliest_depart = filter_data[0]['journey_departure_date']
+                        for j, dic in enumerate(filter_data):
+                            if earliest_depart > dic['journey_departure_date']:
+                                depart_index = j
+                    # lets count
+                    if filter_data[0]['reservation_issued_date_og']:
+                        # conver journey date (string) to datetime
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'],'%Y-%m-%d %H:%M:%S')
+                        # check if reservation has issued dates
+                        # this should be quite obselete since this function only calls for issued reservation
+                        # but this function also written in more general function so.. there's that
+                        if filter_data[0]['reservation_issued_date_og']:
+                            # actually counting the day difference between each date
+                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                            if date_count.days < 0:
+                                # if for some whatever reason the date result in negative
+                                # just print to logger, maybe if someday needed to be check there's the data in logger
+                                _logger.error("please check {}".format(i['reservation_order_number']))
+                        else:
+                            date_count = 0
+
+                        # for airline only i dicided to seperate the data between international departure
+                        # and domestic departure, it makes more sense and insightful
+                        # so in here we check if the reservation has international or domestic destination (well from sector actually)
+                        if filter_data[0]['reservation_sector'] == 'International':
+                            # if the data is international then we'll add it in international list
+                            issued_depart_index = self.check_index(issued_depart_international_summary, "day", date_count.days)
+                            # as always check the index
+                            # if no index found a.k.a -1 then we'll create and add the data
+                            if issued_depart_index == -1:
+                                temp_dict = {
+                                    "day": date_count.days,
+                                    "counter": 1,
+                                    'passenger': filter_data[0]['reservation_passenger']
+                                }
+                                issued_depart_international_summary.append(temp_dict)
+                            else:
+                                # if data exist then we only need to update existing data
+                                issued_depart_international_summary[issued_depart_index]['counter'] += 1
+                                issued_depart_international_summary[issued_depart_index]['passenger'] += filter_data[0][
+                                    'reservation_passenger']
+                        else:
+                            # as of today 2020-12-08 else considered as domestic
+                            # so we'll add it in domestic section
+                            issued_depart_index = self.check_index(issued_depart_domestic_summary, "day",
+                                                                   date_count.days)
+                            if issued_depart_index == -1:
+                                temp_dict = {
+                                    "day": date_count.days,
+                                    "counter": 1,
+                                    'passenger': filter_data[0]['reservation_passenger']
+                                }
+                                issued_depart_domestic_summary.append(temp_dict)
+                            else:
+                                issued_depart_domestic_summary[issued_depart_index]['counter'] += 1
+                                issued_depart_domestic_summary[issued_depart_index]['passenger'] += filter_data[0][
+                                    'reservation_passenger']
+
+                    # ============= end of Issued compareed to depart date ==============
+
+                    if i['reservation_state'] == 'issued':
+                        # total += i['amount']
+                        # num_data += 1
+
+                        # ============= Search best for every sector ==================
+                        # in this section we only compare how many reservation is actually for international destination
+                        # and how many domestic reservation
+                        # just to make is useful this report also sumarize passenger count, and reservation count
+                        returning_index = self.returning_index_sector(destination_sector_summary,{'departure': i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+                        # once again as always we check for index then create and add if not exist, update if data already exist
+                        if returning_index == -1:
+                            new_dict = {
+                                'sector': i['reservation_sector'],
+                                'departure': i['departure'],
+                                'destination': i['destination'],
+                                'counter': 1,
+                                'elder_count': i['reservation_elder'],
+                                'adult_count': i['reservation_adult'],
+                                'child_count': i['reservation_child'],
+                                'infant_count': i['reservation_infant'],
+                                'passenger_count': i['reservation_passenger']
+                            }
+                            destination_sector_summary.append(new_dict)
+                        else:
+                            destination_sector_summary[returning_index]['counter'] += 1
+                            destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                            destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                            destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                            destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                            destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                        # ============= Search for best 50 routes ====================
+                        # in this section we want to extract top i dunno like 15 route of each sector
+                        # this code can produce more than 15, but will be trim later down the line
+                        # to make it insightful i add revenue data, and passenger count
+                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+
+                        if returning_index == -1:
+                            new_dict = {
+                                'direction': i['reservation_direction'],
+                                'departure': i['departure'],
+                                'destination': i['destination'],
+                                'sector': i['reservation_sector'],
+                                'counter': 1,
+                                'elder_count': i['reservation_elder'],
+                                'adult_count': i['reservation_adult'],
+                                'child_count': i['reservation_child'],
+                                'infant_count': i['reservation_infant'],
+                                'passenger_count': i['reservation_passenger']
+                            }
+                            destination_direction_summary.append(new_dict)
+                        else:
+                            destination_direction_summary[returning_index]['counter'] += 1
+                            destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                            destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                            destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                            destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                            destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                    # current_id[i['provider_type_name']].append(i['reservation_id'])
+                else:
+                    # els in here means iterate data has the same order number as previous lines
+                    # with that we only need to update ledger count
+                    # no more filtering for smaller overview
+
+                    # this if logic is needed because in a reservation can contain multi journey and multi segment and multi ledger
+                    # it will double with each join (in SQL)
+                    # in order not to double count, this if condition is needed
+                    if current_segment != i['segment_id'] and current_pnr != i['ledger_pnr']:
+                        # if both segment and pnr is diff, then we want to count the ledger
+                        # hence update to current pnr and segment
+                        current_segment = i['segment_id']
+                        current_pnr = i['ledger_pnr']
+
+                        # this if condition is needed because even after i add ORDER BY in SQL for some reason ledger PNR could still be in mumbo jumbo
+                        # so we need to keep track what pnr is already count
+                        if current_pnr in pnr_within:
+                            continue
+                        else:
+                            pnr_within.append(current_pnr)
+
+                        # Let's count
+                        if i['ledger_transaction_type'] == 3:   # type 3 = commission
+                            # as always we look for what index particular data is
+                            month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
+                            # get the date (also known as index in summary issued)
+                            splits = i['reservation_issued_date'].split("-")
+                            day_index = int(splits[2]) - 1
+                            # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
+                            # if HQ guy asking then we'll count everything
+                            # if not HQ guy then we'll only count respected agent
+                            if is_ho or agent_name_context == i['ledger_agent_name']:
+                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                                profit_total += i['debit'] - i['credit']
+                                profit_ho += i['debit'] - i['credit']
+                            # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_ho += i['debit'] - i['credit']
+                            # elif i['ledger_agent_type_name'] != 'HO':
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_agent += i['debit'] - i['credit']
+
+                        # update top carrier base on same reservation but diff segment and diff pnr
+                        try:
+                            # so because pnr and segment difference, we could safely assume that this is a new airline, could be the same
+                            # but eitherway we'll gonna count it anyway so this section is for that
+                            carrier_index = self.check_carrier(top_carrier, {'carrier_name': i['airline']})
+
+                            # at this point this seems really redundant so you know the drill.
+                            if carrier_index == -1:
+                                # filter service charge
+                                # product total corresponding to particular pnr
+                                # filter from service charge data
+                                temp_charge = list(filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] ==i['reservation_order_number'], service_charge))
+
+                                # this section count revenue for each airline by looking thru the service charge
+                                # so it's like super accurate
+                                nta_total = 0
+                                commission = 0
+                                for k in temp_charge:
+                                    if k['booking_charge_type'] == 'RAC':
+                                        commission -= k['booking_charge_total']
+                                        nta_total += k['booking_charge_total']
+                                    else:
+                                        if k['booking_charge_type'] != '' and k['booking_charge_total']:
+                                            nta_total += k['booking_charge_total']
+                                grand_total = nta_total + commission
+
+                                # maybe not section above but below this you know the drill
+                                # carrier is not exist yet
+                                # declare a temporary dictionary
+                                temp_dict = {
+                                    'carrier_name': i['airline'],
+                                    'counter': 1,
+                                    'revenue': grand_total,
+                                    'passenger': i['reservation_passenger'],
+                                    'route': [{
+                                        'departure': i['departure'],
+                                        'destination': i['destination'],
+                                        'counter': 1,
+                                        'passenger': i['reservation_passenger']
+                                    }]
+                                }
+                                # add to main list
+                                top_carrier.append(temp_dict)
+                            else:
+                                # check index of route within top_carrier dictionary
+                                carrier_route_index = self.check_carrier_route(top_carrier[carrier_index]['route'], {'departure': i['departure'], 'destination': i['destination']})
+
+                                # filter service charge
+                                # product total corresponding to particular pnr
+                                # filter from service charge data
+                                temp_charge = list(filter(lambda x: x['booking_pnr'] == i['ledger_pnr'] and x['order_number'] == i['reservation_order_number'], service_charge))
+
+                                # this section count revenue for each airline by looking thru the service charge
+                                # so it's like super accurate
+                                nta_total = 0
+                                commission = 0
+                                for k in temp_charge:
+                                    if k['booking_charge_type'] == 'RAC':
+                                        commission -= k['booking_charge_total']
+                                        nta_total += k['booking_charge_total']
+                                    else:
+                                        if k['booking_charge_type'] != '' and k['booking_charge_total']:
+                                            nta_total += k['booking_charge_total']
+                                grand_total = nta_total + commission
+
+                                # same drill
+                                if carrier_route_index == -1:
+                                    # route is not exist yet
+                                    # create temporary dict
+                                    temp_dict = {
+                                        'departure': i['departure'],
+                                        'destination': i['destination'],
+                                        'counter': 1,
+                                        'passenger': int(i['reservation_passenger'])
+                                    }
+                                    # add to list
+                                    top_carrier[carrier_index]['route'].append(temp_dict)
+                                else:
+                                    # if exist then only add counter
+                                    top_carrier[carrier_index]['route'][carrier_route_index]['counter'] += 1
+                                    top_carrier[carrier_index]['route'][carrier_route_index][
+                                        'passenger'] += int(i['reservation_passenger'])
+                                # add carrier counter
+                                top_carrier[carrier_index]['counter'] += 1
+                                top_carrier[carrier_index]['revenue'] += grand_total
+                                top_carrier[carrier_index]['passenger'] += i['reservation_passenger']
+                        except:
+                            pass
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -3102,6 +3516,160 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # ============= Summary by Domestic/International ============
+                    # this summary basically make table to create international and domestic by direction
+                    # like one way, return or even multi city
+                    if i['reservation_sector'] == 'International':
+                        # for every reservation with international destination
+                        # valuation = revenue
+                        sector_dictionary[0]['valuation'] += float(i['amount'])
+                        # counter = # of reservation
+                        sector_dictionary[0]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            # OW = one way
+                            sector_dictionary[0]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            # rt = return
+                            sector_dictionary[0]['return'] += 1
+                        else:
+                            # else considered as multicity as of today 2020-12-08
+                            sector_dictionary[0]['multi_city'] += 1
+                            # adding total passenger in international section
+                        sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+                    elif i['reservation_sector'] == 'Domestic':
+                        # for every reservation with domestic destination
+                        sector_dictionary[1]['valuation'] += float(i['amount'])
+                        sector_dictionary[1]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            sector_dictionary[1]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            sector_dictionary[1]['return'] += 1
+                        else:
+                            sector_dictionary[1]['multi_city'] += 1
+                        sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                    else:
+                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
+                        sector_dictionary[2]['valuation'] += float(i['amount'])
+                        sector_dictionary[2]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            sector_dictionary[2]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            sector_dictionary[2]['return'] += 1
+                        else:
+                            sector_dictionary[2]['multi_city'] += 1
+                        sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+
+                    # issued depart days difference
+                    # ============= Issued compareed to depart date ==============
+                    # filter the data, resulting all of the data with respected order number
+                    filter_data = list(
+                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
+                               issued_values['lines']))
+
+                    # look for the nearest departure date from issued date
+                    depart_index = 0
+                    if len(filter_data) > 1:
+                        earliest_depart = filter_data[0]['journey_departure_date']
+                        for j, dic in enumerate(filter_data):
+                            if earliest_depart > dic['journey_departure_date']:
+                                depart_index = j
+                    # lets count
+                    if filter_data[0]['reservation_issued_date_og']:
+                        # conver journey date (string) to datetime
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M')
+                        # check if reservation has issued dates
+                        # this should be quite obselete since this function only calls for issued reservation
+                        # but this function also written in more general function so.. there's that
+                        if filter_data[0]['reservation_issued_date_og']:
+                            # actually counting the day difference between each date
+                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                            if date_count.days < 0:
+                                # if for some whatever reason the date result in negative
+                                # just print to logger, maybe if someday needed to be check there's the data in logger
+                                _logger.error("please check {}".format(i['reservation_order_number']))
+                        else:
+                            date_count = 0
+
+                        # check for index in issued depart summary
+                        issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
+                        # if no index found a.k.a -1 then we'll create and add the data
+                        if issued_depart_index == -1:
+                            temp_dict = {
+                                "day": date_count.days,
+                                "counter": 1,
+                                'passenger': filter_data[0]['reservation_passenger']
+                            }
+                            issued_depart_summary.append(temp_dict)
+                        else:
+                            # if data exist then we only need to update existing data
+                            issued_depart_summary[issued_depart_index]['counter'] += 1
+                            issued_depart_summary[issued_depart_index]['passenger'] += \
+                            filter_data[0][
+                                'reservation_passenger']
+
+                    # ============= end of Issued compareed to depart date ==============
+
+
+                    if i['reservation_state'] == 'issued':
+                        # total += i['amount']
+                        # num_data += 1
+
+                        # ============= Search best for every sector ==================
+                        # in this section we only compare how many reservation is actually for international destination
+                        # and how many domestic reservation
+                        # just to make is useful this report also sumarize passenger count, and reservation count
+                        returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
+                        # once again as always we check for index then create and add if not exist, update if data already exist
+                         i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+                        if returning_index == -1:
+                            new_dict = {
+                                'sector': i['reservation_sector'],
+                                'departure': i['departure'],
+                                'destination': i['destination'],
+                                'counter': 1,
+                                'elder_count': i['reservation_elder'],
+                                'adult_count': i['reservation_adult'],
+                                'child_count': i['reservation_child'],
+                                'infant_count': i['reservation_infant'],
+                                'passenger_count': i['reservation_passenger']
+                            }
+                            destination_sector_summary.append(new_dict)
+                        else:
+                            destination_sector_summary[returning_index]['counter'] += 1
+                            destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                            destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                            destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                            destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                            destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                        # ============= Search for best 50 routes ====================
+                        # in this section we want to extract top i dunno like 15 route of each sector
+                        # this code can produce more than 15, but will be trim later down the line
+                        # to make it insightful i add revenue data, and passenger count
+                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+
+                        if returning_index == -1:
+                            new_dict = {
+                                'direction': i['reservation_direction'],
+                                'departure': i['departure'],
+                                'destination': i['destination'],
+                                'sector': i['reservation_sector'],
+                                'counter': 1,
+                                'elder_count': i['reservation_elder'],
+                                'adult_count': i['reservation_adult'],
+                                'child_count': i['reservation_child'],
+                                'infant_count': i['reservation_infant'],
+                                'passenger_count': i['reservation_passenger']
+                            }
+                            destination_direction_summary.append(new_dict)
+                        else:
+                            destination_direction_summary[returning_index]['counter'] += 1
+                            destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                            destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                            destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                            destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                            destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -3642,6 +4210,97 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    try:
+                        # this section responsible to build overview in hotel
+                        # the overview group the data by city, and adding like top 10 hotel within the city
+                        # code below is searching for index of city within location_overview
+                        location_index = self.check_location(location_overview, {'city': i['hotel_city']})
+
+                        # if city cannot be found in location_overview, index will return as -1
+                        # hence we need to create and append the data
+                        if location_index == -1:
+                            # build a temporary dictionary
+                            temp_dict = {
+                                'country': i['country_name'] if i['country_name'] else '',
+                                'city': i['hotel_city'],
+                                'counter': 1,
+                                'revenue': i['amount'],
+                                'passenger': i['reservation_passenger'],
+                                'hotel': [{
+                                    'name': i['reservation_hotel_name'],
+                                    'counter': 1,
+                                    'passenger': i['reservation_passenger'],
+                                    'revenue': i['amount']
+                                }]
+                            }
+                            # append to location_overview
+                            location_overview.append(temp_dict)
+                        else:
+                            # if city is exist, then we only need to look out for specific hotel
+                            # if hotel not found same drill as city, and if exist then we only need to update the data
+                            hotel_index = self.check_hotel_index(location_overview[location_index]['hotel'], {'name': i['reservation_hotel_name']})
+
+                            if hotel_index == -1:
+                                temp_dict = {
+                                    'name': i['reservation_hotel_name'],
+                                    'counter': 1,
+                                    'passenger': i['reservation_passenger'],
+                                    'revenue': i['amount']
+                                }
+                                location_overview[location_index]['hotel'].append(temp_dict)
+                            else:
+                                # this only update the data
+                                location_overview[location_index]['hotel'][hotel_index]['counter'] += 1
+                                location_overview[location_index]['hotel'][hotel_index]['passenger'] += i['reservation_passenger']
+                            # this update the data for the city
+                            location_overview[location_index]['counter'] += 1
+                            location_overview[location_index]['revenue'] += i['amount']
+                            location_overview[location_index]['passenger'] += i['reservation_passenger']
+                    except:
+                        pass
+
+                    # issued to check in days difference
+                    # have the same logic as issued to depart in airline and train
+                    # ============= Issued compareed to depart date ==============
+                    # filter the data, resulting all of the data with respected order number
+                    filter_data = list(
+                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
+                               issued_values['lines']))
+
+                    # look for the nearest departure date from issued date
+                    depart_index = 0
+                    if len(filter_data) > 1:
+                        earliest_depart = filter_data[0]['reservation_check_in_date']
+                        for j, dic in enumerate(filter_data):
+                            if earliest_depart > dic['reservation_check_in_date']:
+                                depart_index = j
+                    # lets count
+                    if filter_data[0]['reservation_issued_date_og']:
+                        date_time_convert = datetime(filter_data[depart_index]['reservation_check_in_date'].year, filter_data[depart_index]['reservation_check_in_date'].month, filter_data[depart_index]['reservation_check_in_date'].day)
+                        if filter_data[0]['reservation_issued_date_og']:
+                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                            if date_count.days < 0:
+                                _logger.error("please check {}".format(i['reservation_order_number']))
+                        else:
+                            date_count = 0
+
+                        issued_depart_index = self.check_index(issued_depart_summary, "day",
+                                                               date_count.days)
+                        if issued_depart_index == -1:
+                            temp_dict = {
+                                "day": date_count.days,
+                                "counter": 1,
+                                'passenger': filter_data[0]['reservation_passenger']
+                            }
+                            issued_depart_summary.append(temp_dict)
+                        else:
+                            issued_depart_summary[issued_depart_index]['counter'] += 1
+                            issued_depart_summary[issued_depart_index]['passenger'] += \
+                                filter_data[0][
+                                    'reservation_passenger']
+
+                    # ============= end of Issued compareed to depart date ==============
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -4148,6 +4807,31 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # ============= product summary =====================================
+                    product_index = self.check_index(product_summary, 'product', i['tour_name'])
+                    if product_index == -1:
+                        temp_dict = {
+                            'product': i['tour_name'],
+                            'product_type': i['tour_type'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        product_summary.append(temp_dict)
+                    else:
+                        product_summary[product_index]['counter'] += 1
+                        product_summary[product_index]['passenger'] += i['reservation_passenger']
+                        product_summary[product_index]['amount'] += i['amount']
+                        product_summary[product_index]['elder_count'] += i['reservation_elder']
+                        product_summary[product_index]['adult_count'] += i['reservation_adult']
+                        product_summary[product_index]['child_count'] += i['reservation_child']
+                        product_summary[product_index]['infant_count'] += i['reservation_infant']
+                    # ============= end of product summary ==============================
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -4590,6 +5274,30 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # ============= product summary =====================================
+                    product_index = self.check_index(product_summary, 'product', i['reservation_activity_name'])
+                    if product_index == -1:
+                        temp_dict = {
+                            'product': i['reservation_activity_name'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        product_summary.append(temp_dict)
+                    else:
+                        product_summary[product_index]['counter'] += 1
+                        product_summary[product_index]['passenger'] += i['reservation_passenger']
+                        product_summary[product_index]['amount'] += i['amount']
+                        product_summary[product_index]['elder_count'] += i['reservation_elder']
+                        product_summary[product_index]['adult_count'] += i['reservation_adult']
+                        product_summary[product_index]['child_count'] += i['reservation_child']
+                        product_summary[product_index]['infant_count'] += i['reservation_infant']
+                    # ============= end of product summary ==============================
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -5029,6 +5737,30 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # ============= product summary =====================================
+                    product_index = self.check_index(product_summary, 'product', i['reservation_event_name'])
+                    if product_index == -1:
+                        temp_dict = {
+                            'product': i['reservation_event_name'],
+                            'counter': 1,
+                            'elder_count': i['reservation_elder'],
+                            'adult_count': i['reservation_adult'],
+                            'child_count': i['reservation_child'],
+                            'infant_count': i['reservation_infant'],
+                            'passenger': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        product_summary.append(temp_dict)
+                    else:
+                        product_summary[product_index]['counter'] += 1
+                        product_summary[product_index]['passenger'] += i['reservation_passenger']
+                        product_summary[product_index]['amount'] += i['amount']
+                        product_summary[product_index]['elder_count'] += i['reservation_elder']
+                        product_summary[product_index]['adult_count'] += i['reservation_adult']
+                        product_summary[product_index]['child_count'] += i['reservation_child']
+                        product_summary[product_index]['infant_count'] += i['reservation_infant']
+                    # ============= end of product summary =====================================
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -5462,6 +6194,21 @@ class TtReportDashboard(models.Model):
                         total += i['amount'] + i['channel_profit']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                    # ============= product summary =====================================
+                    # ============= Country summary Report =======================
+                    country_index = self.check_index(country_summary, 'country', i['country_name'])
+                    if country_index == -1:
+                        temp_dict = {
+                            'country': i['country_name'],
+                            'counter': 1,
+                            'passenger': i['reservation_passenger']
+                        }
+                        country_summary.append(temp_dict)
+                    else:
+                        country_summary[country_index]['counter'] += 1
+                        country_summary[country_index]['passenger'] += i['reservation_passenger']
+                    # ============= end of product summary =====================================
 
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
@@ -5898,6 +6645,20 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # group data by offline provider type (airline, train, etc)
+                    offline_index = self.check_index(offline_summary, 'provider_type', i['reservation_offline_provider_type'])
+                    if offline_index == -1:
+                        temp_dict = {
+                            'category': 'Offline',
+                            'provider_type': i['reservation_offline_provider_type'],
+                            'counter': 1,
+                            'amount': i['amount']
+                        }
+                        offline_summary.append(temp_dict)
+                    else:
+                        offline_summary[offline_index]['counter'] += 1
+                        offline_summary[offline_index]['amount'] += i['amount']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -6332,6 +7093,21 @@ class TtReportDashboard(models.Model):
                         total += i['amount'] + i['channel_profit']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                    # populate ppob_summary
+                    ppob_index = self.check_index(ppob_summary, 'product', i['carrier_name'])
+                    if ppob_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        ppob_summary.append(temp_dict)
+                    else:
+                        ppob_summary[ppob_index]['counter'] += 1
+                        ppob_summary[ppob_index]['amount'] += i['amount']
+                        ppob_summary[ppob_index]['passenger_count'] += i['reservation_passenger']
 
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
@@ -7198,6 +7974,21 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # populate phc_summary
+                    phc_index = self.check_index(phc_summary, 'product', i['carrier_name'])
+                    if phc_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        phc_summary.append(temp_dict)
+                    else:
+                        phc_summary[phc_index]['counter'] += 1
+                        phc_summary[phc_index]['amount'] += i['amount']
+                        phc_summary[phc_index]['passenger_count'] += i['reservation_passenger']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -7629,6 +8420,21 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # populate periksain_summary
+                    periksain_index = self.check_index(periksain_summary, 'product', i['carrier_name'])
+                    if periksain_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        periksain_summary.append(temp_dict)
+                    else:
+                        periksain_summary[periksain_index]['counter'] += 1
+                        periksain_summary[periksain_index]['amount'] += i['amount']
+                        periksain_summary[periksain_index]['passenger_count'] += i['reservation_passenger']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -8059,6 +8865,21 @@ class TtReportDashboard(models.Model):
                         total += i['amount'] + i['channel_profit']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                    # populate medical_summary
+                    medical_index = self.check_index(medical_summary, 'product', i['carrier_name'])
+                    if medical_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        medical_summary.append(temp_dict)
+                    else:
+                        medical_summary[medical_index]['counter'] += 1
+                        medical_summary[medical_index]['amount'] += i['amount']
+                        medical_summary[medical_index]['passenger_count'] += i['reservation_passenger']
 
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
@@ -8678,6 +9499,160 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # ============= Summary by Domestic/International ============
+                    # this summary basically make table to create international and domestic by direction
+                    # like one way, return or even multi city
+                    if i['reservation_sector'] == 'International':
+                        # for every reservation with international destination
+                        # valuation = revenue
+                        sector_dictionary[0]['valuation'] += float(i['amount'])
+                        # counter = # of reservation
+                        sector_dictionary[0]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            # OW = one way
+                            sector_dictionary[0]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            # rt = return
+                            sector_dictionary[0]['return'] += 1
+                        else:
+                            # else considered as multicity as of today 2020-12-08
+                            sector_dictionary[0]['multi_city'] += 1
+                            # adding total passenger in international section
+                        sector_dictionary[0]['passenger_count'] += int(i['reservation_passenger'])
+                    elif i['reservation_sector'] == 'Domestic':
+                        # for every reservation with domestic destination
+                        sector_dictionary[1]['valuation'] += float(i['amount'])
+                        sector_dictionary[1]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            sector_dictionary[1]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            sector_dictionary[1]['return'] += 1
+                        else:
+                            sector_dictionary[1]['multi_city'] += 1
+                        sector_dictionary[1]['passenger_count'] += int(i['reservation_passenger'])
+                    else:
+                        # for any other (maybe an update on the system or something, take makes the reservation neither international or domestic)
+                        sector_dictionary[2]['valuation'] += float(i['amount'])
+                        sector_dictionary[2]['counter'] += 1
+                        if i['reservation_direction'] == 'OW':
+                            sector_dictionary[2]['one_way'] += 1
+                        elif i['reservation_direction'] == 'RT':
+                            sector_dictionary[2]['return'] += 1
+                        else:
+                            sector_dictionary[2]['multi_city'] += 1
+                        sector_dictionary[2]['passenger_count'] += int(i['reservation_passenger'])
+
+                    # issued depart days difference
+                    # ============= Issued compareed to depart date ==============
+                    # filter the data, resulting all of the data with respected order number
+                    filter_data = list(
+                        filter(lambda x: x['reservation_order_number'] == i['reservation_order_number'],
+                               issued_values['lines']))
+
+                    # look for the nearest departure date from issued date
+                    depart_index = 0
+                    if len(filter_data) > 1:
+                        earliest_depart = filter_data[0]['journey_departure_date']
+                        for j, dic in enumerate(filter_data):
+                            if earliest_depart > dic['journey_departure_date']:
+                                depart_index = j
+                    # lets count
+                    if filter_data[0]['reservation_issued_date_og']:
+                        # conver journey date (string) to datetime
+                        date_time_convert = datetime.strptime(filter_data[depart_index]['journey_departure_date'], '%Y-%m-%d %H:%M:%S')
+                        # check if reservation has issued dates
+                        # this should be quite obselete since this function only calls for issued reservation
+                        # but this function also written in more general function so.. there's that
+                        if filter_data[0]['reservation_issued_date_og']:
+                            # actually counting the day difference between each date
+                            date_count = date_time_convert - filter_data[0]['reservation_issued_date_og']
+                            if date_count.days < 0:
+                                # if for some whatever reason the date result in negative
+                                # just print to logger, maybe if someday needed to be check there's the data in logger
+                                _logger.error("please check {}".format(i['reservation_order_number']))
+                        else:
+                            date_count = 0
+
+                        # check for index in issued depart summary
+                        issued_depart_index = self.check_index(issued_depart_summary, "day", date_count.days)
+                        # if no index found a.k.a -1 then we'll create and add the data
+                        if issued_depart_index == -1:
+                            temp_dict = {
+                                "day": date_count.days,
+                                "counter": 1,
+                                'passenger': filter_data[0]['reservation_passenger']
+                            }
+                            issued_depart_summary.append(temp_dict)
+                        else:
+                            # if data exist then we only need to update existing data
+                            issued_depart_summary[issued_depart_index]['counter'] += 1
+                            issued_depart_summary[issued_depart_index]['passenger'] += \
+                            filter_data[0][
+                                'reservation_passenger']
+
+                    # ============= end of Issued compareed to depart date ==============
+
+
+                    if i['reservation_state'] == 'issued':
+                        # total += i['amount']
+                        # num_data += 1
+
+                        # ============= Search best for every sector ==================
+                        # in this section we only compare how many reservation is actually for international destination
+                        # and how many domestic reservation
+                        # just to make is useful this report also sumarize passenger count, and reservation count
+                        returning_index = self.returning_index_sector(destination_sector_summary, {'departure':
+                        # once again as always we check for index then create and add if not exist, update if data already exist
+                        i['departure'], 'destination': i['destination'], 'sector': i['reservation_sector']})
+                        if returning_index == -1:
+                            new_dict = {
+                                'sector': i['reservation_sector'],
+                                'departure': i['departure'],
+                                'destination': i['destination'],
+                                'counter': 1,
+                                'elder_count': i['reservation_elder'],
+                                'adult_count': i['reservation_adult'],
+                                'child_count': i['reservation_child'],
+                                'infant_count': i['reservation_infant'],
+                                'passenger_count': i['reservation_passenger']
+                            }
+                            destination_sector_summary.append(new_dict)
+                        else:
+                            destination_sector_summary[returning_index]['counter'] += 1
+                            destination_sector_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                            destination_sector_summary[returning_index]['elder_count'] += i['reservation_elder']
+                            destination_sector_summary[returning_index]['adult_count'] += i['reservation_adult']
+                            destination_sector_summary[returning_index]['child_count'] += i['reservation_child']
+                            destination_sector_summary[returning_index]['infant_count'] += i['reservation_infant']
+
+                        # ============= Search for best 50 routes ====================
+                        # in this section we want to extract top i dunno like 15 route of each sector
+                        # this code can produce more than 15, but will be trim later down the line
+                        # to make it insightful i add revenue data, and passenger count
+                        returning_index = self.returning_index(destination_direction_summary, {'departure': i['departure'], 'destination': i['destination']})
+
+                        if returning_index == -1:
+                            new_dict = {
+                                'direction': i['reservation_direction'],
+                                'departure': i['departure'],
+                                'destination': i['destination'],
+                                'sector': i['reservation_sector'],
+                                'counter': 1,
+                                'elder_count': i['reservation_elder'],
+                                'adult_count': i['reservation_adult'],
+                                'child_count': i['reservation_child'],
+                                'infant_count': i['reservation_infant'],
+                                'passenger_count': i['reservation_passenger']
+                            }
+                            destination_direction_summary.append(new_dict)
+                        else:
+                            destination_direction_summary[returning_index]['counter'] += 1
+                            destination_direction_summary[returning_index]['passenger_count'] += i['reservation_passenger']
+                            destination_direction_summary[returning_index]['elder_count'] += i['reservation_elder']
+                            destination_direction_summary[returning_index]['adult_count'] += i['reservation_adult']
+                            destination_direction_summary[returning_index]['child_count'] += i['reservation_child']
+                            destination_direction_summary[returning_index]['infant_count'] += i['reservation_infant']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -9133,6 +10108,21 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # populate insurance_summary
+                    insurance_index = self.check_index(insurance_summary, 'product', i['provider_name'])
+                    if insurance_index == -1:
+                        temp_dict = {
+                            'product': i['provider_name'], ## SEMENTARA KARENA TIDAK ADA CARRIER NAME
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        insurance_summary.append(temp_dict)
+                    else:
+                        insurance_summary[insurance_index]['counter'] += 1
+                        insurance_summary[insurance_index]['amount'] += i['amount']
+                        insurance_summary[insurance_index]['passenger_count'] += i['reservation_passenger']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -9563,6 +10553,21 @@ class TtReportDashboard(models.Model):
                         total += i['amount'] + i['channel_profit']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                    # populate swabexpress_summary
+                    swabexpress_index = self.check_index(swabexpress_summary, 'product', i['carrier_name'])
+                    if swabexpress_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        swabexpress_summary.append(temp_dict)
+                    else:
+                        swabexpress_summary[swabexpress_index]['counter'] += 1
+                        swabexpress_summary[swabexpress_index]['amount'] += i['amount']
+                        swabexpress_summary[swabexpress_index]['passenger_count'] += i['reservation_passenger']
 
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
@@ -9995,6 +11000,21 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # populate labpintar_summary
+                    labpintar_index = self.check_index(labpintar_summary, 'product', i['carrier_name'])
+                    if labpintar_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        labpintar_summary.append(temp_dict)
+                    else:
+                        labpintar_summary[labpintar_index]['counter'] += 1
+                        labpintar_summary[labpintar_index]['amount'] += i['amount']
+                        labpintar_summary[labpintar_index]['passenger_count'] += i['reservation_passenger']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -10426,6 +11446,21 @@ class TtReportDashboard(models.Model):
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
+                    # populate mitrakeluarga_summary
+                    mitrakeluarga_index = self.check_index(mitrakeluarga_summary, 'product', i['carrier_name'])
+                    if mitrakeluarga_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        mitrakeluarga_summary.append(temp_dict)
+                    else:
+                        mitrakeluarga_summary[mitrakeluarga_index]['counter'] += 1
+                        mitrakeluarga_summary[mitrakeluarga_index]['amount'] += i['amount']
+                        mitrakeluarga_summary[mitrakeluarga_index]['passenger_count'] += i['reservation_passenger']
+
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
                     if i['ledger_transaction_type'] == 3:
@@ -10856,6 +11891,21 @@ class TtReportDashboard(models.Model):
                         total += i['amount'] + i['channel_profit']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
+
+                    # populate sentramedika_summary
+                    sentramedika_index = self.check_index(sentramedika_summary, 'product', i['carrier_name'])
+                    if sentramedika_index == -1:
+                        temp_dict = {
+                            'product': i['carrier_name'],
+                            'counter': 1,
+                            'passenger_count': i['reservation_passenger'],
+                            'amount': i['amount']
+                        }
+                        sentramedika_summary.append(temp_dict)
+                    else:
+                        sentramedika_summary[sentramedika_index]['counter'] += 1
+                        sentramedika_summary[sentramedika_index]['amount'] += i['amount']
+                        sentramedika_summary[sentramedika_index]['passenger_count'] += i['reservation_passenger']
 
                 if i['ledger_id'] not in ledger_id_list[i['provider_type_name']]:
                     # proceed profit first graph
