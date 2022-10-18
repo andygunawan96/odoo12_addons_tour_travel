@@ -2832,16 +2832,20 @@ class ActivitySyncProductsChildren(models.TransientModel):
 
             # gw_timeout = int(len(activity_data_list) / 3) > 120 and int(len(activity_data_list) / 3) or 120 # kalau 60 timeout
             gw_timeout = 10
-            vals = {
-                'provider_type': 'activity',
-                'action': 'sync_products_to_children',
-                'data': activity_data_list,
-                'fail_send_limit': 1, #1 x saja supaya tidak ulang ulang proses di btbo2
-                'timeout': gw_timeout
-            }
-            self.env['tt.api.webhook.data'].notify_subscriber(vals)
+
+            def chunks(list_data, amt_per_list):
+                """Yield successive amt_per_list-sized chunks from list_data."""
+                for i in range(0, len(list_data), amt_per_list):
+                    yield list_data[i:i + amt_per_list]
+
+            for rec in list(chunks(activity_data_list, 1000)):
+                vals = {
+                    'provider_type': 'activity',
+                    'action': 'sync_products_to_children',
+                    'data': rec,
+                    'fail_send_limit': 1,  # 1 x saja supaya tidak ulang ulang proses di btbo2
+                    'timeout': gw_timeout
+                }
+                self.env['tt.api.webhook.data'].notify_subscriber(vals)
         except Exception as e:
             raise UserError(_('Failed to sync activity data to children!'))
-
-
-
