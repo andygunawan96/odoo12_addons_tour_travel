@@ -2,14 +2,14 @@
     <record id="tt_ledger_for_agent" model="ir.rule">
         <field name="name">Ledger For Agent</field>
         <field name="model_id" ref="model_tt_ledger"/>
-        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">['|',('customer_parent_id.parent_agent_id','=',user.agent_id.id),'|',('agent_id.parent_agent_id','=',user.agent_id.id),('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_ledger_for_agent_user" model="ir.rule">
         <field name="name">Ledger For Agent User</field>
         <field name="model_id" ref="model_tt_ledger"/>
-        <field name="domain_force">['|',('customer_parent_id.parent_agent_id','=',user.agent_id.id),('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">['|',('customer_parent_id.parent_agent_id','=',user.agent_id.id),'|',('agent_id.parent_agent_id','=',user.agent_id.id),('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
@@ -44,14 +44,14 @@
     <record id="tt_adjustment_for_agent" model="ir.rule">
         <field name="name">Adjustment For Agent</field>
         <field name="model_id" ref="model_tt_adjustment"/>
-        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">['|',('agent_id.parent_agent_id','=',user.agent_id.id),('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_adjustment_for_agent_user" model="ir.rule">
         <field name="name">Adjustment For Agent User</field>
         <field name="model_id" ref="model_tt_adjustment"/>
-        <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">['|',('agent_id.parent_agent_id','=',user.agent_id.id),('agent_id','=',user.agent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
