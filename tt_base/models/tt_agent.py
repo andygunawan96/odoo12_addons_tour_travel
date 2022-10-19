@@ -301,7 +301,7 @@ class TtAgent(models.Model):
             res = ERR.get_error()
         return res
 
-    def check_balance_limit(self, amount, is_use_credit_limit):
+    def check_balance_limit(self, amount):
         # if not self.ensure_one():
         #     raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
         # sql_query = 'select id,balance from tt_ledger where agent_id = %s order by id desc limit 1;' % (self.id)
@@ -314,12 +314,9 @@ class TtAgent(models.Model):
 
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        if is_use_credit_limit:
-            return self.balance + self.credit_limit >= amount
-        else:
-            return self.balance >= amount
+        return self.balance >= amount
 
-    def check_balance_limit_api(self, agent_id, amount, is_use_credit_limit=False):
+    def check_balance_limit_api(self, agent_id, amount):
         partner_obj = self.env['tt.agent']
         if type(agent_id) == int:
             partner_obj = self.env['tt.agent'].browse(agent_id)
@@ -328,7 +325,7 @@ class TtAgent(models.Model):
 
         if not partner_obj:
             return ERR.get_error(1008)
-        if not partner_obj.check_balance_limit(amount, is_use_credit_limit):
+        if not partner_obj.check_balance_limit(amount):
             return ERR.get_error(1007)
         else:
             return ERR.get_no_error()
