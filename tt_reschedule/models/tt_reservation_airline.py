@@ -1619,6 +1619,13 @@ class ReservationAirline(models.Model):
                     rsch_obj = self.env['tt.reschedule'].browse(commit_data['reschedule_id'])
                     res_vals.pop('service_type')
                     rsch_obj.write(res_vals)
+                    for rsch_pax in rsch_obj.passenger_ids:
+                        # fill RS number to pax's reschedule CSCs with empty description
+                        for rsch_p_csc in rsch_pax.channel_service_charge_ids.filtered(lambda x: 'rs' in x.charge_code.split('.')):
+                            if not rsch_p_csc.description:
+                                rsch_p_csc.update({
+                                    'description': rsch_obj.name
+                                })
 
                     # June 2, 2022 - SAM
                     co_uid = context.get('co_uid') if not is_webhook else ''

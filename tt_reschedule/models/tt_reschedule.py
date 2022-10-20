@@ -590,6 +590,11 @@ class TtReschedule(models.Model):
             'final_date': datetime.now()
         })
 
+    def set_to_final(self):
+        self.write({
+            'state': 'final',
+        })
+
     def check_po_required(self):
         required = False
         for rec in self.reschedule_line_ids:
