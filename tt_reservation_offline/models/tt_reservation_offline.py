@@ -2158,6 +2158,7 @@ class IssuedOffline(models.Model):
                     arrival_time = datetime.strptime(line.get('arrival'), '%Y-%m-%d %H:%M')
                     delta_date = arrival_time - departure_time
                     if delta_date.days < 0:
+                        _logger.error("ERROR data line departure %s, arrival %s" % (str(departure_time), str(arrival_time)))
                         raise RequestException(1004,
                                                additional_message='Error create line : Arrival date must be greater than departure date')
                     line_tmp = {
