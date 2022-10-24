@@ -2133,6 +2133,7 @@ class IssuedOffline(models.Model):
             }
             res = self.get_booking_offline_api(response, context)
         except RequestException as e:
+            _logger.error('DATA OFFLINE ERROR\nCONTEXT %s\n%s' % (json.dumps(context),json.dumps(data)))
             _logger.error(traceback.format_exc())
             try:
                 book_obj.notes += str(datetime.now()) + '\n' + traceback.format_exc()+'\n'
