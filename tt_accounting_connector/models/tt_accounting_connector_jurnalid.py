@@ -386,7 +386,7 @@ class AccountingConnectorAccurate(models.Model):
                             if pnr == room['prov_issued_code']:
                                 desc = "%s; %s; %s-%s; %s; %s; Atas Nama: %s" % (pnr, provider_booking['hotel_name'], datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'),room['room_name'], room['meal_type'], passenger_data)
                                 list_desc.append({
-                                    "price": room['room_rate'] / len(room['dates']) - (provider_booking['total_commission']/len(room['dates'])),
+                                    "price": room['room_rate'] / len(room['dates']) - (provider_booking['total_commission']/(len(provider_booking['rooms']) * len(room['dates']))),
                                     "desc": desc,
                                     "quantity": len(room['dates'])
                                 })
