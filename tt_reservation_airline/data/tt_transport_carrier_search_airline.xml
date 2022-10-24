@@ -302,7 +302,8 @@
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
             <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_qatar')),
             ]"/>
         </record>
 
