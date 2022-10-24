@@ -2929,6 +2929,7 @@ class ReservationAirline(models.Model):
                         'identity_number': identity and identity['identity_number'] or '',
                         'identity_expdate': identity and identity['identity_expdate'] or False,
                         'identity_country_of_issued_id': identity and country_obj.search([('code', '=ilike', identity['identity_country_of_issued_code'])], limit=1).id or False,
+                        'is_valid_identity': True,
                     }
                     identity_passport = psg.get('identity_passport')
                     if identity_passport:
