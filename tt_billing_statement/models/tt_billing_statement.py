@@ -77,6 +77,8 @@ class TtBillingStatement(models.Model):
     # double_payment = fields.Boolean('Double Payment')
 
     def compute_date_billing_all(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self.search([]):
             rec.date_billing = rec.create_date.date()
 

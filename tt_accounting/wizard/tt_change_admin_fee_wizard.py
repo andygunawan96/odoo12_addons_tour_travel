@@ -39,6 +39,8 @@ class TtChangeAdminFeeWizard(models.TransientModel):
         }}
 
     def submit_change_admin_fee(self):
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         try:
             target_obj = self.env[self.res_model].browse(int(self.res_id))
             target_obj.write({

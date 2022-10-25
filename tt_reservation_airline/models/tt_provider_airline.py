@@ -104,6 +104,8 @@ class TtProviderAirline(models.Model):
 
     ##button function
     def action_change_is_hold_date_sync(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'is_hold_date_sync': not self.is_hold_date_sync
         })
@@ -172,6 +174,8 @@ class TtProviderAirline(models.Model):
             self.booking_id.check_provider_state({'co_uid': self.cancel_uid.id})
 
     def action_reverse_ledger_from_button(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
@@ -199,6 +203,8 @@ class TtProviderAirline(models.Model):
         }
 
     def action_set_to_book_from_button(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state == 'booked':
             raise UserError("Has been Booked.")
 
@@ -887,6 +893,8 @@ class TtProviderAirline(models.Model):
 
     # June 2, 2021 - SAM
     def action_reprice_provider(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if not self.provider_id:
             raise Exception('Provider is not set')
         req = {
@@ -939,6 +947,8 @@ class TtProviderAirline(models.Model):
 
     # March 28, 2022 - SAM
     def action_void_provider(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if not self.provider_id:
             raise Exception('Provider is not set')
         req = {
@@ -1042,6 +1052,8 @@ class TtProviderAirline(models.Model):
 
     # December 29, 2021 - SAM
     def action_send_vendor_ticket_email(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if not self.provider_id:
             raise Exception('Provider is not set')
         req = {

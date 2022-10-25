@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 import logging, traceback
 import requests
 from datetime import datetime
@@ -57,6 +58,8 @@ class TtAccountingQueue(models.Model):
         }
 
     def action_send_to_vendor(self):
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         try:
             self.send_uid = self.env.user.id
             self.send_date = fields.Datetime.now()

@@ -469,6 +469,8 @@ class ReservationGroupBooking(models.Model):
 
     @api.one
     def action_cancel(self):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self.ledger_ids:
             if not rec.is_reversed:
                 rec.reverse_ledger()
@@ -503,10 +505,14 @@ class ReservationGroupBooking(models.Model):
         self.resv_code = False
 
     def action_set_as_draft(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.action_draft()
 
 
     def action_set_as_issued(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if len(self.provider_booking_ids) != 0:
             self.state = 'issued'
             self.state_groupbooking = 'issued'
@@ -516,6 +522,8 @@ class ReservationGroupBooking(models.Model):
             raise UserError('Please Set to Sent first!')
 
     def action_sent_groupbooking(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         error_msg = self.validate_data()
         if error_msg:
             raise UserError(error_msg)
@@ -523,6 +531,8 @@ class ReservationGroupBooking(models.Model):
             self.create_provider_groupbooking()
 
     def action_set_as_booked(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state_groupbooking = 'confirm'
         self.state = 'booked'
 
@@ -1956,11 +1966,15 @@ class ReservationGroupBooking(models.Model):
         return ERR.get_no_error()
 
     def action_issued_installment_groupbooking(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state_groupbooking': 'issued_installment',
         })
 
     def action_done_groupbooking(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state_groupbooking': 'done',
         })

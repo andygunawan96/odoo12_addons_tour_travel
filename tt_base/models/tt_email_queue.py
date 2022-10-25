@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from ...tools import variables, util, ERR
 from ...tools.ERR import RequestException
 import logging, traceback
@@ -458,6 +459,8 @@ class TtEmailQueue(models.Model):
         self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
 
     def action_send_email(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         try:
             if self.type in ['issued_airline', 'issued_train', 'issued_activity', 'issued_tour', 'issued_visa', 'issued_passport', 'issued_hotel', 'issued_offline', 'issued_ppob', 'issued_bus', 'issued_periksain', 'issued_phc', 'issued_medical', 'issued_swabexpress', 'issued_labpintar', 'issued_sentramedika']:
                 self.prepare_attachment_reservation_issued()

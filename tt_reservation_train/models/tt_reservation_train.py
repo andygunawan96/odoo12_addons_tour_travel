@@ -1,4 +1,5 @@
 from odoo import api,models,fields
+from odoo.exceptions import UserError
 import json,traceback,logging
 from ...tools.ERR import RequestException
 from ...tools import ERR,util,variables
@@ -63,21 +64,29 @@ class TtReservationTrain(models.Model):
 
     @api.multi
     def action_set_as_draft(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'draft'
 
 
     @api.multi
     def action_set_as_booked(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'booked'
 
     @api.multi
     def action_set_as_issued(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'issued'
 
     def action_cancel(self):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         super(TtReservationTrain, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()

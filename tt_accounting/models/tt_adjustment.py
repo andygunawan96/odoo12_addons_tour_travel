@@ -111,6 +111,8 @@ class TtAdjustment(models.Model):
                  ('refund', 'Refund'), ('after_sales', 'After Sales'), ('balance', 'Balance'), ('invoice', 'Invoice')]
 
     def confirm_adj_from_button(self):
+        if not self.env.user.has_group('tt_base.group_adjustment_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'draft':
             raise UserError("Cannot Approve because state is not 'draft'.")
 
@@ -121,6 +123,8 @@ class TtAdjustment(models.Model):
         })
 
     def validate_adj_from_button(self):
+        if not self.env.user.has_group('tt_base.group_adjustment_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'confirm':
             raise UserError("Cannot Approve because state is not 'Confirm'.")
 
@@ -131,6 +135,8 @@ class TtAdjustment(models.Model):
         })
 
     def approve_adj_from_button(self):
+        if not self.env.user.has_group('tt_base.group_adjustment_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'validate':
             raise UserError("Cannot Approve because state is not 'Validate'.")
         debit = 0
@@ -190,6 +196,8 @@ class TtAdjustment(models.Model):
         }
 
     def cancel_adj_from_button(self):
+        if not self.env.user.has_group('tt_base.group_adjustment_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self.ledger_ids:
             rec.reverse_ledger()
 

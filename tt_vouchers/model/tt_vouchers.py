@@ -459,16 +459,22 @@ class TtVoucher(models.Model):
         return {'domain': domain}
 
     def action_set_to_draft(self):
+        if not self.env.user.has_group('tt_base.group_voucher_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'draft'
         })
 
     def action_set_to_confirm(self):
+        if not self.env.user.has_group('tt_base.group_voucher_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'confirm'
         })
 
     def set_to_not_active(self):
+        if not self.env.user.has_group('tt_base.group_voucher_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'not-active'
         })
@@ -519,6 +525,8 @@ class TtVoucherDetail(models.Model):
         return super(TtVoucherDetail, self).write(vals)
 
     def create_voucher_created_email_queue(self):
+        if not self.env.user.has_group('tt_base.group_voucher_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.create_voucher_email_queue('created')
 
     def create_voucher_email_queue(self, type):
@@ -587,16 +595,22 @@ class TtVoucherDetail(models.Model):
         return 0
 
     def action_set_not_active(self):
+        if not self.env.user.has_group('tt_base.group_voucher_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'not-active'
         })
 
     def action_set_active(self):
+        if not self.env.user.has_group('tt_base.group_voucher_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'active'
         })
 
     def action_set_expire(self):
+        if not self.env.user.has_group('tt_base.group_voucher_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'expire'
         })

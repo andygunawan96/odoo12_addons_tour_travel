@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from ...tools import variables, util, ERR
 import json
 from ...tools.ERR import RequestException
@@ -284,6 +285,8 @@ class TtReservationRequest(models.Model):
             return ERR.get_error(1039)
 
     def action_cancel(self, context={}):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state in ['draft', 'on_process']:
             if not context.get('co_uid'):
                 context['co_uid'] = self.env.user.id
@@ -295,9 +298,13 @@ class TtReservationRequest(models.Model):
                 self.cancel_cuid = cancel_cust.id
 
     def action_set_to_approved(self):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'approved'
 
     def action_reject(self, context={}):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state in ['draft', 'on_process']:
             if not context.get('co_uid'):
                 context['co_uid'] = self.env.user.id
@@ -309,6 +316,8 @@ class TtReservationRequest(models.Model):
                 self.reject_cuid = reject_cust.id
 
     def action_set_to_draft(self):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'draft'
 
 

@@ -1,6 +1,8 @@
 from odoo import api, models, fields
+from odoo.exceptions import UserError
 from datetime import datetime,timedelta
 from ...tools import ERR
+
 class TtBanUser(models.Model):
     _name = 'tt.ban.user'
     _description = 'Ban User'
@@ -33,6 +35,8 @@ class TtBanUser(models.Model):
         user_obj.is_banned = True
 
     def unban_user_from_button(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.unban_user(self.user_id.id)
 
     def unban_user(self,user_id):

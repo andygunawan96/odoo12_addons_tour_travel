@@ -1,4 +1,5 @@
 from odoo import api,fields,models
+from odoo.exceptions import UserError
 from datetime import datetime, timedelta
 from ...tools import ERR
 from ...tools.ERR import RequestException
@@ -127,6 +128,8 @@ class TtPnrQuota(models.Model):
                 rec.total_amount = minimum + rec.transaction_amount_external
 
     def payment_pnr_quota_api(self):
+        if not self.env.user.has_group('tt_base.group_pnr_quota_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             if rec.agent_id.is_payment_by_system and rec.agent_id.balance >= rec.total_amount:
                 # bikin ledger
@@ -163,6 +166,8 @@ class TtPnrQuota(models.Model):
                 rec.state = 'done'
 
     def set_to_waiting_pnr_quota(self):
+        if not self.env.user.has_group('tt_base.group_pnr_quota_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         ledgers_obj = self.ledger_ids.filtered(lambda x: x.is_reversed == False)
         for ledger_obj in ledgers_obj:
             ledger_obj.reverse_ledger()
@@ -289,6 +294,8 @@ class TtPnrQuota(models.Model):
         }
 
     def recompute_wrong_value_amount(self):
+        if not self.env.user.has_group('tt_base.group_pnr_quota_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.amount = int(self.price_package_id.minimum_fee)
         package_obj = self.price_package_id
         free_pnr_quota = package_obj.free_usage
