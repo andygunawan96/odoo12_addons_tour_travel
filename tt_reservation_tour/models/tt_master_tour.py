@@ -281,6 +281,8 @@ class MasterTour(models.Model):
                 self.sync_products(provider, file)
 
     def copy_tour(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         new_tour_obj = self.copy()
         for rec in self.tour_line_ids:
             new_tour_line_obj = self.env['tt.master.tour.lines'].sudo().create({
@@ -719,12 +721,16 @@ class MasterTour(models.Model):
             return False
 
     def set_to_draft(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'draft'
         for rec in self.tour_line_ids:
             if rec.state == 'closed':
                 rec.action_reopen()
 
     def action_confirm(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'draft':
             raise UserError(_('Cannot confirm master tour because state is not "draft"!'))
         if not self.provider_id:
@@ -745,6 +751,8 @@ class MasterTour(models.Model):
             rec.action_validate()
 
     def action_closed(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'closed'
         for rec in self.tour_line_ids:
             rec.action_closed()

@@ -43,6 +43,9 @@ class TtAdjustmentWizard(models.TransientModel):
     description = fields.Text('Description')
 
     def submit_adjustment(self):
+        if not self.env.user.has_group('tt_base.group_adjustment_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+
         if self.adj_reason == 'sys':
             self.reason_uid = False
 
@@ -64,6 +67,9 @@ class TtAdjustmentWizard(models.TransientModel):
         return adjustment_obj
 
     def submit_and_force_approve_adjustment(self):
+        if not self.env.user.has_group('tt_base.group_adjustment_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+
         adj_obj = self.submit_adjustment()
         adj_obj.confirm_adj_from_button()
         adj_obj.validate_adj_from_button()

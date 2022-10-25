@@ -28,7 +28,7 @@ class ttCronTopUpValidator(models.Model):
                     if transaction:
                         date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"))
                         if date_exist:
-                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C' and x.transaction_connection != 'connect') #check mutasi bank yg belum connect saja
+                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C' and x.transaction_connection != 'connect', limit=1) #check mutasi bank yg belum connect saja
                             if result:
                                 if result.transaction_message == '':
                                     reference_code = result.transaction_code
@@ -122,7 +122,7 @@ class ttCronTopUpValidator(models.Model):
                                             }
                                             res = self.env['tt.payment.api.con'].send_payment(req)
                                             _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1], json.dumps(res)))
-                                            if res['error_code'] == 0:
+                                            if res['error_code'] == 0 and res['response']['state'] == 'issued':
                                                 # tutup payment acq number
                                                 payment_acq_obj.state = 'done'
                                             else:

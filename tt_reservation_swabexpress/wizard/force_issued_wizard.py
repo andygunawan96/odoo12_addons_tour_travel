@@ -42,6 +42,8 @@ class ForceIssuedWizard(models.TransientModel):
             rec.booker_id = provider_obj.booking_id.booker_id.id
 
     def submit_force_issued(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
             payment_data = {
                 'member': self.use_credit_limit,
@@ -56,6 +58,8 @@ class ForceIssuedWizard(models.TransientModel):
         provider_obj.action_force_issued_from_button(payment_data)
 
     def submit_set_to_issued(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.customer_parent_type_id.id != self.env.ref('tt_base.customer_type_fpo').id:
             payment_data = {
                 'member': self.use_credit_limit,

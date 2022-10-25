@@ -60,21 +60,29 @@ class MasterTourLines(models.Model):
             rec.dp = dp
 
     def action_validate(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state == 'draft':
             self.state = 'open'
             if not self.tour_line_code:
                 self.tour_line_code = self.env['ir.sequence'].next_by_code('master.tour.line.code')
 
     def action_closed(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'closed'
 
     def action_definite(self):
         self.state = 'definite'
 
     def action_on_going(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'on_going'
 
     def action_cancel(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'cancel'
 
     def set_to_draft(self):
@@ -84,9 +92,13 @@ class MasterTourLines(models.Model):
         self.state = 'done'
 
     def action_sold(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'sold'
 
     def action_reopen(self):
+        if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'open'
 
     def book_line_quota(self, pax_amount):

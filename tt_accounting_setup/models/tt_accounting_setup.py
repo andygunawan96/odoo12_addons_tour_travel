@@ -32,6 +32,8 @@ class TtAccountingSetup(models.Model):
             rec.display_name = dict(self._fields['accounting_provider'].selection).get(self.accounting_provider)
 
     def copy_setup(self):
+        if not self.env.user.has_group('base.user_admin'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         new_setup_obj = self.copy()
 
         for rec in self.variable_ids:

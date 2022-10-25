@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 import logging, traceback
 import requests
 from datetime import datetime
@@ -57,6 +58,8 @@ class TtAccountingQueue(models.Model):
         }
 
     def action_send_to_vendor(self):
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         try:
             self.send_uid = self.env.user.id
             self.send_date = fields.Datetime.now()
@@ -87,6 +90,8 @@ class TtAccountingQueue(models.Model):
                             'description': led.description or '',
                             'agent_id': led.agent_id and led.agent_id.id or 0,
                             'agent_name': led.agent_id and led.agent_id.name or '',
+                            'agent_type_id': led.agent_type_id and led.agent_type_id.id or 0,
+                            'agent_type_name': led.agent_type_id and led.agent_type_id.name or '',
                             'display_provider_name': led.display_provider_name or '',
                             'pnr': led.pnr or '',
                             'transaction_type': led.transaction_type
@@ -250,6 +255,8 @@ class TtAccountingQueue(models.Model):
                             'description': led.description or '',
                             'agent_id': led.agent_id and led.agent_id.id or 0,
                             'agent_name': led.agent_id and led.agent_id.name or '',
+                            'agent_type_id': led.agent_type_id and led.agent_type_id.id or 0,
+                            'agent_type_name': led.agent_type_id and led.agent_type_id.name or '',
                             'display_provider_name': led.display_provider_name or '',
                             'pnr': led.pnr or '',
                             'transaction_type': led.transaction_type
@@ -311,6 +318,8 @@ class TtAccountingQueue(models.Model):
                         'description': trans_obj.ledger_id.description or '',
                         'agent_id': trans_obj.ledger_id.agent_id and trans_obj.ledger_id.agent_id.id or 0,
                         'agent_name': trans_obj.ledger_id.agent_id and trans_obj.ledger_id.agent_id.name or '',
+                        'agent_type_id': trans_obj.ledger_id.agent_type_id and trans_obj.ledger_id.agent_type_id.id or 0,
+                        'agent_type_name': trans_obj.ledger_id.agent_type_id and trans_obj.ledger_id.agent_type_id.name or '',
                         'display_provider_name': trans_obj.ledger_id.display_provider_name or '',
                         'pnr': trans_obj.ledger_id.pnr or '',
                         'transaction_type': trans_obj.ledger_id.transaction_type
@@ -365,6 +374,8 @@ class TtAccountingQueue(models.Model):
                         'description': led.description or '',
                         'agent_id': led.agent_id and led.agent_id.id or 0,
                         'agent_name': led.agent_id and led.agent_id.name or '',
+                        'agent_type_id': led.agent_type_id and led.agent_type_id.id or 0,
+                        'agent_type_name': led.agent_type_id and led.agent_type_id.name or '',
                         'display_provider_name': led.display_provider_name or '',
                         'pnr': led.pnr or '',
                         'transaction_type': led.transaction_type
@@ -441,6 +452,8 @@ class TtAccountingQueue(models.Model):
                         'description': led.description or '',
                         'agent_id': led.agent_id and led.agent_id.id or 0,
                         'agent_name': led.agent_id and led.agent_id.name or '',
+                        'agent_type_id': led.agent_type_id and led.agent_type_id.id or 0,
+                        'agent_type_name': led.agent_type_id and led.agent_type_id.name or '',
                         'display_provider_name': led.display_provider_name or '',
                         'pnr': led.pnr or '',
                         'transaction_type': led.transaction_type

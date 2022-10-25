@@ -1155,7 +1155,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -2676,10 +2676,10 @@ class TtReportDashboard(models.Model):
                             # check if commission (also known as profit) is belong to HQ or not, and if the user requesting is part of HQ or not
                             # if HQ guy asking then we'll count everything
                             # if not HQ guy then we'll only count respected agent
-                            if is_ho or agent_name_context == i['ledger_agent_name']:
-                                summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
-                                profit_total += i['debit'] - i['credit']
-                                profit_ho += i['debit'] - i['credit']
+                            # if is_ho or agent_name_context == i['ledger_agent_name']:
+                            #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
+                            #     profit_total += i['debit'] - i['credit']
+                            #     profit_ho += i['debit'] - i['credit']
                             # if i['ledger_agent_type_name'] == 'HO' and is_ho == True:
                             #     summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             #     profit_total += i['debit'] - i['credit']
@@ -2788,7 +2788,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -3680,7 +3680,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -4311,7 +4311,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -4842,7 +4842,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -5308,7 +5308,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -5771,7 +5771,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -6220,7 +6220,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -6669,7 +6669,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -7119,7 +7119,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -7551,7 +7551,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -7999,7 +7999,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -8445,7 +8445,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -8891,7 +8891,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -9663,7 +9663,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -10133,7 +10133,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -10579,7 +10579,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -11025,7 +11025,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -11471,7 +11471,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']
@@ -11917,7 +11917,7 @@ class TtReportDashboard(models.Model):
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_ho += i['debit'] - i['credit']
-                        elif i['ledger_agent_type_name'] != 'HO' and agent_seq_id_name == i['agent_name'] == i['ledger_agent_name']:  # punya agent
+                        elif i['ledger_agent_type_name'] != 'HO' and i['agent_name'] == i['ledger_agent_name']:  # punya agent
                             summary_issued[month_index]['detail'][day_index]['profit'] += i['debit'] - i['credit']
                             profit_total += i['debit'] - i['credit']
                             profit_agent += i['debit'] - i['credit']

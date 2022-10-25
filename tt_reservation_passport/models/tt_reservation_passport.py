@@ -161,6 +161,8 @@ class TtPassport(models.Model):
         self.message_post(body='Order FAILED (Booked)')
 
     def action_draft_passport(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state_passport': 'draft',
             'state': 'issued'
@@ -173,6 +175,8 @@ class TtPassport(models.Model):
         self.message_post(body='Order DRAFT')
 
     def action_confirm_passport(self):
+        if not self.env.user.has_group('tt_base.group_tt_agent_user'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         is_confirmed = True
         for rec in self.passenger_ids:
             if rec.state not in ['confirm', 'cancel', 'validate']:
@@ -197,6 +201,8 @@ class TtPassport(models.Model):
         self.message_post(body='Order PROCEED')
 
     def action_validate_passport(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         is_validated = True
         for rec in self.passenger_ids:
             if rec.state not in ['validate', 'cancel']:
@@ -214,6 +220,8 @@ class TtPassport(models.Model):
         self.message_post(body='Order VALIDATED')
 
     def action_in_process_passport(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         data = {
             'order_number': self.name,
             'voucher': {
@@ -272,6 +280,8 @@ class TtPassport(models.Model):
         self.message_post(body='Order PAYMENT')
 
     def action_in_process_immigration_passport(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         is_payment = True
         for rec in self.passenger_ids:
             if rec.state not in ['confirm_payment']:
@@ -342,6 +352,8 @@ class TtPassport(models.Model):
         self.message_post(body='Order DELIVERED')
 
     def action_cancel_passport(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         # set semua state passenger ke cancel
         if self.state_passport in ['in_process', 'payment']:
             self.can_refund = True
@@ -373,6 +385,8 @@ class TtPassport(models.Model):
         self.state_passport = 'expired'
 
     def action_calc_expenses_passport(self):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         # Calc passport vendor
         self.calc_passport_upsell_vendor()
 

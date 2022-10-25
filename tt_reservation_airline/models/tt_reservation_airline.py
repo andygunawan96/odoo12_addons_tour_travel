@@ -109,17 +109,23 @@ class ReservationAirline(models.Model):
 
     @api.multi
     def action_set_as_draft(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'draft'
 
 
     @api.multi
     def action_set_as_booked(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'booked'
 
     @api.multi
     def action_set_as_issued(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'issued'
 
@@ -271,6 +277,8 @@ class ReservationAirline(models.Model):
             rec.state = 'cancel_pending'
 
     def action_cancel(self):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         super(ReservationAirline, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
@@ -1856,6 +1864,8 @@ class ReservationAirline(models.Model):
 
     #retrieve booking utk samakan info dengan vendor
     def sync_booking_with_vendor(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         req = {
             'order_number': self.name,
             # June 10, 2021 - SAM
@@ -2929,6 +2939,7 @@ class ReservationAirline(models.Model):
                         'identity_number': identity and identity['identity_number'] or '',
                         'identity_expdate': identity and identity['identity_expdate'] or False,
                         'identity_country_of_issued_id': identity and country_obj.search([('code', '=ilike', identity['identity_country_of_issued_code'])], limit=1).id or False,
+                        'is_valid_identity': True,
                     }
                     identity_passport = psg.get('identity_passport')
                     if identity_passport:

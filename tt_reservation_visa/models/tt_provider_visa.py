@@ -131,6 +131,8 @@ class TtProviderVisa(models.Model):
     def action_set_to_booked(self):
         """ Fungsi ini mengembalikan state provider ke booked & state visa ke validate """
         """ Fungsi ini dijalankan, in case terdapat salah input harga di pricelist & sudah potong ledger """
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
 
         self.action_booked()  # ubah state provider ke booked
 
@@ -254,6 +256,8 @@ class TtProviderVisa(models.Model):
         return printout_expenses_id.report_action(self, data=datas)
 
     def action_sync_price(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         provider_type_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa')
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 
