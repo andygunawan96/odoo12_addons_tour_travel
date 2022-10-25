@@ -518,6 +518,8 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_confirm(self, kwargs=False):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'confirm'
         self.booked_date = fields.Datetime.now()
         self.booked_uid = kwargs and kwargs.get('user_id', self.env.user.id) or self.env.user.id
@@ -553,20 +555,28 @@ class HotelReservation(models.Model):
 
     @api.multi
     def action_set_as_draft(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'draft'
 
     @api.multi
     def action_set_as_booked(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'booked'
 
     @api.multi
     def action_set_as_issued(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state = 'issued'
 
     def action_issued_backend(self):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if not self.ensure_one():
             raise UserError('Cannot Issued more than 1 Resv.')
         is_enough = self.action_issued()
@@ -580,10 +590,14 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_set_to_issued(self, kwargs=False):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'issued'
 
     @api.one
     def action_set_to_failed(self, kwargs=False):
+        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state = 'fail_issued'
 
     @api.one

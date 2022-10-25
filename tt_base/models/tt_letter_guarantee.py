@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.exceptions import UserError
 from datetime import datetime
 
 
@@ -49,6 +50,8 @@ class TtLetterGuarantee(models.Model):
         return super(TtLetterGuarantee, self).create(vals)
 
     def action_confirm(self):
+        if not self.env.user.has_group('tt_base.group_lg_po_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
@@ -56,6 +59,8 @@ class TtLetterGuarantee(models.Model):
         })
 
     def action_sent(self):
+        if not self.env.user.has_group('tt_base.group_lg_po_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'sent',
             'sent_uid': self.env.user.id,
@@ -63,6 +68,8 @@ class TtLetterGuarantee(models.Model):
         })
 
     def action_paid(self):
+        if not self.env.user.has_group('tt_base.group_lg_po_level_5'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'paid',
             'paid_uid': self.env.user.id,
@@ -70,6 +77,8 @@ class TtLetterGuarantee(models.Model):
         })
 
     def action_cancel(self):
+        if not self.env.user.has_group('tt_base.group_lg_po_level_5'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'cancel',
             'cancel_uid': self.env.user.id,
@@ -77,6 +86,8 @@ class TtLetterGuarantee(models.Model):
         })
 
     def set_to_draft(self):
+        if not self.env.user.has_group('tt_base.group_lg_po_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'draft',
         })

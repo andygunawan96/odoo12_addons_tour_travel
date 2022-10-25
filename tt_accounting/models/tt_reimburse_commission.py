@@ -80,6 +80,8 @@ class TtReimburseCommission(models.Model):
                 rec.agent_id = False
 
     def action_approve(self):
+        if not self.env.user.has_group('tt_base.group_pricing_agent_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state == 'draft':
             commission_list = [rec.to_dict() for rec in self.service_charge_ids]
             provider_obj = self.env[self.res_model].browse(self.res_id)
@@ -92,12 +94,16 @@ class TtReimburseCommission(models.Model):
                 raise UserError(_('Provider Object not found.'))
 
     def action_cancel(self):
+        if not self.env.user.has_group('tt_base.group_pricing_agent_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state == 'draft':
             self.cancel_date = fields.Datetime.now()
             self.cancel_uid = self.env.user.id
             self.state = 'cancel'
 
     def action_set_to_draft(self):
+        if not self.env.user.has_group('tt_base.group_pricing_agent_level_3'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state == 'cancel':
             self.state = 'draft'
 

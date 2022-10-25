@@ -31,6 +31,8 @@ class MasterTourProvider(models.Model):
                 rec.is_lg_required = False
 
     def generate_lg(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         lg_exist = self.env['tt.letter.guarantee'].search([('res_model', '=', self._name), ('res_id', '=', self.id), ('type', '=', 'lg')])
         if lg_exist:
             raise UserError('Letter of Guarantee for this provider is already exist.')

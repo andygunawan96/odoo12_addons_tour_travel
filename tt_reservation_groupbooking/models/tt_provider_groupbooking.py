@@ -260,9 +260,13 @@ class ProviderGroupBooking(models.Model):
             raise UserError('You can only generate Letter of Guarantee if this reservation state is "Validated".')
 
     def generate_lg(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.generate_lg_or_po('lg')
 
     def generate_po(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.generate_lg_or_po('po')
 
     def action_refund(self, check_provider_state=False):

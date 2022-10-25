@@ -177,6 +177,8 @@ class TtCustomerParent(models.Model):
         return email_cc
 
     def set_all_cor_por_email_cc(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('base.user_admin').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         all_cor_por = self.env['tt.customer.parent'].search([('customer_parent_type_id', 'in', [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id])])
         for rec in all_cor_por:
             rec.write({
@@ -229,6 +231,8 @@ class TtCustomerParent(models.Model):
             return ERR.get_error(1022)
 
     def action_confirm(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id, self.env.ref('tt_base.group_tt_agent_user').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
         if not self.address_ids or not self.phone_ids:
@@ -240,6 +244,8 @@ class TtCustomerParent(models.Model):
         })
 
     def action_request(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'confirm':
             raise UserError("Cannot Submit Request because state is not 'confirm'.")
 
@@ -250,6 +256,8 @@ class TtCustomerParent(models.Model):
         })
 
     def action_validate(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'request':
             raise UserError("Cannot Validate because state is not 'request'.")
 
@@ -260,11 +268,15 @@ class TtCustomerParent(models.Model):
         })
 
     def set_to_validate(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'validate',
         })
 
     def action_done(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'validate':
             raise UserError("Cannot Approve because state is not 'validate'.")
 
@@ -275,6 +287,8 @@ class TtCustomerParent(models.Model):
         })
 
     def action_reject(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_user').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state == 'done':
             raise UserError("Cannot reject already approved Customer Parent.")
 
@@ -285,11 +299,15 @@ class TtCustomerParent(models.Model):
         })
 
     def set_to_done(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'done',
         })
 
     def set_to_draft(self):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_user').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'reject':
             raise UserError("Please reject this Customer Parent before setting it to draft!")
 

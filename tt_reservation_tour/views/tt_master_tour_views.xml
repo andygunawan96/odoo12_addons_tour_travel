@@ -194,9 +194,9 @@
                         <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel">
                             <field name="related_provider_ids"/>
                         </page>
-                        <page string="Tour Quotation" groups="tt_base.group_tt_tour_travel">
-                            <field name="quotation_ids"/>
-                        </page>
+<!--                        <page string="Tour Quotation" groups="tt_base.group_tt_tour_travel">-->
+<!--                            <field name="quotation_ids"/>-->
+<!--                        </page>-->
                     </notebook>
 
                     <!--Tour Details Segment-->

@@ -14,6 +14,8 @@ class TtRefundExtendWizard(models.TransientModel):
     new_refund_date = fields.Date('New Refund Date', required=True)
 
     def extend_refund(self):
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         refund_obj = self.refund_id
         if self.new_refund_date <= refund_obj.refund_date_ho:
             raise UserError(_("New refund date must be higher than the current one!"))
