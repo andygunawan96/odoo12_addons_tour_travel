@@ -15,7 +15,7 @@ class TtSetPnrWizard(models.TransientModel):
     pnr = fields.Char('PNR')
 
     def set_pnr(self):
-        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         provider_obj = self.env['tt.provider.groupbooking'].search([('id','=',self.res_id)])
         provider_obj.update({

@@ -460,7 +460,7 @@ class TtReschedule(models.Model):
         })
 
     def confirm_reschedule_from_button(self):
-        if not self.env.user.has_group('tt_base.group_tt_agent_user'):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")

@@ -99,12 +99,18 @@ class ReservationMitraKeluarga(models.Model):
             rec.state = 'issued'
 
     def action_set_state_vendor_as_test_completed(self):
+        if not ({self.env.ref('tt_base.group_external_vendor_mitrakeluarga_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state_vendor = 'test_completed'
 
     def action_set_state_vendor_as_no_show(self):
+        if not ({self.env.ref('tt_base.group_external_vendor_mitrakeluarga_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state_vendor = 'no_show'
 
     def action_set_state_vendor_as_refund(self):
+        if not ({self.env.ref('tt_base.group_external_vendor_mitrakeluarga_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.state_vendor = 'refund'
 
     def action_booked_api_mitrakeluarga(self,context):
