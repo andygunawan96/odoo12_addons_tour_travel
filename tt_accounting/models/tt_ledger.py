@@ -25,7 +25,8 @@ LEDGER_TYPE = [
 
 SOURCE_OF_FUNDS_TYPE = [
     ('balance', 'Balance'),
-    ('point', 'Point Reward')
+    ('point', 'Point Reward'),
+    ('credit_limit', 'Credit Limit')
 ]
 
 _logger = logging.getLogger(__name__)

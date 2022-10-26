@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_ho_invoice_filter_view" model="ir.ui.view">
+        <field name="name">tt.ho.invoice.filter.view</field>
+        <field name="model">tt.ho.invoice</field>
+        <field name="arch" type="xml">
+            <search string="Search HO Invoice">
+                <field name="name"/>
+                <field name="pnr"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="booker_id"/>
+                <field name="invoice_line_ids"/>
+                <separator/>
+                <filter string="All" name='all'/>
+                <filter string="Confirm" name='confirm' domain="['|', ('state', '=', 'draft'), ('state', '=', 'confirm')]"/>
+                <filter string="Bill" name='bill' domain="['|', ('state', '=', 'bill'), ('state', '=', 'bill2')]"/>
+                <filter string="Paid" name='paid' domain="[('state', '=', 'paid')]"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('date_invoice','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
+                <filter name="yesterday" string="Yesterday"
+                        domain="[
+                                ('date_invoice', '&lt;', (context_today()).strftime('%Y-%m-%d')),
+                                ('date_invoice', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter name="week" string="This Week"
+                        domain="[
+                                '&amp;',
+                                ('date_invoice', '>=', (context_today() + relativedelta(weeks=-1,days=1,weekday=0)).strftime('%Y-%m-%d')),
+                                ('date_invoice', '&lt;=', (context_today() + relativedelta(weekday=6)).strftime('%Y-%m-%d')),
+                            ]"/>
+                <filter string="This Month" name="thismonth" domain="[('date_invoice','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                <filter string="This Year" name="thisyear" domain="[('date_invoice','&gt;=',time.strftime('%%Y-01-01'))]"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_form_view" model="ir.ui.view">
+        <field name="name">tt.ho.invoice.form.view</field>
+        <field name="model">tt.ho.invoice</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button name="set_to_bill" string="Set as Bill" type="object" groups="base.group_system"/>
+                    <button name="set_as_confirm" string="Set as Confirm" type="object" groups="base.group_system"/>
+                    <button name="set_as_paid" string="Set as Paid" type="object" groups="base.group_system"/>
+
+                    <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move Line" type="action" states="confirm" context="{'default_invoice_id1': id}"/>
+                    <button name="action_cancel_invoice" string="Cancel Invoice" type="object"
+                            groups="base.group_system,tt_base.group_agent_invoice_level_4"
+                            states="confirm,bill,bill2"
+                        confirm="Are you sure you want to cancel?"/>
+                    <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
+                            groups="tt_base.group_adjustment_level_3"
+                            context="{
+                        'default_res_model': 'tt.agent.invoice',
+                        'default_res_id': id,
+                        'default_agent_id': agent_id,
+                        'default_customer_parent_id': customer_parent_id,
+                        'default_referenced_document': name,
+                        'default_currency_id': currency_id,
+                        'default_adj_type': -5,
+                        'hide_component_type': True
+                   }"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,issued"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_invoice"
+                                class="oe_stat_button" states="draft,confirm,bill,bill2,paid"
+                                string="Print" type="object" icon="fa-print"/>
+                        <button name="print_kwitansi"
+                                class="oe_stat_button" states="paid"
+                                string="Print (Kwitansi)" type="object" icon="fa-print"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" nolabel='1' placeholder="Name" readonly="True"/>
+                        </h1>
+                    </div>
+                    <group name="invoice_info">
+                        <group>
+                            <field name="date_invoice"/>
+                            <field name="booker_id"/>
+                            <field name="customer_parent_id"/>
+                            <field name="customer_parent_type_id" string="Customer Type"/>
+                            <field name="pnr"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="agent_id"/>
+                            <label for="confirmed_uid" string="Confirm By"/>
+                            <div>
+                                <field name="confirmed_uid" class="oe_inline"/> /
+                                <field name="confirmed_date" class="oe_inline"/>
+                            </div>
+                            <label for="cancel_uid" string="Cancel By"/>
+                            <div>
+                                <field name="cancel_uid" class="oe_inline"/> /
+                                <field name="cancel_date" class="oe_inline"/>
+                            </div>
+                            <field name="printout_invoice_id" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <group name="billing_info">
+                        <group>
+                            <field name="bill_name"/>
+                            <field name="bill_address"/>
+                        </group>
+                        <group>
+                            <field name="payment_acquirers"/>
+                            <field name="additional_information"/>
+                        </group>
+                    </group>
+                    <group>
+                        <notebook>
+                            <page string="Line">
+                                <field name="invoice_line_ids">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="desc"/>
+                                        <field name="model_type_id"/>
+                                        <field name="total"/>
+                                        <field name="total_after_tax"/>
+                                        <field name="admin_fee"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Payments">
+                                <field name="payment_ids"
+                                       context="{'tree_view_ref':'tt_agent_sales.tt_payment_invoice_rel_invoice_tree_view'}"/>
+                            </page>
+                            <page string="Ledgers">
+                                <field name="ledger_ids" context="{'tree_view_ref': 'tt_accounting.tt_ledger_cor_tree_view'}"/>
+                            </page>
+                        </notebook>
+                    </group>
+
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                        <field name="total" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="total_after_tax" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="admin_fee" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="grand_total" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="paid_amount" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_tree_view" model="ir.ui.view">
+        <field name="name">tt.ho.invoice.tree.view</field>
+        <field name="model">tt.ho.invoice</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+                <field name="date_invoice"/>
+                <field name="name"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="customer_parent_id"/>
+                <field name="customer_parent_type_id"/>
+                <field name="booker_id"/>
+                <field name="pnr"/>
+                <field name="payment_acquirers"/>
+                <field name="confirmed_uid"/>
+                <field name="total_after_tax"/>
+                <field name="paid_amount"/>
+                <field name="state"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_action_view" model="ir.actions.act_window" >
+        <field name="name">HO Invoice</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.ho.invoice</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <!--        <field name="domain">[]</field>-->
+        <field name="context">
+            {
+            'form_view_ref': 'tt_agent_sales.tt_ho_invoice_form_view',
+            'tree_view_ref': 'tt_agent_sales.tt_ho_invoice_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_ho_invoice_all"
+              parent="tt_agent_sales.menu_agent_invoice"
+              action="tt_agent_sales.tt_ho_invoice_action_view"
+              name="HO Invoice ALL"
+              sequence="1"
+              groups="base.group_user"/>
+
+    <menuitem id="sub_menu_ho_invoice_line"
+              parent="tt_agent_sales.menu_agent_invoice"
+              action="tt_agent_sales.tt_ho_invoice_action_line_view"
+              name="HO Invoice Line"
+              sequence="20"
+              groups="base.group_user"/>
+</odoo>
