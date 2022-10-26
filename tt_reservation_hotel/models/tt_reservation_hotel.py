@@ -6,6 +6,8 @@ from odoo.exceptions import UserError
 import base64
 import logging
 import traceback
+from ...tools import util,variables,ERR
+from ...tools.ERR import RequestException
 
 from .ApiConnector_Hotel import ApiConnectorHotels
 API_CN_HOTEL = ApiConnectorHotels()
@@ -966,12 +968,12 @@ class HotelReservation(models.Model):
         #                                                 'booked_name': self.room_detail_ids[0].name,
         #                                                 'issued_name': self.room_detail_ids[0].issued_name,
         #                                                 }, api_context)
-        self.env['tt.hotel.api.con'].check_booking_status({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
-                                                           'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
-                                                           'booking_id': self.id,
-                                                           'booked_name': self.room_detail_ids[0].name,
-                                                           'issued_name': self.room_detail_ids[0].issued_name,
-                                                           })
+        res = self.env['tt.hotel.api.con'].check_booking_status({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
+                                                                 'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
+                                                                 'booking_id': self.id,
+                                                                 'booked_name': self.room_detail_ids[0].name,
+                                                                 'issued_name': self.room_detail_ids[0].issued_name,
+                                                                 })
         if res['error_code'] != 0:
             raise ('Error')
         else:
@@ -1316,6 +1318,76 @@ class HotelReservation(models.Model):
                 pax_data['pnr_list'].append(pax_pnr_data)
             pax_list.append(pax_data)
         return pax_list
+
+    # Copycat dari create_refund_airline_api
+    def create_refund_hotel_api(self, data, context):
+        try:
+            if data.get('book_id'):
+                hotel_obj = self.env['tt.reservation.hotel'].browse(data['book_id'])
+            elif data.get('order_number'):
+                hotel_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])])
+            else:
+                raise Exception('Book ID or Order Number is not found')
+
+            # VIN: 2021/03/02: admin fee tdak bisa di hardcode
+            # TODO: refund type tdak boleh hardcode lagi, jika frontend sdah support pilih refund type regular / quick
+            ref_type = data.get('refund_type', 'regular')
+            admin_fee_obj = self.env['tt.refund'].get_refund_admin_fee_rule(hotel_obj.agent_id.id, ref_type)
+            if ref_type == 'quick':
+                refund_type = self.env.ref('tt_accounting.refund_type_quick_refund').id
+            else:
+                refund_type = self.env.ref('tt_accounting.refund_type_regular_refund').id
+            # refund_type = 'regular'
+
+            refund_line_ids = []
+            # Untuk Hotel krena jmlah pax tidak valid?
+            pax_price = hotel_obj.total
+            total_charge_fee = hotel_obj.total - sum(x['received_amount'] for x in data['provider_bookings'])
+            pax = hotel_obj.passenger_ids[0]
+            line_obj = self.env['tt.refund.line'].create({
+                'name': (pax.title or '') + ' ' + (pax.name or ''),
+                'birth_date': pax.birth_date,
+                'pax_price': pax_price,
+                'charge_fee': total_charge_fee,
+            })
+            refund_line_ids.append(line_obj.id)
+
+            res_vals = {
+                'agent_id': hotel_obj.agent_id.id,
+                'customer_parent_id': hotel_obj.customer_parent_id.id,
+                'booker_id': hotel_obj.booker_id.id,
+                'currency_id': hotel_obj.currency_id.id,
+                'service_type': hotel_obj.provider_type_id.id,
+                'refund_type_id': refund_type,
+                'admin_fee_id': admin_fee_obj.id,
+                'referenced_document': hotel_obj.name,
+                'referenced_pnr': hotel_obj.pnr,
+                'res_model': hotel_obj._name,
+                'res_id': hotel_obj.id,
+                # 'booking_desc': hotel_obj.get_aftersales_desc(), #Di Airline sperti ini
+                'booking_desc': data.get('refund_code'),
+                'notes': data.get('notes') and data['notes'] or '',
+                'created_by_api': True,
+            }
+            res_obj = self.env['tt.refund'].create(res_vals)
+            res_obj.confirm_refund_from_button()
+            res_obj.update({
+                'refund_line_ids': [(6, 0, refund_line_ids)],
+            })
+            res_obj.send_refund_from_button()
+            res_obj.validate_refund_from_button()
+            res_obj.finalize_refund_from_button()
+            response = {
+                'refund_id': res_obj.id,
+                'refund_number': res_obj.name
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error('Error Create Refund Hotel API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except Exception as e:
+            _logger.error('Error Create Refund Hotel API, %s' % traceback.format_exc())
+            return ERR.get_error(1030)
 
 
 class ServiceCharge(models.Model):
