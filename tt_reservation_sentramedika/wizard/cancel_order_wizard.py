@@ -17,6 +17,8 @@ class CancelOrderSentraMedikaWizard(models.TransientModel):
     cancellation_reason = fields.Char('Cancellation Reason', required=True)
 
     def cancel_order(self):
+        if not ({self.env.ref('tt_base.group_external_vendor_sentramedika_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.booking_id.write({
             'cancellation_reason': self.cancellation_reason
         })

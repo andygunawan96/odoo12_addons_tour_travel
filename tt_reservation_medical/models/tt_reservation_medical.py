@@ -97,6 +97,8 @@ class Reservationmedical(models.Model):
 
     @api.multi
     def action_set_state_vendor_as_suspect(self):
+        if not ({self.env.ref('tt_base.group_external_vendor_medical_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         for rec in self:
             rec.state_vendor = 'suspect'
 
