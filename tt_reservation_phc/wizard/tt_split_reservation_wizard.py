@@ -29,6 +29,8 @@ class TtSplitReservationPHCWizard(models.TransientModel):
         }}
 
     def submit_split_reservation(self):
+        if not self.env.user.has_group('tt_base.group_reservation_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         book_obj = self.env['tt.reservation.phc'].sudo().browse(int(self.res_id))
         pax_list = []
         is_pax_full = True
