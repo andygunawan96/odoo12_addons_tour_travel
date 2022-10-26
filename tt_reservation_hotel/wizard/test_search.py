@@ -696,12 +696,14 @@ class TestSearch(models.Model):
                         'meal_type': '',
                     })
                     # Merge Jika Room type yg sama 2
-                    for price in charge_id['service_charges']:
-                        price.update({
+                    for scs in charge_id['service_charges']:
+                        scs.update({
                             'resv_hotel_id': resv_id.id,
-                            'total': price['amount'] * price['pax_count'],
+                            'total': scs['amount'] * scs['pax_count'],
+                            'currency_id': self.env['res.currency'].get_id(scs.get('currency'), default_param_idr=True),
+                            'foreign_currency_id': self.env['res.currency'].get_id(scs.get('foreign_currency'), default_param_idr=True),
                         })
-                        self.env['tt.service.charge'].create(price)
+                        self.env['tt.service.charge'].create(scs)
 
                 detail.sale_price = total_price
         # resv_id.total = total_rate
@@ -1240,19 +1242,13 @@ class TestSearch(models.Model):
                 return vals
             return False
 
-        # Cari di destination
-
-        # Jika tidak ada baru cari di city dan country
-        # Flow lama
         providers = []
+        full_dest_name = dest_name.split(';')
+        dest_name = full_dest_name[0]
+        country_name = full_dest_name[-1] if len(full_dest_name) > 1 else ''
 
         city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
-        # if city_id:
-        #     country_id = city_id.state_id and city_id.state_id.country_id or city_id.country_id
-        #
-        #     vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', country_id.id), ('is_apply', '=', True)])
-        #     vendor_ids = [x.provider_id for x in vendor_ids]
-        # else:
+
         hotel_type_obj = self.env.ref('tt_reservation_hotel.tt_provider_type_hotel')
         vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
 

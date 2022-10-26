@@ -188,7 +188,7 @@ class HotelInformationCompare(models.Model):
             if record.compare_id.hotel_id.destination_id.name == record.compare_id.comp_hotel_id.destination_id.name and record.compare_id.comp_hotel_id.destination_id.name != False:
                 rmv_str += [record.compare_id.hotel_id.destination_id.name.lower()]
         elif record.params in ['address']:
-            rmv_param += ['-', '+', '.', ',', '/', '(', ')',';'] # Pertimbangkan pengunaan '(' , ')'
+            rmv_param += ['-', '+', '.', ',', '/', '(', ')', ';', '–'] # Pertimbangkan pengunaan '(' , ')'
             # Contoh: Jl. P. Mangkubumi 57/59 vs Jl. Margoutomo (P. Mangkubumi)
             rmv_str = ['jalan', 'jl', 'jln', 'no', 'street']
             if record.compare_id.hotel_id.city_id.name == record.compare_id.comp_hotel_id.city_id.name and record.compare_id.comp_hotel_id.city_id.name != False:
