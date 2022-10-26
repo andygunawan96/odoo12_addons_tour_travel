@@ -18,6 +18,8 @@ class TtHotelApiCon(models.Model):
             res = table_obj.payment_hotel_api(data,context)
         elif action == 'update_cost_service_charges':
             res = table_obj.update_cost_service_charge_hotel_api(data,context)
+        elif action == 'create_refund':
+            res = table_obj.create_refund_hotel_api(data,context)
         else:
             raise RequestException(999)
         return res
