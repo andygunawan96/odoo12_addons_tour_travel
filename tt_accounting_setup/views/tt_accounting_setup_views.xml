@@ -40,6 +40,7 @@
                         <group>
                             <group>
                                 <field name="accounting_provider"/>
+                                <field name="notes"/>
                                 <field name="sequence"/>
                             </group>
                             <group>
@@ -86,6 +87,7 @@
                     <field name="cycle"/>
                     <field name="is_recon_only"/>
                     <field name="create_date"/>
+                    <field name="notes"/>
                     <field name="active"/>
                 </tree>
             </field>

@@ -112,9 +112,10 @@ class AccountingConnectorITM(models.Model):
                         vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
                             _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
-
-                        temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
-                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+                            vat = 0
+                        else:
+                            temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
+                            vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
                         # total cost = Total NTA
                         # total sales = Agent NTA
@@ -190,9 +191,10 @@ class AccountingConnectorITM(models.Model):
                         vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
                             _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
-
-                        temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
-                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+                            vat = 0
+                        else:
+                            temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
+                            vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
                         # total cost = Total NTA
                         # total sales = Agent NTA
@@ -254,9 +256,10 @@ class AccountingConnectorITM(models.Model):
                     vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                     if not vat_var_obj or not vat_perc_obj:
                         _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
-
-                    temp_vat_var = prov_setup.get(vat_var_obj.variable_value) and prov_setup[vat_var_obj.variable_value] or 0
-                    vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+                        vat = 0
+                    else:
+                        temp_vat_var = prov_setup.get(vat_var_obj.variable_value) and prov_setup[vat_var_obj.variable_value] or 0
+                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
                     journey_list = [{
                         "itin": 1,
