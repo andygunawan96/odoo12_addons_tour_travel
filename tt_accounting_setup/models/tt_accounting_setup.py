@@ -24,6 +24,7 @@ class TtAccountingSetup(models.Model):
     is_send_commission= fields.Boolean('Send Commission Transaction', default=False)
     variable_ids = fields.One2many('tt.accounting.setup.variables', 'accounting_setup_id', 'Variables')
     provider_supplier_ids = fields.One2many('tt.accounting.setup.suppliers', 'accounting_setup_id', 'Provider Suppliers')
+    notes = fields.Char('Notes')
 
     @api.depends('accounting_provider')
     @api.onchange('accounting_provider')
@@ -48,7 +49,9 @@ class TtAccountingSetup(models.Model):
                 'accounting_setup_id': new_setup_obj.id,
                 'provider_id': rec.provider_id and rec.provider_id.id or '',
                 'supplier_code': rec.supplier_code or '',
-                'supplier_name': rec.supplier_name or ''
+                'supplier_name': rec.supplier_name or '',
+                'product_code': rec.product_code or '',
+                'product_name': rec.product_name or ''
             })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
