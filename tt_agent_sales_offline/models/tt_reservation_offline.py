@@ -13,6 +13,9 @@ class ReservationOffline(models.Model):
 
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=', 'tt.reservation.offline')])
 
+    ho_invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'res_id_resv', 'HO Invoice',
+                                          domain=[('res_model_resv', '=', 'tt.reservation.offline')])
+
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
@@ -28,8 +31,9 @@ class ReservationOffline(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
-    def action_create_invoice(self):
+    def action_create_invoice(self, payment_method_to_ho):
         invoice_id = False
+        ho_invoice_id = False
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -48,6 +52,47 @@ class ReservationOffline(models.Model):
                 invoice_id.write({
                     'confirmed_uid': self.confirm_uid.id
                 })
+
+        ### HO ####
+        is_use_credit_limit = False
+        if not ho_invoice_id:
+            if payment_method_to_ho == 'balance':
+                state = 'paid'
+                is_use_credit_limit = False
+            else:
+                state = 'confirm'
+                is_use_credit_limit = True
+            ho_invoice_id = self.env['tt.ho.invoice'].create({
+                'booker_id': self.booker_id.id,
+                'agent_id': self.agent_id.id,
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': state,
+                'confirmed_date': datetime.now(),
+                'is_use_credit_limit': is_use_credit_limit
+            })
+
+            if self.issued_uid.agent_id.id == self.agent_id.id:
+                ho_invoice_id.write({
+                    'confirmed_uid': self.issued_uid.id
+                })
+            else:
+                ho_invoice_id.write({
+                    'confirmed_uid': self.confirm_uid.id
+                })
+
+        ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
+            'res_model_resv': self._name,
+            'res_id_resv': self.id,
+            'invoice_id': ho_invoice_id.id,
+            'reference': self.name,
+            'desc': self.get_segment_description(),
+            'admin_fee': 0
+        })
+
+        ho_invoice_line_id = ho_inv_line_obj.id
+
+        discount = 0
 
         line_desc = ''
         if self.provider_type_id_name != 'hotel':
@@ -71,6 +116,22 @@ class ReservationOffline(models.Model):
         })
 
         invoice_line_id = inv_line_obj.id
+
+        ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
+            'res_model_resv': self._name,
+            'res_id_resv': self.id,
+            'invoice_id': ho_invoice_id.id,
+            'reference': self.name,
+            'desc': line_desc,
+            'admin_fee': self.payment_acquirer_number_id.fee_amount
+        })
+
+        model_type_id = self.env['tt.provider.type'].search([('code', '=', self.offline_provider_type)], limit=1)
+        ho_inv_line_obj.write({
+            'model_type_id': model_type_id.id
+        })
+
+        ho_invoice_line_id = ho_inv_line_obj.id
 
         # get charge code name
 
@@ -97,7 +158,8 @@ class ReservationOffline(models.Model):
                 for srvc in self.sale_service_charge_ids:
                     if srvc.charge_type not in ['RAC', 'DISC']:
                         price_unit += srvc.amount
-
+                    elif srvc.charge_type == 'DISC':
+                        discount += srvc.amount
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {
                         'desc': desc_text,
@@ -106,6 +168,83 @@ class ReservationOffline(models.Model):
                         'invoice_line_id': invoice_line_id,
                     })]
                 })
+
+        ## HO INVOICE ABAIKAN SERVICE CHARGES DISC KARENA DISCOUNT DARI HO TIDAK MEMPENGARUHI NTA##
+        if self.provider_type_id_name == 'hotel':
+            qty = 0
+            for line in self.line_ids:
+                qty += line.obj_qty
+            for line in self.line_ids:
+                desc_text = line.get_line_hotel_description()
+                ### FARE
+                self.env['tt.ho.invoice.line.detail'].create({
+                    'desc': desc_text,
+                    'price_unit': self.total/qty,
+                    'quantity': qty,
+                    'invoice_line_id': ho_invoice_line_id,
+                })
+            ## RAC
+            commission_list = {}
+            price_unit = 0
+            for price_obj in self.sale_service_charge_ids:
+                if price_obj.charge_type == 'RAC':
+                    if is_use_credit_limit:
+                        if not price_obj.commission_agent_id:
+                            agent_id = self.agent_id.id
+                        else:
+                            agent_id = price_obj.commission_agent_id.id
+                        if agent_id not in commission_list:
+                            commission_list[agent_id] = 0
+                        commission_list[agent_id] += price_obj.amount * -1
+                    elif price_obj.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                        price_unit += price_obj.amount
+            for rec in commission_list:
+                self.env['tt.ho.invoice.line.detail'].create({
+                    'desc': "Commission",
+                    'price_unit': commission_list[rec],
+                    'quantity': 1,
+                    'invoice_line_id': ho_invoice_line_id,
+                    'commission_agent_id': rec,
+                    'is_commission': True
+                })
+
+        else:
+            for psg in self.passenger_ids:
+                desc_text = psg.customer_id.name
+                price_unit = 0
+                commission_list = {}
+                for srvc in self.sale_service_charge_ids:
+                    if srvc.charge_type not in ['RAC', 'DISC']:
+                        price_unit += srvc.amount
+                    elif srvc.charge_type == 'RAC':
+                        if is_use_credit_limit:
+                            if not srvc.commission_agent_id:
+                                agent_id = self.agent_id.id
+                            else:
+                                agent_id = srvc.commission_agent_id.id
+                            if agent_id not in commission_list:
+                                commission_list[agent_id] = 0
+                            commission_list[agent_id] += srvc.amount * -1
+                        elif srvc.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                            price_unit += srvc.amount
+                ### FARE
+                self.env['tt.ho.invoice.line.detail'].create({
+                    'desc': desc_text,
+                    'price_unit': self.total / len(self.passenger_ids),
+                    'quantity': 1,
+                    'invoice_line_id': ho_invoice_line_id,
+                })
+                ## RAC
+                for rec in commission_list:
+                    self.env['tt.ho.invoice.line.detail'].create({
+                        'desc': "Commission",
+                        'price_unit': commission_list[rec],
+                        'quantity': 1,
+                        'invoice_line_id': ho_invoice_line_id,
+                        'commission_agent_id': rec,
+                        'is_commission': True
+                    })
+
 
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
@@ -126,6 +265,54 @@ class ReservationOffline(models.Model):
             'pay_amount': invoice_id.grand_total
         })
 
+        ## payment HO
+        acq_obj = False
+        if payment_method_to_ho != 'credit_limit':
+            acq_objs = self.agent_id.payment_acquirer_ids
+            for payment_acq in acq_objs:
+                if payment_acq.name == 'Cash':
+                    acq_obj = payment_acq.id
+                    break
+
+        ho_payment_vals = {
+            'agent_id': self.agent_id.id,
+            'acquirer_id': acq_obj,
+            'real_total_amount': ho_invoice_id.grand_total,
+            'confirm_date': datetime.now()
+        }
+        if self.issued_uid.agent_id.id == self.agent_id.id:
+            ho_payment_vals.update({
+                'confirmed_uid': self.issued_uid.id
+            })
+        else:
+            ho_payment_vals.update({
+                'confirmed_uid': self.confirm_uid.id
+            })
+
+        ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
+
+        self.env['tt.payment.invoice.rel'].create({
+            'ho_invoice_id': ho_invoice_id.id,
+            'payment_id': ho_payment_obj.id,
+            'pay_amount': ho_invoice_id.grand_total
+        })
+        ## payment HO
+
+        self.write({
+            'is_invoice_created': True
+        })
+
     def action_done(self):
         super(ReservationOffline, self).action_done()
         self.action_create_invoice()
+
+        if not self.is_invoice_created:
+            ## check ledger bayar pakai balance / credit limit
+            payment_method_to_ho = ''
+            for ledger_obj in self.ledger_ids:
+                if ledger_obj.transaction_type == 2:  ## order
+                    if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
+                        payment_method_to_ho = ledger_obj.source_of_funds_type
+                        break
+                pass
+            self.action_create_invoice(payment_method_to_ho)

@@ -13,6 +13,9 @@ class TtAgent(models.Model):
     adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment Balance',
                                      domain=[('res_model', '=', 'tt.agent')])
 
+    balance_credit_limit = fields.Monetary(string="Balance Credit Limit", compute="_compute_balance_credit_limit_agent", store=True)
+    actual_credit_balance = fields.Monetary(string="Actual Credit Limit", readonly=True, compute="_compute_actual_credit_balance")  ## HANYA CREDIT LIMIT
+    unprocessed_amount = fields.Monetary(string="Unprocessed Amount", readonly=True, compute="_compute_unprocessed_amount")
     def action_view_ledgers(self):
         return {
             'name': _('Ledger(s)'),
@@ -40,6 +43,41 @@ class TtAgent(models.Model):
                     break
             else:
                 rec.balance = 0
+
+    def compute_all_agent_balance_credit_limit(self):
+        for rec in self.search([]):
+            rec._compute_balance_credit_limit_agent()
+
+    @api.depends('ledger_ids','ledger_ids.balance')
+    def _compute_balance_credit_limit_agent(self):
+        for rec in self:
+            if len(rec.ledger_ids) > 0:
+                for ledger_obj in rec.ledger_ids.search([('source_of_funds_type', '=', 'credit_limit')]): ## source_of_funds_type 0 untuk balance
+                    rec.balance_credit_limit = ledger_obj.balance
+                    break
+            else:
+                rec.balance_credit_limit = 0
+
+    def _compute_actual_credit_balance(self):
+        for rec in self:
+            rec.actual_credit_balance = rec.credit_limit - rec.unprocessed_amount + rec.balance_credit_limit
+
+    def _compute_unprocessed_amount(self):
+        for rec in self:
+            total_amt = 0
+            invoice_objs = self.env['tt.ho.invoice'].sudo().search([('agent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
+            for rec2 in invoice_objs:
+                for rec3 in rec2.invoice_line_ids:
+                    total_amt += rec3.total_after_tax
+
+            ## check invoice billed tetapi sudah di bayar
+            invoice_bill_objs = self.env['tt.ho.invoice'].sudo().search(
+                [('agent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
+            paid_amount = 0
+            for billed_invoice in invoice_bill_objs:
+                paid_amount += billed_invoice.paid_amount
+            rec.unprocessed_amount = total_amt-paid_amount
+
 
     def create_ledger_statement(self):
         ##fixing balance from last statement

@@ -26,6 +26,7 @@ Key Features
         'views/tt_agent_invoice_views.xml',
         'views/tt_billing_statement_views.xml',
         'views/tt_customer_parent_views.xml',
+        'views/tt_agent_views.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
     ],

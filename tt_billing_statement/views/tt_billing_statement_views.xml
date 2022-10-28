@@ -112,7 +112,16 @@
                     </group>
                     <notebook >
                         <page string="Invoices">
-                            <field name="invoice_ids">
+                            <field name="invoice_ids" attrs="{'invisible':[('customer_parent_id','=',False)]}">
+                                <tree create="false">
+                                    <field name="name"/>
+                                    <field name="date_invoice"/>
+                                    <field name="total"/>
+                                    <field name="total_after_tax"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                            <field name="ho_invoice_ids" attrs="{'invisible':[('customer_parent_id','!=',False)]}">
                                 <tree create="false">
                                     <field name="name"/>
                                     <field name="date_invoice"/>

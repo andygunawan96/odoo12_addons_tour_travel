@@ -439,7 +439,7 @@ class TtProviderTour(models.Model):
     #             'total_orig': total_orig
     #         })
 
-    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False,payment_method_use_to_ho=False):
         if pay_method == 'installment':
             total_amount = (self.booking_id.tour_lines_id.down_payment / 100) * self.booking_id.total
             booking_obj = self.booking_id
@@ -489,7 +489,7 @@ class TtProviderTour(models.Model):
             return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
                                                         ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, source_of_funds_type, **additional_vals)
         else:
-            return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
+            return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point, payment_method_use_to_ho=payment_method_use_to_ho)
 
     def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False, use_point=False):
         try:
