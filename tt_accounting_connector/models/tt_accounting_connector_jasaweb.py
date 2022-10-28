@@ -112,7 +112,7 @@ class AccountingConnectorJasaweb(models.Model):
                 trans_type = 'Transport Booking'
             elif rec['transaction_type'] == 3:
                 trans_type = 'Commission'
-                if rec.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                if rec['agent_type_id'] == self.env.ref('tt_base.agent_type_ho').id:
                     trans_type += ' HO'
                 else:
                     trans_type += ' Channel'
