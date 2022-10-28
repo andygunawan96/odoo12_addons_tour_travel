@@ -53,7 +53,17 @@ class AccountingConnectorITM(models.Model):
             supplier_list = []
             idx = 0
             for prov in request['provider_bookings']:
-                supplier_obj = self.env['tt.accounting.setup.suppliers'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('provider_id.code', '=', prov['provider'])], limit=1)
+                sup_search_param = [('accounting_setup_id.accounting_provider', '=', 'itm'), ('provider_id.code', '=', prov['provider'])]
+                if request.get('sector_type'):
+                    if request['sector_type'] == 'Domestic':
+                        temp_product_search = ('variable_name', '=', 'domestic_product')
+                    else:
+                        temp_product_search = ('variable_name', '=', 'international_product')
+                    sector_based_product = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), temp_product_search], limit=1)
+                    if sector_based_product:
+                        sup_search_param.append(('product_code', '=', sector_based_product[0].variable_value))
+
+                supplier_obj = self.env['tt.accounting.setup.suppliers'].search(sup_search_param, limit=1)
                 if supplier_obj:
                     supplier_list.append({
                         'supplier_code': supplier_obj.supplier_code or '',
