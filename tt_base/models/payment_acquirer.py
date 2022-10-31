@@ -403,6 +403,8 @@ class PaymentAcquirer(models.Model):
                     can_use_credit_limit = False
                     is_provider_type = True
                     is_provider = True
+                    if ['groupbooking', 'tour'] in book_obj.provider_type_id.code:  ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                        is_provider_type = False
                     ## asumsi kalau all pasti True
                     if book_obj.agent_id.agent_credit_limit_provider_type_access_type == 'allow' and book_obj.provider_type_id not in book_obj.agent_id.agent_credit_limit_provider_type_eligibility_ids or \
                             book_obj.agent_id.agent_credit_limit_provider_type_access_type == 'restrict' and book_obj.provider_type_id in book_obj.agent_id.agent_credit_limit_provider_type_eligibility_ids:
@@ -430,6 +432,8 @@ class PaymentAcquirer(models.Model):
                         ## asumsi kalau all pasti True
 
                         provider_type_obj = self.env['tt.provider.type'].search([('code','=',req['provider_type'])], limit=1)
+                        if ['groupbooking', 'tour'] in req['provider_type']: ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                            is_provider_type = False
                         if agent_obj.agent_credit_limit_provider_type_access_type == 'allow' and provider_type_obj not in agent_obj.agent_credit_limit_provider_type_eligibility_ids or \
                                 agent_obj.agent_credit_limit_provider_type_access_type == 'restrict' and provider_type_obj in agent_obj.agent_credit_limit_provider_type_eligibility_ids:
                             is_provider_type = False

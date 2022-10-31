@@ -1241,7 +1241,8 @@ class TtReservation(models.Model):
                         ## asumsi kalau all provider_type & provider pasti True
                         is_provider_type = True
                         is_provider = True
-
+                        if ['groupbooking', 'tour'] in book_obj.provider_type_id: ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                            is_provider_type = False
                         if agent_obj.agent_credit_limit_provider_type_access_type == 'allow' and book_obj.provider_type_id not in agent_obj.agent_credit_limit_provider_type_eligibility_ids or \
                                 agent_obj.agent_credit_limit_provider_type_access_type == 'restrict' and book_obj.provider_type_id in agent_obj.agent_credit_limit_provider_type_eligibility_ids:
                             is_provider_type = False

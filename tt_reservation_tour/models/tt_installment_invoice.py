@@ -32,7 +32,6 @@ class InstallmentInvoice(models.Model):
 
     # ledger_ids = fields.One2many('tt.ledger', 'resv_id', 'Ledger')
     agent_invoice_id = fields.Many2one('tt.agent.invoice', 'Agent Invoice', readonly=True)
-    ho_invoice_id = fields.Many2one('tt.ho.invoice', 'Agent Invoice', readonly=True)
 
     description = fields.Text('Description')
     payment_rules_id = fields.Many2one('tt.payment.rules', 'Payment Rules ID', readonly=True)

@@ -93,7 +93,7 @@ class ReservationVisa(models.Model):
                 'customer_parent_id': book_obj.customer_parent_id.id,
                 'customer_parent_type_id': book_obj.customer_parent_type_id.id,
                 'state': state,
-                'confirmed_uid': data['co_uid'],
+                'confirmed_uid': book_obj.confirmed_uid.id,
                 'confirmed_date': datetime.now(),
                 'is_use_credit_limit': is_use_credit_limit
             })
@@ -258,7 +258,6 @@ class ReservationVisa(models.Model):
             'agent_id': self.agent_id.id,
             'acquirer_id': acq_obj,
             'real_total_amount': ho_invoice_id.grand_total,
-            'confirm_uid': data['co_uid'],
             'confirm_date': datetime.now()
         }
         if ho_payref_id_list:

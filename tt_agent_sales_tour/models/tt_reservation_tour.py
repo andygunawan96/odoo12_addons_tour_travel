@@ -128,9 +128,7 @@ class ReservationTour(models.Model):
                 admin_fee_medical = 0
                 for ticket in provider.ticket_ids:
                     psg = ticket.passenger_id
-                    desc_text = '%s, %s (%s)' % (
-                        ' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '',
-                        ticket.ticket_number)
+                    desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
                     price_unit = 0
                     commission_list = {}
                     for cost_charge in psg.cost_service_charge_ids:
@@ -354,16 +352,14 @@ class ReservationTour(models.Model):
                     if cost_charge.charge_type not in ['DISC', 'RAC']:
                         price_unit += cost_charge.amount
                     elif cost_charge.charge_type == 'RAC':
-                        if is_use_credit_limit:
-                            if not cost_charge.commission_agent_id:
-                                agent_id = self.agent_id.id
-                            else:
-                                agent_id = cost_charge.commission_agent_id.id
-                            if agent_id not in commission_list:
-                                commission_list[agent_id] = 0
-                            commission_list[agent_id] += cost_charge.amount * -1
-                        elif cost_charge.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
-                            price_unit += cost_charge.amount
+                        if not cost_charge.commission_agent_id:
+                            agent_id = self.agent_id.id
+                        else:
+                            agent_id = cost_charge.commission_agent_id.id
+                        if agent_id not in commission_list:
+                            commission_list[agent_id] = 0
+                        commission_list[agent_id] += cost_charge.amount * -1
+
                 ### FARE
                 self.env['tt.ho.invoice.line.detail'].create({
                     'desc': desc_text,
@@ -372,13 +368,13 @@ class ReservationTour(models.Model):
                     'invoice_line_id': ho_invoice_line_id,
                 })
                 ## RAC
-                for rec in commission_list:
+                for rec_commission in commission_list:
                     self.env['tt.ho.invoice.line.detail'].create({
                         'desc': "Commission",
-                        'price_unit': (self.tour_lines_id.down_payment / 100) * commission_list[rec],
+                        'price_unit': (self.tour_lines_id.down_payment / 100) * commission_list[rec_commission],
                         'quantity': 1,
                         'invoice_line_id': ho_invoice_line_id,
-                        'commission_agent_id': rec,
+                        'commission_agent_id': rec_commission,
                         'is_commission': True
                     })
 
@@ -486,16 +482,6 @@ class ReservationTour(models.Model):
                 'payment_rules_id': False,
             })
 
-            self.env['tt.installment.invoice'].create({
-                'ho_invoice_id': ho_invoice_id.id,
-                'booking_id': self.id,
-                'amount': ho_inv_line_obj.total,
-                'due_date': date.today(),
-                'description': 'Down Payment',
-                'state_invoice': 'done',
-                'payment_rules_id': False,
-            })
-
             for rec in self.tour_lines_id.payment_rules_ids:
                 invoice_id = self.env['tt.agent.invoice'].create({
                     'booker_id': self.booker_id.id,
@@ -519,7 +505,7 @@ class ReservationTour(models.Model):
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
                     'customer_parent_type_id': self.customer_parent_type_id.id,
-                    'state': state,
+                    'state': 'paid', ## TIDAK TERPAKAI KARENA FUNGSI POTONG SUDAH OTOMATIS DI AGENT INVOICE KALAU UPDATE ROMBAK BANYAK
                     'confirmed_uid': data['co_uid'],
                     'confirmed_date': datetime.now(),
                     'is_use_credit_limit': is_use_credit_limit
@@ -533,6 +519,8 @@ class ReservationTour(models.Model):
                     'desc': (rec.name and rec.name + '\n' or '') + self.get_tour_description(),
                     'admin_fee': 0
                 })
+                ho_invoice_line_id = ho_inv_line_obj.id
+
                 discount = 0
                 # untuk harga fare per passenger
                 for psg in self.passenger_ids:
@@ -582,13 +570,13 @@ class ReservationTour(models.Model):
                         'invoice_line_id': ho_invoice_line_id,
                     })
                     ## RAC
-                    for rec in commission_list:
+                    for rec_commission in commission_list:
                         self.env['tt.ho.invoice.line.detail'].create({
                             'desc': "Commission",
-                            'price_unit': (rec.payment_percentage / 100) * commission_list[rec],
+                            'price_unit': (rec.payment_percentage / 100) * commission_list[rec_commission],
                             'quantity': 1,
                             'invoice_line_id': ho_invoice_line_id,
-                            'commission_agent_id': rec,
+                            'commission_agent_id': rec_commission,
                             'is_commission': True
                         })
 
@@ -632,7 +620,7 @@ class ReservationTour(models.Model):
                 self.env['tt.payment.invoice.rel'].create({
                     'ho_invoice_id': ho_invoice_id.id,
                     'payment_id': ho_payment_obj.id,
-                    'pay_amount': ho_invoice_id.grand_total
+                    'pay_amount': ho_inv_line_obj.total_after_tax
                 })
                 ## payment HO
 
@@ -640,16 +628,6 @@ class ReservationTour(models.Model):
                     'agent_invoice_id': invoice_id.id,
                     'booking_id': self.id,
                     'amount': inv_line_obj.total,
-                    'due_date': rec.due_date,
-                    'description': rec.name,
-                    'state_invoice': 'open',
-                    'payment_rules_id': rec.id,
-                })
-
-                self.env['tt.installment.invoice'].create({
-                    'ho_invoice_id': ho_invoice_id.id,
-                    'booking_id': self.id,
-                    'amount': ho_inv_line_obj.total,
                     'due_date': rec.due_date,
                     'description': rec.name,
                     'state_invoice': 'open',

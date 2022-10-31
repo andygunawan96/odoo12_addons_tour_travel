@@ -485,9 +485,12 @@ class TtProviderTour(models.Model):
                 booking_obj.is_using_point_reward = True
                 _logger.info('####### IS USING POINT REWARD ########')
 
-            source_of_funds_type = 'balance' ## balance
-            return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
+            source_of_funds_type = payment_method_use_to_ho ## balance
+            if source_of_funds_type == 'balance':
+                return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
                                                         ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, source_of_funds_type, **additional_vals)
+            else:
+                return True
         else:
             return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point, payment_method_use_to_ho=payment_method_use_to_ho)
 
