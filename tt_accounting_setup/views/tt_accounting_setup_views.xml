@@ -81,7 +81,7 @@
             <field name="name">tt.accounting.setup.tree.view</field>
             <field name="model">tt.accounting.setup</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree decoration-muted="active == False">
                     <field name="sequence" widget="handle"/>
                     <field name="accounting_provider"/>
                     <field name="cycle"/>
@@ -98,6 +98,7 @@
             <field name="view_type">form</field>
             <field name="res_model">tt.accounting.setup</field>
             <field name="view_mode">tree,form</field>
+            <field name="domain">['|',('active', '=', 1),('active', '=', 0)]</field>
             <field name="context">
                 {
                 'form_view_ref': 'tt_base.tt_accounting_setup_form_view',
