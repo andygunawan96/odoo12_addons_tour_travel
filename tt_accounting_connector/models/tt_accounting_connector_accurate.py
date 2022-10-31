@@ -21,25 +21,25 @@ class AccountingConnectorAccurate(models.Model):
     _description = 'Accounting Connector Accurate'
 
     def acc_login(self):
-        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'url')], limit=1)
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Accurate Accounting Setup!')
-        client_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'client_id')], limit=1)
+        client_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'client_id')], limit=1)
         if not client_id_obj:
             raise Exception('Please provide a variable with the name "client_id" in Accurate Accounting Setup!')
-        client_secret_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'client_secret')], limit=1)
+        client_secret_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'client_secret')], limit=1)
         if not client_secret_obj:
             raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
-        url_redirect_web_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'url_redirect_web')], limit=1)
+        url_redirect_web_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url_redirect_web')], limit=1)
         if not url_redirect_web_obj:
             raise Exception('Please provide a variable with the name "url_redirect_web" in Accurate Accounting Setup!')
-        username_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'username')], limit=1)
+        username_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'username')], limit=1)
         if not username_obj:
             raise Exception('Please provide a variable with the name "username" in Accurate Accounting Setup!')
-        password_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'password')], limit=1)
+        password_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'password')], limit=1)
         if not password_obj:
             raise Exception('Please provide a variable with the name "password" in Accurate Accounting Setup!')
-        database_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'database_id')], limit=1)
+        database_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'database_id')], limit=1)
         if not database_id_obj:
             raise Exception('Please provide a variable with the name "database_id" in Accurate Accounting Setup!')
         else:
@@ -127,7 +127,7 @@ class AccountingConnectorAccurate(models.Model):
     ##BELUM GANTI
     def get_sales_order(self):
         url_obj = self.env['tt.accounting.setup.variables'].search(
-            [('accounting_setup_id.accounting_provider', '=', 'accurate'), ('variable_name', '=', 'url')], limit=1)
+            [('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Accurate Accounting Setup!')
 
