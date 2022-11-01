@@ -855,8 +855,7 @@ class MasterActivity(models.Model):
                         temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
                         cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt)], limit=1) or False
                         temp_opt.update({
-                            'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
-                            'type': 'perBooking'
+                            'currency_id': cur_obj_opt and cur_obj_opt[0].id or False
                         })
                         opt_obj = self.env['tt.activity.booking.option'].sudo().create(temp_opt)
                         self.env.cr.commit()
@@ -876,8 +875,7 @@ class MasterActivity(models.Model):
                         temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
                         cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt)], limit=1) or False
                         temp_opt.update({
-                            'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
-                            'type': 'perPax'
+                            'currency_id': cur_obj_opt and cur_obj_opt[0].id or False
                         })
                         opt_obj = self.env['tt.activity.booking.option'].sudo().create(temp_opt)
                         self.env.cr.commit()
