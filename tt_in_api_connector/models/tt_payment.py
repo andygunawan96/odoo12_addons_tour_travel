@@ -16,9 +16,8 @@ class TtPaymentApiCon(models.Model):
         if action == 'payment':
             if data['va_type'] == 'open':
                 _logger.info("##############STARTING ESPAY OPEN TOP UP##############")
-                if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
-                    payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0]
-                    payment_acq_number_obj.fee = data['fee']
+                payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])], limit=1)
+                if payment_acq_number_obj.state == 'open':
                     # check ada payment ref yg kembar ngga
                     if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                         # topup
@@ -42,7 +41,7 @@ class TtPaymentApiCon(models.Model):
                                 'virtual_account': data['virtual_account'],
                                 'name': res['response']['name'],
                                 'payment_ref': data['payment_ref'],
-                                'fee': data['fee']
+                                'fee': payment_acq_number_obj.fee_amount
                             }
                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_number_obj.id)
                             _logger.info("##############SUCCESS ESPAY OPEN TOP UP##############")

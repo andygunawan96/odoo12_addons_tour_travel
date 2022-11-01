@@ -144,7 +144,7 @@ class PhoneDetail(models.Model):
         if len(data) != 0:
             res = self.env['tt.payment.api.con'].delete_VA(data)
             if res['error_code'] == 0:
-                for rec in self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids:
+                for rec in self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids.filtered(lambda x: x.state == 'open'):
                     rec.unlink()
                 self.va_create = False
                 self.env.cr.commit()
