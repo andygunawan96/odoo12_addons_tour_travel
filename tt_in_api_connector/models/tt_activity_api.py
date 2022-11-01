@@ -118,6 +118,9 @@ class TtMasterActivityApiCon(models.Model):
     def get_details(self, data):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_details_provider', timeout=600)
 
+    def get_details_bulk(self, data):
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_details_bulk_provider', timeout=1800)
+
     def send_product_analytics(self, data):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'send_product_analytics')
 
