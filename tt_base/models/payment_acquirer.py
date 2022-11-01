@@ -575,7 +575,7 @@ class PaymentAcquirerNumber(models.Model):
         if payment_acq_number:
             payment_acq_number.va_number = data.get('va_number')
             payment_acq_number.bank_name = data.get('bank_name')
-            payment_acq_number.fee_amount = data.get('fee_amount')
+            # payment_acq_number.fee_amount = data.get('fee_amount') ## AMBIL DARI BACKEND
             payment_acq_number.time_limit = data.get('time_limit')
             payment_acq_number.url = data.get('url')
             return ERR.get_no_error()
