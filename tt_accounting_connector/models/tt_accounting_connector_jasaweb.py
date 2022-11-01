@@ -14,13 +14,13 @@ class AccountingConnectorJasaweb(models.Model):
     _description = 'Accounting Connector Jasaweb'
 
     def acc_login(self):
-        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'url')], limit=1)
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Jasaweb Accounting Setup!')
-        usr_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'usr')], limit=1)
+        usr_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'usr')], limit=1)
         if not usr_obj:
             raise Exception('Please provide a variable with the name "usr" in Jasaweb Accounting Setup!')
-        pwd_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'pwd')], limit=1)
+        pwd_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'pwd')], limit=1)
         if not pwd_obj:
             raise Exception('Please provide a variable with the name "pwd" in Jasaweb Accounting Setup!')
 
@@ -34,7 +34,7 @@ class AccountingConnectorJasaweb(models.Model):
 
     def get_sales_order(self):
         url_obj = self.env['tt.accounting.setup.variables'].search(
-            [('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'url')], limit=1)
+            [('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Jasaweb Accounting Setup!')
 
@@ -56,7 +56,7 @@ class AccountingConnectorJasaweb(models.Model):
 
     def add_sales_order(self, vals):
         url_obj = self.env['tt.accounting.setup.variables'].search(
-            [('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('variable_name', '=', 'url')], limit=1)
+            [('accounting_setup_id.accounting_provider', '=', 'jasaweb'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Jasaweb Accounting Setup!')
 
