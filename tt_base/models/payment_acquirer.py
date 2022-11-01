@@ -625,7 +625,6 @@ class PaymentAcquirerNumber(models.Model):
             unique_amount = 0
 
 
-        _logger.info(json.dumps(data))
         payment = self.env['payment.acquirer.number'].create({
             'state': 'close',
             'number': "%s.%s" %(data['order_number'], datetime.now().strftime('%Y%m%d%H%M%S')),

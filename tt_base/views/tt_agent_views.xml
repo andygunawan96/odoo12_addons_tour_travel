@@ -45,7 +45,6 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="recompute_va_open" string="Recompute VA OPEN ALL AGENT" type="object" groups="tt_base.group_tt_tour_travel" />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
