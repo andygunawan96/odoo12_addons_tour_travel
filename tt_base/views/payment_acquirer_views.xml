@@ -76,7 +76,7 @@
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['edc'])]}"/>
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
-                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
+                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['payment_gateway', 'edc'])]}"/>
                                 <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
                             </group>
@@ -151,7 +151,7 @@
                                 <field name="show_device_type" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}"/>
                                 <field name="bank_fee" attrs="{'invisible': [('type','not in',['edc'])]}" readonly="1"/>
                                 <field name="va_fee" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}" readonly="1"/>
-                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}" readonly="1"/>
+                                <field name="fee_percentage" attrs="{'invisible': [('type','not in',['payment_gateway', 'edc'])]}" readonly="1"/>
                                 <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}" readonly="1"/>
                             </group>
@@ -237,19 +237,19 @@
                             <field name="display_name_payment"/>
                         </h1>
                         <group>
-                            <field name="number"/>
-                            <field name="payment_acquirer_id"/>
-                            <field name="state"/>
-                            <field name="amount"/>
-                            <field name="unique_amount"/>
-                            <field name="unique_amount_id"/>
-                            <field name="fee_amount"/>
+                            <field name="number" readonly="1"/>
+                            <field name="payment_acquirer_id" readonly="1"/>
+                            <field name="state" attrs="{'readonly': [('agent_id', '==', 'tt_base.agent_type_ho')]}"/>
+                            <field name="amount" readonly="1"/>
+                            <field name="unique_amount" readonly="1"/>
+                            <field name="unique_amount_id" readonly="1"/>
+                            <field name="fee_amount" readonly="1"/>
                             <field name="agent_id"/>
-                            <field name="email"/>
-                            <field name="url"/>
-                            <field name="va_number"/>
-                            <field name="bank_name"/>
-                            <field name="is_using_point_reward"/>
+                            <field name="email" readonly="1"/>
+                            <field name="url" readonly="1"/>
+                            <field name="va_number" readonly="1"/>
+                            <field name="bank_name" readonly="1"/>
+                            <field name="is_using_point_reward" readonly="1"/>
                             <field name="point_reward_amount" attrs="{'invisible': [('is_using_point_reward','=',False)]}"/>
                             <field name="create_date"/>
                             <field name="time_limit"/>
