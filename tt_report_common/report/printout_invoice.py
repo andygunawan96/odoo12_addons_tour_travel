@@ -839,6 +839,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
         return vals
 
 
+# Bse on Rsv
 class PrintoutInvoiceHO(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_ho'
     _description = 'Report Common Printout Invoice HO'
@@ -1587,6 +1588,391 @@ class PrintoutInvoice(models.AbstractModel):
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'is_invoice': True
+        }
+        if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain', 'tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
+            val.update({
+                'terms_conditions': resv_obj.get_terms_conditions_email()
+            })
+        if resv_obj._name in ['tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
+            val.update({
+                'qr_code_data': resv_obj.to_dict()
+            })
+        return val
+
+
+class PrintoutInvoiceHOINV(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_invoice_hoinv'
+    _description = 'Report Common Printout Invoice'
+
+    """Abstract Model for report template.
+        for `_name` model, please use `report.` as prefix then add `module_name.report_name`.
+    """
+    def format_description(self, desc_str):
+        # desc_str.replace('\n','&lt;br/&gt;')
+        return desc_str
+
+    def get_invoice_data(self, line, rec, inv):
+        a = {}
+        if rec._name == 'tt.reservation.offline':
+            a = {'descs': self.format_description(line.desc), 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            # for provider in rec.provider_booking_ids:
+            #     a['pnr'].append(provider.pnr)
+            for line_detail in line.invoice_line_detail_ids:
+                a['line_detail'].append({
+                    'name': line_detail.desc,
+                    'price': line_detail.price_unit,
+                    'quantity': line_detail.quantity,
+                    'amount': line_detail.price_subtotal
+                })
+            # if rec.line_ids:
+            #     for rec2 in rec.line_ids:
+            #         if rec.offline_provider_type != 'hotel':
+            #             pnr_same = True
+            #             pnr = rec2.pnr if rec2.pnr else '-'
+            #             if not a.get(pnr):
+            #                 pnr_same = False
+            #                 a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                           'provider_type': ''}
+            #             if not pnr_same:
+            #                 a[pnr]['descs'].append(rec2.get_line_description())
+            #                 a[pnr]['provider_type'] = rec.provider_type_id.name
+            #
+            #                 for provider in rec.provider_booking_ids:
+            #                     if provider.pnr == pnr:
+            #                         div_amount = 0
+            #                         for line2 in rec.line_ids:
+            #                             if line2.pnr == pnr:
+            #                                 div_amount += 1
+            #                         for line_detail in line.invoice_line_detail_ids:
+            #                             a[pnr]['pax_data'].append({
+            #                                 'name': (line_detail.desc if line_detail.desc else ''),
+            #                                 'total': (line_detail.price_subtotal/len(rec.line_ids)*div_amount if line_detail.price_subtotal else 0)
+            #                             })
+            #                         break
+            #         else:
+            #             pnr_same = True
+            #             pnr = rec2.pnr if rec2.pnr else '-'
+            #             if not a.get(pnr):
+            #                 pnr_same = False
+            #                 a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                           'provider_type': ''}
+            #             a[pnr]['descs'].append(line.desc if line.desc else '')
+            #             a[pnr]['provider_type'] = rec.provider_type_id.name
+            #             a[pnr]['pax_data'].append({
+            #                 'name': (rec2.get_line_hotel_description() if rec2.get_line_hotel_description() else ''),
+            #                 'total': rec.total / len(rec.line_ids)
+            #             })
+            # else:
+            #     for rec2 in rec.provider_booking_ids:
+            #         pnr = rec2.pnr if rec2.pnr else '-'
+            #         if not a.get(pnr):
+            #             a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            #         a[pnr]['descs'].append(line.desc if line.desc else '')
+            #         a[pnr]['provider_type'] = rec.provider_type_id.name
+            #         for line_detail in line.invoice_line_detail_ids:
+            #             a[pnr]['pax_data'].append({
+            #                 'name': (line_detail.desc if line_detail.desc else ''),
+            #                 'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #             })
+        elif rec._name == 'tt.reservation.hotel':
+            a = {'descs': self.format_description(line.desc), 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            for room in rec.room_detail_ids:
+                if room.issued_name and room.issued_name not in a['pnr']:
+                    a['pnr'].append(room.issued_name)
+            for line_detail in line.invoice_line_detail_ids:
+                a['line_detail'].append({
+                    'name': line_detail.desc,
+                    'price': line_detail.price_unit,
+                    'quantity': line_detail.quantity,
+                    'amount': line_detail.price_subtotal
+                })
+            # if rec.room_detail_ids:
+            # for rec2 in rec.room_detail_ids:
+            #     issued_name = rec2.issued_name if rec2.issued_name else '-'
+            #     if not a.get(issued_name):
+            #         a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                           'provider_type': ''}
+            #     a[issued_name]['descs'].append(line.desc if line.desc else '')
+            #     a[issued_name]['provider_type'] = rec.provider_type_id.name
+            #     for line_detail in line.invoice_line_detail_ids:
+            #         a[issued_name]['pax_data'].append({
+            #             'name': (line_detail.desc if line_detail.desc else ''),
+            #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #         })
+            # else:
+            # issued_name = '-'
+            # if not a.get(issued_name):
+            #     a[issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [],
+            #                       'provider_type': ''}
+            # a[issued_name]['descs'].append(line.desc if line.desc else '')
+            # a[issued_name]['provider_type'] = rec.provider_type_id.name
+            # for line_detail in line.invoice_line_detail_ids:
+            #     a[issued_name]['pax_data'].append({
+            #         'name': (line_detail.desc if line_detail.desc else ''),
+            #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #     })
+        elif rec._name == 'tt.reschedule':
+            a = {'descs': self.format_description(line.desc), 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            a['pnr'].append(rec.pnr or '-')
+            for line_detail in line.invoice_line_detail_ids:
+                a['line_detail'].append({
+                    'name': line_detail.desc,
+                    'price': line_detail.price_unit,
+                    'quantity': line_detail.quantity,
+                    'amount': line_detail.price_subtotal
+                })
+            # pnr = rec.pnr and rec.pnr or '-'
+            # re_book_obj = self.env[rec.res_model].sudo().browse(int(rec.res_id))
+            # if not a.get(pnr):
+            #     a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            # a[pnr]['descs'].append(line.desc if line.desc else '')
+            # a[pnr]['provider_type'] = re_book_obj and re_book_obj.provider_type_id.name or 'Reschedule'
+            # for line_detail in line.invoice_line_detail_ids:
+            #     a[pnr]['pax_data'].append({
+            #         'name': (line_detail.desc if line_detail.desc else ''),
+            #         'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #     })
+        else:
+            a = {'descs': self.format_description(line.desc), 'pnr': line.pnr.split(',') if line.pnr else '', 'line_detail': [], 'total_after_tax': line.total_after_tax}
+            for line_detail in line.invoice_line_detail_ids:
+                if not line_detail.commission_agent_id or line_detail.commission_agent_id.id == line.invoice_id.agent_id.id:
+                    a['line_detail'].append({
+                        'name': line_detail.desc,
+                        'price': line_detail.price_unit,
+                        'quantity': line_detail.quantity,
+                        'amount': line_detail.price_subtotal
+                    })
+            # if rec.provider_booking_ids:
+            #     for provider in rec.provider_booking_ids:
+            #         pnr = provider.pnr if provider.pnr else '-'
+            #         if not a.get(pnr):
+            #             a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            #         a[pnr]['descs'].append(line.desc if line.desc else '')
+            #         a[pnr]['provider_type'] = rec.provider_type_id.name
+            #         for line_detail in line.invoice_line_detail_ids:
+            #             a[pnr]['pax_data'].append({
+            #                 'name': (line_detail.desc if line_detail.desc else ''),
+            #                 'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #             })
+            # else:
+            #     pnr = '-'
+            #     if not a.get(pnr):
+            #         a[pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': ''}
+            #     a[pnr]['descs'].append(line.desc if line.desc else '')
+            #     a[pnr]['provider_type'] = rec.provider_type_id.name
+            #     for line_detail in line.invoice_line_detail_ids:
+            #         a[pnr]['pax_data'].append({
+            #             'name': (line_detail.desc if line_detail.desc else ''),
+            #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
+            #         })
+        return a
+
+    def calc_segments(self, rec, paxs):
+        a = {}
+        if rec._name == 'tt.reservation.hotel':
+            for rec2 in rec.room_detail_ids:
+                if not a.get(rec2.issued_name):
+                    a[rec2.issued_name] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'total': 0}
+                a[rec2.issued_name]['descs'].append( 'Hotel: ' + rec.hotel_name + '; Room: ' + rec2.room_name + ' ' + str(rec2.room_type) )
+                a[rec2.issued_name]['total'] += rec2.sale_price
+            for psg in rec.passenger_ids:
+                a[rec.pnr]['pax_data'].append({
+                    'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),
+                })
+        elif rec._name == 'tt.reservation.airline':
+            for provider in rec.provider_booking_ids:
+                if not a.get(provider.pnr):
+                    a[provider.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'total': rec.total}
+                for journey in provider.journey_ids:
+                    a[provider.pnr]['descs'].append(journey.origin_id.name + ' - ' + journey.destination_id.name + '; ' +
+                                                    journey.departure_date + ' - ' + journey.arrival_date + '; ' +
+                                                    journey.carrier_id.name + ' ' + journey.name)
+                for ticket in provider.ticket_ids:
+                    a[provider.pnr]['pax_data'].append({
+                        'name': ticket.passenger_id.first_name + ' ' + (ticket.passenger_id.last_name if ticket.passenger_id.last_name else ''),
+                        'total': 0
+                    })
+                for pax in a[provider.pnr]['pax_data']:
+                    if a[provider.pnr]['pax_data'].get('pax_type'):
+                        for price in provider.cost_service_charge_ids:
+                            if pax.get('pax_type') == price.pax_type:
+                                pax['total'] += price.amount / price.pax_total
+            # for rec2 in rec.segment_ids:
+            #     if not a.get(rec2.pnr):
+            #         a[rec2.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'airline', 'total': rec.total}
+            #     a[rec2.pnr]['descs'].append(rec2.origin_id.name + ' - ' + rec2.destination_id.name + '; ' +
+            #                                 rec2.departure_date + ' - ' + rec2.arrival_date + '; ' +
+            #                                 rec2.carrier_id.name + ' ' + rec2.name)
+
+        elif rec._name == 'tt.reservation.activity':
+            for provider in rec.provider_booking_ids:
+                if not a.get(provider.pnr):
+                    a[provider.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'total': rec.total}
+                temp_desc = (provider.activity_id.name if provider.activity_id.name else '') + ' - ' + \
+                            (provider.activity_product_id.name if provider.activity_product_id.name else '') + '; ' + \
+                            (str(provider.visit_date) if provider.visit_date else '')
+                if rec.timeslot:
+                    temp_desc += ' ' + str(rec.timeslot) + '; '
+                else:
+                    temp_desc += '; '
+                a[provider.pnr]['descs'].append(temp_desc)
+                for ticket in provider.ticket_ids:
+                    a[provider.pnr]['pax_data'].append({
+                        'name': ticket.passenger_id.first_name + ' ' + (
+                            ticket.passenger_id.last_name if ticket.passenger_id.last_name else ''),
+                        'total': 0
+                    })
+                for pax in a[provider.pnr]['pax_data']:
+                    if a[provider.pnr]['pax_data'].get('pax_type'):
+                        for price in provider.cost_service_charge_ids:
+                            if pax.get('pax_type') == price.pax_type:
+                                pax['total'] += price.amount / price.pax_total
+
+                # if not a.get(rec.pnr):
+                #     a[rec.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'activity', 'total': rec.total}
+                # temp_desc = (rec.activity_id.name if rec.activity_id.name else '') + ' - ' + \
+                #             (rec.activity_product_id.name if rec.activity_product_id.name else '') + '; ' + \
+                #             (str(rec.visit_date) if rec.visit_date else '')
+                # if rec.timeslot:
+                #     temp_desc += ' ' + str(rec.timeslot) + '; '
+                # else:
+                #     temp_desc += '; '
+                # a[rec.pnr]['descs'].append(temp_desc)
+        elif rec._name == 'tt.reservation.visa':
+            pnr = rec.provider_booking_ids[0].pnr
+            for rec2 in rec.provider_booking_ids:
+                if not a.get(rec2.pnr):
+                    a[rec2.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'visa', 'total': rec.total}
+                for pax in rec2.passenger_ids:
+                    a[rec2.pnr]['descs'].append('Visa : ' + (pax.passenger_id.first_name if pax.passenger_id.first_name else '') + ' ' +
+                                                (pax.passenger_id.last_name if pax.passenger_id.last_name else '') + ', ' +
+                                                (pax.passenger_id.title if pax.passenger_id.title else '') + ' ' +
+                                                '( ' + (pax.pax_type if pax.pax_type else '') + ' ) ' +
+                                                (pax.pricelist_id.entry_type if pax.pricelist_id.entry_type else '') + ' ' +
+                                                (pax.pricelist_id.visa_type if pax.pricelist_id.visa_type else '') + ' ' +
+                                                (pax.pricelist_id.process_type if pax.pricelist_id.process_type else '') + ' ' +
+                                                '(' + (str(pax.pricelist_id.duration) if pax.pricelist_id.duration else '') + ' days)')
+                for psg in rec.passenger_ids:
+                    a[rec2.pnr]['pax_data'].append({
+                        'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),
+                        'total': psg.pricelist_id.sale_price
+                    })
+        elif rec._name == 'tt.reservation.tour':
+            for provider in rec.provider_booking_ids:
+                if not a.get(provider.pnr):
+                    a[provider.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'total': rec.total}
+                temp_desc = (provider.tour_id.name if provider.tour_id.name else '') + '; ' + (str(provider.departure_date)[:10] if provider.departure_date else '') + ' - ' + (str(provider.arrival_date)[:10] if provider.arrival_date else '') + '; '
+                a[provider.pnr]['descs'].append(temp_desc)
+                for ticket in provider.ticket_ids:
+                    a[provider.pnr]['pax_data'].append({
+                        'name': ticket.passenger_id.first_name + ' ' + (
+                            ticket.passenger_id.last_name if ticket.passenger_id.last_name else ''),
+                        'total': 0
+                    })
+                for pax in a[provider.pnr]['pax_data']:
+                    if a[provider.pnr]['pax_data'].get('pax_type'):
+                        for price in provider.cost_service_charge_ids:
+                            if pax.get('pax_type') == price.pax_type:
+                                pax['total'] += price.amount / price.pax_total
+        elif rec._name == 'tt.reservation.offline':
+            if rec.provider_type_id_name == 'hotel':
+                for rec2 in rec.line_ids:
+                    if not a.get(rec2.pnr):
+                        a[rec2.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'hotel', 'total': rec.total}
+                    a[rec2.pnr]['descs'].append('Hotel: ' + (rec2.hotel_name if rec2.hotel_name else '') +
+                                                '; Room: ' + (rec2.room if rec2.room else '') + ' ' +
+                                                str(rec2.meal_type if rec2.meal_type else ''))
+                    for psg in rec.passenger_ids:
+                        a[rec2.pnr]['pax_data'].append({
+                            'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),
+                            'provider_type': 'hotel',
+                            'total': 0
+                        })
+            elif rec.provider_type_id_name == 'airline':
+                for rec2 in rec.line_ids:
+                    if not a.get(rec2.pnr):
+                        a[rec2.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'airline', 'total': rec.total}
+                    a[rec2.pnr]['descs'].append((rec2.origin_id.name if rec2.origin_id.name else '') + ' - ' +
+                                                (rec2.destination_id.name if rec2.destination_id.name else '') + '; ' +
+                                                str(rec2.departure_date if rec2.departure_date else '') + ' - ' +
+                                                str(rec2.arrival_date if rec2.arrival_date else '') + '; ' +
+                                                (rec2.carrier_id.name if rec2.carrier_id.name else '') + ' ' +
+                                                (rec2.carrier_code if rec2.carrier_code else '') + ' - ' +
+                                                (rec2.carrier_number if rec2.carrier_number else '') + ' ')
+                    for psg in rec.passenger_ids:
+                        a[rec2.pnr]['pax_data'].append({
+                            'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),
+                            'provider_type': 'airline',
+                            'total': 0
+                        })
+                    for pax in a[rec2.pnr]['pax_data']:
+                        pax['total'] = rec.total / len(rec.passenger_ids)
+            elif rec.provider_type_id_name == 'activity':
+                for rec2 in rec.line_ids:
+                    if not a.get(rec2.pnr):
+                        a[rec2.pnr] = {'model': rec._name, 'paxs': paxs, 'pax_data': [], 'descs': [], 'provider_type': 'activity', 'total': rec.total}
+                    temp_desc = (rec2.activity_name.name if rec2.activity_name.name else '') + ' - ' + \
+                                (rec2.activity_package.name if rec2.activity_package.name else '') + '; ' + \
+                                (str(rec2.check_in) if rec2.check_in else '')
+                    if rec2.activity_timeslot:
+                        temp_desc += ' ' + str(rec2.activity_timeslot) + '; '
+                    else:
+                        temp_desc += '; '
+                    a[rec2.pnr]['descs'].append(temp_desc)
+                    for psg in rec.passenger_ids:
+                        a[rec2.pnr]['pax_data'].append({
+                            'name': (psg.first_name if psg.first_name else '') + ' ' + (psg.last_name if psg.last_name else ''),
+                            'total': 0
+                        })
+                    for pax in a[rec2.pnr]['pax_data']:
+                        pax['total'] = rec.total / len(rec.passenger_ids)
+        return a
+
+    # Get Terbilang dkk di hapus
+    def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
+        a = {}
+        for rec2 in recs:
+            a.update({rec2.name: num2words(rec2.grand_total) + ' Rupiah'})
+        return a
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        # Print dari BackEnd bisa digunakan untuk Resv maupun invoice
+        if not data.get('context'):
+            data['context'] = {
+                'active_model': 'tt.reservation.airline',
+                'active_ids': docids
+            }
+        values = {}
+        val = {}
+        header_width = 90
+        resv_obj = False
+        agent_id = False
+        doc_objs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        for rec in doc_objs:
+            values[rec.id] = []
+            agent_id = rec.agent_id
+            for rec2 in rec.invoice_line_ids:
+                resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
+                values[rec.id].append(self.get_invoice_data(rec2, resv_obj, rec))
+                # values[rec.id].append(self.calc_segments(resv_obj, resv_obj.passenger_ids))
+            pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
+        invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
+        val = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'doc_type': 'ho_invoice',
+            'docs': doc_objs,
+            'inv_lines': values,
+            'pnr_length': pnr_length,
+            'header_width': str(header_width),
+            'terbilang': self.compute_terbilang_from_objs(
+                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'invoice_footer': invoice_footer and invoice_footer[0].html or '',
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'ho_obj': self.env.ref('tt_base.rodex_ho'),
             'is_invoice': True
         }
         if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain', 'tt.reservation.medical', 'tt.reservation.mitrakeluarga']:

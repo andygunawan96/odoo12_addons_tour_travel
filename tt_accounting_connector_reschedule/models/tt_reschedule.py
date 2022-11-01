@@ -38,8 +38,8 @@ class TtReschedule(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1000)
 
-    def validate_reschedule_from_button(self):
-        super(TtReschedule, self).validate_reschedule_from_button()
+    def validate_reschedule_from_button(self, agent_payment_method='balance'):
+        super(TtReschedule, self).validate_reschedule_from_button(agent_payment_method)
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
             [('cycle', '=', 'real_time'), ('is_send_reschedule', '=', True)])

@@ -15,6 +15,9 @@ class ReservationGroupBooking(models.Model):
 
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=', 'tt.reservation.groupbooking')])
 
+    ho_invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'res_id_resv', 'HO Invoice',
+                                          domain=[('res_model_resv', '=', 'tt.reservation.groupbooking')])
+
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 
@@ -38,7 +41,7 @@ class ReservationGroupBooking(models.Model):
         tmp += '\n'
         return tmp
 
-    def action_create_invoice(self, acquirer_id,co_uid, customer_parent_id, payment_method):
+    def action_create_invoice(self, acquirer_id,co_uid, customer_parent_id, payment_method, payment_method_to_ho):
         payment_rules = self.env['tt.payment.rules.groupbooking'].search([('seq_id','=',payment_method)])
 
         for rec in payment_rules.installment_ids:
@@ -59,6 +62,38 @@ class ReservationGroupBooking(models.Model):
             })
             invoice_line_id = inv_line_obj.id
 
+            ### HO ####
+            is_use_credit_limit = False
+            if payment_method_to_ho == 'balance':
+                state = 'paid'
+                is_use_credit_limit = False
+            else:
+                state = 'confirm'
+                is_use_credit_limit = True
+            ho_invoice_id = self.env['tt.ho.invoice'].create({
+                'booker_id': self.booker_id.id,
+                'agent_id': self.agent_id.id,
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': state,
+                'confirmed_uid': co_uid,
+                'confirmed_date': datetime.now(),
+                'is_use_credit_limit': is_use_credit_limit
+            })
+
+            ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
+                'res_model_resv': self._name,
+                'res_id_resv': self.id,
+                'invoice_id': ho_invoice_id.id,
+                'reference': self.name,
+                'desc': (rec.name and rec.name + '\n' or '') + self.get_tour_description(),
+                'admin_fee': 0
+            })
+
+            ho_invoice_line_id = ho_inv_line_obj.id
+
+            discount = 0
+
             # untuk harga fare per passenger
             for psg in self.passenger_ids:
                 desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
@@ -66,6 +101,8 @@ class ReservationGroupBooking(models.Model):
                 for cost_charge in psg.cost_service_charge_ids:
                     if cost_charge.charge_type != 'RAC':
                         price_unit += cost_charge.amount
+                    elif cost_charge.charge_type == 'DISC':
+                        discount += cost_charge.amount
                 for channel_charge in psg.channel_service_charge_ids:
                     price_unit += channel_charge.amount
 
@@ -77,6 +114,47 @@ class ReservationGroupBooking(models.Model):
                         'invoice_line_id': invoice_line_id,
                     })]
                 })
+
+            ## HO INVOICE ABAIKAN SERVICE CHARGES DISC KARENA DISCOUNT DARI HO TIDAK MEMPENGARUHI NTA##
+            for psg in self.passenger_ids:
+                desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+                price_unit = 0
+                commission_list = {}
+                for cost_charge in psg.cost_service_charge_ids:
+                    if cost_charge.charge_type not in ['DISC', 'RAC']:
+                        price_unit += cost_charge.amount
+                    # elif cost_charge.charge_type == 'DISC':
+                    #     discount += cost_charge.amount
+                    elif cost_charge.charge_type == 'RAC':
+                        if is_use_credit_limit:
+                            if not cost_charge.commission_agent_id:
+                                agent_id = self.agent_id.id
+                            else:
+                                agent_id = cost_charge.commission_agent_id.id
+                            if agent_id not in commission_list:
+                                commission_list[agent_id] = 0
+                            commission_list[agent_id] += cost_charge.amount * -1
+                        elif cost_charge.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                            price_unit += cost_charge.amount
+                ### FARE
+                self.env['tt.ho.invoice.line.detail'].create({
+                    'desc': desc_text,
+                    'price_unit': price_unit,
+                    'quantity': 1,
+                    'invoice_line_id': ho_invoice_line_id,
+                })
+                ## RAC
+                for rec in commission_list:
+                    self.env['tt.ho.invoice.line.detail'].create({
+                        'desc': "Commission",
+                        'price_unit': commission_list[rec],
+                        'quantity': 1,
+                        'invoice_line_id': ho_invoice_line_id,
+                        'commission_agent_id': rec,
+                        'is_commission': True
+                    })
+
+            inv_line_obj.discount = abs(discount)
 
             ##membuat payment dalam draft
             payment_obj = self.env['tt.payment'].create({
@@ -107,6 +185,37 @@ class ReservationGroupBooking(models.Model):
                 'payment_rules_id': payment_rules.id,
             })
 
+            ## payment HO
+            acq_obj = False
+            if payment_method_to_ho != 'credit_limit':
+                acq_objs = self.agent_id.payment_acquirer_ids
+                for payment_acq in acq_objs:
+                    if payment_acq.name == 'Cash':
+                        acq_obj = payment_acq.id
+                        break
+
+            ho_payment_vals = {
+                'agent_id': self.agent_id.id,
+                'acquirer_id': acq_obj,
+                'real_total_amount': ho_invoice_id.grand_total,
+                'confirm_uid': co_uid,
+                'confirm_date': datetime.now()
+            }
+
+            ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
+
+            self.env['tt.payment.invoice.rel'].create({
+                'ho_invoice_id': ho_invoice_id.id,
+                'payment_id': ho_payment_obj.id,
+                'pay_amount': ho_invoice_id.grand_total
+            })
+            ## payment HO
+
+
+        self.write({
+            'is_invoice_created': True
+        })
+
     def action_reverse_groupbooking(self, context):
         super(ReservationGroupBooking, self).action_reverse_groupbooking(context)
         for rec in self.invoice_line_ids:
@@ -117,6 +226,15 @@ class ReservationGroupBooking(models.Model):
 
     def action_issued_groupbooking(self, co_uid, customer_parent_id, acquirer_id):
         super(ReservationGroupBooking, self).action_issued_groupbooking(co_uid, customer_parent_id)
-        payment_method = self.payment_rules_id.seq_id
-        self.action_create_invoice(acquirer_id, co_uid, customer_parent_id, payment_method)
+        if not self.is_invoice_created:
+            ## check ledger bayar pakai balance / credit limit
+            payment_method_to_ho = ''
+            for ledger_obj in self.ledger_ids:
+                if ledger_obj.transaction_type == 2:  ## order
+                    if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
+                        payment_method_to_ho = ledger_obj.source_of_funds_type
+                        break
+                pass
+            payment_method = self.payment_rules_id.seq_id
+            self.action_create_invoice(acquirer_id, co_uid, customer_parent_id, payment_method, payment_method_to_ho)
 

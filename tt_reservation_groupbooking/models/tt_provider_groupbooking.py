@@ -281,7 +281,7 @@ class ProviderGroupBooking(models.Model):
             for scs in rec.cost_service_charge_ids:
                     rec.total_price += scs.total
 
-    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False,payment_method_use_to_ho=False):
         for rec in self.booking_id.payment_rules_id.installment_ids:
             if rec.due_date == 0:
                 total_amount = (rec.payment_percentage / 100) * self.booking_id.total

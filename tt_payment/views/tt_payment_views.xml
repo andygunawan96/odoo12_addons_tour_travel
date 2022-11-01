@@ -137,7 +137,7 @@
                         <page name="used_on" string="Used On">
                             <group>
                                 <field name="top_up_id"
-                                       attrs="{'invisible': [('customer_parent_id', '!=', False)]}"/>
+                                       attrs="{'invisible': [('top_up_id', '=', False)]}"/>
                             </group>
                         </page>
                         <page string="Adjustments">

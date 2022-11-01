@@ -40,4 +40,11 @@
         <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
+
+    <record id="tt_ho_invoice_line_detail" model="ir.rule">
+        <field name="name">HO Invoice Line Detail</field>
+        <field name="model_id" ref="model_tt_ho_invoice_line_detail"/>
+        <field name="domain_force">[('commission_agent_id','=',user.agent_id.id),('commission_agent_id','=','')]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
+    </record>
 </odoo>

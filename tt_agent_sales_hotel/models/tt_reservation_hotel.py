@@ -11,6 +11,9 @@ class ReservationHotel(models.Model):
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True, compute='set_agent_invoice_state')
 
+    ho_invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'res_id_resv', 'HO Invoice',
+                                          domain=[('res_model_resv', '=', 'tt.reservation.hotel')])
+
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
         states = []
@@ -35,8 +38,9 @@ class ReservationHotel(models.Model):
         tmp += 'Special Request: %s\n'  % (self.special_req or '-', )
         return tmp
 
-    def action_create_invoice(self, data):
+    def action_create_invoice(self, data, payment_method_to_ho):
         invoice_id = False
+        ho_invoice_id = False
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -59,6 +63,38 @@ class ReservationHotel(models.Model):
             'discount': self.total_discount,
         })
 
+        ### HO ####
+        is_use_credit_limit = False
+        if not ho_invoice_id:
+            if payment_method_to_ho == 'balance':
+                state = 'paid'
+                is_use_credit_limit = False
+            else:
+                state = 'confirm'
+                is_use_credit_limit = True
+            ho_invoice_id = self.env['tt.ho.invoice'].create({
+                'booker_id': self.booker_id.id,
+                'agent_id': self.agent_id.id,
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': state,
+                'confirmed_uid': data['co_uid'],
+                'confirmed_date': datetime.now(),
+                'is_use_credit_limit': is_use_credit_limit
+            })
+
+        ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
+            'res_model_resv': self._name,
+            'res_id_resv': self.id,
+            'invoice_id': ho_invoice_id.id,
+            'reference': self.name,
+            'desc': self.get_segment_description(),
+            'admin_fee': 0,
+            'discount': self.total_discount,
+        })
+
+        ho_invoice_line_id = ho_inv_line_obj.id
+
         for room_obj in self.room_detail_ids:
             meal = room_obj.meal_type or 'Room Only'
             self.env['tt.agent.invoice.line.detail'].create({
@@ -67,6 +103,49 @@ class ReservationHotel(models.Model):
                 'price_unit': room_obj.sale_price,
                 'quantity': 1,
             })
+
+        discount = 0
+        for price_obj in self.sale_service_charge_ids:
+            if price_obj.charge_type == 'DISC':
+                discount += price_obj.total
+
+        ## HO
+        for idx, room_obj in enumerate(self.room_detail_ids):
+            meal = room_obj.meal_type or 'Room Only'
+            price_unit = room_obj.sale_price
+            commission_list = {}
+            for price_obj in self.sale_service_charge_ids:
+                if price_obj.charge_type == 'RAC':
+                    if is_use_credit_limit:
+                        if not price_obj.commission_agent_id:
+                            agent_id = self.agent_id.id
+                        else:
+                            agent_id = price_obj.commission_agent_id.id
+                        if agent_id not in commission_list:
+                            commission_list[agent_id] = 0
+                        commission_list[agent_id] += price_obj.amount * -1
+                    elif price_obj.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                        price_unit += price_obj.amount
+            ## FARE
+            self.env['tt.ho.invoice.line.detail'].create({
+                'desc': room_obj.room_name + ' (' + meal + ') ',
+                'invoice_line_id': ho_inv_line_obj.id,
+                'price_unit': price_unit,
+                'quantity': 1,
+            })
+
+            ## RAC
+            for rec in commission_list:
+                self.env['tt.ho.invoice.line.detail'].create({
+                    'desc': "Commission",
+                    'price_unit': commission_list[rec],
+                    'quantity': 1,
+                    'invoice_line_id': ho_invoice_line_id,
+                    'commission_agent_id': rec,
+                    'is_commission': True
+                })
+
+        inv_line_obj.discount = abs(discount)
 
         upsell_sc = 0
         for psg in self.passenger_ids:
@@ -85,6 +164,7 @@ class ReservationHotel(models.Model):
             acquirer_obj = self.payment_acquirer_number_id.payment_acquirer_id
 
         payref_id_list = []
+        ho_payref_id_list = []
         for idx, att in enumerate(data['payment_ref_attachment']):
             file_ext = att['name'].split(".")[-1]
             temp_filename = '%s_Payment_Ref_%s.%s' % (str(idx), invoice_id.name, file_ext)
@@ -101,6 +181,22 @@ class ReservationHotel(models.Model):
             )
             upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
             payref_id_list.append(upc_id.id)
+
+            ## HO
+            temp_filename = '%s_HO_Payment_Ref_%s.%s' % (str(idx), ho_invoice_id.name, file_ext)
+            res = self.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': temp_filename,
+                    'file_reference': 'Payment Reference',
+                    'file': att['file']
+                },
+                {
+                    'co_agent_id': self.agent_id.id,
+                    'co_uid': data['co_uid'],
+                }
+            )
+            upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            ho_payref_id_list.append(upc_id.id)
 
         payment_vals = {
             'agent_id': self.agent_id.id,
@@ -126,6 +222,42 @@ class ReservationHotel(models.Model):
             'pay_amount': invoice_id.grand_total
         })
 
+        ## payment HO
+        acq_obj = False
+        if payment_method_to_ho != 'credit_limit':
+            acq_objs = self.agent_id.payment_acquirer_ids
+            for payment_acq in acq_objs:
+                if payment_acq.name == 'Cash':
+                    acq_obj = payment_acq.id
+                    break
+
+        ho_payment_vals = {
+            'agent_id': self.agent_id.id,
+            'acquirer_id': acq_obj,
+            'real_total_amount': ho_invoice_id.grand_total,
+            'confirm_uid': data['co_uid'],
+            'confirm_date': datetime.now()
+        }
+
+        if ho_payref_id_list:
+            ho_payment_vals.update({
+                'reference': data.get('payment_reference', ''),
+                'payment_image_ids': [(6, 0, ho_payref_id_list)]
+            })
+
+        ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
+
+        self.env['tt.payment.invoice.rel'].create({
+            'ho_invoice_id': ho_invoice_id.id,
+            'payment_id': ho_payment_obj.id,
+            'pay_amount': ho_invoice_id.grand_total
+        })
+        ## payment HO
+
+        self.write({
+            'is_invoice_created': True
+        })
+
     def action_done(self, issued_response={}):
         a = super(ReservationHotel, self).action_done(issued_response)
         # Calc PNR untuk agent_invoice + agent_invoice_line
@@ -136,5 +268,13 @@ class ReservationHotel(models.Model):
 
     def action_issued(self, data, kwargs=False):
         super(ReservationHotel, self).action_issued(data, kwargs)
-        if not self.is_invoice_created:
-            self.action_create_invoice(data)
+        # if not self.is_invoice_created:
+        ## check ledger bayar pakai balance / credit limit
+        payment_method_to_ho = ''
+        for ledger_obj in self.ledger_ids:
+            if ledger_obj.transaction_type == 2:  ## order
+                if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
+                    payment_method_to_ho = ledger_obj.source_of_funds_type
+                    break
+            pass
+        self.action_create_invoice(data, payment_method_to_ho)

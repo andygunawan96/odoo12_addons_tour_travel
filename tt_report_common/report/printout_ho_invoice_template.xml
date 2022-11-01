@@ -261,4 +261,26 @@
             </t>
         </t>
     </template>
+
+    <template id="printout_invoice_hoinv">
+        <!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
+        <!--        <t t-set="data_report_margin_top" t-value="2"/>-->
+        <t t-set="data_report_header_spacing" t-value="0"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-set="data_report_margin_bottom" t-value="26"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <br/>
+                        <div style="margin: 0 20px; font-family: 'DeJavu Sans'">
+                            <t t-call="tt_report_common.agent_invoice_content_view"/>
+                            <!--<t t-call="tt_report_common.agent_invoice_content_type_1_view"/>-->
+                        </div>
+
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
 </odoo>

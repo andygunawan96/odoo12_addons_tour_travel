@@ -522,7 +522,7 @@ class ReservationGroupBooking(models.Model):
             raise UserError('Please Set to Sent first!')
 
     def action_sent_groupbooking(self):
-        if not self.env.user.has_group('tt_base.group_tt_tour_travel'):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         error_msg = self.validate_data()
         if error_msg:

@@ -320,6 +320,17 @@
                             <field name="ledger_ids"
                                    context="{'tree_view_ref': 'tt_accounting.tt_ledger_adj_tree_view'}"/>
                         </page>
+                        <page string="HO Invoice" name="invoice_page">
+                            <field name="ho_invoice_line_ids" readonly="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="invoice_id"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="total"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page string="Invoice" name="invoice_page">
                             <field name="invoice_line_ids" readonly="1">
                                 <tree>
