@@ -1234,7 +1234,41 @@ class TtReservation(models.Model):
                     if total_use_point:
                         ### check agent amount minimal saldo yg di punya oleh agent yg setelah di kurang point
                         agent_check_amount -= total_use_point
-                balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount)
+                can_use_credit_limit = False
+                if agent_obj.credit_limit > 0:
+                    try:
+                        can_use_credit_limit = False
+                        ## asumsi kalau all provider_type & provider pasti True
+                        is_provider_type = True
+                        is_provider = True
+                        if book_obj.provider_type_id in ['groupbooking', 'tour']: ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                            is_provider_type = False
+                        if agent_obj.agent_credit_limit_provider_type_access_type == 'allow' and book_obj.provider_type_id not in agent_obj.agent_credit_limit_provider_type_eligibility_ids or \
+                                agent_obj.agent_credit_limit_provider_type_access_type == 'restrict' and book_obj.provider_type_id in agent_obj.agent_credit_limit_provider_type_eligibility_ids:
+                            is_provider_type = False
+                        for provider_booking in book_obj.provider_booking_ids:
+                            if agent_obj.agent_credit_limit_provider_access_type == 'allow' and provider_booking.provider_id not in agent_obj.agent_credit_limit_provider_eligibility_ids or \
+                                    agent_obj.agent_credit_limit_provider_access_type == 'restrict' and provider_booking.provider_id in agent_obj.agent_credit_limit_provider_eligibility_ids:
+                                is_provider = False
+                                break
+                        if is_provider_type and is_provider:
+                            can_use_credit_limit = True
+                    except Exception as e:
+                        _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+                payment_method_to_ho_list = []
+                ## hanya untuk yg check otomatis / pilih credit_limit
+                if can_use_credit_limit and req.get('agent_payment_method', False) in [False, 'credit_limit']:
+                    payment_method_to_ho_list.append('credit_limit')
+                ## hanya untuk yg check otomatis / pilih balance
+                if req.get('agent_payment_method', False) in [False, 'balance']:
+                    payment_method_to_ho_list.append('balance')
+                payment_method_use_to_ho = ''
+                balance_res = {}
+                for payment_method_to_ho in payment_method_to_ho_list:
+                    balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount, payment_method_to_ho)
+                    if balance_res['error_code'] == 0:
+                        payment_method_use_to_ho = payment_method_to_ho
+                        break
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
                     raise RequestException(1007,additional_message="agent balance")
@@ -1255,7 +1289,7 @@ class TtReservation(models.Model):
 
                 for provider in book_obj.provider_booking_ids:
                     _logger.info('create quota pnr')
-                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point)
+                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point, payment_method_use_to_ho)
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         try:
@@ -1299,7 +1333,7 @@ class TtReservation(models.Model):
                         #     print("5k woi")
 
                 ## add point reward for agent
-                if website_use_point_reward == 'True':
+                if website_use_point_reward == 'True' and payment_method_use_to_ho != 'credit_limit':
                     ## ASUMSI point reward didapat dari total harga yg di bayar
                     ## karena kalau per pnr per pnr 55 rb & rules point reward kelipatan 10 rb agent rugi 1 point
                     self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])

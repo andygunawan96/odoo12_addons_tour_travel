@@ -26,8 +26,10 @@ class TtBillingStatement(models.Model):
                                states={'draft': [('readonly', False)]},
                                default=lambda self: self.env.user.agent_id.id)
     agent_type_id = fields.Many2one('tt.agent.type', string='Agent Type', related='agent_id.agent_type_id', store=True)
-    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, readonly=True,
-                                   states={'draft': [('readonly', False)]})
+    # customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, readonly=True,
+    #                                states={'draft': [('readonly', False)]})
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True,
+                                   states={'draft': [('readonly', False)]}) ## TESTING REQUIRED FALSE UNTUK AGENT
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', string='Customer Type', related='customer_parent_id.customer_parent_type_id',
                                         store=True)
 
@@ -45,6 +47,7 @@ class TtBillingStatement(models.Model):
     amount_total = fields.Monetary('Total', compute='_compute_amount_total', store=False)
 
     invoice_ids = fields.One2many('tt.agent.invoice', 'billing_statement_id', string='Agent Invoices')
+    ho_invoice_ids = fields.One2many('tt.ho.invoice', 'billing_statement_id', string='HO Invoices')
 
     # payment_transaction_ids = fields.One2many('payment.transaction', 'billing_statement_id', string='Payments',
     #                                           required=True)

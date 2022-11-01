@@ -32,6 +32,11 @@
             </xpath>
             <field name="currency_id" position="after">
                 <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="actual_credit_balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance_credit_limit" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+            </field>
+            <field name="credit_limit" position="after">
+                <field name="unprocessed_amount" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
             </field>
         </field>
     </record>

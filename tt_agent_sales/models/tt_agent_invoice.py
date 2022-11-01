@@ -103,7 +103,11 @@ class AgentInvoice(models.Model):
 
     @api.model
     def create(self, vals_list):
-        vals_list['name'] = self.env['ir.sequence'].next_by_code('agent.invoice')
+        if type(vals_list) == dict:
+            vals_list = [vals_list]
+        for rec in vals_list: ## agar sequence tidak tertumpuk karena table di inherit
+            if 'name' not in rec:
+                rec['name'] = self.env['ir.sequence'].next_by_code('agent.invoice')
         new_invoice = super(AgentInvoice, self).create(vals_list)
         new_invoice.set_default_billing_to()
         return new_invoice
