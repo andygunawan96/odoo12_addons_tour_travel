@@ -79,6 +79,7 @@
                                 <field name="fee_percentage" attrs="{'invisible': [('type','not in',['payment_gateway', 'edc'])]}"/>
                                 <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
+                                <field name="is_calculate_credit_card_fee" attrs="{'invisible': [('type','not in',['payment_gateway'])]}"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
@@ -154,6 +155,7 @@
                                 <field name="fee_percentage" attrs="{'invisible': [('type','not in',['payment_gateway', 'edc'])]}" readonly="1"/>
                                 <field name="minimum_amount" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}"/>
                                 <field name="save_url" attrs="{'invisible': [('type','not in',['va','payment_gateway', 'edc'])]}" readonly="1"/>
+                                <field name="is_calculate_credit_card_fee" attrs="{'invisible': [('type','not in',['payment_gateway'])]}" readonly="1"/>
                             </group>
                         </group>
                         <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
