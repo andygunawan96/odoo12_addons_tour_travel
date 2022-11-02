@@ -759,29 +759,6 @@ class TtAgent(models.Model):
             file.write(row)
         file.close()
 
-    def recompute_va_open(self):
-        _logger.info('UPDATE VA OPEN')
-        error_list = []
-        for rec in self.search([]):
-            _logger.info('AGENT %s' % rec.name)
-            for payment_acq in rec.payment_acq_ids.filtered(lambda x: x.state == 'open'):
-                update_va_open = False
-                if payment_acq.payment_acquirer_id:
-                    fee_amount = 0
-                    if payment_acq.payment_acquirer_id.minimum_amount > payment_acq.payment_acquirer_id.va_fee:
-                        fee_amount = payment_acq.payment_acquirer_id.minimum_amount
-                    else:
-                        fee_amount = payment_acq.payment_acquirer_id.va_fee
-                    payment_acq.fee_amount = fee_amount
-                    update_va_open = True
-                if update_va_open:
-                    _logger.info('UPDATE FEE VA OPEN AGENT %s, VA NUMBER %s' % (rec.name, payment_acq.number))
-                else:
-                    error_list.append(rec.name)
-                    _logger.info('FEE VA OPEN AGENT %s, VA NUMBER %s NOT UPDATED payment acquirer not found' % (rec.name, payment_acq.number))
-        if error_list:
-            _logger.error('PLEASE UPDATE VA OPEN FOR AGENT %s', ",".join(error_list))
-
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.target'
