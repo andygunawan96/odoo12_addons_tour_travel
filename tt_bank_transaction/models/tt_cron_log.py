@@ -69,7 +69,7 @@ class ttCronTopUpValidator(models.Model):
                         for transaction_data in transaction:
                             date_exist = transaction_data.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.today().strftime("%Y-%m-%d"))
                             if date_exist:
-                                result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == payment_acq_obj.amount + payment_acq_obj.unique_amount and x.transaction_type == 'C')
+                                result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == payment_acq_obj.amount + payment_acq_obj.unique_amount + payment_acq_obj.fee_amount and x.transaction_type == 'C')
                                 if result:
                                     result = result[0]
                                     if result.transaction_message == '':
