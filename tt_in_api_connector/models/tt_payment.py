@@ -45,7 +45,7 @@ class TtPaymentApiCon(models.Model):
                                 'virtual_account': data['virtual_account'],
                                 'name': res['response']['name'],
                                 'payment_ref': data['payment_ref'],
-                                'fee': payment_acq_number_obj.fee_amount
+                                'fee': fee_amount
                             }
                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_number_obj.id)
                             _logger.info("##############SUCCESS ESPAY OPEN TOP UP##############")
