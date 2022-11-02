@@ -37,6 +37,10 @@ class TtPaymentApiCon(models.Model):
 
                         res = self.env['tt.top.up'].create_top_up_api(request,context, True)
                         if res['error_code'] == 0:
+                            if payment_acq_number_obj.payment_acquirer_id.minimum_amount > payment_acq_number_obj.payment_acquirer_id.va_fee:
+                                fee_amount = payment_acq_number_obj.payment_acquirer_id.minimum_amount
+                            else:
+                                fee_amount = payment_acq_number_obj.payment_acquirer_id.va_fee
                             request = {
                                 'virtual_account': data['virtual_account'],
                                 'name': res['response']['name'],
