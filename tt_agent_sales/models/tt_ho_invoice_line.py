@@ -42,8 +42,10 @@ class AgentInvoiceLineInh(models.Model):
         for rec in self:
             total = 0
             for detail in rec.invoice_line_detail_ids:
-                if not detail.is_commission:
+                if not detail.is_commission and not detail.is_point_reward:
                     total += detail.price_subtotal
+                if detail.is_point_reward:
+                    total -= detail.price_subtotal
             rec.total = total
 
     @api.multi

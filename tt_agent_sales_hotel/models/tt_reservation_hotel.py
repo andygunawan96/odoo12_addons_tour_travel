@@ -110,10 +110,11 @@ class ReservationHotel(models.Model):
                 discount += price_obj.total
 
         ## HO
+        total_price = 0
+        commission_list = {}
         for idx, room_obj in enumerate(self.room_detail_ids):
             meal = room_obj.meal_type or 'Room Only'
             price_unit = room_obj.sale_price
-            commission_list = {}
             for price_obj in self.sale_service_charge_ids:
                 if price_obj.charge_type == 'RAC':
                     if is_use_credit_limit:
@@ -133,19 +134,48 @@ class ReservationHotel(models.Model):
                 'price_unit': price_unit,
                 'quantity': 1,
             })
+            total_price += price_unit
 
-            ## RAC
-            for rec in commission_list:
+        ## RAC
+        for rec in commission_list:
+            self.env['tt.ho.invoice.line.detail'].create({
+                'desc': "Commission",
+                'price_unit': commission_list[rec],
+                'quantity': 1,
+                'invoice_line_id': ho_invoice_line_id,
+                'commission_agent_id': rec,
+                'is_commission': True
+            })
+        if self.is_using_point_reward and is_use_credit_limit:
+            ## CREATE LEDGER UNTUK POTONG POINT REWARD
+            total_use_point = 0
+            total_price -= abs(discount)
+            payment_method = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)])
+            if payment_method.type == 'cash':
+                point_reward = self.agent_id.actual_point_reward
+                if point_reward > total_price:
+                    total_use_point = total_price - 1
+                else:
+                    total_use_point = point_reward
+            elif payment_method.type == 'payment_gateway':
+                point_reward = self.agent_id.actual_point_reward
+                if point_reward - payment_method.minimum_amount > total_price:
+                    total_use_point = total_price - payment_method.minimum_amount
+                else:
+                    total_use_point = point_reward
+
+            if total_use_point:
                 self.env['tt.ho.invoice.line.detail'].create({
-                    'desc': "Commission",
-                    'price_unit': commission_list[rec],
+                    'desc': "Use Point Reward",
+                    'price_unit': total_use_point,
                     'quantity': 1,
                     'invoice_line_id': ho_invoice_line_id,
-                    'commission_agent_id': rec,
-                    'is_commission': True
+                    'commission_agent_id': self.agent_id.id,
+                    'is_point_reward': True
                 })
 
         inv_line_obj.discount = abs(discount)
+        ho_inv_line_obj.discount = abs(discount)
 
         upsell_sc = 0
         for psg in self.passenger_ids:

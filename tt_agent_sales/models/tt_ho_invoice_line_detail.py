@@ -10,4 +10,5 @@ class AgentInvoiceLineDetail(models.Model):
 
     commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
     is_commission = fields.Boolean(default=False)
+    is_point_reward = fields.Boolean(default=False)
 

@@ -1241,7 +1241,7 @@ class TtReservation(models.Model):
                         ## asumsi kalau all provider_type & provider pasti True
                         is_provider_type = True
                         is_provider = True
-                        if book_obj.provider_type_id in ['groupbooking', 'tour']: ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                        if book_obj.provider_type_id.code in ['groupbooking', 'tour']: ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
                             is_provider_type = False
                         if agent_obj.agent_credit_limit_provider_type_access_type == 'allow' and book_obj.provider_type_id not in agent_obj.agent_credit_limit_provider_type_eligibility_ids or \
                                 agent_obj.agent_credit_limit_provider_type_access_type == 'restrict' and book_obj.provider_type_id in agent_obj.agent_credit_limit_provider_type_eligibility_ids:
@@ -1257,10 +1257,10 @@ class TtReservation(models.Model):
                         _logger.error('%s, %s' % (str(e), traceback.format_exc()))
                 payment_method_to_ho_list = []
                 ## hanya untuk yg check otomatis / pilih credit_limit
-                if can_use_credit_limit and req.get('agent_payment_method', False) in [False, 'credit_limit']:
+                if can_use_credit_limit and req.get('agent_payment_method', False) in [False, 'credit_limit', None]:
                     payment_method_to_ho_list.append('credit_limit')
                 ## hanya untuk yg check otomatis / pilih balance
-                if req.get('agent_payment_method', False) in [False, 'balance']:
+                if req.get('agent_payment_method', False) in [False, 'balance', None]: ## kalau dari bca agent payment method None
                     payment_method_to_ho_list.append('balance')
                 payment_method_use_to_ho = ''
                 balance_res = {}

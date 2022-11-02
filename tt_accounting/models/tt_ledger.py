@@ -339,6 +339,8 @@ class Ledger(models.Model):
             commission_created = self.create_commission_ledger(provider_obj,issued_uid)
             ledger_created = self.create_ledger(provider_obj,issued_uid, use_point, payment_method_use_to_ho)
             return commission_created or ledger_created
+        if use_point:
+            provider_obj.booking_id.is_using_point_reward = True
         return True
 
     # May 12, 2020 - SAM

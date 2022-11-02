@@ -25,14 +25,15 @@ class PaymentAcquirer(models.Model):
     bank_fee = fields.Float('Bank Fee')
     va_fee = fields.Float('Fee Flat') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA UNTUK FLAT NAMA FIELD SUDAH MASUK INI
     fee_percentage = fields.Float('Fee Percentage') ## NAMA VA DI HAPUS KARENA UNTUK FEE CREDIT CARD ESPAY JUGA
-    online_wallet = fields.Boolean('Online Wallet')
+    online_wallet = fields.Boolean('Online Wallet', help="""For DANAPAY, OVO""")
     is_sunday_off = fields.Boolean('Sunday Off')
     is_specific_time = fields.Boolean('Specific Time')
     start_time = fields.Float(string='Start Time', help="Format: HH:mm Range 00:00 => 24:00")
     end_time = fields.Float(string='End Time', help="Format: HH:mm Range 00:00 => 24:00")
     description_msg = fields.Text('Description')
     show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
-    save_url = fields.Boolean('Save URL')
+    save_url = fields.Boolean('Save URL', help="""For Shopee, Modern channel, linkAja, Credit Card""")
+    is_calculate_credit_card_fee = fields.Boolean('Is Credit Card', help="""For Credit Card""")
     minimum_amount = fields.Float('Minimum Amount', help="""Minimum fee amount""")
 
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Agent Type Access Type', default='all')
@@ -75,10 +76,18 @@ class PaymentAcquirer(models.Model):
             bank_fee = round((amount+cust_fee) * self.bank_fee / 100)
         ##untuk VA fee, jika VA fee pasti bukan EDC jadi bisa replace
 
-        if self.type == 'credit': ## UNTUK CREDIT CARD ESPAY
-            return 0, int(round((amount + self.va_fee) / ((100-self.fee_percentage)/100) * (self.fee_percentage/100), 0)) + self.va_fee, uniq
+        if self.is_calculate_credit_card_fee: ## UNTUK CREDIT CARD ESPAY
+            total_fee = int(round((amount + self.va_fee) / ((100-self.fee_percentage)/100) * (self.fee_percentage/100), 0)) + self.va_fee
+            if total_fee > self.minimum_amount:
+                return 0, total_fee, uniq
+            else:
+                return 0, self.minimum_amount, uniq
         elif self.va_fee or self.fee_percentage:
-            return 0, math.ceil(self.fee_percentage * amount / 100) + self.va_fee, uniq
+            total_fee = math.ceil(self.fee_percentage * amount / 100) + self.va_fee
+            if total_fee > self.minimum_amount:
+                return 0, total_fee, uniq
+            else:
+                return 0, self.minimum_amount, uniq
         else:
             lost_or_profit = cust_fee-bank_fee
             return lost_or_profit,cust_fee, uniq
@@ -544,7 +553,7 @@ class PaymentAcquirerNumber(models.Model):
     bank_name = fields.Char('Bank Name')
     unique_amount = fields.Float('Unique Amount')
     unique_amount_id = fields.Many2one('unique.amount','Unique Amount Obj',readonly=True)
-    fee_amount = fields.Float('Fee Amount')
+    fee_amount = fields.Float('Fee Amount') ## HANYA UNTUK CLOSE VA
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
     state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type')
@@ -623,6 +632,7 @@ class PaymentAcquirerNumber(models.Model):
         else:## VA Espay
             unique_amount_id = False
             unique_amount = 0
+
 
 
         payment = self.env['payment.acquirer.number'].create({

@@ -44,7 +44,7 @@
     <record id="tt_ho_invoice_line_detail" model="ir.rule">
         <field name="name">HO Invoice Line Detail</field>
         <field name="model_id" ref="model_tt_ho_invoice_line_detail"/>
-        <field name="domain_force">[('commission_agent_id','=',user.agent_id.id),('commission_agent_id','=','')]</field>
+        <field name="domain_force">['|',('commission_agent_id','=',user.agent_id.id),('commission_agent_id','=',False)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
     </record>
 </odoo>

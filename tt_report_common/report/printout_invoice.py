@@ -1603,7 +1603,7 @@ class PrintoutInvoice(models.AbstractModel):
 
 class PrintoutInvoiceHOINV(models.AbstractModel):
     _name = 'report.tt_report_common.printout_invoice_hoinv'
-    _description = 'Report Common Printout Invoice'
+    _description = 'Report Common Printout HO Invoice'
 
     """Abstract Model for report template.
         for `_name` model, please use `report.` as prefix then add `module_name.report_name`.

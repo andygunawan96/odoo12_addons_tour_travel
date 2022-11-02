@@ -142,13 +142,14 @@ class ReservationLabPintar(models.Model):
                 })
 
         ## HO INVOICE ABAIKAN SERVICE CHARGES DISC KARENA DISCOUNT DARI HO TIDAK MEMPENGARUHI NTA##
+        total_price = 0
+        commission_list = {}
         for provider in self.provider_booking_ids:
             admin_fee_medical = 0
             for ticket in provider.ticket_ids:
                 psg = ticket.passenger_id
                 desc_text = '%s, %s (%s)' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '', ticket.ticket_number)
                 price_unit = 0
-                commission_list = {}
                 for cost_charge in psg.cost_service_charge_ids:
                     if cost_charge.charge_type == 'ADMIN_FEE_MEDICAL':
                         admin_fee_medical += cost_charge.amount
@@ -176,17 +177,9 @@ class ReservationLabPintar(models.Model):
                     'price_unit': price_unit,
                     'quantity': 1,
                     'invoice_line_id': ho_invoice_line_id,
+                    'commission_agent_id': self.agent_id.id
                 })
-                ## RAC
-                for rec in commission_list:
-                    self.env['tt.ho.invoice.line.detail'].create({
-                        'desc': "Commission",
-                        'price_unit': commission_list[rec],
-                        'quantity': 1,
-                        'invoice_line_id': ho_invoice_line_id,
-                        'commission_agent_id': rec,
-                        'is_commission': True
-                    })
+                total_price += price_unit
             ##add admin fee medical @10k
             if admin_fee_medical > 0:
                 self.env['tt.ho.invoice.line.detail'].create({
@@ -195,8 +188,47 @@ class ReservationLabPintar(models.Model):
                     'quantity': len(provider.ticket_ids.ids),
                     'invoice_line_id': ho_invoice_line_id,
                 })
+        ## RAC
+        for rec in commission_list:
+            self.env['tt.ho.invoice.line.detail'].create({
+                'desc': "Commission",
+                'price_unit': commission_list[rec],
+                'quantity': 1,
+                'invoice_line_id': ho_invoice_line_id,
+                'commission_agent_id': rec,
+                'is_commission': True
+            })
+
+        if self.is_using_point_reward and is_use_credit_limit:
+            ## CREATE LEDGER UNTUK POTONG POINT REWARD
+            total_use_point = 0
+            total_price -= abs(discount)
+            payment_method = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)])
+            if payment_method.type == 'cash':
+                point_reward = self.agent_id.actual_point_reward
+                if point_reward > total_price:
+                    total_use_point = total_price - 1
+                else:
+                    total_use_point = point_reward
+            elif payment_method.type == 'payment_gateway':
+                point_reward = self.agent_id.actual_point_reward
+                if point_reward - payment_method.minimum_amount > total_price:
+                    total_use_point = total_price - payment_method.minimum_amount
+                else:
+                    total_use_point = point_reward
+
+            if total_use_point:
+                self.env['tt.ho.invoice.line.detail'].create({
+                    'desc': "Use Point Reward",
+                    'price_unit': total_use_point,
+                    'quantity': 1,
+                    'invoice_line_id': ho_invoice_line_id,
+                    'commission_agent_id': self.agent_id.id,
+                    'is_point_reward': True
+                })
 
         inv_line_obj.discount = abs(discount)
+        ho_inv_line_obj.discount = abs(discount)
 
         payref_id_list = []
         ho_payref_id_list = []
