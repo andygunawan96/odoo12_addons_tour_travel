@@ -16,9 +16,8 @@ class TtPaymentApiCon(models.Model):
         if action == 'payment':
             if data['va_type'] == 'open':
                 _logger.info("##############STARTING ESPAY OPEN TOP UP##############")
-                if self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0].state == 'open':
-                    payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])[0]
-                    payment_acq_number_obj.fee = data['fee']
+                payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])], limit=1)
+                if payment_acq_number_obj.state == 'open':
                     # check ada payment ref yg kembar ngga
                     if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                         # topup
@@ -38,11 +37,15 @@ class TtPaymentApiCon(models.Model):
 
                         res = self.env['tt.top.up'].create_top_up_api(request,context, True)
                         if res['error_code'] == 0:
+                            if payment_acq_number_obj.payment_acquirer_id.minimum_amount > payment_acq_number_obj.payment_acquirer_id.va_fee:
+                                fee_amount = payment_acq_number_obj.payment_acquirer_id.minimum_amount
+                            else:
+                                fee_amount = payment_acq_number_obj.payment_acquirer_id.va_fee
                             request = {
                                 'virtual_account': data['virtual_account'],
                                 'name': res['response']['name'],
                                 'payment_ref': data['payment_ref'],
-                                'fee': data['fee']
+                                'fee': payment_acq_number_obj.fee_amount
                             }
                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_number_obj.id)
                             _logger.info("##############SUCCESS ESPAY OPEN TOP UP##############")
@@ -60,46 +63,54 @@ class TtPaymentApiCon(models.Model):
                     _logger.info("##############STARTING ESPAY CLOSED PAYMENT##############")
                     pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state','=','close')])
                     if pay_acq_num:
+                        ## CLOSE PAYMENT
                         _logger.info("### FOUND PAY ACQ NUM %s ###" % (str(pay_acq_num.ids)))
                         _logger.info("USED PAY ACQ %s, State %s, Fee Amount %s" % (pay_acq_num[len(pay_acq_num)-1].id,pay_acq_num[len(pay_acq_num)-1].state, pay_acq_num[len(pay_acq_num)-1].fee_amount))
-                        pay_acq_num[len(pay_acq_num)-1].state = 'done'
-                        pay_acq_num[len(pay_acq_num)-1].fee_amount = float(data['fee'])
+                        # pay_acq_num[len(pay_acq_num)-1].fee_amount = float(data['fee'])
                         _logger.info("UPDATING PAY ACQ NUM TO state %s and fee %s" % (pay_acq_num[len(pay_acq_num)-1].state,pay_acq_num[len(pay_acq_num)-1].fee_amount))
-                    agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
-                    if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
-                        # topup
-                        context = {
-                            'co_agent_id': agent_id.id,
-                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
-                        }
-                        request = {
-                            'amount': data['amount'],
-                            'currency_code': data['ccy'],
-                            'payment_ref': data['payment_ref'],
-                            'payment_seq_id': pay_acq_num[len(pay_acq_num)-1].payment_acquirer_id.seq_id,
-                            'fee': data['fee']
-                        }
 
-                        res = self.env['tt.top.up'].create_top_up_api(request,context, True)
-                        if res['error_code'] == 0:
-                            request = {
-                                'virtual_account': data['virtual_account'],
-                                'name': res['response']['name'],
-                                'payment_ref': data['payment_ref'],
-                                'fee': data['fee']
+                        agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
+                        if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
+                            # topup
+                            context = {
+                                'co_agent_id': agent_id.id,
+                                'co_uid': self.env.ref('tt_base.base_top_up_admin').id
                             }
-                            res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
+                            request = {
+                                'amount': data['amount'],
+                                'currency_code': data['ccy'],
+                                'payment_ref': data['payment_ref'],
+                                'payment_seq_id': pay_acq_num[len(pay_acq_num)-1].payment_acquirer_id.seq_id,
+                                # 'fee': data['fee']
+                                'fee': pay_acq_num.fee_amount
+                            }
+
+                            res = self.env['tt.top.up'].create_top_up_api(request,context, True)
+                            if res['error_code'] == 0:
+                                request = {
+                                    'virtual_account': data['virtual_account'],
+                                    'name': res['response']['name'],
+                                    'payment_ref': data['payment_ref'],
+                                    # 'fee': data['fee']
+                                    'fee': pay_acq_num.fee_amount
+                                }
+                                res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
+                                pay_acq_num[len(pay_acq_num) - 1].state = 'done'
 
                     book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
                     _logger.info(data['order_number'])
                     if book_obj:
+                        pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close','done'])],limit=1) ## SELECT ULANG KARENA BISA CONCURRENT, UNTUK AMBIL FEE AMOUNT
                         reservation_transaction_amount = book_obj.total - book_obj.total_discount
+                        if pay_acq_num:
+                            reservation_transaction_amount += pay_acq_num.fee_amount
                         website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
                         if website_use_point_reward == 'True':
                             if pay_acq_num.is_using_point_reward:
                                 reservation_transaction_amount -= pay_acq_num.point_reward_amount
                         ##testing dulu
-                        if reservation_transaction_amount == float(data['transaction_amount']):
+                        # if reservation_transaction_amount == float(data['transaction_amount']):
+                        if reservation_transaction_amount == float(data['amount']):
                             seq_id = ''
                             if book_obj.payment_acquirer_number_id:
                                 seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
@@ -137,6 +148,7 @@ class TtPaymentApiCon(models.Model):
                 amount = book_obj.total - book_obj.total_discount
                 payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
                 if payment_acq_number_obj:
+                    amount += payment_acq_number_obj.fee_amount
                     different_time = payment_acq_number_obj.time_limit - datetime.now()
                     timelimit = int(different_time.seconds / 60)
                     ## ada 2 cara amount langsung pakai amount di payment acq number / amount dari book_obj di kurang dengan point reward yg di pakai
@@ -144,22 +156,24 @@ class TtPaymentApiCon(models.Model):
                     if website_use_point_reward == 'True':
                         if payment_acq_number_obj.is_using_point_reward:
                             amount -= payment_acq_number_obj.point_reward_amount
-                else: ## KALAU PAYMENT ACQ NUMBER TIDAK KETEMU
-                    different_time = book_obj.hold_date - datetime.now()
-                    if different_time > timedelta(hours=1): ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
-                        timelimit = 55
-                    else: ## KURANG DARI 1 JAM, TIMELIMIT = HOLD DATE - 5 MENIT
-                        different_time_in_minutes = int(different_time.seconds / 60)
-                        timelimit = different_time_in_minutes - 5
-                values = {
-                    "amount": amount,
-                    "currency": book_obj.currency_id.name,
-                    "phone_number": "".join(book_obj.contact_phone.split(' - ')),
-                    "name": book_obj.contact_id.name,
-                    "email": book_obj.contact_email,
-                    "time_limit": timelimit
-                }
-                res = ERR.get_no_error(values)
+                # else: ## KALAU PAYMENT ACQ NUMBER TIDAK KETEMU
+                #     different_time = book_obj.hold_date - datetime.now()
+                #     if different_time > timedelta(hours=1): ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
+                #         timelimit = 55
+                #     else: ## KURANG DARI 1 JAM, TIMELIMIT = HOLD DATE - 5 MENIT
+                #         different_time_in_minutes = int(different_time.seconds / 60)
+                #         timelimit = different_time_in_minutes - 5
+                    values = {
+                        "amount": amount,
+                        "currency": book_obj.currency_id.name,
+                        "phone_number": "".join(book_obj.contact_phone.split(' - ')),
+                        "name": book_obj.contact_id.name,
+                        "email": book_obj.contact_email,
+                        "time_limit": timelimit
+                    }
+                    res = ERR.get_no_error(values)
+                else:
+                    res = ERR.get_error(additional_message='Payment Acquirer Number not found')
             else:
                 res = ERR.get_error(additional_message='Reservation Not Found')
         elif action == 'top_up': ##b2c auto top up different price

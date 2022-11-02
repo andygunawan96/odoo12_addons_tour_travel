@@ -33,7 +33,7 @@ class PaymentAcquirer(models.Model):
     description_msg = fields.Text('Description')
     show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
     save_url = fields.Boolean('Save URL')
-    minimum_amount = fields.Float('Minimum Amount')
+    minimum_amount = fields.Float('Minimum Amount', help="""Minimum fee amount""")
 
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Agent Type Access Type', default='all')
     payment_acquirer_agent_type_eligibility_ids = fields.Many2many("tt.agent.type", "tt_agent_type_tt_payment_acquirer_rel","payment_acquirer_id", "tt_agent_type_id","Agent Type")  # type of agent that are able to use the voucher
@@ -526,7 +526,7 @@ class PaymentAcquirerNumber(models.Model):
             unique_amount = 0
 
 
-
+        _logger.info(json.dumps(data))
         payment = self.env['payment.acquirer.number'].create({
             'state': 'close',
             'number': "%s.%s" %(data['order_number'], datetime.now().strftime('%Y%m%d%H%M%S')),
@@ -539,7 +539,8 @@ class PaymentAcquirerNumber(models.Model):
             'time_limit': hold_date,
             'is_using_point_reward': is_use_point,
             'point_reward_amount': point_amount,
-            'agent_id': booking_obj.agent_id.id
+            'agent_id': booking_obj.agent_id.id,
+            'fee_amount': data['fee_amount']
         })
         return payment
 
@@ -574,7 +575,7 @@ class PaymentAcquirerNumber(models.Model):
         if payment_acq_number:
             payment_acq_number.va_number = data.get('va_number')
             payment_acq_number.bank_name = data.get('bank_name')
-            payment_acq_number.fee_amount = data.get('fee_amount')
+            # payment_acq_number.fee_amount = data.get('fee_amount') ## AMBIL DARI BACKEND
             payment_acq_number.time_limit = data.get('time_limit')
             payment_acq_number.url = data.get('url')
             return ERR.get_no_error()
