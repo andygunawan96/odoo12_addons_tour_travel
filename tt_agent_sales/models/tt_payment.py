@@ -90,7 +90,7 @@ class TtPaymentInvoiceRel(models.Model):
 
     def action_approve(self):
         if not ({self.env.ref('tt_base.group_payment_level_4').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 41')
         if self.pay_amount > self.payment_id.available_amount:
             raise exceptions.UserError("Cannot approve payment relation, pay ammount exceeded payment's available amount.")
         self.write({
@@ -106,7 +106,7 @@ class TtPaymentInvoiceRel(models.Model):
 
     def action_cancel(self):
         if not ({self.env.ref('tt_base.group_payment_level_4').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 42')
         self.write({
             'state': 'cancel'
         })

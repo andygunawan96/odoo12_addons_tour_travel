@@ -70,7 +70,7 @@ class TtReconcileTransaction(models.Model):
 
     def compare_reconcile_data(self,ctx=False,notif_to_telegram=False):
         if not self.env.user.has_group('tt_base.group_reconcile_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.. Code: 91')
         not_match_str = ''
         idx = 1
         for rec in self.reconcile_lines_ids.filtered(lambda x: x.state == 'not_match'):
@@ -185,7 +185,7 @@ class TtReconcileTransaction(models.Model):
 
     def view_filter_tree(self):
         if not self.env.user.has_group('tt_base.group_reconcile_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.. Code: 92')
         tree_id = self.env.ref('tt_reservation.tt_reconcile_transaction_lines_tree_view')
         return {
             'type': 'ir.actions.act_window',
@@ -201,7 +201,7 @@ class TtReconcileTransaction(models.Model):
 
     def print_report_excel(self):
         if not self.env.user.has_group('tt_base.group_reconcile_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.. Code: 93')
         datas = {'id': self.id}
         res = self.read()
         res = res and res[0] or {}
@@ -314,7 +314,7 @@ class TtReconcileTransactionLines(models.Model):
 
     def ignore_recon_line_from_button(self):
         if not self.env.user.has_group('tt_base.group_reconcile_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.. Code: 94')
         if self.state == 'not_match':
             self.state = 'ignore'
         else:
@@ -322,7 +322,7 @@ class TtReconcileTransactionLines(models.Model):
 
     def unignore_recon_line_from_button(self):
         if not self.env.user.has_group('tt_base.group_reconcile_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.. Code: 95')
         if self.state == 'ignore':
             self.get_default_state()
         else:
@@ -330,7 +330,7 @@ class TtReconcileTransactionLines(models.Model):
 
     def cancel_recon_line_from_button(self):
         if not self.env.user.has_group('tt_base.group_reconcile_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.. Code: 96')
         if self.state != 'cancel':
             self.state = 'cancel'
         else:
@@ -338,7 +338,7 @@ class TtReconcileTransactionLines(models.Model):
 
     def uncancel_recon_line_from_button(self):
         if not self.env.user.has_group('tt_base.group_reconcile_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.. Code: 97')
         if self.state == 'cancel':
             self.get_default_state()
         else:

@@ -77,7 +77,7 @@ class TtSplitReservationWizard(models.TransientModel):
 
     def submit_split_reservation(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 137')
         book_obj = self.env['tt.reservation.groupbooking'].sudo().browse(int(self.res_id))
         provider_list = []
         pax_list = []

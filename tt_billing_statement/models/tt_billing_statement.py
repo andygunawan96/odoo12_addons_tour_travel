@@ -78,7 +78,7 @@ class TtBillingStatement(models.Model):
 
     def compute_date_billing_all(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 69')
         for rec in self.search([]):
             rec.date_billing = rec.create_date.date()
 

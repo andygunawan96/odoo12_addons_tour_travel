@@ -295,7 +295,7 @@ class ReservationActivity(models.Model):
 
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 98')
         for rec in self.invoice_id:
             rec.action_cancel()
         self._create_anti_ledger_activity()

@@ -205,7 +205,7 @@ class TtVisa(models.Model):
 
     def action_draft_visa(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 326')
         self.write({
             'state_visa': 'draft',
             'state': 'draft'
@@ -219,7 +219,7 @@ class TtVisa(models.Model):
 
     def action_confirm_visa(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 327')
         is_confirmed = True
         for rec in self.passenger_ids:
             if rec.state not in ['confirm', 'cancel', 'validate']:
@@ -265,7 +265,7 @@ class TtVisa(models.Model):
 
     def action_validate_visa(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 328')
         is_validated = True
         for rec in self.passenger_ids:
             if rec.state not in ['validate', 'cancel']:
@@ -460,7 +460,7 @@ class TtVisa(models.Model):
 
     def action_in_process_visa(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 329')
         data = {
             'order_number': self.name,
             'voucher': {
@@ -525,7 +525,7 @@ class TtVisa(models.Model):
     # kirim data dan dokumen ke vendor
     def action_to_vendor_visa(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 330')
         for provider in self.provider_booking_ids:
             provider.use_vendor = True
         self.write({
@@ -537,7 +537,7 @@ class TtVisa(models.Model):
 
     def action_vendor_process_visa(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 331')
         self.write({
             'state_visa': 'vendor_process',
             'vendor_process_date': datetime.now()
@@ -554,7 +554,7 @@ class TtVisa(models.Model):
 
     def action_in_process_consulate_visa(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 332')
         is_payment = True
         for rec in self.passenger_ids:
             if rec.state not in ['confirm_payment']:
@@ -636,7 +636,7 @@ class TtVisa(models.Model):
         # cek state visa.
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 333')
         if self.state_visa in ['in_process', 'payment']:
             self.can_refund = True
         if self.commercial_state == 'Unpaid':
@@ -676,7 +676,7 @@ class TtVisa(models.Model):
 
     def action_calc_expenses_visa(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 334')
         # Calc visa vendor
         self.calc_visa_upsell_vendor()
         # Create new agent invoice (panggil di agent sales visa)

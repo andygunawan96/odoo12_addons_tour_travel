@@ -61,8 +61,6 @@ class TtRefundLine(models.Model):
         })
 
     def set_to_confirm(self):
-        if not self.env.user.has_group('tt_base.group_after_sales_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         # tanya boleh tidak IVAN
         self.commission_fee = 0
         self.charge_fee = 0
@@ -481,7 +479,7 @@ class TtRefund(models.Model):
 
     def confirm_refund_from_button(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 6')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
@@ -531,7 +529,7 @@ class TtRefund(models.Model):
 
     def confirm_refund_from_button_ho(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 7')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
@@ -603,7 +601,7 @@ class TtRefund(models.Model):
 
     def send_refund_from_button_backend(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 8')
         self.send_refund_from_button()
 
     def send_webhook_refund(self, data, action, child_id):
@@ -711,7 +709,7 @@ class TtRefund(models.Model):
 
     def validate_refund_from_button(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 9')
         if self.state != 'sent':
             raise UserError("Cannot Validate because state is not 'Sent'.")
 
@@ -796,7 +794,7 @@ class TtRefund(models.Model):
 
     def finalize_refund_from_button_backend(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 10')
         self.finalize_refund_from_button()
 
     def finalize_refund_from_button(self, list=[]):
@@ -903,7 +901,7 @@ class TtRefund(models.Model):
 
     def action_approve_backend(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 11')
         self.action_approve()
 
     def action_approve(self, list=[]):
@@ -1059,7 +1057,7 @@ class TtRefund(models.Model):
 
     def create_profit_loss_ledger(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 12')
         value = self.real_refund_amount - self.refund_amount
         if self.real_refund_amount != 0 and value != 0 and not self.profit_loss_created:
             debit = value >= 0 and value or 0
@@ -1092,7 +1090,7 @@ class TtRefund(models.Model):
 
     def set_to_approve(self):
         if not self.env.user.has_group('tt_base.group_after_sales_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 13')
         for rec in self.refund_line_cust_ids:
             rec.sudo().unlink()
         self.write({
@@ -1104,7 +1102,7 @@ class TtRefund(models.Model):
 
     def action_payment(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 14')
         if self.state != 'approve':
             raise UserError("Cannot process payment to customer because state is not 'approved'.")
 
@@ -1126,7 +1124,7 @@ class TtRefund(models.Model):
 
     def action_approve_cust(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 15')
         if self.state != 'payment':
             raise UserError("Cannot process payment to customer because state is not 'approved'.")
         self.write({
@@ -1137,7 +1135,7 @@ class TtRefund(models.Model):
 
     def action_done(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 16')
         state_list = ['approve_cust']
         if self.customer_parent_id.customer_parent_type_id.id == self.env.ref('tt_base.customer_type_fpo').id:
             state_list.append('approve')
@@ -1230,7 +1228,7 @@ class TtRefund(models.Model):
 
     def cancel_refund_reverse_ledger(self):
         if not self.env.user.has_group('tt_base.group_after_sales_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 17')
         for rec in self.ledger_ids:
             if not rec.is_reversed:
                 rec.reverse_ledger()
@@ -1262,7 +1260,7 @@ class TtRefund(models.Model):
 
     def toggle_is_vendor_received(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 18')
         self.is_vendor_received = not self.is_vendor_received
 
     def print_refund_to_agent(self):

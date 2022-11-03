@@ -34,7 +34,7 @@ class TtAccountingSetup(models.Model):
 
     def copy_setup(self):
         if not self.env.user.has_group('base.user_admin'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 32')
         new_setup_obj = self.copy()
 
         for rec in self.variable_ids:
