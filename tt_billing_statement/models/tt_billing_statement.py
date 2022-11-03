@@ -132,12 +132,17 @@ class TtBillingStatement(models.Model):
         self.transaction_end_date = date(end_date.year,end_date.month,end_date.day)
 
     @api.multi
-    @api.depends('invoice_ids.total', 'invoice_ids.paid_amount','invoice_ids')
+    @api.depends('invoice_ids.total', 'invoice_ids.paid_amount','invoice_ids', 'ho_invoice_ids.total', 'ho_invoice_ids.paid_amount','ho_invoice_ids')
     def _compute_amount_total(self):
         for rec in self:
             amount_total = 0
             paid_amount = 0
             for inv in rec.invoice_ids:
+                if inv.state != 'cancel':
+                    amount_total += inv.total_after_tax
+                    paid_amount += inv.paid_amount
+
+            for inv in rec.ho_invoice_ids:
                 if inv.state != 'cancel':
                     amount_total += inv.total_after_tax
                     paid_amount += inv.paid_amount

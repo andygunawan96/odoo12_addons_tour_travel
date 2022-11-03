@@ -125,7 +125,7 @@ class TtAgentInh(models.Model):
                 new_bs_obj = self.env['tt.billing.statement'].create({
                     'date': datetime.now(),
                     'due_date': self.get_billing_due_date(today_date,agent_obj.billing_due_date, bill_day_list),
-                    'agent_id': agent_obj.parent_agent_id.id,
+                    'agent_id': agent_obj.id,
                     'ho_invoice_ids': invoice_list,
                     'state': 'confirm'
                 })

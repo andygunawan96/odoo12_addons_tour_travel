@@ -53,6 +53,31 @@ class ReservationOffline(models.Model):
                     'confirmed_uid': self.confirm_uid.id
                 })
 
+        discount = 0
+
+        line_desc = ''
+        if self.provider_type_id_name != 'hotel':
+            for line in self.line_ids:
+                line_desc += line.get_line_description()
+        else:
+            line_desc += 'Description : ' + (self.description if self.description else '')
+
+        inv_line_obj = self.env['tt.agent.invoice.line'].create({
+            'res_model_resv': self._name,
+            'res_id_resv': self.id,
+            'invoice_id': invoice_id.id,
+            'reference': self.name,
+            'desc': line_desc,
+            'admin_fee': self.payment_acquirer_number_id.fee_amount
+        })
+
+        model_type_id = self.env['tt.provider.type'].search([('code', '=', self.offline_provider_type)], limit=1)
+        inv_line_obj.write({
+            'model_type_id': model_type_id.id
+        })
+
+        invoice_line_id = inv_line_obj.id
+
         ### HO ####
         is_use_credit_limit = False
         if not ho_invoice_id:
@@ -86,44 +111,8 @@ class ReservationOffline(models.Model):
             'res_id_resv': self.id,
             'invoice_id': ho_invoice_id.id,
             'reference': self.name,
-            'desc': self.get_segment_description(),
+            'desc': line_desc,
             'admin_fee': 0
-        })
-
-        ho_invoice_line_id = ho_inv_line_obj.id
-
-        discount = 0
-
-        line_desc = ''
-        if self.provider_type_id_name != 'hotel':
-            for line in self.line_ids:
-                line_desc += line.get_line_description()
-        else:
-            line_desc += 'Description : ' + (self.description if self.description else '')
-
-        inv_line_obj = self.env['tt.agent.invoice.line'].create({
-            'res_model_resv': self._name,
-            'res_id_resv': self.id,
-            'invoice_id': invoice_id.id,
-            'reference': self.name,
-            'desc': line_desc,
-            'admin_fee': self.payment_acquirer_number_id.fee_amount
-        })
-
-        model_type_id = self.env['tt.provider.type'].search([('code', '=', self.offline_provider_type)], limit=1)
-        inv_line_obj.write({
-            'model_type_id': model_type_id.id
-        })
-
-        invoice_line_id = inv_line_obj.id
-
-        ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
-            'res_model_resv': self._name,
-            'res_id_resv': self.id,
-            'invoice_id': ho_invoice_id.id,
-            'reference': self.name,
-            'desc': line_desc,
-            'admin_fee': self.payment_acquirer_number_id.fee_amount
         })
 
         model_type_id = self.env['tt.provider.type'].search([('code', '=', self.offline_provider_type)], limit=1)
@@ -327,8 +316,6 @@ class ReservationOffline(models.Model):
 
     def action_done(self):
         super(ReservationOffline, self).action_done()
-        self.action_create_invoice()
-
         if not self.is_invoice_created:
             ## check ledger bayar pakai balance / credit limit
             payment_method_to_ho = ''

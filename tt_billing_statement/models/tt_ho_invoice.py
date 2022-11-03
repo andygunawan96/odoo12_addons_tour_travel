@@ -92,9 +92,12 @@ class AgentInvoiceInh(models.Model):
         amount_list = [] ## untuk commission
         amount = 0
         total_amount = 0
+        book_obj = False
         for invoice_line_obj in self.invoice_line_ids:
+            if not book_obj:
+                book_obj = self.env[invoice_line_obj.res_model_resv].browse(invoice_line_obj.res_id_resv)
             for invoice_line_detail_obj in invoice_line_obj.invoice_line_detail_ids:
-                if not invoice_line_detail_obj.is_commission:
+                if not invoice_line_detail_obj.is_commission and not invoice_line_detail_obj.is_point_reward:
                     total_amount += invoice_line_detail_obj.price_subtotal
                 if self.is_use_credit_limit and invoice_line_detail_obj.is_commission and debit: ## untuk payment
                     order_type = 3 ## commission
@@ -107,8 +110,21 @@ class AgentInvoiceInh(models.Model):
                         'amount': invoice_line_detail_obj.price_subtotal,
                         'agent_id': agent_id,
                         'order_type': order_type,
-                        'source_of_fund_type': source_of_fund_type
+                        'source_of_fund_type': source_of_fund_type,
+                        'type': 'debit'
                     })
+                elif self.is_use_credit_limit and invoice_line_detail_obj.is_point_reward: ## untuk payment
+                    if debit:
+                        order_type = 2
+                        source_of_fund_type = 'point'
+                        amount_list.append({
+                            'amount': invoice_line_detail_obj.price_subtotal,
+                            'agent_id': self.agent_id.id,
+                            'order_type': order_type,
+                            'source_of_fund_type': source_of_fund_type,
+                            'type': 'credit'
+                        })
+                    total_amount -= invoice_line_detail_obj.price_subtotal
         # if not debit:
         #     amount_list.append({
         #         'amount': amount,
@@ -117,16 +133,17 @@ class AgentInvoiceInh(models.Model):
         #         'source_of_fund_type': 'credit_limit'
         #     })
         amount_list.append({
-            'amount': total_amount,
+            'amount': total_amount - self.discount,
             'agent_id': self.agent_id.id,
             'order_type': 2,  ## order
-            'source_of_fund_type': 'credit_limit'
+            'source_of_fund_type': 'credit_limit',
         })
         for rec in amount_list:
-            if rec['order_type'] == 2:
+            if rec['order_type'] == 2 and rec['source_of_fund_type'] == 'credit_limit' and debit:
                 ## CHECK LAGI POINT REWARD HERE
                 website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
-                # if website_use_point_reward == 'True':
+                if website_use_point_reward == 'True':
+                    self.env['tt.point.reward'].add_point_reward(book_obj, total_amount - self.discount, self.env.user.id)
                     ## ASUMSI point reward didapat dari total harga yg di bayar
                     ## karena kalau per pnr per pnr 55 rb & rules point reward kelipatan 10 rb agent rugi 1 point
                     # self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
@@ -141,8 +158,8 @@ class AgentInvoiceInh(models.Model):
                 self.env.user.id,
                 rec['agent_id'],
                 False,
-                rec['amount'] if debit == True else 0,
-                rec['amount'] if debit == False else 0,
+                rec['amount'] if debit == True and rec.get('type', 'debit') == 'debit' else 0,
+                rec['amount'] if debit == False or debit == True and rec.get('type','debit') == 'credit' else 0,
                 'Ledger for: %s%s' % ("Payment " if debit else "", self.name),
                 rec['source_of_fund_type'],
                 **{
