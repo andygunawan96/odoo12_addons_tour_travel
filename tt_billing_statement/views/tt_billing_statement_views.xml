@@ -66,6 +66,8 @@
                                 class="oe_stat_button"
                                 groups=""
                                 string="Billing Statement" type="object" icon="fa-print"/>
+                        <button name="unlink_all_printout"
+                            class="oe_stat_button" string="Delete PrintOut" type="object" icon="fa-minus-square"/>
                     </div>
                     <div class="oe_title">
                         <h1>

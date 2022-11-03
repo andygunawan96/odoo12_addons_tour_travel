@@ -9,9 +9,12 @@ class TtPaymentInvoiceRel(models.Model):
     _description = 'Payment Invoice Rel'
 
     invoice_id = fields.Many2one('tt.agent.invoice', 'Invoice', readonly="True")
+    ho_invoice_id = fields.Many2one('tt.ho.invoice', 'HO Invoice', readonly="True")
     inv_customer_parent_id = fields.Many2one('tt.customer.parent','Invoice Customer Parent',related='invoice_id.customer_parent_id',store=True)
+    # payment_id = fields.Many2one('tt.payment', 'Payment', required=True,
+    #                              domain="[('is_full','=',False),('state','=','approved'),('customer_parent_id','!=',False),('customer_parent_id', '=', inv_customer_parent_id)]")
     payment_id = fields.Many2one('tt.payment', 'Payment', required=True,
-                                 domain="[('is_full','=',False),('state','=','approved'),('customer_parent_id','!=',False),('customer_parent_id', '=', inv_customer_parent_id)]")
+                                 domain="[('is_full','=',False),('state','=','approved')]")
 
     payment_state = fields.Selection("Payment State",related="payment_id.state")
     pay_amount = fields.Monetary('Pay Amount', required=True)
@@ -33,7 +36,7 @@ class TtPaymentInvoiceRel(models.Model):
 
         vals_list['state'] = 'confirm'
         payment_obj = self.env['tt.payment'].sudo().browse(vals_list.get('payment_id'))
-        invoice_obj = self.env['tt.agent.invoice'].sudo().browse(vals_list.get('invoice_id'))
+        invoice_obj = self.env['tt.agent.invoice'].sudo().browse(vals_list.get('invoice_id')) or self.env['tt.ho.invoice'].sudo().browse(vals_list.get('ho_invoice_id'))
 
         #pengecekan overpaid
         missing_ammount = invoice_obj.grand_total - invoice_obj.paid_amount
@@ -88,15 +91,28 @@ class TtPaymentInvoiceRel(models.Model):
             if self.payment_id.available_amount < 0:
                 raise exceptions.UserError("Pay amount exceeded available amount")
 
+        if self.ho_invoice_id:
+            # pengecekan overpaid
+            missing_ammount = self.ho_invoice_id.grand_total - self.ho_invoice_id.paid_amount
+            if self.payment_id.available_amount >= missing_ammount and self.pay_amount > missing_ammount:
+                self.pay_amount = missing_ammount
+                # raise exceptions.UserError("Pay amount changed to missing amount")
+
+            if self.payment_id.available_amount < 0:
+                raise exceptions.UserError("Pay amount exceeded available amount")
+
     def action_approve(self):
         if not ({self.env.ref('tt_base.group_payment_level_4').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 41')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         if self.pay_amount > self.payment_id.available_amount:
             raise exceptions.UserError("Cannot approve payment relation, pay ammount exceeded payment's available amount.")
         self.write({
             'state': 'approved'
         })
-        self.invoice_id.check_paid_status()
+        if self.invoice_id:
+            self.invoice_id.check_paid_status()
+        elif self.ho_invoice_id:
+            self.ho_invoice_id.check_paid_status()
         self.payment_id.check_full()
 
         return {
@@ -106,11 +122,14 @@ class TtPaymentInvoiceRel(models.Model):
 
     def action_cancel(self):
         if not ({self.env.ref('tt_base.group_payment_level_4').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 42')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
         self.write({
             'state': 'cancel'
         })
-        self.invoice_id.check_paid_status()
+        if self.invoice_id:
+            self.invoice_id.check_paid_status()
+        elif self.ho_invoice_id:
+            self.ho_invoice_id.check_paid_status()
         self.payment_id.check_full()
         return {
             'type': 'ir.actions.client',

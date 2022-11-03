@@ -35,6 +35,11 @@
                         </t>
                     </div>
                 </t>
+                <t t-if="doc_model == 'tt.ho.invoice'">
+                    <div style="margin: 0 20px">
+                        <t t-call="tt_report_common.price_and_sign_ho"/>
+                    </div>
+                </t>
                 <t t-call="tt_report_common.external_layout_footer"/>
             </div>
         </div>

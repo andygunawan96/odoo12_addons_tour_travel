@@ -28,6 +28,8 @@ Key Features
         'wizard/tt_merge_wizard_view.xml',
         'views/tt_agent_invoice_line.xml',
         'views/tt_agent_invoice.xml',
+        'views/tt_ho_invoice_line.xml',
+        'views/tt_ho_invoice.xml',
         'views/tt_ledger.xml',
         'views/tt_payment.xml',
         'data/ir_cron_data.xml'
