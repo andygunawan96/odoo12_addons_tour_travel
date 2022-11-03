@@ -118,7 +118,7 @@ class TtProviderPassport(models.Model):
         """ Fungsi ini dijalankan, in case terdapat salah input harga di pricelist & sudah potong ledger """
 
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 216')
 
         self.action_booked()  # ubah ke booked
 
@@ -220,7 +220,7 @@ class TtProviderPassport(models.Model):
 
     def action_sync_price(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 217')
         provider_type_id = self.env.ref('tt_reservation_passport.tt_provider_type_passport')
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 

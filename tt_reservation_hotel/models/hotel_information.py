@@ -66,7 +66,7 @@ class HotelInformation(models.Model):
     @api.one
     def action_confirm(self):
         if not self.env.user.has_group('tt_base.group_master_data_hotel_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 138')
         self.state = 'confirm'
 
     @api.one

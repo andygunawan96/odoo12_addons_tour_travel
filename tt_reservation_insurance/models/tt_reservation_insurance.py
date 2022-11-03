@@ -79,7 +79,7 @@ class ReservationInsurance(models.Model):
     @api.multi
     def action_set_as_draft(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 154')
         for rec in self:
             rec.state = 'draft'
 
@@ -87,14 +87,14 @@ class ReservationInsurance(models.Model):
     @api.multi
     def action_set_as_booked(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 155')
         for rec in self:
             rec.state = 'booked'
 
     @api.multi
     def action_set_as_issued(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 156')
         for rec in self:
             rec.state = 'issued'
 
@@ -243,7 +243,7 @@ class ReservationInsurance(models.Model):
 
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 157')
         super(ReservationInsurance, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()

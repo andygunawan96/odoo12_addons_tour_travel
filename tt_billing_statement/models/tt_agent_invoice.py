@@ -120,7 +120,7 @@ class AgentInvoice(models.Model):
 
     def create_billing_statement(self):
         if not self.env.user.has_group('tt_base.group_billing_statement_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 70')
         if any(rec.state != 'confirm' for rec in self):
             raise UserError(_('You cannot create Billing Statement that an Invoice has been set to \'Confirm\'.'))
 

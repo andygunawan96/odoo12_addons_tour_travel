@@ -111,7 +111,7 @@ class TtProviderSentraMedika(models.Model):
 
     def action_reverse_ledger_from_button(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 267')
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
@@ -137,7 +137,7 @@ class TtProviderSentraMedika(models.Model):
 
     def action_set_to_book_from_button(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 268')
         if self.state == 'booked':
             raise UserError("Has been Booked.")
 

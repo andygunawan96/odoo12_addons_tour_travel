@@ -36,7 +36,7 @@ class TtBanUser(models.Model):
 
     def unban_user_from_button(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 57')
         self.unban_user(self.user_id.id)
 
     def unban_user(self,user_id):

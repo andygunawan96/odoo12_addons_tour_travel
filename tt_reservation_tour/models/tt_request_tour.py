@@ -91,7 +91,7 @@ class TtRequestTour(models.Model):
 
     def action_confirm(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 308')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
@@ -139,7 +139,7 @@ class TtRequestTour(models.Model):
 
     def action_approve(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 309')
         if self.state != 'confirm':
             raise UserError("Cannot Approve because state is not 'confirm'.")
 
@@ -151,7 +151,7 @@ class TtRequestTour(models.Model):
 
     def action_done(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 310')
         if self.state != 'approved':
             raise UserError("Cannot Set to Done because state is not 'approved'.")
 
@@ -163,7 +163,7 @@ class TtRequestTour(models.Model):
 
     def action_reject(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 311')
         self.write({
             'state': 'rejected',
             'reject_uid': self.env.user.id,
@@ -172,7 +172,7 @@ class TtRequestTour(models.Model):
 
     def action_cancel(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 312')
         self.write({
             'state': 'cancelled',
             'cancel_uid': self.env.user.id,
@@ -181,7 +181,7 @@ class TtRequestTour(models.Model):
 
     def action_set_to_draft(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 313')
         self.write({
             'state': 'draft',
         })

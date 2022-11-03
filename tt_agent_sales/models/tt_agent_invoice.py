@@ -133,7 +133,7 @@ class AgentInvoice(models.Model):
 
     def set_as_confirm(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_agent_invoice_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 43')
         self.write({
             'state': "confirm",
             'confirmed_uid': self.env.user.id,
@@ -142,7 +142,7 @@ class AgentInvoice(models.Model):
 
     def action_cancel_invoice(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_agent_invoice_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 44')
         if self.state not in ['cancel','paid']:
             legal = True
             for i in self.payment_ids:
@@ -160,7 +160,7 @@ class AgentInvoice(models.Model):
 
     def set_as_paid(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 45')
         self.state = "paid"
 
     def action_confirm_agent_invoice(self):
@@ -250,7 +250,7 @@ class AgentInvoice(models.Model):
 
     def set_to_bill(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 46')
         self.state = 'bill'
 
     def print_reschedule_invoice_api(self, data, context):

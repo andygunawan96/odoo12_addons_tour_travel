@@ -97,14 +97,14 @@ class PaymentTransaction(models.Model):
 
     def test_set_as_draft(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 71')
         self.write({
             'state': 'draft'
         })
 
     def test_set_as_confirm(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_payment_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 72')
         self.write({
             'state': 'confirm'
         })
@@ -156,7 +156,7 @@ class PaymentTransaction(models.Model):
 
     def action_validate_from_button(self):
         if not self.env.user.has_group('tt_base.group_payment_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 73')
         if self.state != 'confirm':
             raise exceptions.UserError('%s Can only validate [Confirmed] state Payment.' % (self.name))
         if self.reference:
@@ -173,7 +173,7 @@ class PaymentTransaction(models.Model):
 
     def action_approve_from_button(self):
         if not self.env.user.has_group('tt_base.group_payment_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 74')
         if self.state != 'validated':
             raise exceptions.UserError('%s Can only approve [Validated] state Payment.' % (self.name))
         if self.top_up_id:
@@ -218,7 +218,7 @@ class PaymentTransaction(models.Model):
 
     def action_cancel_from_button(self):
         if not self.env.user.has_group('tt_base.group_payment_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 75')
         if self.state != 'approved':
             raise exceptions.UserError('Can only cancel [Approved] state Payment.')
         if self.top_up_id:
@@ -231,5 +231,5 @@ class PaymentTransaction(models.Model):
 
     def action_reject_from_button(self):
         if not self.env.user.has_group('tt_base.group_payment_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 76')
         self.action_cancel_payment({'co_uid': self.env.user.id})

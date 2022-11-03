@@ -138,7 +138,7 @@ class Ledger(models.Model):
 
     def reverse_ledger(self):
         if not self.env.user.has_group('tt_base.group_ledger_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 1')
         # 3
         # self.waiting_list_process([self.agent_id and self.agent_id.id or False],self.customer_parent_id and self.customer_parent_id.id or False,"Reverse")
         reverse_id = self.env['tt.ledger'].create({

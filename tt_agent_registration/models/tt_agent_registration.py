@@ -138,7 +138,7 @@ class AgentRegistration(models.Model):
 
     def action_send_email(self):
         if not self.env.user.has_group('tt_base.group_agent_registration_master_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 33')
         template = self.env.ref('tt_agent_registration.template_mail_agent_regis')
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
@@ -661,7 +661,7 @@ class AgentRegistration(models.Model):
 
     def action_confirm(self):
         if not self.env.user.has_group('tt_base.group_agent_registration_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 34')
         self.check_address()
         self.set_agent_address()
         self.check_user_contact()
@@ -674,7 +674,7 @@ class AgentRegistration(models.Model):
 
     def action_progress(self):
         if not self.env.user.has_group('tt_base.group_agent_registration_master_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 35')
         self.check_tac()
         self.check_registration_documents()
 
@@ -682,12 +682,12 @@ class AgentRegistration(models.Model):
 
     def action_payment(self):
         if not self.env.user.has_group('tt_base.group_agent_registration_master_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 36')
         self.state = 'payment'
 
     def action_validate(self):
         if not self.env.user.has_group('tt_base.group_agent_registration_master_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 37')
         percentage = 0
         if not self.payment_ids:
             raise UserError('Payment Term is Empty')
@@ -713,7 +713,7 @@ class AgentRegistration(models.Model):
 
     def action_done(self):
         if not self.env.user.has_group('tt_base.group_agent_registration_master_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 38')
         self.check_opening_documents()
         user_ids = self.create_agent_user()
         agent_id = self.create_partner_agent(user_ids)
@@ -728,12 +728,12 @@ class AgentRegistration(models.Model):
 
     def action_cancel(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_agent_registration_master_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 39')
         self.state = 'cancel'
 
     def action_draft(self):
         if not self.env.user.has_group('tt_base.group_agent_registration_master_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 40')
         for rec in self:
             if rec.registration_document_ids:
                 for reg_doc in rec.registration_document_ids:
