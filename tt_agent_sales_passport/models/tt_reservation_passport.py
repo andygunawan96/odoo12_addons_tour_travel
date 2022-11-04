@@ -13,6 +13,9 @@ class ReservationPassport(models.Model):
 
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=[('res_model_resv','=', 'tt.reservation.passport')])
 
+    ho_invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'res_id_resv', 'HO Invoice',
+                                          domain=[('res_model_resv', '=', 'tt.reservation.passport')])
+
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
 

@@ -38,7 +38,7 @@ class TtReschedulePHC(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1000)
 
-    def validate_reschedule_from_button(self):
+    def validate_reschedule_from_button(self, agent_payment_method='balance'):
         super(TtReschedulePHC, self).validate_reschedule_from_button()
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(

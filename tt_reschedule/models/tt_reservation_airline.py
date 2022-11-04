@@ -365,7 +365,10 @@ class ReservationAirline(models.Model):
                 # Sementara diasumsikan untuk seluruh proses berhasil
                 reschedule_obj.confirm_reschedule_from_api(context.get('co_uid'))
                 reschedule_obj.send_reschedule_from_button()
-                reschedule_obj.validate_reschedule_from_button()
+                agent_payment_method = 'balance'
+                if vals.get('agent_payment_method'):
+                    agent_payment_method = vals['agent_payment_method']
+                reschedule_obj.validate_reschedule_from_button(agent_payment_method)
                 reschedule_obj.finalize_reschedule_from_button()
                 reschedule_obj.action_done()
                 # END
@@ -1678,7 +1681,10 @@ class ReservationAirline(models.Model):
                         co_uid = context.get('co_uid') if not is_webhook else False
                         rsch_obj.confirm_reschedule_from_api(co_uid=co_uid)
                         rsch_obj.send_reschedule_from_api(co_uid=co_uid)
-                        rsch_obj.validate_reschedule_from_api(co_uid=co_uid)
+                        agent_payment_method = 'balance'
+                        if vals.get('agent_payment_method'):
+                            agent_payment_method = vals['agent_payment_method']
+                        rsch_obj.validate_reschedule_from_api(co_uid=co_uid, agent_payment_method=agent_payment_method)
                         rsch_obj.finalize_reschedule_from_api(co_uid=co_uid)
                         rsch_obj.action_done_from_api(bypass_po=True, co_uid=co_uid)
                     else:
@@ -2090,7 +2096,10 @@ class ReservationAirline(models.Model):
                 if rsv_prov_obj.state == 'issued':
                     rsch_obj.confirm_reschedule_from_api(context.get('co_uid'))
                     rsch_obj.send_reschedule_from_button()
-                    rsch_obj.validate_reschedule_from_button()
+                    agent_payment_method = 'balance'
+                    if vals.get('agent_payment_method'):
+                        agent_payment_method = vals['agent_payment_method']
+                    rsch_obj.validate_reschedule_from_button(agent_payment_method)
 
                 commit_data.update({
                     'reschedule_id': rsch_obj.id

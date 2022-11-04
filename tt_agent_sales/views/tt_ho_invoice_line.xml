@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tt_ho_invoice_line_form_view" model="ir.ui.view">
+        <field name="name">tt.ho.invoice.line.form.view</field>
+        <field name="model">tt.ho.invoice.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Go to Reservation" name="open_reservation" type="object"/>
+                    <!--                    <button string="Fill Reference" name="fill_reference" type="object" help="Fill the reference field for empty IVL" groups="base.group_system"/>-->
+                    <!--                    <button string="Compute PNR" name="compute_pnr" type="object" help="Compute PNR" groups="base.group_system"/>-->
+                    <button name="open_split_wizard" string="Split" type="object"
+                            context = "{'default_reservation_model': res_model_resv,'default_reservation_id': res_id_resv }"/>
+                    <button name="open_merge_wizard" string="Merge" type="object"
+                            context = "{'default_reservation_model': res_model_resv,'default_reservation_id': res_id_resv }"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" nolabel='1' placeholder="Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="invoice_id"/>
+                        <field name="reference"/>
+                        <field name="pnr"/>
+                        <field name="res_model_resv" groups="base.group_system"/>
+                        <field name="res_id_resv" groups="base.group_system"/>
+                        <field name="desc"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="invoice_line_detail_ids">
+                            <tree>
+                                <field name="desc"/>
+                                <field name="price_unit"/>
+                                <field name="quantity"/>
+                                <field name="price_subtotal"/>
+                                <field name="currency_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                        <field name="total" class="oe_subtotal_footer_separator"/>
+                        <field name="discount" class="oe_subtotal_footer_separator"/>
+                        <field name="total_after_tax" class="oe_subtotal_footer_separator"/>
+                        <field name="admin_fee" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_line_filter_view" model="ir.ui.view">
+        <field name="name">tt.ho.invoice.line.filter.view</field>
+        <field name="model">tt.ho.invoice.line</field>
+        <field name="arch" type="xml">
+            <search string="Search HO Invoice Line">
+                <field name="name"/>
+                <field name="invoice_id"/>
+                <field name="pnr"/>
+                <field name="reference"/>
+                <field name="desc"/>
+                <field name="agent_id"/>
+                <field name="customer_parent_id"/>
+                <field name="invoice_line_detail_ids"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_invoice_id" string="Invoice" domain="[]" context="{'group_by':'invoice_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_reference" string="Reference" domain="[]" context="{'group_by':'reference'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_line_tree_view" model="ir.ui.view">
+        <field name="name">tt.ho.invoice.line.tree.view</field>
+        <field name="model">tt.ho.invoice.line</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false">
+                <field name="name"/>
+                <field name="invoice_id"/>
+                <field name="pnr"/>
+                <field name="agent_id"/>
+                <field name="customer_parent_id"/>
+                <field name="total"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_line_tree_can_edit_view" model="ir.ui.view">
+        <field name="name">tt.ho.invoice.line.tree.can.edit.view</field>
+        <field name="model">tt.ho.invoice.line</field>
+        <field name="inherit_id" ref="tt_agent_sales.tt_ho_invoice_line_tree_view"/>
+        <field name="mode">primary</field>
+        <field name="priority" eval="90"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="create">1</attribute>
+                <attribute name="edit">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_action_line_view" model="ir.actions.act_window" >
+        <field name="name">HO Invoice Line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tt.ho.invoice.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="tt_ho_invoice_line_filter_view"/>
+        <field name="context">
+            {
+            'tree_view_ref': 'tt_agent_sales.tt_ho_invoice_line_tree_view',
+            }
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_ho_invoice_line"
+          parent="tt_agent_sales.menu_agent_invoice"
+          action="tt_agent_sales.tt_ho_invoice_action_line_view"
+          name="HO Invoice Line"
+          sequence="22"
+          groups="base.group_user"/>
+</odoo>

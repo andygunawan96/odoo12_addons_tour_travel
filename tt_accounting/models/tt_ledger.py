@@ -25,7 +25,8 @@ LEDGER_TYPE = [
 
 SOURCE_OF_FUNDS_TYPE = [
     ('balance', 'Balance'),
-    ('point', 'Point Reward')
+    ('point', 'Point Reward'),
+    ('credit_limit', 'Credit Limit')
 ]
 
 _logger = logging.getLogger(__name__)
@@ -254,7 +255,7 @@ class Ledger(models.Model):
 
 
     # API START #####################################################################
-    def create_ledger(self, provider_obj,issued_uid, use_point):
+    def create_ledger(self, provider_obj,issued_uid, use_point, payment_method_use_to_ho):
         amount = 0
         used_sc_list = []
         for sc in provider_obj.cost_service_charge_ids:
@@ -269,7 +270,22 @@ class Ledger(models.Model):
 
         website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
         if use_point and website_use_point_reward == 'True':
-            total_use_point = 0
+            amount -= self.use_point_reward(booking_obj, use_point, amount, issued_uid)
+
+        ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
+                                          2, booking_obj.currency_id.id, issued_uid, 0, amount, '', payment_method_use_to_ho)
+
+        pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
+        ledger_values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
+        self.create(ledger_values)
+        for sc in used_sc_list:
+            sc.change_ledger_created(True)
+        return True ## return berhasil create ledger
+
+    def use_point_reward(self, booking_obj, use_point, amount, issued_uid):
+        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+        total_use_point = 0
+        if use_point and website_use_point_reward == 'True':
             payment_method = self.env['payment.acquirer'].search([('seq_id', '=', booking_obj.payment_method)])
             if payment_method.type == 'cash':
                 point_reward = booking_obj.agent_id.actual_point_reward
@@ -286,15 +302,7 @@ class Ledger(models.Model):
             amount -= total_use_point
             self.env['tt.point.reward'].minus_points("Used", booking_obj, total_use_point, issued_uid)
             booking_obj.is_using_point_reward = True
-        ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                          2, booking_obj.currency_id.id, issued_uid, 0, amount)
-
-        pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
-        ledger_values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
-        self.create(ledger_values)
-        for sc in used_sc_list:
-            sc.change_ledger_created(True)
-        return True ## return berhasil create ledger
+        return total_use_point
 
     def create_commission_ledger(self, provider_obj,issued_uid):
         booking_obj = provider_obj.booking_id
@@ -329,14 +337,29 @@ class Ledger(models.Model):
 
         return True #return berhasil create ledger
 
-    def action_create_ledger(self, provider_obj,issued_uid, use_point=False):
+    def action_create_ledger(self, provider_obj,issued_uid, use_point=False, payment_method_use_to_ho=False):
         #1
         # affected_agent = [rec.commission_agent_id.id if rec.commission_agent_id else provider_obj.booking_id.agent_id.id for rec in provider_obj.cost_service_charge_ids]
         # affected_agent = set(affected_agent)
         # self.waiting_list_process(affected_agent, False,"Create Ledger Provider")
-        commission_created = self.create_commission_ledger(provider_obj,issued_uid)
-        ledger_created = self.create_ledger(provider_obj,issued_uid, use_point)
-        return commission_created or ledger_created
+        if payment_method_use_to_ho != 'credit_limit':
+            commission_created = self.create_commission_ledger(provider_obj,issued_uid)
+            ledger_created = self.create_ledger(provider_obj,issued_uid, use_point, payment_method_use_to_ho)
+            return commission_created or ledger_created
+        if use_point:
+            amount = 0
+            used_sc_list = []
+            for sc in provider_obj.cost_service_charge_ids:
+                if sc.charge_type != 'RAC' and not sc.is_ledger_created:
+                    amount += sc.get_total_for_payment()
+                    used_sc_list.append(sc)
+
+            if amount == 0:
+                return
+
+            booking_obj = provider_obj.booking_id
+            self.use_point_reward(booking_obj, use_point,amount,issued_uid)
+        return True
 
     # May 12, 2020 - SAM
     def action_adjustment_ledger(self, provider, provider_obj, issued_uid):

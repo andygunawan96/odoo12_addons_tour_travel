@@ -1,7 +1,7 @@
 from odoo import models,api,fields
 from odoo.exceptions import UserError
 
-class AgentInvoice(models.Model):
+class AgentInvoiceLine(models.Model):
 
     _name = 'tt.agent.invoice.line'
     _rec_name = 'name'
@@ -56,7 +56,7 @@ class AgentInvoice(models.Model):
                 rec['name'] = self.env['ir.sequence'].next_by_code('agent.invoice.line')
         #####
 
-        new_invoice_line = super(AgentInvoice, self).create(vals_list)
+        new_invoice_line = super(AgentInvoiceLine, self).create(vals_list)
 
         new_invoice_line_obj = new_invoice_line.get_reservation_obj()
 
