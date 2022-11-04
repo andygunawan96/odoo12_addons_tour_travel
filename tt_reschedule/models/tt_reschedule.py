@@ -293,6 +293,7 @@ class TtReschedule(models.Model):
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
     old_fee_notes = fields.Text('Old Fee Notes', readonly=True, default='')
     new_fee_notes = fields.Text('New Fee Notes', readonly=True, default='')
+    refund_line_ids = fields.Boolean('Refund Line Dummy')
 
     def to_dict(self):
         return {
