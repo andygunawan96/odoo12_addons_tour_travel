@@ -19,6 +19,7 @@
                 <sheet>
                     <group>
                         <field name="invoice_id" readonly="1"/>
+                        <field name="ho_invoice_id" readonly="1"/>
                         <field name="payment_id"/>
                         <field name="inv_customer_parent_id" invisible="1"/>
                         <field name="payment_state"/>
@@ -38,6 +39,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="invoice_id"/>
+                <field name="ho_invoice_id"/>
                 <field name="pay_amount"/>
                 <field name="payment_acquirer"/>
                 <field name="currency_id" invisible="1"/>
@@ -88,7 +90,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='used_on']" position="inside">
                 <field name="invoice_ids"
-                       attrs="{'invisible': [('customer_parent_id', '=', False)]}"/>
+                       attrs="{'invisible': [('invoice_ids', '=', False)]}"/>
             </xpath>
         </field>
     </record>

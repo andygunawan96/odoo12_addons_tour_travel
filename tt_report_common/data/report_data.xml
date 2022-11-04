@@ -23,6 +23,19 @@
             print_report_name="'Kwitansi - %s' % (object.name)"
             menu="False"
         />
+
+        <report
+            string="Invoice HO"
+            id="action_report_printout_invoice_ho"
+            model="tt.ho.invoice"
+            report_type="qweb-html"
+            name="tt_report_common.printout_invoice_hoinv"
+            file="tt_report_common.printout_invoice_hoinv"
+            paperformat="tt_report_common.paperformat_A4_no_margin"
+            print_report_name="'HO Invoice - %s' % (object.name)"
+            menu="False"
+        />
+
         <report
             string="HO Invoice Airline"
             id="action_report_printout_invoice_ho_airline"

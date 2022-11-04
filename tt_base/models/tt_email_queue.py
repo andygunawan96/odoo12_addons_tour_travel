@@ -49,6 +49,17 @@ class TtEmailQueue(models.Model):
                     'res_id': resv.id,
                 })
 
+                ## HO INVOICE
+                if type_str == 'Issued':
+                    template = self.env.ref('tt_reservation_{}.template_mail_reservation_ho_invoice_{}'.format(data['provider_type'], data['provider_type'])).id
+                    self.env['tt.email.queue'].sudo().create({
+                        'name': type_str + ' ' + resv.name,
+                        'type': 'ho_invoice',
+                        'template_id': template,
+                        'res_model': resv._name,
+                        'res_id': resv.id,
+                    })
+
 
                 #ini customer
                 if resv.agent_id.is_send_email_cust:
@@ -458,6 +469,49 @@ class TtEmailQueue(models.Model):
             raise Exception(_('Failed to get voucher attachment!'))
         self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
 
+    def prepare_attachment_ho_invoice(self):
+        attachment_id_list = []
+        resv_has_invoice = False
+        printed_inv_ids = []
+        ref_obj = self.env[self.res_model].sudo().browse(int(self.res_id))
+        for ho_invoice_obj in ref_obj.ho_invoice_line_ids:
+            if ho_invoice_obj.invoice_id.id not in printed_inv_ids and ho_invoice_obj.invoice_id.state != 'cancel':
+                inv_data = ho_invoice_obj.invoice_id.print_invoice()
+                if inv_data.get('url'):
+                    headers = {
+                        'Content-Type': 'application/json',
+                    }
+                    inv_data['url'] = 'https://staticinternal.rodextrip.com/2022/11/04/078b/48d2/9d5d/Agent Invoice INV.221104352282.pdf'
+                    upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
+                                                    content_type='content', timeout=600)
+                    if upload_data['error_code'] == 0:
+                        attachment_obj = self.env['ir.attachment'].create({
+                            'name': ref_obj.name + 'HO Invoice.pdf',
+                            'datas_fname': ref_obj.name + 'HO Invoice.pdf',
+                            'datas': upload_data['response'],
+                            'url': inv_data['url']
+                        })
+                        attachment_id_list.append(attachment_obj.id)
+                        resv_has_invoice = True
+                    else:
+                        _logger.info(upload_data['error_msg'])
+                        raise Exception(_('Failed to convert invoice attachment!'))
+                    ###########GOOGLE API ATTACHMENT OAUTH2##################
+                    # attachment_obj = self.env['ir.attachment'].create({
+                    #     'name': ref_obj.name + ' Invoice.pdf',
+                    #     'datas_fname': ref_obj.name + ' Invoice.pdf',
+                    #     # 'datas': upload_data['response'],
+                    #     'url': inv_data['path'],
+                    # })
+                    # attachment_id_list.append(attachment_obj.id)
+                    resv_has_invoice = True
+                else:
+                    raise Exception(_('Failed to get invoice attachment!'))
+                printed_inv_ids.append(ho_invoice_obj.invoice_id.id)
+
+        self.template_id.attachment_ids = [(6, 0, attachment_id_list)]
+
+
     def action_send_email(self):
         if not self.env.user.has_group('base.group_system'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 58')
@@ -472,6 +526,8 @@ class TtEmailQueue(models.Model):
                 self.prepare_attachment_refund()
             elif self.type == 'voucher_created':
                 self.prepare_attachment_voucher()
+            elif self.type == 'ho_invoice':
+                self.prepare_attachment_ho_invoice()
             else:
                 self.template_id.attachment_ids = [(6, 0, [])]
 
