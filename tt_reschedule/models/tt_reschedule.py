@@ -44,7 +44,7 @@ class TtReconcileTransaction(models.Model):
 
 class TtRescheduleChanges(models.Model):
     _name = "tt.reschedule.changes"
-    _description = "After Sales Model"
+    _description = "After Sales Changes Model"
 
     name = fields.Char('Field Name', readonly=True)
     seg_sequence = fields.Integer('Segment Sequence', readonly=True)
@@ -63,7 +63,7 @@ class TtRescheduleChanges(models.Model):
 
 class TtRescheduleLine(models.Model):
     _name = "tt.reschedule.line"
-    _description = "After Sales Model"
+    _description = "After Sales Line Model"
     _order = 'id DESC'
 
     reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('reroute', 'Reroute'), ('revalidate', 'Revalidate'),
@@ -293,6 +293,7 @@ class TtReschedule(models.Model):
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
     old_fee_notes = fields.Text('Old Fee Notes', readonly=True, default='')
     new_fee_notes = fields.Text('New Fee Notes', readonly=True, default='')
+    refund_line_ids = fields.Boolean('Refund Line Dummy')
 
     def to_dict(self):
         return {
