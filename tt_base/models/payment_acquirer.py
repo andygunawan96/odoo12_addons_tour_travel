@@ -461,7 +461,7 @@ class PaymentAcquirer(models.Model):
                         if is_provider_type and is_provider:
                             can_use_credit_limit = True
                         if can_use_credit_limit:
-                            credit_limit = self.generate_agent_payment(amount, book_obj.agent_id.id, 'credit_limit')
+                            credit_limit = self.generate_agent_payment(amount, agent_obj.id, 'credit_limit')
                             if credit_limit != {}:
                                 res['agent'].append(credit_limit)
                     ## BALANCE
