@@ -44,7 +44,7 @@ class TtReconcileTransaction(models.Model):
 
 class TtRescheduleChanges(models.Model):
     _name = "tt.reschedule.changes"
-    _description = "After Sales Model"
+    _description = "After Sales Changes Model"
 
     name = fields.Char('Field Name', readonly=True)
     seg_sequence = fields.Integer('Segment Sequence', readonly=True)
@@ -63,7 +63,7 @@ class TtRescheduleChanges(models.Model):
 
 class TtRescheduleLine(models.Model):
     _name = "tt.reschedule.line"
-    _description = "After Sales Model"
+    _description = "After Sales Line Model"
     _order = 'id DESC'
 
     reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('reroute', 'Reroute'), ('revalidate', 'Revalidate'),
