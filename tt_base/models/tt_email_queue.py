@@ -481,7 +481,6 @@ class TtEmailQueue(models.Model):
                     headers = {
                         'Content-Type': 'application/json',
                     }
-                    inv_data['url'] = 'https://staticinternal.rodextrip.com/2022/11/04/078b/48d2/9d5d/Agent Invoice INV.221104352282.pdf'
                     upload_data = util.send_request(inv_data['url'], data={}, headers=headers, method='GET',
                                                     content_type='content', timeout=600)
                     if upload_data['error_code'] == 0:
