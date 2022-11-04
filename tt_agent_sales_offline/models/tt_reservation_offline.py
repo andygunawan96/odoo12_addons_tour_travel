@@ -256,6 +256,7 @@ class ReservationOffline(models.Model):
                     'commission_agent_id': self.agent_id.id,
                     'is_point_reward': True
                 })
+                self.use_point_reward(self, True, total_use_point, self.issued_uid)
 
 
         ##membuat payment dalam draft

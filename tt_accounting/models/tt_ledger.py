@@ -347,18 +347,7 @@ class Ledger(models.Model):
             ledger_created = self.create_ledger(provider_obj,issued_uid, use_point, payment_method_use_to_ho)
             return commission_created or ledger_created
         if use_point:
-            amount = 0
-            used_sc_list = []
-            for sc in provider_obj.cost_service_charge_ids:
-                if sc.charge_type != 'RAC' and not sc.is_ledger_created:
-                    amount += sc.get_total_for_payment()
-                    used_sc_list.append(sc)
-
-            if amount == 0:
-                return
-
-            booking_obj = provider_obj.booking_id
-            self.use_point_reward(booking_obj, use_point,amount,issued_uid)
+            provider_obj.booking_id.is_using_point_reward = True
         return True
 
     # May 12, 2020 - SAM
