@@ -426,7 +426,9 @@ class PaymentAcquirer(models.Model):
                     if is_provider_type and is_provider:
                         can_use_credit_limit = True
                     if can_use_credit_limit:
-                        res['agent'].append(self.generate_agent_payment(amount, book_obj.agent_id.id, 'credit_limit'))
+                        credit_limit = self.generate_agent_payment(amount, book_obj.agent_id.id, 'credit_limit')
+                        if credit_limit != {}:
+                            res['agent'].append(credit_limit)
                 ## BALANCE
                 res['agent'].append(self.generate_agent_payment(amount, book_obj.agent_id.id, 'balance'))
             except Exception as e:
@@ -459,7 +461,9 @@ class PaymentAcquirer(models.Model):
                         if is_provider_type and is_provider:
                             can_use_credit_limit = True
                         if can_use_credit_limit:
-                            res['agent'].append(self.generate_agent_payment(amount, agent_obj.id, 'credit_limit'))
+                            credit_limit = self.generate_agent_payment(amount, book_obj.agent_id.id, 'credit_limit')
+                            if credit_limit != {}:
+                                res['agent'].append(credit_limit)
                     ## BALANCE
                     res['agent'].append(self.generate_agent_payment(amount, agent_obj.id, 'balance'))
                 except Exception as e:
@@ -473,19 +477,22 @@ class PaymentAcquirer(models.Model):
     def generate_agent_payment(self, amount, agent_id, type):
         agent_obj = self.env['tt.agent'].browse(agent_id)
         if type == 'credit_limit':
-            values = {
-                'payment_method': 'credit_limit',
-                'name': 'Credit Limit',
-                'actual_balance': agent_obj.actual_credit_balance,
-                'credit_limit': agent_obj.credit_limit,
-                'currency': agent_obj.currency_id.name,
-                'price_component': {
-                    'amount': amount,
-                    'fee': 0,
-                    'unique_amount': 0
-                },
-                'total_amount': amount
-            }
+            if agent_obj.actual_credit_balance >= amount:
+                values = {
+                    'payment_method': 'credit_limit',
+                    'name': 'Credit Limit',
+                    'actual_balance': agent_obj.actual_credit_balance,
+                    'credit_limit': agent_obj.credit_limit,
+                    'currency': agent_obj.currency_id.name,
+                    'price_component': {
+                        'amount': amount,
+                        'fee': 0,
+                        'unique_amount': 0
+                    },
+                    'total_amount': amount
+                }
+            else:
+                values = {}
         else:
             values = {
                 'payment_method': 'balance',
