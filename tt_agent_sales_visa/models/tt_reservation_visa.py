@@ -211,7 +211,7 @@ class ReservationVisa(models.Model):
                     'commission_agent_id': self.agent_id.id,
                     'is_point_reward': True
                 })
-                self.use_point_reward(self, True, total_use_point, self.issued_uid)
+                self.env['tt.ledger'].use_point_reward(self, True, total_use_point, self.issued_uid)
 
         inv_line_obj.discount = abs(discount)
         ho_inv_line_obj.discount = abs(discount)
