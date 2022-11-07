@@ -214,7 +214,7 @@ class TtAgent(models.Model):
         )
 
     def check_credit_limit_usage(self):
-        current_perc = self.actual_balance / self.credit_limit * 100
+        current_perc = self.actual_credit_balance / self.credit_limit * 100
         if 100-current_perc >= self.limit_usage_notif:
             return 'You have used more than %s percent of your credit limit. Remaining Credit: %s %s / %s %s' % (self.limit_usage_notif, self.currency_id.name,
                                                                                                                  util.get_rupiah(self.actual_credit_balance), self.currency_id.name,
