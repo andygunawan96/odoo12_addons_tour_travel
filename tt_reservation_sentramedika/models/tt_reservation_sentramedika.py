@@ -407,6 +407,10 @@ class ReservationSentraMedika(models.Model):
                 req['repricing_data']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
 
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,

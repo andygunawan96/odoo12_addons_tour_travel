@@ -3,6 +3,9 @@ from odoo.exceptions import UserError
 from datetime import date,timedelta,datetime
 import pytz
 import base64
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class TtBillingStatement(models.Model):
     _name = 'tt.billing.statement'
@@ -223,3 +226,11 @@ class TtBillingStatement(models.Model):
         }
         return url
         # return printout_billing_statement_action.report_action(self, data=datas)
+
+    def get_email_reply_to(self):
+        try:
+            final_email = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_default_email_address', default='')
+        except Exception as e:
+            _logger.error(str(e))
+            final_email = ''
+        return final_email

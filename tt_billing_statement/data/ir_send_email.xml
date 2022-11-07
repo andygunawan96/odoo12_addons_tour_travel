@@ -29,5 +29,34 @@
 			</field>
 		</record>
 
+		<record model="mail.template" id="template_mail_billing_statement_agent">
+			<field name="name">Template Mail Billing Statement</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
+
+			<field name="subject">${object.agent_id.name} e-Billing Statement</field>
+			<field name="email_to">${object.agent_id.email}</field>
+            <field name="email_cc">${object.agent_id.check_send_email_cc()}</field>
+			<field name="model_id" ref="tt_billing_statement.model_tt_billing_statement"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>To: ${object.agent_id.name}</p>
+<br/>
+<p>Dear Sir/Madam,</p>
+<br/>
+<p>Attached in this email is your e-Billing Statement for your transaction in ${object.agent_id.name} from ${object.transaction_start_date} until ${object.transaction_end_date}.</p>
+<p>Thank you for your trust and support in using our service.</p>
+<br/>
+<p>${object.agent_id.check_credit_limit_usage()}</p>
+<br/>
+<p>Regards,</p>
+<p>${object.agent_id.name}</p>
+]]>
+			</field>
+		</record>
+
     </data>
 </odoo>
