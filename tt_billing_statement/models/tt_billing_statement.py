@@ -120,8 +120,10 @@ class TtBillingStatement(models.Model):
         if last_billing_obj.transaction_end_date:
             start_date = last_billing_obj.transaction_end_date + timedelta(days=1)
             # start_date = self.find_transaction_date(cycle_list,increment_plus=False)
-        else:
+        elif self.customer_parent_id:
             start_date = self.customer_parent_id.create_date.date()
+        else:
+            start_date = self.create_date.date()
 
         tz_utc7 = pytz.timezone('Asia/Jakarta')
         # today_date = date.today() + timedelta(days=1)
