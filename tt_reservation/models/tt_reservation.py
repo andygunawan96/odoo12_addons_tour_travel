@@ -1116,22 +1116,32 @@ class TtReservation(models.Model):
                 if not is_same_voucher_value and discount['error_code'] == 0: ## kalau ada beda discount
                     self.delete_voucher()
                     for idx, rec in enumerate(discount['response']):  ##DISKON PER PROVIDER
-                        service_charge = [{
-                            "charge_code": "disc_voucher",
-                            "charge_type": "DISC",
-                            "currency": "IDR",
-                            "pax_type": "ADT",
-                            "pax_count": len(self.passenger_ids),
-                            "amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
-                            "foreign_currency": "IDR",
-                            "foreign_amount": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
-                            "total": rec['provider_total_discount'] / len(self.passenger_ids) * -1,
-                            "sequence": idx,
-                            "res_voucher_model": self._name,
-                            "res_voucher_id": self.id,
-                            "description": self.provider_booking_ids[idx].pnr if len(self.provider_booking_ids) > idx else '',
-                            "is_voucher": True
-                        }]
+                        pax_type_dict = {}
+                        for pax_obj in self.passenger_ids:
+                            pax_type = ''
+                            if pax_obj.cost_service_charge_ids:
+                                pax_type = pax_obj.cost_service_charge_ids[0].pax_type
+                                if not pax_type_dict.get(pax_obj.cost_service_charge_ids[0].pax_type):
+                                    pax_type_dict[pax_obj.cost_service_charge_ids[0].pax_type] = 0
+                            if pax_type != '':
+                                pax_type_dict[pax_type] += 1
+                        for pax_type in pax_type_dict:
+                            service_charge = [{
+                                "charge_code": "disc_voucher",
+                                "charge_type": "DISC",
+                                "currency": "IDR",
+                                "pax_type": pax_type,
+                                "pax_count": pax_type_dict[pax_type],
+                                "amount": rec['provider_total_discount'] / pax_type_dict[pax_type] * -1,
+                                "foreign_currency": "IDR",
+                                "foreign_amount": rec['provider_total_discount'] / pax_type_dict[pax_type] * -1,
+                                "total": rec['provider_total_discount'] / pax_type_dict[pax_type] * -1,
+                                "sequence": idx,
+                                "res_voucher_model": self._name,
+                                "res_voucher_id": self.id,
+                                "description": self.provider_booking_ids[idx].pnr if len(self.provider_booking_ids) > idx else '',
+                                "is_voucher": True
+                            }]
                         self.provider_booking_ids[idx].create_service_charge(service_charge)
                     self.calculate_service_charge()
 
