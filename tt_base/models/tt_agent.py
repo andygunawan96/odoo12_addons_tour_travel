@@ -768,6 +768,16 @@ class TtAgent(models.Model):
             file.write(row)
         file.close()
 
+    def check_send_email_cc(self):
+        email_cc = False
+        email_cc_list = []
+        if self.email_cc:
+            email_cc_list += self.email_cc.split(",")
+        if email_cc_list:
+            email_cc_list = list(set(email_cc_list)) ## remove duplicate
+            email_cc = ",".join(email_cc_list)
+        return email_cc
+
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.target'
