@@ -276,6 +276,10 @@ class TtReservationTrain(models.Model):
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)
 
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,

@@ -274,6 +274,10 @@ class TtReservationBus(models.Model):
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
 
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,

@@ -2,6 +2,7 @@ from odoo import models, fields, api, _
 from datetime import datetime
 import pytz
 import logging
+from ...tools import util
 
 _logger = logging.getLogger(__name__)
 
@@ -16,6 +17,7 @@ class TtAgent(models.Model):
     balance_credit_limit = fields.Monetary(string="Balance Credit Limit", compute="_compute_balance_credit_limit_agent", store=True)
     actual_credit_balance = fields.Monetary(string="Actual Credit Limit", readonly=True, compute="_compute_actual_credit_balance")  ## HANYA CREDIT LIMIT
     unprocessed_amount = fields.Monetary(string="Unprocessed Amount", readonly=True, compute="_compute_unprocessed_amount")
+    limit_usage_notif = fields.Integer(string="Limit Usage Notification (%)", default=60, help="Send Email Notification when credit limit usage reaches certain percentage.")
 
     point_reward = fields.Monetary(string="Point Reward", compute="_compute_point_reward_agent")
     actual_point_reward = fields.Monetary(string="Actual Point Reward", compute="_compute_point_reward_agent")
@@ -211,3 +213,11 @@ class TtAgent(models.Model):
             'point'
         )
 
+    def check_credit_limit_usage(self):
+        current_perc = self.actual_balance / self.credit_limit * 100
+        if 100-current_perc >= self.limit_usage_notif:
+            return 'You have used more than %s percent of your credit limit. Remaining Credit: %s %s / %s %s' % (self.limit_usage_notif, self.currency_id.name,
+                                                                                                                 util.get_rupiah(self.actual_balance), self.currency_id.name,
+                                                                                                                 util.get_rupiah(self.credit_limit))
+        else:
+            return 'Remaining Credit: %s %s / %s %s' % (self.currency_id.name, util.get_rupiah(self.actual_balance), self.currency_id.name, util.get_rupiah(self.credit_limit))
