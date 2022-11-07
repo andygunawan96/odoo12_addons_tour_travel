@@ -105,9 +105,12 @@ class TtCronLog(models.Model):
                         rec.state = 'failed'
                 else:
                     ## agent bill manual jika belum bayar saat cron jalan ban agent
-                    if rec.state != 'done':
+                    if rec.state != 'done' and rec.total_amount != 0:
                         rec.agent_id.ban_user_api()
                         rec.state = 'failed'
+                    elif rec.total_amount == 0: ## TOTAL BAYAR FREE
+                        rec.state = 'done'
+
         except Exception as e:
             _logger.error(traceback.format_exc())
             self.create_cron_log_folder()
