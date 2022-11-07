@@ -211,7 +211,6 @@ class ReservationTour(models.Model):
             ho_inv_line_obj.discount = abs(discount)
 
             payref_id_list = []
-            ho_payref_id_list = []
             for idx, att in enumerate(data['payment_ref_attachment']):
                 file_ext = att['name'].split(".")[-1]
                 temp_filename = '%s_Payment_Ref_%s.%s' % (str(idx), invoice_id.name, file_ext)
@@ -228,22 +227,6 @@ class ReservationTour(models.Model):
                 )
                 upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
                 payref_id_list.append(upc_id.id)
-
-                ## HO
-                temp_filename = '%s_HO_Payment_Ref_%s.%s' % (str(idx), ho_invoice_id.name, file_ext)
-                res = self.env['tt.upload.center.wizard'].upload_file_api(
-                    {
-                        'filename': temp_filename,
-                        'file_reference': 'Payment Reference',
-                        'file': att['file']
-                    },
-                    {
-                        'co_agent_id': self.agent_id.id,
-                        'co_uid': data['co_uid'],
-                    }
-                )
-                upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-                ho_payref_id_list.append(upc_id.id)
 
             payment_vals = {
                 'agent_id': self.agent_id.id,
@@ -285,12 +268,6 @@ class ReservationTour(models.Model):
                 'confirm_uid': data['co_uid'],
                 'confirm_date': datetime.now()
             }
-
-            if ho_payref_id_list:
-                ho_payment_vals.update({
-                    'reference': data.get('payment_reference', ''),
-                    'payment_image_ids': [(6, 0, ho_payref_id_list)]
-                })
 
             ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
 
@@ -415,7 +392,6 @@ class ReservationTour(models.Model):
             ho_inv_line_obj.discount = abs(discount)
 
             payref_id_list = []
-            ho_payref_id_list = []
             for idx, att in enumerate(data['payment_ref_attachment']):
                 file_ext = att['name'].split(".")[-1]
                 temp_filename = '%s_Payment_Ref_%s.%s' % (str(idx), invoice_id.name, file_ext)
@@ -432,22 +408,6 @@ class ReservationTour(models.Model):
                 )
                 upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
                 payref_id_list.append(upc_id.id)
-
-                ## HO
-                temp_filename = '%s_HO_Payment_Ref_%s.%s' % (str(idx), ho_invoice_id.name, file_ext)
-                res = self.env['tt.upload.center.wizard'].upload_file_api(
-                    {
-                        'filename': temp_filename,
-                        'file_reference': 'Payment Reference',
-                        'file': att['file']
-                    },
-                    {
-                        'co_agent_id': self.agent_id.id,
-                        'co_uid': data['co_uid'],
-                    }
-                )
-                upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-                ho_payref_id_list.append(upc_id.id)
 
             payment_vals = {
                 'agent_id': self.agent_id.id,
@@ -489,12 +449,6 @@ class ReservationTour(models.Model):
                 'confirm_uid': data['co_uid'],
                 'confirm_date': datetime.now()
             }
-
-            if ho_payref_id_list:
-                ho_payment_vals.update({
-                    'reference': data.get('payment_reference', ''),
-                    'payment_image_ids': [(6, 0, ho_payref_id_list)]
-                })
 
             ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
 
