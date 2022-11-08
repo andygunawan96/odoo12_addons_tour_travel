@@ -45,7 +45,7 @@ class TtAgent(models.Model):
     def _compute_balance_agent(self):
         for rec in self:
             if len(rec.ledger_ids) > 0:
-                for ledger_obj in rec.ledger_ids.search([('source_of_funds_type', '=', 'balance')]): ## source_of_funds_type 0 untuk balance
+                for ledger_obj in rec.ledger_ids.filtered(lambda x: x.source_of_funds_type == 'balance'): ## source_of_funds_type 0 untuk balance
                     rec.balance = ledger_obj.balance
                     break
             else:
@@ -59,7 +59,7 @@ class TtAgent(models.Model):
     def _compute_balance_credit_limit_agent(self):
         for rec in self:
             if len(rec.ledger_ids) > 0:
-                for ledger_obj in rec.ledger_ids.search([('source_of_funds_type', '=', 'credit_limit')]): ## source_of_funds_type 0 untuk balance
+                for ledger_obj in rec.ledger_ids.filtered(lambda x: x.source_of_funds_type == 'credit_limit'): ## source_of_funds_type 0 untuk balance
                     rec.balance_credit_limit = ledger_obj.balance
                     break
             else:

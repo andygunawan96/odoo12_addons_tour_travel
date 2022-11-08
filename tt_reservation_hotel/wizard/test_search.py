@@ -732,7 +732,7 @@ class TestSearch(models.Model):
 
         ## PAKAI VOUCHER
         if req.get('voucher'):
-            resv_id.add_voucher(req['voucher']['voucher_reference'], context)
+            resv_id.voucher_code = req['voucher']['voucher_reference']
 
         return self.get_booking_result(resv_id.id, context)
 
@@ -954,7 +954,7 @@ class TestSearch(models.Model):
             provider_bookings = []
             for provider_booking in resv_obj.provider_booking_ids:
                 provider_bookings.append(provider_booking.to_dict())
-            new_vals = resv_obj.to_dict()
+            new_vals = resv_obj.to_dict(context)
             for a in ['arrival_date', 'departure_date']:
                 new_vals.pop(a)
             new_vals.update({

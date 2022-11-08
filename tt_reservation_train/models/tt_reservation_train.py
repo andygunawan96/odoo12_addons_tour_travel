@@ -432,7 +432,8 @@ class TtReservationTrain(models.Model):
                     provider_obj.action_failed_issued_api_train(provider.get('error_code'),provider.get('error_msg'))
                     any_provider_changed = True
 
-
+            if book_obj.state == 'booked' and book_obj.voucher_code:  ##karena baru dapet harga waktu update pnr
+                book_obj.add_voucher(book_obj.voucher_code, context)
 
 
             for rec in book_obj.provider_booking_ids:
