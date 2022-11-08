@@ -1117,6 +1117,7 @@ class TtReservation(models.Model):
                     self.delete_voucher()
                     for idx, rec in enumerate(discount['response']):  ##DISKON PER PROVIDER
                         pax_type_dict = {}
+                        total_pax = 0
                         for pax_obj in self.passenger_ids:
                             pax_type = ''
                             if pax_obj.cost_service_charge_ids:
@@ -1125,24 +1126,27 @@ class TtReservation(models.Model):
                                     pax_type_dict[pax_obj.cost_service_charge_ids[0].pax_type] = 0
                             if pax_type != '':
                                 pax_type_dict[pax_type] += 1
+                                total_pax += 1
+                        service_charge = []
                         for pax_type in pax_type_dict:
-                            service_charge = [{
+                            service_charge.append({
                                 "charge_code": "disc_voucher",
                                 "charge_type": "DISC",
                                 "currency": "IDR",
                                 "pax_type": pax_type,
                                 "pax_count": pax_type_dict[pax_type],
-                                "amount": rec['provider_total_discount'] / pax_type_dict[pax_type] * -1,
+                                "amount": rec['provider_total_discount'] / total_pax * -1,
                                 "foreign_currency": "IDR",
-                                "foreign_amount": rec['provider_total_discount'] / pax_type_dict[pax_type] * -1,
-                                "total": rec['provider_total_discount'] / pax_type_dict[pax_type] * -1,
+                                "foreign_amount": rec['provider_total_discount'] / total_pax * -1,
+                                "total": (pax_type_dict[pax_type] * rec['provider_total_discount'] / total_pax) * -1,
                                 "sequence": idx,
                                 "res_voucher_model": self._name,
                                 "res_voucher_id": self.id,
                                 "description": self.provider_booking_ids[idx].pnr if len(self.provider_booking_ids) > idx else '',
                                 "is_voucher": True
-                            }]
-                        self.provider_booking_ids[idx].create_service_charge(service_charge)
+                            })
+                        if service_charge:
+                            self.provider_booking_ids[idx].create_service_charge(service_charge)
                     self.calculate_service_charge()
 
                 if type == 'use':  ##CATAT DI VOUCHER DETAIL
