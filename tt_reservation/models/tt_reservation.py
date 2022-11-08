@@ -1127,6 +1127,9 @@ class TtReservation(models.Model):
                             if pax_type != '':
                                 pax_type_dict[pax_type] += 1
                                 total_pax += 1
+                        if pax_type_dict == {} and self._name == 'tt.reservation.hotel':
+                            pax_type_dict[''] = 1
+                            total_pax += 1
                         service_charge = []
                         for pax_type in pax_type_dict:
                             service_charge.append({
