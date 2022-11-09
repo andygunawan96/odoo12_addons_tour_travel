@@ -62,12 +62,9 @@ class TtPnrQuota(models.Model):
         for rec in self:
             usage_pnr = 0
             ## IVAN 9 NOV 2022 update usage_quota all inventory --> karena kebutuhan (bunga)
-            if rec.price_package_id.is_calculate_all_inventory:
-                quota_usage = self.usage_ids
-            else:
-                quota_usage = self.usage_ids.filtered(lambda x: x.inventory == 'external')
-            for usage_obj in quota_usage[::-1]:  ## reverse paling bawah duluan agar urutan free pnr tidak berubah
-                usage_pnr += usage_obj.usage_quota
+            for usage_obj in self.usage_ids[::-1]:  ## reverse paling bawah duluan agar urutan free pnr tidak berubah
+                if rec.price_package_id.is_calculate_all_inventory or usage_obj.inventory == 'external':
+                    usage_pnr += usage_obj.usage_quota
             rec.usage_quota = usage_pnr
 
     # @api.depends('price_list_id')
@@ -306,22 +303,20 @@ class TtPnrQuota(models.Model):
         free_pnr_quota = package_obj.free_usage
         quota_pnr_usage = 0
         ## IVAN 9 NOV 2022 update ke all inventory --> karena kebutuhan (bunga)
-        if package_obj.is_calculate_all_inventory:
-            quota_usage = self.usage_ids
-        else:
-            quota_usage = self.usage_ids.filtered(lambda x: x.inventory == 'external')
-        for usage_obj in quota_usage[::-1]: ## reverse paling bawah duluan agar urutan free pnr tidak berubah
+        for usage_obj in self.usage_ids[::-1]: ## reverse paling bawah duluan agar urutan free pnr tidak berubah
             ##check free juga
-            calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, usage_obj)
-            quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
-            if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
-                usage_obj.amount = 0
-            elif free_pnr_quota > quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
-                usage_obj.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
-            else:
-                usage_obj.amount = calculate_price_dict['price']
-            quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
-            usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
+            if package_obj.is_calculate_all_inventory or usage_obj.inventory == 'external':
+                calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, usage_obj)
+                quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
+                if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
+                    usage_obj.amount = 0
+                elif free_pnr_quota > quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
+                    usage_obj.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
+                else:
+                    usage_obj.amount = calculate_price_dict['price']
+                quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
+                usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
+        self.usage_quota = quota_pnr_usage
 
     def print_report_excel(self):
         datas = {'id': self.id}
