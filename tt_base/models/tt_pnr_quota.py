@@ -325,7 +325,7 @@ class TtPnrQuota(models.Model):
             co_agent_id = self.env.user.agent_id.id
 
         co_uid = self.env.user.id
-        if self.pnr_quota_excel_id:
+        if not self.pnr_quota_excel_id:
             excel_bytes = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
