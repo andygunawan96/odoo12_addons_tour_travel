@@ -234,3 +234,8 @@ class TtBillingStatement(models.Model):
             _logger.error(str(e))
             final_email = ''
         return final_email
+
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name
+    

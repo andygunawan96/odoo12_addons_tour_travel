@@ -17,6 +17,7 @@ class TtPnrQuotaPricePackage(models.Model):
     fix_profit_share = fields.Boolean('Fix Profit Share', default=True)
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     active = fields.Boolean('Active', default=True)
+    is_calculate_all_inventory = fields.Boolean('Is count internal inventory', default=False, help="""to calculate all inventory""")
 
     @api.model
     def create(self, vals_list):

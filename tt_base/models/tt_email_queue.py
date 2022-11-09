@@ -84,11 +84,14 @@ class TtEmailQueue(models.Model):
                 if resv.customer_parent_id:
                     customer_name = resv.customer_parent_id.name
                     template = self.env.ref('tt_billing_statement.template_mail_billing_statement').id
+                    name = resv.agent_id.name + ' e-Billing Statement for ' + customer_name
                 else:
+                    ho_name = self.env['tt.billing.statement'].get_company_name()
                     customer_name = resv.agent_id.name
                     template = self.env.ref('tt_billing_statement.template_mail_billing_statement_agent').id
+                    name = ho_name + ' e-Billing Statement for ' + resv.agent_id.name
                 self.env['tt.email.queue'].sudo().create({
-                    'name': resv.agent_id.name + ' e-Billing Statement for ' + customer_name,
+                    'name': name,
                     'type': 'billing_statement',
                     'template_id': template,
                     'res_model': resv._name,
