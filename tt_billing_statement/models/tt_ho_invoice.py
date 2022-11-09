@@ -144,7 +144,7 @@ class AgentInvoiceInh(models.Model):
                 ## CHECK LAGI POINT REWARD HERE
                 website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
                 if website_use_point_reward == 'True':
-                    if book_obj._name != 'tt.reschedule':
+                    if book_obj._name == 'tt.reschedule':
                         book_obj = self.env[book_obj.res_model].browse(book_obj.res_id)
                     self.env['tt.point.reward'].add_point_reward(book_obj, total_amount - self.discount, self.env.user.id)
                     ## ASUMSI point reward didapat dari total harga yg di bayar
