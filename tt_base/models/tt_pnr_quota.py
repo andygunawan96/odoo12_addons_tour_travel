@@ -314,7 +314,6 @@ class TtPnrQuota(models.Model):
                     usage_obj.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
                 else:
                     usage_obj.amount = calculate_price_dict['price']
-                quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
                 usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
         self.usage_quota = quota_pnr_usage
 
