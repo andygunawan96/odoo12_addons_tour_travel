@@ -146,4 +146,4 @@ class TtAgentInh(models.Model):
                             _logger.info('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
                             raise Exception('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
                 except Exception as e:
-                    _logger.info('Error Create Email Queue')
+                    _logger.info('Error Create Email Queue from Head Office to %s' % agent_obj.name)
