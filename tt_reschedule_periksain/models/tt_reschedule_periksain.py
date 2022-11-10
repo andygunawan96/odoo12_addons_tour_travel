@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 class TtReschedulePeriksainChanges(models.Model):
     _name = "tt.reschedule.periksain.changes"
     _inherit = "tt.reschedule.changes"
-    _description = "After Sales Model"
+    _description = "After Sales Periksain Changes Model"
 
     reschedule_id = fields.Many2one('tt.reschedule.periksain', 'After Sales', readonly=True)
 
@@ -21,7 +21,7 @@ class TtReschedulePeriksainChanges(models.Model):
 class TtRescheduleLine(models.Model):
     _name = "tt.reschedule.periksain.line"
     _inherit = "tt.reschedule.line"
-    _description = "After Sales Model"
+    _description = "After Sales Periksain Line Model"
     _order = 'id DESC'
 
     reschedule_id = fields.Many2one('tt.reschedule.periksain', 'After Sales', readonly=True)

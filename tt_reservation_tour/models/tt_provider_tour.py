@@ -115,7 +115,7 @@ class TtProviderTour(models.Model):
 
     def action_set_to_book_from_button(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 306')
         if self.state == 'booked':
             raise UserError("Has been Booked.")
 
@@ -143,7 +143,7 @@ class TtProviderTour(models.Model):
 
     def action_reverse_ledger_from_button(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 307')
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 
@@ -439,7 +439,7 @@ class TtProviderTour(models.Model):
     #             'total_orig': total_orig
     #         })
 
-    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False,payment_method_use_to_ho=False):
         if pay_method == 'installment':
             total_amount = (self.booking_id.tour_lines_id.down_payment / 100) * self.booking_id.total
             booking_obj = self.booking_id
@@ -485,11 +485,14 @@ class TtProviderTour(models.Model):
                 booking_obj.is_using_point_reward = True
                 _logger.info('####### IS USING POINT REWARD ########')
 
-            source_of_funds_type = 'balance' ## balance
-            return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
+            source_of_funds_type = payment_method_use_to_ho ## balance
+            if source_of_funds_type == 'balance':
+                return self.env['tt.ledger'].create_ledger_vanilla(res_model, res_id, name, ref, date, ledger_type, currency_id,
                                                         ledger_issued_uid, agent_id, customer_parent_id, debit, credit, description, source_of_funds_type, **additional_vals)
+            else:
+                return True
         else:
-            return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
+            return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point, payment_method_use_to_ho=payment_method_use_to_ho)
 
     def action_create_installment_ledger(self, issued_uid, payment_rules_id, commission_ledger=False, use_point=False):
         try:

@@ -40,7 +40,7 @@ class TtChangeAdminFeeWizard(models.TransientModel):
 
     def submit_change_admin_fee(self):
         if not ({self.env.ref('tt_base.group_after_sales_master_level_3').id, self.env.ref('tt_base.group_tt_tour_travel').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 28')
         try:
             target_obj = self.env[self.res_model].browse(int(self.res_id))
             target_obj.write({

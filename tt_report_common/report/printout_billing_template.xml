@@ -7,7 +7,12 @@
                 <td style="width:50px;">To</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px; vertical-align: top;" rowspan="6">
-                    <t t-set="o_addr" t-value="doc.customer_parent_id"/>
+                    <t t-if="doc.customer_parent_id">
+                        <t t-set="o_addr" t-value="doc.customer_parent_id"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="o_addr" t-value="doc.agent_id"/>
+                    </t>
                     <t t-set="is_cor" t-value="1"/>
                     <t t-call="tt_report_common.address_layout"/>
                 </td>
@@ -115,6 +120,42 @@
                     </div>
                 </t>
             </t>
+            <t t-foreach="doc.ho_invoice_ids" t-as="ho_inv_id">
+                <t t-if="ho_inv_id.state != 'cancel'">
+                    <div class="row" style="margin-left: 0px; margin-right: 0px; border: 1px solid #BBB;">
+                        <!--                    <div class="col-1" style="background: #F0F0F0;">-->
+                        <!--                        <t t-esc="index"/>-->
+                        <!--                    </div>-->
+                        <div class="col-2" style="text-align:center">
+                            <span t-field="ho_inv_id.name"/><br/>
+                            <span t-field="ho_inv_id.date_invoice"/>
+                        </div>
+                        <div class="col-3">
+                            <ul style="padding-left:15px;">
+                                <t t-foreach="ho_inv_id.invoice_line_ids" t-as="line_id">
+                                    <t t-foreach="line_id.invoice_line_detail_ids" t-as="detail_id">
+                                        <t t-if="detail_id.desc not in ['Commission','Use Point Reward']">
+                                            <li><span t-field="detail_id.desc"/></li>
+                                        </t>
+                                    </t>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="col-3">
+                            <t t-foreach="ho_inv_id.invoice_line_ids" t-as="line_id">
+                                <span t-field="line_id.desc"/>
+                            </t>
+                        </div>
+                        <div class="col-2 text-right" style="padding: 5px 15px;">
+                            <span t-field="ho_inv_id.total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' style="letter-spacing: 0.025em;"/>
+                        </div>
+                        <div class="col-2 text-right" style="padding: 5px 15px;">
+                            <span t-field="ho_inv_id.total_after_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' style="letter-spacing: 0.025em;"/>
+                        </div>
+                        <t t-set="index" t-value="index + 1"/>
+                    </div>
+                </t>
+            </t>
             <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 20px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
                 <div class="col-6" style="background: #F0F0F0; border-radius: 0 0 0px 20px; padding: 10px 10px 10px 20px;"/>
                 <div class="col-3 text-right" style="background-color: #F0F0F0; padding: 5px;">Billing Total</div>
@@ -139,26 +180,51 @@
                     </tr>
                 </table>
                 <br/>
-                <t t-if="doc.agent_id.payment_acquirer_ids">
-                    <span style="font-size: 28px; font-weight: 730">Important Note(s)</span><br/>
-                    <ol style="margin: 0 25px;">
-                        <span t-raw="billing_footer"/>
-                        <li>
-                            Please transfer to the following account:
-                            <ul>
-                                <t t-set="current" t-value="0"/>
-                                <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
-                                    <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
-                                        <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
-                                        <t t-set="current" t-value="current + 1"/>
+                <t t-if="doc.customer_parent_id">
+                    <t t-if="doc.agent_id.payment_acquirer_ids">
+                        <span style="font-size: 28px; font-weight: 730">Important Note(s)</span><br/>
+                        <ol style="margin: 0 25px;">
+                            <span t-raw="billing_footer"/>
+                            <li>
+                                Please transfer to the following account:
+                                <ul>
+                                    <t t-set="current" t-value="0"/>
+                                    <t t-foreach="doc.agent_id.payment_acquirer_ids" t-as="payment_id">
+                                        <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
+                                            <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
+                                            <t t-set="current" t-value="current + 1"/>
+                                        </t>
                                     </t>
-                                </t>
-                                <t t-if="current == 0">
-                                    <li>Direct payment (cash) at <span t-field="doc.agent_id.name"/></li>
-                                </t>
-                            </ul>
-                        </li>
-                    </ol>
+                                    <t t-if="current == 0">
+                                        <li>Direct payment (cash) at <span t-field="doc.agent_id.name"/></li>
+                                    </t>
+                                </ul>
+                            </li>
+                        </ol>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-if="ho_obj.payment_acquirer_ids">
+                        <span style="font-size: 28px; font-weight: 730">Important Note(s)</span><br/>
+                        <ol style="margin: 0 25px;">
+                            <span t-raw="billing_footer"/>
+                            <li>
+                                Please transfer to the following account:
+                                <ul>
+                                    <t t-set="current" t-value="0"/>
+                                    <t t-foreach="ho_obj.payment_acquirer_ids" t-as="payment_id">
+                                        <t t-if="payment_id.type == 'transfer' and payment_id.account_number and payment_id.account_name and payment_id.website_published">
+                                            <li><span t-field="payment_id.bank_id.name"/> (IDR) <span t-field="payment_id.account_number"/> A/N <span t-field="payment_id.account_name"/></li>
+                                            <t t-set="current" t-value="current + 1"/>
+                                        </t>
+                                    </t>
+                                    <t t-if="current == 0">
+                                        <li>Direct payment (cash) at <span t-field="ho_obj.name"/></li>
+                                    </t>
+                                </ul>
+                            </li>
+                        </ol>
+                    </t>
                 </t>
             </div>
             <div class="col-1"/>

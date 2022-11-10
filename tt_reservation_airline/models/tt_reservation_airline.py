@@ -110,7 +110,7 @@ class ReservationAirline(models.Model):
     @api.multi
     def action_set_as_draft(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 109')
         for rec in self:
             rec.state = 'draft'
 
@@ -118,14 +118,14 @@ class ReservationAirline(models.Model):
     @api.multi
     def action_set_as_booked(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 110')
         for rec in self:
             rec.state = 'booked'
 
     @api.multi
     def action_set_as_issued(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 111')
         for rec in self:
             rec.state = 'issued'
 
@@ -278,7 +278,7 @@ class ReservationAirline(models.Model):
 
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 112')
         super(ReservationAirline, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
@@ -528,7 +528,9 @@ class ReservationAirline(models.Model):
             ##pengecekan segment kembar airline dengan nama passengers
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)
-
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
@@ -1865,7 +1867,7 @@ class ReservationAirline(models.Model):
     #retrieve booking utk samakan info dengan vendor
     def sync_booking_with_vendor(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 113')
         req = {
             'order_number': self.name,
             # June 10, 2021 - SAM

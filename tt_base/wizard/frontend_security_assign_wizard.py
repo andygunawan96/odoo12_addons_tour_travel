@@ -15,7 +15,7 @@ class FrontendSecurityAssign(models.TransientModel):
 
     def assign_security(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 67')
         for rec in self.to_user_ids:
             rec.write({
                 'frontend_security_ids': [(4, self.frontend_security_id.id)]

@@ -10,6 +10,7 @@ class TtCronLogInhBill(models.Model):
     def cron_create_billing_statement(self):
         try:
             self.env['tt.customer.parent'].cron_create_billing_statement()
+            self.env['tt.agent'].cron_create_billing_statement()
         except Exception as e:
             try:
                 request = {

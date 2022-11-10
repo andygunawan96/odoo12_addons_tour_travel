@@ -261,12 +261,12 @@ class ProviderGroupBooking(models.Model):
 
     def generate_lg(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 128')
         self.generate_lg_or_po('lg')
 
     def generate_po(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 129')
         self.generate_lg_or_po('po')
 
     def action_refund(self, check_provider_state=False):
@@ -281,7 +281,7 @@ class ProviderGroupBooking(models.Model):
             for scs in rec.cost_service_charge_ids:
                     rec.total_price += scs.total
 
-    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False,payment_method_use_to_ho=False):
         for rec in self.booking_id.payment_rules_id.installment_ids:
             if rec.due_date == 0:
                 total_amount = (rec.payment_percentage / 100) * self.booking_id.total

@@ -132,7 +132,7 @@ class TtProviderVisa(models.Model):
         """ Fungsi ini mengembalikan state provider ke booked & state visa ke validate """
         """ Fungsi ini dijalankan, in case terdapat salah input harga di pricelist & sudah potong ledger """
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 324')
 
         self.action_booked()  # ubah state provider ke booked
 
@@ -214,8 +214,8 @@ class TtProviderVisa(models.Model):
                 rec.unlink()
         return ledger_created
 
-    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
-        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False,payment_method_use_to_ho=False):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point, payment_method_use_to_ho=payment_method_use_to_ho)
 
     def action_reverse_ledger_from_button(self):
         if self.state == 'fail_refunded':
@@ -257,7 +257,7 @@ class TtProviderVisa(models.Model):
 
     def action_sync_price(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 325')
         provider_type_id = self.env.ref('tt_reservation_visa.tt_provider_type_visa')
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 

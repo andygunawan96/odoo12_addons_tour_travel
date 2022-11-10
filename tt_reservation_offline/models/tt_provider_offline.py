@@ -207,12 +207,12 @@ class ProviderOffline(models.Model):
 
     def generate_lg(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 198')
         self.generate_lg_or_po('lg')
 
     def generate_po(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 199')
         self.generate_lg_or_po('po')
 
     def action_refund(self, check_provider_state=False):
@@ -1009,8 +1009,8 @@ class ProviderOffline(models.Model):
                 rec.unlink()
         return ledger_created
 
-    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
-        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False,payment_method_use_to_ho=False):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point, payment_method_use_to_ho=payment_method_use_to_ho)
 
     def set_total_price(self):
         for rec in self:

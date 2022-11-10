@@ -17,5 +17,21 @@
             <field name="padding">3</field>
             <field name="company_id" eval="False"/>
         </record>
+
+        <record id="seq_ho_invoice" model="ir.sequence">
+            <field name="name">HO Invoice</field>
+            <field name="code">ho.invoice</field>
+            <field name="prefix">HOINV.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="padding">3</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_ho_invoice_line" model="ir.sequence">
+            <field name="name">HO Invoice Line</field>
+            <field name="code">ho.invoice.line</field>
+            <field name="prefix">HOIVL.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="padding">3</field>
+            <field name="company_id" eval="False"/>
+        </record>
     </data>
 </odoo>

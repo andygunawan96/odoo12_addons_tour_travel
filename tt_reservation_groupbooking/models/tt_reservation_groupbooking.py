@@ -470,7 +470,7 @@ class ReservationGroupBooking(models.Model):
     @api.one
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 130')
         for rec in self.ledger_ids:
             if not rec.is_reversed:
                 rec.reverse_ledger()
@@ -506,13 +506,13 @@ class ReservationGroupBooking(models.Model):
 
     def action_set_as_draft(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 131')
         self.action_draft()
 
 
     def action_set_as_issued(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 132')
         if len(self.provider_booking_ids) != 0:
             self.state = 'issued'
             self.state_groupbooking = 'issued'
@@ -523,7 +523,7 @@ class ReservationGroupBooking(models.Model):
 
     def action_sent_groupbooking(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 133')
         error_msg = self.validate_data()
         if error_msg:
             raise UserError(error_msg)
@@ -532,7 +532,7 @@ class ReservationGroupBooking(models.Model):
 
     def action_set_as_booked(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 134')
         self.state_groupbooking = 'confirm'
         self.state = 'booked'
 
@@ -1967,14 +1967,14 @@ class ReservationGroupBooking(models.Model):
 
     def action_issued_installment_groupbooking(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 135')
         self.write({
             'state_groupbooking': 'issued_installment',
         })
 
     def action_done_groupbooking(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 136')
         self.write({
             'state_groupbooking': 'done',
         })

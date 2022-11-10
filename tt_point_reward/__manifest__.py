@@ -18,7 +18,6 @@ Key Features
         'data/ir_cron_data.xml',
         'views/tt_point_reward_rules_views.xml',
         'views/tt_point_reward_views.xml',
-        'views/tt_agent_views.xml',
         'views/menu_item_views.xml',
     ],
     'demo': [],

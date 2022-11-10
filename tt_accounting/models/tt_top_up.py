@@ -98,7 +98,7 @@ class TtTopUp(models.Model):
 
     def action_set_back_to_request(self):
         if not self.env.user.has_group('tt_base.group_top_up_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 22')
         if self.state not in ["expired","cancel"]:
             raise UserError("Can only set to request [Expired] state top up.")
         self.write({
@@ -107,7 +107,7 @@ class TtTopUp(models.Model):
 
     def action_reject_from_button(self):
         if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 23')
         self.action_cancel_top_up({
             'co_uid':self.env.user.id
         })
@@ -126,14 +126,14 @@ class TtTopUp(models.Model):
 
     def test_set_as_draft(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 24')
         self.write({
             'state': 'draft'
         })
 
     def test_set_as_request(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 25')
         self.write({
             'state': 'request'
         })

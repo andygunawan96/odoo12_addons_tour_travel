@@ -17,7 +17,7 @@ class TtMasterTourFlight(models.Model):
     _name = 'flight.segment'
     _description = 'Flight Segment'
 
-    journey_type = fields.Selection(JOURNEY_TYPE, 'Journey Type', default='DP')
+    journey_type = fields.Selection(JOURNEY_TYPE, 'Journey Type', default='dp')
 
     def _get_domain_airline(self):
         airline_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline').id

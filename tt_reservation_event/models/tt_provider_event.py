@@ -56,8 +56,8 @@ class TtProviderEvent(models.Model):
     reconcile_time = fields.Datetime('Reconcile Time')
     ##
 
-    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False):
-        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point)
+    def action_create_ledger(self, issued_uid, pay_method=None, use_point=False,payment_method_use_to_ho=False):
+        return self.env['tt.ledger'].action_create_ledger(self, issued_uid, use_point=use_point, payment_method_use_to_ho=payment_method_use_to_ho)
 
     def create_service_charge(self, service_charge_vals):
         service_chg_obj = self.env['tt.service.charge']
@@ -80,7 +80,7 @@ class TtProviderEvent(models.Model):
 
     def action_set_to_book_from_button(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 125')
         if self.state == 'booked':
             raise UserError("Has been Booked.")
 
@@ -97,7 +97,7 @@ class TtProviderEvent(models.Model):
 
     def action_reverse_ledger_from_button(self):
         if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 126')
         if self.state == 'fail_refunded':
             raise UserError("Cannot refund, this PNR has been refunded.")
 

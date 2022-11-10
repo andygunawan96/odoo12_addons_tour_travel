@@ -61,7 +61,7 @@ class MasterTourLines(models.Model):
 
     def action_validate(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 299')
         if self.state == 'draft':
             self.state = 'open'
             if not self.tour_line_code:
@@ -69,7 +69,7 @@ class MasterTourLines(models.Model):
 
     def action_closed(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 300')
         self.state = 'closed'
 
     def action_definite(self):
@@ -77,12 +77,12 @@ class MasterTourLines(models.Model):
 
     def action_on_going(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 301')
         self.state = 'on_going'
 
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 302')
         self.state = 'cancel'
 
     def set_to_draft(self):
@@ -93,12 +93,12 @@ class MasterTourLines(models.Model):
 
     def action_sold(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 303')
         self.state = 'sold'
 
     def action_reopen(self):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 304')
         self.state = 'open'
 
     def book_line_quota(self, pax_amount):

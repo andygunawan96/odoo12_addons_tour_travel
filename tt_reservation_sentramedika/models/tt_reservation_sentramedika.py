@@ -80,37 +80,37 @@ class ReservationSentraMedika(models.Model):
     @api.multi
     def action_set_as_draft(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 269')
         for rec in self:
             rec.state = 'draft'
 
     @api.multi
     def action_set_as_booked(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 270')
         for rec in self:
             rec.state = 'booked'
 
     @api.multi
     def action_set_as_issued(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 271')
         for rec in self:
             rec.state = 'issued'
 
     def action_set_state_vendor_as_test_completed(self):
         if not ({self.env.ref('tt_base.group_external_vendor_sentramedika_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 272')
         self.state_vendor = 'test_completed'
 
     def action_set_state_vendor_as_no_show(self):
         if not ({self.env.ref('tt_base.group_external_vendor_sentramedika_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 273')
         self.state_vendor = 'no_show'
 
     def action_set_state_vendor_as_refund(self):
         if not ({self.env.ref('tt_base.group_external_vendor_sentramedika_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 274')
         self.state_vendor = 'refund'
 
     def action_booked_api_sentramedika(self,context):
@@ -244,7 +244,7 @@ class ReservationSentraMedika(models.Model):
 
     def action_cancel(self, backend_context=False, gateway_context=False):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 275')
         super(ReservationSentraMedika, self).action_cancel(gateway_context=gateway_context)
         for rec in self.provider_booking_ids:
             rec.action_cancel(gateway_context)
@@ -406,6 +406,10 @@ class ReservationSentraMedika(models.Model):
             if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
+
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
 
             response = {
                 'book_id': book_obj.id,

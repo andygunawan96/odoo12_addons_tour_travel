@@ -44,7 +44,7 @@ class TtReconcileTransaction(models.Model):
 
 class TtRescheduleChanges(models.Model):
     _name = "tt.reschedule.changes"
-    _description = "After Sales Model"
+    _description = "After Sales Changes Model"
 
     name = fields.Char('Field Name', readonly=True)
     seg_sequence = fields.Integer('Segment Sequence', readonly=True)
@@ -63,7 +63,7 @@ class TtRescheduleChanges(models.Model):
 
 class TtRescheduleLine(models.Model):
     _name = "tt.reschedule.line"
-    _description = "After Sales Model"
+    _description = "After Sales Line Model"
     _order = 'id DESC'
 
     reschedule_type = fields.Selection([('reschedule', 'Reschedule'), ('reroute', 'Reroute'), ('revalidate', 'Revalidate'),
@@ -186,7 +186,7 @@ class TtRescheduleLine(models.Model):
 
     def generate_po(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 77')
         if self.reschedule_id.state == 'final':
             if not self.env.user.has_group('tt_base.group_lg_po_level_5'):
                 hour_passed = (datetime.now() - self.reschedule_id.final_date).seconds / 3600
@@ -271,9 +271,14 @@ class TtReschedule(models.Model):
     adjustment_ids = fields.One2many('tt.adjustment', 'res_id', 'Adjustment', readonly=True, domain=_get_res_model_domain)
     pnr = fields.Char('New PNR', readonly=True, compute="_compute_new_pnr", store=True)
     invoice_line_ids = fields.One2many('tt.agent.invoice.line', 'res_id_resv', 'Invoice', domain=_get_res_model_resv_domain, readonly=True)
+
+    ho_invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'res_id_resv', 'HO Invoice', domain=_get_res_model_resv_domain, readonly=True)
     state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True, compute='set_agent_invoice_state')
+    ho_state_invoice = fields.Selection([('wait', 'Waiting'), ('partial', 'Partial'), ('full', 'Full')],
+                                     'Invoice Status', help="HO Invoice status", default='wait',
+                                     readonly=True, compute='set_ho_invoice_state')
     old_segment_ids = fields.Many2many('tt.segment.airline', 'tt_reschedule_old_segment_rel', 'reschedule_id', 'segment_id', string='Old Segments',
                                        readonly=True)
     new_segment_ids = fields.Many2many('tt.segment.reschedule', 'tt_reschedule_new_segment_rel', 'reschedule_id', 'segment_id', string='New Segments',
@@ -293,6 +298,9 @@ class TtReschedule(models.Model):
     refund_type_id = fields.Many2one('tt.refund.type', 'Refund Type', required=False, readonly=True)
     old_fee_notes = fields.Text('Old Fee Notes', readonly=True, default='')
     new_fee_notes = fields.Text('New Fee Notes', readonly=True, default='')
+    refund_amount = fields.Monetary('Refund Amount Dummy (to prevent error when create refund)', default=0, compute='')
+    real_refund_amount = fields.Monetary('Real Refund Amount Dummy (to prevent error when create refund)', default=0, compute='')
+    refund_line_ids = fields.Boolean('Refund Line Dummy')
 
     def to_dict(self):
         return {
@@ -392,6 +400,21 @@ class TtReschedule(models.Model):
         elif any(state != 'draft' for state in states):
             self.state_invoice = 'partial'
 
+    @api.depends('ho_invoice_line_ids')
+    def set_ho_invoice_state(self):
+
+        states = []
+
+        for rec in self.ho_invoice_line_ids:
+            states.append(rec.state)
+
+        if all(state == 'draft' for state in states) or not states:
+            self.ho_state_invoice = 'wait'
+        elif all(state != 'draft' for state in states):
+            self.ho_state_invoice = 'full'
+        elif any(state != 'draft' for state in states):
+            self.ho_state_invoice = 'partial'
+
     @api.depends('new_segment_ids')
     @api.onchange('new_segment_ids')
     def _compute_new_pnr(self):
@@ -451,7 +474,7 @@ class TtReschedule(models.Model):
 
     def set_to_confirm(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 78')
         self.write({
             'state': 'confirm',
             'confirm_uid': self.env.user.id,
@@ -461,7 +484,7 @@ class TtReschedule(models.Model):
 
     def confirm_reschedule_from_button(self):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 79')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
@@ -479,7 +502,7 @@ class TtReschedule(models.Model):
 
     def confirm_reschedule_from_button_ho(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 80')
         if self.state != 'draft':
             raise UserError("Cannot Confirm because state is not 'draft'.")
 
@@ -491,7 +514,7 @@ class TtReschedule(models.Model):
 
     def send_reschedule_from_button(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 81')
         if self.state != 'confirm':
             raise UserError("Cannot Send because state is not 'confirm'.")
 
@@ -501,70 +524,22 @@ class TtReschedule(models.Model):
             'sent_date': datetime.now(),
         })
 
-    def validate_reschedule_from_button(self):
+    def validate_reschedule_from_button(self, agent_payment_method='balance'):
         if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_after_sales_master_level_3').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 82')
         if self.state != 'sent':
             raise UserError("Cannot Validate because state is not 'Sent'.")
 
-        for rec in self.reschedule_line_ids:
-            credit = rec.reschedule_amount + rec.admin_fee_ho + rec.admin_fee_agent
-            debit = 0
-            ledger_type = rec.reschedule_type == 'addons' and 8 or 7
-            temp_desc = str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
-            self.env['tt.ledger'].create_ledger_vanilla(
-                self.res_model,
-                self.res_id,
-                'After Sales : %s' % (self.name),
-                self.name,
-                datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-                ledger_type,
-                self.currency_id.id,
-                self.env.user.id,
-                self.agent_id.id,
-                False,
-                debit,
-                credit,
-                temp_desc + ' for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
-                **{
-                    'reschedule_id': self.id,
-                    'reschedule_model': self._name
-                }
-            )
-
-            if rec.admin_fee_ho:
-                ho_agent = self.env.ref('tt_base.rodex_ho')
-                credit = 0
-                debit = rec.admin_fee_ho
-                ledger_type = 6
-                self.env['tt.ledger'].sudo().create_ledger_vanilla(
+        if agent_payment_method == 'balance':
+            for rec in self.reschedule_line_ids:
+                credit = rec.reschedule_amount + rec.admin_fee_ho + rec.admin_fee_agent
+                debit = 0
+                ledger_type = rec.reschedule_type == 'addons' and 8 or 7
+                temp_desc = str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)) + '\n'
+                self.env['tt.ledger'].create_ledger_vanilla(
                     self.res_model,
                     self.res_id,
-                    'After Sales Admin Fee: %s' % (self.name),
-                    self.name,
-                    datetime.now(pytz.timezone('Asia/Jakarta')).date(),
-                    ledger_type,
-                    self.currency_id.id,
-                    self.env.user.id,
-                    ho_agent and ho_agent.id or False,
-                    False,
-                    debit,
-                    credit,
-                    temp_desc + ' Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
-                    **{
-                        'reschedule_id': self.id,
-                        'reschedule_model': self._name
-                    }
-                )
-
-            if rec.admin_fee_agent:
-                credit = 0
-                debit = rec.admin_fee_agent
-                ledger_type = 3
-                self.env['tt.ledger'].sudo().create_ledger_vanilla(
-                    self.res_model,
-                    self.res_id,
-                    'After Sales Agent Admin Fee: %s' % (self.name),
+                    'After Sales : %s' % (self.name),
                     self.name,
                     datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                     ledger_type,
@@ -574,12 +549,64 @@ class TtReschedule(models.Model):
                     False,
                     debit,
                     credit,
-                    temp_desc + ' Agent Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
+                    temp_desc + ' for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
+                    agent_payment_method,
                     **{
                         'reschedule_id': self.id,
                         'reschedule_model': self._name
                     }
                 )
+
+                if rec.admin_fee_ho:
+                    ho_agent = self.env.ref('tt_base.rodex_ho')
+                    credit = 0
+                    debit = rec.admin_fee_ho
+                    ledger_type = 6
+                    self.env['tt.ledger'].sudo().create_ledger_vanilla(
+                        self.res_model,
+                        self.res_id,
+                        'After Sales Admin Fee: %s' % (self.name),
+                        self.name,
+                        datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                        ledger_type,
+                        self.currency_id.id,
+                        self.env.user.id,
+                        ho_agent and ho_agent.id or False,
+                        False,
+                        debit,
+                        credit,
+                        temp_desc + ' Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
+                        agent_payment_method,
+                        **{
+                            'reschedule_id': self.id,
+                            'reschedule_model': self._name
+                        }
+                    )
+
+                if rec.admin_fee_agent:
+                    credit = 0
+                    debit = rec.admin_fee_agent
+                    ledger_type = 3
+                    self.env['tt.ledger'].sudo().create_ledger_vanilla(
+                        self.res_model,
+                        self.res_id,
+                        'After Sales Agent Admin Fee: %s' % (self.name),
+                        self.name,
+                        datetime.now(pytz.timezone('Asia/Jakarta')).date(),
+                        ledger_type,
+                        self.currency_id.id,
+                        self.env.user.id,
+                        self.agent_id.id,
+                        False,
+                        debit,
+                        credit,
+                        temp_desc + ' Agent Admin Fee for %s (PNR: from %s to %s)' % (self.referenced_document, self.referenced_pnr, self.pnr),
+                        agent_payment_method,
+                        **{
+                            'reschedule_id': self.id,
+                            'reschedule_model': self._name
+                        }
+                    )
 
         self.write({
             'state': 'validate',
@@ -590,7 +617,7 @@ class TtReschedule(models.Model):
 
     def finalize_reschedule_from_button(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 83')
         if self.state != 'validate':
             raise UserError("Cannot Finalize because state is not 'Validated'.")
 
@@ -606,7 +633,7 @@ class TtReschedule(models.Model):
 
     def set_to_final(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_5'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 84')
         self.write({
             'state': 'final',
         })
@@ -621,7 +648,7 @@ class TtReschedule(models.Model):
 
     def action_done(self, bypass_po=False):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 85')
         if self.state != 'final':
             raise UserError("Cannot Approve because state is not 'Finalized'.")
         if self.check_po_required():
@@ -643,8 +670,8 @@ class TtReschedule(models.Model):
         if co_uid:
             self.write({'sent_uid': co_uid})
 
-    def validate_reschedule_from_api(self, co_uid=False):
-        self.validate_reschedule_from_button()
+    def validate_reschedule_from_api(self, co_uid=False, agent_payment_method='balance'):
+        self.validate_reschedule_from_button(agent_payment_method)
         if co_uid:
             self.write({'validate_uid': co_uid})
 
@@ -679,9 +706,21 @@ class TtReschedule(models.Model):
 
     def action_create_invoice(self):
         invoice_id = False
+        ho_invoice_id = False
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
+                'booker_id': self.booker_id.id,
+                'agent_id': self.agent_id.id,
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': 'confirm',
+                'confirmed_uid': self.env.user.id,
+                'confirmed_date': datetime.now()
+            })
+
+        if not ho_invoice_id:
+            ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
@@ -716,6 +755,15 @@ class TtReschedule(models.Model):
 
         invoice_line_id = inv_line_obj.id
 
+        ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
+            'res_model_resv': self._name,
+            'res_id_resv': self.id,
+            'invoice_id': ho_invoice_id.id,
+            'desc': desc_str
+        })
+
+        ho_invoice_line_id = ho_inv_line_obj.id
+
         for idx, rec in enumerate(self.reschedule_line_ids):
             tot_amt = rec.total_amount
             # csc RS per pax hanya ditambah ke line pertama (asumsi untuk addons / reschedule dari front end hanya ada 1 RS line)
@@ -727,6 +775,15 @@ class TtReschedule(models.Model):
                     'price_unit': tot_amt,
                     'quantity': 1,
                     'invoice_line_id': invoice_line_id,
+                })]
+            })
+
+            ho_inv_line_obj.write({
+                'invoice_line_detail_ids': [(0, 0, {
+                    'desc': str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)),
+                    'price_unit': tot_amt,
+                    'quantity': 1,
+                    'invoice_line_id': ho_invoice_line_id,
                 })]
             })
 
@@ -746,6 +803,24 @@ class TtReschedule(models.Model):
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
             'pay_amount': inv_line_obj.total,
+        })
+
+        ##membuat payment dalam draft
+        ho_payment_obj = self.env['tt.payment'].create({
+            'agent_id': self.agent_id.id,
+            'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
+            'real_total_amount': ho_inv_line_obj.total,
+            'customer_parent_id': self.customer_parent_id.id,
+            'state': 'confirm',
+            'payment_date': datetime.now(),
+            'reference': self.name,
+            'confirm_uid': self.confirm_uid.id
+        })
+
+        self.env['tt.payment.invoice.rel'].create({
+            'ho_invoice_id': ho_invoice_id.id,
+            'payment_id': ho_payment_obj.id,
+            'pay_amount': ho_inv_line_obj.total,
         })
 
     def generate_changes(self):
@@ -1058,7 +1133,7 @@ class TtReschedule(models.Model):
     # admin only function, use only 1 time!
     def convert_old_to_new_ledger_res_model(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 86')
         all_old_ledger = self.env['tt.ledger'].search([('res_model', '=', 'tt.reschedule'), ('reschedule_model', '=', False)])
         for rec in all_old_ledger:
             rec.write({

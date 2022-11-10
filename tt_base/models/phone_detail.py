@@ -90,19 +90,12 @@ class PhoneDetail(models.Model):
                                 'website_published': False,
                                 'name': 'Your Virtual Account at %s' % (bank_obj.name),
                             })
-                            fee_amount = 0
-                        else:
-                            if existing_payment_acquirer.minimum_amount > existing_payment_acquirer.va_fee:
-                                fee_amount = existing_payment_acquirer.minimum_amount
-                            else:
-                                fee_amount = existing_payment_acquirer.va_fee
                         self.env['payment.acquirer.number'].create({
                             'agent_id': agent.id,
                             'payment_acquirer_id': existing_payment_acquirer.id,
                             'state': 'open',
                             'number': rec['number'],
                             'email': agent.email,
-                            'fee_amount': fee_amount
                         })
                 else:
                     raise UserError(_("Phone number has been use, please change first phone number"))

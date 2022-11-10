@@ -65,7 +65,7 @@ class TtReservationBus(models.Model):
     @api.multi
     def action_set_as_draft(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 117')
         for rec in self:
             rec.state = 'draft'
 
@@ -73,20 +73,20 @@ class TtReservationBus(models.Model):
     @api.multi
     def action_set_as_booked(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 118')
         for rec in self:
             rec.state = 'booked'
 
     @api.multi
     def action_set_as_issued(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 119')
         for rec in self:
             rec.state = 'issued'
 
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 120')
         super(TtReservationBus, self).action_cancel()
         for rec in self.provider_booking_ids:
             rec.action_cancel()
@@ -274,6 +274,10 @@ class TtReservationBus(models.Model):
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
 
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
@@ -368,6 +372,9 @@ class TtReservationBus(models.Model):
                 elif provider['state'] == 'refund':
                     provider_obj.action_refund()
                     any_provider_changed = True
+
+            if book_obj.state == 'booked' and book_obj.voucher_code:  ##karena baru dapet harga waktu update pnr
+                book_obj.add_voucher(book_obj.voucher_code, context)
 
             for rec in book_obj.provider_booking_ids:
                 if rec.pnr and rec.pnr not in pnr_list:

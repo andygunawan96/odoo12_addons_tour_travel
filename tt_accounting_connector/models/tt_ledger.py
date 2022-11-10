@@ -14,7 +14,7 @@ class TtLedger(models.Model):
 
     def set_sent_to_acc_false(self):
         if not self.env.user.has_group('tt_base.group_ledger_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 31')
         self.sudo().write({
             'is_sent_to_acc': False
         })

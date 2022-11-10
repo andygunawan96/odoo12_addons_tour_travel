@@ -15,7 +15,7 @@ class UserDuplicatePermissions(models.TransientModel):
 
     def duplicate_permissions(self):
         if not self.env.user.has_group('base.group_system'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 68')
         try:
             group_id_list = []
             frontend_id_list = []

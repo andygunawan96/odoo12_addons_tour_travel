@@ -59,7 +59,7 @@ class TtAccountingQueue(models.Model):
 
     def action_send_to_vendor(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 30')
         try:
             self.send_uid = self.env.user.id
             self.send_date = fields.Datetime.now()
@@ -215,6 +215,7 @@ class TtAccountingQueue(models.Model):
                     billing_due_date = rec.customer_parent_id.billing_due_date
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
+                    'customer_parent_id': trans_obj.customer_parent_id and trans_obj.customer_parent_id.id or '',
                     'total_nta': trans_obj.total_nta or 0,
                     'parent_agent_commission': trans_obj.parent_agent_commission or 0,
                     'ho_commission': trans_obj.ho_commission or 0,

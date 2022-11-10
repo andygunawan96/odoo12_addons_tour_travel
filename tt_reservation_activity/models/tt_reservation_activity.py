@@ -295,7 +295,7 @@ class ReservationActivity(models.Model):
 
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 98')
         for rec in self.invoice_id:
             rec.action_cancel()
         self._create_anti_ledger_activity()
@@ -681,6 +681,10 @@ class ReservationActivity(models.Model):
             prov_list = []
             for prov in book_obj.provider_booking_ids:
                 prov_list.append(prov.to_dict())
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = book_obj.to_dict(context)
             response.update({
                 'provider_booking': prov_list,

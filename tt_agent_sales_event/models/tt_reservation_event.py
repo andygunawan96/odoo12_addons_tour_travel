@@ -11,6 +11,9 @@ class ReservationEvent(models.Model):
                                      'Invoice Status', help="Agent Invoice status", default='wait',
                                      readonly=True, compute='set_agent_invoice_state')
 
+    ho_invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'res_id_resv', 'HO Invoice',
+                                          domain=[('res_model_resv', '=', 'tt.reservation.event')])
+
     @api.depends('invoice_line_ids')
     def set_agent_invoice_state(self):
         states = []
@@ -37,8 +40,9 @@ class ReservationEvent(models.Model):
         tmp += 'Contact Phone : %s\n' % (self.contact_phone,)
         return tmp
 
-    def action_create_invoice(self, data):
-        invoice_id = self.invoice_line_ids.filtered(lambda x: x.state in ['bill', 'bill2', 'paid'])
+    def action_create_invoice(self, data, payment_method_to_ho):
+        invoice_id = False
+        ho_invoice_id = False
 
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
@@ -61,6 +65,37 @@ class ReservationEvent(models.Model):
             'customer_parent_id': self.customer_parent_id.id
         })
 
+        ### HO ####
+        is_use_credit_limit = False
+        if not ho_invoice_id:
+            if payment_method_to_ho == 'balance':
+                state = 'paid'
+                is_use_credit_limit = False
+            else:
+                state = 'confirm'
+                is_use_credit_limit = True
+            ho_invoice_id = self.env['tt.ho.invoice'].create({
+                'booker_id': self.booker_id.id,
+                'agent_id': self.agent_id.id,
+                'customer_parent_id': self.customer_parent_id.id,
+                'customer_parent_type_id': self.customer_parent_type_id.id,
+                'state': state,
+                'confirmed_uid': data['co_uid'],
+                'confirmed_date': datetime.now(),
+                'is_use_credit_limit': is_use_credit_limit
+            })
+
+        ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
+            'res_model_resv': self._name,
+            'res_id_resv': self.id,
+            'invoice_id': ho_invoice_id.id,
+            'reference': self.name,
+            'desc': self.get_segment_description(),
+            'admin_fee': 0
+        })
+
+        ho_invoice_line_id = ho_inv_line_obj.id
+
         discount = 0
 
         for opt_obj in self.passenger_ids:
@@ -82,7 +117,79 @@ class ReservationEvent(models.Model):
                 'quantity': 1,
             })
 
+        ## HO INVOICE ABAIKAN SERVICE CHARGES DISC KARENA DISCOUNT DARI HO TIDAK MEMPENGARUHI NTA##
+        total_price = 0
+        commission_list = {}
+        for psg in self.passenger_ids:
+            desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
+            price_unit = 0
+            for cost_charge in psg.cost_service_charge_ids:
+                if cost_charge.charge_type not in ['DISC', 'RAC']:
+                    price_unit += cost_charge.amount
+                # elif cost_charge.charge_type == 'DISC':
+                #     discount += cost_charge.amount
+                elif cost_charge.charge_type == 'RAC':
+                    if is_use_credit_limit:
+                        if not cost_charge.commission_agent_id:
+                            agent_id = self.agent_id.id
+                        else:
+                            agent_id = cost_charge.commission_agent_id.id
+                        if agent_id not in commission_list:
+                            commission_list[agent_id] = 0
+                        commission_list[agent_id] += cost_charge.amount * -1
+                    elif cost_charge.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                        price_unit += cost_charge.amount
+            ### FARE
+            self.env['tt.ho.invoice.line.detail'].create({
+                'desc': desc_text,
+                'price_unit': price_unit,
+                'quantity': 1,
+                'invoice_line_id': ho_invoice_line_id,
+                'commission_agent_id': self.agent_id.id
+            })
+            total_price += price_unit
+        ## RAC
+        for rec in commission_list:
+            self.env['tt.ho.invoice.line.detail'].create({
+                'desc': "Commission",
+                'price_unit': commission_list[rec],
+                'quantity': 1,
+                'invoice_line_id': ho_invoice_line_id,
+                'commission_agent_id': rec,
+                'is_commission': True
+            })
+
+        if self.is_using_point_reward and is_use_credit_limit:
+            ## CREATE LEDGER UNTUK POTONG POINT REWARD
+            total_use_point = 0
+            total_price -= abs(discount)
+            payment_method = self.env['payment.acquirer'].search([('seq_id', '=', self.payment_method)])
+            if payment_method.type == 'cash':
+                point_reward = self.agent_id.actual_point_reward
+                if point_reward > total_price:
+                    total_use_point = total_price - 1
+                else:
+                    total_use_point = point_reward
+            elif payment_method.type == 'payment_gateway':
+                point_reward = self.agent_id.actual_point_reward
+                if point_reward - payment_method.minimum_amount > total_price:
+                    total_use_point = total_price - payment_method.minimum_amount
+                else:
+                    total_use_point = point_reward
+
+            if total_use_point:
+                self.env['tt.ho.invoice.line.detail'].create({
+                    'desc': "Use Point Reward",
+                    'price_unit': total_use_point,
+                    'quantity': 1,
+                    'invoice_line_id': ho_invoice_line_id,
+                    'commission_agent_id': self.agent_id.id,
+                    'is_point_reward': True
+                })
+                self.env['tt.ledger'].use_point_reward(self, True, total_use_point, self.issued_uid.id)
+
         inv_line_obj.discount = abs(discount)
+        ho_inv_line_obj.discount = abs(discount)
 
         payref_id_list = []
         for idx, att in enumerate(data['payment_ref_attachment']):
@@ -104,7 +211,7 @@ class ReservationEvent(models.Model):
 
         payment_vals = {
             'agent_id': self.agent_id.id,
-            'acquirer_id': data['acquirer_id'],
+            'acquirer_id': data['acquirer_id'].id,
             'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': data['customer_parent_id'],
             'confirm_uid': data['co_uid'],
@@ -126,6 +233,45 @@ class ReservationEvent(models.Model):
             'pay_amount': invoice_id.grand_total
         })
 
+        ## payment HO
+        acq_obj = False
+        if payment_method_to_ho != 'credit_limit':
+            acq_objs = self.agent_id.payment_acquirer_ids
+            for payment_acq in acq_objs:
+                if payment_acq.name == 'Cash':
+                    acq_obj = payment_acq.id
+                    break
+
+        ho_payment_vals = {
+            'agent_id': self.agent_id.id,
+            'acquirer_id': acq_obj,
+            'real_total_amount': ho_invoice_id.grand_total,
+            'confirm_uid': data['co_uid'],
+            'confirm_date': datetime.now()
+        }
+
+        ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
+
+        self.env['tt.payment.invoice.rel'].create({
+            'ho_invoice_id': ho_invoice_id.id,
+            'payment_id': ho_payment_obj.id,
+            'pay_amount': ho_invoice_id.grand_total
+        })
+        ## payment HO
+
+        self.write({
+            'is_invoice_created': True
+        })
+
     def action_issued_event(self,data):
         super(ReservationEvent, self).action_issued_event(data)
-        self.action_create_invoice(data)
+        if not self.is_invoice_created:
+            ## check ledger bayar pakai balance / credit limit
+            payment_method_to_ho = ''
+            for ledger_obj in self.ledger_ids:
+                if ledger_obj.transaction_type == 2:  ## order
+                    if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
+                        payment_method_to_ho = ledger_obj.source_of_funds_type
+                        break
+                pass
+            self.action_create_invoice(data, payment_method_to_ho)

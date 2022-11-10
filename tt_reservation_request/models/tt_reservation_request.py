@@ -286,7 +286,7 @@ class TtReservationRequest(models.Model):
 
     def action_cancel(self, context={}):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 263')
         if self.state in ['draft', 'on_process']:
             if not context.get('co_uid'):
                 context['co_uid'] = self.env.user.id
@@ -299,12 +299,12 @@ class TtReservationRequest(models.Model):
 
     def action_set_to_approved(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 264')
         self.state = 'approved'
 
     def action_reject(self, context={}):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 265')
         if self.state in ['draft', 'on_process']:
             if not context.get('co_uid'):
                 context['co_uid'] = self.env.user.id
@@ -317,7 +317,7 @@ class TtReservationRequest(models.Model):
 
     def action_set_to_draft(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 266')
         self.state = 'draft'
 
 

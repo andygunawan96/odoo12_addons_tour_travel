@@ -19,7 +19,7 @@ class ConfirmOrdermedicalWizard(models.TransientModel):
 
     def confirm_order(self):
         if not ({self.env.ref('tt_base.group_external_vendor_medical_level_2').id, self.env.ref('tt_base.group_reservation_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 180')
         if not self.analyst_ids:
             raise UserError("Please Pick Timeslot and Input Analyst")
         self.booking_id.write({

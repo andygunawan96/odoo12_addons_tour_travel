@@ -26,6 +26,7 @@
                             <field name="free_usage"/>
                             <field name="minimum_fee"/>
                             <field name="fix_profit_share"/>
+                            <field name="is_calculate_all_inventory"/>
                             <field name="validity"/>
                             <field name="currency_id"/>
                             <field name="available_price_list_ids"/>

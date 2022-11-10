@@ -61,8 +61,10 @@ class TtPnrQuota(models.Model):
     def _compute_usage_quota(self):
         for rec in self:
             usage_pnr = 0
-            for usage_obj in rec.usage_ids.filtered(lambda x: x.inventory == 'external'):
-                usage_pnr += usage_obj.usage_quota
+            ## IVAN 9 NOV 2022 update usage_quota all inventory --> karena kebutuhan (bunga)
+            for usage_obj in self.usage_ids[::-1]:  ## reverse paling bawah duluan agar urutan free pnr tidak berubah
+                if rec.price_package_id.is_calculate_all_inventory or usage_obj.inventory == 'external':
+                    usage_pnr += usage_obj.usage_quota
             rec.usage_quota = usage_pnr
 
     # @api.depends('price_list_id')
@@ -129,7 +131,7 @@ class TtPnrQuota(models.Model):
 
     def payment_pnr_quota_api(self):
         if not self.env.user.has_group('tt_base.group_pnr_quota_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 64')
         for rec in self:
             if rec.agent_id.is_payment_by_system and rec.agent_id.balance >= rec.total_amount:
                 # bikin ledger
@@ -167,7 +169,7 @@ class TtPnrQuota(models.Model):
 
     def set_to_waiting_pnr_quota(self):
         if not self.env.user.has_group('tt_base.group_pnr_quota_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 65')
         ledgers_obj = self.ledger_ids.filtered(lambda x: x.is_reversed == False)
         for ledger_obj in ledgers_obj:
             ledger_obj.reverse_ledger()
@@ -295,23 +297,25 @@ class TtPnrQuota(models.Model):
 
     def recompute_wrong_value_amount(self):
         if not self.env.user.has_group('tt_base.group_pnr_quota_level_3'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake.')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 66')
         self.amount = int(self.price_package_id.minimum_fee)
         package_obj = self.price_package_id
         free_pnr_quota = package_obj.free_usage
         quota_pnr_usage = 0
-        for rec in self.usage_ids.filtered(lambda x: x.inventory == 'external')[::-1]: ## reverse paling bawah duluan agar urutan free pnr tidak berubah
+        ## IVAN 9 NOV 2022 update ke all inventory --> karena kebutuhan (bunga)
+        for usage_obj in self.usage_ids[::-1]: ## reverse paling bawah duluan agar urutan free pnr tidak berubah
             ##check free juga
-            calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, rec)
-            rec.usage_quota = calculate_price_dict['quota_pnr_usage']
-            if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
-                rec.amount = 0
-            elif free_pnr_quota > quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
-                rec.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
-            else:
-                rec.amount = calculate_price_dict['price']
-            rec.usage_quota = calculate_price_dict['quota_pnr_usage']
-            quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
+            if package_obj.is_calculate_all_inventory or usage_obj.inventory == 'external':
+                calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, usage_obj)
+                quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
+                if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
+                    usage_obj.amount = 0
+                elif free_pnr_quota > quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
+                    usage_obj.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
+                else:
+                    usage_obj.amount = calculate_price_dict['price']
+                usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
+        self.usage_quota = quota_pnr_usage
 
     def print_report_excel(self):
         datas = {'id': self.id}
@@ -325,7 +329,7 @@ class TtPnrQuota(models.Model):
             co_agent_id = self.env.user.agent_id.id
 
         co_uid = self.env.user.id
-        if self.pnr_quota_excel_id:
+        if not self.pnr_quota_excel_id:
             excel_bytes = self.env['tt.report.printout.pnr.quota.usage'].print_report_excel(datas)
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
