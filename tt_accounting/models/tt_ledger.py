@@ -524,7 +524,7 @@ class Ledger(models.Model):
                 "booker": booker,
                 "create_date": rec_ledger.create_date.strftime('%Y-%m-%d %H:%M:%S'),
                 "provider_type_name": provider_type,
-                "source_of_funds_type": "balance" if rec_ledger.source_of_funds_type == 'balance' else "point"
+                "source_of_funds_type": rec_ledger.source_of_funds_type
 
             })
 
