@@ -539,6 +539,10 @@ class ReservationTour(models.Model):
                 response.update({
                     'provider_booking': provider_booking_list
                 })
+
+                ## PAKAI VOUCHER
+                if data.get('voucher'):
+                    booking_obj.add_voucher(data['voucher']['voucher_reference'], context)
             else:
                 response = {
                     'book_id': 0,

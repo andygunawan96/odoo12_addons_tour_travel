@@ -261,4 +261,61 @@
             </t>
         </t>
     </template>
+
+    <template id="hoinv_invoice_content_view_v1">
+        <!-- Issued Code + Line Info -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">PAYMENT DETAILS</span><br/>
+        </div>
+        <table style="width: 100%; line-height: normal; border-collapse: separate; border-spacing: 0; table-layout: fixed;">  <!--border-radius: 20px; border: 1px solid #CCC; border-spacing: 0; margin-bottom: 30px; padding: 5px 0px 5px 0px;-->
+            <tr t-att-style="'background-color: '+base_color+'; padding-top: 5px; padding-bottom: 5px;'">
+                <th style="width: 25%; padding: 7px 7px 7px 20px; border-left: 1px solid #CCC; overflow-wrap:break-word; border-top-left-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Ref. Number</span>
+                </th>
+                <th style="width: 40%; padding: 7px 7px 7px 20px; color: white; font-weight: 800; overflow-wrap:break-word; font-size: 18px">
+                    <span>Descriptions</span>
+                </th>
+                <th style="width: 35%; padding: 7px 7px 7px 20px; border-right: 1px solid #CCC; overflow-wrap:break-word; border-top-right-radius: 20px; color: white; font-weight: 800; font-size: 18px">
+                    <span>Amount</span>
+                </th>
+            </tr>
+            <t t-set="row_idx" t-value="0"/>
+            <t t-foreach="payment_lines[doc.id]" t-as="pay_line_idx">
+                <tr valign="top" style="padding-top: 5px; padding-bottom: 5px;">
+                    <td><span t-esc="pay_line_idx['name']"/></td>
+                    <td><span t-esc="pay_line_idx['description']"/></td>
+                    <td><span t-esc="pay_line_idx['amount']"/></td>
+                </tr>
+            </t>
+        </table>
+    </template>
+
+    <template id="hoinv_invoice_content_view">
+        <!-- Issued Code + Line Info -->
+        <div style="margin-bottom: 10px; margin-top: 20px;">
+            <span style="font-size: 28px; font-weight: 730">PAYMENT VIA: </span><span t-esc="pay_method[doc.id]"/><br/>
+        </div>
+    </template>
+
+    <template id="printout_invoice_hoinv">
+        <!--        <t t-set="data_report_header_spacing" t-value="20"/>-->
+        <!--        <t t-set="data_report_margin_top" t-value="2"/>-->
+        <t t-set="data_report_header_spacing" t-value="0"/>
+        <t t-set="data_report_margin_top" t-value="10"/>
+        <t t-set="data_report_margin_bottom" t-value="26"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-call="tt_report_common.external_layout">
+                        <br/>
+                        <div style="margin: 0 20px; font-family: 'DeJavu Sans'">
+                            <t t-call="tt_report_common.agent_invoice_content_view"/>
+<!--                            <t t-call="tt_report_common.hoinv_invoice_content_view"/>-->
+                        </div>
+
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
 </odoo>

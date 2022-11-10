@@ -3,6 +3,9 @@ from odoo.exceptions import UserError
 from datetime import date,timedelta,datetime
 import pytz
 import base64
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class TtBillingStatement(models.Model):
     _name = 'tt.billing.statement'
@@ -26,8 +29,10 @@ class TtBillingStatement(models.Model):
                                states={'draft': [('readonly', False)]},
                                default=lambda self: self.env.user.agent_id.id)
     agent_type_id = fields.Many2one('tt.agent.type', string='Agent Type', related='agent_id.agent_type_id', store=True)
-    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, readonly=True,
-                                   states={'draft': [('readonly', False)]})
+    # customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, readonly=True,
+    #                                states={'draft': [('readonly', False)]})
+    customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True,
+                                   states={'draft': [('readonly', False)]}) ## TESTING REQUIRED FALSE UNTUK AGENT
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', string='Customer Type', related='customer_parent_id.customer_parent_type_id',
                                         store=True)
 
@@ -45,6 +50,7 @@ class TtBillingStatement(models.Model):
     amount_total = fields.Monetary('Total', compute='_compute_amount_total', store=False)
 
     invoice_ids = fields.One2many('tt.agent.invoice', 'billing_statement_id', string='Agent Invoices')
+    ho_invoice_ids = fields.One2many('tt.ho.invoice', 'billing_statement_id', string='HO Invoices')
 
     # payment_transaction_ids = fields.One2many('payment.transaction', 'billing_statement_id', string='Payments',
     #                                           required=True)
@@ -75,6 +81,10 @@ class TtBillingStatement(models.Model):
     printout_billing_statement_id = fields.Many2one('tt.upload.center', 'Printout Billing Statement', readonly=True)
 
     # double_payment = fields.Boolean('Double Payment')
+
+    def unlink_all_printout(self, type='All'):
+        for rec in self:
+            rec.printout_billing_statement_id.unlink()
 
     def compute_date_billing_all(self):
         if not self.env.user.has_group('base.group_system'):
@@ -113,8 +123,10 @@ class TtBillingStatement(models.Model):
         if last_billing_obj.transaction_end_date:
             start_date = last_billing_obj.transaction_end_date + timedelta(days=1)
             # start_date = self.find_transaction_date(cycle_list,increment_plus=False)
-        else:
+        elif self.customer_parent_id:
             start_date = self.customer_parent_id.create_date.date()
+        else:
+            start_date = self.create_date.date()
 
         tz_utc7 = pytz.timezone('Asia/Jakarta')
         # today_date = date.today() + timedelta(days=1)
@@ -129,12 +141,17 @@ class TtBillingStatement(models.Model):
         self.transaction_end_date = date(end_date.year,end_date.month,end_date.day)
 
     @api.multi
-    @api.depends('invoice_ids.total', 'invoice_ids.paid_amount','invoice_ids')
+    @api.depends('invoice_ids.total', 'invoice_ids.paid_amount','invoice_ids', 'ho_invoice_ids.total', 'ho_invoice_ids.paid_amount','ho_invoice_ids')
     def _compute_amount_total(self):
         for rec in self:
             amount_total = 0
             paid_amount = 0
             for inv in rec.invoice_ids:
+                if inv.state != 'cancel':
+                    amount_total += inv.total_after_tax
+                    paid_amount += inv.paid_amount
+
+            for inv in rec.ho_invoice_ids:
                 if inv.state != 'cancel':
                     amount_total += inv.total_after_tax
                     paid_amount += inv.paid_amount
@@ -209,3 +226,16 @@ class TtBillingStatement(models.Model):
         }
         return url
         # return printout_billing_statement_action.report_action(self, data=datas)
+
+    def get_email_reply_to(self):
+        try:
+            final_email = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_default_email_address', default='')
+        except Exception as e:
+            _logger.error(str(e))
+            final_email = ''
+        return final_email
+
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([],limit=1)
+        return company_obj.name
+    

@@ -78,7 +78,11 @@ class TtRefundWizard(models.TransientModel):
             book_obj = self.env[self.env.context['active_model']].sudo().browse(int(self.env.context['active_id']))
 
         #tembak parent IVAN
-        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)], limit=1)
+        if resv_obj:
+            resv_obj = resv_obj[0]
+        else:
+            raise UserError('Referenced Document Not Found.')
         total_vendor = len(resv_obj.provider_booking_ids)
         referenced_document_external = ''
         for rec in resv_obj.provider_booking_ids:
@@ -126,18 +130,22 @@ class TtRefundWizard(models.TransientModel):
             'referenced_document_external': referenced_document_external,
             'notes': self.notes
         })
+        refund_line_ids = []
         for pax in book_obj.passenger_ids:
             pax_price = 0
             for cost in pax.cost_service_charge_ids:
                 if cost.charge_type != 'RAC':
                     pax_price += cost.amount
-            self.env['tt.refund.line'].create({
-                'refund_id': refund_obj.id,
+            line_obj = self.env['tt.refund.line'].create({
                 'name': (pax.title or '') + ' ' + (pax.name or ''),
                 'birth_date': pax.birth_date,
                 'pax_price': pax_price,
                 'total_vendor': total_vendor
             })
+            refund_line_ids.append(line_obj.id)
+        refund_obj.update({
+            'refund_line_ids': [(6, 0, refund_line_ids)],
+        })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         action_num = self.env.ref('tt_accounting.tt_refund_action').id

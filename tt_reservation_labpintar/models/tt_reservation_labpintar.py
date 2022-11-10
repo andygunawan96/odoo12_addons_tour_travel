@@ -430,6 +430,11 @@ class ReservationLabPintar(models.Model):
                 'order_number': book_obj.name,
                 'provider_ids': response_provider_ids
             }
+
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             return ERR.get_no_error(response)
         except RequestException as e:
             _logger.error(traceback.format_exc())

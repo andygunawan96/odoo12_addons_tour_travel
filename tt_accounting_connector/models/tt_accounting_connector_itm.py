@@ -56,8 +56,12 @@ class AccountingConnectorITM(models.Model):
 
         live_id = live_id_obj.variable_value
         trans_id = trans_id_obj.variable_value
-        customer_code = int(customer_code_obj.variable_value)
         item_key = item_key_obj.variable_value
+        if customer_code_obj.variable_value == 'dynamic_customer_code':
+            customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
+            customer_code = customer_obj and customer_obj.seq_id or ''
+        else:
+            customer_code = int(customer_code_obj.variable_value)
         if request['category'] == 'reservation':
             include_service_taxes = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'is_include_service_taxes')], limit=1)
             pnr_list = request.get('pnr') and request['pnr'].split(', ') or []

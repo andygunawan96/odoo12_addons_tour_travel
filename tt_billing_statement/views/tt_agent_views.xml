@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="tt_agent_billing_inh" model="ir.ui.view">
+        <field name="name">tt.agent.billing.inh</field>
+        <field name="model">tt.agent</field>
+        <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='est_date']" position="after">
+                <field name="billing_cycle_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')], 'invisible':[('credit_limit','=',0)]}"/>
+                <field name="billing_due_date" options='{"type": "number", "step": 1}' attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')], 'invisible':[('credit_limit','=',0)]}"/>
+                <field name="billing_due_date_ids" widget="many2many_tags" options="{'no_create_edit': True,'color_field': 'color'}" attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')], 'invisible':[('credit_limit','=',0)]}"/>
+                <!--                    <button name="test_check_billing_cycle" type="object" string="Check Cycle"/>-->
+                <!--                    <button name="cron_create_billing_statement" type="object" string="Cron Cycle"/>-->
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

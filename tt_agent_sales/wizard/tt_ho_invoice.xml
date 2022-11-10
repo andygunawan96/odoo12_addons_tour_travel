@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_ho_invoice_wizard_form_view" model="ir.ui.view">
+        <field name="name">Invoice Wizard</field>
+        <field name="model">tt.ho.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Move Options">
+                <group>
+                    <group>
+                        <field name="invoice_id1"/>
+                        <field name="invoice_id2"/>
+                    </group>
+                </group>
+                <separator string="Moved Line"/>
+                <field name="invoice_line_ids" context="{'tree_view_ref': 'tt_agent_sales.tt_agent_invoice_line_tree_can_edit_view'}"/>
+                <footer>
+                    <button name="perform_move" string="Move" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_ho_invoice_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Invoice Wizard</field>
+        <field name="res_model">tt.ho.invoice.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

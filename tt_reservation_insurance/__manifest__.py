@@ -22,6 +22,7 @@ Key Features
         'data/tt_provider_insurance.xml',
         'data/tt_transport_carrier_insurance.xml',
         'data/ir_sequence_data.xml',
+        'data/ir_send_email.xml',
 
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',

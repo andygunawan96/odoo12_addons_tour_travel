@@ -343,6 +343,10 @@ class ReservationInsurance(models.Model):
                 'carrier_name': ','.join(name_ids['carrier']),
             })
 
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,

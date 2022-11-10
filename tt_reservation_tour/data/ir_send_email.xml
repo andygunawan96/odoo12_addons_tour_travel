@@ -254,5 +254,34 @@
 			</field>
 		</record>
 
+		<record model="mail.template" id="template_mail_reservation_ho_invoice_tour">
+			<field name="name">Template Mail Reservation HO Invoice Tour</field>
+			<field name="email_from">${object.get_email_reply_to()}</field>
+			<field name="reply_to">${object.get_email_reply_to()}</field>
+			<field name="subject">Reservation: ${object.name} HO Invoice</field>
+			<field name="email_to">${object.agent_id.email}</field>
+            <field name="email_cc"/>
+			<field name="model_id" ref="tt_reservation_tour.model_tt_reservation_tour"/>
+			<field name="auto_delete" eval="False"/>
+			<field name="lang"/>
+			<field name="copyvalue"/>
+			<field name="body_html">
+<![CDATA[
+<p>Dear ${object.agent_id.name},</p>
+<br/>
+<p>Your ${object.provider_type_id.name} reservation for ${object.contact_title} ${object.contact_name} has been issued with the following information:</p>
+<p>PNR: ${object.pnr}</p>
+<p>Order Number: ${object.name}</p>
+<p>Issued Date: ${object.get_btc_issued_date()}</p>
+<p>Booker Name: ${object.booker_id.name}</p>
+<br/>
+<p>Your HO Invoice are attached in this E-mail. Thank you for your trust and support in using our service.</p>
+<br/>
+<p>Regards,</p>
+<p>${object.get_company_name()}</p>
+]]>
+			</field>
+		</record>
+
     </data>
 </odoo>

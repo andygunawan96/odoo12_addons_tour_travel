@@ -274,6 +274,10 @@ class TtReservationBus(models.Model):
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
 
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = {
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
@@ -368,6 +372,9 @@ class TtReservationBus(models.Model):
                 elif provider['state'] == 'refund':
                     provider_obj.action_refund()
                     any_provider_changed = True
+
+            if book_obj.state == 'booked' and book_obj.voucher_code:  ##karena baru dapet harga waktu update pnr
+                book_obj.add_voucher(book_obj.voucher_code, context)
 
             for rec in book_obj.provider_booking_ids:
                 if rec.pnr and rec.pnr not in pnr_list:

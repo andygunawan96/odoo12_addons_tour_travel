@@ -681,6 +681,10 @@ class ReservationActivity(models.Model):
             prov_list = []
             for prov in book_obj.provider_booking_ids:
                 prov_list.append(prov.to_dict())
+            ## PAKAI VOUCHER
+            if req.get('voucher'):
+                book_obj.add_voucher(req['voucher']['voucher_reference'], context)
+
             response = book_obj.to_dict(context)
             response.update({
                 'provider_booking': prov_list,
