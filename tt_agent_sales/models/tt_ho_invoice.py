@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 class Ledger(models.Model):
     _inherit = 'tt.ledger'
 
-    ho_invoice_id = fields.Many2one('tt.ho.invoice','Agent Invoice ID')
+    ho_invoice_id = fields.Many2one('tt.ho.invoice','HO Invoice ID')
 
 class AgentInvoiceInh(models.Model):
     _name = 'tt.ho.invoice'
