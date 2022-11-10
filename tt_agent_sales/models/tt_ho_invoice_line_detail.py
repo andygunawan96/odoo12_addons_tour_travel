@@ -1,6 +1,6 @@
 from odoo import api,models,fields
 
-class AgentInvoiceLineDetail(models.Model):
+class AgentInvoiceLineDetailInh(models.Model):
     _name = 'tt.ho.invoice.line.detail'
     _inherit = 'tt.agent.invoice.line.detail'
     _rec_name = 'desc'
