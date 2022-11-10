@@ -150,9 +150,20 @@ class AgentInvoiceInh(models.Model):
                     ## ASUMSI point reward didapat dari total harga yg di bayar
                     ## karena kalau per pnr per pnr 55 rb & rules point reward kelipatan 10 rb agent rugi 1 point
                     # self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
+            ho_invoice_data = {
+                'ho_invoice_id': self.id,
+                'ho_invoice_model': self._name
+            }
+            if book_obj._name == 'tt.reschedule':
+                ho_invoice_data.update({
+                    'reschedule_id': book_obj.res_id,
+                    'reschedule_model': book_obj.res_model
+                })
+                book_obj = self.env[book_obj.res_model].browse(book_obj.res_id)
+
             self.env['tt.ledger'].create_ledger_vanilla(
-                self._name,
-                self.id,
+                book_obj._name,
+                book_obj.id,
                 '%sHO Invoice : %s' % ("Payment For " if debit else "",self.name),
                 self.name,
                 datetime.now(pytz.timezone('Asia/Jakarta')).date(),
@@ -165,10 +176,7 @@ class AgentInvoiceInh(models.Model):
                 rec['amount'] if debit == False or debit == True and rec.get('type','debit') == 'credit' else 0,
                 'Ledger for: %s%s' % ("Payment " if debit else "", self.name),
                 rec['source_of_fund_type'],
-                **{
-                    'ho_invoice_id': self.id
-                },
-
+                **ho_invoice_data,
             )
 
     def action_confirm(self):

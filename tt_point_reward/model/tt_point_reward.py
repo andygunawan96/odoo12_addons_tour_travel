@@ -44,7 +44,7 @@ class TtPointReward(models.Model):
             try:
                 total_point = 0
                 ## check agent type yg sesuai
-                point_reward_data_obj = self.search([])
+                point_reward_data_obj = self.search([('is_active','=', True)])
                 for rec in point_reward_data_obj:
                     is_agent_type = False
                     is_provider_type = False
