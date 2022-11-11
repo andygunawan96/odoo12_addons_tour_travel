@@ -530,6 +530,17 @@ class Ledger(models.Model):
 
         return ERR.get_no_error(res)
 
+    def filter_my_ledger(self):
+        return {
+            'name': 'Ledger',
+            'type': 'ir.actions.act_window',
+            'res_model': 'tt.ledger',
+            'view_mode': 'tree',
+            'domain': [('agent_id', '=', self.env.user.agent_id.id)],
+            'view_id': self.env.ref('tt_accounting.tt_ledger_tree_view').id,
+            'target': 'current'
+        }
+
 class TtLedgerWaitingList(models.Model):
     _name = 'tt.ledger.waiting.list'
     _description = 'Ledger Waiting List'

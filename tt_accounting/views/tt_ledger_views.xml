@@ -195,11 +195,21 @@
         <field name="res_model">tt.ledger</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
         <field name="context">
             {
             'form_view_ref': 'tt_accounting.tt_ledger_form_view',
             'tree_view_ref': 'tt_accounting.tt_ledger_tree_view'
             }
+        </field>
+    </record>
+
+    <record id="tt_ledger_action_agent_user" model="ir.actions.server">
+        <field name="name">My Ledger</field>
+        <field name="model_id" ref="model_tt_ledger"/>
+        <field name="state">code</field>
+        <field name="code">
+          action = model.filter_my_ledger()
         </field>
     </record>
 
@@ -254,7 +264,12 @@
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action" sequence="10"
-              groups="tt_base.group_ledger_level_1"
+              groups="tt_base.group_tt_tour_travel"
+    />
+
+    <menuitem id="menu_transaction_ledger_agent_user" parent="tt_accounting.top_transaction_ledger"
+              name="Ledger" action="tt_ledger_action_agent_user" sequence="12"
+              groups="tt_base.group_tt_agent_user"
     />
 
     <menuitem id="menu_transaction_ledger_waiting_list" parent="tt_accounting.top_transaction_ledger"
