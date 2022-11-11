@@ -241,3 +241,54 @@ class Destinations(models.Model):
             payload = {}
         return payload
     # END
+
+    def get_destination_data_by_provider_type(self, provider_type):
+        payload = {
+            'destination_data': {}
+        }
+        try:
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            if not provider_type_obj:
+                return payload
+
+            provider_id = provider_type_obj.id
+
+            objs = self.env['tt.destinations'].sudo().search([('provider_type_id', '=', provider_id)])
+            destination_data = {}
+            date_now = datetime.now().strftime(FORMAT_DATETIME)
+            expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
+            expired_date = expired_date.strftime(FORMAT_DATETIME)
+
+            country_data = {}
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                provider_type = obj.provider_type_id.code if obj.provider_type_id else ''
+                if not provider_type:
+                    continue
+
+                vals = obj.get_destination_data()
+                destination_code = vals['code']
+
+                if not destination_code:
+                    continue
+
+                country_code = obj.country_id.code if obj.country_id else ''
+                if country_code and country_code not in country_data:
+                    country_data[country_code] = obj.country_id.get_country_data()
+
+                vals.update({
+                    'country_code': country_code,
+                    'country_id': country_data.get(country_code, {})
+                })
+                destination_data[destination_code] = vals
+
+            payload = {
+                'destination_data': destination_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Destination Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+    # END
