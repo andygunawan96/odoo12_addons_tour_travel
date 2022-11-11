@@ -791,7 +791,7 @@ class TtReschedule(models.Model):
         payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
-            'real_total_amount': inv_line_obj.total,
+            'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': self.customer_parent_id.id,
             'state': 'confirm',
             'payment_date': datetime.now(),
@@ -809,7 +809,7 @@ class TtReschedule(models.Model):
         ho_payment_obj = self.env['tt.payment'].create({
             'agent_id': self.agent_id.id,
             'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
-            'real_total_amount': ho_inv_line_obj.total,
+            'real_total_amount': ho_invoice_id.grand_total,
             'customer_parent_id': self.customer_parent_id.id,
             'state': 'confirm',
             'payment_date': datetime.now(),
