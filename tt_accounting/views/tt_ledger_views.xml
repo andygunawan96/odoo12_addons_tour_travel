@@ -209,7 +209,7 @@
         <field name="model_id" ref="model_tt_ledger"/>
         <field name="state">code</field>
         <field name="code">
-          action = model.filter_my_ledger()
+          action = model.force_domain_agent_ledger()
         </field>
     </record>
 

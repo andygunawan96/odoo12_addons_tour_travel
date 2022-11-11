@@ -530,7 +530,7 @@ class Ledger(models.Model):
 
         return ERR.get_no_error(res)
 
-    def filter_my_ledger(self):
+    def force_domain_agent_ledger(self):
         return {
             'name': 'Ledger',
             'type': 'ir.actions.act_window',
