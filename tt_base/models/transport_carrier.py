@@ -157,6 +157,37 @@ class TransportCarrier(models.Model):
             payload = {}
         return payload
 
+    def get_carrier_by_provider_type(self, provider_type):
+        payload = {
+            'carrier_data': {}
+        }
+        try:
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            if not provider_type_obj:
+                return payload
+
+            provider_id = provider_type_obj.id
+
+            objs = self.env['tt.transport.carrier'].sudo().search([('provider_type_id', '=', provider_id)])
+            carrier_data = {}
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                vals = obj.get_carrier_data()
+                carrier_code = vals['code']
+                if not carrier_code:
+                    continue
+                carrier_data[carrier_code] = vals
+
+            payload = {
+                'carrier_data': carrier_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Carrier Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+
 
 class TransportCarrierType(models.Model):
     _name = 'tt.transport.carrier.type'
@@ -246,6 +277,37 @@ class TransportCarrierType(models.Model):
                         'carrier_type_dict': {},
                     }
                 carrier_type_data[provider_type_code]['carrier_type_dict'][carrier_type_code] = vals
+
+            payload = {
+                'carrier_type_data': carrier_type_data
+            }
+        except Exception as e:
+            _logger.error('Error Get Carrier Type Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+
+    def get_carrier_type_by_provider_type(self, provider_type):
+        payload = {
+            'carrier_type_data': {}
+        }
+        try:
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            if not provider_type_obj:
+                return payload
+
+            provider_id = provider_type_obj.id
+            objs = self.env['tt.transport.carrier.type'].sudo().search([('provider_type_id', '=', provider_id)])
+            carrier_type_data = {}
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                vals = obj.get_carrier_type_data()
+                carrier_type_code = vals['code']
+                if not carrier_type_code:
+                    continue
+
+                carrier_type_data[carrier_type_code] = vals
 
             payload = {
                 'carrier_type_data': carrier_type_data
