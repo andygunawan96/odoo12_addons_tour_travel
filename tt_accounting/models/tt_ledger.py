@@ -126,7 +126,7 @@ class Ledger(models.Model):
                                  res_id,name, ref,
                                  ledger_date, ledger_type,
                                  currency_id, issued_uid,
-                                 debit, credit,description, source_of_funds_type)
+                                 debit, credit,description, source_of_funds_type and source_of_funds_type or 'balance')
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
         else:
@@ -273,7 +273,7 @@ class Ledger(models.Model):
             amount -= self.use_point_reward(booking_obj, use_point, amount, issued_uid)
 
         ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Order : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                          2, booking_obj.currency_id.id, issued_uid, 0, amount, '', payment_method_use_to_ho)
+                                          2, booking_obj.currency_id.id, issued_uid, 0, amount, '', payment_method_use_to_ho and payment_method_use_to_ho or 'balance')
 
         pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
         ledger_values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
