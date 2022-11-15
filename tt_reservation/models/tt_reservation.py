@@ -1306,7 +1306,7 @@ class TtReservation(models.Model):
 
                 for provider in book_obj.provider_booking_ids:
                     _logger.info('create quota pnr')
-                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point, payment_method_use_to_ho)
+                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point, payment_method_use_to_ho) ##payment method untuk bayar full / installment, payment method use to ho --> payment agent to HO (balance / credit limit)
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         try:
