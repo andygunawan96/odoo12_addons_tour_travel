@@ -203,6 +203,51 @@ class TtSSRList(models.Model):
         return payload
 
 
+    def get_ssr_data_by_provider_type(self, provider_type):
+        payload = {
+            'ssr_data': {}
+        }
+        try:
+            provider_type_obj = self.env['tt.provider.type'].sudo().search([('code', '=', provider_type)], limit=1)
+            if not provider_type_obj:
+                return payload
+
+            provider_id = provider_type_obj.id
+
+            objs = self.env['tt.ssr.list'].sudo().search([('provider_type_id', '=', provider_id)])
+            ssr_data = {
+                'provider_dict': {}
+            }
+            for obj in objs:
+                if not obj.active:
+                    continue
+
+                provider_type_code = obj.provider_type_id.code if obj.provider_type_id else ''
+                provider_code = obj.provider_id.code if obj.provider_id else ''
+
+                if not provider_type_code or not provider_code:
+                    continue
+
+                vals = obj.get_ssr_data()
+                ssr_code = vals['code']
+                if not ssr_code:
+                    continue
+
+                if provider_code not in ssr_data['provider_dict']:
+                    ssr_data['provider_dict'][provider_code] = {
+                        'ssr_dict': {}
+                    }
+                ssr_data['provider_dict'][provider_code]['ssr_dict'][ssr_code] = vals
+
+            payload = {
+                'ssr_data': ssr_data
+            }
+        except Exception as e:
+            _logger.error('Error Get SSR Data, %s' % traceback.format_exc())
+            payload = {}
+        return payload
+
+
 class TtSSRListLine(models.Model):
     _name = 'tt.ssr.list.line'
     _description = 'SSR List Line'
