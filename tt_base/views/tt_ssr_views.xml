@@ -91,9 +91,6 @@
             <field name="model">tt.ssr.list</field>
             <field name="arch" type="xml">
                 <form string="SSR List">
-                    <header>
-<!--                        <button name="merge_ssr_category" string="Merge SSR Category" type="object" class="btn-default" groups="base.group_no_one"/>-->
-                    </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object"
@@ -149,16 +146,9 @@
             <field name="model">tt.ssr.list</field>
             <field name="arch" type="xml">
                 <search string="SSR List">
-                    <field name="name"/>
-                    <field name="code"/>
                     <field name="category_id"/>
                     <field name="provider_id"/>
                     <field name="provider_type_id"/>
-                    <group expand="1" string="Group By">
-                    <filter string="Category" name="group_by_category" context="{'group_by':'category_id'}"/>
-                    <filter string="Provider" name="group_by_provider" context="{'group_by':'provider_id'}"/>
-                    <filter string="Provider Type" name="group_by_providertype" context="{'group_by':'provider_type_id'}"/>
-                </group>
                 </search>
             </field>
         </record>

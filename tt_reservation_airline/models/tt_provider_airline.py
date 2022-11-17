@@ -907,28 +907,11 @@ class TtProviderAirline(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 106')
         if not self.provider_id:
             raise Exception('Provider is not set')
-
-        user_id = self.booking_id.user_id
-
-        co_user_info = self.env['tt.agent'].sudo().get_agent_level(user_id.agent_id.id)
-        context = {
-            "co_uid": user_id.id,
-            "co_user_name": user_id.name,
-            "co_user_login": user_id.login,
-            "co_agent_id": user_id.agent_id.id,
-            "co_agent_name": user_id.agent_id.name,
-            "co_agent_type_id": user_id.agent_id.agent_type_id.id,
-            "co_agent_type_name": user_id.agent_id.agent_type_id.name,
-            "co_agent_type_code": user_id.agent_id.agent_type_id.code,
-            "co_user_info": co_user_info,
-        }
-
         req = {
             "provider": self.provider_id.code,
             "pnr": self.pnr,
             "pnr2": self.pnr2,
-            "reference": self.reference,
-            "context": context,
+            "reference": self.reference
         }
         res = self.env['tt.airline.api.con'].send_reprice_booking_vendor(req)
         _logger.info('Action Reprice Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
@@ -978,28 +961,11 @@ class TtProviderAirline(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 107')
         if not self.provider_id:
             raise Exception('Provider is not set')
-
-        user_id = self.booking_id.user_id
-
-        co_user_info = self.env['tt.agent'].sudo().get_agent_level(user_id.agent_id.id)
-        context = {
-            "co_uid": user_id.id,
-            "co_user_name": user_id.name,
-            "co_user_login": user_id.login,
-            "co_agent_id": user_id.agent_id.id,
-            "co_agent_name": user_id.agent_id.name,
-            "co_agent_type_id": user_id.agent_id.agent_type_id.id,
-            "co_agent_type_name": user_id.agent_id.agent_type_id.name,
-            "co_agent_type_code": user_id.agent_id.agent_type_id.code,
-            "co_user_info": co_user_info,
-        }
-
         req = {
             "provider": self.provider_id.code,
             "pnr": self.pnr,
             "pnr2": self.pnr2,
-            "reference": self.reference,
-            "context": context,
+            "reference": self.reference
         }
         res = self.env['tt.airline.api.con'].send_void_booking_vendor(req)
         _logger.info('Action Void Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
