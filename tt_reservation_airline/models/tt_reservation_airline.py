@@ -456,12 +456,12 @@ class ReservationAirline(models.Model):
                             continue
 
                         psg_obj = book_obj.passenger_ids[psg_idx]
-                        name = '%s %s' % (psg['first_name'], psg['last_name'])
+                        name = '%s %s' % (psg_obj.first_name, psg_obj.last_name)
                         name = name.strip()
                         ff_values = {
                             'name': name,
-                            'first_name': psg['first_name'],
-                            'last_name': psg['last_name'],
+                            'first_name': psg_obj.first_name,
+                            'last_name': psg_obj.last_name,
                             'ff_number': ff['ff_number'],
                             'ff_code': ff['ff_code'],
                             'schedule_id': ff['schedule_id'],

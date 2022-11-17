@@ -659,7 +659,14 @@ class TtReschedule(models.Model):
             else:
                 raise UserError(_('Purchase Order is required in one Line or more. Please check all Line(s)!'))
 
-        self.action_create_invoice()
+        payment_method_to_ho = ''
+        for ledger_obj in self.ledger_ids:
+            if ledger_obj.transaction_type == 7:  ## reschedule
+                if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
+                    payment_method_to_ho = ledger_obj.source_of_funds_type
+                    break
+            pass
+        self.action_create_invoice(payment_method_to_ho)
         self.write({
             'state': 'done',
             'done_uid': self.env.user.id,
@@ -706,7 +713,7 @@ class TtReschedule(models.Model):
         if co_uid:
             self.write({'cancel_uid': co_uid})
 
-    def action_create_invoice(self):
+    def action_create_invoice(self, payment_method_to_ho):
         invoice_id = False
         ho_invoice_id = False
 
@@ -721,15 +728,23 @@ class TtReschedule(models.Model):
                 'confirmed_date': datetime.now()
             })
 
+        is_use_credit_limit = False
         if not ho_invoice_id:
+            if payment_method_to_ho == 'balance':
+                state = 'paid'
+                is_use_credit_limit = False
+            else:
+                state = 'confirm'
+                is_use_credit_limit = True
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
-                'state': 'confirm',
+                'state': state,
                 'confirmed_uid': self.env.user.id,
-                'confirmed_date': datetime.now()
+                'confirmed_date': datetime.now(),
+                'is_use_credit_limit': is_use_credit_limit
             })
 
         desc_str = self.name + ' ('

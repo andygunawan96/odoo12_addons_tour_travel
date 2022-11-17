@@ -12,7 +12,8 @@ _logger = logging.getLogger(__name__)
 class Ledger(models.Model):
     _inherit = 'tt.ledger'
 
-    ho_invoice_id = fields.Many2one('tt.ho.invoice','HO Invoice ID')
+    ho_invoice_id = fields.Integer('After Sales ID')
+    ho_invoice_model = fields.Char('After Sales Model')
 
 class AgentInvoiceInh(models.Model):
     _name = 'tt.ho.invoice'
@@ -20,14 +21,17 @@ class AgentInvoiceInh(models.Model):
     _description = 'HO Invoice'
     _order = 'id desc'
 
+    def _get_ho_invoice_model_domain(self):
+        return [('ho_invoice_model', '=', self._name)]
+
     invoice_line_ids = fields.One2many('tt.ho.invoice.line', 'invoice_id', 'Invoice Line', readonly=True,
                                        states={'draft': [('readonly', False)]})
     payment_ids = fields.One2many('tt.payment.invoice.rel', 'ho_invoice_id', 'Payments',
                                   states={'paid': [('readonly', True)]})
 
-    ledger_ids = fields.One2many('tt.ledger', 'res_id', 'Ledger',
+    ledger_ids = fields.One2many('tt.ledger', 'ho_invoice_id', 'Ledger',
                                  readonly=True, states={'draft': [('readonly', False)]},
-                                 domain=[('res_model', '=', 'tt.ho.invoice')])
+                                 domain=_get_ho_invoice_model_domain)
     is_use_credit_limit = fields.Boolean(default=False)
 
     # Fungsi Asli dri tt.agent.invoice ==> set_default_billing_to

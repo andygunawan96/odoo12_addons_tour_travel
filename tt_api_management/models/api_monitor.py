@@ -25,8 +25,13 @@ class ApiMonitor(models.Model):
 
             provider_type_obj = self.env['tt.provider.type'].search([('code','=',req['provider_type_code'])],limit=1)
 
-            monitor_data_obj = monitor_obj.monitor_data_ids.filtered(lambda x: x.action == req['action']
-                                                                               and x.req_data == str(req['req_data']))
+            # filtered is slow when the data are large
+            # monitor_data_obj = monitor_obj.monitor_data_ids.filtered(lambda x: x.action == req['action']
+            #                                                                    and x.req_data == str(req['req_data']))
+            monitor_data_obj = self.env['tt.api.monitor.data'].search([('monitor_id','=',monitor_obj.id),
+                                                                       ('action','=',req['action']),
+                                                                       ('req_data','=',str(req['req_data']))])
+
             if not monitor_data_obj:
                 monitor_data_obj = self.env['tt.api.monitor.data'].create({
                     'action': req['action'],
@@ -91,8 +96,10 @@ class ApiMonitorData(models.Model):
     @api.depends('record_ids','record_ids.is_verified')
     def _compute_unverified_counter(self):
         for rec in self:
-            rec.unverified_counter = len(rec.record_ids.filtered(lambda x: x.is_verified == False).ids)
-
+            #filtered is slow when the data are too large
+            # rec.unverified_counter = len(rec.record_ids.filtered(lambda x: x.is_verified == False).ids)
+            rec.unverified_counter = len(self.env['tt.api.monitor.data.record'].search([('monitor_data_id','=',rec.id),
+                                                                                        ('is_verified','=',False)]).ids)
 class ApiMonitorDataRecord(models.Model):
     _name = 'tt.api.monitor.data.record'
     _description = 'API Monitor Data Record'
