@@ -247,49 +247,6 @@ class TtSSRList(models.Model):
             payload = {}
         return payload
 
-    # def merge_ssr_category(self):
-    #     _logger.info('Merge SSR Category : START')
-    #     try:
-    #         objs = self.sudo().search([])
-    #         category_id_dict = {}
-    #         del_category_id_list = []
-    #         del_category_obj_list = []
-    #         for obj in objs:
-    #             if not obj.category_id:
-    #                 continue
-    #
-    #             category_obj = obj.category_id
-    #             key = category_obj.key
-    #             value = category_obj.id
-    #             if key not in category_id_dict:
-    #                 category_id_dict[key] = value
-    #                 continue
-    #             else:
-    #                 category_id = category_id_dict[key]
-    #                 if value == category_id:
-    #                     continue
-    #
-    #                 if value not in del_category_id_list:
-    #                     del_category_id_list.append(value)
-    #                     del_category_obj_list.append(category_obj)
-    #                 obj.write({
-    #                     'category_id': category_id
-    #                 })
-    #
-    #         cat_objs = self.env['tt.ssr.category'].sudo().search([])
-    #         for cat_obj in cat_objs:
-    #             key = cat_obj.key
-    #             value = cat_obj.id
-    #             if key in category_id_dict and value != category_id_dict[key] and value not in del_category_id_list:
-    #                 del_category_obj_list.append(cat_obj)
-    #         for obj in del_category_obj_list:
-    #             obj.unlink()
-    #         _logger.info('Merge SSR Category : DONE')
-    #         return True
-    #     except Exception as e:
-    #         _logger.error('Error Merge SSR Category, %s' % traceback.format_exc())
-    #         return False
-
 
 class TtSSRListLine(models.Model):
     _name = 'tt.ssr.list.line'

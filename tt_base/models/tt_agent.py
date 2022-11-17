@@ -778,50 +778,6 @@ class TtAgent(models.Model):
             email_cc = ",".join(email_cc_list)
         return email_cc
 
-    def get_simple_agent_list_data(self):
-        '''
-        start_index=None, limit=None
-        '''
-        payload = {
-            'agent_list': [],
-            'error_code': 0,
-            'error_msg': '',
-        }
-        try:
-            # if start_index != None and type(start_index) != int:
-            #     raise Exception('Wrong type value start_index, must be int')
-            # if limit != None and type(limit) != int:
-            #     raise Exception('Wrong type value limit, must be int')
-
-            objs = self.env['tt.agent'].sudo().search([])
-            # if start_index != None:
-            #     objs = objs[start_index:]
-            # if limit != None:
-            #     objs = objs[:limit]
-
-            for obj in objs:
-                vals = {
-                    'name': obj.name,
-                    'agent_id': obj.id,
-                    'agent_type_id': 0,
-                    'agent_type_name': "",
-                    'agent_type_code': "",
-                }
-                if obj.agent_type_id:
-                    vals.update({
-                        'agent_type_id': obj.agent_type_id.id,
-                        'agent_type_name': obj.agent_type_id.name,
-                        'agent_type_code': obj.agent_type_id.code,
-                    })
-                payload['agent_list'].append(vals)
-        except Exception as e:
-            payload.update({
-                'error_code': 500,
-                'error_msg': str(e)
-            })
-        return payload
-
-
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.target'
