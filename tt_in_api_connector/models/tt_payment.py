@@ -143,7 +143,7 @@ class TtPaymentApiCon(models.Model):
                 pass
             # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
         elif action == 'get_amount':
-            book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
+            book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])])
             if book_obj:
                 amount = book_obj.total - book_obj.total_discount
                 payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
