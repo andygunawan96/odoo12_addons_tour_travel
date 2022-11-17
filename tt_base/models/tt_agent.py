@@ -538,7 +538,7 @@ class TtAgent(models.Model):
                         dom.append(('state', '=', req['state']))
             if util.get_without_empty(context,'co_customer_parent_id'):
                 dom.append(('customer_parent_id','=',context['co_customer_parent_id']))
-
+            dom.append(('state', '!=', ['halt_booked']))
             res_dict = {}
             for type in types:
                 # if util.get_without_empty(req,'order_or_pnr'):
