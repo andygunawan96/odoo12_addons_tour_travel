@@ -373,22 +373,12 @@ class TtProviderAirline(models.Model):
                 'rescheduled_date': fields.Datetime.now(),
             })
 
-    def action_halt_booked_api_airline(self, api_context,err_code=0,err_msg=''):
+    def action_halt_booked_api_airline(self, api_context):
         for rec in self:
-            data = {
+            rec.write({
                 'state': 'halt_booked',
                 'hold_date': datetime.now() + timedelta(minutes=30)
-            }
-            if err_code != 0:
-                data.update({
-                    'error_history_ids': [(0, 0, {
-                        'res_model': self._name,
-                        'res_id': self.id,
-                        'error_code': err_code,
-                        'error_msg': err_msg
-                    })]
-                })
-            rec.write(data)
+            })
 
     def action_halt_issued_api_airline(self, api_context):
         for rec in self:

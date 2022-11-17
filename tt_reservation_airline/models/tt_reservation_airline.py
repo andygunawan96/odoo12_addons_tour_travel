@@ -688,10 +688,6 @@ class ReservationAirline(models.Model):
                             elif provider['status'] == 'FAIL_ISSUED':
                                 provider_obj.action_failed_issued_api_airline(provider.get('error_code', -1),provider.get('error_msg', ''))
                                 any_provider_changed = True
-                            elif provider['status'] == 'HALT':
-                                provider_obj.action_halt_booked_api_airline(context, provider.get('error_code', -1),provider.get('error_msg', ''))
-                                book_obj.is_halt_process = True
-                                any_provider_changed = True
                             # else:
                             #     provider_obj.write({
                             #         'error_history_ids': [(0, 0, {
@@ -701,15 +697,6 @@ class ReservationAirline(models.Model):
                             #             'error_msg': provider['error_msg']
                             #         })]
                             #     })
-                        elif provider_obj.state == 'halt_booked':
-                            provider_obj.write({
-                                'error_history_ids': [(0, 0, {
-                                    'res_model': provider_obj._name,
-                                    'res_id': provider_obj.id,
-                                    'error_code': provider['error_code'],
-                                    'error_msg': provider['error_msg']
-                                })]
-                            })
                     # END
                     continue
                 # END
@@ -816,9 +803,6 @@ class ReservationAirline(models.Model):
                     any_provider_changed = True
                 elif provider['status'] == 'REISSUE':
                     provider_obj.action_reissue_api_airline(context)
-                    any_provider_changed = True
-                elif provider['status'] == 'HALT':
-                    provider_obj.action_halt_booked_api_airline(context, provider.get('error_code', -1),provider.get('error_msg', ''))
                     any_provider_changed = True
 
             # for rec in book_obj.provider_booking_ids:
@@ -1021,7 +1005,6 @@ class ReservationAirline(models.Model):
                 'provider_bookings': prov_list,
                 'refund_list': refund_list,
                 'reschedule_list': reschedule_list,
-                'signature_booked': book_obj.sid_booked
                 # 'provider_type': book_obj.provider_type_id.code
             })
             # _logger.info("Get resp\n" + json.dumps(res))
