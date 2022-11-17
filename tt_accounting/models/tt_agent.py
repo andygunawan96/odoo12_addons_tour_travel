@@ -45,9 +45,9 @@ class TtAgent(models.Model):
     def _compute_balance_agent(self):
         for rec in self:
             if len(rec.ledger_ids) > 0:
-                for ledger_obj in rec.ledger_ids.filtered(lambda x: x.source_of_funds_type == 'balance'): ## source_of_funds_type 0 untuk balance
+                ledger_obj = self.env['tt.ledger'].search([('agent_id', '=', rec.id), ('source_of_funds_type', '=', 'balance')],limit=1)
+                if len(ledger_obj.ids) > 0:
                     rec.balance = ledger_obj.balance
-                    break
             else:
                 rec.balance = 0
 
@@ -59,9 +59,9 @@ class TtAgent(models.Model):
     def _compute_balance_credit_limit_agent(self):
         for rec in self:
             if len(rec.ledger_ids) > 0:
-                for ledger_obj in rec.ledger_ids.filtered(lambda x: x.source_of_funds_type == 'credit_limit'): ## source_of_funds_type 0 untuk balance
-                    rec.balance_credit_limit = ledger_obj.balance
-                    break
+                ledger_obj = self.env['tt.ledger'].search([('agent_id', '=', rec.id), ('source_of_funds_type', '=', 'credit_limit')],limit=1)
+                if len(ledger_obj.ids) > 0:
+                    rec.credit_limit = ledger_obj.balance
             else:
                 rec.balance_credit_limit = 0
 
@@ -162,8 +162,9 @@ class TtAgent(models.Model):
             point_reward = 0
             ### POINT REWARD ####
             if len(rec.ledger_ids)>0:
-                for ledger_points_obj in rec.ledger_ids.filtered(lambda x: x.source_of_funds_type == 'point'): ## source_of_funds_type 1 untuk points
-                    point_reward += ledger_points_obj.debit - ledger_points_obj.credit
+                ledger_obj = self.env['tt.ledger'].search([('agent_id', '=', rec.id), ('source_of_funds_type', '=', 'point')], limit=1)
+                if len(ledger_obj.ids) > 0:
+                    point_reward = ledger_obj.balance
             rec.point_reward = point_reward
 
             ### UNPROCESS AMOUNT ####
