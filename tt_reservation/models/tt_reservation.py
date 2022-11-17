@@ -1106,7 +1106,7 @@ class TtReservation(models.Model):
         return total_discount_in_reservation
 
     def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
-        if self.state in ['draft', 'booked', 'issued']: ## DRAFT UNTUK VOUCHER BOOK / FORCE ISSUED
+        if self.state in ['draft', 'booked', 'issued', 'halt_booked']: ## DRAFT UNTUK VOUCHER BOOK / FORCE ISSUED
             if voucher_reference:
                 voucher_dict, discount = self.get_discount(voucher_reference, context)
                 is_same_voucher_value = True
