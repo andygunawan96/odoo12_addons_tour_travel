@@ -825,7 +825,8 @@ class TtReservation(models.Model):
             'booked_by': self.user_id.name,
             'issued_by': self.issued_uid.name,
             'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-            'use_point': self.is_using_point_reward
+            'use_point': self.is_using_point_reward,
+            'signature_booked': self.sid_booked,
             # END
         }
         if self.booker_insentif:
