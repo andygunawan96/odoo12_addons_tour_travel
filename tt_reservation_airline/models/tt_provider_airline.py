@@ -377,7 +377,7 @@ class TtProviderAirline(models.Model):
         for rec in self:
             data = {
                 'state': 'halt_booked',
-                'hold_date': datetime.now() + timedelta(minutes=30)
+                'hold_date': datetime.now() + timedelta(minutes=10)
             }
             if err_code != 0:
                 data.update({

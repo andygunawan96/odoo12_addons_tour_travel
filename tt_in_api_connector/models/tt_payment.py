@@ -97,7 +97,7 @@ class TtPaymentApiCon(models.Model):
                                 res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
                                 pay_acq_num[len(pay_acq_num) - 1].state = 'done'
 
-                    book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])], limit=1)
+                    book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])], limit=1)
                     _logger.info(data['order_number'])
                     if book_obj:
                         pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close','done'])],limit=1) ## SELECT ULANG KARENA BISA CONCURRENT, UNTUK AMBIL FEE AMOUNT
@@ -143,7 +143,7 @@ class TtPaymentApiCon(models.Model):
                 pass
             # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
         elif action == 'get_amount':
-            book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked'])])
+            book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])])
             if book_obj:
                 amount = book_obj.total - book_obj.total_discount
                 payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
