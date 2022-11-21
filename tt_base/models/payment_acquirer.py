@@ -83,7 +83,7 @@ class PaymentAcquirer(models.Model):
             else:
                 return 0, self.minimum_amount, uniq
         elif self.va_fee or self.fee_percentage:
-            total_fee = math.ceil(self.fee_percentage * amount / 100) + self.va_fee
+            total_fee = math.ceil(self.fee_percentage * (amount + self.va_fee) / 100 + self.va_fee )
             if total_fee > self.minimum_amount:
                 return 0, total_fee, uniq
             else:
