@@ -83,7 +83,7 @@ class PaymentAcquirer(models.Model):
             else:
                 return 0, self.minimum_amount, uniq
         elif self.va_fee or self.fee_percentage:
-            total_fee = math.ceil(self.fee_percentage * amount / 100) + self.va_fee
+            total_fee = math.ceil(self.fee_percentage * (amount + self.va_fee) / 100 + self.va_fee )
             if total_fee > self.minimum_amount:
                 return 0, total_fee, uniq
             else:
@@ -563,7 +563,15 @@ class PaymentAcquirerNumber(models.Model):
     fee_amount = fields.Float('Fee Amount') ## HANYA UNTUK CLOSE VA
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
-    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type')
+    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type', help="""
+    OPEN FOR VA OPEN
+    CLOSED FOR PAYMENT RESERVATION
+    WAITING NEXT CRON FOR ALREADY PAY BUT ERROR ISSUED DO ISSUED AUTOMATICALLY
+    DONE FOR DONE PAYMENT RESERVATION
+    EXPIRED FOR NO PAYMENT BEFORE MORE THAN TIME LIMIT
+    CANCELLED FOR CANCEL FROM USER
+    FAILED FOR ALREADY PAYMENT BUT ERROR ISSUED
+    """)
     email = fields.Char(string="Email") # buat VA open biar ngga kembar
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
     is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
@@ -609,7 +617,7 @@ class PaymentAcquirerNumber(models.Model):
 
     def create_payment_acq(self,data,booking_obj,provider_type, is_use_point):
         if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
-            hold_date = booking_obj.hold_date
+            hold_date = booking_obj.hold_date - timedelta(minutes=5)
         elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
             hold_date = datetime.now() + timedelta(minutes=30)
         else:

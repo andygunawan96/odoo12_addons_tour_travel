@@ -62,7 +62,7 @@ BOOKING_STATE = [
     ('reissue', 'Reissue'), #diganti reissue
     # April 21, 2020 - SAM
     ('fail_booked', 'Booking Failed'),
-    ('halt_booked', 'Booking Halt'),
+    ('halt_booked', 'Halt'),
     ('booked_pending', 'Booking Pending'),
     ('partial_booked', 'Partial Booked'),
     ('fail_issued', 'Issued Failed'),
@@ -105,7 +105,7 @@ BOOKING_STATE_STR = {
     'reissue': 'Reissue', #diganti reissue
     # April 21, 2020
     'fail_booked': 'Booking Failed',
-    'halt_booked': 'Booking Halt',
+    'halt_booked': 'Halt',
     'booked_pending': 'Booking Pending',
     'booked': 'Booked',
     'partial_booked': 'Partial Booked',
