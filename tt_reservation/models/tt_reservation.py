@@ -825,7 +825,8 @@ class TtReservation(models.Model):
             'booked_by': self.user_id.name,
             'issued_by': self.issued_uid.name,
             'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
-            'use_point': self.is_using_point_reward
+            'use_point': self.is_using_point_reward,
+            'signature_booked': self.sid_booked,
             # END
         }
         if self.booker_insentif:
@@ -1105,7 +1106,7 @@ class TtReservation(models.Model):
         return total_discount_in_reservation
 
     def add_voucher(self, voucher_reference, context={}, type='apply'): ##type apply --> pasang, use --> pakai
-        if self.state in ['draft', 'booked', 'issued']: ## DRAFT UNTUK VOUCHER BOOK / FORCE ISSUED
+        if self.state in ['draft', 'booked', 'issued', 'halt_booked']: ## DRAFT UNTUK VOUCHER BOOK / FORCE ISSUED
             if voucher_reference:
                 voucher_dict, discount = self.get_discount(voucher_reference, context)
                 is_same_voucher_value = True

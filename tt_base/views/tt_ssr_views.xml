@@ -91,6 +91,9 @@
             <field name="model">tt.ssr.list</field>
             <field name="arch" type="xml">
                 <form string="SSR List">
+                    <header>
+<!--                        <button name="merge_ssr_category" string="Merge SSR Category" type="object" class="btn-default" groups="base.group_no_one"/>-->
+                    </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object"

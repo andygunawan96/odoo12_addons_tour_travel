@@ -89,7 +89,8 @@ class TtAirlineApiCon(models.Model):
             'reference': req.get('reference', ''),
             'provider': req.get('provider'),
             'is_retrieved': req.get('is_retrieved',False),
-            'pricing_date': req.get('pricing_date',False)
+            'pricing_date': req.get('pricing_date',False),
+            'context': req.get('context', {}),
         }
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
@@ -106,7 +107,8 @@ class TtAirlineApiCon(models.Model):
             'reference': req.get('reference', ''),
             'provider': req.get('provider'),
             'is_retrieved': req.get('is_retrieved',False),
-            'pricing_date': req.get('pricing_date',False)
+            'pricing_date': req.get('pricing_date',False),
+            'context': req.get('context', {}),
         }
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,

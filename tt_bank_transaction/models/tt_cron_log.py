@@ -104,11 +104,11 @@ class ttCronTopUpValidator(models.Model):
                                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)
                                             result.top_up_validated(res['response']['top_up_id'])
                                             self._cr.commit()
-                                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in', ['booked','issued'])], limit=1)
+                                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in', ['booked','issued','halt_booked'])], limit=1)
 
                                     if book_obj:
                                         #login gateway, payment
-                                        if book_obj.state == 'booked':
+                                        if book_obj.state in ['booked', 'halt_booked']:
                                             seq_id = ''
                                             if book_obj.payment_acquirer_number_id:
                                                 seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
