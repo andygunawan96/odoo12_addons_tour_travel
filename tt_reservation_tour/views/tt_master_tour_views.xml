@@ -285,6 +285,11 @@
                                                 </tree>
                                                 <form>
                                                     <sheet>
+                                                        <div class="oe_button_box" name="button_box">
+                                                            <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Image" type="action"
+                                                                            class="oe_stat_button" icon="fa-upload" groups="base.group_system,tt_base.group_master_data_tour_level_3"
+                                                                            context="{'default_target_field_name': 'image_id'}"/>
+                                                        </div>
                                                         <group>
                                                             <group>
                                                                 <field name="sequence"/>

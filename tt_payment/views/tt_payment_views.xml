@@ -53,16 +53,16 @@
                     <button name="test_set_as_draft" string="set as draft" type="object" groups="base.group_system"/>
                     <button name="test_set_as_confirm" string="set as confirm" type="object" groups="base.group_system,tt_base.group_payment_level_4"/>
                     <button string="Validate" name="action_validate_from_button"
-                            type="object" groups="tt_base.group_payment_level_4"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
                             attrs="{'invisible':[('state','!=','confirm')]}"/>
                     <button string="Approve" name="action_approve_from_button"
-                            type="object" groups="tt_base.group_payment_level_4"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
                             attrs="{'invisible':[('state','!=','validated')]}"/>
                     <button string="Reject" name="action_reject_from_button"
-                            type="object" groups="tt_base.group_payment_level_4"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
                             attrs="{'invisible':[('state','not in',['confirm','validated'])]}"/>
                     <button string="Cancel Payment" name="action_cancel_from_button"
-                            type="object" groups="tt_base.group_payment_level_4"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
                             attrs="{'invisible':[('state','!=','approved')]}" confirm="Are you sure you want to cancel?"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_payment_level_4"
@@ -214,13 +214,23 @@
             </button>
             <button name="action_validate_from_button" position="replace">
                 <button string="Validate" name="action_validate_from_button"
-                        type="object" groups="tt_base.group_tt_agent_finance"
+                        type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
                         attrs="{'invisible':['|',('state','!=','confirm'),('top_up_id','!=', False)]}"/>
             </button>
             <button name="action_approve_from_button" position="replace">
                 <button string="Approve" name="action_approve_from_button"
-                        type="object" groups="tt_base.group_tt_agent_finance"
+                        type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
                         attrs="{'invisible':['|',('state','!=','validated'),('top_up_id','!=', False)]}"/>
+            </button>
+            <button name="action_reject_from_button" position="replace">
+                <button string="Reject" name="action_reject_from_button"
+                        type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
+                        attrs="{'invisible':['|',('state','not in',['confirm','validated']),('top_up_id','!=', False)]}"/>
+            </button>
+            <button name="action_cancel_from_button" position="replace">
+                <button string="Cancel Payment" name="action_cancel_from_button"
+                        type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
+                        attrs="{'invisible':['|',('state','!=','approved'),('top_up_id','!=', False)]}" confirm="Are you sure you want to cancel?"/>
             </button>
         </field>
     </record>

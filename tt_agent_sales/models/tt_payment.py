@@ -146,6 +146,20 @@ class TtPaymentInh(models.Model):
     _inherit = 'tt.payment'
 
     invoice_ids = fields.One2many('tt.payment.invoice.rel', 'payment_id', 'Invoices',readonly=True)
+    is_ho_invoice_payment = fields.Boolean('Is HO Invoice Payment', readonly=True, compute='_compute_is_ho_invoice_payment', store=True)
+
+    @api.depends('invoice_ids')
+    @api.onchange('invoice_ids')
+    def _compute_is_ho_invoice_payment(self):
+        for rec in self:
+            is_ho = False
+            for inv in rec.invoice_ids:
+                if inv.ho_invoice_id:
+                    is_ho = True
+            rec.is_ho_invoice_payment = is_ho
+
+    def get_is_ho_invoice_payment(self):
+        return self.is_ho_invoice_payment
 
     @api.multi
     def compute_available_amount(self):
