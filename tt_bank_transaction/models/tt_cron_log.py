@@ -212,7 +212,8 @@ class ttCronTopUpValidator(models.Model):
                             _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1],json.dumps(res)))
                             if res['error_code'] == 0 and res['response']['state'] == 'issued':
                                 # tutup payment acq number
-                                payment_acq_obj.state = 'done'
+                                # payment_acq_obj.state = 'done'
+                                pass
                             else:
                                 payment_acq_obj.state = 'waiting'
                                 if book_obj.agent_type_id.code == 'btc':
