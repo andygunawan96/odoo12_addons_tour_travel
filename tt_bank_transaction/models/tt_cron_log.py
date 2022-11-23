@@ -62,7 +62,8 @@ class ttCronTopUpValidator(models.Model):
                 self.write_cron_log('auto tup-up validator by system')
             #payment reservation
             try:
-                payment_acq_objs = self.env['payment.acquirer.number'].search(['|',('state','=','close'), ('state', '=', 'waiting'), ('unique_amount','!=',0)])
+                ## UNTUK YG BAYAR BCA
+                payment_acq_objs = self.env['payment.acquirer.number'].search(['|',('state','=','close'), ('unique_amount','!=',0)])
                 for payment_acq_obj in payment_acq_objs:
                     transaction = self.env['tt.bank.accounts'].search([])
                     if transaction:
@@ -188,6 +189,95 @@ class ttCronTopUpValidator(models.Model):
                                     _logger.error("%s ID, is not found within transaction" % payment_acq_obj.id)
                                     continue
 
+                ## UNTUK CRON YG SUDAH BAYAR TAPI BELUM ISSUED PAYMENT BY BCA & Espay STATE WAITING
+                payment_acq_objs = self.env['payment.acquirer.number'].search([('state', '=', 'waiting')])
+                for payment_acq_obj in payment_acq_objs:
+                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in',['booked','issued','halt_booked'])],limit=1)
+                    if book_obj:
+                        if book_obj.state in ['issued', 'done']:
+                            payment_acq_obj.state = 'done'
+                        # login gateway, payment
+                        elif book_obj.state in ['booked', 'halt_booked']:
+                            seq_id = ''
+                            if book_obj.payment_acquirer_number_id:
+                                seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
+                            req = {
+                                'order_number': book_obj.name,
+                                'user_id': book_obj.user_id.id,
+                                'provider_type': variables.PROVIDER_TYPE_PREFIX[book_obj.name.split('.')[0]],
+                                'member': False,  # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
+                                'acquirer_seq_id': seq_id,
+                                'force_issued': True,
+                                'use_point': book_obj.payment_acquirer_number_id.is_using_point_reward
+                            }
+                            res = self.env['tt.payment.api.con'].send_payment(req)
+                            _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1],json.dumps(res)))
+                            if res['error_code'] != 0:
+                                # payment_acq_obj.state = 'waiting' ## update state waktu next cron agar tidak concurrent
+                                if book_obj.agent_type_id.code == 'btc':
+                                    different_price = res['response']['agent_nta'] - payment_acq_obj.amount
+                                    if different_price > 0:
+                                        ##b2c beda harga top up selisih harga
+                                        context = {
+                                            'co_agent_id': book_obj.agent_id.id,
+                                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                                        }
+                                        request = {
+                                            'amount': different_price,
+                                            'currency_code': book_obj.currency,
+                                            'payment_ref': '%s_autotopup' % payment_acq_obj['number'],
+                                            'payment_seq_id': payment_acq_obj.payment_acquirer_id.seq_id,
+                                            'subsidy': 0,
+                                            'fee': 0
+                                        }
+
+                                        res = self.env['tt.top.up'].create_top_up_api(request, context, True)
+                                        if res['error_code'] == 0:
+                                            request = {
+                                                'virtual_account': '',
+                                                'name': res['response']['name'],
+                                                'payment_ref': '%s_autotopup' % payment_acq_obj['number'],
+                                                ##jangan di ubah nanti ngebug top up approved dobule dengan case, 2 payment acq number status closed dari agent yg sama kemudian di trf 2 2nya, confurrent update
+                                                'fee': 0
+                                            }
+                                            _logger.info("###5")
+                                            res = self.env['tt.top.up'].action_va_top_up(request, context,
+                                                                                         payment_acq_obj.id)
+                                            self.env['tt.bank.accounts'].top_up_validated(res['response']['top_up_id'])
+                                            self._cr.commit()
+                                    res = self.env['tt.payment.api.con'].send_payment(req)
+                                    if res['error_code'] == 0:
+                                        # tutup payment acq number
+                                        payment_acq_obj.state = 'done'
+                                    else:
+                                        ## NOTIF TELE
+                                        if payment_acq_obj.unique_amount == 0:
+                                            payment_vendor_name = 'BCA'
+                                        else:
+                                            payment_vendor_name = 'Espay'
+                                        data = {
+                                            'code': 9903,
+                                            'title': 'ERROR ISSUED using %s' % payment_vendor_name,
+                                            'message': 'Error issued %s order number %s\n%s' % (payment_vendor_name, book_obj.name, res['error_msg']),
+                                        }
+                                        GatewayConnector().telegram_notif_api(data, {})
+
+                                else:
+                                    ## NOTIF TELE
+                                    if payment_acq_obj.unique_amount == 0:
+                                        payment_vendor_name = 'BCA mutation'
+                                    else:
+                                        payment_vendor_name = 'Espay'
+                                    data = {
+                                        'code': 9903,
+                                        'title': 'ERROR ISSUED',
+                                        'message': 'Error issued %s, order number %s\n%s' % (payment_vendor_name, book_obj.name, res['error_msg']),
+                                    }
+                                    GatewayConnector().telegram_notif_api(data, {})
+                        elif book_obj.state == 'issued':
+                            payment_acq_obj.state = 'done'
+                            _logger.info('Cron Top Up Validator Already issued for order number %s change payment acquirer number status' % (payment_acq_obj['number']))
+                        self._cr.commit()
             except Exception as e:
                 self.create_cron_log_folder()
                 self.write_cron_log('auto tup-up validator by system')

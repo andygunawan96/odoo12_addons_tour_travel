@@ -89,8 +89,36 @@
         <field name="inherit_id" ref="tt_payment.tt_payment_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='used_on']" position="inside">
+                <field name="is_ho_invoice_payment" invisible="1"/>
                 <field name="invoice_ids"
                        attrs="{'invisible': [('invoice_ids', '=', False)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tt_payment_form_inh_view_agent" model="ir.ui.view">
+        <field name="name">tt.payment.form.inh.view.agent</field>
+        <field name="model">tt.payment</field>
+        <field name="inherit_id" ref="tt_payment.tt_payment_form_view_agent"/>
+        <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_agent_user_operator'),ref('tt_base.group_tt_agent_user')])]" />
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="replace">
+                <header>
+                    <button string="Validate" name="action_validate_from_button"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
+                            attrs="{'invisible':['|','|',('state','!=','confirm'),('is_ho_invoice_payment', '!=', False),('top_up_id','!=', False)]}"/>
+                    <button string="Approve" name="action_approve_from_button"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
+                            attrs="{'invisible':['|','|',('state','!=','validated'),('is_ho_invoice_payment', '!=', False),('top_up_id','!=', False)]}"/>
+                    <button string="Reject" name="action_reject_from_button"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
+                            attrs="{'invisible':['|','|',('state','not in',['confirm','validated']),('is_ho_invoice_payment', '!=', False),('top_up_id','!=', False)]}"/>
+                    <button string="Cancel Payment" name="action_cancel_from_button"
+                            type="object" groups="tt_base.group_payment_level_4,tt_base.group_tt_agent_finance"
+                            attrs="{'invisible':['|','|',('state','!=','approved'),('is_ho_invoice_payment', '!=', False),('top_up_id','!=', False)]}" confirm="Are you sure you want to cancel?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validated,approved"/>
+                </header>
             </xpath>
         </field>
     </record>

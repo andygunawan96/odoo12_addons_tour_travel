@@ -103,7 +103,7 @@ class PaymentTransaction(models.Model):
         })
 
     def test_set_as_confirm(self):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_payment_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_payment_level_4').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 72')
         self.write({
             'state': 'confirm'
@@ -154,39 +154,40 @@ class PaymentTransaction(models.Model):
                 raise exceptions.UserError("Total amount on %s is less than the used amount." % (self.name))
         return super(PaymentTransaction, self).write(vals_list)
 
+    def get_is_ho_invoice_payment(self):
+        return False
+
     def action_validate_from_button(self):
-        if not self.env.user.has_group('tt_base.group_payment_level_4'):
+        # khusus top up dan HO invoice, agent user tidak boleh klik
+        if (self.top_up_id or self.get_is_ho_invoice_payment()) and self.env.user.has_group('tt_base.group_tt_agent_user'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 73b')
+        # level 4 = untuk HO yang punya level 4, agent finance = untuk finance agent user
+        if not ({self.env.ref('tt_base.group_payment_level_4').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 73')
         if self.state != 'confirm':
             raise exceptions.UserError('%s Can only validate [Confirmed] state Payment.' % (self.name))
         if self.reference:
             if self.top_up_id:
-                if self.env.user.has_group('tt_base.group_payment_level_4'):
-                    self.top_up_id.action_validate_top_up(self.total_amount)
-                    self.action_validate_payment()
-                else:
-                    raise exceptions.UserError('No permission to validate Top Up.')
-            else:
-                self.action_validate_payment()
+                self.top_up_id.action_validate_top_up(self.total_amount)
+            self.action_validate_payment()
         else:
             raise exceptions.UserError('Please write down the payment reference.')
 
     def action_approve_from_button(self):
-        if not self.env.user.has_group('tt_base.group_payment_level_4'):
+        # khusus top up dan HO invoice, agent user tidak boleh klik
+        if (self.top_up_id or self.get_is_ho_invoice_payment()) and self.env.user.has_group('tt_base.group_tt_agent_user'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 74b')
+        # level 4 = untuk HO yang punya level 4, agent finance = untuk finance agent user
+        if not ({self.env.ref('tt_base.group_payment_level_4').id,self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 74')
         if self.state != 'validated':
             raise exceptions.UserError('%s Can only approve [Validated] state Payment.' % (self.name))
         if self.top_up_id:
-            if self.env.user.has_group('tt_base.group_payment_level_4'):
-                ## 3 Januari 2020 di minta hapuskan by desy
-                # if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
-                #     raise exceptions.UserError('Cannot change, have to wait 1 day.')
-                self.top_up_id.action_approve_top_up()
-                self.action_approve_payment()
-            else:
-                raise exceptions.UserError('No permission to approve Top Up.')
-        else:
-            self.action_approve_payment()
+            ## 3 Januari 2020 di minta hapuskan by desy
+            # if self.top_up_id.total != self.real_total_amount and datetime.now().day == self.create_date.day:
+            #     raise exceptions.UserError('Cannot change, have to wait 1 day.')
+            self.top_up_id.action_approve_top_up()
+        self.action_approve_payment()
 
     def action_approve_payment(self):
         approve_values = {
@@ -217,7 +218,11 @@ class PaymentTransaction(models.Model):
         })
 
     def action_cancel_from_button(self):
-        if not self.env.user.has_group('tt_base.group_payment_level_4'):
+        # khusus top up dan HO invoice, agent user tidak boleh klik
+        if (self.top_up_id or self.get_is_ho_invoice_payment()) and self.env.user.has_group('tt_base.group_tt_agent_user'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 75b')
+        # level 4 = untuk HO yang punya level 4, agent finance = untuk finance agent user
+        if not ({self.env.ref('tt_base.group_payment_level_4').id,self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 75')
         if self.state != 'approved':
             raise exceptions.UserError('Can only cancel [Approved] state Payment.')
@@ -230,6 +235,10 @@ class PaymentTransaction(models.Model):
         })
 
     def action_reject_from_button(self):
-        if not self.env.user.has_group('tt_base.group_payment_level_4'):
+        # khusus top up dan HO invoice, agent user tidak boleh klik
+        if (self.top_up_id or self.get_is_ho_invoice_payment()) and self.env.user.has_group('tt_base.group_tt_agent_user'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 76b')
+        # level 4 = untuk HO yang punya level 4, agent finance = untuk finance agent user
+        if not ({self.env.ref('tt_base.group_payment_level_4').id, self.env.ref('tt_base.group_tt_agent_finance').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 76')
         self.action_cancel_payment({'co_uid': self.env.user.id})
