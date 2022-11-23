@@ -769,6 +769,8 @@ class TtReservation(models.Model):
                         self.cancel_payment_method()
                 else:
                     self.cancel_payment_method()
+            elif self.payment_acquirer_number_id.state == 'waiting' and self.state in ['done', 'issued']: ## espay done waktu get booking
+                self.payment_acquirer_number_id.state = 'done'
         if self.voucher_code and self.state in ['booked']: ##SETIAP GETBOOKING STATUS BOOKED CHECK VOUCHER VALID/TIDAK, YG EXPIRED DI LEPAS LEWAT CRON
             self.check_voucher_valid(self.voucher_code, context)
         is_agent = False

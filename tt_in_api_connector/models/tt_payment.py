@@ -95,7 +95,7 @@ class TtPaymentApiCon(models.Model):
                                     'fee': pay_acq_num.fee_amount
                                 }
                                 res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
-                                pay_acq_num[len(pay_acq_num) - 1].state = 'done'
+                                pay_acq_num[len(pay_acq_num) - 1].state = 'waiting'
 
                     book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])], limit=1)
                     _logger.info(data['order_number'])
