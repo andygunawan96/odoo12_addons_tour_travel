@@ -33,6 +33,8 @@
                             <group>
                                 <field name="currency_id"/>
                                 <field name="used_amount"/>
+                                <field name="total_passenger"/>
+                                <field name="total_room_night"/>
                                 <field name="usage_quota"/>
                                 <field name="transaction_amount_internal"/>
                                 <field name="transaction_amount_external"/>
@@ -105,6 +107,19 @@
                   action="tt_pnr_quota_action_view"
                   name="PNR Quota"
                   sequence="16"/>
+
+        <menuitem id="menu_customer_pnr_quota_agent"
+              parent="tt_base.top_customers_customers"
+              groups="tt_base.group_access_vendor_report"
+              name="PNR Quota"
+              sequence="15"/>
+
+        <menuitem id="submenu_customer_pnr_quota_agent"
+                  parent="tt_base.menu_customer_pnr_quota_agent"
+                  groups="tt_base.group_access_vendor_report"
+                  action="tt_pnr_quota_action_view"
+                  name="PNR Quota"
+                  sequence="2"/>
 
     </data>
 </odoo>

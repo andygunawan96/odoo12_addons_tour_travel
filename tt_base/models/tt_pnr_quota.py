@@ -20,6 +20,8 @@ class TtPnrQuota(models.Model):
 
     name = fields.Char('Name')
     used_amount = fields.Integer('Total Transaction', compute='_compute_used_amount',store=True) ## harus nya total transaction
+    total_passenger = fields.Integer('Total Passenger', compute='_compute_used_amount',store=True)
+    total_room_night = fields.Integer('Total Room/Night', compute='_compute_used_amount',store=True)
     usage_quota = fields.Integer('Usage Quota', compute='_compute_usage_quota',store=True) ## quota external
     amount = fields.Integer('Amount', store=True)
     currency_id = fields.Many2one('res.currency', string='Currency', readonly=True,
@@ -55,6 +57,9 @@ class TtPnrQuota(models.Model):
     def _compute_used_amount(self):
         for rec in self:
             rec.used_amount = len(rec.usage_ids.ids)
+            rec.total_passenger = sum(rec2.ref_pax for rec2 in rec.usage_ids)
+            rec.total_room_night = sum(rec2.ref_r_n for rec2 in rec.usage_ids)
+
 
     @api.onchange('usage_ids', 'usage_ids.active')
     @api.depends('usage_ids', 'usage_ids.active')
