@@ -1205,6 +1205,7 @@ class ProviderPricing(object):
                 is_class_of_service = False
                 is_charge_code = False
                 is_tour_code = False
+                is_dot = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -1324,7 +1325,17 @@ class ProviderPricing(object):
                 elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
                     is_tour_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
+                dot_data = rule['route']['date_of_travel']
+                if dot_data['access_type'] == 'all':
+                    is_dot = True
+                elif not departure_date_list:
+                    pass
+                elif dot_data['access_type'] == 'allow' and all(dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in departure_date_list):
+                    is_dot = True
+                elif dot_data['access_type'] == 'restrict' and not all(dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in departure_date_list):
+                    is_dot = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -1496,6 +1507,7 @@ class ProviderPricing(object):
     def get_less_calculation(self, rule_obj, pax_type, **kwargs):
         less_data = rule_obj['less']
         less_percentage = less_data['percentage']
+        less_tour_code = less_data.get('tour_code', '')
         if pax_type == 'INF' and not less_data.get('is_infant', False):
             less_percentage = 0
 
@@ -1503,7 +1515,8 @@ class ProviderPricing(object):
             'rule_id': rule_obj['id'],
             'section': 'less',
             'pax_type': pax_type,
-            'less_percentage': less_percentage
+            'less_percentage': less_percentage,
+            'less_tour_code': less_tour_code,
         }
         return payload
 
@@ -1615,6 +1628,7 @@ class AgentPricing(object):
                 is_class_of_service = False
                 is_charge_code = False
                 is_tour_code = False
+                is_dot = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -1736,7 +1750,21 @@ class AgentPricing(object):
                 elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
                     is_tour_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
+                dot_data = rule['route']['date_of_travel']
+                if dot_data['access_type'] == 'all':
+                    is_dot = True
+                elif not departure_date_list:
+                    pass
+                elif dot_data['access_type'] == 'allow' and all(
+                        dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in
+                        departure_date_list):
+                    is_dot = True
+                elif dot_data['access_type'] == 'restrict' and not all(
+                        dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in
+                        departure_date_list):
+                    is_dot = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -2221,6 +2249,7 @@ class CustomerPricing(object):
                 is_class_of_service = False
                 is_charge_code = False
                 is_tour_code = False
+                is_dot = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -2340,7 +2369,21 @@ class CustomerPricing(object):
                 elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
                     is_tour_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
+                dot_data = rule['route']['date_of_travel']
+                if dot_data['access_type'] == 'all':
+                    is_dot = True
+                elif not departure_date_list:
+                    pass
+                elif dot_data['access_type'] == 'allow' and all(
+                        dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in
+                        departure_date_list):
+                    is_dot = True
+                elif dot_data['access_type'] == 'restrict' and not all(
+                        dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in
+                        departure_date_list):
+                    is_dot = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -2563,6 +2606,7 @@ class AgentCommission(object):
                 is_class_of_service = False
                 is_charge_code = False
                 is_tour_code = False
+                is_dot = False
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -2684,7 +2728,21 @@ class AgentCommission(object):
                 elif tour_code_data['access_type'] == 'restrict' and not any(tour_code in tour_code_data['tour_code_list'] for tour_code in tour_code_list):
                     is_tour_code = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code]
+                dot_data = rule['route']['date_of_travel']
+                if dot_data['access_type'] == 'all':
+                    is_dot = True
+                elif not departure_date_list:
+                    pass
+                elif dot_data['access_type'] == 'allow' and all(
+                        dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in
+                        departure_date_list):
+                    is_dot = True
+                elif dot_data['access_type'] == 'restrict' and not all(
+                        dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in
+                        departure_date_list):
+                    is_dot = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -3019,7 +3077,7 @@ class RepricingToolsV2(object):
     def add_ancillary_fare(self, fare_data):
         self.ancillary_fare_list.append(fare_data)
 
-    def get_provider_less(self, agent_id='', agent_type_code='', provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', **kwargs):
+    def get_provider_less(self, agent_id='', agent_type_code='', provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', departure_date_list=[], **kwargs):
         if not self.ticket_fare_list:
             raise Exception('Ticket Fare List is empty')
 
@@ -3064,7 +3122,8 @@ class RepricingToolsV2(object):
             'class_of_service_list': class_of_service_list,
             'tour_code_list': tour_code_list,
             'charge_code_list': charge_code_list,
-            'pricing_datetime': datetime.now().strftime(FORMAT_DATETIME)
+            'pricing_datetime': datetime.now().strftime(FORMAT_DATETIME),
+            'departure_date_list': departure_date_list,
         }
         rule_obj = self.provider_pricing.get_pricing_data(**rule_param)
         pricing_less_list = []
@@ -3082,7 +3141,7 @@ class RepricingToolsV2(object):
         }
         return payload
 
-    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], tour_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, **kwargs):
+    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], tour_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, departure_date_list=[], **kwargs):
         '''
             pricing_datetime = %Y-%m-%d %H:%M:%S
         '''
@@ -3149,6 +3208,7 @@ class RepricingToolsV2(object):
             'charge_code_list': charge_code_list,
             'tour_code_list': tour_code_list,
             'pricing_datetime': pricing_datetime,
+            'departure_date_list': departure_date_list,
         }
         rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_type), str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id)] + class_of_service_list + charge_code_list + tour_code_list
         rule_key = ''.join(rule_key_list)
@@ -3177,18 +3237,24 @@ class RepricingToolsV2(object):
             self.agent_commission_data_dict[rule_key] = agent_com_obj
 
         pricing_type = rule_obj.get('pricing_type', 'standard')
+        # September 5, 2022 - SAM
+        # if pricing_type == 'from_nta':
+        #     show_commission = True
+        #     show_upline_commission = True
+        # END
         ## 1-2
         pax_count_dict = {
-            'ADT': 0
+            # 'ADT': 0
         }
         sc_summary_dict = {
-            'ADT': self._default_sc_summary_values()
+            # 'ADT': self._default_sc_summary_values()
         }
         # class_of_service_list = class_of_service_list if class_of_service_list else []
         # charge_code_list = charge_code_list if charge_code_list else []
         total_commission_amount = 0.0
         total_reservation_amount = 0.0
         sc_temp = None
+        pax_type_list = []
         for fare in self.ticket_fare_list:
             # if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
             #     class_of_service_list.append(fare['class_of_service'])
@@ -3211,6 +3277,7 @@ class RepricingToolsV2(object):
 
                 if pax_type not in sc_summary_dict:
                     sc_summary_dict[pax_type] = self._default_sc_summary_values()
+                    pax_type_list.append(pax_type)
                 sc_data = sc_summary_dict[pax_type]
 
                 pax_count = sc['pax_count']
@@ -3273,6 +3340,13 @@ class RepricingToolsV2(object):
             return False
             # raise Exception('Service Charge detail is not found')
 
+        if not pax_type_list:
+            _logger.error('Pax Type is empty')
+            return False
+
+        pax_type_list.sort()
+        default_pax_type = pax_type_list[0]
+
         for fare in self.ancillary_fare_list:
             if 'service_charges' not in fare:
                 continue
@@ -3318,6 +3392,10 @@ class RepricingToolsV2(object):
         for pricing_idx in range(3):
             for pax_type, sc_sum in sc_summary_dict.items():
                 pax_count = pax_count_dict[pax_type]
+                if pax_count == 0:
+                    _logger.error('Pax Count 0, Pax Type %s' % pax_type)
+                    continue
+
                 fare_amount = sc_sum['total_fare_amount'] / pax_count
                 tax_amount = sc_sum['total_tax_amount'] / pax_count
                 sub_total = fare_amount + tax_amount
@@ -3816,7 +3894,8 @@ class RepricingToolsV2(object):
                                 sc_values.update({
                                     'charge_type': 'RAC',
                                     'charge_code': 'rac',
-                                    'pax_type': 'ADT',
+                                    # 'pax_type': 'ADT',
+                                    'pax_type': default_pax_type,
                                     'pax_count': 1,
                                     'amount': -agent_rsv_res['commission_amount'],
                                     'foreign_amount': -agent_rsv_res['commission_amount'],
