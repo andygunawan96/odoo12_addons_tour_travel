@@ -63,7 +63,7 @@ class ttCronTopUpValidator(models.Model):
             #payment reservation
             try:
                 ## UNTUK YG BAYAR BCA
-                payment_acq_objs = self.env['payment.acquirer.number'].search(['|',('state','=','close'), ('unique_amount','!=',0)])
+                payment_acq_objs = self.env['payment.acquirer.number'].search([('state','=','close'), ('unique_amount','!=',0)])
                 for payment_acq_obj in payment_acq_objs:
                     transaction = self.env['tt.bank.accounts'].search([])
                     if transaction:

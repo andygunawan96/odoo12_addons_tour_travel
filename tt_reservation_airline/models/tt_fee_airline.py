@@ -67,21 +67,22 @@ class TtSsrAirline(models.Model):
     def _compute_departure_date_utc(self):
         for rec in self:
             try:
-                journey_code = rec.journey_code.split(',')
-                departure_date = journey_code[3]
-                dept_time_obj = None
-                try:
-                    dept_time_obj = datetime.strptime(departure_date, '%Y-%m-%d %H:%M:%S')
-                except:
-                    departure_date = None
-                origin_obj = self.env['tt.destinations'].search([('code','=',journey_code[2]),('provider_type_id.code','=','airline')], limit=1)
-                # origin_obj = journey_code[2]
-                if not origin_obj or not dept_time_obj:
-                    rec.departure_date_utc = departure_date
-                    continue
+                if rec.journey_code:
+                    journey_code = rec.journey_code.split(',')
+                    departure_date = journey_code[3]
+                    dept_time_obj = None
+                    try:
+                        dept_time_obj = datetime.strptime(departure_date, '%Y-%m-%d %H:%M:%S')
+                    except:
+                        departure_date = None
+                    origin_obj = self.env['tt.destinations'].search([('code','=',journey_code[2]),('provider_type_id.code','=','airline')], limit=1)
+                    # origin_obj = journey_code[2]
+                    if not origin_obj or not dept_time_obj:
+                        rec.departure_date_utc = departure_date
+                        continue
 
-                utc_time = origin_obj.timezone_hour
-                rec.departure_date_utc = dept_time_obj - timedelta(hours=utc_time)
+                    utc_time = origin_obj.timezone_hour
+                    rec.departure_date_utc = dept_time_obj - timedelta(hours=utc_time)
             except Exception as e:
                 _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
