@@ -420,6 +420,10 @@ class TtRefund(models.Model):
     def get_service_type(self):
         return [(rec,rec.capitalize()) for rec in self.env['tt.provider.type'].get_provider_type()]
 
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([], limit=1)
+        return company_obj.name
+
     def action_expired(self):
         self.write({
             'state': 'expired',
