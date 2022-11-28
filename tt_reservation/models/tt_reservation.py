@@ -1288,6 +1288,7 @@ class TtReservation(models.Model):
                     balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount, payment_method_to_ho)
                     if balance_res['error_code'] == 0:
                         payment_method_use_to_ho = payment_method_to_ho
+                        book_obj.payment_method_to_ho = payment_method_to_ho
                         break
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
