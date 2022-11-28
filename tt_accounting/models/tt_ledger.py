@@ -535,9 +535,14 @@ class Ledger(models.Model):
             'name': 'Ledger',
             'type': 'ir.actions.act_window',
             'res_model': 'tt.ledger',
-            'view_mode': 'tree',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
             'domain': [('agent_id', '=', self.env.user.agent_id.id)],
-            'view_id': self.env.ref('tt_accounting.tt_ledger_tree_view').id,
+            'view_id': False,
+            'views': [
+                (self.env.ref('tt_accounting.tt_ledger_tree_view').id, 'tree'),
+                (self.env.ref('tt_accounting.tt_ledger_form_view').id, 'form'),
+            ],
             'target': 'current'
         }
 

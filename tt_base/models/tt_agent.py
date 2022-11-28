@@ -74,6 +74,7 @@ class TtAgent(models.Model):
     quota_package_id = fields.Many2one('tt.pnr.quota.price.package', 'Package', readonly=True)
     quota_ids = fields.One2many('tt.pnr.quota','agent_id','Quota', readonly=False)
     quota_total_duration = fields.Date('Max Duration', compute='_compute_quota_duration',store=True, readonly=True)
+    quota_partner_ids = fields.Many2many('tt.agent', 'tt_agent_quota_partner_agent_rel', 'agent_id', 'partner_agent_id', string='Quota Partners')
     is_payment_by_system = fields.Boolean('Payment By System', default=False)
     is_send_email_cust = fields.Boolean('Send Notification Email to Customer', default=False)
     is_share_cust_ho = fields.Boolean('Share Customers with HO', default=False)
