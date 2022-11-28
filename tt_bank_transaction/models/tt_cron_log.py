@@ -82,7 +82,8 @@ class ttCronTopUpValidator(models.Model):
                                         # topup
                                         context = {
                                             'co_agent_id': resv_obj.agent_id.id,
-                                            'co_uid': self.env.ref('base.user_root').id
+                                            'co_uid': self.env.user.id
+                                            # 'co_uid': self.env.ref('base.user_root').id
                                         }
                                         request = {
                                             'amount': payment_acq_obj.amount + payment_acq_obj.unique_amount,
