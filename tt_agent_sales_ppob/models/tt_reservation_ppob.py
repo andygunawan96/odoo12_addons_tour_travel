@@ -66,12 +66,12 @@ class ReservationPPOB(models.Model):
         ### HO ####
         is_use_credit_limit = False
         if not ho_invoice_id:
-            if payment_method_to_ho == 'balance':
-                state = 'paid'
-                is_use_credit_limit = False
-            else:
+            if payment_method_to_ho == 'credit_limit':
                 state = 'confirm'
                 is_use_credit_limit = True
+            else:
+                state = 'paid'
+                is_use_credit_limit = False
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
@@ -274,12 +274,4 @@ class ReservationPPOB(models.Model):
     def action_issued_ppob(self, data):
         super(ReservationPPOB, self).action_issued_ppob(data)
         if not self.is_invoice_created:
-            ## check ledger bayar pakai balance / credit limit
-            payment_method_to_ho = ''
-            for ledger_obj in self.ledger_ids:
-                if ledger_obj.transaction_type == 2:  ## order
-                    if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
-                        payment_method_to_ho = ledger_obj.source_of_funds_type
-                        break
-                pass
-            self.action_create_invoice(data, payment_method_to_ho)
+            self.action_create_invoice(data, self.payment_method_to_ho)

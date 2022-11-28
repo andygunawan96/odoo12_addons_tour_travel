@@ -2099,6 +2099,7 @@ class ReservationAirline(models.Model):
                     agent_payment_method = 'balance'
                     if vals.get('agent_payment_method'):
                         agent_payment_method = vals['agent_payment_method']
+                    rsch_obj.payment_method_to_ho = agent_payment_method
                     rsch_obj.validate_reschedule_from_button(agent_payment_method)
 
                 commit_data.update({

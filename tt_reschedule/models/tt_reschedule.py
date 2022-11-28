@@ -303,6 +303,7 @@ class TtReschedule(models.Model):
     total_amount_cust = fields.Monetary('Refund Amount Cust Dummy (to prevent error when creating refund and reschedule)', default=0, compute='')
     refund_line_ids = fields.Boolean('Refund Line Dummy')
     refund_line_cust_ids = fields.Boolean('Refund Line Cust Dummy')
+    payment_method_to_ho = fields.Selection([('balance', 'Balance'), ('credit_limit', 'Credit Limit')], 'Payment Method to HO', default='balance')
 
     def to_dict(self):
         return {
@@ -659,14 +660,7 @@ class TtReschedule(models.Model):
             else:
                 raise UserError(_('Purchase Order is required in one Line or more. Please check all Line(s)!'))
 
-        payment_method_to_ho = ''
-        for ledger_obj in self.ledger_ids:
-            if ledger_obj.transaction_type == 7:  ## reschedule
-                if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
-                    payment_method_to_ho = ledger_obj.source_of_funds_type
-                    break
-            pass
-        self.action_create_invoice(payment_method_to_ho)
+        self.action_create_invoice(self.payment_method_to_ho)
         self.write({
             'state': 'done',
             'done_uid': self.env.user.id,
@@ -730,12 +724,12 @@ class TtReschedule(models.Model):
 
         is_use_credit_limit = False
         if not ho_invoice_id:
-            if payment_method_to_ho == 'balance':
-                state = 'paid'
-                is_use_credit_limit = False
-            else:
+            if payment_method_to_ho == 'credit_limit':
                 state = 'confirm'
                 is_use_credit_limit = True
+            else:
+                state = 'paid'
+                is_use_credit_limit = False
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
                 'agent_id': self.agent_id.id,
