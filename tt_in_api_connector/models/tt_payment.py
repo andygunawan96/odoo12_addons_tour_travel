@@ -25,7 +25,7 @@ class TtPaymentApiCon(models.Model):
                         agent_id = self.env['tt.agent'].browse(payment_acq_number_obj.agent_id.id)
                         context = {
                             'co_agent_id': agent_id.id,
-                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                            'co_uid': self.env.ref('tt_base.user_root').id
                         }
                         request = {
                             'amount': data['amount'],
