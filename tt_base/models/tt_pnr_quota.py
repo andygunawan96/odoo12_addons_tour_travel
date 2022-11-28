@@ -322,6 +322,22 @@ class TtPnrQuota(models.Model):
                 usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
         self.usage_quota = quota_pnr_usage
 
+    def force_domain_agent_pnr_quota(self):
+        return {
+            'name': 'PNR Quota',
+            'type': 'ir.actions.act_window',
+            'res_model': 'tt.pnr.quota',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'domain': ['|', ('agent_id', '=', self.env.user.agent_id.id), ('agent_id', 'in', self.env.user.agent_id.quota_partner_ids.ids)],
+            'view_id': False,
+            'views': [
+                (self.env.ref('tt_base.tt_pnr_quota_tree_ho_view').id, 'tree'),
+                (self.env.ref('tt_base.tt_pnr_quota_form_view').id, 'form'),
+            ],
+            'target': 'current'
+        }
+
     def print_report_excel(self):
         datas = {'id': self.id}
         res = self.read()

@@ -62,6 +62,8 @@
                 <tree string="PNR Quota">
                     <field name="name"/>
                     <field name="used_amount"/>
+                    <field name="total_passenger"/>
+                    <field name="total_room_night"/>
                     <field name="usage_quota"/>
                     <field name="expired_date"/>
                     <field name="state"/>
@@ -95,6 +97,15 @@
             </field>
         </record>
 
+        <record id="tt_pnr_quota_action_view_agent" model="ir.actions.server">
+            <field name="name">PNR Quota</field>
+            <field name="model_id" ref="model_tt_pnr_quota"/>
+            <field name="state">code</field>
+            <field name="code">
+              action = model.force_domain_agent_pnr_quota()
+            </field>
+        </record>
+
         <menuitem id="menu_customer_pnr_quota"
                   parent="tt_base.top_tour_travel_customers"
                   groups="tt_base.group_pnr_quota_level_1"
@@ -117,7 +128,7 @@
         <menuitem id="submenu_customer_pnr_quota_agent"
                   parent="tt_base.menu_customer_pnr_quota_agent"
                   groups="tt_base.group_access_vendor_report"
-                  action="tt_pnr_quota_action_view"
+                  action="tt_pnr_quota_action_view_agent"
                   name="PNR Quota"
                   sequence="2"/>
 
