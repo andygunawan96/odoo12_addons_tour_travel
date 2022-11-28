@@ -259,15 +259,7 @@ class ReservationGroupBooking(models.Model):
 
     def action_issued_groupbooking(self, co_uid, customer_parent_id, acquirer_id):
         super(ReservationGroupBooking, self).action_issued_groupbooking(co_uid, customer_parent_id)
-        if not self.is_invoice_created:
-            ## check ledger bayar pakai balance / credit limit
-            payment_method_to_ho = ''
-            for ledger_obj in self.ledger_ids:
-                if ledger_obj.transaction_type == 2:  ## order
-                    if ledger_obj.source_of_funds_type in ['balance', 'credit_limit']:
-                        payment_method_to_ho = ledger_obj.source_of_funds_type
-                        break
-                pass
-            payment_method = self.payment_rules_id.seq_id
-            self.action_create_invoice(acquirer_id, co_uid, customer_parent_id, payment_method, payment_method_to_ho)
+        # if not self.is_invoice_created: ## untuk offline tidak di check karena state sering maju mundur dari done ke validate
+        payment_method = self.payment_rules_id.seq_id
+        self.action_create_invoice(acquirer_id, co_uid, customer_parent_id, payment_method, self.payment_method_to_ho)
 

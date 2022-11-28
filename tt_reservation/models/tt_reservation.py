@@ -170,6 +170,8 @@ class TtReservation(models.Model):
     is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
     is_get_point_reward = fields.Boolean('Is Get Point Reward', default=False)
 
+    payment_method_to_ho = fields.Selection([('balance','Balance'), ('credit_limit','Credit Limit')], 'Payment Method to HO', default='balance')
+
     @api.model
     def create(self, vals_list):
         try:
