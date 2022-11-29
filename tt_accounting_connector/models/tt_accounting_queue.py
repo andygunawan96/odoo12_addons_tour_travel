@@ -217,7 +217,7 @@ class TtAccountingQueue(models.Model):
                     billing_due_date = rec.customer_parent_id.billing_due_date
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
-                    'customer_parent_id': trans_obj.customer_parent_id and trans_obj.customer_parent_id.id or '',
+                    'customer_parent_id': trans_obj.customer_parent_id and trans_obj.customer_parent_id.id or 0,
                     'total_nta': trans_obj.total_nta or 0,
                     'parent_agent_commission': trans_obj.parent_agent_commission or 0,
                     'ho_commission': trans_obj.ho_commission or 0,
