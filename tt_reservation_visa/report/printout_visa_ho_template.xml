@@ -32,8 +32,8 @@
     </template>
 
     <template id="printout_visa_notes_signature_ho">
-        <div style="position: absolute; z-index:1; top:2090px;">
-            <div class="row" style="font-family: 'DeJavu Sans'; font-size: 16px;">
+        <div style="position: absolute; z-index:1; top:1890px;">
+            <div class="row" style="font-family: 'DeJavu Sans'; font-size: 20px;">
                 <p><strong><span>Notes: </span></strong>
                     <t t-if="p.notes">
                         <span t-field="p.notes"/>
@@ -41,7 +41,7 @@
                 </p>
             </div>
             <span t-raw="visa_ho_footer"/>
-            <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 16px;">
+            <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 20px;">
                 <div class="col-6 text-center">
                     <span><strong>Applicant</strong></span>
                     <br/>
@@ -76,7 +76,7 @@
         <t t-foreach="docs" t-as="o">
             <t t-foreach="o.passenger_ids" t-as="p">
                 <t t-call="web.html_container">
-                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 16px;">
+                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 20px;">
                         <div class="oe_structure"/>
                         <div id="header" class="row" style="">
                             <div class="col-2">
@@ -183,7 +183,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px">
+                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px; font-size: 20px;">
                             <div class="col-6">
                                 <strong><span>Document Type</span></strong>
                             </div>
@@ -196,7 +196,7 @@
                         </div>
                         <t t-if="p.to_requirement_ids">
                             <t t-foreach="p.to_requirement_ids" t-as="req">
-                                <div class="row" style="border-top: 1px solid #CCCCCC; ">
+                                <div class="row" style="border-top: 1px solid #CCCCCC; font-size: 20px;">
                                     <div class="col-6">
                                         <span t-field="req.requirement_id.name"/>
                                     </div>
@@ -224,168 +224,168 @@
                             </t>
                         </t>
                         <br/>
-                        <div id="questions" class="row">
-                            <div class="col-12">
-                                <table class="table table-condensed mt16" style="border: 1px solid black;">
-                                    <thead>
-                                        <th style="border: 1px solid black; width:90%;"><strong>Please answer all the questions below as a guideline to help us processing your document.</strong></th>
-                                        <th style="border: 1px solid black; width:5%;"><strong>Yes</strong></th>
-                                        <th style="border: 1px solid black; width:5%;"><strong>No</strong></th>
-                                    </thead>
-                                    <tbody>
-                                        <t t-if="p.handling_ids">
-                                            <t t-foreach="p.handling_ids" t-as="handling">
-                                                <tr>
-                                                    <td style="border: 1px solid black;">
-                                                        <span t-field="handling.handling_id.name"/>
-                                                    </td>
-                                                    <td style="border: 1px solid black;">
-                                                        <t t-if="handling.answer">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
-                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
-                                                        <t t-else="">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
-                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
-<!--                                                        <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"-->
+<!--                        <div id="questions" class="row">-->
+<!--                            <div class="col-12">-->
+<!--                                <table class="table table-condensed mt16" style="border: 1px solid black;">-->
+<!--                                    <thead>-->
+<!--                                        <th style="border: 1px solid black; width:90%;"><strong>Please answer all the questions below as a guideline to help us processing your document.</strong></th>-->
+<!--                                        <th style="border: 1px solid black; width:5%;"><strong>Yes</strong></th>-->
+<!--                                        <th style="border: 1px solid black; width:5%;"><strong>No</strong></th>-->
+<!--                                    </thead>-->
+<!--                                    <tbody>-->
+<!--                                        <t t-if="p.handling_ids">-->
+<!--                                            <t t-foreach="p.handling_ids" t-as="handling">-->
+<!--                                                <tr>-->
+<!--                                                    <td style="border: 1px solid black;">-->
+<!--                                                        <span t-field="handling.handling_id.name"/>-->
+<!--                                                    </td>-->
+<!--                                                    <td style="border: 1px solid black;">-->
+<!--                                                        <t t-if="handling.answer">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"-->
 <!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
-                                                    </td>
-                                                    <td style="border: 1px solid black;">
-                                                        <t t-if="not handling.answer">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
-                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
-                                                        <t t-else="">
-                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
-                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
-                                                        </t>
-<!--                                                        <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"-->
+<!--                                                        </t>-->
+<!--                                                        <t t-else="">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"-->
 <!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
-                                                    </td>
-                                                </tr>
-                                            </t>
-                                        </t>
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                1. Have you ever applied for a visa to this country?-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--                                                        </t>-->
+<!--&lt;!&ndash;                                                        <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>&ndash;&gt;-->
+<!--                                                    </td>-->
+<!--                                                    <td style="border: 1px solid black;">-->
+<!--                                                        <t t-if="not handling.answer">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"-->
+<!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
+<!--                                                        </t>-->
+<!--                                                        <t t-else="">-->
+<!--                                                            <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"-->
+<!--                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>-->
+<!--                                                        </t>-->
+<!--&lt;!&ndash;                                                        <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"&ndash;&gt;-->
+<!--&lt;!&ndash;                                                                 style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>&ndash;&gt;-->
+<!--                                                    </td>-->
+<!--                                                </tr>-->
+<!--                                            </t>-->
+<!--                                        </t>-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                1. Have you ever applied for a visa to this country?&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                2. Have you ever been rejected when applying for a visa to any countries? If yes, please-->
-<!--                                                explain it in the extra information column below.-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                2. Have you ever been rejected when applying for a visa to any countries? If yes, please&ndash;&gt;-->
+<!--&lt;!&ndash;                                                explain it in the extra information column below.&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                3. Are you aware that if your visa get rejected, it is outside of the travel agent responsibility ?-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                3. Are you aware that if your visa get rejected, it is outside of the travel agent responsibility ?&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                4. Have you read all of our terms and conditions thoroughly ?-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                4. Have you read all of our terms and conditions thoroughly ?&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                5. Are you a First Traveler?-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                5. Are you a First Traveler?&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                6. Do your family ever get rejected by the embassy when applying for a visa ? If yes, please-->
-<!--                                                elaborate the reason in the extra information column below.-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                6. Do your family ever get rejected by the embassy when applying for a visa ? If yes, please&ndash;&gt;-->
+<!--&lt;!&ndash;                                                elaborate the reason in the extra information column below.&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                7. Do you have the standard amount of Rp.50.000.000,- / Pax in your account? If no, please write a-->
-<!--                                                statement that you insist on applying your document in the extra information column below.-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                7. Do you have the standard amount of Rp.50.000.000,- / Pax in your account? If no, please write a&ndash;&gt;-->
+<!--&lt;!&ndash;                                                statement that you insist on applying your document in the extra information column below.&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                8. Do you have any family members or relatives who currently live at the country you want to visit ?-->
-<!--                                                If yes, please write it in the extra information column below.-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                8. Do you have any family members or relatives who currently live at the country you want to visit ?&ndash;&gt;-->
+<!--&lt;!&ndash;                                                If yes, please write it in the extra information column below.&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                9. Are you aware that even having an Electronic Visa, you can still get rejected during immigration in the-->
-<!--                                                country of destination ?-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                9. Are you aware that even having an Electronic Visa, you can still get rejected during immigration in the&ndash;&gt;-->
+<!--&lt;!&ndash;                                                country of destination ?&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-<!--                                        <tr>-->
-<!--                                            <td style="border: 1px solid black;">-->
-<!--                                                10. Did you give any false information or forged documents when you apply for a visa to the country your want to visit right now?-->
-<!--                                                If yes, explain it in the extra information column below.-->
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
+<!--&lt;!&ndash;                                                10. Did you give any false information or forged documents when you apply for a visa to the country your want to visit right now?&ndash;&gt;-->
+<!--&lt;!&ndash;                                                If yes, explain it in the extra information column below.&ndash;&gt;-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                            <td style="border: 1px solid black;">-->
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                            <td style="border: 1px solid black;">&ndash;&gt;-->
 
-<!--                                            </td>-->
-<!--                                        </tr>-->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+<!--&lt;!&ndash;                                            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;                                        </tr>&ndash;&gt;-->
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                            </div>-->
+<!--                        </div>-->
                         <p style="page-break-after:always;">   </p>
                         <div id="name_country" class="row">
                             <div class="col-6">
