@@ -58,8 +58,13 @@ class AccountingConnectorITM(models.Model):
         trans_id = trans_id_obj.variable_value
         item_key = item_key_obj.variable_value
         if customer_code_obj.variable_value == 'dynamic_customer_code':
-            customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
-            customer_code = customer_obj and customer_obj.seq_id or ''
+            customer_code = ''
+            if request.get('customer_parent_id'):
+                customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
+                try:
+                    customer_code = customer_obj.seq_id
+                except:
+                    customer_code = ''
         else:
             customer_code = int(customer_code_obj.variable_value)
         if request['category'] == 'reservation':
