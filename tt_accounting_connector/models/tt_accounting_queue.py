@@ -341,7 +341,7 @@ class TtAccountingQueue(models.Model):
                 request = {}
             if request:
                 res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_sales_order(request)
-                self.state = res.get('status', 'failed')
+                self.state = res.get('status') and res['status'] or 'failed'
             else:
                 raise Exception('Failed to fetch request from reference model.')
             self.response = json.dumps(res)
