@@ -235,6 +235,10 @@ class TtAccountingQueue(models.Model):
                     'billing_due_date': billing_due_date
                 })
                 if self.action in ['reverse', 'split_reservation']:
+                    if request.get('order_number'):
+                        request.update({
+                            'order_number': request['order_number'] + '.' + self.action
+                        })
                     self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider)
             elif self.res_model in ['tt.refund', 'tt.reschedule', 'tt.reschedule.periksain', 'tt.reschedule.phc']:
                 request = trans_obj.to_dict()
@@ -341,12 +345,16 @@ class TtAccountingQueue(models.Model):
                 request = {}
             if request:
                 res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_sales_order(request)
+                self.response = json.dumps(res)
                 self.state = res.get('status') and res['status'] or 'failed'
             else:
+                self.response = 'Failed to fetch request from reference model.'
+                self.state = 'failed'
                 raise Exception('Failed to fetch request from reference model.')
-            self.response = json.dumps(res)
         except Exception as e:
-            _logger.error(traceback.format_exc())
+            _logger.error(traceback.format_exc(e))
+            self.state = 'failed'
+            self.response = traceback.format_exc(e)
 
     def get_request_data(self):
         try:
@@ -414,6 +422,10 @@ class TtAccountingQueue(models.Model):
                     'billing_due_date': billing_due_date
                 })
                 if self.action in ['reverse', 'split_reservation']:
+                    if request.get('order_number'):
+                        request.update({
+                            'order_number': request['order_number'] + '.' + self.action
+                        })
                     self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider)
             elif self.res_model in ['tt.refund', 'tt.reschedule', 'tt.reschedule.periksain', 'tt.reschedule.phc']:
                 request = trans_obj.to_dict()
