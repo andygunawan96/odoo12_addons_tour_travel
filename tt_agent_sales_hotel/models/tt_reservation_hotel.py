@@ -1,5 +1,6 @@
 from odoo import models,api,fields
 from datetime import datetime, timedelta
+import math
 import base64
 
 
@@ -181,7 +182,9 @@ class ReservationHotel(models.Model):
         upsell_sc = 0
         for psg in self.passenger_ids:
             upsell_sc += sum(channel_charge.amount for channel_charge in psg.channel_service_charge_ids)
-        inv_line_obj.invoice_line_detail_ids[0]['price_unit'] += upsell_sc
+        split_upsell_sc = float(upsell_sc) / len(inv_line_obj.invoice_line_detail_ids)
+        for inv_det in inv_line_obj.invoice_line_detail_ids:
+            inv_det['price_unit'] += math.ceil(split_upsell_sc)
 
         ##membuat payment dalam draft
         if data.get('acquirer_id'):
