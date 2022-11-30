@@ -11,6 +11,7 @@ class VisaOrderRequirements(models.Model):
     passenger_state = fields.Selection('Passenger State', related='to_passenger_id.state')
     is_ori = fields.Boolean('Original', default=False)
     is_copy = fields.Boolean('Copy', default=False)
+    notes = fields.Text('Notes')
     check_uid = fields.Many2one('res.users', 'Check By')
     check_date = fields.Datetime('Check Date')
     # is_ori_HO = fields.Boolean('Original HO', default=False)
