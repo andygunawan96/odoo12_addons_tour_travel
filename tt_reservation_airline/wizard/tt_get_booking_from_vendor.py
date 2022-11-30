@@ -23,6 +23,7 @@ provider_selection = [
         ('rodextrip_airline', 'Rodextrip Airline'),
         ('airasia', 'Airasia'),
         ('airasia_web', 'Airasia Web'),
+        ('qatar', 'Qatar'),
         # ('sabre', 'Sabre'),
     ]
 
