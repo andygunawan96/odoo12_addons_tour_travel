@@ -73,7 +73,7 @@
         <t t-foreach="docs" t-as="o">
             <t t-foreach="o.passenger_ids" t-as="p">
                 <t t-call="web.html_container">
-                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 20px;">
+                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 24px;">
                         <div class="oe_structure"/>
                         <div id="header" class="row" style="">
                             <div class="col-2">
@@ -183,7 +183,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px; font-size: 20px;">
+                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px; font-size: 24px;">
                             <div class="col-6">
                                 <strong><span>Document Type</span></strong>
                             </div>
@@ -196,7 +196,7 @@
                         </div>
                         <t t-if="p.to_requirement_ids">
                             <t t-foreach="p.to_requirement_ids" t-as="req">
-                                <div class="row" style="border-top: 1px solid #CCCCCC; font-size: 20px;">
+                                <div class="row" style="border-top: 1px solid #CCCCCC; font-size: 24px;">
                                     <div class="col-6">
                                         <span t-field="req.requirement_id.name"/>
                                     </div>
