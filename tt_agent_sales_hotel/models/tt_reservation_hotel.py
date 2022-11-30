@@ -182,9 +182,9 @@ class ReservationHotel(models.Model):
         upsell_sc = 0
         for psg in self.passenger_ids:
             upsell_sc += sum(channel_charge.amount for channel_charge in psg.channel_service_charge_ids)
-        split_upsell_sc = float(upsell_sc) / len(inv_line_obj.invoice_line_detail_ids)
+        split_upsell_sc = math.ceil(float(upsell_sc) / len(inv_line_obj.invoice_line_detail_ids))
         for inv_det in inv_line_obj.invoice_line_detail_ids:
-            inv_det['price_unit'] += math.ceil(split_upsell_sc)
+            inv_det['price_unit'] += split_upsell_sc
 
         ##membuat payment dalam draft
         if data.get('acquirer_id'):
