@@ -135,6 +135,8 @@
                                 <field name="is_ori" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user"/>
                                 <field name="is_copy" readonly="1" groups="tt_base.group_tt_tour_travel"/>
                                 <field name="is_copy" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user"/>
+                                <field name="notes" readonly="1" groups="tt_base.group_tt_tour_travel"/>
+                                <field name="notes" attrs="{'readonly': [('passenger_state', 'not in', ['draft','Draft'])]}" groups="tt_base.group_tt_agent_user"/>
                                 <field name="check_uid" attrs="{'readonly': [('check_uid', '!=', 'False')]}"/>
                                 <field name="check_uid" invisible="1"/>
                                 <field name="check_date" attrs="{'readonly': [('check_date', '!=', 'False')]}"/>

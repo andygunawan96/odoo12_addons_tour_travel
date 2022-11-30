@@ -32,8 +32,8 @@
     </template>
 
     <template id="printout_visa_notes_signature_cust">
-        <div style="position: absolute; z-index:1; top:2090px;">
-            <div class="row" style="font-family: 'DeJavu Sans'; font-size: 16px;">
+        <div style="position: absolute; z-index:1; top:1890px;">
+            <div class="row" style="font-family: 'DeJavu Sans'; font-size: 20px;">
                 <p><strong><span>Notes: </span></strong>
                     <t t-if="p.notes">
                         <span t-field="p.notes"/>
@@ -41,7 +41,7 @@
                 </p>
             </div>
             <span t-raw="visa_customer_footer"/>
-            <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 16px;">
+            <div class="row mt16" style="font-family: 'DeJavu Sans'; font-size: 20px;">
                 <div class="col-6 text-center">
                     <span><strong>Applicant</strong></span>
                     <br/>
@@ -73,7 +73,7 @@
         <t t-foreach="docs" t-as="o">
             <t t-foreach="o.passenger_ids" t-as="p">
                 <t t-call="web.html_container">
-                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 16px;">
+                    <div class="article" style="font-family: 'DeJavu Sans'; font-size: 24px;">
                         <div class="oe_structure"/>
                         <div id="header" class="row" style="">
                             <div class="col-2">
@@ -183,24 +183,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px">
+                        <div class="row" style="border-bottom: 1px solid black; margin-top:25px; font-size: 24px;">
                             <div class="col-6">
                                 <strong><span>Document Type</span></strong>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <strong><span>Original</span></strong>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <strong><span>Copy</span></strong>
+                            </div>
+                            <div class="col-2">
+                                <strong><span>Notes</span></strong>
                             </div>
                         </div>
                         <t t-if="p.to_requirement_ids">
                             <t t-foreach="p.to_requirement_ids" t-as="req">
-                                <div class="row" style="border-top: 1px solid #CCCCCC; ">
+                                <div class="row" style="border-top: 1px solid #CCCCCC; font-size: 24px;">
                                     <div class="col-6">
                                         <span t-field="req.requirement_id.name"/>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-2">
                                         <t t-if="req.is_ori">
                                             <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
@@ -210,7 +213,7 @@
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
                                         </t>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-2">
                                         <t t-if="req.is_copy">
                                             <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
@@ -218,6 +221,14 @@
                                         <t t-if="not req.is_copy">
                                             <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-2">
+                                        <t t-if="req.notes">
+                                            <span t-field="req.notes"/>
+                                        </t>
+                                        <t t-if="not req.notes">
+                                            <span>-</span>
                                         </t>
                                     </div>
                                 </div>

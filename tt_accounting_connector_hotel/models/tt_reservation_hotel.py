@@ -20,6 +20,7 @@ class TtReservationHotel(models.Model):
                 for ven in vendor_list:
                     data_exist = self.env['tt.accounting.queue'].search([('res_model', '=', self._name),
                                                                          ('res_id', '=', self.id),
+                                                                         ('action', '=', func_action),
                                                                          ('accounting_provider', '=', ven)])
                     if data_exist:
                         new_obj = data_exist[0]
