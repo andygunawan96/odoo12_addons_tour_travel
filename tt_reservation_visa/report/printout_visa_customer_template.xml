@@ -187,11 +187,14 @@
                             <div class="col-6">
                                 <strong><span>Document Type</span></strong>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <strong><span>Original</span></strong>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                                 <strong><span>Copy</span></strong>
+                            </div>
+                            <div class="col-2">
+                                <strong><span>Notes</span></strong>
                             </div>
                         </div>
                         <t t-if="p.to_requirement_ids">
@@ -200,7 +203,7 @@
                                     <div class="col-6">
                                         <span t-field="req.requirement_id.name"/>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-2">
                                         <t t-if="req.is_ori">
                                             <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
@@ -210,7 +213,7 @@
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
                                         </t>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-2">
                                         <t t-if="req.is_copy">
                                             <img t-att-src="'/tt_reservation_visa/static/src/images/checked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
@@ -218,6 +221,14 @@
                                         <t t-if="not req.is_copy">
                                             <img t-att-src="'/tt_reservation_visa/static/src/images/unchecked-checkbox.png'"
                                                  style="max-height: 20px; max-width: 20px; margin: 5px 0;"/>
+                                        </t>
+                                    </div>
+                                    <div class="col-2">
+                                        <t t-if="req.notes">
+                                            <span t-field="req.notes"/>
+                                        </t>
+                                        <t t-if="not req.notes">
+                                            <span>-</span>
                                         </t>
                                     </div>
                                 </div>
