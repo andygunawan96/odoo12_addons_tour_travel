@@ -171,7 +171,7 @@ class TtPaymentApiCon(models.Model):
                         "name": book_obj.contact_id.name,
                         "email": book_obj.contact_email,
                         "time_limit": timelimit,
-                        'time_limit_datetime': payment_acq_number_obj.time_limit.strptime('%Y-%m-%d %H:%M:%S')
+                        'time_limit_datetime': payment_acq_number_obj.time_limit.strftime('%Y-%m-%d %H:%M:%S')
                     }
                     res = ERR.get_no_error(values)
                 else:
