@@ -151,7 +151,7 @@ class TtPaymentApiCon(models.Model):
                 if payment_acq_number_obj:
                     amount += payment_acq_number_obj.fee_amount
                     different_time = payment_acq_number_obj.time_limit - datetime.now()
-                    timelimit = int(different_time.seconds / 60)
+                    timelimit = int(different_time.seconds / 60) - 5
                     ## ada 2 cara amount langsung pakai amount di payment acq number / amount dari book_obj di kurang dengan point reward yg di pakai
                     website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
                     if website_use_point_reward == 'True':
