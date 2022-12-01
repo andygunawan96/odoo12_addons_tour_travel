@@ -618,12 +618,12 @@ class PaymentAcquirerNumber(models.Model):
     def create_payment_acq(self,data,booking_obj,provider_type, is_use_point):
         ## RULE TIME LIMIT PAYMENT ACQ < 1 jam, 10 menit = HOLD DATE - 10 menit
         ## UNTUK YG LEBIH DARI 1 JAM, 10 menit HOLE DATE HOLD DATE 60 menit
-        if booking_obj.hold_date < datetime.now() + timedelta(minutes=70):
+        if booking_obj.hold_date < datetime.now() + timedelta(minutes=130):
             hold_date = booking_obj.hold_date - timedelta(minutes=10)
         elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
             hold_date = datetime.now() + timedelta(minutes=30)
         else:
-            hold_date = datetime.now() + timedelta(minutes=60)
+            hold_date = datetime.now() + timedelta(minutes=120)
 
 
 
