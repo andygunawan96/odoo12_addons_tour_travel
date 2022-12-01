@@ -6,7 +6,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
     _name = 'get.merchant.info.payment.acquirer'
     _description = 'Get Merchant Info Payment Acquirer'
 
-    provider = fields.Selection([('espay','Espay')],'Provider')
+    provider = fields.Selection([('espay','Espay')],'Provider', help="Please turn on cron Auto-top-up-validator")
 
     def sync_info(self):
         try:
