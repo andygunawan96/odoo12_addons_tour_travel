@@ -616,12 +616,10 @@ class PaymentAcquirerNumber(models.Model):
         return ERR.get_no_error(payment)
 
     def create_payment_acq(self,data,booking_obj,provider_type, is_use_point):
-        if booking_obj.hold_date < datetime.now() + timedelta(minutes=45):
-            hold_date = booking_obj.hold_date - timedelta(minutes=5)
-        elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
+        if data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
             hold_date = datetime.now() + timedelta(minutes=30)
         else:
-            hold_date = datetime.now() + timedelta(minutes=45)
+            hold_date = booking_obj.hold_date - timedelta(minutes=5)
 
 
 
