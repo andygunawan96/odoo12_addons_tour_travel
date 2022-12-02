@@ -22,7 +22,7 @@ class MergeInvoice(models.Model):
 
     invoice_id = fields.Many2one('tt.agent.invoice', 'Invoice ID')
 
-    invoice_line_detail_list = fields.One2many('tt.merge.invoice.line', 'merge_wizard_id', ondelete='cascade')
+    invoice_line_detail_list = fields.One2many('tt.merge.invoice.line', 'merge_wizard_id')
 
     # @api.onchange('current_invoice_line')
     # def _onchange_domain_target_invoice(self):

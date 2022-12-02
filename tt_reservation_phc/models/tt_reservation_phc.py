@@ -1244,6 +1244,7 @@ class Reservationphc(models.Model):
     #             })
     #         return url
 
+    # DEPRECATED
     @api.multi
     def print_ho_invoice(self):
         datas = {

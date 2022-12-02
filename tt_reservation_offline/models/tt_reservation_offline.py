@@ -2316,6 +2316,7 @@ class IssuedOffline(models.Model):
         obj = self.sudo().browse(id)
         obj.action_confirm()
 
+    # DEPRECATED
     def print_ho_invoice(self):
         datas = {
             'ids': self.env.context.get('active_ids', []),

@@ -938,6 +938,7 @@ class ReservationActivity(models.Model):
         return url
         # return self.env.ref('tt_report_common.action_printout_itinerary_activity').report_action(self, data=datas)
 
+    # DEPRECATED
     @api.multi
     def print_ho_invoice(self):
         datas = {

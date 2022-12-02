@@ -332,7 +332,12 @@
                     <t t-set="printout_icon" t-value="'/tt_report_common/static/images/airfreight-white.svg'"/>
                     <t t-if="doc_model == 'tt.agent.invoice'">
                         <span t-att-style="'margin-top: 10px; margin-left: 10px; color: '+ base_color +'; font-size: 20px;'">
-                            <t t-if="is_invoice == True">Invoice</t><t t-else="">Kwitansi</t>
+                            <t t-if="is_invoice == True">
+                                Invoice <t t-if="is_dynamic_print and doc.dynamic_print_count > 0">- Reprint <span t-field="doc.dynamic_print_count"/></t>
+                            </t>
+                            <t t-else="">
+                                Kwitansi
+                            </t>
                         </span><br/>
                         <t t-set="printout_icon" t-value="'/tt_report_common/static/images/bill-white.png'"/>
                     </t><t t-elif="doc_model == 'tt.billing.statement'">
@@ -1143,7 +1148,7 @@
                         <span t-esc="line2_idx['descs']" style="white-space: pre-wrap"/>
                     </td>
                     <td t-att-rowspan="len(line2_idx['line_detail']) + 1"  style="height: 50px; padding: 7px 7px 7px 20px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; text-align: right; padding-right: 25px; border-radius: 0px 0px 0px 0px; overflow-wrap: break-word;">
-                        <span t-esc="line2_idx['total_after_tax']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
+                        <span t-esc="line2_idx['total_after_tax'] - line2_idx.get('reduce_amt', 0)" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}" style="height: 100%;"/>
                     </td>
                 </tr>
                 <t t-foreach="line2_idx['line_detail']" t-as="line_detail">
@@ -1185,11 +1190,22 @@
                 <t t-else="">
                     <t t-set="point_reward_value" t-value="0"/>
                 </t>
+                <t t-if="reduce_amt">
+                    <t t-if="reduce_amt[doc.id]">
+                        <t t-set="reduce_value" t-value="reduce_amt[doc.id]"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="reduce_value" t-value="0"/>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-set="reduce_value" t-value="0"/>
+                </t>
                 <table style="width:100%">
                 <tr>
                     <td><strong>Subtotal</strong></td>
                     <td class="text-right">
-                        <t t-set="print_total" t-value="doc.total + point_reward_value"/>
+                        <t t-set="print_total" t-value="doc.total + point_reward_value - reduce_value"/>
                         <span style="padding: 10px 25px;" t-esc="print_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                     </td>
                 </tr>
@@ -1224,7 +1240,8 @@
                 <tr class="border-black">
                     <td><strong>Grand Total</strong></td>
                     <td class="text-right">
-                        <span style="padding: 10px 25px;" t-field="doc.grand_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
+                        <t t-set="print_grand_total" t-value="doc.grand_total - reduce_value"/>
+                        <span style="padding: 10px 25px;" t-esc="print_grand_total" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/>
                     </td>
                 </tr>
             </table>

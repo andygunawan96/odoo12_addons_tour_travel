@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_dynamic_print_invoice_wizard_form_view" model="ir.ui.view">
+        <field name="name">Dynamic Print Invoice Wizard</field>
+        <field name="model">tt.dynamic.print.invoice.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="invoice_line_detail_ids">
+                        <tree editable="bottom" create="false" delete="false">
+                            <field name="invoice_line_detail_id"/>
+                            <field name="invoice_line_id"/>
+                            <field name="is_printed"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="dynamic_print_invoice" string="Print Invoice" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_dynamic_print_invoice_action_view" model="ir.actions.act_window">
+        <field name="name">Dynamic Print Invoice Wizard</field>
+        <field name="res_model">tt.dynamic.print.invoice.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
