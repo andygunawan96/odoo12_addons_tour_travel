@@ -24,7 +24,7 @@ class SplitInvoice(models.Model):
     #     lines = [self.env['tt.split.invoice.line'].sudo().create({'passenger_id': p,'limit': len(p_list)+1}).id for p in p_list]
     #     return [(6, 0, lines)]
     
-    invoice_line_detail_list = fields.One2many('tt.split.invoice.line', 'split_wizard_id', ondelete='cascade')
+    invoice_line_detail_list = fields.One2many('tt.split.invoice.line', 'split_wizard_id')
 
     def get_form_id(self):
         return self.env.ref("tt_agent_sales.tt_split_invoice_wizard_form_view")
@@ -80,5 +80,3 @@ class SplitInvoice(models.Model):
             'type': 'ir.actions.client',
             'tag': 'reload',
         }
-
-

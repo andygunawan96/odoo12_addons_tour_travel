@@ -1231,13 +1231,18 @@ class PrintoutInvoice(models.AbstractModel):
         # desc_str.replace('\n','&lt;br/&gt;')
         return desc_str
 
-    def get_invoice_data(self, line, rec, inv):
+    def get_invoice_data(self, line, rec, inv, inc_details=[]):
         a = {}
+        reduce_amt = 0
+        apply_filter = True if inc_details else False
         if rec._name == 'tt.reservation.offline':
             a = {'descs': self.format_description(line.desc), 'pnr': inv.pnr.split(','), 'line_detail': [], 'total_after_tax': line.total_after_tax}
             # for provider in rec.provider_booking_ids:
             #     a['pnr'].append(provider.pnr)
             for line_detail in line.invoice_line_detail_ids:
+                if apply_filter and line_detail.id not in inc_details:
+                    reduce_amt += line_detail.price_subtotal
+                    continue
                 a['line_detail'].append({
                     'name': line_detail.desc,
                     'price': line_detail.price_unit,
@@ -1300,6 +1305,9 @@ class PrintoutInvoice(models.AbstractModel):
                 if room.issued_name and room.issued_name not in a['pnr']:
                     a['pnr'].append(room.issued_name)
             for line_detail in line.invoice_line_detail_ids:
+                if apply_filter and line_detail.id not in inc_details:
+                    reduce_amt += line_detail.price_subtotal
+                    continue
                 a['line_detail'].append({
                     'name': line_detail.desc,
                     'price': line_detail.price_unit,
@@ -1335,6 +1343,9 @@ class PrintoutInvoice(models.AbstractModel):
             a = {'descs': self.format_description(line.desc), 'pnr': [], 'line_detail': [], 'total_after_tax': line.total_after_tax}
             a['pnr'].append(rec.pnr or '-')
             for line_detail in line.invoice_line_detail_ids:
+                if apply_filter and line_detail.id not in inc_details:
+                    reduce_amt += line_detail.price_subtotal
+                    continue
                 a['line_detail'].append({
                     'name': line_detail.desc,
                     'price': line_detail.price_unit,
@@ -1355,6 +1366,9 @@ class PrintoutInvoice(models.AbstractModel):
         else:
             a = {'descs': self.format_description(line.desc), 'pnr': line.pnr.split(',') if line.pnr else '', 'line_detail': [], 'total_after_tax': line.total_after_tax}
             for line_detail in line.invoice_line_detail_ids:
+                if apply_filter and line_detail.id not in inc_details:
+                    reduce_amt += line_detail.price_subtotal
+                    continue
                 a['line_detail'].append({
                     'name': line_detail.desc,
                     'price': line_detail.price_unit,
@@ -1384,6 +1398,10 @@ class PrintoutInvoice(models.AbstractModel):
             #             'name': (line_detail.desc if line_detail.desc else ''),
             #             'total': (line_detail.price_subtotal if line_detail.price_subtotal else '')
             #         })
+        if reduce_amt:
+            a.update({
+                'reduce_amt': reduce_amt
+            })
         return a
 
     def calc_segments(self, rec, paxs):
@@ -1554,6 +1572,13 @@ class PrintoutInvoice(models.AbstractModel):
             a.update({rec2.name: num2words(rec2.grand_total) + ' Rupiah'})
         return a
 
+    def compute_terbilang_from_objs_dynamic(self, recs, reduce_amt, currency_str='rupiah'):
+        a = {}
+        for rec2 in recs:
+            final_amt = reduce_amt.get(rec2.id) and rec2.grand_total - reduce_amt[rec2.id] or rec2.grand_total
+            a.update({rec2.name: num2words(final_amt) + ' Rupiah'})
+        return a
+
     @api.model
     def _get_report_values(self, docids, data=None):
         # Print dari BackEnd bisa digunakan untuk Resv maupun invoice
@@ -1562,28 +1587,46 @@ class PrintoutInvoice(models.AbstractModel):
                 'active_model': 'tt.reservation.airline',
                 'active_ids': docids
             }
+        add_data = data.get('data', {})
         values = {}
+        reduce_amt = {}
         val = {}
         header_width = 90
         resv_obj = False
         agent_id = False
         doc_objs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        is_dynamic_print = add_data.get('is_dynamic_print') and add_data['is_dynamic_print'] or False
         for rec in doc_objs:
             values[rec.id] = []
+            reduce_amt[rec.id] = 0
             for rec2 in rec.invoice_line_ids:
                 resv_obj = self.env[rec2.res_model_resv].browse(rec2.res_id_resv)
-                values[rec.id].append(self.get_invoice_data(rec2, resv_obj, rec))
+                if is_dynamic_print:
+                    included_detail_ids = add_data.get('included_detail_ids') and add_data['included_detail_ids'] or []
+                else:
+                    included_detail_ids = []
+                inv_line_data = self.get_invoice_data(rec2, resv_obj, rec, included_detail_ids)
+                if inv_line_data.get('reduce_amt'):
+                    reduce_amt[rec.id] += inv_line_data['reduce_amt']
+                if is_dynamic_print and not inv_line_data.get('line_detail'):
+                    continue
+                values[rec.id].append(inv_line_data)
                 # values[rec.id].append(self.calc_segments(resv_obj, resv_obj.passenger_ids))
             agent_id = rec.agent_id
         invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
+        if reduce_amt:
+            terbilang = self.compute_terbilang_from_objs_dynamic(self.env[data['context']['active_model']].browse(data['context']['active_ids']), reduce_amt)
+        else:
+            terbilang = self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids']))
         val = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': doc_objs,
             'inv_lines': values,
+            'is_dynamic_print': is_dynamic_print,
+            'reduce_amt': reduce_amt,
             'header_width': str(header_width),
-            'terbilang': self.compute_terbilang_from_objs(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'terbilang': terbilang,
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
             'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",

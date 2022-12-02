@@ -18,6 +18,10 @@ class TtCronLogInhResv(models.Model):
             for rec in wizard_objs:
                 rec.sudo().unlink()
 
+            wizard_objs = self.env['tt.dynamic.print.invoice.wizard'].sudo().search([('create_date', '<=', datetime.today() - timedelta(days=2))])
+            for rec in wizard_objs:
+                rec.sudo().unlink()
+
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('Update installment invoice Tour')

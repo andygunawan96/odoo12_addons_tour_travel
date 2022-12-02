@@ -2493,6 +2493,7 @@ class ReservationGroupBooking(models.Model):
         obj = self.sudo().browse(id)
         obj.action_confirm()
 
+    # DEPRECATED
     def print_ho_invoice(self):
         datas = {
             'ids': self.env.context.get('active_ids', []),
@@ -2603,6 +2604,7 @@ class ReservationGroupBooking(models.Model):
                 desc_txt += 'Description : ' + (rec.description or '') + '<br/><br/>'
         return desc_txt
 
+    # DEPRECATED
     @api.multi
     def print_ho_invoice(self):
         datas = {

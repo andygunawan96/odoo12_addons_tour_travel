@@ -909,6 +909,7 @@ class TtReservationBus(models.Model):
         # return self.env.ref('tt_report_common.action_report_printout_reservation_bus').report_action(self,
         #                                                                                                data=datas)
 
+    # DEPRECATED
     @api.multi
     def print_ho_invoice(self):
         datas = {

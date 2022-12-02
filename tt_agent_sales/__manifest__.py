@@ -26,6 +26,7 @@ Key Features
         'wizard/tt_agent_invoice.xml',
         'wizard/tt_split_wizard_view.xml',
         'wizard/tt_merge_wizard_view.xml',
+        'wizard/dynamic_print_invoice_wizard_view.xml',
         'views/tt_agent_invoice_line.xml',
         'views/tt_agent_invoice.xml',
         'views/tt_ho_invoice_line.xml',

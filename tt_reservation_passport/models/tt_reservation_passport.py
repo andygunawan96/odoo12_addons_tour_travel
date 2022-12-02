@@ -709,6 +709,7 @@ class TtPassport(models.Model):
         return url
         # return passport_itinerary_id.report_action(book_obj, data=data)
 
+    # DEPRECATED
     def print_ho_invoice(self):
         datas = {
             'ids': self.env.context.get('active_ids', []),

@@ -215,6 +215,7 @@ class HotelReservation(models.Model):
         return url
         # return self.env.ref('tt_report_common.action_report_printout_reservation_hotel').report_action([], data=datas)
 
+    # DEPRECATED
     @api.multi
     def print_ho_invoice(self):
         datas = {

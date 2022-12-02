@@ -15,7 +15,7 @@ class SplitInvoiceLine(models.Model):
     # passenger_id = fields.Many2one('tt.customer','Passenger')
     invoice_line_detail_id = fields.Many2one('tt.agent.invoice.line.detail', 'Invoice Line', readonly=True)
     limit = fields.Integer('Limit',default=2)
-    split_wizard_id = fields.Many2one('tt.split.invoice.wizard')
+    split_wizard_id = fields.Many2one('tt.split.invoice.wizard', 'Split Wizard', ondelete='cascade')
 
     new_invoice_number = fields.Many2one('tt.dynamic.selection','New Invoice',domain="[('name','<=',limit)]")
 
