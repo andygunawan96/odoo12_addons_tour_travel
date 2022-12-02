@@ -66,19 +66,21 @@
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                            attrs="{'invisible': ['|', ('state', '!=', 'issued'), ('provider_name', '=', 'klook')]}"/>
+                            states="issued,done,refund,rescheduled,reissue"
+                            attrs="{'invisible': [('provider_name', '=', 'klook')]}"/>
                     <button name="resend_voucher_button"
                             string="Resend Voucher Email"
                             type="object"
                             class="oe_stat_button"
                             icon="fa-print"
-                            attrs="{'invisible': ['|', ('state', '!=', 'issued'), ('provider_name', '!=', 'klook')]}"/>
+                            states="issued,done,refund,rescheduled,reissue"
+                            attrs="{'invisible': [('provider_name', '!=', 'klook')]}"/>
 <!--                    <button name="print_ho_invoice"-->
 <!--                            class="oe_stat_button" states="issued,done"-->
 <!--                            string="Print Invoice (HO)" type="object" icon="fa-print"-->
 <!--                            groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>-->
                     <button name="print_itinerary"
-                            class="oe_stat_button" states="booked,issued,done,paid,pending"
+                            class="oe_stat_button" states="booked,issued,done,paid,pending,refund,rescheduled,reissue"
                             string="Print Itinerary" type="object" icon="fa-print"/>
                 </div>
             </xpath>

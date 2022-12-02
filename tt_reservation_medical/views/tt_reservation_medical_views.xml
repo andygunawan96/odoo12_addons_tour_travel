@@ -91,17 +91,17 @@
 
             <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                 <button name="print_eticket"
-                        class="oe_stat_button" states="issued,done"
+                        class="oe_stat_button" states="issued,done,refund,rescheduled,reissue"
                         string="Print E-Ticket" type="object" icon="fa-print"/>
                 <button name="print_eticket_with_price"
-                        class="oe_stat_button" states="issued,done"
+                        class="oe_stat_button" states="issued,done,refund,rescheduled,reissue"
                         string="Print E-Ticket (Price)" type="object" icon="fa-print"/>
 <!--                <button name="print_ho_invoice"-->
 <!--                        class="oe_stat_button" states="issued,done"-->
 <!--                        string="Print Invoice (HO)" type="object" icon="fa-print"-->
 <!--                        groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>-->
                 <button name="print_itinerary"
-                        class="oe_stat_button" states="booked,issued,done"
+                        class="oe_stat_button" states="booked,issued,done,refund,rescheduled,reissue"
                         string="Print Itinerary" type="object" icon="fa-print"/>
             </xpath>
             <xpath expr="//field[@name='date']" position="before">
