@@ -89,6 +89,7 @@ class AgentInvoice(models.Model):
 
     printout_invoice_id = fields.Many2one('tt.upload.center', 'Printout Invoice')
     printout_kwitansi_id = fields.Many2one('tt.upload.center', 'Printout kwitansi')
+    dynamic_print_count = fields.Integer('Dynamic Print Count', default=0)
 
     # Bill to
     bill_name = fields.Char('Billing to')
@@ -572,3 +573,29 @@ class AgentInvoice(models.Model):
             rec.printout_invoice_id.unlink()
             rec.printout_kwitansi_id.unlink()
 
+    def open_dynamic_print_wizard(self):
+        wizard_model = self.env['tt.dynamic.print.invoice.wizard']
+        wizard_obj = wizard_model.create({
+            'invoice_id': self.id
+        })
+
+        for rec in self.invoice_line_ids:
+            for rec2 in rec.invoice_line_detail_ids:
+                self.env['tt.dynamic.print.invoice.line'].create({
+                    'invoice_line_detail_id': rec2.id,
+                    'print_wizard_id': wizard_obj.id
+                })
+
+        form_id = wizard_model.get_form_id()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Dynamic Print Invoice Wizard',
+            'res_model': 'tt.dynamic.print.invoice.wizard',
+            'res_id': wizard_obj.id,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': form_id.id,
+            'context': {},
+            'target': 'new',
+        }

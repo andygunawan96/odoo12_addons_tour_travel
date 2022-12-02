@@ -1118,6 +1118,7 @@ class ReservationPpob(models.Model):
             book_obj.is_ticket_printed += 1
         return url
 
+    # DEPRECATED
     def print_ho_invoice(self):
         datas = {
             'ids': self.env.context.get('active_ids', []),

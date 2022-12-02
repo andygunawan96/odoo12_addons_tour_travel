@@ -76,6 +76,9 @@
                         <button name="print_invoice"
                                 class="oe_stat_button" states="draft,confirm,bill,bill2,paid"
                                 string="Print" type="object" icon="fa-print"/>
+                        <button name="open_dynamic_print_wizard"
+                                class="oe_stat_button" states="draft,confirm,bill,bill2,paid"
+                                string="Dynamic Print" type="object" icon="fa-print"/>
                         <button name="print_kwitansi"
                                 class="oe_stat_button" states="paid"
                                 string="Print (Kwitansi)" type="object" icon="fa-print"/>
@@ -95,6 +98,7 @@
                             <field name="customer_parent_type_id" string="Customer Type"/>
                             <field name="pnr"/>
                             <field name="currency_id"/>
+                            <field name="dynamic_print_count" groups="tt_base.group_tt_tour_travel"/>
                         </group>
                         <group>
                             <field name="agent_id"/>

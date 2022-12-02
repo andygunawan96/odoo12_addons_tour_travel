@@ -806,6 +806,7 @@ class ReservationTour(models.Model):
         else:
             return super(ReservationTour, self).get_total_amount()
 
+    # DEPRECATED
     @api.multi
     def print_ho_invoice(self):
         datas = {

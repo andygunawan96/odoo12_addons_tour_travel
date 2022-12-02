@@ -678,6 +678,7 @@ class ReservationEvent(models.Model):
         }
         return url
 
+    # DEPRECATED
     def print_ho_invoice(self):
         datas = {
             'ids': self.env.context.get('active_ids', []),
