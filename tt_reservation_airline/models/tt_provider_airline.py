@@ -377,7 +377,7 @@ class TtProviderAirline(models.Model):
         for rec in self:
             data = {
                 'state': 'halt_booked',
-                'hold_date': datetime.now() + timedelta(minutes=10)
+                'hold_date': datetime.now().replace(microsecond=0) + timedelta(minutes=10)
             }
             if err_code != 0:
                 data.update({
@@ -394,7 +394,7 @@ class TtProviderAirline(models.Model):
         for rec in self:
             rec.write({
                 'state': 'halt_issued',
-                'hold_date': datetime.now() + timedelta(minutes=30)
+                'hold_date': datetime.now().replace(microsecond=0) + timedelta(minutes=30)
             })
 
     def action_failed_void_api_airline(self,err_code,err_msg):
