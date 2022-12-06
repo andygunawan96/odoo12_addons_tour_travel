@@ -6,6 +6,7 @@ import json
 from threading import Thread
 from ...tools.db_connector import GatewayConnector
 from datetime import datetime
+import copy
 
 
 _logger = logging.getLogger(__name__)
@@ -1094,6 +1095,8 @@ class ReservationAirline(models.Model):
                                                                                    limit=1)
                             destination_obj = self.env['tt.destinations'].sudo().search(
                                 [('code', '=', seg['destination'])], limit=1)
+
+                            segment_addons_ids = []
                             n_seg_values = {
                                 'segment_code': seg['segment_code'],
                                 'pnr': commit_data['pnr'],
@@ -1129,7 +1132,17 @@ class ReservationAirline(models.Model):
                                 })
                                 # for sc in fare['service_charge_summary']:
                                 #     total_amount += sc['total_price']
+                                for fare_detail in fare.get('fare_details', []):
+                                    fare_detail_data = copy.deepcopy(fare_detail)
+                                    if not fare_detail_data.get('description'):
+                                        fare_detail_data['description'] = json.dumps('[]')
+                                    else:
+                                        fare_detail_data['description'] = json.dumps(fare_detail_data['description'])
+                                    segment_addons_ids.append((0, 0, fare_detail_data))
 
+                            n_seg_values.update({
+                                'segment_addons_ids': segment_addons_ids,
+                            })
                             n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
                             new_segment_list.append(n_seg_obj.id)
 
@@ -1243,6 +1256,7 @@ class ReservationAirline(models.Model):
                             carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
                             origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin'])], limit=1)
                             destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination'])], limit=1)
+                            segment_addons_ids = []
                             n_seg_values = {
                                 'segment_code': seg['segment_code'],
                                 'pnr': commit_data['pnr'],
@@ -1278,7 +1292,17 @@ class ReservationAirline(models.Model):
                                 })
                                 # for sc in fare['service_charge_summary']:
                                 #     total_amount += sc['total_price']
+                                for fare_detail in fare.get('fare_details', []):
+                                    fare_detail_data = copy.deepcopy(fare_detail)
+                                    if not fare_detail_data.get('description'):
+                                        fare_detail_data['description'] = json.dumps('[]')
+                                    else:
+                                        fare_detail_data['description'] = json.dumps(fare_detail_data['description'])
+                                    segment_addons_ids.append((0, 0, fare_detail_data))
 
+                            n_seg_values.update({
+                                'segment_addons_ids': segment_addons_ids
+                            })
                             n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
                             new_segment_list.append(n_seg_obj.id)
 
