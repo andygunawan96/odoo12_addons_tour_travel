@@ -352,7 +352,6 @@ class AgentInvoice(models.Model):
             datas['form'] = res
             invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
             for invoice in rec['invoice_line_ids']:
-                final_url = ''
                 if not invoice.invoice_id.printout_invoice_id or is_dynamic_print:
                     datas['included_detail_ids'] = []
                     for inv_det in invoice.invoice_line_detail_ids:
@@ -391,6 +390,8 @@ class AgentInvoice(models.Model):
                         invoice.invoice_id.write({
                             'dynamic_print_count': print_count + 1
                         })
+                else:
+                    final_url = invoice.invoice_id.printout_invoice_id.url
 
                 url.append({
                     'type': 'ir.actions.act_url',
