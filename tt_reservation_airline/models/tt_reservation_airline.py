@@ -655,6 +655,13 @@ class ReservationAirline(models.Model):
             any_provider_changed = False
             any_pnr_changed = False
 
+            # November 29, 2022 - SAM
+            resv_passenger_number_dict = {}
+            for psg in book_obj.passenger_ids:
+                key_number = str(psg.sequence)
+                resv_passenger_number_dict[key_number] = psg
+            # END
+
             for provider in req['provider_bookings']:
                 # December 31, 2021 - SAM
                 # if 'error_code' not in provider or provider['error_code'] != 0:
@@ -720,6 +727,10 @@ class ReservationAirline(models.Model):
                     raise RequestException(1002)
                 # book_status.append(provider['status'])
 
+                # November 29, 2022 - SAM
+                provider['passengers'] = util.match_passenger_data(provider['passengers'], book_obj.passenger_ids)
+                # END
+
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
                     # default_hold_date = datetime.now().replace(microsecond=0) + timedelta(minutes=30)
                     # curr_hold_date = datetime.strptime(util.get_without_empty(provider,'hold_date',str(default_hold_date)), '%Y-%m-%d %H:%M:%S')
@@ -733,6 +744,15 @@ class ReservationAirline(models.Model):
                     book_obj.update_journey(provider)
                     provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
+                    # November 29, 2022 - SAM
+                    provider_obj.sudo().delete_passenger_fees()
+                    for psg in provider['passengers']:
+                        key = str(psg['passenger_number'])
+                        if key not in resv_passenger_number_dict:
+                            continue
+                        psg_obj = resv_passenger_number_dict[key]
+                        psg_obj.create_ssr(psg['fees'], provider_obj.pnr, provider_obj.id, is_create_service_charge=False)
+                    # END
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     # May 20, 2020 - SAM
                     # Testing di comment
@@ -765,6 +785,17 @@ class ReservationAirline(models.Model):
                     provider_obj.action_issued_api_airline(provider, context)
                     # END
                     any_provider_changed = True
+
+                    # November 29, 2022 - SAM
+                    book_obj.update_journey(provider)
+                    provider_obj.sudo().delete_passenger_fees()
+                    for psg in provider['passengers']:
+                        key = str(psg['passenger_number'])
+                        if key not in resv_passenger_number_dict:
+                            continue
+                        psg_obj = resv_passenger_number_dict[key]
+                        psg_obj.create_ssr(psg['fees'], provider_obj.pnr, provider_obj.id, is_create_service_charge=False)
+                    # END
 
 
                     ## 23 Mar 2021, di pindahkan ke gateway tidak lagi sync sendiri
@@ -945,6 +976,38 @@ class ReservationAirline(models.Model):
                                 }
                                 leg_ids.append((1, leg_obj.id, val))
 
+                            # November 29, 2022 - SAM
+                            fare_detail_dict = {}
+                            for fare in segment_data.get('fares', []):
+                                for fare_detail in fare.get('fare_details', []):
+                                    detail_type = fare_detail.get('detail_type', '')
+                                    detail_code = fare_detail.get('detail_code', '')
+                                    if not detail_type and not detail_code:
+                                        continue
+                                    key = '%s-%s' % (detail_type, detail_code)
+                                    fare_detail_dict[key] = fare_detail
+
+                            segment_addons_ids = []
+                            for fare_detail_obj in segment_obj.segment_addons_ids:
+                                detail_type = fare_detail_obj.detail_type
+                                detail_code = fare_detail_obj.detail_code
+                                if not detail_type and not detail_code:
+                                    continue
+                                key = '%s-%s' % (detail_type, detail_code)
+                                if key not in fare_detail_dict:
+                                    segment_addons_ids.append((2, fare_detail_obj.id))
+                                else:
+                                    fare_detail_data = fare_detail_dict.pop(key)
+                                    if not fare_detail_data.get('description'):
+                                        fare_detail_data['description'] = json.dumps('[]')
+                                    else:
+                                        fare_detail_data['description'] = json.dumps(
+                                            fare_detail_data['description'])
+                                    segment_addons_ids.append((1, fare_detail_obj.id, fare_detail_data))
+                            for fare_detail_data in fare_detail_dict.values():
+                                segment_addons_ids.append((0, 0, fare_detail_data))
+                            # END
+
                             segment_obj.write({
                                 'segment_code': segment_data['segment_code'],
                                 'carrier_code': segment_data['carrier_code'],
@@ -956,7 +1019,112 @@ class ReservationAirline(models.Model):
                                 'cabin_class': segment_data['fares'][0].get('cabin_class', ''),
                                 'fare_basis_code': segment_data['fares'][0].get('fare_basis_code', ''),
                                 'tour_code': segment_data['fares'][0].get('tour_code', ''),
-                                'leg_ids': leg_ids
+                                'leg_ids': leg_ids,
+                                'segment_addons_ids': segment_addons_ids,
+                            })
+                        journey_obj.compute_detail_info()
+                    provider_obj.write({
+                        'departure_date': provider_obj.journey_ids[0]['departure_date'],
+                        'arrival_date': provider_obj.journey_ids[-1]['arrival_date'],
+                    })
+                if idx == 0:
+                    departure_date = provider_obj.departure_date[:10]
+                    arrival_date = provider_obj.arrival_date[:10]
+                else:
+                    arrival_date = provider_obj.departure_date[:10]
+            self.departure_date = departure_date
+            if self.direction != 'OW':
+                self.arrival_date = arrival_date
+        else:
+            departure_date = ''
+            arrival_date = ''
+            prov_segment_dict = {}
+            for journey in provider['journeys']:
+                for seg in journey['segments']:
+                    key = '{origin}{destination}'.format(**seg)
+                    prov_segment_dict[key] = seg
+
+            for idx, provider_obj in enumerate(self.provider_booking_ids):
+                if provider_obj.pnr == provider['pnr']:
+                    for journey_obj in provider_obj.journey_ids:
+                        for segment_obj in journey_obj.segment_ids:
+                            origin = segment_obj.origin_id.code if segment_obj.origin_id else '-'
+                            destination = segment_obj.destination_id.code if segment_obj.destination_id else '-'
+                            key = '%s%s' % (origin, destination)
+                            if key not in prov_segment_dict:
+                                _logger.error('Update journeys failed, key not found %s' % (key))
+                                continue
+
+                            segment_data = prov_segment_dict[key]
+                            leg_key_dict = {}
+                            for leg in segment_data['legs']:
+                                leg_key = '{origin}{destination}'.format(**leg)
+                                leg_key_dict[leg_key] = leg
+                            leg_key_list = [key for key in leg_key_dict.keys()]
+                            leg_key_str = ';'.join(leg_key_list)
+
+                            leg_ids = []
+                            for leg_obj in segment_obj.leg_ids:
+                                origin = leg_obj.origin_id.code if leg_obj.origin_id else '-'
+                                destination = leg_obj.destination_id.code if leg_obj.destination_id else '-'
+                                leg_key = '%s%s' % (origin, destination)
+                                if not leg_key in leg_key_dict:
+                                    _logger.error('Update journeys failed, key not found %s, leg key list %s' % (leg_key, leg_key_str))
+                                    leg_ids.append((4, leg_obj.id))
+                                    continue
+
+                                leg_data = leg_key_dict[leg_key]
+                                val = {
+                                    'leg_code': leg_data['leg_code'],
+                                    'departure_date': leg_data['departure_date'],
+                                    'arrival_date': leg_data['arrival_date'],
+                                }
+                                leg_ids.append((1, leg_obj.id, val))
+
+                            # November 29, 2022 - SAM
+                            fare_detail_dict = {}
+                            for fare in segment_data.get('fares', []):
+                                for fare_detail in fare.get('fare_details', []):
+                                    detail_type = fare_detail.get('detail_type', '')
+                                    detail_code = fare_detail.get('detail_code', '')
+                                    if not detail_type and not detail_code:
+                                        continue
+                                    key = '%s-%s' % (detail_type, detail_code)
+                                    fare_detail_dict[key] = fare_detail
+
+                            segment_addons_ids = []
+                            for fare_detail_obj in segment_obj.segment_addons_ids:
+                                detail_type = fare_detail_obj.detail_type
+                                detail_code = fare_detail_obj.detail_code
+                                if not detail_type and not detail_code:
+                                    continue
+                                key = '%s-%s' % (detail_type, detail_code)
+                                if key not in fare_detail_dict:
+                                    segment_addons_ids.append((2, fare_detail_obj.id))
+                                else:
+                                    fare_detail_data = fare_detail_dict.pop(key)
+                                    if not fare_detail_data.get('description'):
+                                        fare_detail_data['description'] = json.dumps('[]')
+                                    else:
+                                        fare_detail_data['description'] = json.dumps(fare_detail_data['description'])
+                                    segment_addons_ids.append((1, fare_detail_obj.id, fare_detail_data))
+                            for fare_detail_data in fare_detail_dict.values():
+                                segment_addons_ids.append((0, 0, fare_detail_data))
+                            # END
+
+                            segment_obj.write({
+                                'segment_code': segment_data['segment_code'],
+                                'carrier_code': segment_data['carrier_code'],
+                                'carrier_type_code': segment_data.get('carrier_type_code', ''),
+                                'carrier_number': segment_data['carrier_number'],
+                                'arrival_date': segment_data['arrival_date'],
+                                'departure_date': segment_data['departure_date'],
+                                'class_of_service': segment_data['fares'][0]['class_of_service'],
+                                'cabin_class': segment_data['fares'][0].get('cabin_class', ''),
+                                'fare_basis_code': segment_data['fares'][0].get('fare_basis_code', ''),
+                                'tour_code': segment_data['fares'][0].get('tour_code', ''),
+                                'leg_ids': leg_ids,
+                                'segment_addons_ids': segment_addons_ids,
                             })
                         journey_obj.compute_detail_info()
                     provider_obj.write({

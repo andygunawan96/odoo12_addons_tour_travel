@@ -55,12 +55,11 @@ class DynamicPrintInvoice(models.Model):
             co_uid = self.env.user.id
 
         print_count = self.invoice_id.dynamic_print_count
+        datas['is_dynamic_print'] = is_dynamic_print
         if is_dynamic_print:
-            datas['is_dynamic_print'] = True
-            filename = print_count == 0 and 'Agent Invoice %s' % self.invoice_id.name or 'Agent Invoice %s - Reprint %s.pdf' % (self.invoice_id.name, print_count)
+            filename = print_count == 0 and 'Agent Invoice %s.pdf' % self.invoice_id.name or 'Agent Invoice %s - Reprint %s.pdf' % (self.invoice_id.name, print_count)
         else:
-            datas['is_dynamic_print'] = False
-            filename = 'Agent Invoice %s' % self.invoice_id.name
+            filename = 'Agent Invoice %s.pdf' % self.invoice_id.name
         pdf_report = printout_invoice_id.report_action(self.invoice_id, data=datas)
         pdf_report['context'].update({
             'active_model': self.invoice_id._name,
