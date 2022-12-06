@@ -334,22 +334,35 @@ class AgentInvoice(models.Model):
             new_data.update({
                 'additional_information': data.get('additional_information')
             })
-            
+
+        is_dynamic_print = data.get('is_dynamic_print') and data['is_dynamic_print'] or False
+        included_pax_names = data.get('included_pax_names') and data['included_pax_names'] or []
         url = []
         for rec in self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]):
             if new_data:
                 for invoice in rec['invoice_line_ids']:
                     invoice.invoice_id.write(new_data)
-                    invoice.invoice_id.printout_invoice_id.unlink()
+                    if not is_dynamic_print:
+                        invoice.invoice_id.printout_invoice_id.unlink()
 
-            datas = {'ids': self.env.context.get('active_ids', [])}
+            datas = {'ids': self.env.context.get('active_ids', []), 'is_dynamic_print': is_dynamic_print}
             # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
             res = rec.read()
             res = res and res[0] or {}
             datas['form'] = res
             invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
             for invoice in rec['invoice_line_ids']:
-                if not invoice.invoice_id.printout_invoice_id:
+                final_url = ''
+                if not invoice.invoice_id.printout_invoice_id or is_dynamic_print:
+                    datas['included_detail_ids'] = []
+                    for inv_det in invoice.invoice_line_detail_ids:
+                        if inv_det.desc in included_pax_names:
+                            datas['included_detail_ids'].append(inv_det.id)
+                    print_count = invoice.invoice_id.dynamic_print_count
+                    if is_dynamic_print:
+                        filename = print_count == 0 and 'Agent Invoice %s.pdf' % invoice.name or 'Agent Invoice %s - Reprint %s.pdf' % (invoice.name, print_count)
+                    else:
+                        filename = 'Agent Invoice %s.pdf' % invoice.name
                     pdf_report = invoice_id.report_action(invoice.invoice_id, data=datas)
                     pdf_report['context'].update({
                         'active_model': invoice.invoice_id._name,
@@ -358,7 +371,7 @@ class AgentInvoice(models.Model):
                     pdf_report_bytes = invoice_id.render_qweb_pdf(data=pdf_report)
                     res = self.env['tt.upload.center.wizard'].upload_file_api(
                         {
-                            'filename': 'Agent Invoice %s.pdf' % invoice.name,
+                            'filename': filename,
                             'file_reference': 'Agent Invoice for %s' % invoice.name,
                             'file': base64.b64encode(pdf_report_bytes[0]),
                             'delete_date': datetime.today() + timedelta(minutes=10)
@@ -369,12 +382,20 @@ class AgentInvoice(models.Model):
                         }
                     )
                     upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-                    invoice.invoice_id.printout_invoice_id = upc_id.id
+                    if not is_dynamic_print:
+                        invoice.invoice_id.printout_invoice_id = upc_id.id
+                        final_url = invoice.invoice_id.printout_invoice_id.url
+                    else:
+                        final_url = upc_id.url
+                        invoice.invoice_id.write({
+                            'dynamic_print_count': print_count + 1
+                        })
+
                 url.append({
                     'type': 'ir.actions.act_url',
                     'name': "Printout",
                     'target': 'new',
-                    'url': invoice.invoice_id.printout_invoice_id.url,
+                    'url': final_url,
                 })
         return url
         # return self.env.ref('tt_report_common.action_report_printout_invoice').report_action(self, data=datas)
