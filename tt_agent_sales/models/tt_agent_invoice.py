@@ -358,6 +358,7 @@ class AgentInvoice(models.Model):
                     for inv_det in invoice.invoice_line_detail_ids:
                         if inv_det.desc in included_pax_names:
                             datas['included_detail_ids'].append(inv_det.id)
+                            included_pax_names.remove(inv_det.desc)
                     print_count = invoice.invoice_id.dynamic_print_count
                     if is_dynamic_print:
                         filename = print_count == 0 and 'Agent Invoice %s.pdf' % invoice.name or 'Agent Invoice %s - Reprint %s.pdf' % (invoice.name, print_count)
