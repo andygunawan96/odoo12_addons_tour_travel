@@ -555,7 +555,10 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "contacts": [],
             "passengers": retrieve_res['passengers'],##
             "order_number": create_res['order_number'],
-            "segment_dict": segment_dict_req_list##
+            "segment_dict": segment_dict_req_list,##
+            "journeys": retrieve_res.get('journeys', []),
+            "is_hold_date_sync": retrieve_res.get('is_hold_date_sync', True),
+            "is_advance_purchase": retrieve_res.get('is_advance_purchase', False),
         })
 
 
