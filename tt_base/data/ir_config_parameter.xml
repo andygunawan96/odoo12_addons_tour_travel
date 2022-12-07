@@ -17,5 +17,16 @@
             <field name="key">use_point_reward</field>
             <field name="value">False</field>
         </record>
+        <record id="digest.digest_digest_default" model="digest.digest">
+            <field name="state">deactivated</field>
+        </record>
+        <record id="digest.ir_cron_digest_scheduler_action" model="ir.cron">
+            <field name="active">False</field>
+        </record>
+        <!-- Matikan Centang waktu untuk adding tiap klo create new user  -->
+        <record id="digest.default_emails_digest" model="ir.config_parameter">
+            <field name="key">digest.default_digest_emails</field>
+            <field name="value">False</field>
+        </record>
     </data>
 </odoo>
