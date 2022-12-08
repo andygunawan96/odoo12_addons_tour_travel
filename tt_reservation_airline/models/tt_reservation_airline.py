@@ -743,11 +743,14 @@ class ReservationAirline(models.Model):
                     # if provider_obj.state == 'booked' and hold_date == provider_obj.hold_date:
                     #     continue
                     self.update_pnr_booked(provider_obj,provider,context)
-                    book_obj.update_journey(provider)
-                    provider_obj.update_ticket_api(provider['passengers'])
+                    try:
+                        book_obj.update_journey(provider)
+                    except:
+                        _logger.error('Except Error update journey, %s' % traceback.format_exc())
                     any_provider_changed = True
                     # November 29, 2022 - SAM
                     if provider.get('passengers'):
+                        provider_obj.update_ticket_api(provider['passengers'])
                         provider_obj.sudo().delete_passenger_fees()
                         for psg in provider['passengers']:
                             key = str(psg['passenger_number'])
@@ -790,7 +793,11 @@ class ReservationAirline(models.Model):
                     any_provider_changed = True
 
                     # November 29, 2022 - SAM
-                    book_obj.update_journey(provider)
+                    try:
+                        book_obj.update_journey(provider)
+                    except:
+                        _logger.error('Except error Update journey, %s' % traceback.format_exc())
+
                     if provider.get('passengers'):
                         provider_obj.sudo().delete_passenger_fees()
                         for psg in provider['passengers']:
@@ -800,7 +807,6 @@ class ReservationAirline(models.Model):
                             psg_obj = resv_passenger_number_dict[key]
                             psg_obj.create_ssr(psg['fees'], provider_obj.pnr, provider_obj.id, is_create_service_charge=False)
                     # END
-
 
                     ## 23 Mar 2021, di pindahkan ke gateway tidak lagi sync sendiri
                     # #get balance vendor
