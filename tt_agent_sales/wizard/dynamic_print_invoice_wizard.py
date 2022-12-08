@@ -57,7 +57,7 @@ class DynamicPrintInvoice(models.Model):
         print_count = self.invoice_id.dynamic_print_count
         datas['is_dynamic_print'] = is_dynamic_print
         if is_dynamic_print:
-            filename = print_count == 0 and 'Agent Invoice %s.pdf' % self.invoice_id.name or 'Agent Invoice %s - Reprint %s.pdf' % (self.invoice_id.name, print_count)
+            filename = 'Agent Invoice %s - Reprint %s.pdf' % (self.invoice_id.name, print_count)
         else:
             filename = 'Agent Invoice %s.pdf' % self.invoice_id.name
         pdf_report = printout_invoice_id.report_action(self.invoice_id, data=datas)

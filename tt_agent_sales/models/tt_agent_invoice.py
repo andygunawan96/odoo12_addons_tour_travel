@@ -89,7 +89,7 @@ class AgentInvoice(models.Model):
 
     printout_invoice_id = fields.Many2one('tt.upload.center', 'Printout Invoice')
     printout_kwitansi_id = fields.Many2one('tt.upload.center', 'Printout kwitansi')
-    dynamic_print_count = fields.Integer('Dynamic Print Count', default=0)
+    dynamic_print_count = fields.Integer('Dynamic Print Count', default=1)
 
     # Bill to
     bill_name = fields.Char('Billing to')
@@ -360,7 +360,7 @@ class AgentInvoice(models.Model):
                             included_pax_names.remove(inv_det.desc)
                     print_count = invoice.invoice_id.dynamic_print_count
                     if is_dynamic_print:
-                        filename = print_count == 0 and 'Agent Invoice %s.pdf' % invoice.name or 'Agent Invoice %s - Reprint %s.pdf' % (invoice.name, print_count)
+                        filename = 'Agent Invoice %s - Reprint %s.pdf' % (invoice.name, print_count)
                     else:
                         filename = 'Agent Invoice %s.pdf' % invoice.name
                     pdf_report = invoice_id.report_action(invoice.invoice_id, data=datas)
