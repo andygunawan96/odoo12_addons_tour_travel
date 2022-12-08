@@ -89,7 +89,7 @@ class AgentInvoice(models.Model):
 
     printout_invoice_id = fields.Many2one('tt.upload.center', 'Printout Invoice')
     printout_kwitansi_id = fields.Many2one('tt.upload.center', 'Printout kwitansi')
-    dynamic_print_count = fields.Integer('Dynamic Print Count', default=1)
+    dynamic_print_count = fields.Integer('Dynamic Print Count', default=0)
 
     # Bill to
     bill_name = fields.Char('Billing to')
@@ -358,8 +358,11 @@ class AgentInvoice(models.Model):
                         if inv_det.desc in included_pax_names:
                             datas['included_detail_ids'].append(inv_det.id)
                             included_pax_names.remove(inv_det.desc)
-                    print_count = invoice.invoice_id.dynamic_print_count
+                    print_count = invoice.invoice_id.dynamic_print_count + 1
                     if is_dynamic_print:
+                        invoice.invoice_id.write({
+                            'dynamic_print_count': print_count
+                        })
                         filename = 'Agent Invoice %s - Reprint %s.pdf' % (invoice.name, print_count)
                     else:
                         filename = 'Agent Invoice %s.pdf' % invoice.name
@@ -387,9 +390,6 @@ class AgentInvoice(models.Model):
                         final_url = invoice.invoice_id.printout_invoice_id.url
                     else:
                         final_url = upc_id.url
-                        invoice.invoice_id.write({
-                            'dynamic_print_count': print_count + 1
-                        })
                 else:
                     final_url = invoice.invoice_id.printout_invoice_id.url
 
