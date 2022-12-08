@@ -362,6 +362,9 @@ class TtRefund(models.Model):
         for rec in all_refunds:
             rec._compute_admin_fee()
 
+    def recalculate_admin_fee(self):
+        self._compute_admin_fee()
+
     @api.depends('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     @api.onchange('admin_fee_id', 'refund_amount', 'res_model', 'res_id')
     def _compute_admin_fee(self):

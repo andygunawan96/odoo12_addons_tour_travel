@@ -728,7 +728,9 @@ class ReservationAirline(models.Model):
                 # book_status.append(provider['status'])
 
                 # November 29, 2022 - SAM
-                provider['passengers'] = util.match_passenger_data(provider['passengers'], book_obj.passenger_ids)
+                if provider['status'] in ['BOOKED', 'ISSUED']:
+                    if provider.get('passengers'):
+                        provider['passengers'] = util.match_passenger_data(provider['passengers'], book_obj.passenger_ids)
                 # END
 
                 if provider['status'] == 'BOOKED' and not provider.get('error_code'):
@@ -745,13 +747,14 @@ class ReservationAirline(models.Model):
                     provider_obj.update_ticket_api(provider['passengers'])
                     any_provider_changed = True
                     # November 29, 2022 - SAM
-                    provider_obj.sudo().delete_passenger_fees()
-                    for psg in provider['passengers']:
-                        key = str(psg['passenger_number'])
-                        if key not in resv_passenger_number_dict:
-                            continue
-                        psg_obj = resv_passenger_number_dict[key]
-                        psg_obj.create_ssr(psg['fees'], provider_obj.pnr, provider_obj.id, is_create_service_charge=False)
+                    if provider.get('passengers'):
+                        provider_obj.sudo().delete_passenger_fees()
+                        for psg in provider['passengers']:
+                            key = str(psg['passenger_number'])
+                            if key not in resv_passenger_number_dict:
+                                continue
+                            psg_obj = resv_passenger_number_dict[key]
+                            psg_obj.create_ssr(psg['fees'], provider_obj.pnr, provider_obj.id, is_create_service_charge=False)
                     # END
                 elif provider['status'] == 'ISSUED' and not provider.get('error_code'):
                     # May 20, 2020 - SAM
@@ -788,13 +791,14 @@ class ReservationAirline(models.Model):
 
                     # November 29, 2022 - SAM
                     book_obj.update_journey(provider)
-                    provider_obj.sudo().delete_passenger_fees()
-                    for psg in provider['passengers']:
-                        key = str(psg['passenger_number'])
-                        if key not in resv_passenger_number_dict:
-                            continue
-                        psg_obj = resv_passenger_number_dict[key]
-                        psg_obj.create_ssr(psg['fees'], provider_obj.pnr, provider_obj.id, is_create_service_charge=False)
+                    if provider.get('passengers'):
+                        provider_obj.sudo().delete_passenger_fees()
+                        for psg in provider['passengers']:
+                            key = str(psg['passenger_number'])
+                            if key not in resv_passenger_number_dict:
+                                continue
+                            psg_obj = resv_passenger_number_dict[key]
+                            psg_obj.create_ssr(psg['fees'], provider_obj.pnr, provider_obj.id, is_create_service_charge=False)
                     # END
 
 
