@@ -358,9 +358,12 @@ class AgentInvoice(models.Model):
                         if inv_det.desc in included_pax_names:
                             datas['included_detail_ids'].append(inv_det.id)
                             included_pax_names.remove(inv_det.desc)
-                    print_count = invoice.invoice_id.dynamic_print_count
+                    print_count = invoice.invoice_id.dynamic_print_count + 1
                     if is_dynamic_print:
-                        filename = print_count == 0 and 'Agent Invoice %s.pdf' % invoice.name or 'Agent Invoice %s - Reprint %s.pdf' % (invoice.name, print_count)
+                        invoice.invoice_id.write({
+                            'dynamic_print_count': print_count
+                        })
+                        filename = 'Agent Invoice %s - Reprint %s.pdf' % (invoice.name, print_count)
                     else:
                         filename = 'Agent Invoice %s.pdf' % invoice.name
                     pdf_report = invoice_id.report_action(invoice.invoice_id, data=datas)
@@ -387,9 +390,6 @@ class AgentInvoice(models.Model):
                         final_url = invoice.invoice_id.printout_invoice_id.url
                     else:
                         final_url = upc_id.url
-                        invoice.invoice_id.write({
-                            'dynamic_print_count': print_count + 1
-                        })
                 else:
                     final_url = invoice.invoice_id.printout_invoice_id.url
 

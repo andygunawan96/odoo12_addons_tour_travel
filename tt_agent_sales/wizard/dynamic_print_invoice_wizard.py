@@ -54,10 +54,13 @@ class DynamicPrintInvoice(models.Model):
         else:
             co_uid = self.env.user.id
 
-        print_count = self.invoice_id.dynamic_print_count
+        print_count = self.invoice_id.dynamic_print_count + 1
         datas['is_dynamic_print'] = is_dynamic_print
         if is_dynamic_print:
-            filename = print_count == 0 and 'Agent Invoice %s.pdf' % self.invoice_id.name or 'Agent Invoice %s - Reprint %s.pdf' % (self.invoice_id.name, print_count)
+            self.invoice_id.write({
+                'dynamic_print_count': print_count
+            })
+            filename = 'Agent Invoice %s - Reprint %s.pdf' % (self.invoice_id.name, print_count)
         else:
             filename = 'Agent Invoice %s.pdf' % self.invoice_id.name
         pdf_report = printout_invoice_id.report_action(self.invoice_id, data=datas)
@@ -79,10 +82,6 @@ class DynamicPrintInvoice(models.Model):
             }
         )
         upc_id = self.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-        if is_dynamic_print:
-            self.invoice_id.write({
-                'dynamic_print_count': print_count + 1
-            })
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
