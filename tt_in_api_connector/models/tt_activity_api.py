@@ -98,6 +98,8 @@ class TtMasterActivityApiCon(models.Model):
             res = table_obj.get_autocomplete_api(data,context)
         elif action == 'product_update_webhook':
             res = table_obj.product_update_webhook(data,context)
+        elif action == 'product_type_new_webhook':
+            res = table_obj.product_type_new_webhook(data,context)
         elif action == 'product_type_update_webhook':
             res = table_obj.product_type_update_webhook(data,context)
         elif action == 'product_type_inactive_webhook':
