@@ -522,6 +522,24 @@
                         </tbody>
                     </table>
 
+                    <span style="font-size: 28px; font-weight: 730">Product Info</span><br/>
+                    <table class="table table-sm" style="text-align:center;">
+                        <thead>
+                            <tr>
+                                <th>Product Type</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="provider_itin_id.activity_detail_ids" t-as="activity_details">
+                                <tr>
+                                    <td><span t-field="activity_details.activity_product_id.name"/></td>
+                                    <td><span t-field="activity_details.activity_product_id.description"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
                     <span style="font-size: 28px; font-weight: 730">Guest Detail(s)</span><br/>
                     <div class="box" style="margin: 20px 20px 20px 20px; border-style: solid; border-width: 1px; border-color: #BBB; border-radius: 20px">
                         <div class="row" style="margin-left: 0px; margin-right: 0px; margin-top: 5px; margin-bottom: 5px">
