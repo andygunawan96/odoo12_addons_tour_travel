@@ -738,8 +738,8 @@ class TtCustomerBehavior(models.Model):
     def to_dict(self):
         return {
             "provider_type": self.provider_type_id.name,
-            "behavior_type": self.behavior_type.capitalize(),
-            "behavior_value": self.behavior_value.capitalize(),
+            "behavior_type": self.behavior_type.capitalize() if self.behavior_type else '',
+            "behavior_value": self.behavior_value.capitalize() if self.behavior_value else '',
             "counter": self.counter,
             "remark": self.remark
         }
