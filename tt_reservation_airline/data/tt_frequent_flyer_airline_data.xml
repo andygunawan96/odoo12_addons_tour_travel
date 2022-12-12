@@ -65,6 +65,19 @@
                 (4, ref('tt_reservation_airline.tt_loyalty_program_garudamiles')),
             ]"/>
         </record>
+        <record id="tt_frequent_flyer_airline_pelita" model="tt.frequent.flyer.airline">
+            <field name="name">Pelita Air Frequent Flyer</field>
+            <field name="sequence">40</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_pelita')),
+            ]"/>
+            <field name="carrier_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_transport_carrier_airline_ip')),
+            ]"/>
+            <field name="loyalty_program_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_loyalty_program_pelitaair')),
+            ]"/>
+        </record>
     </data>
 </odoo>
     
