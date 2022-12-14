@@ -14,7 +14,7 @@ class TtPnrQuotaPricePackage(models.Model):
     minimum_fee = fields.Monetary('Minimum Fee',default=0)
     validity = fields.Integer('Validity Month', default=1)
     free_usage = fields.Integer('Free Usage', default=1000)
-    fix_profit_share = fields.Boolean('Fix Profit Share', default=True)
+    fix_profit_share = fields.Boolean('Fix Profit Share', default=True, help="""Check to ignore internal inventory""")
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     active = fields.Boolean('Active', default=True)
     is_calculate_all_inventory = fields.Boolean('Is count internal inventory', default=False, help="""to calculate all inventory""")

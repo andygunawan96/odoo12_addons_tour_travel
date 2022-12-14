@@ -34,6 +34,8 @@ class AgentInvoiceInh(models.Model):
                                  domain=_get_ho_invoice_model_domain)
     is_use_credit_limit = fields.Boolean(default=False)
 
+    total_after_tax = fields.Monetary('Total (After Fee)', compute="_compute_total_tax", store=True)
+
     # Fungsi Asli dri tt.agent.invoice ==> set_default_billing_to
     def set_default_ho_billing_to(self):
         for rec in self:

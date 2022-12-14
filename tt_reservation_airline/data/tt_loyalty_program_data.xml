@@ -801,6 +801,11 @@
             <field name="name">Belama Club</field>
             <field name="code">belamaclub</field>
         </record>
+
+        <record id="tt_loyalty_program_pelitaair" model="tt.loyalty.program">
+            <field name="name">Pelita Air</field>
+            <field name="code">pelitaair</field>
+        </record>
     </data>
 </odoo>
     
