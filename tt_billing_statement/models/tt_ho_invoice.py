@@ -92,6 +92,7 @@ class AgentInvoiceInh(models.Model):
         amount_list = [] ## untuk commission
         amount = 0
         total_amount = 0
+        total_point_reward = 0
         book_obj = False
         for invoice_line_obj in self.invoice_line_ids:
             if not book_obj:
@@ -99,6 +100,8 @@ class AgentInvoiceInh(models.Model):
             for invoice_line_detail_obj in invoice_line_obj.invoice_line_detail_ids:
                 if not invoice_line_detail_obj.is_commission and not invoice_line_detail_obj.is_point_reward:
                     total_amount += invoice_line_detail_obj.price_subtotal
+                elif invoice_line_detail_obj.is_point_reward:
+                    total_point_reward += invoice_line_detail_obj.price_subtotal
                 if self.is_use_credit_limit and invoice_line_detail_obj.is_commission and debit: ## untuk payment
                     order_type = 3 ## commission
                     if invoice_line_detail_obj.commission_agent_id:
@@ -133,6 +136,17 @@ class AgentInvoiceInh(models.Model):
         #         'order_type': 2, ## order
         #         'source_of_fund_type': 'credit_limit'
         #     })
+        if total_amount + total_point_reward - self.discount != self.grand_total:
+            if debit:
+                total_amount += self.grand_total - (total_amount + total_point_reward - self.discount)
+            else:
+                amount_list.append({
+                    'amount': self.grand_total - (total_amount + total_point_reward - self.discount),
+                    'agent_id': self.agent_id.id,
+                    'order_type': 2,  ## order
+                    'source_of_fund_type': 'credit_limit',
+                    'info': ', credit limit fee'
+                })
         amount_list.append({
             'amount': total_amount - self.discount,
             'agent_id': self.agent_id.id,
@@ -164,7 +178,7 @@ class AgentInvoiceInh(models.Model):
             self.env['tt.ledger'].create_ledger_vanilla(
                 book_obj._name,
                 book_obj.id,
-                '%sHO Invoice : %s' % ("Payment For " if debit else "",self.name),
+                '%sHO Invoice : %s%s' % ("Payment For " if debit else "",self.name, rec.get('info','')),
                 self.name,
                 datetime.now(pytz.timezone('Asia/Jakarta')).date(),
                 rec['order_type'],

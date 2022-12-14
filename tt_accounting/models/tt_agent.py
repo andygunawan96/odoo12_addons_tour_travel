@@ -18,7 +18,7 @@ class TtAgent(models.Model):
     actual_credit_balance = fields.Monetary(string="Actual Credit Limit", readonly=True, compute="_compute_actual_credit_balance")  ## HANYA CREDIT LIMIT
     unprocessed_amount = fields.Monetary(string="Unprocessed Amount", readonly=True, compute="_compute_unprocessed_amount")
     limit_usage_notif = fields.Integer(string="Limit Usage Notification (%)", default=60, help="Send Email Notification when credit limit usage reaches certain percentage.")
-
+    tax_percentage = fields.Float('Tax (%)', default=0)
     point_reward = fields.Monetary(string="Point Reward", compute="_compute_point_reward_agent")
     actual_point_reward = fields.Monetary(string="Actual Point Reward", compute="_compute_point_reward_agent")
     unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward", compute="_compute_point_reward_agent")
