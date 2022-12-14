@@ -280,35 +280,27 @@ class ReservationOffline(models.Model):
 
         ## payment HO
         acq_obj = False
-        if payment_method_to_ho != 'credit_limit':
-            acq_objs = self.agent_id.payment_acquirer_ids
-            for payment_acq in acq_objs:
-                if payment_acq.name == 'Cash':
-                    acq_obj = payment_acq.id
-                    break
-
-        ho_payment_vals = {
-            'agent_id': self.agent_id.id,
-            'acquirer_id': acq_obj,
-            'real_total_amount': ho_invoice_id.grand_total,
-            'confirm_date': datetime.now()
-        }
-        if self.issued_uid.agent_id.id == self.agent_id.id:
-            ho_payment_vals.update({
-                'confirmed_uid': self.issued_uid.id
+        if payment_method_to_ho == 'credit_limit':
+            ho_payment_vals = {
+                'agent_id': self.agent_id.id,
+                'acquirer_id': acq_obj,
+                'real_total_amount': ho_invoice_id.grand_total,
+                'confirm_date': datetime.now()
+            }
+            if self.issued_uid.agent_id.id == self.agent_id.id:
+                ho_payment_vals.update({
+                    'confirmed_uid': self.issued_uid.id
+                })
+            else:
+                ho_payment_vals.update({
+                    'confirmed_uid': self.confirm_uid.id
+                })
+            ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
+            self.env['tt.payment.invoice.rel'].create({
+                'ho_invoice_id': ho_invoice_id.id,
+                'payment_id': ho_payment_obj.id,
+                'pay_amount': ho_invoice_id.grand_total
             })
-        else:
-            ho_payment_vals.update({
-                'confirmed_uid': self.confirm_uid.id
-            })
-
-        ho_payment_obj = self.env['tt.payment'].create(ho_payment_vals)
-
-        self.env['tt.payment.invoice.rel'].create({
-            'ho_invoice_id': ho_invoice_id.id,
-            'payment_id': ho_payment_obj.id,
-            'pay_amount': ho_invoice_id.grand_total
-        })
         ## payment HO
 
         self.write({

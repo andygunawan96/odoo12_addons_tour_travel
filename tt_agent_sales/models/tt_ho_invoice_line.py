@@ -10,6 +10,7 @@ class AgentInvoiceLineInh(models.Model):
 
     invoice_id = fields.Many2one('tt.ho.invoice', 'HO Invoice', ondelete='cascade')
     invoice_line_detail_ids = fields.One2many('tt.ho.invoice.line.detail', 'invoice_line_id', 'Invoice Line Detail')
+    total_after_tax = fields.Monetary('Total (After Fee)', compute="_compute_total_tax", store=True) ## sama dengan agent invoice line hanya ganti tampilan
 
     @api.model
     def create(self, vals_list):
@@ -52,4 +53,7 @@ class AgentInvoiceLineInh(models.Model):
     @api.depends('total', 'discount')
     def _compute_total_tax(self):
         for rec in self:
-            rec.total_after_tax = rec.total - rec.discount
+            if rec.invoice_id.state == 'confirm' and rec.invoice_id.agent_id.tax_percentage:
+                rec.total_after_tax = rec.total + ((rec.invoice_id.agent_id.tax_percentage / 100) * rec.total) - rec.discount
+            else:
+                rec.total_after_tax = rec.total - rec.discount
