@@ -1188,7 +1188,7 @@
             <field name="code">IP</field>
             <field name="icao">PAS</field>
             <field name="call_sign">PELITA</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="adult_length_name">200</field>
             <field name="child_length_name">200</field>
