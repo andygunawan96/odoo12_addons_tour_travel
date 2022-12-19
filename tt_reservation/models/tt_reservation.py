@@ -1415,7 +1415,7 @@ class TtReservation(models.Model):
                 })
                 res = ERR.get_no_error()
             else:
-                res = ERR.get_error(500, additional_message='duplicate external')
+                res = ERR.get_error(4043) ## duplicate pnr
         except Exception as e:
             _logger.error(traceback.format_exc())
             res = ERR.get_error(500)
