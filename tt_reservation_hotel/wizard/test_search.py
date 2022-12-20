@@ -39,7 +39,7 @@ class TestSearch(models.Model):
 
     ##### Cache Odoo12 START #####
     def render_cache_city_for_gw(self, country_name=[], city_name='', providers='', limit=99999):
-        domain = []
+        domain = [('active','=',True)]
         city_cache = []
         if providers:
             provider_destination_ids = []
