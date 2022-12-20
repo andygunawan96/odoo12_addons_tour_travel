@@ -233,6 +233,9 @@
                             <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; border-color: #CCC; padding: 10px 10px 10px 20px; margin-right: 10px; border: 1px solid #BBB;">
                                 <!--<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>-->
                                 <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>
+                                <t t-if="length.reference != segment_obj.pnr">
+                                    <span style="font-size: 16px;">Interline Code: <span t-field="length.reference"/></span><br/>
+                                </t>
                                 <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <t t-if="segment_obj.operating_airline_id">

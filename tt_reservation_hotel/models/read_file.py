@@ -2235,6 +2235,7 @@ class HotelInformation(models.Model):
         return True
 
     def formating_homas(self, hotel, hotel_id, provider, city_id, city_name, destination_id=False):
+        loc_obj = hotel.get('location') or hotel
         new_hotel = {
                     'id': str(hotel_id),
                     'name': hotel.get('name') and hotel['name'].title(),
@@ -2244,14 +2245,14 @@ class HotelInformation(models.Model):
                     'location': {
                         'destination_id': destination_id,
                         'city_id': isinstance(city_id, int) and city_id or city_id.id if city_id else False,
-                        'address': hotel.get('address') or hotel.get('street'),
-                        'address2': hotel.get('address2') or hotel.get('street2'),
-                        'address3': hotel.get('address3') or hotel.get('street3'),
-                        'city': hotel.get('city', city_name),
+                        'address': loc_obj.get('address') or loc_obj.get('street'),
+                        'address2': loc_obj.get('address2') or loc_obj.get('street2'),
+                        'address3': loc_obj.get('address3') or loc_obj.get('street3'),
+                        'city': loc_obj.get('city') or hotel.get('city', city_name),
                         'state': hotel.get('state_id.name'),
                         'district': hotel.get('district_id'),
                         'kelurahan': hotel.get('kelurahan'),
-                        'zipcode': hotel.get('zip')
+                        'zipcode': hotel.get('zipcode') or hotel.get('zip')
                     },
                     'telephone': hotel.get('phone'),
                     'fax': hotel.get('fax'),
@@ -2385,7 +2386,11 @@ class HotelInformation(models.Model):
         if len(fmt_hotel_name) >= 3:
             similarity = 0
             for elem in fmt_hotel_name:
-                if elem in fmt_hotel_master:
+                # Contoh "[Vagabond,a,tribute,portofolio]" "A" bikin value ne naik jadi ku skip
+                if len(elem) == 1:
+                    continue
+                # if elem in fmt_hotel_master: #Tidak bisa Handle Grand Setiakawan, Master: Hotel Grand Setia Kawan
+                if elem in "".join(fmt_hotel_master):
                     similarity += 1
 
             len_const = math.floor(max(len(fmt_hotel_name), len(fmt_hotel_master)))
@@ -2394,7 +2399,8 @@ class HotelInformation(models.Model):
             elif filter(lambda x:x in ['formerly', 'ex'], fmt_hotel_name) and similarity >= len_const/4:
                 return True
         else:
-            if all(elem in " ".join(fmt_hotel_master) for elem in fmt_hotel_name):
+            # if all(elem in " ".join(fmt_hotel_master) for elem in fmt_hotel_name): #Tidak bisa Handle Grand Setiakawan, Master: Hotel Grand Setia Kawan
+            if all(elem in "".join(fmt_hotel_master) for elem in fmt_hotel_name):
                 return True
         return False
 
@@ -2402,7 +2408,7 @@ class HotelInformation(models.Model):
         fmt_hotel_name = self.formatting_hotel_name(hotel_name, city_name)
         temp = []
 
-        if any(x != fmt_hotel_name for x in ['oyo', 'reddoors', 'zen']):
+        if any(x == fmt_hotel_name for x in ['oyo', 'reddoors', 'zen']):
             limit = 80
 
         # TYPE 1: cek by city dulu klo masih kurang => destination
@@ -2410,6 +2416,11 @@ class HotelInformation(models.Model):
             # Todo Find City
             # for rec in self.env['tt.hotel'].search([('id', '!=', new_hotel_id), ('city_id', 'in', city_ids), ('state', 'not in', ['merged',])]):
             for rec in self.env['tt.hotel.master'].search([('city_id', 'in', city_ids)]):
+                # Remark untuk prod START
+                # if 'soloha' in rec.name.lower():
+                #     var_test = 'Test'
+                # Remark untuk prod END
+
                 if len(temp) > limit:
                     return temp
 
@@ -2454,6 +2465,14 @@ class HotelInformation(models.Model):
 
         city_ids = self.compute_related_city(self.city_id)
         same_hotel_obj = self.advance_find_similar_name_from_database(self.name, self.city_id.name, city_ids, self.destination_id.id, False)
+
+        if not same_hotel_obj:
+            for city_other_name_obj in self.city_id.other_name_ids:
+                temp_same_hotel_objs = self.advance_find_similar_name_from_database(self.name, ' '.join([self.city_id.name, city_other_name_obj.name]), city_ids, self.destination_id.id, False)
+
+                for temp_same_hotel_obj in temp_same_hotel_objs:
+                    if temp_same_hotel_obj.id not in [x.id for x in same_hotel_obj]:
+                        same_hotel_obj.append(temp_same_hotel_obj)
 
         for same_hotel_obj_id in same_hotel_obj:
             comparing_id = self.env['tt.hotel.compare'].create({
@@ -3543,9 +3562,19 @@ class HotelInformation(models.Model):
         for master_provider in provider_list:
             base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
             base_url = base_cache_directory + master_provider + "/"
+
+            looped_country = os.walk(base_url)
             for country in os.walk(base_url):
-                country_str = country[0][len(base_url):]
-                # if country_str != 'Indonesia':
+                if isinstance(country, tuple):
+                    looped_country = country[1]
+                    break
+                else:
+                    break
+
+            for country in looped_country:
+                country_str = country
+
+                # if country_str != 'ID':
                 #     _logger.info('Skiping Data For Country: ' + country_str + '. Not in Search range')
                 #     continue
                 city_ids = glob.glob(base_url + country_str + "/*.json")
@@ -3570,11 +3599,11 @@ class HotelInformation(models.Model):
                     # Versi 2021/01 hotel di hubungkan dengan tt.hotel.destination
                     is_exact, destination_obj = self.env['tt.hotel.destination'].find_similar_obj({
                         'id': False,
-                        'name': False,
+                        'name': city_name,
                         'city_str': city_name,
                         'state_str': state_name if state_name != country_name else '',
                         'country_str': country_name,
-                    })
+                    }, force_create=True)
                     city_obj = destination_obj.city_id
                     city_id = city_obj and city_obj.id or self.env['res.city'].find_city_by_name(city_name, 1)
                     self.file_log_write(str(target_city_index + 1) + '. Start Render: ' + city_name)
@@ -3597,6 +3626,9 @@ class HotelInformation(models.Model):
                                     for hotel in json.loads(file):
                                         hotel_id += 1
                                         # rubah format ke odoo
+                                        if any([x in hotel['name'].lower().split(' ') for x in ['oyo', 'reddoorz', 'airy']]):
+                                            _logger.info('Skipping ' + hotel['name'])
+                                            continue
                                         hotel_fmt = self.formating_homas(hotel, hotel_id, provider, city_id, city_name, destination_obj.id)
 
                                         internal_hotel_obj = self.create_or_edit_hotel(hotel_fmt, -1)
@@ -3612,7 +3644,7 @@ class HotelInformation(models.Model):
                                                         'comp_hotel_id': same_hotel_obj_id.id,
                                                     })
                                                     comparing_id.compare_hotel()
-                                        if hotel_id % 50 == 0:
+                                        if hotel_id % 10 == 0:
                                             _logger.info('====== Saving Poin Hotel Raw Data ======')
                                             self.env.cr.commit()
                                 f2.close()

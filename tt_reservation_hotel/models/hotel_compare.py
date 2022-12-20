@@ -457,6 +457,10 @@ class HotelInformationCompare(models.Model):
         for rec in self:
             rec.merge_hotel()
 
+    def multi_decline_hotel(self):
+        for rec in self:
+            rec.decline_merge_hotel()
+
     def clear_compare_list(self):
         for rec in self.line_ids:
             rec.sudo().unlink()
