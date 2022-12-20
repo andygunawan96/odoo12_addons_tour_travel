@@ -56,8 +56,8 @@ class ReservationAirline(models.Model):
                             for seg in journey['segments']:
                                 carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
                                 provider_obj = self.env['tt.provider'].sudo().search([('code', '=', seg['provider'])], limit=1)
-                                origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin'])], limit=1)
-                                destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination'])], limit=1)
+                                origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
+                                destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
                                 n_seg_values = {
                                     'segment_code': seg['segment_code'],
                                     'pnr': prov['pnr'],
