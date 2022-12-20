@@ -67,10 +67,10 @@ class HotelDestination(models.Model):
     # Func render Name
 
     # Func Find Similar Destination
-    def find_similar_obj(self, new_dict):
+    def find_similar_obj(self, new_dict, force_create=False):
         params = [('id','!=', new_dict['id'])]
 
-        country_exist = new_dict['country_str']
+        country_exist = new_dict['country_str'] # Bisa jadi Indonesia bisa jadi ID klo ID dia error
         state_exist = new_dict['state_str']
         city_exist = new_dict['city_str']
 
@@ -84,7 +84,15 @@ class HotelDestination(models.Model):
             is_exact = country_exist and city_exist
             return is_exact, similar_rec
         else:
-            return False, similar_rec
+            # Create
+            if force_create:
+                similar_rec = self.env['tt.hotel.destination'].create({
+                'name': new_dict.get('name'),
+                'country_str': new_dict.get('country_str'),
+                'state_str': new_dict.get('state_str'),
+                'city_str': new_dict.get('city_str'),
+            })
+            return True, similar_rec
 
     # In Active Record jika sdah exist
     def in_active_this_record_if_similar(self):

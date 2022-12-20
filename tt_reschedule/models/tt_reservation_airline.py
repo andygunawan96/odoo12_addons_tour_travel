@@ -1800,6 +1800,7 @@ class ReservationAirline(models.Model):
                     'booker_id': airline_obj.booker_id and airline_obj.booker_id.id or False,
                     'contact_id': airline_obj.contact_id and airline_obj.contact_id.id or False,
                     'contact_title': airline_obj.contact_title,
+                    'contact_name': airline_obj.contact_name,
                     'contact_email': airline_obj.contact_email,
                     'contact_phone': airline_obj.contact_phone,
                     'passenger_ids': passenger_airline_ids,

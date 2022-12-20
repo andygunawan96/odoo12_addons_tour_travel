@@ -315,7 +315,12 @@
                         <t t-foreach="doc.provider_booking_ids" t-as="provider_itin_id">
                             <t t-foreach="doc.segment_ids.filtered(lambda x:x.pnr == provider_itin_id.pnr)" t-as="provider_segment_id">
                                 <tr>
-                                    <td><span t-field="provider_segment_id.pnr"/></td>
+                                    <td>
+                                        <span t-field="provider_segment_id.pnr"/>
+                                        <t t-if="provider_segment_id.pnr != provider_itin_id.reference">
+                                            <br/><span t-field="provider_itin_id.reference"/>
+                                        </t>
+                                    </td>
                                     <td>
                                         <span t-field="provider_segment_id.origin_id.city"/> (<span t-field="provider_segment_id.origin_id.code"/>)<br/>
                                         <span t-field="provider_segment_id.origin_id.name"/><br/>

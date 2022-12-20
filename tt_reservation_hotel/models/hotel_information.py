@@ -293,9 +293,9 @@ class HotelInformation(models.Model):
             comparer = self.env['tt.hotel.compare'].search([('hotel_id', '=', rec.id),('state', 'in', ['draft', 'tobe_merged', 'confirm', 'merged'])])
 
             if comparer:
-                for rec in comparer:
-                    if rec.score > 55 and 'stay later' not in rec.hotel_id.name.lower():
-                        rec.merge_hotel()
+                for rec2 in comparer:
+                    if rec2.score > 55 and 'stay later' not in rec2.hotel_id.name.lower():
+                        rec2.merge_hotel()
             else:
                 comparing_id = self.env['tt.hotel.compare'].create({
                     'hotel_id': rec.id,
@@ -303,7 +303,7 @@ class HotelInformation(models.Model):
                 })
                 # comparing_id.merge_hotel()
 
-            if idx % 50 == 0:
+            if idx % 5 == 0:
                 self.env.cr.commit()
 
     def mass_recalc_state(self):
