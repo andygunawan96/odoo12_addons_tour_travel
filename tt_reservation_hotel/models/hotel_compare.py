@@ -122,6 +122,9 @@ class HotelInformationCompare(models.Model):
     similar_id = fields.Many2one('tt.hotel.master', 'Master Hotel', help='Final Product after merged')
     state = fields.Selection([('draft', 'Draft'), ('tobe_merge', 'To Be Merged'), ('merge', 'Merged'), ('cancel', 'Cancel')], string='State', default='draft')
 
+    hotel_state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('expired', 'Not Available'),
+                              ('tobe_merge', 'To Be Merge'), ('merged', 'Merged')], related='hotel_id.state', string="Hotel #1 Current State")
+
     def get_compared_param(self):
         return ['name','rating','address','address2','address3','lat','long','email','destination_id','city_id','phone','state_id','country_id','provider']
 
