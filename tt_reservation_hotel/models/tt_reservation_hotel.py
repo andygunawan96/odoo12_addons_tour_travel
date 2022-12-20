@@ -551,7 +551,7 @@ class HotelReservation(models.Model):
     @api.one
     def action_booked(self, context):
         self.state = 'booked'
-        self.booked_date = fields.Datetime.today()
+        self.booked_date = fields.Datetime.now()
         self.booked_uid = context.get('co_uid') or self.env.user.id,
         self.provider_name = self.get_provider_list()
         return True
