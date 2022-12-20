@@ -166,8 +166,11 @@ class HotelInformation(models.Model):
     def v2_collect_by_human_miki_csv(self):
         hotel_fmt_list = {}
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
-        with open(base_cache_directory + 'miki_pool/master/20190703_en.csv', 'r') as f:
-            hotel_ids = csv.reader(f)
+        # with open(base_cache_directory + 'miki_pool/master/20190703_en.csv', 'r') as f:
+        # with open(base_cache_directory + 'miki/master/Rodex (1).csv', 'r') as f:
+        # with open(base_cache_directory + 'miki/master/new miki 20221207.csv', 'r') as f:
+        with open(base_cache_directory + 'miki/master/Miki full product list DEC 2022 for Rodex (copy).csv', 'r') as f:
+            hotel_ids = csv.reader(f, delimiter=';')
             index = False
             for hotel in hotel_ids:
                 if not index:
@@ -179,8 +182,7 @@ class HotelInformation(models.Model):
                     'name': hotel[5],
                     'street': hotel[6],
                     'street2': hotel[8] or '', #Usually ZipCode
-                    'street3': hotel[7] or '', #Usually City
-                    'description': 'Supplier Code: ' + str(hotel[4]),
+                    'street3': hotel[7] or '', #Usually Citydex
                     'email': '',
                     'images': [],
                     'facilities': [],
@@ -192,9 +194,20 @@ class HotelInformation(models.Model):
                     'long': hotel[10],
                     'rating': 0,
                     'hotel_type': '',
-                    'city': hotel[2],
                     'country': hotel[3],
                 }
+
+                # Untuk yg RO (1)
+                hotel_fmt.update({
+                    'description': 'Giata Code: ' + str(hotel[1]),
+                    'city': hotel[4],
+                })
+                # Untuk yg 20190703_en.csv
+                # hotel_fmt.update({
+                #     'description': 'Supplier Code: ' + str(hotel[4]),
+                #     'city': hotel[2],
+                # })
+
                 if not hotel_fmt_list.get(hotel_fmt['country']):
                     hotel_fmt_list[hotel_fmt['country']] = {}
                 if not hotel_fmt_list[hotel_fmt['country']].get(hotel_fmt['city']):
@@ -204,7 +217,7 @@ class HotelInformation(models.Model):
             need_to_add = [['Name', 'Hotel Qty']]
             for country in hotel_fmt_list.keys():
                 txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')',                                                               '')
-                filename = base_cache_directory + "miki_pool/" + txt_country
+                filename = base_cache_directory + "miki/" + txt_country
                 if not os.path.exists(filename):
                     os.mkdir(filename)
                 for city in hotel_fmt_list[country].keys():
@@ -218,7 +231,7 @@ class HotelInformation(models.Model):
                 need_to_add.append([city, len(hotel_fmt_list[country][city])])
         f.close()
 
-        with open(base_cache_directory + 'miki_pool/master/result_data.csv', 'w') as csvFile:
+        with open(base_cache_directory + 'miki/master/result_data.csv', 'w') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerows(need_to_add)
         csvFile.close()
@@ -230,7 +243,7 @@ class HotelInformation(models.Model):
     # Notes: Mesti bantuan human untuk upload file location serta formating
     # Notes: Bagian ini bakal sering berubah
     def v2_collect_by_human_miki(self):
-        self.v2_collect_by_human_miki_xml()
+        # self.v2_collect_by_human_miki_xml()
         self.v2_collect_by_human_miki_csv()
 
     # 1c. Get Country Code

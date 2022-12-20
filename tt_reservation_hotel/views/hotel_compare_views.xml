@@ -24,6 +24,7 @@
                         <group>
                             <field name="hotel_id"/>
                             <field name="comp_hotel_id"/>
+                            <field name="hotel_state"/>
                         </group>
                         <group>
                             <field name="score"/>
@@ -126,6 +127,17 @@
         <field name="code">
             if records:
                 action = records.multi_merge_hotel()
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_multi_decline_hotel">
+        <field name="name">Decline Hotel</field>
+        <field name="model_id" ref="tt_reservation_hotel.model_tt_hotel_compare"/>
+        <field name="binding_model_id" ref="tt_reservation_hotel.model_tt_hotel_compare"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.multi_decline_hotel()
         </field>
     </record>
 </odoo>
