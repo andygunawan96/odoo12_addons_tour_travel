@@ -1145,7 +1145,7 @@
             <field name="code">WY</field>
             <field name="icao">OMA</field>
             <field name="call_sign">OMAN AIR</field>
-            <field name="active">0</field>
+            <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>

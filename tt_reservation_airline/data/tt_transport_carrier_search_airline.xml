@@ -634,5 +634,17 @@
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
             ]"/>
         </record>
+
+        <record id="tt_transport_carrier_search_wy_all" model="tt.transport.carrier.search">
+            <field name="name">Oman Air</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_wy"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">157</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+        </record>
+
     </data>
 </odoo>
