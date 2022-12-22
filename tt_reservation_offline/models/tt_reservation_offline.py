@@ -2144,6 +2144,11 @@ class IssuedOffline(models.Model):
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,
             })
+            # channel repricing upsell
+            if data.get('repricing_data'):
+                data['repricing_data']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(data['repricing_data'], context)
+                book_obj.create_svc_upsell()
 
             book_obj.action_confirm(context)
             response = {

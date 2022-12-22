@@ -103,8 +103,8 @@ class ReservationGroupBooking(models.Model):
                         price_unit += cost_charge.amount
                     elif cost_charge.charge_type == 'DISC':
                         discount += cost_charge.amount
-                for channel_charge in psg.channel_service_charge_ids:
-                    price_unit += channel_charge.amount
+                # for channel_charge in psg.channel_service_charge_ids:
+                #     price_unit += channel_charge.amount
 
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0, 0, {

@@ -906,7 +906,8 @@ class TestSearch(models.Model):
                 })
 
             if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
-                continue
+                if p_charge_type == 'RAC' and 'csc' not in p_sc.charge_code:
+                    continue
 
             sc_value[pnr][p_charge_type].update({
                 'charge_code': p_sc.charge_code,
@@ -946,7 +947,6 @@ class TestSearch(models.Model):
             if len(resv_obj.passenger_ids[0].channel_service_charge_ids.ids) > 0: ##ASUMSI UPSELL HANYA 1 PER PASSENGER & HOTEL UPSELL PER RESERVASI (MASUK KE PAX 1)
                 svc_csc = self.sudo().prepare_service_charge(resv_obj.passenger_ids[0].channel_service_charge_ids, resv_obj.pnr or resv_obj.name)
                 for pnr in svc_csc:
-
                     passengers[0]['channel_service_charges'] = {
                         "amount": svc_csc[pnr]['CSC']['amount'],
                         "currency": svc_csc[pnr]['CSC']['currency']

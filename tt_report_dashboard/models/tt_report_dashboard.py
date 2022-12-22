@@ -716,8 +716,9 @@ class TtReportDashboard(models.Model):
                         'reservation': 1
                     }
                     if current_id not in passed_resv_id_list:
-                        temp_dict['profit'] += i['channel_profit']
-                        temp_dict['revenue'] += i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['profit'] += i['channel_profit']
+                            temp_dict['revenue'] += i['channel_profit']
                         passed_resv_id_list.append(current_id)
 
                     # add to summary_customer
@@ -727,8 +728,9 @@ class TtReportDashboard(models.Model):
                     summary_customer[customer_index]['revenue'] += i['amount']
                     summary_customer[customer_index]['reservation'] += 1
                     if current_id not in passed_resv_id_list:
-                        summary_customer[customer_index]['profit'] += i['channel_profit']
-                        summary_customer[customer_index]['revenue'] += i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_customer[customer_index]['profit'] += i['channel_profit']
+                            summary_customer[customer_index]['revenue'] += i['channel_profit']
                         passed_resv_id_list.append(current_id)
 
                 # looking for index of particular customer group (FPO and such)
@@ -738,20 +740,30 @@ class TtReportDashboard(models.Model):
 
                 if customer_parent_index == -1:
                     # create temp dict because no data found
+                    if not i['is_upsell_in_service_charge']:
+                        revenue_amount = i['amount'] + i['channel_profit']
+                        profit_amount = i['channel_profit']
+                    else:
+                        revenue_amount = i['amount']
+                        profit_amount = 0
                     temp_dict = {
                         'customer_parent_id': i['customer_parent_id'],
                         'customer_parent_name': i['customer_parent_name'],
-                        'revenue': i['amount'] + i['channel_profit'],
-                        'profit': i['channel_profit'],
+                        'revenue': revenue_amount,
+                        'profit': profit_amount,
                         'reservation': 1
                     }
 
                     # add to summary_customer_parent
                     summary_customer_parent.append(temp_dict)
                 else:
-                    summary_customer_parent[customer_parent_index]['revenue'] += i['amount'] + i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        summary_customer_parent[customer_parent_index]['revenue'] += i['amount'] + i['channel_profit']
+                        summary_customer_parent[customer_parent_index]['profit'] += i['channel_profit']
+                    else:
+                        summary_customer_parent[customer_parent_index]['revenue'] += i['amount']
+                        summary_customer_parent[customer_parent_index]['profit'] += 0
                     summary_customer_parent[customer_parent_index]['reservation'] += 1
-                    summary_customer_parent[customer_parent_index]['profit'] += i['channel_profit']
 
             list_person = []
             list_customer = []
@@ -907,22 +919,32 @@ class TtReportDashboard(models.Model):
                 if person_index == -1:
                     # data is not exist
                     # create data
+                    if not i['is_upsell_in_service_charge']:
+                        revenue_amount = i['amount'] + i['channel_profit']
+                        profit_amount = i['channel_profit']
+                    else:
+                        revenue_amount = i['amount']
+                        profit_amount = 0
                     temp_dict = {
                         'agent_id': i['agent_id'],
                         'agent_type_id': i['agent_type_id'],
                         'agent_name': i['agent_name'],
                         'agent_type_name': i['agent_type_name'],
-                        'revenue': i['amount'] + i['channel_profit'],
-                        'profit': i['channel_profit'],
+                        'revenue': revenue_amount,
+                        'profit': profit_amount,
                         'reservation': 1
                     }
                     # add to final list
                     summary_chanel.append(temp_dict)
                 else:
                     # data exist
-                    summary_chanel[person_index]['revenue'] += i['amount'] + i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        summary_chanel[person_index]['revenue'] += i['amount'] + i['channel_profit']
+                        summary_chanel[person_index]['profit'] += i['channel_profit']
+                    else:
+                        summary_chanel[person_index]['revenue'] += i['amount']
+                        summary_chanel[person_index]['profit'] += 0
                     summary_chanel[person_index]['reservation'] += 1
-                    summary_chanel[person_index]['profit'] += i['channel_profit']
 
             summary_ho = False
             for i in summary_chanel:
@@ -1107,8 +1129,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -1127,10 +1150,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -1140,8 +1168,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -1185,20 +1217,28 @@ class TtReportDashboard(models.Model):
 
                 if provider_index == -1:
                     if i['provider_type_name'] == 'Offline':
+                        if not i['is_upsell_in_service_charge']:
+                            profit_amount = i['channel_profit']
+                        else:
+                            profit_amount = 0
                         temp_dict = {
                             'provider': i['provider_type_name'] + "_" + i['reservation_offline_provider_type'],
                             'counter': 1,
                             i['reservation_state']: 1,
-                            'total_price': i['channel_profit'],
-                            'total_commission': i['channel_profit']
+                            'total_price': profit_amount,
+                            'total_commission': profit_amount
                         }
                     else:
+                        if not i['is_upsell_in_service_charge']:
+                            profit_amount = i['channel_profit']
+                        else:
+                            profit_amount = 0
                         temp_dict = {
                             'provider': i['provider_type_name'],
                             'counter': 1,
                             i['reservation_state']: 1,
-                            'total_price': i['channel_profit'],
-                            'total_commission': i['channel_profit']
+                            'total_price': profit_amount,
+                            'total_commission': profit_amount
                         }
                     summary_provider.append(temp_dict)
                 else:
@@ -1208,8 +1248,10 @@ class TtReportDashboard(models.Model):
                             summary_provider[provider_index][i['reservation_state']] += 1
                         except:
                             summary_provider[provider_index][i['reservation_state']] = 1
-                        summary_provider[provider_index]['total_price'] += i['channel_profit']
-                        summary_provider[provider_index]['total_commission'] += i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_provider[provider_index]['total_price'] += i['channel_profit']
+                            summary_provider[provider_index]['total_commission'] += i['channel_profit']
+
                 reservation_id_list_issued[i['provider_type_name']].append(i['reservation_id'])
 
                 #profit
@@ -2326,8 +2368,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -2346,10 +2389,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -2359,8 +2408,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -3478,8 +3531,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -3498,10 +3552,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -3511,8 +3570,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -4172,8 +4235,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -4192,10 +4256,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -4205,8 +4275,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -4769,8 +4843,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -4789,10 +4864,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -4802,8 +4883,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -5236,8 +5321,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -5256,10 +5342,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -5269,8 +5360,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -5699,8 +5794,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -5719,10 +5815,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -5732,8 +5833,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -6157,8 +6262,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -6177,10 +6283,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -6190,8 +6302,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -6607,8 +6723,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -6627,10 +6744,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -6640,8 +6762,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -7056,8 +7182,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -7076,10 +7203,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -7089,8 +7221,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -7503,8 +7639,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -7523,10 +7660,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -7536,8 +7678,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -7936,8 +8082,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -7956,10 +8103,15 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -7969,8 +8121,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -8382,8 +8538,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -8402,10 +8559,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -8415,8 +8578,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -8828,8 +8995,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -8848,10 +9016,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -8861,8 +9035,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -9461,8 +9639,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -9481,10 +9660,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -9494,8 +9679,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -10070,8 +10259,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -10090,10 +10280,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -10103,8 +10299,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -10516,8 +10716,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -10536,10 +10737,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -10549,8 +10756,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -10962,8 +11173,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -10982,10 +11194,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -10995,8 +11213,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -11408,8 +11630,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -11428,10 +11651,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -11441,8 +11670,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 
@@ -11854,8 +12087,9 @@ class TtReportDashboard(models.Model):
                     ledger_id_list[i['provider_type_name']] = []
 
                 if i['reservation_id'] not in reservation_id_list[i['provider_type_name']]:
-                    profit_total += i['channel_profit']
-                    profit_agent += i['channel_profit']
+                    if not i['is_upsell_in_service_charge']:
+                        profit_total += i['channel_profit']
+                        profit_agent += i['channel_profit']
                     month_index = self.check_date_index(summary_issued, {'year': i['issued_year'], 'month': month[int(i['issued_month']) - 1]})
 
                     if month_index == -1:
@@ -11874,10 +12108,16 @@ class TtReportDashboard(models.Model):
 
                         # assign the first value to temp dict
                         temp_dict['detail'][day_index]['reservation'] += 1
-                        temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                        else:
+                            temp_dict['detail'][day_index]['revenue'] += i['amount']
 
                         # add to global variable
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            total += i['amount']
                         num_data += 1
                         # add to final list
                         summary_issued.append(temp_dict)
@@ -11887,8 +12127,12 @@ class TtReportDashboard(models.Model):
                         splits = i['reservation_issued_date'].split("-")
                         day_index = int(splits[2]) - 1
                         summary_issued[month_index]['detail'][day_index]['reservation'] += 1
-                        summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
-                        total += i['amount'] + i['channel_profit']
+                        if not i['is_upsell_in_service_charge']:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount'] + i['channel_profit']
+                            total += i['amount'] + i['channel_profit']
+                        else:
+                            summary_issued[month_index]['detail'][day_index]['revenue'] += i['amount']
+                            total += i['amount']
                         num_data += 1
                     reservation_id_list[i['provider_type_name']].append(i['reservation_id'])
 

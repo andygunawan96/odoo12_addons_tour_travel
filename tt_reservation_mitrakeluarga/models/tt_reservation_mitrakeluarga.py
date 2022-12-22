@@ -403,7 +403,7 @@ class ReservationMitraKeluarga(models.Model):
             if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
-
+                book_obj.create_svc_upsell()
             ## PAKAI VOUCHER
             if req.get('voucher'):
                 book_obj.add_voucher(req['voucher']['voucher_reference'], context)

@@ -131,22 +131,7 @@ class PaymentAcquirer(models.Model):
         fee_point = 0
         uniq_point = 0
         website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
-        if website_use_point_reward == 'True':
-            point_reward = agent_obj.actual_point_reward
-            minimum_amount_with_point = self.minimum_amount
-            if point_reward - minimum_amount_with_point > amount:
-                total_use_point = amount - minimum_amount_with_point
-            else:
-                total_use_point = point_reward
-            amount_when_use_point = amount - total_use_point
-            loss_or_profit_point, fee_point, uniq_point = self.compute_fee(amount_when_use_point, unique)
-
-            with_point_minimum_amount = self.minimum_amount + uniq_point
-            if self.type == 'credit':
-                with_point_minimum_amount += fee_point
-            minimum_amount['with_point'] = with_point_minimum_amount
-
-        return {
+        res_payment_acq = {
             'acquirer_seq_id': self.seq_id,
             'name': self.name,
             'account_name': self.account_name or '-',
@@ -163,20 +148,38 @@ class PaymentAcquirer(models.Model):
                 'fee': fee,
                 'unique_amount': uniq,
             },
-            'price_component_with_point': {
-                'amount': amount_when_use_point,
-                'fee': fee_point,
-                'unique_amount': uniq_point,
-            },
             'online_wallet': self.online_wallet,
             'save_url': self.save_url,
             'show_device_type': self.show_device_type,
             'total_amount': float(amount) + uniq + fee,
-            'total_amount_with_point': float(amount_when_use_point) + uniq_point + fee_point,
+
             'image': self.bank_id.image_id and self.bank_id.image_id.url or '',
             'description_msg': self.description_msg or '',
             'minimum_amount': minimum_amount
         }
+        if website_use_point_reward == 'True':
+            point_reward = agent_obj.actual_point_reward
+            minimum_amount_with_point = self.minimum_amount
+            if point_reward - minimum_amount_with_point > amount:
+                total_use_point = amount - minimum_amount_with_point
+            else:
+                total_use_point = point_reward
+            amount_when_use_point = amount - total_use_point
+            loss_or_profit_point, fee_point, uniq_point = self.compute_fee(amount_when_use_point, unique)
+
+            with_point_minimum_amount = self.minimum_amount + uniq_point
+            if self.type == 'credit':
+                with_point_minimum_amount += fee_point
+            minimum_amount['with_point'] = with_point_minimum_amount
+            res_payment_acq.update({
+                'total_amount_with_point': float(amount_when_use_point) + uniq_point + fee_point,
+                'price_component_with_point': {
+                    'amount': amount_when_use_point,
+                    'fee': fee_point,
+                    'unique_amount': uniq_point,
+                },
+            })
+        return res_payment_acq
 
     def acquirer_format_VA(self, acq, amount,unique):
         # NB:  CASH /payment/cash/feedback?acq_id=41
@@ -478,6 +481,7 @@ class PaymentAcquirer(models.Model):
         agent_obj = self.env['tt.agent'].browse(agent_id)
         if type == 'credit_limit':
             if agent_obj.actual_credit_balance >= amount:
+                fee_credit_limit = ((agent_obj.tax_percentage / 100) * (amount))
                 values = {
                     'payment_method': 'credit_limit',
                     'name': 'Credit Limit',
@@ -486,10 +490,10 @@ class PaymentAcquirer(models.Model):
                     'currency': agent_obj.currency_id.name,
                     'price_component': {
                         'amount': amount,
-                        'fee': 0,
+                        'fee': fee_credit_limit,
                         'unique_amount': 0
                     },
-                    'total_amount': amount
+                    'total_amount': amount + fee_credit_limit
                 }
             else:
                 values = {}

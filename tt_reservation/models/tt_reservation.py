@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import time
 import odoo.tools as tools
 import base64
+import copy
 
 _logger = logging.getLogger(__name__)
 
@@ -171,6 +172,8 @@ class TtReservation(models.Model):
     is_get_point_reward = fields.Boolean('Is Get Point Reward', default=False)
 
     payment_method_to_ho = fields.Selection([('balance','Balance'), ('credit_limit','Credit Limit')], 'Payment Method to HO', default='balance')
+
+    is_upsell_in_service_charge = fields.Boolean('Is Get Point Reward', default=False)
 
     @api.model
     def create(self, vals_list):
@@ -667,7 +670,7 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_code == 'rac' and sale.charge_type == 'RAC':
+                if sale.charge_code == 'rac' and sale.charge_type == 'RAC' or 'csc' in sale.charge_code and sale.charge_type == 'RAC':
                     agent_nta_total += sale.total
             rec.agent_nta = agent_nta_total + rec.total
 
@@ -916,12 +919,115 @@ class TtReservation(models.Model):
             if book_obj.agent_id.id == context['co_agent_id']:
                 for psg in req['passengers']:
                     book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'], req.get('type', ''))
+                book_obj.create_svc_upsell()
             else:
                 return ERR.get_error(1001)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())
             return ERR.get_error(500, additional_message=str(e))
         return ERR.get_no_error()
+
+    def recompute_svc_upsell(self):
+        types = variables.PROVIDER_TYPE
+        dom = []
+        dom.append(('total_channel_upsell', '!=', 0))
+        for type in types:
+            list_obj = self.env['tt.reservation.%s' % (type)].search(dom, order='create_date desc')
+            for rec in list_obj:
+                _logger.info('check upsell for %s' % rec.name)
+                try:
+                    rec.create_svc_upsell()
+                except Exception as e:
+                    _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+
+    def create_svc_upsell(self):
+        svc_list = []
+        total_pax = {
+            "ADT": {
+                "total": 0,
+                "id": []
+            },
+            "CHD": {
+                "total": 0,
+                "id": []
+            },
+            "INF": {
+                "total": 0,
+                "id": []
+            },
+        }
+        for pax in self.passenger_ids:
+            total_provider = len(self.provider_booking_ids)
+            for rec in self.provider_booking_ids:
+                pax_type = ''
+                if hasattr(rec, 'ticket_ids'):
+                    for ticket in rec.ticket_ids:
+                        if pax.id == ticket.passenger_id.id:
+                            pax_type = ticket.pax_type
+                            total_pax[pax_type]['total'] += 1
+                            total_pax[pax_type]['id'].append(pax.id)
+                            break
+                else:
+                    # tidak ada ticket upsell per reservasi asumsi adult 1
+                    ## hotel, ppob
+                    pax_type = 'ADT'
+                    total_pax[pax_type]['total'] = 1
+                    total_pax[pax_type]['id'].append(pax.id)
+
+                for sc in pax.channel_service_charge_ids:
+                    sc_pax = copy.deepcopy(sc.to_dict())
+
+                    if pax_type != '' and total_pax[pax_type]['total'] == 1 or '.' in sc_pax['charge_code']:
+                        sc_pax.update({
+                            "charge_type": 'ROC',
+                            "amount": sc_pax['amount'] / total_provider,
+                            "pax_type": pax_type,
+                            "pax_count": 0
+                        })
+                        if '.' in sc_pax['charge_code']: ## untuk upsell after sales per orang
+                            sc_pax.update({
+                                "pax_count": 1,
+                                "passenger_%s_ids" % self.provider_type_id.code: [(6, 0, [pax.id])]
+                            })
+                        svc_list.append(sc_pax)
+
+                        sc_pax = copy.deepcopy(sc_pax)
+                        ## jika harga lebih dari 0 bikin rac upsell, jika kurang dari 0 discount tidak bikin rac
+                        if sc['amount'] > 0:
+                            sc_pax.update({
+                                "charge_type": 'RAC',
+                                "amount": sc_pax['amount'] * -1,
+                            })
+                            svc_list.append(sc_pax)
+        if svc_list:
+            for rec in self.provider_booking_ids:
+                svc_list_to_save_backend = []
+                for svc in svc_list:
+                    svc.update({
+                        "description": rec.pnr,
+                        'total': svc['amount'] * svc.get('pax_count', 0),
+                        'currency_id': rec.currency_id.id,
+                        'foreign_currency_id': rec.currency_id.id,
+                    })
+                    if svc['total'] == 0:
+                        svc.update({
+                            "passenger_%s_ids" % self.provider_type_id.code: [(6, 0, total_pax[svc['pax_type']]['id'])],
+                            'pax_count': total_pax[svc['pax_type']]['total'],
+                            'total': svc['amount'] * total_pax[svc['pax_type']]['total'],
+                        })
+                    svc_list_to_save_backend.append((4, self.env['tt.service.charge'].create(svc).id))
+                ##update cost service charges passenger
+                for svc in rec.cost_service_charge_ids:
+                    if 'csc' in svc.charge_code and svc.charge_type in ['RAC', 'ROC']:
+                        svc_list_to_save_backend.append((2, svc.id))
+                rec.write({
+                    'cost_service_charge_ids': svc_list_to_save_backend
+                })
+            self.calculate_service_charge()
+            self.is_upsell_in_service_charge = True
+            _logger.info('update upsell for %s' % self.name)
+        else:
+            _logger.info('upsell not found for %s' % self.name)
 
     ##butuh field
     def booker_insentif_api(self, req, context):
