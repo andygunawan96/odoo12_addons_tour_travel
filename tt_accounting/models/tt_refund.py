@@ -1270,6 +1270,10 @@ class TtRefund(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 18')
         self.is_vendor_received = not self.is_vendor_received
 
+    def get_company_name(self):
+        company_obj = self.env['res.company'].search([], limit=1)
+        return company_obj.name
+
     def print_refund_to_agent(self):
         datas = {
             'ids': self.env.context.get('active_ids', []),
