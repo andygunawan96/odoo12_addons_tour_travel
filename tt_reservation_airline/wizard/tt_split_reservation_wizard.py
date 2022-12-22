@@ -334,7 +334,8 @@ class TtSplitReservationWizard(models.TransientModel):
                                 'description': rec2.description and rec2.description or '',
                                 'commission_agent_id': rec2.commission_agent_id and rec2.commission_agent_id.id or False,
                                 'provider_airline_booking_id': new_prov_obj.id,
-                                'passenger_airline_ids': [(6, 0, new_pax_id_list)]
+                                'passenger_airline_ids': [(6, 0, new_pax_id_list)],
+                                'is_voucher': rec2.is_voucher
                             })
                             rec2.amount = temp_amt
                             rec2.total = tot_amt
