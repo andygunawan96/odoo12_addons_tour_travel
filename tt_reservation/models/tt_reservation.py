@@ -941,7 +941,7 @@ class TtReservation(models.Model):
                     _logger.error('%s, %s' % (str(e), traceback.format_exc()))
 
     def create_svc_upsell(self):
-        if self.state in ['booked', 'halt_booked','halt']:
+        if self.state in ['booked', 'halt_booked','halt', 'draft']:
             svc_list = []
             total_pax = {
                 "ADT": {
