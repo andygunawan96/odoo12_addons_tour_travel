@@ -1229,8 +1229,10 @@ class TtReservation(models.Model):
                     for idx, rec in enumerate(discount['response']):  ##DISKON PER PROVIDER
                         pax_type_dict = {}
                         total_pax = 0
+                        passenger_list_id = []
                         for pax_obj in self.passenger_ids:
                             pax_type = ''
+                            passenger_list_id.append(pax_obj.id)
                             if pax_obj.cost_service_charge_ids:
                                 pax_type = pax_obj.cost_service_charge_ids[0].pax_type
                                 if not pax_type_dict.get(pax_obj.cost_service_charge_ids[0].pax_type):
@@ -1241,6 +1243,7 @@ class TtReservation(models.Model):
                         if pax_type_dict == {} and self._name == 'tt.reservation.hotel':
                             pax_type_dict[''] = 1
                             total_pax += 1
+                            passenger_list_id = [self.passenger_ids[0].id]
                         service_charge = []
                         for pax_type in pax_type_dict:
                             service_charge.append({
@@ -1257,7 +1260,8 @@ class TtReservation(models.Model):
                                 "res_voucher_model": self._name,
                                 "res_voucher_id": self.id,
                                 "description": self.provider_booking_ids[idx].pnr if len(self.provider_booking_ids) > idx else '',
-                                "is_voucher": True
+                                "is_voucher": True,
+                                "passenger_%s_ids" % self.provider_type_id.code: [(6, 0, passenger_list_id)],
                             })
                         if service_charge:
                             self.provider_booking_ids[idx].create_service_charge(service_charge)
@@ -1271,6 +1275,8 @@ class TtReservation(models.Model):
             svc_discount.unlink() ##unlink service charge
         for voucher_use in self.env['tt.voucher.detail.used'].search([('order_number','=',self.name)]):
             voucher_use.unlink() ##unlink voucher use
+        self.voucher_code = ''
+        self.calculate_service_charge()
 
     ##ini potong ledger
     def payment_reservation_api(self,table_name,req,context):

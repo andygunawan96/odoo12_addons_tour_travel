@@ -621,7 +621,8 @@ class ReservationAirline(models.Model):
                                     'pax_count': total_pax,
                                     'total': sc_total
                                 })
-                                commit_data['journeys'][-1]['segments'][-1]['fares'][-1]['service_charges'].append(sc_values)
+                                if sc_obj.charge_code != 'disc_voucher':
+                                    commit_data['journeys'][-1]['segments'][-1]['fares'][-1]['service_charges'].append(sc_values)
                         except:
                             _logger.error('Failed to append service charges, %s' % traceback.format_exc())
                         # END
@@ -1812,6 +1813,9 @@ class ReservationAirline(models.Model):
                 }
 
                 new_resv_obj = self.env['tt.reservation.airline'].create(new_vals)
+                ## split hapus voucher
+                new_resv_obj.delete_voucher()
+                airline_obj.delete_voucher()
                 provider_ids, name_ids = new_resv_obj._create_provider_api(new_provider_bookings, context)
 
                 new_resv_obj.calculate_service_charge()
