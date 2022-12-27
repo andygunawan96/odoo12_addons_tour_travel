@@ -755,7 +755,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_sv_all" model="tt.transport.carrier.search">
-            <field name="name">Air Europa</field>
+            <field name="name">Saudia</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sv"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
