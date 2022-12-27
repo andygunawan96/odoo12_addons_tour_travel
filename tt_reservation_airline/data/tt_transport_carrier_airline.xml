@@ -1199,6 +1199,159 @@
             <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
+
+        <record id="tt_transport_carrier_airline_ty" model="tt.transport.carrier">
+            <field name="name">Air Caledonie International</field>
+            <field name="code">TY</field>
+            <field name="icao">TPC</field>
+            <field name="call_sign">AIRCAL</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_lq" model="tt.transport.carrier">
+            <field name="name">Lanmei Airlines</field>
+            <field name="code">LQ</field>
+            <field name="icao">MKR</field>
+            <field name="call_sign">AIR LANME</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_am" model="tt.transport.carrier">
+            <field name="name">Aeromexico</field>
+            <field name="code">AM</field>
+            <field name="icao">AMX</field>
+            <field name="call_sign">AEROMEXICO</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_ad" model="tt.transport.carrier">
+            <field name="name">Azul Linhas Aereas</field>
+            <field name="code">AD</field>
+            <field name="icao">AZU</field>
+            <field name="call_sign">AZUL</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_nx" model="tt.transport.carrier">
+            <field name="name">Air Macau</field>
+            <field name="code">NX</field>
+            <field name="icao">AMU</field>
+            <field name="call_sign">AIR MACAU</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_kq" model="tt.transport.carrier">
+            <field name="name">Kenya Airways</field>
+            <field name="code">KQ</field>
+            <field name="icao">KQA</field>
+            <field name="call_sign">KENYA</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_lx" model="tt.transport.carrier">
+            <field name="name">Swiss International Airlines</field>
+            <field name="code">LX</field>
+            <field name="icao">SWR</field>
+            <field name="call_sign">SWISS</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_hx" model="tt.transport.carrier">
+            <field name="name">Hong Kong Airlines</field>
+            <field name="code">HX</field>
+            <field name="icao">CRK</field>
+            <field name="call_sign">BAUHINA</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_ux" model="tt.transport.carrier">
+            <field name="name">Air Europa</field>
+            <field name="code">UX</field>
+            <field name="icao">AEA</field>
+            <field name="call_sign">EUROPA</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
     </data>
 </odoo>
     
