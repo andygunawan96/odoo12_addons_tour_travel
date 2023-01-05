@@ -1977,6 +1977,7 @@ class ReservationAirline(models.Model):
                 }
                 airline_obj.write(rsv_vals)
             # END
+            airline_obj.create_svc_upsell()
 
             payload = {
                 'order_number': airline_obj.name if not new_resv_obj else new_resv_obj.name
