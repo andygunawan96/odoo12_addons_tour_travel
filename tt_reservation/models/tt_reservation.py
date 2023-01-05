@@ -752,7 +752,7 @@ class TtReservation(models.Model):
         #             'state': rec.state
         #         })
         include_total_nta = False
-        if context:
+        if context and context.get('co_agent_id'):
             include_total_nta = context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
@@ -777,7 +777,7 @@ class TtReservation(models.Model):
         if self.voucher_code and self.state in ['booked']: ##SETIAP GETBOOKING STATUS BOOKED CHECK VOUCHER VALID/TIDAK, YG EXPIRED DI LEPAS LEWAT CRON
             self.check_voucher_valid(self.voucher_code, context)
         is_agent = False
-        if context:
+        if context and context.get('co_agent_id'):
             if context['co_agent_id'] == self.agent_id.id:
                 is_agent = True
 
@@ -1006,7 +1006,7 @@ class TtReservation(models.Model):
                     svc_list_to_save_backend = []
                     for svc in svc_list:
                         svc.update({
-                            "description": rec.pnr,
+                            "description": rec.pnr if rec.pnr != False else '',
                             'total': svc['amount'] * svc.get('pax_count', 0),
                             'currency_id': rec.currency_id.id,
                             'foreign_currency_id': rec.currency_id.id,
