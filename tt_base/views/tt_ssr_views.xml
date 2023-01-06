@@ -149,6 +149,8 @@
             <field name="model">tt.ssr.list</field>
             <field name="arch" type="xml">
                 <search string="SSR List">
+                    <field name="name"/>
+                    <field name="code"/>
                     <field name="category_id"/>
                     <field name="provider_id"/>
                     <field name="provider_type_id"/>
