@@ -463,14 +463,9 @@ class TtVisa(models.Model):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 329')
         data = {
             'order_number': self.name,
-            'voucher': {
-                'voucher_reference': self.voucher_code,
-                'date': datetime.now().strftime('%Y-%m-%d'),
-                'provider_type': 'visa',
-                'provider': self.provider_name,
-            },
             'member': self.is_member,
-            'acquirer_seq_id': self.payment_method
+            'acquirer_seq_id': self.payment_method,
+            'agent_payment_method': self.payment_method_to_ho
         }
         if self.voucher_code:
             data.update({
@@ -1398,6 +1393,7 @@ class TtVisa(models.Model):
             if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
+                book_obj.create_svc_upsell()
 
             response = {
                 'order_number': book_obj.name
