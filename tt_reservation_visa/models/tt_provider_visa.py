@@ -379,8 +379,9 @@ class TtProviderVisa(models.Model):
 
     def to_dict(self):
         passenger_list = []
-        for rec in self.passenger_ids:
+        for idx, rec in enumerate(self.passenger_ids):
             passenger_list.append(rec.to_dict())
+            passenger_list[-1]['sequence'] = idx
         vendor_list = []
         for rec in self.vendor_ids:
             vendor_list.append(rec.to_dict())

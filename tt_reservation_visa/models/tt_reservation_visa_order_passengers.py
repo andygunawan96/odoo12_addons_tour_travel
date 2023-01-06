@@ -564,7 +564,8 @@ class VisaOrderPassengers(models.Model):
                 })
 
             if p_charge_type == 'RAC' and p_sc.charge_code != 'rac':
-                continue
+                if p_charge_type == 'RAC' and 'csc' not in p_sc.charge_code:
+                    continue
 
             sc_value[pnr][p_charge_type].update({
                 'charge_code': p_sc.charge_code,
