@@ -248,7 +248,10 @@ class TtAgent(models.Model):
             customer_parent_balance = 0
             currency_code = agent_obj.currency_id.name
             customer_parent_currency_code = ''
-            credit_limit = agent_obj.actual_credit_balance
+            if agent_obj.credit_limit:
+                credit_limit = agent_obj.actual_credit_balance
+            else:
+                credit_limit = 0
             is_show_balance = True
             is_show_customer_parent_balance = False
             is_show_credit_limit = True if agent_obj.credit_limit > 0 else False

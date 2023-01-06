@@ -564,6 +564,7 @@ class IssuedOffline(models.Model):
             'book_id': self.id,
             'order_number': self.name,
             'acquirer_seq_id': self.acquirer_id.seq_id,
+            'agent_payment_method': self.payment_method_to_ho,
             'member': False
         }
         website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
