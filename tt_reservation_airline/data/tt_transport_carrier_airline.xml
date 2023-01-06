@@ -556,6 +556,21 @@
         </record>
 
 
+        <record id="tt_transport_carrier_airline_we" model="tt.transport.carrier">
+            <field name="name">Thai Smile Airways</field>
+            <field name="code">WE</field>
+            <field name="icao">THD</field>
+            <field name="call_sign">THAI SMILE</field>
+            <field name="active">1</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="required_identity_required_domestic" eval="False"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="True"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+
         <record id="tt_transport_carrier_airline_va" model="tt.transport.carrier">
             <field name="name">Virgin Australia</field>
             <field name="code">VA</field>
