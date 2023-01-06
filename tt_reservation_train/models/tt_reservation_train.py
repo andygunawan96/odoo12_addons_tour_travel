@@ -276,6 +276,12 @@ class TtReservationTrain(models.Model):
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)
 
+            # channel repricing upsell
+            if req.get('repricing_data'):
+                req['repricing_data']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
+                book_obj.create_svc_upsell()
+
             ## PAKAI VOUCHER
             if req.get('voucher'):
                 book_obj.add_voucher(req['voucher']['voucher_reference'], context)
@@ -442,7 +448,7 @@ class TtReservationTrain(models.Model):
 
             if any_provider_changed:
                 book_obj.check_provider_state(context,pnr_list,hold_date,req)
-
+                book_obj.create_svc_upsell()
             return ERR.get_no_error({
                 'order_number': book_obj.name,
                 'book_id': book_obj.id
@@ -750,6 +756,7 @@ class TtReservationTrain(models.Model):
 
         book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
         book_obj.calculate_service_charge()
+        book_obj.create_svc_upsell()
         return ERR.get_no_error()
 
     def calculate_service_charge(self):

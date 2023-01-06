@@ -692,6 +692,7 @@ class HotelReservation(models.Model):
                 })
             elif issued_response[prov.provider_id.code]['status'] == 'in_process':
                 prov.action_in_progress_api_hotel()
+            self.create_svc_upsell()
         self.check_provider_state({'co_uid': self.issued_uid.id})
         return True
 

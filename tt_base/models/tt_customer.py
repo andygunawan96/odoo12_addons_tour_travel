@@ -350,9 +350,14 @@ class TtCustomer(models.Model):
             ## CASE IN TIDAK KELUAR TETAPI INF KELUAR
             ## KARENA RECORD YG INF TIDAK MASUK KE CUSTOMER_LIST_OBJ, KENA LIMIT JADI RECORD
             customer_list = []
-            lower = date.today() - relativedelta(years=req.get('lower',12))
-            upper = date.today() - relativedelta(years=req.get('upper',200))
 
+
+            if req.get('departure_date'):
+                upper = datetime.strptime(req['departure_date'], '%Y-%m-%d').date() - relativedelta(years=req.get('upper',200))
+                lower = datetime.strptime(req['departure_date'], '%Y-%m-%d').date() - relativedelta(years=req.get('lower', 12))
+            else:
+                upper = date.today() - relativedelta(years=req.get('upper', 200))
+                lower = date.today() - relativedelta(years=req.get('lower', 12))
             for cust in customer_list_obj:
                 ###fixme kalau tidak pbirth_date gimana? di asumsikan adult?
                 if cust.birth_date:

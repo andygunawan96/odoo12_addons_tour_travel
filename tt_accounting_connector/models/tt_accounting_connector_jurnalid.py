@@ -6,6 +6,7 @@ import base64
 import time
 from datetime import datetime, timedelta
 from lxml import html
+import traceback
 
 
 _logger = logging.getLogger(__name__)
@@ -386,7 +387,7 @@ class AccountingConnectorAccurate(models.Model):
                             if pnr == room['prov_issued_code']:
                                 desc = "%s; %s; %s-%s; %s; %s; Atas Nama: %s" % (pnr, provider_booking['hotel_name'], datetime.strptime(provider_booking['checkin_date'], '%Y-%m-%d').strftime('%d %b %Y'), datetime.strptime(provider_booking['checkout_date'], '%Y-%m-%d').strftime('%d %b %Y'),room['room_name'], room['meal_type'], passenger_data)
                                 list_desc.append({
-                                    "price": room['room_rate'] / len(room['dates']) - (provider_booking['total_commission']/(len(provider_booking['rooms']) * len(room['dates']))),
+                                    "price": room['room_rate'] / len(room['dates']) - ((provider_booking['agent_commission'] + provider_booking['ho_commission']) / (len(provider_booking['rooms']) * len(room['dates']))),
                                     "desc": desc,
                                     "quantity": len(room['dates'])
                                 })
@@ -579,6 +580,9 @@ class AccountingConnectorAccurate(models.Model):
                         _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
                         response = requests.post(url, headers=headers, json=data)
                         _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
+                        if response.status_code != 200:
+                            _logger.error('######ERROR ADD PURCHASE JURNAL ID %s#########\n' % vals['order_number'])
+                            raise Exception(500, 'Error add purchase')
                         price = 0
         else:
             _logger.info('###JurnalID, Already sent to vendor accounting####')
@@ -613,7 +617,7 @@ class AccountingConnectorAccurate(models.Model):
                                 price = (room['room_rate'] / len(room['dates'])) + (vals['total_channel_upsell'] / ((len(provider_booking['rooms'] * len(vals['provider_bookings']))) * len(room['dates']))) - (vals['total_discount'] / len(provider_booking['rooms']))
                             else:
                                 ## - total commission + commission HO karena dapet harga full
-                                price = (room['room_rate'] / len(room['dates'])) - (vals['total_discount'] / len(provider_booking['rooms'])) + ((provider_booking['ho_commission'] - provider_booking['total_commission']) / len(provider_booking['rooms']))
+                                price = (room['room_rate'] / len(room['dates'])) - (vals['total_discount'] / len(provider_booking['rooms'])) + ((provider_booking['ho_commission']) / len(provider_booking['rooms']))
                             list_desc.append({
                                 "price": price,
                                 "desc": desc,
@@ -643,9 +647,9 @@ class AccountingConnectorAccurate(models.Model):
                         desc = "%s; Tiket Perjalanan %s %s; Atas Nama: %s" % (pnr, journey_type, journey_text, rec_ticket['passenger'])
                         price = 0
                         if is_user_ho:
-                            price = rec_ticket['agent_nta'] + rec_ticket['total_commission'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
+                            price = rec_ticket['total_nta'] + rec_ticket['total_commission'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets'])))
                         else:
-                            price = rec_ticket['total_nta'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets']))) + (rec_ticket['ho_commission'])
+                            price = rec_ticket['total_nta'] - (vals['total_discount'] / (len(provider_booking['tickets']) * len(provider_booking['tickets']))) + rec_ticket['ho_commission']
                         list_desc.append({
                             "price": price,
                             "desc": desc,
@@ -680,7 +684,7 @@ class AccountingConnectorAccurate(models.Model):
                         desc = "%s; %s; %s; Atas Nama: %s" % (pnr, activity_name, visit_date, rec_ticket['passenger'])
                         price = 0
                         if is_user_ho:
-                            price = rec_ticket['agent_nta'] + rec_ticket['total_commission'] + rec_ticket['total_channel_upsell'] - (vals['total_discount'] / len(provider_booking['tickets']))
+                            price = rec_ticket['total_nta'] + rec_ticket['total_commission'] - (vals['total_discount'] / len(provider_booking['tickets']))
                         else:
                             price = rec_ticket['total_nta'] - (vals['total_discount']/len(provider_booking['tickets'])) + (rec_ticket['ho_commission'])
                         list_desc.append({
@@ -747,7 +751,7 @@ class AccountingConnectorAccurate(models.Model):
             else:
                 price = 0
                 if is_user_ho:
-                    price = vals['total'] + vals['total_channel_upsell'] - vals['total_discount']
+                    price = vals['total'] - vals['total_discount']
                 else:
                     price = vals['total_nta'] - vals['total_discount'] + vals['ho_commission']
                 transaction_lines_attributes_lines.append({
@@ -795,6 +799,9 @@ class AccountingConnectorAccurate(models.Model):
             _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
             response = requests.post(url, headers=headers, json=data)
             _logger.info('######RESPONSE SALES#########\n%s' % response.text)
+            if response.status_code != 200:
+                _logger.error('######ERROR ADD SALES JURNAL ID %s#########\n' % vals['order_number'])
+                raise Exception(500, 'Error add sales')
         else:
             _logger.info('###JurnalID, Already sent to vendor accounting####')
         return 0
@@ -891,6 +898,7 @@ class AccountingConnectorAccurate(models.Model):
 
         index_page = 1
         page_size = 10000
+        reservation = []
         while True:
             data = {
                 "page": index_page,
@@ -923,6 +931,7 @@ class AccountingConnectorAccurate(models.Model):
 
         index_page = 1
         page_size = 10000
+        reservation = []
         while True:
             data = {
                 "page": index_page,
@@ -1309,100 +1318,111 @@ class AccountingConnectorAccurate(models.Model):
         return 0
 
     def add_sales_order(self, vals):
-        cookies = False
-        data_login = self.acc_login()
+        try:
+            cookies = False
+            data_login = self.acc_login()
 
-        if vals['category'] == 'reservation':
-            ##### AMBIL CONTACT ###############
-            contact = self.get_contact(data_login, vals)
-            ###################################
-            ####### CREATE PURCHASE INVOICE ##########
-            self.add_purchase(data_login, vals)
-            ###################################
+            if vals['category'] == 'reservation':
+                ##### AMBIL CONTACT ###############
+                contact = self.get_contact(data_login, vals)
+                ###################################
+                ####### CREATE PURCHASE INVOICE ##########
+                self.add_purchase(data_login, vals)
+                ###################################
 
-            ####### CREATE SALES INVOICE ##########
-            self.add_sales(data_login, vals, contact)
-            ###################################
-        elif vals['category'] == 'top_up':
-            ######## GET ACCOUNT ############
-            if len(vals['ledgers']) > 0:
-                account_ho = self.get_account(data_login, vals['bank'])
-                account_agent = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
-                tag_name = self.search_tags(data_login, 'Top Up')
-                self.create_journal(data_login, vals, account_ho, account_agent, "TOP UP %s %s" % (account_agent, vals['name']),vals['date'], vals['total'], tag_name)
-            else:
-                _logger.info('###JurnalID, Already sent to vendor accounting####')
-        elif vals['category'] == 'reschedule':
-            ## HANYA UNTUK AIRLINE
-            ##### AMBIL CONTACT ###############
-            contact = self.get_contact(data_login, vals)
-            ###################################
+                ####### CREATE SALES INVOICE ##########
+                self.add_sales(data_login, vals, contact)
+                ###################################
+            elif vals['category'] == 'top_up':
+                ######## GET ACCOUNT ############
+                if len(vals['ledgers']) > 0:
+                    account_ho = self.get_account(data_login, vals['bank'])
+                    account_agent = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
+                    tag_name = self.search_tags(data_login, 'Top Up')
+                    self.create_journal(data_login, vals, account_ho, account_agent, "TOP UP %s %s" % (account_agent, vals['name']),vals['date'], vals['total'], tag_name)
+                else:
+                    _logger.info('###JurnalID, Already sent to vendor accounting####')
+            elif vals['category'] == 'reschedule':
+                ## HANYA UNTUK AIRLINE
+                ##### AMBIL CONTACT ###############
+                contact = self.get_contact(data_login, vals)
+                ###################################
 
-            ####### CREATE PURCHASE INVOICE ##########
-            self.add_purchase_after_sales(data_login, vals)
-            ###################################
+                ####### CREATE PURCHASE INVOICE ##########
+                self.add_purchase_after_sales(data_login, vals)
+                ###################################
 
-            ####### CREATE SALES INVOICE ##########
-            self.add_sales_after_sales(data_login, vals, contact)
-            ###################################
-            pass
-        elif vals['category'] == 'refund':
-            ## HANYA UNTUK AIRLINE
-            ####### REFUND ################
-            ##### VENDOR TO HEAD OFFICE #######
-            if len(vals['ledgers']) > 0:
-                desc = ''
-                passenger_data = ''
-                vendor_name = ''
-
-                for pax in vals['refund_lines']:
-                    if passenger_data != '':
-                        passenger_data += ', '
-                    passenger_data += pax['name']
-                for segment in vals['new_segment']:
-                    pnr = segment['pnr']
-                    if desc != '':
-                        desc += '; '
-                    desc += "%s; Reschedule Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
-                    pnr, segment['origin'], segment['destination'],
-                    segment['departure_date'].split(' ')[0], passenger_data)
+                ####### CREATE SALES INVOICE ##########
+                self.add_sales_after_sales(data_login, vals, contact)
+                ###################################
+                pass
+            elif vals['category'] == 'refund':
+                ## HANYA UNTUK AIRLINE
+                ####### REFUND ################
+                ##### VENDOR TO HEAD OFFICE #######
+                if len(vals['ledgers']) > 0:
+                    desc = ''
                     passenger_data = ''
+                    vendor_name = ''
 
-
-                for provider_booking in vals['provider_bookings']:
-                    if provider_booking['pnr'] == vals['referenced_pnr']:
-                        vendor_name = provider_booking['provider']
-                        pnr = provider_booking['pnr']
+                    for pax in vals['refund_lines']:
+                        if passenger_data != '':
+                            passenger_data += ', '
+                        passenger_data += pax['name']
+                    for segment in vals['new_segment']:
+                        pnr = segment['pnr']
                         if desc != '':
                             desc += '; '
-                        desc += "%s; REFUND Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
-                            pnr, provider_booking['origin'], provider_booking['destination'],
-                            provider_booking['departure_date'].split(' ')[0], passenger_data)
+                        desc += "%s; Reschedule Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
+                        pnr, segment['origin'], segment['destination'],
+                        segment['departure_date'].split(' ')[0], passenger_data)
                         passenger_data = ''
-                        break
-
-                ####### REFUND #################
-
-                ##### VENDOR TO HEAD OFFICE #######
-                account_vendor = self.get_account(data_login, vendor_name)
-                account_ho = self.get_account(data_login, "Cash")
-                tag_name = self.search_tags(data_login, 'Refund Tiket')
-                self.create_journal(data_login, vals, account_vendor, account_ho, desc, vals['real_refund_date'], vals['refund_amount'], tag_name)
 
 
-                ##### HEAD OFFICE TO AGENT ########
-                account_customer = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
-                tag_name = self.search_tags(data_login, 'Refund Tiket')
-                self.create_journal(data_login, vals, account_ho, account_customer, desc, vals['refund_date'], vals['total_amount'], tag_name)
+                    for provider_booking in vals['provider_bookings']:
+                        if provider_booking['pnr'] == vals['referenced_pnr']:
+                            vendor_name = provider_booking['provider']
+                            pnr = provider_booking['pnr']
+                            if desc != '':
+                                desc += '; '
+                            desc += "%s; REFUND Tiket Perjalanan %s-%s; %s; Atas Nama: %s" % (
+                                pnr, provider_booking['origin'], provider_booking['destination'],
+                                provider_booking['departure_date'].split(' ')[0], passenger_data)
+                            passenger_data = ''
+                            break
 
-            else:
-                _logger.info('###JurnalID, Already sent to vendor accounting####')
-        res = self.response_parser()
+                    ####### REFUND #################
+
+                    ##### VENDOR TO HEAD OFFICE #######
+                    account_vendor = self.get_account(data_login, vendor_name)
+                    account_ho = self.get_account(data_login, "Cash")
+                    tag_name = self.search_tags(data_login, 'Refund Tiket')
+                    self.create_journal(data_login, vals, account_vendor, account_ho, desc, vals['real_refund_date'], vals['refund_amount'], tag_name)
+
+
+                    ##### HEAD OFFICE TO AGENT ########
+                    account_customer = self.get_account(data_login, "Deposit System %s" % vals['agent_name'])
+                    tag_name = self.search_tags(data_login, 'Refund Tiket')
+                    self.create_journal(data_login, vals, account_ho, account_customer, desc, vals['refund_date'], vals['total_amount'], tag_name)
+
+                else:
+                    _logger.info('###JurnalID, Already sent to vendor accounting####')
+            res = self.response_parser_success()
+        except Exception as e:
+            _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+            res = self.response_parser_error()
         return res
 
-    def response_parser(self):
+    def response_parser_success(self):
         res = {
             'status': 'success',
+            'content': ''
+        }
+        return res
+
+    def response_parser_error(self):
+        res = {
+            'status': 'error',
             'content': ''
         }
         return res

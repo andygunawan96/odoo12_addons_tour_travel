@@ -87,6 +87,7 @@ tt_error_api_4039,4039,"PNR not allowed to process",,,1,1
 tt_error_api_4040,4040,"Failed Split Booking",,,1,1
 tt_error_api_4041,4041,"Failed to Retrieve Vendor Balance",,,1,1
 tt_error_api_4042,4042,"No update change detected",,,1,1
+tt_error_api_4043,4043,"Duplicate quota pnr",,,1,1
 tt_error_api_9001,9901,Notification,For Notif,,1,1
 tt_error_api_9002,9902,Warning,For Warning,,1,1
 tt_error_api_9003,9903,Error,For Error,,1,1

@@ -564,6 +564,7 @@ class IssuedOffline(models.Model):
             'book_id': self.id,
             'order_number': self.name,
             'acquirer_seq_id': self.acquirer_id.seq_id,
+            'agent_payment_method': self.payment_method_to_ho,
             'member': False
         }
         website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
@@ -2144,6 +2145,11 @@ class IssuedOffline(models.Model):
             book_obj.sudo().write({
                 'customer_parent_id': customer_parent_id,
             })
+            # channel repricing upsell
+            if data.get('repricing_data'):
+                data['repricing_data']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(data['repricing_data'], context)
+                book_obj.create_svc_upsell()
 
             book_obj.action_confirm(context)
             response = {

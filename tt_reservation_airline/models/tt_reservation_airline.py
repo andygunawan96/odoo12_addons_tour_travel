@@ -525,6 +525,10 @@ class ReservationAirline(models.Model):
             if req.get('repricing_data_ssr'):
                 req['repricing_data_ssr']['order_number'] = book_obj.name
                 self.env['tt.reservation'].channel_pricing_api(req['repricing_data_ssr'], context)
+
+            if req.get('repricing_data') or req.get('repricing_data_ssr'):
+                book_obj.create_svc_upsell()
+
             ##pengecekan segment kembar airline dengan nama passengers
             if not req.get("bypass_psg_validator",False):
                 self.psg_validator(book_obj)
@@ -1346,6 +1350,7 @@ class ReservationAirline(models.Model):
 
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
             book_obj.calculate_service_charge()
+            book_obj.create_svc_upsell()
             return ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())

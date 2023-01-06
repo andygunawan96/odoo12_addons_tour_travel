@@ -274,6 +274,11 @@ class TtReservationBus(models.Model):
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
 
+            if req.get('repricing_data'):
+                req['repricing_data']['order_number'] = book_obj.name
+                self.env['tt.reservation'].channel_pricing_api(req['repricing_data'], context)
+                book_obj.create_svc_upsell()
+
             ## PAKAI VOUCHER
             if req.get('voucher'):
                 book_obj.add_voucher(req['voucher']['voucher_reference'], context)
@@ -382,6 +387,7 @@ class TtReservationBus(models.Model):
 
             if any_provider_changed:
                 book_obj.check_provider_state(context,pnr_list,hold_date,req)
+                book_obj.create_svc_upsell()
 
             return ERR.get_no_error({
                 'order_number': book_obj.name,
@@ -731,6 +737,7 @@ class TtReservationBus(models.Model):
 
         book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
         book_obj.calculate_service_charge()
+        book_obj.create_svc_upsell()
         return ERR.get_no_error()
 
     def calculate_service_charge(self):

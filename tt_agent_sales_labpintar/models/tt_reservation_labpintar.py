@@ -119,8 +119,8 @@ class ReservationLabPintar(models.Model):
                         price_unit += cost_charge.amount
                     elif cost_charge.charge_type == 'DISC':
                         discount += cost_charge.amount
-                for channel_charge in psg.channel_service_charge_ids:
-                    price_unit += channel_charge.amount
+                # for channel_charge in psg.channel_service_charge_ids:
+                #     price_unit += channel_charge.amount
 
                 inv_line_obj.write({
                     'invoice_line_detail_ids': [(0,0,{
@@ -168,8 +168,8 @@ class ReservationLabPintar(models.Model):
                             commission_list[agent_id] += cost_charge.amount * -1
                         elif cost_charge.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
                             price_unit += cost_charge.amount
-                for channel_charge in psg.channel_service_charge_ids:
-                    price_unit += channel_charge.amount
+                # for channel_charge in psg.channel_service_charge_ids:
+                #     price_unit += channel_charge.amount
 
                 ### FARE
                 self.env['tt.ho.invoice.line.detail'].create({
