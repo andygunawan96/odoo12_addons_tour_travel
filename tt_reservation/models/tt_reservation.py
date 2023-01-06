@@ -173,7 +173,7 @@ class TtReservation(models.Model):
 
     payment_method_to_ho = fields.Selection([('balance','Balance'), ('credit_limit','Credit Limit')], 'Payment Method to HO', default='balance')
 
-    is_upsell_in_service_charge = fields.Boolean('Is Get Point Reward', default=False)
+    is_upsell_in_service_charge = fields.Boolean('Is Upsell in service charges', default=False) ## for report old reservation
 
     @api.model
     def create(self, vals_list):
