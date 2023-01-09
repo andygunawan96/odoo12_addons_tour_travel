@@ -958,23 +958,24 @@ class TtReservation(models.Model):
                 },
             }
 
-            for pax in self.passenger_ids:
+            for idx, rec in enumerate(self.provider_booking_ids):
                 total_provider = len(self.provider_booking_ids)
-                for rec in self.provider_booking_ids:
+                for pax in self.passenger_ids:
                     pax_type = ''
-                    if hasattr(rec, 'ticket_ids'):
-                        for ticket in rec.ticket_ids:
-                            if pax.id == ticket.passenger_id.id:
-                                pax_type = ticket.pax_type
-                                total_pax[pax_type]['total'] += 1
-                                total_pax[pax_type]['id'].append(pax.id)
-                                break
-                    else:
-                        # tidak ada ticket upsell per reservasi asumsi adult 1
-                        ## hotel, ppob
-                        pax_type = 'ADT'
-                        total_pax[pax_type]['total'] = 1
-                        total_pax[pax_type]['id'].append(pax.id)
+                    if idx == 0:
+                        if hasattr(rec, 'ticket_ids'):
+                            for ticket in rec.ticket_ids:
+                                if pax.id == ticket.passenger_id.id:
+                                    pax_type = ticket.pax_type
+                                    total_pax[pax_type]['total'] += 1
+                                    total_pax[pax_type]['id'].append(pax.id)
+                                    break
+                        else:
+                            # tidak ada ticket upsell per reservasi asumsi adult 1
+                            ## hotel, ppob
+                            pax_type = 'ADT'
+                            total_pax[pax_type]['total'] = 1
+                            total_pax[pax_type]['id'].append(pax.id)
 
                     for sc in pax.channel_service_charge_ids:
                         sc_pax = copy.deepcopy(sc.to_dict())
