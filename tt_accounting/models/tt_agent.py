@@ -19,9 +19,9 @@ class TtAgent(models.Model):
     unprocessed_amount = fields.Monetary(string="Unprocessed Amount", readonly=True, compute="_compute_unprocessed_amount")
     limit_usage_notif = fields.Integer(string="Limit Usage Notification (%)", default=60, help="Send Email Notification when credit limit usage reaches certain percentage.")
     tax_percentage = fields.Float('Tax (%)', default=0)
-    point_reward = fields.Monetary(string="Point Reward", compute="_compute_point_reward_agent")
-    actual_point_reward = fields.Monetary(string="Actual Point Reward", compute="_compute_point_reward_agent")
-    unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward", compute="_compute_point_reward_agent")
+    point_reward = fields.Float(string="Point Reward", compute="_compute_point_reward_agent")
+    actual_point_reward = fields.Float(string="Actual Point Reward", compute="_compute_point_reward_agent")
+    unprocessed_point_reward = fields.Float(string="Unprocess Point Reward", compute="_compute_point_reward_agent")
 
     def action_view_ledgers(self):
         return {

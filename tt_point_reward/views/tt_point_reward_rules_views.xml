@@ -35,7 +35,11 @@
                         <field name="is_gradual_points"/>
                         <field name="currency_id"/>
                         <field name="min_price"/>
-                        <field name="points"/>
+                        <label for="point_div" string="Point"/>
+                        <div name="point_div">
+                            <field name="points"/> pts
+                        </div>
+
                     </group>
                 </sheet>
                 <div class="oe_chatter">
