@@ -94,6 +94,14 @@ class HotelReservation(models.Model):
     def get_form_id(self):
         return self.env.ref("tt_reservation_hotel.tt_reservation_hotel_form_views")
 
+    @api.depends('room_detail_ids')
+    def _compute_total_pax(self):
+        for rec in self:
+            total_pax = 0
+            for room_detail_obj in rec.room_detail_ids:
+                total_pax += len(room_detail_obj.room_date_ids)
+            rec.total_pax = total_pax
+
     @api.depends("passenger_ids.channel_service_charge_ids")
     def _compute_total_channel_upsell(self):
         for rec in self:

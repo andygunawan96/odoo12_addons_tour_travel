@@ -52,7 +52,7 @@ class ReservationAirline(models.Model):
     is_hold_date_sync = fields.Boolean('Hold Date Sync', compute='compute_hold_date_sync', default=True, store=True)
 
     flight_number_name = fields.Char('List of Flight number', readonly=True, compute='_compute_flight_number')
-    total_pax = fields.Integer('Total Pax', readonly=True, compute='_compute_total_pax')
+
 
     @api.multi
     @api.depends('provider_booking_ids.is_hold_date_sync')
@@ -87,12 +87,6 @@ class ReservationAirline(models.Model):
             else:
                 rec.reconcile_state = 'not_reconciled'
 
-    def update_old_data(self):
-        data = self.search([])
-        for rec in data:
-            rec._compute_flight_number()
-            rec._compute_total_pax()
-
     @api.depends('provider_booking_ids')
     def _compute_flight_number(self):
         for rec in self:
@@ -106,10 +100,6 @@ class ReservationAirline(models.Model):
 
             rec.flight_number_name = flight_number_name
 
-    @api.depends('adult', 'child', 'infant')
-    def _compute_total_pax(self):
-        for rec in self:
-            rec.total_pax = rec.adult + rec.child + rec.infant
 
     @api.depends('segment_ids')
     def _compute_sector_type(self):

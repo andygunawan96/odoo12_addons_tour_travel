@@ -533,8 +533,6 @@ class TtAgent(models.Model):
                 dom.append(('booked_date', '<=', req['date_to']))
             if req.get('provider'):
                 dom.append(('provider_name', 'ilike', req['provider']))
-            if req.get('total_pax'):
-                dom.append(('total_pax', '=', int(req['total_pax'])))
 
             if req.get('state'):
                 if req.get('state') != 'all':
@@ -588,7 +586,8 @@ class TtAgent(models.Model):
                         'issued_uid': rec.issued_uid and rec.issued_uid.name or '',
                         'transaction_addtional_info': rec.get_transaction_additional_info(),
                         'flight_number': rec.flight_number_name if hasattr(rec,'flight_number_name') else '',
-                        'departure_date': rec.departure_date if hasattr(rec,'departure_date') else ''
+                        'departure_date': rec.departure_date if hasattr(rec,'departure_date') else '',
+                        'total_pax': rec.total_pax
                     })
 
             # _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))
