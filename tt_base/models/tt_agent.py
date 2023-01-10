@@ -531,6 +531,11 @@ class TtAgent(models.Model):
                 dom.append(('booked_date', '>=', req['date_from']))
             if req.get('date_to'):
                 dom.append(('booked_date', '<=', req['date_to']))
+            if req.get('provider'):
+                dom.append(('provider_name', 'ilike', req['provider']))
+            if req.get('total_pax'):
+                dom.append(('total_pax', '=', int(req['total_pax'])))
+
             if req.get('state'):
                 if req.get('state') != 'all':
                     if req.get('state') == 'is_need_update_identity': ## untuk filter invalid identity
@@ -542,9 +547,9 @@ class TtAgent(models.Model):
                         dom.append(('state', '=', req['state']))
             if util.get_without_empty(context,'co_customer_parent_id'):
                 dom.append(('customer_parent_id','=',context['co_customer_parent_id']))
-            
-            dom.append(('state', '!=', ['halt_booked']))
-            
+
+            dom.append(('state', 'not in', ['halt_booked']))
+
             res_dict = {}
             for type in types:
                 # if util.get_without_empty(req,'order_or_pnr'):
@@ -581,7 +586,9 @@ class TtAgent(models.Model):
                         'state_description': variables.BOOKING_STATE_STR[rec.state],
                         'issued_date': rec.issued_date and rec.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'issued_uid': rec.issued_uid and rec.issued_uid.name or '',
-                        'transaction_addtional_info': rec.get_transaction_additional_info()
+                        'transaction_addtional_info': rec.get_transaction_additional_info(),
+                        'flight_number': rec.flight_number_name if hasattr(rec,'flight_number_name') else '',
+                        'departure_date': rec.departure_date if hasattr(rec,'departure_date') else ''
                     })
 
             # _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))
