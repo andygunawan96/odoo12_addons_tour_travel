@@ -175,6 +175,8 @@ class TtReservation(models.Model):
 
     is_upsell_in_service_charge = fields.Boolean('Is Upsell in service charges', default=False) ## for report old reservation
 
+    total_pax = fields.Integer('Total Pax', readonly=True, compute='_compute_total_pax')
+
     @api.model
     def create(self, vals_list):
         try:
@@ -198,6 +200,12 @@ class TtReservation(models.Model):
                     else:
                         vals['hold_date'] = datetime.now() + timedelta(minutes=45)
         super(TtReservation, self).write(vals)
+
+
+    @api.depends('adult', 'child', 'infant')
+    def _compute_total_pax(self):
+        for rec in self:
+            rec.total_pax = rec.adult + rec.child + rec.infant + rec.elder
 
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
