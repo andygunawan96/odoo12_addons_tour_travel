@@ -19,6 +19,7 @@ class TtCronLogInhResv(models.Model):
                 if not mail_created:
                     temp_data = {
                         'provider_type': mail_type,
+                        'order_number': to_send.name,
                         'res_id': to_send.id,
                         'res_model': to_send._name,
                         'type': '',
@@ -41,6 +42,7 @@ class TtCronLogInhResv(models.Model):
                 if not mail_created:
                     temp_data = {
                         'provider_type': mail_type,
+                        'order_number': to_send.name,
                         'res_id': to_send.id,
                         'res_model': to_send._name,
                         'type': '',
