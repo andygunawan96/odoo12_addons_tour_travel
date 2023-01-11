@@ -66,6 +66,7 @@
                 <attribute name="edit">false</attribute>
             </xpath>
             <xpath expr="//button[@name='action_cancel']" position="after">
+                <!--<button string="Update old data" name="update_old_data" groups="base.group_system" type="object"/>-->
                 <button string="Split Reservation" name="%(tt_reservation_airline.tt_split_reservation_wizard_action_view)d" type="action" groups="tt_base.group_reservation_level_4"
                         context="{
                         'default_res_id': id,

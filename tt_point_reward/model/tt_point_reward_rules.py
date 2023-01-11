@@ -13,4 +13,4 @@ class TtPointRewardRules(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', required=True, readonly=True, default=lambda self: self.env.user.company_id.currency_id.id)
     is_gradual_points = fields.Boolean('Is Gradual Points', default=True, help="""Gradual Points ex: price:50,000 for point:10,000 total payment:150,000 agent will get 30,000 points""")
     min_price = fields.Monetary(string='Minimum Price', default=0)
-    points = fields.Monetary(string='Point', default=0)
+    points = fields.Float(string='Point', default=0)

@@ -51,6 +51,9 @@ class ReservationAirline(models.Model):
                                        'attachment_id', string='Attachments', domain=['|', ('active', '=', True), ('active', '=', False)])
     is_hold_date_sync = fields.Boolean('Hold Date Sync', compute='compute_hold_date_sync', default=True, store=True)
 
+    flight_number_name = fields.Char('List of Flight number', readonly=True, compute='_compute_flight_number')
+
+
     @api.multi
     @api.depends('provider_booking_ids.is_hold_date_sync')
     def compute_hold_date_sync(self):
@@ -83,6 +86,20 @@ class ReservationAirline(models.Model):
                 rec.reconcile_state = 'cancel'
             else:
                 rec.reconcile_state = 'not_reconciled'
+
+    @api.depends('provider_booking_ids')
+    def _compute_flight_number(self):
+        for rec in self:
+            flight_number_name = ''
+            for provider_booking_obj in rec.provider_booking_ids:
+                for journey_obj in provider_booking_obj.journey_ids:
+                    for segment_obj in journey_obj.segment_ids:
+                        if flight_number_name:
+                            flight_number_name += ';'
+                        flight_number_name += "%s%s" % (segment_obj.carrier_code, segment_obj.carrier_number)
+
+            rec.flight_number_name = flight_number_name
+
 
     @api.depends('segment_ids')
     def _compute_sector_type(self):
@@ -517,6 +534,8 @@ class ReservationAirline(models.Model):
                 'carrier_name': ','.join(name_ids['carrier']),
                 'arrival_date': provider_ids[-1].arrival_date[:10]
             })
+            # book_obj._compute_flight_number()
+            # book_obj._compute_total_pax()
             #channel repricing upsell
             if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name

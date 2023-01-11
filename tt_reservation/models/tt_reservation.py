@@ -175,6 +175,8 @@ class TtReservation(models.Model):
 
     is_upsell_in_service_charge = fields.Boolean('Is Upsell in service charges', default=False) ## for report old reservation
 
+    total_pax = fields.Integer('Total Pax', readonly=True, compute='_compute_total_pax')
+
     @api.model
     def create(self, vals_list):
         try:
@@ -198,6 +200,12 @@ class TtReservation(models.Model):
                     else:
                         vals['hold_date'] = datetime.now() + timedelta(minutes=45)
         super(TtReservation, self).write(vals)
+
+
+    @api.depends('adult', 'child', 'infant')
+    def _compute_total_pax(self):
+        for rec in self:
+            rec.total_pax = rec.adult + rec.child + rec.infant + rec.elder
 
     def create_booker_api(self, vals, context):
         booker_obj = self.env['tt.customer'].sudo()
@@ -958,23 +966,24 @@ class TtReservation(models.Model):
                 },
             }
 
-            for pax in self.passenger_ids:
+            for idx, rec in enumerate(self.provider_booking_ids):
                 total_provider = len(self.provider_booking_ids)
-                for rec in self.provider_booking_ids:
+                for pax in self.passenger_ids:
                     pax_type = ''
-                    if hasattr(rec, 'ticket_ids'):
-                        for ticket in rec.ticket_ids:
-                            if pax.id == ticket.passenger_id.id:
-                                pax_type = ticket.pax_type
-                                total_pax[pax_type]['total'] += 1
-                                total_pax[pax_type]['id'].append(pax.id)
-                                break
-                    else:
-                        # tidak ada ticket upsell per reservasi asumsi adult 1
-                        ## hotel, ppob
-                        pax_type = 'ADT'
-                        total_pax[pax_type]['total'] = 1
-                        total_pax[pax_type]['id'].append(pax.id)
+                    if idx == 0:
+                        if hasattr(rec, 'ticket_ids'):
+                            for ticket in rec.ticket_ids:
+                                if pax.id == ticket.passenger_id.id:
+                                    pax_type = ticket.pax_type
+                                    total_pax[pax_type]['total'] += 1
+                                    total_pax[pax_type]['id'].append(pax.id)
+                                    break
+                        else:
+                            # tidak ada ticket upsell per reservasi asumsi adult 1
+                            ## hotel, ppob
+                            pax_type = 'ADT'
+                            total_pax[pax_type]['total'] = 1
+                            total_pax[pax_type]['id'].append(pax.id)
 
                     for sc in pax.channel_service_charge_ids:
                         sc_pax = copy.deepcopy(sc.to_dict())
