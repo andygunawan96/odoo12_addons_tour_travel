@@ -570,6 +570,7 @@ class TtAgent(models.Model):
                         'order_number': rec.name,
                         'booked_date': rec.booked_date and rec.booked_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'booked_uid': rec.user_id and rec.user_id.name or '',
+                        'agent_name': rec.agent_id.name,
                         # 'provider': {
                         'provider_type': rec.provider_type_id and rec.provider_type_id.code or '',
                         'carrier_names': rec.carrier_name and rec.carrier_name or '',
@@ -584,7 +585,7 @@ class TtAgent(models.Model):
                         'state_description': variables.BOOKING_STATE_STR[rec.state],
                         'issued_date': rec.issued_date and rec.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                         'issued_uid': rec.issued_uid and rec.issued_uid.name or '',
-                        'transaction_addtional_info': rec.get_transaction_additional_info(),
+                        'transaction_additional_info': rec.get_transaction_additional_info(),
                         'flight_number': rec.flight_number_name if hasattr(rec,'flight_number_name') else '',
                         'departure_date': rec.departure_date if hasattr(rec,'departure_date') else '',
                         'total_pax': rec.total_pax
