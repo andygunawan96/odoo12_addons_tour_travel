@@ -124,7 +124,7 @@ class TtAccountingQueue(models.Model):
                                 temp_prov_price_dict['ho_commission'] -= sale.total
                         if sale.charge_type != 'RAC':
                             temp_prov_price_dict['agent_nta'] += sale.total
-                        if sale.charge_type == 'TAX':
+                        if sale.charge_type in ['FARE', 'TAX', 'ROC']:
                             temp_prov_price_dict['tax_service_charges'].append({
                                 'charge_code': sale.charge_code,
                                 'amount': sale.total
@@ -156,7 +156,7 @@ class TtAccountingQueue(models.Model):
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC':
                                     temp_tick_price_dict['agent_nta'] += sale.amount
-                                if sale.charge_type == 'TAX':
+                                if sale.charge_type in ['FARE', 'TAX', 'ROC']:
                                     temp_tick_price_dict['tax_service_charges'].append({
                                         'charge_code': sale.charge_code,
                                         'amount': sale.amount
@@ -194,7 +194,7 @@ class TtAccountingQueue(models.Model):
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC':
                                     temp_tick_price_dict['agent_nta'] += sale.amount
-                                if sale.charge_type == 'TAX':
+                                if sale.charge_type in ['FARE', 'TAX', 'ROC']:
                                     temp_tick_price_dict['tax_service_charges'].append({
                                         'charge_code': sale.charge_code,
                                         'amount': sale.amount

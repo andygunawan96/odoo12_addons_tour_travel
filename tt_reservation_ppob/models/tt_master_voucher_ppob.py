@@ -5,6 +5,11 @@ from datetime import datetime
 import json, logging
 
 _logger = logging.getLogger(__name__)
+voucher_types = [
+    ('prepaid_mobile', 'Prepaid Mobile'),
+    ('game', 'Game Voucher'),
+    ('others', 'Others')
+]
 
 
 class TtMasterVoucherPPOB(models.Model):
@@ -17,7 +22,13 @@ class TtMasterVoucherPPOB(models.Model):
     name = fields.Char('Operator Name', default='Unnamed')
     code = fields.Char('Code', default='')
     value = fields.Integer('Nominal', default=0)
-    type = fields.Selection([('prepaid_mobile', 'Prepaid Mobile'), ('game', 'Game Voucher')], 'Voucher Type', default='game')
+    type = fields.Selection(voucher_types, 'Voucher Type', default='prepaid_mobile')
+
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     sequence = fields.Integer('Sequence', default=50)
     display_name = fields.Char('Display Name', compute='_compute_display_name')
     active = fields.Boolean('Active', default=True)

@@ -96,6 +96,7 @@
                             <field name="total"/>
                         </tree>
                     </field>
+                    <field name="raw_additional_data"/>
                     <separator string="Allowed Denominations"/>
                     <field name="allowed_denomination_ids">
                         <form>

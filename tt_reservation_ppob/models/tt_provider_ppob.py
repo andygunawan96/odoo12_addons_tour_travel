@@ -64,6 +64,7 @@ class TtProviderPPOB(models.Model):
     promotion_code = fields.Char(string='Promotion Code')
     unpaid_bill = fields.Integer(string='Unpaid Bill Amount')
     unpaid_bill_display = fields.Integer(string='Unpaid Bill Displayed')
+    raw_additional_data = fields.Text('Raw Additional Data')
     ticket_ids = fields.One2many('tt.ticket.ppob', 'provider_id', 'Ticket Number')
 
     # Booking Progress
@@ -448,21 +449,21 @@ class TtProviderPPOB(models.Model):
 
     def get_description(self):
         desc = ''
-        if self.carrier_id.code == '521':
+        if self.carrier_id.code == 'pln_postpaid':
             desc += 'Fare Type: %s <br/>' % (self.fare_type,)
             desc += 'Power: %s <br/>' % (self.power,)
             for rec in self.ppob_bill_ids:
                 if rec.meter_history_ids:
                     desc += 'Meter (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.meter_history_ids[-1].after_meter)
-        elif self.carrier_id.code == '532':
+        elif self.carrier_id.code == 'pln_prepaid':
             desc += 'Fare Type: %s <br/>' % (self.fare_type,)
             desc += 'Power: %s <br/>' % (self.power,)
             for rec in self.ppob_bill_ids:
                 desc += 'Token (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.token)
                 desc += 'KWH Amount (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.kwh_amount)
-        elif self.carrier_id.code == '524':
+        elif self.carrier_id.code == 'pln_nontag':
             desc += 'Transaction: %s <br/>' % (self.transaction_name,)
-        elif self.carrier_id.code == '3200':
+        elif self.carrier_id.code == 'bpjs_kesehatan':
             desc += ''
         return desc
 
@@ -531,6 +532,7 @@ class TtProviderPPOB(models.Model):
             'unpaid_bill': self.unpaid_bill and self.unpaid_bill or 0,
             'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
+            'raw_additional_data': self.raw_additional_data and self.raw_additional_data or '',
             'allowed_denominations': allowed_denominations,
             'description': self.get_description(),
             'tickets': ticket_list

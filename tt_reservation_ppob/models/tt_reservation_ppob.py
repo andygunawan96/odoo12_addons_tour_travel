@@ -79,7 +79,11 @@ class ReservationPpob(models.Model):
             available_prepaid_mobile = {}
             prepaid_mobile_data = self.env['tt.master.voucher.ppob'].search([('type', '=', 'prepaid_mobile')])
             for rec in prepaid_mobile_data:
-                available_prepaid_mobile[rec.code] = rec.display_name
+                if not available_prepaid_mobile.get(rec.provider_id.code):
+                    available_prepaid_mobile[rec.provider_id.code] = {}
+                available_prepaid_mobile[rec.provider_id.code].update({
+                    rec.code: rec.display_name
+                })
             res = {
                 'product_data': product_data,
                 'allowed_denominations': allowed_denominations,
@@ -505,6 +509,7 @@ class ReservationPpob(models.Model):
             'unpaid_bill': data.get('unpaid_bill') and data['unpaid_bill'] or 0,
             'unpaid_bill_display': data.get('unpaid_bill') and data['unpaid_bill'] - len(data['bill_data']) or 0,
             'allowed_denomination_ids': [(6,0,nominal_id_list)],
+            'raw_additional_data': data.get('raw_additional_data') and data['raw_additional_data'] or ''
         }
         prov_obj = self.env['tt.provider.ppob'].create(provider_vals)
 
@@ -895,7 +900,8 @@ class ReservationPpob(models.Model):
                     'customer_number': rec.customer_number,
                     'bill_data': bill_list,
                     'is_send_transaction_code': rec.is_send_transaction_code and rec.is_send_transaction_code or False,
-                    'transaction_code': rec.transaction_code and rec.transaction_code or ''
+                    'transaction_code': rec.transaction_code and rec.transaction_code or '',
+                    'raw_additional_data': rec.raw_additional_data and rec.raw_additional_data or ''
                 })
 
             total_admin = 0
