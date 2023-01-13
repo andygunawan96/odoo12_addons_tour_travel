@@ -24,10 +24,12 @@
                 (4, ref('tt_reservation_airline.tt_provider_airline_singaporeairlines')),
                 (4, ref('tt_reservation_airline.tt_provider_airline_rodextrip_airline')),
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus')),
+                (4, ref('tt_reservation_airline.tt_provider_airline_scoot')),
             ]"/>
             <field name="carrier_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_transport_carrier_airline_sq')),
                 (4, ref('tt_reservation_airline.tt_transport_carrier_airline_mi')),
+                (4, ref('tt_reservation_airline.tt_transport_carrier_airline_tr')),
             ]"/>
             <field name="loyalty_program_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_loyalty_program_krisflyer')),
