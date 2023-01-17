@@ -92,13 +92,13 @@ class PrintoutTicketForm(models.AbstractModel):
                         if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc']:
                             price_target['total_price'] += rec2.amount
 
-                    for csc in pax.passenger_id.fee_ids:
-                        price_target['total_price'] += csc.amount
+                    # for csc in pax.passenger_id.fee_ids:
+                    #     price_target['total_price'] += csc.amount
 
-                    if pax.passenger_id.id not in csc_pax_list:
-                        for scs in pax.passenger_id.channel_service_charge_ids:
-                            price_target['total_price'] += scs.amount
-                        csc_pax_list.append(pax.passenger_id.id)
+                    # if pax.passenger_id.id not in csc_pax_list:
+                    #     for scs in pax.passenger_id.channel_service_charge_ids:
+                    #         price_target['total_price'] += scs.amount
+                    #     csc_pax_list.append(pax.passenger_id.id)
                     a[provider.pnr].append(price_target)
 
             for ssr_per_pax in rec.passenger_ids:
@@ -214,6 +214,75 @@ class PrintoutTicketForm(models.AbstractModel):
             vals.update({'qr_code_data': qr_values})
         return vals
 
+class PrintoutTicketBusForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_bus_ticket'
+    _description = 'Report Common Printout Bus Ticket'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            # internal_model_id = docids.pop(0)
+            data['context'] = {}
+            data['context']['active_model'] = 'tt.reservation.bus'
+            data['context']['active_ids'] = docids
+        values = {}
+        agent_id = False
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] = rec2.pax_count
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
+            agent_id = rec.agent_id
+        train_ticket_footer = self.env['tt.report.common.setting'].get_footer('bus_ticket', agent_id)
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+        }
+        if 'is_with_price' in data:
+            vals.update({
+                'with_price': data.get('is_with_price') or False,
+            })
+        elif 'is_with_price' in data.get('data',''):
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        else:
+            vals.update({
+                'with_price': False,
+            })
+
+        if 'is_hide_agent_logo' in data:
+            vals.update({
+                'is_hide_agent_logo': data.get('is_hide_agent_logo') or False,
+            })
+        elif 'is_hide_agent_logo' in data.get('data', {}):
+            vals.update({
+                'is_hide_agent_logo': data['data'].get('is_hide_agent_logo') or False
+            })
+        else:
+            vals.update({
+                'is_hide_agent_logo': False
+            })
+
+        return vals
+
 
 class PrintoutTicketTrainForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_train_ticket'
@@ -320,10 +389,10 @@ class PrintoutTicketEventForm(models.AbstractModel):
                                                                                                             'disc']:
                             price_target['total_price'] += rec2.amount
 
-                    if pax.id not in csc_pax_list:
-                        for scs in pax.channel_service_charge_ids:
-                            price_target['total_price'] += scs.amount
-                        csc_pax_list.append(pax.id)
+                    # if pax.id not in csc_pax_list:
+                    #     for scs in pax.channel_service_charge_ids:
+                    #         price_target['total_price'] += scs.amount
+                    #     csc_pax_list.append(pax.id)
                     a[provider.pnr].append(price_target)
 
             values[rec.id] = [a[new_a] for new_a in a]
@@ -787,8 +856,8 @@ class PrintoutInvoiceVendor(models.AbstractModel):
                 pax_dict[psg.id] = {}
                 pax_dict[psg.id]['name'] = psg.option_id.event_option_id.grade
                 pax_dict[psg.id]['total'] = 0
-                for csc in psg.cost_service_charge_ids:
-                    pax_dict[psg.id]['total'] += csc.total
+                # for csc in psg.cost_service_charge_ids:
+                #     pax_dict[psg.id]['total'] += csc.total
         return pax_dict
 
     def compute_terbilang_from_objs(self, recs, currency_str='rupiah'):
@@ -2558,21 +2627,21 @@ class PrintoutIteneraryForm(models.AbstractModel):
             if discount_value:
                 a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value, 'qty': 1,}})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
                 # Noted Mark Up Airline pakek tngan per org makane langsung di kali QTY
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
                 # Add SSR cman karena ssr itu per pax maka smentara cman ku kasih di total
                 # klo di tmbah ke per pax jadi slah jumlah
-                if hasattr(psg,'fee_ids'):
-                    for csc in psg.fee_ids:
-                        a[pax_type]['price_total'] += csc.amount
+                # if hasattr(psg,'fee_ids'):
+                #     for csc in psg.fee_ids:
+                #         a[pax_type]['price_total'] += csc.amount
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -2636,8 +2705,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
                         elif cost_sc.charge_type.lower() == 'disc':
                             discount_value += cost_sc.amount
 
-                    for csc in psg.channel_service_charge_ids:
-                        total_price_pax += csc.amount
+                    # for csc in psg.channel_service_charge_ids:
+                    #     total_price_pax += csc.amount
 
                     inc_ssr_descs = []
                     for seg_id in rec.segment_ids:
@@ -2670,11 +2739,11 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     elif sc.charge_type.lower() == 'disc':
                         discount_value += sc.amount
 
-                for psg in rec.passenger_ids:
-                    for csc in psg.channel_service_charge_ids:
-                        total_price_pax += csc.amount
+                # for psg in rec.passenger_ids:
+                    # for csc in psg.channel_service_charge_ids:
+                    #     total_price_pax += csc.amount
 
-                    customer_grand_total += total_price_pax
+                    # customer_grand_total += total_price_pax
 
                 values[rec.id].append({
                     'name': rec.passenger_ids[0].name,
@@ -2693,8 +2762,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
                         elif cost_sc.charge_type.lower() == 'disc':
                             discount_value += cost_sc.amount
 
-                    for csc in psg.channel_service_charge_ids:
-                        total_price_pax += csc.amount
+                    # for csc in psg.channel_service_charge_ids:
+                    #     total_price_pax += csc.amount
 
                     inc_ssr_descs = []
 
@@ -2784,14 +2853,14 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -2867,14 +2936,14 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -2951,14 +3020,14 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+            #     for csc in psg.channel_service_charge_ids:
+                    # if pax_type not in csc_found:
+                    #     a[pax_type]['price_per_pax'] += csc.amount
+                    #     a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                    #     csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -3034,14 +3103,14 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -3117,14 +3186,14 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -3204,14 +3273,14 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -3285,14 +3354,14 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -3371,14 +3440,14 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -3459,14 +3528,14 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
@@ -3549,14 +3618,14 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
                                'qty': 1, }})
 
-            csc_found = []
-            for psg in rec.passenger_ids:
-                pax_type = psg.cost_service_charge_ids[0].pax_type
-                for csc in psg.channel_service_charge_ids:
-                    if pax_type not in csc_found:
-                        a[pax_type]['price_per_pax'] += csc.amount
-                        a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
-                        csc_found.append(pax_type)
+            # csc_found = []
+            # for psg in rec.passenger_ids:
+            #     pax_type = psg.cost_service_charge_ids[0].pax_type
+                # for csc in psg.channel_service_charge_ids:
+                #     if pax_type not in csc_found:
+                #         a[pax_type]['price_per_pax'] += csc.amount
+                #         a[pax_type]['price_total'] += csc.amount * a[pax_type]['qty']
+                #         csc_found.append(pax_type)
 
             for sc_key in a.keys():
                 sc = a[sc_key]
