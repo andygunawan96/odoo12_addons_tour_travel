@@ -905,13 +905,17 @@ class ReservationPpob(models.Model):
                 })
 
             total_admin = 0
+            total_payment = 0
             for serv in resv_obj.sale_service_charge_ids:
                 if serv.charge_type == 'ROC':
                     total_admin += serv.amount
+                elif serv.charge_type == 'FARE':
+                    total_payment += serv.amount
 
             res = {
                 'order_number': resv_obj.name,
                 'total_admin': total_admin,
+                'total_payment': total_payment,
                 'provider_booking': provider_list,
                 'provider': provider_code
             }
