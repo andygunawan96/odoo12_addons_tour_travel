@@ -92,8 +92,8 @@ class PrintoutTicketForm(models.AbstractModel):
                         if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc']:
                             price_target['total_price'] += rec2.amount
 
-                    # for csc in pax.passenger_id.fee_ids:
-                    #     price_target['total_price'] += csc.amount
+                    for csc in pax.passenger_id.fee_ids:
+                        price_target['total_price'] += csc.amount
 
                     # if pax.passenger_id.id not in csc_pax_list:
                     #     for scs in pax.passenger_id.channel_service_charge_ids:
