@@ -384,6 +384,7 @@ class ReservationPpob(models.Model):
             search_req = data['search_RQ']
             inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])),
                                                                        ('customer_number', '=', str(search_req['customer_number'])),
+                                                                       ('provider_id.code', '=', data['data']['provider']),
                                                                        ('state', '=', 'booked'), ('booking_id.agent_id.id', '=', context['co_agent_id'])], limit=1)
             if inq_prov_obj:
                 inq_prov_obj = inq_prov_obj[0]
@@ -814,7 +815,7 @@ class ReservationPpob(models.Model):
             total_price = 0
             for rec in resv_obj.provider_booking_ids:
                 temp_carrier_code = rec.carrier_id and rec.carrier_id.code or ''
-                if int(temp_carrier_code) == 532:
+                if int(temp_carrier_code) == 'pln_prepaid':
                     rec.write({
                         'total': new_total
                     })
@@ -919,6 +920,10 @@ class ReservationPpob(models.Model):
                 'provider_booking': provider_list,
                 'provider': provider_code
             }
+            if resv_obj.prepaid_value:
+                res.update({
+                    'prepaid_value': resv_obj.prepaid_value
+                })
             return ERR.get_no_error(res)
         except RequestException as e:
             _logger.error(traceback.format_exc())
