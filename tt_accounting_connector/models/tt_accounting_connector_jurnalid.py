@@ -580,7 +580,7 @@ class AccountingConnectorAccurate(models.Model):
                         _logger.info('######REQUEST PURCHASE#########\n%s' % json.dumps(data))
                         response = requests.post(url, headers=headers, json=data)
                         _logger.info('######RESPONSE PURCHASE#########\n%s' % response.text)
-                        if response.status_code != 200:
+                        if not json.loads(response.text).get('purchase_invoice'):
                             _logger.error('######ERROR ADD PURCHASE JURNAL ID %s#########\n' % vals['order_number'])
                             raise Exception(500, 'Error add purchase')
                         price = 0
@@ -799,7 +799,7 @@ class AccountingConnectorAccurate(models.Model):
             _logger.info('######REQUEST SALES#########\n%s' % json.dumps(data))
             response = requests.post(url, headers=headers, json=data)
             _logger.info('######RESPONSE SALES#########\n%s' % response.text)
-            if response.status_code != 200:
+            if not json.loads(response.text).get('sales_invoice'):
                 _logger.error('######ERROR ADD SALES JURNAL ID %s#########\n' % vals['order_number'])
                 raise Exception(500, 'Error add sales')
         else:
