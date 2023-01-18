@@ -46,9 +46,10 @@
                         <group>
                             <field name="name"/>
                             <field name="code"/>
-                            <field name="type"/>
+                            <field name="provider_id"/>
                         </group>
                         <group>
+                            <field name="type"/>
                             <field name="value"/>
                             <field name="sequence"/>
                         </group>
@@ -71,6 +72,7 @@
                 <field name="code"/>
                 <field name="value"/>
                 <field name="type"/>
+                <field name="provider_id"/>
                 <field name="sequence"/>
             </tree>
         </field>
