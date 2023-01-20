@@ -426,8 +426,8 @@
             <field name="name">Citibank</field>
             <field name="code">pub_ctb</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -436,8 +436,8 @@
             <field name="name">American Express (AMEX)</field>
             <field name="code">pub_aei</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -446,8 +446,8 @@
             <field name="name">BNI</field>
             <field name="code">pub_bni</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -456,8 +456,8 @@
             <field name="name">ANZ</field>
             <field name="code">pub_anz</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -466,8 +466,8 @@
             <field name="name">Permata Bank</field>
             <field name="code">pub_pmt</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -476,8 +476,8 @@
             <field name="name">Bank Danamon</field>
             <field name="code">pub_dnm</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -486,8 +486,8 @@
             <field name="name">UOB</field>
             <field name="code">pub_uob</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -496,8 +496,8 @@
             <field name="name">ICB Bumiputera</field>
             <field name="code">pub_icb</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -506,8 +506,8 @@
             <field name="name">Bukopin</field>
             <field name="code">pub_bkp</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -516,8 +516,8 @@
             <field name="name">Panin</field>
             <field name="code">pub_pan</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">12</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>

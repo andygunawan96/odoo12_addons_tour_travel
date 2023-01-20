@@ -382,8 +382,9 @@ class ReservationPpob(models.Model):
     def search_inquiry_api(self, data, context):
         try:
             search_req = data['search_RQ']
+            search_cust_num = data['data'].get('customer_number') and str(data['data']['customer_number']) or str(search_req['customer_number'])
             inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])),
-                                                                       ('customer_number', '=', str(search_req['customer_number'])),
+                                                                       ('customer_number', '=', search_cust_num),
                                                                        ('provider_id.code', '=', data['data']['provider']),
                                                                        ('state', '=', 'booked'), ('booking_id.agent_id.id', '=', context['co_agent_id'])], limit=1)
             if inq_prov_obj:
