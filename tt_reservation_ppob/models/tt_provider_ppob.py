@@ -336,16 +336,20 @@ class TtProviderPPOB(models.Model):
                         for rec2 in data['bill_data']:
                             bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
                             if bill_obj:
-                                bill_obj[0].sudo().write({
-                                    'admin_fee': rec2.get('admin_fee') and rec2['admin_fee'] or 0,
+                                new_bill_vals = {
                                     'stamp_fee': rec2.get('stamp_fee') and rec2['stamp_fee'] or 0,
                                     'ppn_tax_amount': rec2.get('ppn_tax_amount') and rec2['ppn_tax_amount'] or 0,
                                     'ppj_tax_amount': rec2.get('ppj_tax_amount') and rec2['ppj_tax_amount'] or 0,
                                     'installment': rec2.get('installment') and rec2['installment'] or 0,
                                     'fare_amount': rec2.get('fare_amount') and rec2['fare_amount'] or 0,
                                     'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
-                                    'token': rec2.get('token') and rec2['token'] or '',
-                                })
+                                    'token': rec2.get('token') and rec2['token'] or ''
+                                }
+                                if not bill_obj[0].admin_fee and rec2.get('admin_fee'):
+                                    new_bill_vals.update({
+                                        'admin_fee': rec2['admin_fee']
+                                    })
+                                bill_obj[0].sudo().write(new_bill_vals)
 
                     rec.action_issued_api_ppob(context)
 
