@@ -127,7 +127,7 @@
             <field name="code">postpaid_mobile_lwa</field>
             <field name="icao">e-voucher</field>
             <field name="adult_length_name">9</field>
-            <field name="child_length_name">13</field>
+            <field name="child_length_name">15</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -137,7 +137,7 @@
             <field name="code">postpaid_mobile_gri</field>
             <field name="icao">e-voucher</field>
             <field name="adult_length_name">9</field>
-            <field name="child_length_name">13</field>
+            <field name="child_length_name">15</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -147,7 +147,7 @@
             <field name="code">postpaid_mobile_swj</field>
             <field name="icao">e-voucher</field>
             <field name="adult_length_name">9</field>
-            <field name="child_length_name">13</field>
+            <field name="child_length_name">15</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>

@@ -6,7 +6,7 @@ from datetime import datetime
 
 class TtBillPPOB(models.Model):
     _name = 'tt.bill.ppob'
-    _rec_name = 'period'
+    _rec_name = 'description'
     _order = 'period'
     _description = 'Bill PPOB'
 
@@ -18,6 +18,7 @@ class TtBillPPOB(models.Model):
     sequence = fields.Integer('Sequence')
 
     period = fields.Date('Period')
+    description = fields.Char('Description')
     amount_of_month = fields.Integer('Amount of Months', default=1)
     period_end_date = fields.Date('Period End Date')
     meter_read_date = fields.Date('Meter Read Date')
@@ -49,6 +50,7 @@ class TtBillPPOB(models.Model):
             'provider': self.provider_id and self.provider_id.code or '',
             'sequence': self.sequence and self.sequence or 0,
             'period': self.period and self.period.strftime('%Y%m') or '',
+            'description': self.description and self.description or '',
             'amount_of_month': self.amount_of_month and self.amount_of_month or 1,
             'period_end_date': self.period_end_date and self.period_end_date.strftime('%Y-%m-%d') or '',
             'meter_read_date': self.meter_read_date and self.meter_read_date.strftime('%Y-%m-%d') or '',

@@ -11,12 +11,13 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="period"/>
+                            <field name="description"/>
                         </h1>
                     </div>
                     <group>
                         <group>
                             <field name="pnr"/>
+                            <field name="period"/>
                             <field name="provider_id"/>
                         </group>
                         <group>
@@ -74,6 +75,7 @@
             <tree create="false">
                 <field name="pnr"/>
                 <field name="provider_id"/>
+                <field name="description"/>
                 <field name="period"/>
                 <field name="amount_of_month"/>
                 <field name="period_end_date"/>

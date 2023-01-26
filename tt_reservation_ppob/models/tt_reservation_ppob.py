@@ -527,6 +527,7 @@ class ReservationPpob(models.Model):
             bill_vals = {
                 'provider_booking_id': prov_obj and prov_obj.id or False,
                 'period': int(util.get_without_empty(rec, 'period')) and datetime.strptime(rec['period'], '%Y%m') or False,
+                'description': rec.get('description') and rec['description'] or '',
                 'total': rec.get('total') and rec['total'] or 0,
                 'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 1,
                 'fare_amount': rec.get('fare_amount') and rec['fare_amount'] or 0,
