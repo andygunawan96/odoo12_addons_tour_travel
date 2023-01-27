@@ -64,6 +64,7 @@ class TtProviderPPOB(models.Model):
     promotion_code = fields.Char(string='Promotion Code')
     unpaid_bill = fields.Integer(string='Unpaid Bill Amount')
     unpaid_bill_display = fields.Integer(string='Unpaid Bill Displayed')
+    raw_additional_data = fields.Text('Raw Additional Data')
     ticket_ids = fields.One2many('tt.ticket.ppob', 'provider_id', 'Ticket Number')
 
     # Booking Progress
@@ -335,16 +336,20 @@ class TtProviderPPOB(models.Model):
                         for rec2 in data['bill_data']:
                             bill_obj = self.env['tt.bill.ppob'].sudo().search([('provider_booking_id', '=', int(rec.id)), ('period', '=', datetime.strptime(rec2['period'], '%Y%m'))], limit=1)
                             if bill_obj:
-                                bill_obj[0].sudo().write({
-                                    'admin_fee': rec2.get('admin_fee') and rec2['admin_fee'] or 0,
+                                new_bill_vals = {
                                     'stamp_fee': rec2.get('stamp_fee') and rec2['stamp_fee'] or 0,
                                     'ppn_tax_amount': rec2.get('ppn_tax_amount') and rec2['ppn_tax_amount'] or 0,
                                     'ppj_tax_amount': rec2.get('ppj_tax_amount') and rec2['ppj_tax_amount'] or 0,
                                     'installment': rec2.get('installment') and rec2['installment'] or 0,
                                     'fare_amount': rec2.get('fare_amount') and rec2['fare_amount'] or 0,
                                     'kwh_amount': rec2.get('kwh_amount') and rec2['kwh_amount'] or 0,
-                                    'token': rec2.get('token') and rec2['token'] or '',
-                                })
+                                    'token': rec2.get('token') and rec2['token'] or ''
+                                }
+                                if not bill_obj[0].admin_fee and rec2.get('admin_fee'):
+                                    new_bill_vals.update({
+                                        'admin_fee': rec2['admin_fee']
+                                    })
+                                bill_obj[0].sudo().write(new_bill_vals)
 
                     rec.action_issued_api_ppob(context)
 
@@ -448,21 +453,21 @@ class TtProviderPPOB(models.Model):
 
     def get_description(self):
         desc = ''
-        if self.carrier_id.code == '521':
+        if self.carrier_id.code == 'pln_postpaid':
             desc += 'Fare Type: %s <br/>' % (self.fare_type,)
             desc += 'Power: %s <br/>' % (self.power,)
             for rec in self.ppob_bill_ids:
                 if rec.meter_history_ids:
                     desc += 'Meter (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.meter_history_ids[-1].after_meter)
-        elif self.carrier_id.code == '532':
+        elif self.carrier_id.code == 'pln_prepaid':
             desc += 'Fare Type: %s <br/>' % (self.fare_type,)
             desc += 'Power: %s <br/>' % (self.power,)
             for rec in self.ppob_bill_ids:
                 desc += 'Token (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.token)
                 desc += 'KWH Amount (%s): %s <br/>' % (rec.period.strftime('%b %Y'), rec.kwh_amount)
-        elif self.carrier_id.code == '524':
+        elif self.carrier_id.code == 'pln_nontag':
             desc += 'Transaction: %s <br/>' % (self.transaction_name,)
-        elif self.carrier_id.code == '3200':
+        elif self.carrier_id.code == 'bpjs_kesehatan':
             desc += ''
         return desc
 
@@ -531,6 +536,7 @@ class TtProviderPPOB(models.Model):
             'unpaid_bill': self.unpaid_bill and self.unpaid_bill or 0,
             'unpaid_bill_display': self.unpaid_bill_display and self.unpaid_bill_display or 0,
             'session_id': self.session_id and self.session_id or '',
+            'raw_additional_data': self.raw_additional_data and self.raw_additional_data or '',
             'allowed_denominations': allowed_denominations,
             'description': self.get_description(),
             'tickets': ticket_list

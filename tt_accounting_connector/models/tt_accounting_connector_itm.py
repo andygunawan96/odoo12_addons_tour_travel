@@ -382,10 +382,13 @@ class AccountingConnectorITM(models.Model):
                 })
             except (UnicodeDecodeError, AttributeError):
                 pass
-        if all(msg.get('Type', '') == 'SUCCESS' for msg in res['content']['Messages']):
-            status = 'success'
-        elif any(msg.get('Type', '') == 'SUCCESS' for msg in res['content']['Messages']):
-            status = 'partial'
+        if res['content'].get('Messages'):
+            if all(msg.get('Type', '') == 'SUCCESS' for msg in res['content']['Messages']):
+                status = 'success'
+            elif any(msg.get('Type', '') == 'SUCCESS' for msg in res['content']['Messages']):
+                status = 'partial'
+            else:
+                status = 'failed'
         else:
             status = 'failed'
         res.update({

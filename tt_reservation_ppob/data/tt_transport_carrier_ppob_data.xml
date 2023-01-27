@@ -4,7 +4,7 @@
 
         <record id="tt_transport_carrier_ppob_bpjs" model="tt.transport.carrier">
             <field name="name">BPJS Kesehatan</field>
-            <field name="code">3200</field>
+            <field name="code">bpjs_kesehatan</field>
             <field name="icao">bpjs</field>
             <field name="adult_length_name">11</field>
             <field name="child_length_name">16</field>
@@ -14,7 +14,7 @@
 
         <record id="tt_transport_carrier_ppob_postpln" model="tt.transport.carrier">
             <field name="name">PLN Postpaid</field>
-            <field name="code">521</field>
+            <field name="code">pln_postpaid</field>
             <field name="icao">pln</field>
             <field name="adult_length_name">12</field>
             <field name="child_length_name">12</field>
@@ -24,7 +24,7 @@
 
         <record id="tt_transport_carrier_ppob_prepln" model="tt.transport.carrier">
             <field name="name">PLN Prepaid</field>
-            <field name="code">532</field>
+            <field name="code">pln_prepaid</field>
             <field name="icao">pln</field>
             <field name="adult_length_name">11</field>
             <field name="child_length_name">12</field>
@@ -34,7 +34,7 @@
 
         <record id="tt_transport_carrier_ppob_notaglispln" model="tt.transport.carrier">
             <field name="name">PLN Non Tagihan</field>
-            <field name="code">524</field>
+            <field name="code">pln_nontag</field>
             <field name="icao">pln</field>
             <field name="adult_length_name">13</field>
             <field name="child_length_name">13</field>
@@ -44,12 +44,483 @@
 
         <record id="tt_transport_carrier_ppob_prepaidmobile" model="tt.transport.carrier">
             <field name="name">Prepaid Mobile</field>
-            <field name="code">800</field>
+            <field name="code">prepaid_mobile</field>
             <field name="icao">e-voucher</field>
             <field name="adult_length_name">9</field>
             <field name="child_length_name">13</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_thl" model="tt.transport.carrier">
+            <field name="name">Postpaid Telkomsel (Kartu HALO)</field>
+            <field name="code">postpaid_mobile_thl</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_imt" model="tt.transport.carrier">
+            <field name="name">Postpaid Indosat (MATRIX)</field>
+            <field name="code">postpaid_mobile_imt</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_xpl" model="tt.transport.carrier">
+            <field name="name">Postpaid Excelcomindo (Xplor)</field>
+            <field name="code">postpaid_mobile_xpl</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_bru" model="tt.transport.carrier">
+            <field name="name">Postpaid PSN / BYRU</field>
+            <field name="code">postpaid_mobile_bru</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_tfc" model="tt.transport.carrier">
+            <field name="name">Postpaid Telkom Flexi Classy</field>
+            <field name="code">postpaid_mobile_tfc</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_fre" model="tt.transport.carrier">
+            <field name="name">Postpaid Smartfren (Smart/Fren/Hepi)</field>
+            <field name="code">postpaid_mobile_fre</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_ere" model="tt.transport.carrier">
+            <field name="name">Postpaid Esia</field>
+            <field name="code">postpaid_mobile_ere</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_lwa" model="tt.transport.carrier">
+            <field name="name">Postpaid Lion Air / Wings Air / Batik Air</field>
+            <field name="code">postpaid_mobile_lwa</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">15</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_gri" model="tt.transport.carrier">
+            <field name="name">Postpaid Garuda Indonesia</field>
+            <field name="code">postpaid_mobile_gri</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">15</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_postpaid_mobile_swj" model="tt.transport.carrier">
+            <field name="name">Postpaid Sriwijaya Air</field>
+            <field name="code">postpaid_mobile_swj</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">15</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_cable_tv_idv" model="tt.transport.carrier">
+            <field name="name">Indovision</field>
+            <field name="code">cable_tv_idv</field>
+            <field name="icao">cable tv</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_cable_tv_top" model="tt.transport.carrier">
+            <field name="name">Indovision Top TV</field>
+            <field name="code">cable_tv_top</field>
+            <field name="icao">cable tv</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_cable_tv_okv" model="tt.transport.carrier">
+            <field name="name">Indovision Oke Vision</field>
+            <field name="code">cable_tv_okv</field>
+            <field name="icao">cable tv</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_cable_tv_frm" model="tt.transport.carrier">
+            <field name="name">First Media</field>
+            <field name="code">cable_tv_frm</field>
+            <field name="icao">cable tv</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_cable_tv_ytv" model="tt.transport.carrier">
+            <field name="name">Yes</field>
+            <field name="code">cable_tv_ytv</field>
+            <field name="icao">cable tv</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_isp_cbn" model="tt.transport.carrier">
+            <field name="name">CBN</field>
+            <field name="code">isp_cbn</field>
+            <field name="icao">internet</field>
+            <field name="adult_length_name">10</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_isp_isn" model="tt.transport.carrier">
+            <field name="name">Indosatnet</field>
+            <field name="code">isp_isn</field>
+            <field name="icao">internet</field>
+            <field name="adult_length_name">10</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_isp_ctr" model="tt.transport.carrier">
+            <field name="name">Centrinnet</field>
+            <field name="code">isp_ctr</field>
+            <field name="icao">internet</field>
+            <field name="adult_length_name">10</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_isp_tsd" model="tt.transport.carrier">
+            <field name="name">Telkom Speedy</field>
+            <field name="code">isp_tsd</field>
+            <field name="icao">internet</field>
+            <field name="adult_length_name">10</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_telephone_tpn" model="tt.transport.carrier">
+            <field name="name">Telkom</field>
+            <field name="code">telephone_tpn</field>
+            <field name="icao">telephone</field>
+            <field name="adult_length_name">10</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_insurance_smf" model="tt.transport.carrier">
+            <field name="name">Sinarmas Life PAYMENT</field>
+            <field name="code">insurance_smf</field>
+            <field name="icao">insurance</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_insurance_sms" model="tt.transport.carrier">
+            <field name="name">Sinar Mas</field>
+            <field name="code">insurance_sms</field>
+            <field name="icao">insurance</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_insurance_aia" model="tt.transport.carrier">
+            <field name="name">AIA Financial</field>
+            <field name="code">insurance_aia</field>
+            <field name="icao">insurance</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_insurance_pru" model="tt.transport.carrier">
+            <field name="name">Prudential</field>
+            <field name="code">insurance_pru</field>
+            <field name="icao">insurance</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">10</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_plj" model="tt.transport.carrier">
+            <field name="name">PAM Palyja</field>
+            <field name="code">pdam_plj</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_atr" model="tt.transport.carrier">
+            <field name="name">PAM Aetra</field>
+            <field name="code">pdam_atr</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_atg" model="tt.transport.carrier">
+            <field name="name">PAM Aetra Tangerang</field>
+            <field name="code">pdam_atg</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_pdb" model="tt.transport.carrier">
+            <field name="name">PDAM Kab. Bogor</field>
+            <field name="code">pdam_pdb</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_pdd" model="tt.transport.carrier">
+            <field name="name">PDAM Kota Bandung</field>
+            <field name="code">pdam_pdd</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_pdk" model="tt.transport.carrier">
+            <field name="name">PDAM Kota Depok</field>
+            <field name="code">pdam_pdk</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_pdl" model="tt.transport.carrier">
+            <field name="name">PDAM Lampung</field>
+            <field name="code">pdam_pdl</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_pdm" model="tt.transport.carrier">
+            <field name="name">PDAM Kota Mataram</field>
+            <field name="code">pdam_pdm</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pdam_pdp" model="tt.transport.carrier">
+            <field name="name">PDAM Palembang</field>
+            <field name="code">pdam_pdp</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_inst_nzp" model="tt.transport.carrier">
+            <field name="name">ANZ PL</field>
+            <field name="code">inst_nzp</field>
+            <field name="icao">credit installment</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_inst_ctc" model="tt.transport.carrier">
+            <field name="name">Citibank PL / Ready Cash</field>
+            <field name="code">inst_ctc</field>
+            <field name="icao">credit installment</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_inst_omb" model="tt.transport.carrier">
+            <field name="name">OTO Mobil</field>
+            <field name="code">inst_omb</field>
+            <field name="icao">credit installment</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_inst_omt" model="tt.transport.carrier">
+            <field name="name">OTO Motor</field>
+            <field name="code">inst_omt</field>
+            <field name="icao">credit installment</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_ctb" model="tt.transport.carrier">
+            <field name="name">Citibank</field>
+            <field name="code">pub_ctb</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_aei" model="tt.transport.carrier">
+            <field name="name">American Express (AMEX)</field>
+            <field name="code">pub_aei</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_bni" model="tt.transport.carrier">
+            <field name="name">BNI</field>
+            <field name="code">pub_bni</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_anz" model="tt.transport.carrier">
+            <field name="name">ANZ</field>
+            <field name="code">pub_anz</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_pmt" model="tt.transport.carrier">
+            <field name="name">Permata Bank</field>
+            <field name="code">pub_pmt</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_dnm" model="tt.transport.carrier">
+            <field name="name">Bank Danamon</field>
+            <field name="code">pub_dnm</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_uob" model="tt.transport.carrier">
+            <field name="name">UOB</field>
+            <field name="code">pub_uob</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_icb" model="tt.transport.carrier">
+            <field name="name">ICB Bumiputera</field>
+            <field name="code">pub_icb</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_bkp" model="tt.transport.carrier">
+            <field name="name">Bukopin</field>
+            <field name="code">pub_bkp</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pub_pan" model="tt.transport.carrier">
+            <field name="name">Panin</field>
+            <field name="code">pub_pan</field>
+            <field name="icao">credit card</field>
+            <field name="adult_length_name">15</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
     </data>
 </odoo>
