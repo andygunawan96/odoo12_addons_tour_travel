@@ -422,7 +422,7 @@
 
         <!-- Header -->
         <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
-            <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN <span t-esc="values['ppob_type_name']"/></span><br/>
+            <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN <span t-esc="values['ppob_type_name_up']"/></span><br/>
         </div>
 
         <!-- Content -->

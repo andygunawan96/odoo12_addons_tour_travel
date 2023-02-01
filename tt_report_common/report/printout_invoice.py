@@ -790,7 +790,8 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
             values.update({
                 'ppob_type': ppob_type,
-                'ppob_type_name': ppob_type_name
+                'ppob_type_name': ppob_type_name,
+                'ppob_type_name_up': ppob_type_name.upper()
             })
             agent_id = rec.agent_id
 
