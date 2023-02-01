@@ -5,8 +5,8 @@ from ...tools.api import Response
 import logging,traceback
 from datetime import datetime, timedelta
 import base64
-
 import json
+from ...tools import util
 
 _logger = logging.getLogger(__name__)
 
@@ -1019,7 +1019,7 @@ class ReservationPpob(models.Model):
     def get_filename(self):
         provider = self.provider_booking_ids[0]
         if provider.carrier_id:
-            return provider.carrier_id.name
+            return util.slugify_str(provider.carrier_id.name)
         return 'PPOB Bills'
 
     def print_itinerary(self, data, ctx=None):
