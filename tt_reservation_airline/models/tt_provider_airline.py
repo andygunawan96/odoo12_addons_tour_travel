@@ -560,11 +560,14 @@ class TtProviderAirline(models.Model):
                             break
 
                 _logger.info(str(psg_obj))
-                ticket_list.append((0, 0, {
+                ticket_vals = {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': psg.get('ticket_number'),
-                    'passenger_id': psg_obj.id
-                }))
+                    'passenger_id': psg_obj.id,
+                    'ff_number': psg.get('ff_number'),
+                    'ff_code': psg.get('ff_code'),
+                }
+                ticket_list.append((0, 0, ticket_vals))
                 psg_obj.is_ticketed = True
                 psg_obj.create_ssr(psg['fees'],pnr,self.id)
             else:
@@ -661,6 +664,7 @@ class TtProviderAirline(models.Model):
                         ticket_values = {
                             'ticket_number': psg.get('ticket_number', ''),
                             'ff_number': psg.get('ff_number', ''),
+                            'ff_code': psg.get('ff_code', ''),
                         }
                         if not ticket.pax_type or (psg.get('pax_type') and psg['pax_type'] != ticket.pax_type):
                             ticket_values.update({

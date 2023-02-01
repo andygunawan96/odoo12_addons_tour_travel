@@ -48,9 +48,12 @@ class TtReservationCustomer(models.Model):
             # September 10, 2021 - SAM
             # Fix amount 0 apabila booking telah terissued.
             for sc in ssr['service_charges']:
-                currency_id = currency_obj.search([('name', '=', sc.pop('currency'))], limit=1).id
+                # FIXME sementara default IDR
+                currency = sc['currency'] if sc.get('currency') else 'IDR'
+                foreign_currency = sc['foreign_currency'] if sc.get('foreign_currency') else 'IDR'
+                currency_id = currency_obj.search([('name', '=', currency)], limit=1).id
                 sc['currency_id'] = currency_id
-                sc['foreign_currency_id'] = currency_obj.search([('name','=',sc.pop('foreign_currency'))],limit=1).id
+                sc['foreign_currency_id'] = currency_obj.search([('name','=', foreign_currency)],limit=1).id
                 sc['description'] = pnr
                 sc['passenger_airline_ids'] = [(4,self.id)]
                 sc['provider_airline_booking_id'] = provider_id
