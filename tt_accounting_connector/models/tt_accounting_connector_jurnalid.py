@@ -74,9 +74,9 @@ class AccountingConnectorAccurate(models.Model):
         index_page = 1
         while True:
             url = '%s/partner/core/api/v1/contacts?contact_index={"curr_page":%s,"selected_tab":1,"sort_asc":true,"show_archive":false}&access_token=%s' % (data_login['url_api'], index_page, data_login['access_token'])
-            _logger.info('######REQUEST CONTACT#########\n%s' % json.dumps(data))
+            _logger.info('######REQUEST SEARCH CONTACT#########\n%s' % json.dumps(data))
             res = requests.get(url, headers=headers, json=data)
-            _logger.info('######RESPONSE CONTACT#########\n%s' % res.text)
+            _logger.info('######RESPONSE SEARCH CONTACT#########\n%s' % res.text)
             res_response = json.loads(res.text)
             contact_name = [d['display_name'] for d in res_response['contact_list']['contact_data']['person_data'] if d['display_name'].upper() == data_contact.upper()]
             if res_response['contact_list']['contact_data']['max_page'] <= index_page or len(contact_name) > 0:
@@ -155,10 +155,15 @@ class AccountingConnectorAccurate(models.Model):
                 ]
             }
         }
-        _logger.info('######REQUEST SEARCH CONTACT#########\n%s' % json.dumps(data))
+        _logger.info('######REQUEST ADD CONTACT#########\n%s' % json.dumps(data))
         response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPONSE SEARCH CONTACT#########\n%s' % response.text)
-        return json.loads(response.text)['person']['display_name']
+        _logger.info('######RESPONSE ADD CONTACT#########\n%s' % response.text)
+        try:
+            ## sucess create contact
+            return json.loads(response.text)['person']['display_name']
+        except:
+            ## already use
+            return json.loads(response.text)['data_contact']
 
     def get_contact_group(self, data_login):
         headers = {
@@ -195,9 +200,9 @@ class AccountingConnectorAccurate(models.Model):
                 "contact_group_role": 1
             }
         }
-        _logger.info('######REQUEST CONTACT GROUP#########\n%s' % json.dumps(data))
+        _logger.info('######REQUEST ADD CONTACT GROUP#########\n%s' % json.dumps(data))
         response = requests.post(url, headers=headers, json=data)
-        _logger.info('######RESPOSNE CONTACT GROUP#########\n%s' % json.dumps(response.text))
+        _logger.info('######RESPOSNE ADD CONTACT GROUP#########\n%s' % json.dumps(response.text))
         return json.loads(response.text)['contact_group'][0]['id']
 
     def get_vendor(self, data_login, vendor_name):
