@@ -19,10 +19,11 @@ Key Features
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
-        'data/tt_master_voucher_ppob_data.xml',
         'data/tt_provider_type_data.xml',
         'data/tt_provider_ppob_data.xml',
         'data/tt_transport_carrier_ppob_data.xml',
+        'data/tt_transport_carrier_search_ppob.xml',
+        'data/tt_master_voucher_ppob_data.xml',
         'data/ir_send_email.xml',
         'data/tt_pricing_agent_ppob_data.xml',
 

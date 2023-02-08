@@ -5,8 +5,8 @@ from ...tools.api import Response
 import logging,traceback
 from datetime import datetime, timedelta
 import base64
-
 import json
+from ...tools import util
 
 _logger = logging.getLogger(__name__)
 
@@ -63,18 +63,35 @@ class ReservationPpob(models.Model):
     def get_config_api(self, data, context):
         try:
             carrier_list = self.env['tt.transport.carrier'].search([('provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
+            multi_prov_carrier_list = self.env['tt.transport.carrier.search'].search([('carrier_id.provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
             product_data = {}
+            multi_prov_prod_data = {}
+            for rec in multi_prov_carrier_list:
+                carr_obj = rec.carrier_id
+                for idx, prov in enumerate(rec.provider_ids):
+                    prod_val = {
+                        'name': idx > 0 and '%s %s' % (carr_obj.name, str(idx)) or carr_obj.name,
+                        'code': '%s~%s' % (carr_obj.code, prov.code),
+                        'category': carr_obj.icao,
+                        'min_cust_number': carr_obj.adult_length_name,
+                        'max_cust_number': carr_obj.child_length_name,
+                        'provider_type': carr_obj.provider_type_id.name
+                    }
+                    if not multi_prov_prod_data.get(str(carr_obj.icao)):
+                        multi_prov_prod_data[str(carr_obj.icao)] = []
+                    multi_prov_prod_data[str(carr_obj.icao)].append(prod_val)
             for rec in carrier_list:
-                if not product_data.get(str(rec.icao)):
-                    product_data[str(rec.icao)] = []
-                product_data[str(rec.icao)].append({
+                prod_val = {
                     'name': rec.name,
                     'code': rec.code,
                     'category': rec.icao,
                     'min_cust_number': rec.adult_length_name,
                     'max_cust_number': rec.child_length_name,
                     'provider_type': rec.provider_type_id.name,
-                })
+                }
+                if not product_data.get(str(rec.icao)):
+                    product_data[str(rec.icao)] = []
+                product_data[str(rec.icao)].append(prod_val)
             allowed_denominations = [20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000, 50000000]
             available_prepaid_mobile = {}
             prepaid_mobile_data = self.env['tt.master.voucher.ppob'].search([('type', '=', 'prepaid_mobile')])
@@ -86,6 +103,7 @@ class ReservationPpob(models.Model):
                 })
             res = {
                 'product_data': product_data,
+                'search_config_data': multi_prov_prod_data,
                 'allowed_denominations': allowed_denominations,
                 'available_prepaid_mobile': available_prepaid_mobile
             }
@@ -382,8 +400,9 @@ class ReservationPpob(models.Model):
     def search_inquiry_api(self, data, context):
         try:
             search_req = data['search_RQ']
+            search_cust_num = data['data'].get('customer_number') and str(data['data']['customer_number']) or str(search_req['customer_number'])
             inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])),
-                                                                       ('customer_number', '=', str(search_req['customer_number'])),
+                                                                       ('customer_number', '=', search_cust_num),
                                                                        ('provider_id.code', '=', data['data']['provider']),
                                                                        ('state', '=', 'booked'), ('booking_id.agent_id.id', '=', context['co_agent_id'])], limit=1)
             if inq_prov_obj:
@@ -526,6 +545,7 @@ class ReservationPpob(models.Model):
             bill_vals = {
                 'provider_booking_id': prov_obj and prov_obj.id or False,
                 'period': int(util.get_without_empty(rec, 'period')) and datetime.strptime(rec['period'], '%Y%m') or False,
+                'description': rec.get('description') and rec['description'] or '',
                 'total': rec.get('total') and rec['total'] or 0,
                 'amount_of_month': rec.get('amount_of_month') and rec['amount_of_month'] or 1,
                 'fare_amount': rec.get('fare_amount') and rec['fare_amount'] or 0,
@@ -1017,7 +1037,7 @@ class ReservationPpob(models.Model):
     def get_filename(self):
         provider = self.provider_booking_ids[0]
         if provider.carrier_id:
-            return provider.carrier_id.name
+            return util.slugify_str(provider.carrier_id.name)
         return 'PPOB Bills'
 
     def print_itinerary(self, data, ctx=None):

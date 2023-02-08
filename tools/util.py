@@ -8,6 +8,8 @@ import logging,traceback
 import copy
 import json
 import requests
+import unicodedata
+import re
 
 _logger = logging.getLogger(__name__)
 TIMEOUT = 30
@@ -331,3 +333,12 @@ def get_rupiah(price):
             return ''
     except Exception as e:
         return price
+
+def slugify_str(value, allow_unicode=False):
+    value = str(value)
+    if allow_unicode:
+        value = unicodedata.normalize('NFKC', value)
+    else:
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value.lower())
+    return re.sub(r'[-\s]+', '-', value).strip('-_')

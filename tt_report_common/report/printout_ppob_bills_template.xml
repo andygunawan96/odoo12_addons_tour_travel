@@ -403,6 +403,61 @@
         </t>
     </template>
 
+    <!-- Template struk general PPOB -->
+    <template id="reservation_ppob_general_content_view">
+        <!-- No. Booking -->
+        <div style="margin-bottom: 30px; margin-top: 30px;">
+            <div class="row" style="">
+                <div class="col-6">
+                    <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                    <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+                </div>
+                <div class="col-6" style="text-align: right;">
+                    <t t-if="doc.is_ticket_printed >= 1">
+                        <span style="font-size: 24px; font-weight: 730; white-space: nowrap; width: 200px; border: 3px solid #000000; overflow: hidden; text-overflow: clip; padding: 6px 10px 6px 10px;">CETAK ULANG</span>
+                    </t>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="title" t-att-style="'background-color: '+base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
+            <span style="text-align: center; padding-left: 20px; color: white; font-weight: 600; font-size: 20px">STRUK PEMBAYARAN <span t-esc="values['ppob_type_name_up']"/></span><br/>
+        </div>
+
+        <!-- Content -->
+        <t t-foreach="doc.provider_booking_ids" t-as="provider">
+            <div class="row" style="margin: 0px; margin-bottom: 40px; padding-top:10px; padding-bottom: 10px; font-size: 17px; border-radius: 0 0 20px 20px; border: 1px solid #BBB;">
+                <div class="col-3">
+                    <b>
+                        <span>NOMOR REFERENSI</span><br/>
+                        <span>NOMOR PELANGGAN</span><br/>
+                        <t t-if="provider.customer_name != 'Customer PPOB'">
+                            <span>NAMA PELANGGAN</span><br/>
+                        </t>
+                        <span>HARGA</span><br/>
+                    </b>
+                </div>
+                <div class="col-1">
+                    <span>:</span><br/>
+                    <span>:</span><br/>
+                    <t t-if="provider.customer_name != 'Customer PPOB'">
+                        <span>:</span><br/>
+                    </t>
+                    <span>:</span><br/>
+                </div>
+                <div class="col-7">
+                    <span t-field="provider.original_pnr"/><br/>
+                    <span t-field="provider.customer_number"/><br/>
+                    <t t-if="provider.customer_name != 'Customer PPOB'">
+                        <span t-field="provider.customer_name"/><br/>
+                    </t>
+                    <span t-field="doc.currency_id.symbol"/> <span t-esc="values['total']"/><br/>
+                </div>
+            </div>
+        </t>
+    </template>
+
     <!-- Main Function -->
     <template id="printout_ppob_bills">
         <t t-set="data_report_header_spacing" t-value="20"/>
@@ -414,29 +469,34 @@
 <!--                        <br/>-->
                         <t t-set="data_report_margin_top" t-value="10"/>
                         <t t-set="data_report_margin_bottom" t-value="0"/>
-                        <t t-if="values['ppob_type'] == 'bpjs'">
+                        <t t-if="values['ppob_type'] == 'bpjs_kesehatan'">
                             <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_bpjs_kesehatan_content_view"/>
                             </div>
                         </t>
-                        <t t-elif="values['ppob_type'] == 'postpln'">
+                        <t t-elif="values['ppob_type'] == 'pln_postpaid'">
                             <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_pln_postpaid_content_view"/>
                             </div>
                         </t>
-                        <t t-elif="values['ppob_type'] == 'prepln'">
+                        <t t-elif="values['ppob_type'] == 'pln_prepaid'">
                             <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_pln_prepaid_content_view"/>
                             </div>
                         </t>
-                        <t t-elif="values['ppob_type'] == 'notaglispln'">
+                        <t t-elif="values['ppob_type'] == 'pln_nontag'">
                             <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_non_pln_content_view"/>
                             </div>
                         </t>
-                        <t t-elif="values['ppob_type'] == 'prepaidmobile'">
+                        <t t-elif="values['ppob_type'] == 'prepaid_mobile'">
                             <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.reservation_ppob_mobile_prepaid_content_view"/>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="box" style="margin: 0px 20px 20px 20px; font-family: 'Liberation Sans'">
+                                <t t-call="tt_report_common.reservation_ppob_general_content_view"/>
                             </div>
                         </t>
                     </t>

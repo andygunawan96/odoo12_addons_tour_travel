@@ -738,6 +738,15 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
         return values
 
+    def get_ppob_general_values(self, rec):
+        values = {}
+
+        values.update({
+            'total': "{:,.0f}".format(rec.total)
+        })
+
+        return values
+
     @api.model
     def _get_report_values(self, docids, data=None):
         if not data.get('context'):
@@ -752,24 +761,24 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             # Get PPOB Type & Values
             ppob_type = ''
+            ppob_type_name = ''
             if rec.provider_booking_ids[0].carrier_id:
                 # Carrier berguna untuk menentukan jenis tagihan
                 ppob_carrier = rec.provider_booking_ids[0].carrier_id
-                if ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
-                    ppob_type = 'bpjs'
+                ppob_type = ppob_carrier.code
+                ppob_type_name = ppob_carrier.name
+                if ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
                     values = self.get_bpjs_kesehatan_values(rec)
-                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
-                    ppob_type = 'postpln'
+                elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
                     values = self.get_pln_postpaid_values(rec)
-                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
-                    ppob_type = 'prepln'
+                elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
                     values = self.get_pln_prepaid_values(rec)
-                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
-                    ppob_type = 'notaglispln'
+                elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
                     values = self.get_non_electricity_bills(rec)
-                elif ppob_carrier.code == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepaidmobile').code:
-                    ppob_type = 'prepaidmobile'
+                elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepaidmobile').code:
                     values = self.get_mobile_prepaid_values(rec)
+                else:
+                    values = self.get_ppob_general_values(rec)
 
             if rec.provider_booking_ids[0].customer_number:
                 va_number = rec.provider_booking_ids[0].customer_number
@@ -780,7 +789,9 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                         header_width = 105
 
             values.update({
-                'ppob_type': ppob_type
+                'ppob_type': ppob_type,
+                'ppob_type_name': ppob_type_name,
+                'ppob_type_name_up': ppob_type_name.upper()
             })
             agent_id = rec.agent_id
 

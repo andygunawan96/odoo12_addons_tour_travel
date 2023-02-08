@@ -1367,6 +1367,125 @@
             <field name="is_identity_can_be_empty" eval="False"/>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
+
+        <record id="tt_transport_carrier_airline_at" model="tt.transport.carrier">
+            <field name="name">Royal Air Maroc</field>
+            <field name="code">AT</field>
+            <field name="icao">RAM</field>
+            <field name="call_sign">ROYAL AIR MAROC</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_mk" model="tt.transport.carrier">
+            <field name="name">Air Mauritius</field>
+            <field name="code">MK</field>
+            <field name="icao">MAU</field>
+            <field name="call_sign">AIR MAURITIUS</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_pg" model="tt.transport.carrier">
+            <field name="name">Bangkok Airways</field>
+            <field name="code">PG</field>
+            <field name="icao">BKP</field>
+            <field name="call_sign">BANGKOK AIR</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_fi" model="tt.transport.carrier">
+            <field name="name">Icelandair</field>
+            <field name="code">FI</field>
+            <field name="icao">ICE</field>
+            <field name="call_sign">ICEAIR</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_kl" model="tt.transport.carrier">
+            <field name="name">KLM Royal Dutch Airlines</field>
+            <field name="code">KL</field>
+            <field name="icao">KLM</field>
+            <field name="call_sign">KLM</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_pc" model="tt.transport.carrier">
+            <field name="name">Pegasus Airlines</field>
+            <field name="code">PC</field>
+            <field name="icao">PGT</field>
+            <field name="call_sign">SUNTURK</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_pc" model="tt.transport.carrier">
+            <field name="name">Pegasus Airlines</field>
+            <field name="code">PC</field>
+            <field name="icao">PGT</field>
+            <field name="call_sign">SUNTURK</field>
+            <field name="active">0</field>
+            <field name="is_adult_birth_date_required" eval="True"/>
+            <field name="adult_length_name">30</field>
+            <field name="child_length_name">30</field>
+            <field name="infant_length_name">16</field>
+            <field name="required_identity_required_domestic" eval="True"/>
+            <field name="required_identity_required_international" eval="True"/>
+            <field name="is_identity_can_be_expired" eval="False"/>
+            <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
+        </record>
     </data>
 </odoo>
     

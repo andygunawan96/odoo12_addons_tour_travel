@@ -41,11 +41,13 @@ class TransportCarrier(models.Model):
         })
         return res
 
-    def get_carrier_list_search_api(self, _is_all_data = False):
+    def get_carrier_list_search_api(self, data, _is_all_data = False):
         try:
             search_param = []
+            if data.get('provider_type'):
+                search_param.append(('provider_type_id.code', '=', data['provider_type']))
             if not _is_all_data:
-                search_param = [('active', '=', True)]
+                search_param.append(('active', '=', True))
             _obj = self.sudo().with_context(active_test=False).search(search_param)
             res = {}
             for idx,rec in enumerate(_obj):

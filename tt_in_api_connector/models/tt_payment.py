@@ -75,7 +75,7 @@ class TtPaymentApiCon(models.Model):
                             # topup
                             context = {
                                 'co_agent_id': agent_id.id,
-                                'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                                'co_uid': self.env.ref('base.user_root').id
                             }
                             request = {
                                 'amount': data['amount'],
@@ -186,7 +186,7 @@ class TtPaymentApiCon(models.Model):
                 # topup
                 context = {
                     'co_agent_id': agent_id.id,
-                    'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                    'co_uid': self.env.ref('base.user_root').id
                 }
                 request = {
                     'amount': data['amount'],

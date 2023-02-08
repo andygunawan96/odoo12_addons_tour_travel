@@ -653,12 +653,16 @@ class PaymentAcquirerNumber(models.Model):
         else:## VA Espay
             unique_amount_id = False
             unique_amount = 0
-
-
+        ## ESPAY
+        new_date = datetime.now().strftime('%y%m%d%H%M%S')
+        new_order_id_espay = "%s.%s" % (data['order_number'], new_date)
+        if len(new_order_id_espay) > 32:
+            max_length_number_date = 32 - len(data['order_number']) - 1 ## max 32 digit - order_number - '.'
+            new_order_id_espay = "%s.%s" % (data['order_number'], new_date[len(new_date)-max_length_number_date:len(new_date)])
 
         payment = self.env['payment.acquirer.number'].create({
             'state': 'close',
-            'number': "%s.%s" %(data['order_number'], datetime.now().strftime('%Y%m%d%H%M%S')),
+            'number': new_order_id_espay,
             'unique_amount': unique_amount,
             'unique_amount_id': unique_amount_id,
             'payment_acquirer_id': payment_acq_obj.id,

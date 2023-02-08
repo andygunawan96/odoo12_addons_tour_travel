@@ -136,7 +136,7 @@ class ttCronTopUpValidator(models.Model):
                                                         ##b2c beda harga top up selisih harga
                                                         context = {
                                                             'co_agent_id': resv_obj.agent_id.id,
-                                                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                                                            'co_uid': self.env.ref('base.user_root').id
                                                         }
                                                         request = {
                                                             'amount': different_price,
@@ -221,7 +221,7 @@ class ttCronTopUpValidator(models.Model):
                                         ##b2c beda harga top up selisih harga
                                         context = {
                                             'co_agent_id': book_obj.agent_id.id,
-                                            'co_uid': self.env.ref('tt_base.base_top_up_admin').id
+                                            'co_uid': self.env.ref('base.user_root').id
                                         }
                                         request = {
                                             'amount': different_price,
