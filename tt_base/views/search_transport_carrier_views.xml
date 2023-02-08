@@ -76,7 +76,7 @@
     </record>
 
     <record id="transport_carrier_search_action" model="ir.actions.act_window">
-        <field name="name">Transport Carrier</field>
+        <field name="name">Transport Carrier Search</field>
         <field name="res_model">tt.transport.carrier.search</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
