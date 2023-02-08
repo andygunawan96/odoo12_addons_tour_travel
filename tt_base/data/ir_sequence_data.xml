@@ -5,7 +5,7 @@
         <record id="seq_customer" model="ir.sequence">
             <field name="name">Customer</field>
             <field name="code">tt.customer</field>
-            <field name="prefix">CU.%(day)s%(sec)s</field>
+            <field name="prefix">CU.%(day)s%(h24)s</field>
             <field name="padding">3</field>
             <field name="company_id" eval="False"/>
         </record>
@@ -13,7 +13,7 @@
         <record id="seq_payment_acquirer" model="ir.sequence">
             <field name="name">Payment Acquirer</field>
             <field name="code">pay.acq</field>
-            <field name="prefix">PQR.%(day)s%(sec)s</field>
+            <field name="prefix">PQR.%(day)s%(h24)s</field>
             <field name="padding">3</field>
             <field name="company_id" eval="False"/>
         </record>
@@ -21,7 +21,7 @@
         <record id="seq_customer_parent" model="ir.sequence">
             <field name="name">Customer Parent</field>
             <field name="code">cust.par</field>
-            <field name="prefix">CTP.%(day)s%(sec)s</field>
+            <field name="prefix">CTP.%(day)s%(h24)s</field>
             <field name="padding">3</field>
             <field name="company_id" eval="False"/>
         </record>
@@ -36,49 +36,49 @@
         <record id="seq_upload_center" model="ir.sequence">
             <field name="name">Upload Center</field>
             <field name="code">tt.upload.center</field>
-            <field name="prefix">UPC.%(day)s%(sec)s</field>
+            <field name="prefix">UPC.%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
 
         <record id="seq_pnr_quota" model="ir.sequence">
             <field name="name">PNR Quota</field>
             <field name="code">tt.pnr.quota</field>
-            <field name="prefix">PQ.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="prefix">PQ.%(y)s%(month)s%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
 
         <record id="seq_pnr_quota_price_list" model="ir.sequence">
             <field name="name">PNR Quota Price List</field>
             <field name="code">tt.pnr.quota.price.list</field>
-            <field name="prefix">PQL.%(day)s%(sec)s</field>
+            <field name="prefix">PQL.%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
 
         <record id="seq_pnr_quota_price_package" model="ir.sequence">
             <field name="name">PNR Quota Price Package</field>
             <field name="code">tt.pnr.quota.price.package</field>
-            <field name="prefix">PQP.%(day)s%(sec)s</field>
+            <field name="prefix">PQP.%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
 
         <record id="seq_external_payment" model="ir.sequence">
             <field name="name">External Payment</field>
             <field name="code">tt.agent.third.party.key.payment</field>
-            <field name="prefix">EXT.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="prefix">EXT.%(y)s%(month)s%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
 
         <record id="seq_letter_guarantee" model="ir.sequence">
             <field name="name">Letter of Guarantee</field>
             <field name="code">tt.letter.guarantee.seq</field>
-            <field name="prefix">LG.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="prefix">LG.%(y)s%(month)s%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
 
         <record id="seq_purchase_order_rodex" model="ir.sequence">
             <field name="name">Purchase Order</field>
             <field name="code">tt.purchase.order.seq</field>
-            <field name="prefix">PO.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="prefix">PO.%(y)s%(month)s%(day)s%(h24)s</field>
             <field name="padding">3</field>
         </record>
     </data>

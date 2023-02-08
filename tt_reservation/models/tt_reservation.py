@@ -1105,7 +1105,7 @@ class TtReservation(models.Model):
             # if provider_obj.state == 'issued':
             #     continue
             for sc in provider_obj.cost_service_charge_ids:
-                if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code != 'rac'):
+                if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code not in ['rac', 'csc']):
                     continue
                 unpaid_nta_amount += sc.total
         return unpaid_nta_amount

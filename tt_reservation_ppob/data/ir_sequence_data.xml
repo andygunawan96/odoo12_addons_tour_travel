@@ -5,7 +5,7 @@
         <record id="seq_reservation_ppob" model="ir.sequence">
             <field name="name">Reservation PPOB</field>
             <field name="code">tt.reservation.ppob</field>
-            <field name="prefix">BT.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="prefix">BT.%(y)s%(month)s%(day)s%(h24)s</field>
             <field name="padding">3</field>
             <field name="company_id" eval="False"/>
         </record>
