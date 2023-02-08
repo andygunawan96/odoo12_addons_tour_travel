@@ -5,7 +5,7 @@
         <record id="seq_tt_payment" model="ir.sequence">
             <field name="name">TT Payment</field>
             <field name="code">tt.payment</field>
-            <field name="prefix">PAY.%(y)s%(month)s%(day)s%(sec)s</field>
+            <field name="prefix">PAY.%(y)s%(month)s%(day)s%(h24)s</field>
             <field name="padding">5</field>
             <field name="company_id" eval="False"/>
         </record>
