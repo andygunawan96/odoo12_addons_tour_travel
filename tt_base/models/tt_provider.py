@@ -129,6 +129,22 @@ class TtProvider(models.Model):
             _logger.error(traceback.format_exc())
             return RequestException(500)
 
+    def get_provider_list_api(self, data, context):
+        try:
+            provider_type_obj = self.env['tt.provider.type'].search([('code','=', data['provider_type'])], limit=1)
+            provider_objs = self.search([('provider_type_id', '=', provider_type_obj.id)])
+            res = []
+            for provider_obj in provider_objs:
+                res.append({
+                    "name": provider_obj.name,
+                    "code": provider_obj.code
+                })
+            return ERR.get_no_error(res)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return RequestException(500)
+
+
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'
     _description = 'Provider Code Model'
