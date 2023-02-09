@@ -126,7 +126,7 @@ class TtAccountingQueue(models.Model):
                             temp_prov_price_dict['agent_nta'] += sale.total
                         if sale.charge_type in ['FARE', 'TAX', 'ROC']:
                             temp_prov_price_dict['tax_service_charges'].append({
-                                'charge_code': sale.charge_code,
+                                'charge_code': 'tax',
                                 'amount': sale.total
                             })
                         prov_sale_id_list.append(sale.id)
@@ -158,7 +158,7 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type in ['FARE', 'TAX', 'ROC']:
                                     temp_tick_price_dict['tax_service_charges'].append({
-                                        'charge_code': sale.charge_code,
+                                        'charge_code': 'tax',
                                         'amount': sale.amount
                                     })
                             temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
@@ -196,7 +196,7 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type in ['FARE', 'TAX', 'ROC']:
                                     temp_tick_price_dict['tax_service_charges'].append({
-                                        'charge_code': sale.charge_code,
+                                        'charge_code': 'tax',
                                         'amount': sale.amount
                                     })
                             temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
