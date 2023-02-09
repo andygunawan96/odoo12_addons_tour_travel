@@ -148,7 +148,8 @@ class HotelInformation(models.Model):
     # Notes: Ambil data dari vendor yg dikasih manual atau tidak bisa diakses melalui API
     # Notes: Mesti bantuan human untuk upload file location serta formating
     # Notes: Bagian ini bakal sering berubah
-    def v2_collect_by_human_mgjarvis(self):
+    # Data pnya Jarvis
+    def v2_collect_by_human_mgjarvis_1(self):
         base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
 
         # Unremark buat baca dari cache
@@ -188,6 +189,59 @@ class HotelInformation(models.Model):
             if not hotel_fmt_list[hotel_fmt['country']].get(hotel_fmt['city']):
                 hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']] = []
             hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']].append(hotel_fmt)
+
+        for country in hotel_fmt_list.keys():
+            txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
+            filename = base_cache_directory + "mgjarvis/" + txt_country
+            if not os.path.exists(filename):
+                os.mkdir(filename)
+            for city in hotel_fmt_list[country].keys():
+                txt_city = city.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
+                _logger.info("Write File " + txt_country + " City: " + txt_city)
+                filename1 = filename + "/" + txt_city + ".json"
+                file = open(filename1, 'w')
+                file.write(json.dumps(hotel_fmt_list[country][city]))
+                file.close()
+
+    def v2_collect_by_human_mgjarvis(self):
+        base_cache_directory = self.env['ir.config_parameter'].sudo().get_param('hotel.cache.directory')
+
+        # Unremark buat baca dari cache
+        with open(base_cache_directory + 'mgjarvis/00_master/Priority One.csv', 'r') as f:
+            hotel_ids = csv.reader(f, delimiter=";")
+            hotel_fmt_list = {}
+            index = 0
+            for hotel in hotel_ids:
+                index += 1
+                if index < 2:
+                    continue
+                # _logger.info("Processing (" + hotel[1] + ").")
+                hotel_fmt = {
+                    'id': hotel[2] + '~' + hotel[4], #ID-SUB~ID00123 (country - city ~ hotel code)
+                    'name': hotel[8],
+                    'street': hotel[12],
+                    'street2': hotel[13] or '',
+                    'street3': '',
+                    'description': 'Check In From: ' + hotel[15] + '; ' + 'Check Out To: ' + hotel[16],
+                    'email': hotel[18],
+                    'images': [],
+                    'facilities': [],
+                    'phone': hotel[17],
+                    'fax': '',
+                    'zip': hotel[14],
+                    'website': hotel[15],
+                    'lat': hotel[11],
+                    'long': hotel[10],
+                    'rating': hotel[9] and hotel[9].split(',')[0] or 0,
+                    'hotel_type': hotel[-1],
+                    'city': hotel[3],
+                    'country': hotel[1],
+                }
+                if not hotel_fmt_list.get(hotel_fmt['country']):
+                    hotel_fmt_list[hotel_fmt['country']] = {}
+                if not hotel_fmt_list[hotel_fmt['country']].get(hotel_fmt['city']):
+                    hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']] = []
+                hotel_fmt_list[hotel_fmt['country']][hotel_fmt['city']].append(hotel_fmt)
 
         for country in hotel_fmt_list.keys():
             txt_country = country.replace('/', '-').replace('(and vicinity)', '').replace(' (', '-').replace(')', '')
