@@ -138,6 +138,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
             recon_data.write({
                 'reconcile_lines_ids': write_data
             })
+            recon_data.compare_reconcile_data()
             recon_data.action_sync_balance()
             recon_data_list.append(recon_data)
         return recon_data_list
