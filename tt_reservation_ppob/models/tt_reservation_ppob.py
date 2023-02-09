@@ -490,9 +490,9 @@ class ReservationPpob(models.Model):
             nominal_id_list.append(new_nominal_obj.id)
 
         provider_type_id = self.env.ref('tt_reservation_ppob.tt_provider_type_ppob')
-        product_code = data['product_code']
         provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider']), ('provider_type_id', '=', provider_type_id.id)])
-        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', product_code), ('provider_type_id', '=', provider_type_id.id)])
+        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', data['product_code'].split('~')[0]), ('provider_type_id', '=', provider_type_id.id)])
+        # split product code in case of BTBO 2
         provider_vals = {
             'state': 'booked',
             'booked_uid': context['co_uid'],
@@ -503,7 +503,7 @@ class ReservationPpob(models.Model):
             'sequence': 1,
             'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,
-            'carrier_code': carrier_obj and carrier_obj.code or False,
+            'carrier_code': data['product_code'],
             'carrier_name': carrier_obj and carrier_obj.name or False,
             'customer_number': data.get('customer_number') and data['customer_number'] or '',
             'customer_name': data.get('customer_name') and data['customer_name'] or 'Customer PPOB',
