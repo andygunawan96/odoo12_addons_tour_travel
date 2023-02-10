@@ -33,13 +33,20 @@ class HotelInformation(models.Model):
         with open(city_file_url, 'r') as f:
             city_ids = csv.reader(f)
             a = 0
+            last_render = self.env['ir.config_parameter'].sudo().get_param('hotel.city.rendered.list')
+            try:
+                last_render = json.loads(last_render)
+                last_render_id = int(last_render[0])
+            except:
+                last_render_id = 0
             base_url = 'http://www.sunhotels.net/Sunhotels.net/HotelInfo/hotelImage.aspx'
 
             for rec in city_ids:
-                if a < 0:  # 19509
-                    a += 1
+                a += 1
+                if a < last_render_id:  # 19509
                     continue
-                elif a % 100 == 0:
+                elif a % 31 == 0:
+                    self.env['ir.config_parameter'].sudo().set_param('hotel.city.rendered.list', [a])
                     self.env.cr.commit()
                 try:
                     # _logger.info("Processing (" + rec[2] + ").")
@@ -89,7 +96,7 @@ class HotelInformation(models.Model):
                     file = open(filename, 'w')
                     file.write(json.dumps(hotel_fmt_list))
                     file.close()
-                    _logger.info("Done City: " + rec[2] + ' get: ' + str(len(hotel_fmt_list)) + ' Hotel(s)')
+                    _logger.info(str(a) + ". Done City: " + rec[2] + ', ' + rec[5] + ' get: ' + str(len(hotel_fmt_list)) + ' Hotel(s)')
                     self.env.cr.commit()
                 except Exception as e:
                     _logger.info("Error " + rec[2] + ': ' + str(e) + '.')

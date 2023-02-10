@@ -75,15 +75,15 @@
 
     <template id="airline_pax_ssr">
         <t t-set="any_ssr" t-value="0"/>
+        <t t-set="data_pax" t-value="psg['passenger_id']"/>
         <t t-foreach="length.journey_ids" t-as="line">
             <t t-foreach="line.segment_ids" t-as="segment_obj">
-                <t t-set="data_pax" t-value="psg['passenger_id']"/>
                 <t t-if="data_pax.fee_ids">
                     <t t-foreach="data_pax.fee_ids" t-as="fee_id">
-                        <t t-if="fee_id.journey_code == segment_obj.segment_code">
+                        <t t-if="segment_obj.segment_code == fee_id.journey_code">
                             <t t-set="any_ssr" t-value="1"/>
                             <!--<i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
-                            <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> <span t-field="fee_id.name"/></i><br/>
+                            <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> + <span t-field="fee_id.name"/></i><br/>
                             <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
                             <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
                         </t>
@@ -101,6 +101,17 @@
                                 <span t-field="addons_obj.amount"/> <span t-field="addons_obj.unit"/>
                             </t>
                         </i><br/>
+                    </t>
+                </t>
+            </t>
+            <t t-if="data_pax.fee_ids">
+                <t t-foreach="data_pax.fee_ids" t-as="fee_id">
+                    <t t-if="line.journey_code == fee_id.journey_code">
+                        <t t-set="any_ssr" t-value="1"/>
+                        <!--<i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
+                        <t t-esc="line.origin_id.code"/> - <t t-esc="line.destination_id.code"/> <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> + <span t-field="fee_id.name"/></i><br/>
+                        <!--<i style="margin-right:3px;" class="fa fa-cutlery"/>-->
+                        <!--<i style="margin-right:3px;" class="fa fa-wheelchair"/>-->
                     </t>
                 </t>
             </t>

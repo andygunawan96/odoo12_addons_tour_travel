@@ -46,5 +46,8 @@ class MealType(models.Model):
             for provider_code_obj in meal_type_obj.provider_code_ids:
                 if not result.get(provider_code_obj.provider_id.code):
                     result[provider_code_obj.provider_id.code] = {}
-                result[provider_code_obj.provider_id.code][provider_code_obj.code] = (meal_type_obj.name, meal_type_obj.category_id.name)
+                if not result.get('rodextrip_hotel'):
+                    result['rodextrip_hotel'] = {}
+                result[provider_code_obj.provider_id.code][provider_code_obj.code] = [meal_type_obj.name, meal_type_obj.category_id.name]
+                result['rodextrip_hotel'][provider_code_obj.code] = [meal_type_obj.name, meal_type_obj.category_id.name]
         return result
