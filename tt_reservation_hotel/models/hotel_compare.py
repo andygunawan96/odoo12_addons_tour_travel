@@ -334,8 +334,9 @@ class HotelInformationCompare(models.Model):
         elif self.hotel_id.state == 'merged':
             any_merged = False
             for comp_id in self.hotel_id.compare_ids:
-                if comp_id.state == 'merged':
+                if comp_id.state == 'merge':
                     any_merged = True
+                    break
             if not any_merged:
                 self.hotel_id.state = 'draft'
             self.state = 'draft'

@@ -168,6 +168,17 @@ class CountryCity(models.Model):
                 new_str += ', '.join([rec.name for rec in rec1.other_name_ids])
             rec1.city_alias_name = new_str
 
+    def get_full_name(self):
+        for rec in self:
+            full_name = rec.name
+            if rec.state_id:
+                full_name += '; ' + rec.state_id.name
+                if rec.state_id.country_id:
+                    full_name += '; ' + rec.state_id.country_id.name
+            elif rec.country_id:
+                full_name += '; ' + rec.country_id.name
+            return full_name
+
 
 class CountryDistrict(models.Model):
     _name = 'res.district'
