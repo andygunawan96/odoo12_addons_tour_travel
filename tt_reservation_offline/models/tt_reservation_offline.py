@@ -183,7 +183,7 @@ class IssuedOffline(models.Model):
             chan_upsell_total = 0
             for pax in rec.passenger_ids:
                 for csc in pax.channel_service_charge_ids:
-                    chan_upsell_total += abs(csc.amount)
+                    chan_upsell_total += csc.amount
             rec.total_channel_upsell = chan_upsell_total
 
     @api.depends('admin_fee_id', 'input_total', 'passenger_ids.name', 'line_ids.pnr', 'line_ids.check_in', 'line_ids.check_out', 'line_ids.obj_qty')

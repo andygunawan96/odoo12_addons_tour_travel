@@ -74,7 +74,7 @@ class ReservationSentraMedika(models.Model):
             chan_upsell_total = 0
             for pax in rec.passenger_ids:
                 for csc in pax.channel_service_charge_ids:
-                    chan_upsell_total += abs(csc.amount)
+                    chan_upsell_total += csc.amount
             rec.total_channel_upsell = chan_upsell_total
 
     @api.multi
