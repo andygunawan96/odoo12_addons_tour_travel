@@ -38,7 +38,7 @@ class TestSearch(models.Model):
     vendor_payment = fields.Float('Total', compute='onchange_calc_sub')
 
     ##### Cache Odoo12 START #####
-    def render_cache_city_for_gw(self, country_name=[], city_name='', providers='', limit=99999):
+    def render_cache_dest_for_gw(self, country_name=[], city_name='', providers=[], limit=99999):
         domain = [('active','=',True)]
         city_cache = []
         if providers:
@@ -49,7 +49,7 @@ class TestSearch(models.Model):
                 # provider = provider.split('_')[0]
                 provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
                 provider_id = provider_obj.id
-                provider_destination_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)])]
+                provider_destination_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'tt.hotel.destination'), ('provider_id', '=', provider_id)]) if rec.res_id]
             domain.append(('id', 'in', provider_destination_ids))
         if country_name:
             country_ids = []
@@ -66,8 +66,28 @@ class TestSearch(models.Model):
         catalog.sort(key=lambda k: k['index'])
 
         destination_ids = self.env['tt.hotel.destination'].sudo().search(domain, limit=limit).ids
+        return destination_ids
+
+    def render_cache_city_for_gw(self, country_name=[], city_name='', providers=[], limit=99999):
+        city_ids = []
+        city_cache = []
+        if providers:
+            for provider in providers:
+                if not provider:
+                    continue
+                # provider = provider.split('_')[0]
+                provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
+                provider_id = provider_obj.id
+                city_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)]) if rec.res_id]
+
+        f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
+        f2 = f2.read()
+        catalog = json.loads(f2)
+        catalog.sort(key=lambda k: k['index'])
+
+        destination_ids = self.render_cache_dest_for_gw(country_name, city_name, providers, limit)
         for city in catalog:
-            if city['destination_id'] in destination_ids:
+            if city['destination_id'] in destination_ids or city['city_id'] in city_ids:
                 city_cache.append(city)
         return city_cache
 
@@ -1255,7 +1275,13 @@ class TestSearch(models.Model):
         city_id = self.env['res.city'].find_city_by_name(dest_name, 1)
 
         hotel_type_obj = self.env.ref('tt_reservation_hotel.tt_provider_type_hotel')
-        vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+
+        # Part untuk tentukan vendor "A" cman di negara yg di mau
+        if self.env['ir.config_parameter'].sudo().get_param('hotel.search.use.country.allowed') in ['1',1,'true','True']:
+            vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', city_id.country_id.id), ('is_apply', '=', True)])
+            vendor_ids = [rec.provider_id for rec in vendor_ids]
+        else:
+            vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
 
         for rec in vendor_ids:
             a = provider_to_dic(rec, city_id)
