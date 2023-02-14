@@ -513,7 +513,7 @@ class TtProviderPPOB(models.Model):
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             # 'service_charges': service_charges,
             'carrier_name': self.carrier_id and self.carrier_id.name or '',
-            'carrier_code': self.carrier_id and self.carrier_id.code or '',
+            'carrier_code': self.carrier_code and self.carrier_code or '',
             'fare_type': self.fare_type and self.fare_type or '',
             'max_kwh': self.max_kwh and self.max_kwh or 0,
             'customer_number': self.customer_number and self.customer_number or '',
