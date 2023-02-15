@@ -126,8 +126,6 @@ class ReservationVisa(models.Model):
                     price += srvc.amount
                 elif srvc.charge_type == 'DISC':
                     discount += srvc.amount
-            for srvc in psg.channel_service_charge_ids:
-                price += srvc.amount
             inv_line_obj.write({
                 'invoice_line_detail_ids': [(0, 0, {
                     'desc': desc_text,
@@ -151,9 +149,9 @@ class ReservationVisa(models.Model):
                         ' (' + str(psg.pricelist_id.duration if psg.pricelist_id.duration else '-') + ' days)'
             price_unit = 0
             for cost_charge in psg.cost_service_charge_ids:
-                if cost_charge.charge_type not in ['DISC', 'RAC']:
+                if cost_charge.charge_type not in ['DISC', 'RAC'] and cost_charge.charge_code != 'csc':
                     price_unit += cost_charge.amount
-                elif cost_charge.charge_type == 'RAC':
+                elif cost_charge.charge_type == 'RAC' and cost_charge.charge_code != 'csc':
                     if is_use_credit_limit:
                         if not cost_charge.commission_agent_id:
                             agent_id = self.agent_id.id

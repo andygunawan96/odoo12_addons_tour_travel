@@ -117,7 +117,7 @@ class ReservationHotel(models.Model):
             meal = room_obj.meal_type or 'Room Only'
             price_unit = room_obj.sale_price
             for price_obj in self.sale_service_charge_ids:
-                if price_obj.charge_type == 'RAC':
+                if price_obj.charge_type == 'RAC' and price_obj.charge_code != 'csc':
                     if is_use_credit_limit:
                         if not price_obj.commission_agent_id:
                             agent_id = self.agent_id.id

@@ -28,7 +28,7 @@ class TransportCarrier(models.Model):
     is_duplicate_single_name = fields.Boolean('Duplicate Single Name', default=True, help='Duplicate Single Name (first name and last name has same value)')
     adult_length_name = fields.Integer('Adult Length Name', default=30, help='Adult length name')
     child_length_name = fields.Integer('Child Length Name', default=30, help='Child length name')
-    infant_length_name = fields.Integer('Infant Length Name', default=16, help='Infant length name')
+    infant_length_name = fields.Integer('Adult and Infant Length Name', default=16, help='Total Adult+Infant length name')
     is_adult_birth_date_required = fields.Boolean('Is Adult Birth Date Required', default=True)
     required_identity_required_domestic = fields.Boolean('Is Identity Required Domestic', default=False) ## must be input before flight and for notif purpose
     required_identity_required_international = fields.Boolean('Is Identity Required International', default=False) ## must be input before flight and for notif purpose
