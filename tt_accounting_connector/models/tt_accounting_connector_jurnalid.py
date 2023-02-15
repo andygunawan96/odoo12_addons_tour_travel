@@ -162,8 +162,8 @@ class AccountingConnectorAccurate(models.Model):
             ## sucess create contact
             return json.loads(response.text)['person']['display_name']
         except:
-            ## already use
-            return json.loads(response.text)['data_contact']
+            ## name already use
+            return data_contact
 
     def get_contact_group(self, data_login):
         headers = {

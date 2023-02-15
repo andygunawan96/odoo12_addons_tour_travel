@@ -660,7 +660,7 @@ class TtReservation(models.Model):
         for rec in self:
             nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type not in ['DISC']:
+                if sale.charge_type != 'DISC' or sale.charge_code != 'csc': # don't count channel upsell
                     nta_total += sale.total
             rec.total_nta = nta_total
 
@@ -678,7 +678,7 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_code == 'rac' and sale.charge_type == 'RAC' or 'csc' in sale.charge_code and sale.charge_type == 'RAC':
+                if (sale.charge_code == 'rac' and sale.charge_type == 'RAC'):
                     agent_nta_total += sale.total
             rec.agent_nta = agent_nta_total + rec.total
 
