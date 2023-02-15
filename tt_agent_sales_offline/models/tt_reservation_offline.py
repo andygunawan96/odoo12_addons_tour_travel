@@ -196,9 +196,9 @@ class ReservationOffline(models.Model):
                 desc_text = psg.customer_id.name
                 price_unit = 0
                 for srvc in self.sale_service_charge_ids:
-                    if srvc.charge_type not in ['RAC', 'DISC']:
+                    if srvc.charge_type not in ['RAC', 'DISC'] and srvc.charge_code != 'csc':
                         price_unit += srvc.amount
-                    elif srvc.charge_type == 'RAC':
+                    elif srvc.charge_type == 'RAC' and srvc.charge_code != 'csc':
                         if is_use_credit_limit:
                             if not srvc.commission_agent_id:
                                 agent_id = self.agent_id.id
