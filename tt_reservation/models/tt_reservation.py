@@ -633,7 +633,7 @@ class TtReservation(models.Model):
         for rec in self:
             tax_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type in ['ROC', 'TAX','ADMIN_FEE_MEDICAL']:
+                if sale.charge_type in ['ROC', 'TAX','ADMIN_FEE_MEDICAL'] and sale.charge_code != 'csc':
                     tax_total += sale.total
             rec.total_tax = tax_total
 
@@ -660,7 +660,7 @@ class TtReservation(models.Model):
         for rec in self:
             nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type != 'DISC' or sale.charge_code != 'csc': # don't count channel upsell
+                if sale.charge_type != 'DISC' and sale.charge_code != 'csc': # don't count channel upsell
                     nta_total += sale.total
             rec.total_nta = nta_total
 
@@ -679,8 +679,8 @@ class TtReservation(models.Model):
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
                 if (sale.charge_code == 'rac' and sale.charge_type == 'RAC'):
-                    agent_nta_total += sale.total
-            rec.agent_nta = agent_nta_total + rec.total
+                    agent_nta_total += sale.total * -1
+            rec.agent_nta = agent_nta_total + rec.total_nta
 
     @api.depends("sale_service_charge_ids")
     def _compute_parent_agent_commission(self):
@@ -993,7 +993,8 @@ class TtReservation(models.Model):
                                 "charge_type": 'ROC',
                                 "amount": sc_pax['amount'] / total_provider,
                                 "pax_type": pax_type,
-                                "pax_count": 0
+                                "pax_count": 0,
+                                "foreign_amount": sc_pax['amount'] / total_provider,
                             })
                             if '.' in sc_pax['charge_code']: ## untuk upsell after sales per orang
                                 sc_pax.update({
