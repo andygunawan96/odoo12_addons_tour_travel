@@ -155,11 +155,11 @@ class ReservationSentraMedika(models.Model):
                 for cost_charge in psg.cost_service_charge_ids:
                     if cost_charge.charge_type == 'ADMIN_FEE_MEDICAL':
                         admin_fee_medical += cost_charge.amount
-                    elif cost_charge.charge_type not in ['RAC', 'DISC']:
+                    elif cost_charge.charge_type not in ['RAC', 'DISC'] and cost_charge.charge_code != 'csc':
                         price_unit += cost_charge.amount
                     # elif cost_charge.charge_type == 'DISC':
                     #     discount += cost_charge.amount
-                    elif cost_charge.charge_type == 'RAC':
+                    elif cost_charge.charge_type == 'RAC' and cost_charge.charge_code != 'csc':
                         if is_use_credit_limit:
                             if not cost_charge.commission_agent_id:
                                 agent_id = self.agent_id.id

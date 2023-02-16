@@ -130,11 +130,11 @@ class ReservationInsurance(models.Model):
             desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
             price_unit = 0
             for cost_charge in psg.cost_service_charge_ids:
-                if cost_charge.charge_type not in ['DISC', 'RAC']:
+                if cost_charge.charge_type not in ['DISC', 'RAC'] and cost_charge.charge_code != 'csc':
                     price_unit += cost_charge.amount
                 # elif cost_charge.charge_type == 'DISC':
                 #     discount += cost_charge.amount
-                elif cost_charge.charge_type == 'RAC':
+                elif cost_charge.charge_type == 'RAC' and cost_charge.charge_code != 'csc':
                     if is_use_credit_limit:
                         if not cost_charge.commission_agent_id:
                             agent_id = self.agent_id.id
