@@ -88,7 +88,7 @@ class TtReconcileTransaction(models.Model):
                 ##kalau tidak ketemu di provider masing masing cari di offline
                 if not found_rec:
                     found_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
-                                                                          ('total_price', '=', abs(rec.total)),
+                                                                          ('vendor_amount', '=', abs(rec.total)),
                                                                           ('reconcile_line_id', '=',False)], limit=1)
                 ##kalau tidak ketemu juga, cari di reschedule
                 # if not found_rec:
