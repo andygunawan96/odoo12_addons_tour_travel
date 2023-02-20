@@ -13,6 +13,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="True"/>
+            <field name="adult_length_name">57</field>
+            <field name="child_length_name">44</field>
+            <field name="infant_length_name">42</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
 
         </record>
@@ -1222,9 +1225,9 @@
             <field name="call_sign">AIRCAL</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1239,9 +1242,9 @@
             <field name="call_sign">AIR LANME</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1256,9 +1259,9 @@
             <field name="call_sign">AEROMEXICO</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1273,9 +1276,9 @@
             <field name="call_sign">AZUL</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1290,9 +1293,9 @@
             <field name="call_sign">AIR MACAU</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1307,9 +1310,9 @@
             <field name="call_sign">KENYA</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1324,9 +1327,9 @@
             <field name="call_sign">SWISS</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1341,9 +1344,9 @@
             <field name="call_sign">BAUHINA</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1358,9 +1361,9 @@
             <field name="call_sign">EUROPA</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1375,9 +1378,9 @@
             <field name="call_sign">ROYAL AIR MAROC</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1392,9 +1395,9 @@
             <field name="call_sign">AIR MAURITIUS</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1409,9 +1412,9 @@
             <field name="call_sign">BANGKOK AIR</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1426,9 +1429,9 @@
             <field name="call_sign">ICEAIR</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1443,9 +1446,9 @@
             <field name="call_sign">KLM</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1460,9 +1463,9 @@
             <field name="call_sign">SUNTURK</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
@@ -1477,9 +1480,9 @@
             <field name="call_sign">SUNTURK</field>
             <field name="active">0</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">30</field>
-            <field name="child_length_name">30</field>
-            <field name="infant_length_name">16</field>
+            <field name="adult_length_name">40</field>
+            <field name="child_length_name">40</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
