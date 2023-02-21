@@ -176,8 +176,8 @@
             <field name="name">PBB</field>
             <field name="code">pbb</field>
             <field name="icao">pbb</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">18</field>
+            <field name="child_length_name">18</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -186,8 +186,8 @@
             <field name="name">PGN A</field>
             <field name="code">gas_pgn_a</field>
             <field name="icao">gas</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">8</field>
+            <field name="child_length_name">12</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -196,8 +196,8 @@
             <field name="name">PGN B</field>
             <field name="code">gas_pgn_b</field>
             <field name="icao">gas</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">8</field>
+            <field name="child_length_name">12</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
