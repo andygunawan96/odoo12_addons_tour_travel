@@ -93,19 +93,41 @@ class ReservationPpob(models.Model):
                     product_data[str(rec.icao)] = []
                 product_data[str(rec.icao)].append(prod_val)
             allowed_denominations = [20000, 50000, 100000, 200000, 500000, 1000000, 5000000, 10000000, 50000000]
-            available_prepaid_mobile = {}
-            prepaid_mobile_data = self.env['tt.master.voucher.ppob'].search([('type', '=', 'prepaid_mobile')])
-            for rec in prepaid_mobile_data:
-                if not available_prepaid_mobile.get(rec.provider_id.code):
-                    available_prepaid_mobile[rec.provider_id.code] = {}
-                available_prepaid_mobile[rec.provider_id.code].update({
-                    rec.code: rec.display_name
-                })
+            voucher_data = {
+                'prepaid_mobile': {},
+                'game': {},
+                'pdam': {},
+                'pbb': {}
+            }
+            for vouch_key in voucher_data.keys():
+                vouch_data = self.env['tt.master.voucher.ppob'].search([('type', '=', vouch_key)])
+                similar_disp_names = {}
+                for rec in vouch_data:
+                    if not voucher_data[vouch_key].get(rec.provider_id.code):
+                        voucher_data[vouch_key][rec.provider_id.code] = {}
+                    if not similar_disp_names.get(rec.provider_id.code):
+                        similar_disp_names[rec.provider_id.code] = {}
+                    if vouch_key == 'prepaid_mobile':
+                        temp_disp_name = rec.display_name
+                    else:
+                        temp_disp_name = rec.name
+                    if vouch_key in ['pdam', 'pbb']:
+                        if similar_disp_names[rec.provider_id.code].get(temp_disp_name.upper()):
+                            og_disp_name = temp_disp_name
+                            temp_disp_name += ' (Alternative %s)' % (chr(64 + int(similar_disp_names[rec.provider_id.code][temp_disp_name.upper()])))
+                            similar_disp_names[rec.provider_id.code][og_disp_name.upper()] += 1
+                        else:
+                            similar_disp_names[rec.provider_id.code].update({
+                                temp_disp_name.upper(): 1
+                            })
+                    voucher_data[vouch_key][rec.provider_id.code].update({
+                        rec.code: temp_disp_name
+                    })
             res = {
                 'product_data': product_data,
                 'search_config_data': multi_prov_prod_data,
                 'allowed_denominations': allowed_denominations,
-                'available_prepaid_mobile': available_prepaid_mobile
+                'voucher_data': voucher_data
             }
             return ERR.get_no_error(res)
         except RequestException as e:

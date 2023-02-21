@@ -135,6 +135,7 @@ class AccountingConnectorITM(models.Model):
 
                         pax_setup = {
                             'ho_profit': ho_prof,
+                            'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
                         }
@@ -148,8 +149,11 @@ class AccountingConnectorITM(models.Model):
                             temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
                             vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
+                        temp_sales = pax_setup['agent_nta']
+                        if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            temp_sales += pax_setup['total_comm']
                         # total cost = Total NTA
-                        # total sales = Agent NTA
+                        # total sales = Agent NTA (kalo HO + total commission)
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
                         provider_dict = {
                             "ItemNo": idx + 1,
@@ -163,7 +167,7 @@ class AccountingConnectorITM(models.Model):
                             "Profit": pax_setup['ho_profit'] - vat,
                             "ServiceFee": 0,
                             "VAT": vat,
-                            "Sales": pax_setup['agent_nta'],
+                            "Sales": temp_sales,
                             "Itin": journey_list,
                             "Pax": pax_list
                         }
@@ -214,6 +218,7 @@ class AccountingConnectorITM(models.Model):
 
                         pax_setup = {
                             'ho_profit': ho_prof,
+                            'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
                         }
@@ -227,6 +232,9 @@ class AccountingConnectorITM(models.Model):
                             temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
                             vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
 
+                        temp_sales = pax_setup['agent_nta']
+                        if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            temp_sales += pax_setup['total_comm']
                         # total cost = Total NTA
                         # total sales = Agent NTA
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
@@ -242,7 +250,7 @@ class AccountingConnectorITM(models.Model):
                             "Profit": pax_setup['ho_profit'] - vat,
                             "ServiceFee": 0,
                             "VAT": vat,
-                            "Sales": pax_setup['agent_nta'],
+                            "Sales": temp_sales,
                             "Itin": journey_list,
                             "Pax": pax_list
                         }
@@ -260,19 +268,17 @@ class AccountingConnectorITM(models.Model):
                         idx += 1
 
                 elif request['provider_type'] == 'hotel':
-                    prov_setup = {
-                        'ho_profit': 0,
-                        'total_nta': 0,
-                        'agent_nta': 0
-                    }
                     if prov.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] + prov['total_channel_upsell'] or prov['total_channel_upsell']
                     else:
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
 
-                    prov_setup['ho_profit'] += ho_prof
-                    prov_setup['total_nta'] += prov.get('total_nta') and prov['total_nta'] or 0
-                    prov_setup['agent_nta'] += prov.get('agent_nta') and prov['agent_nta'] or 0
+                    prov_setup = {
+                        'ho_profit': ho_prof,
+                        'total_comm': prov.get('total_commission') and prov['total_commission'] or 0,
+                        'total_nta': prov.get('total_nta') and prov['total_nta'] or 0,
+                        'agent_nta': prov.get('agent_nta') and prov['agent_nta'] or 0
+                    }
 
                     pax_list = []
                     for pax_idx, pax in enumerate(prov['passengers']):
@@ -303,6 +309,9 @@ class AccountingConnectorITM(models.Model):
                         "Arrival": ''
                     }]
                     for room_idx, room in enumerate(prov['rooms']):
+                        temp_sales = prov_setup['agent_nta'] / len(prov['rooms'])
+                        if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            temp_sales += prov_setup['total_comm'] / len(prov['rooms'])
                         provider_dict = {
                             "ItemNo": idx + 1,
                             "ProductCode": supplier_obj.product_code or '',
@@ -318,7 +327,7 @@ class AccountingConnectorITM(models.Model):
                             "Profit": (prov_setup['ho_profit'] - vat) / len(prov['rooms']),
                             "ServiceFee": 0,
                             "VAT": vat / len(prov['rooms']),
-                            "Sales": prov_setup['agent_nta'] / len(prov['rooms']),
+                            "Sales": temp_sales,
                             "Itin": journey_list,
                             "Pax": pax_list
                         }
@@ -337,6 +346,7 @@ class AccountingConnectorITM(models.Model):
 
             total_sales = request.get('agent_nta', 0)
             if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                total_sales += request.get('total_commission') and request['total_commission'] or 0
                 total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
 
             req = {
