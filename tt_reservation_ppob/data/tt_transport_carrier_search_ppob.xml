@@ -271,7 +271,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ppob_isp_tsd" model="tt.transport.carrier.search">
-            <field name="name">Telkom Speedy</field>
+            <field name="name">INDIHOME</field>
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_tsd"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
