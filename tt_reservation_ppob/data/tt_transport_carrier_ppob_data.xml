@@ -283,7 +283,7 @@
         </record>
 
         <record id="tt_transport_carrier_ppob_isp_tsd" model="tt.transport.carrier">
-            <field name="name">INDIHOME</field>
+            <field name="name">Telkom Indihome</field>
             <field name="code">isp_tsd</field>
             <field name="icao">internet</field>
             <field name="adult_length_name">10</field>
