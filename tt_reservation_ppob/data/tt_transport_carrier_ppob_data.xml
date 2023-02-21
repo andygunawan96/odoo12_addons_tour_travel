@@ -52,6 +52,16 @@
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
 
+        <record id="tt_transport_carrier_ppob_gamevoucher" model="tt.transport.carrier">
+            <field name="name">Game Voucher</field>
+            <field name="code">game_voucher</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">7</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
         <record id="tt_transport_carrier_ppob_postpaid_mobile_thl" model="tt.transport.carrier">
             <field name="name">Postpaid Telkomsel (Kartu HALO)</field>
             <field name="code">postpaid_mobile_thl</field>
@@ -152,6 +162,46 @@
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
 
+        <record id="tt_transport_carrier_ppob_pdam" model="tt.transport.carrier">
+            <field name="name">PDAM</field>
+            <field name="code">pdam</field>
+            <field name="icao">pdam</field>
+            <field name="adult_length_name">11</field>
+            <field name="child_length_name">16</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_pbb" model="tt.transport.carrier">
+            <field name="name">PBB</field>
+            <field name="code">pbb</field>
+            <field name="icao">pbb</field>
+            <field name="adult_length_name">18</field>
+            <field name="child_length_name">18</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_gas_pgn_a" model="tt.transport.carrier">
+            <field name="name">PGN A</field>
+            <field name="code">gas_pgn_a</field>
+            <field name="icao">gas</field>
+            <field name="adult_length_name">8</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
+        <record id="tt_transport_carrier_ppob_gas_pgn_b" model="tt.transport.carrier">
+            <field name="name">PGN B</field>
+            <field name="code">gas_pgn_b</field>
+            <field name="icao">gas</field>
+            <field name="adult_length_name">8</field>
+            <field name="child_length_name">12</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
         <record id="tt_transport_carrier_ppob_cable_tv_idv" model="tt.transport.carrier">
             <field name="name">Indovision</field>
             <field name="code">cable_tv_idv</field>
@@ -233,7 +283,7 @@
         </record>
 
         <record id="tt_transport_carrier_ppob_isp_tsd" model="tt.transport.carrier">
-            <field name="name">Telkom Speedy</field>
+            <field name="name">Telkom Indihome</field>
             <field name="code">isp_tsd</field>
             <field name="icao">internet</field>
             <field name="adult_length_name">10</field>
@@ -288,96 +338,6 @@
             <field name="icao">insurance</field>
             <field name="adult_length_name">9</field>
             <field name="child_length_name">10</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_plj" model="tt.transport.carrier">
-            <field name="name">PAM Palyja</field>
-            <field name="code">pdam_plj</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_atr" model="tt.transport.carrier">
-            <field name="name">PAM Aetra</field>
-            <field name="code">pdam_atr</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_atg" model="tt.transport.carrier">
-            <field name="name">PAM Aetra Tangerang</field>
-            <field name="code">pdam_atg</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_pdb" model="tt.transport.carrier">
-            <field name="name">PDAM Kab. Bogor</field>
-            <field name="code">pdam_pdb</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_pdd" model="tt.transport.carrier">
-            <field name="name">PDAM Kota Bandung</field>
-            <field name="code">pdam_pdd</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_pdk" model="tt.transport.carrier">
-            <field name="name">PDAM Kota Depok</field>
-            <field name="code">pdam_pdk</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_pdl" model="tt.transport.carrier">
-            <field name="name">PDAM Lampung</field>
-            <field name="code">pdam_pdl</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_pdm" model="tt.transport.carrier">
-            <field name="name">PDAM Kota Mataram</field>
-            <field name="code">pdam_pdm</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
-            <field name="active">1</field>
-            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
-        </record>
-
-        <record id="tt_transport_carrier_ppob_pdam_pdp" model="tt.transport.carrier">
-            <field name="name">PDAM Palembang</field>
-            <field name="code">pdam_pdp</field>
-            <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
-            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>

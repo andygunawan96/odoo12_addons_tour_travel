@@ -18,7 +18,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpln"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">501</field>
+            <field name="sequence">510</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay')),
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_mkm'))
@@ -30,7 +30,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_prepln"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">502</field>
+            <field name="sequence">520</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay')),
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_mkm'))
@@ -42,7 +42,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">503</field>
+            <field name="sequence">530</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay')),
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_mkm'))
@@ -54,10 +54,21 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_prepaidmobile"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">504</field>
+            <field name="sequence">540</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay')),
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_mkm'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_gamevoucher" model="tt.transport.carrier.search">
+            <field name="name">Game Voucher</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_gamevoucher"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">550</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
         </record>
 
@@ -66,7 +77,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_thl"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">505</field>
+            <field name="sequence">560</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -77,7 +88,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_imt"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">506</field>
+            <field name="sequence">570</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -88,7 +99,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_xpl"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">507</field>
+            <field name="sequence">580</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -99,7 +110,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_bru"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">508</field>
+            <field name="sequence">590</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -110,7 +121,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_tfc"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">509</field>
+            <field name="sequence">600</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -121,7 +132,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_fre"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">510</field>
+            <field name="sequence">610</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -132,7 +143,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_ere"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">511</field>
+            <field name="sequence">620</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -143,7 +154,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_lwa"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">512</field>
+            <field name="sequence">630</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -154,7 +165,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_gri"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">513</field>
+            <field name="sequence">640</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -165,7 +176,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_postpaid_mobile_swj"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">514</field>
+            <field name="sequence">650</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -176,7 +187,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_idv"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">515</field>
+            <field name="sequence">660</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -187,7 +198,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_top"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">516</field>
+            <field name="sequence">670</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -198,7 +209,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_okv"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">517</field>
+            <field name="sequence">680</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -209,7 +220,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_frm"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">518</field>
+            <field name="sequence">690</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -220,7 +231,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_ytv"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">519</field>
+            <field name="sequence">700</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -231,7 +242,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_cbn"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">520</field>
+            <field name="sequence">710</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -242,7 +253,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_isn"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">521</field>
+            <field name="sequence">720</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -253,18 +264,18 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_ctr"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">522</field>
+            <field name="sequence">730</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
         </record>
 
         <record id="tt_transport_carrier_search_ppob_isp_tsd" model="tt.transport.carrier.search">
-            <field name="name">Telkom Speedy</field>
+            <field name="name">Telkom Indihome</field>
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_tsd"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">523</field>
+            <field name="sequence">740</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -275,7 +286,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_telephone_tpn"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">524</field>
+            <field name="sequence">750</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -286,7 +297,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_smf"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">525</field>
+            <field name="sequence">760</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -297,7 +308,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_sms"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">526</field>
+            <field name="sequence">770</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -308,7 +319,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_aia"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">527</field>
+            <field name="sequence">780</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -319,106 +330,51 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_pru"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">528</field>
+            <field name="sequence">790</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
         </record>
 
-        <record id="tt_transport_carrier_search_ppob_pdam_plj" model="tt.transport.carrier.search">
-            <field name="name">PAM Palyja</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_plj"/>
+        <record id="tt_transport_carrier_search_ppob_pdam" model="tt.transport.carrier.search">
+            <field name="name">PDAM</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">529</field>
+            <field name="sequence">800</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
         </record>
 
-        <record id="tt_transport_carrier_search_ppob_pdam_atr" model="tt.transport.carrier.search">
-            <field name="name">PAM Aetra</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_atr"/>
+        <record id="tt_transport_carrier_search_ppob_pbb" model="tt.transport.carrier.search">
+            <field name="name">PBB</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pbb"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">530</field>
+            <field name="sequence">810</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
         </record>
 
-        <record id="tt_transport_carrier_search_ppob_pdam_atg" model="tt.transport.carrier.search">
-            <field name="name">PAM Aetra Tangerang</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_atg"/>
+        <record id="tt_transport_carrier_search_ppob_gas_pgn_a" model="tt.transport.carrier.search">
+            <field name="name">PGN A</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_gas_pgn_a"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">531</field>
+            <field name="sequence">820</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
         </record>
 
-        <record id="tt_transport_carrier_search_ppob_pdam_pdb" model="tt.transport.carrier.search">
-            <field name="name">PDAM Kab. Bogor</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_pdb"/>
+        <record id="tt_transport_carrier_search_ppob_gas_pgn_b" model="tt.transport.carrier.search">
+            <field name="name">PGN B</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_gas_pgn_b"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">532</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_pdam_pdd" model="tt.transport.carrier.search">
-            <field name="name">PDAM Kota Bandung</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_pdd"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">533</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_pdam_pdk" model="tt.transport.carrier.search">
-            <field name="name">PDAM Kota Depok</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_pdk"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">534</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_pdam_pdl" model="tt.transport.carrier.search">
-            <field name="name">PDAM Lampung</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_pdl"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">535</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_pdam_pdm" model="tt.transport.carrier.search">
-            <field name="name">PDAM Kota Mataram</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_pdm"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">536</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_pdam_pdp" model="tt.transport.carrier.search">
-            <field name="name">PDAM Palembang</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam_pdp"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">537</field>
+            <field name="sequence">830</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -429,7 +385,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_inst_nzp"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">538</field>
+            <field name="sequence">840</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -440,7 +396,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_inst_ctc"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">539</field>
+            <field name="sequence">850</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -451,7 +407,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_inst_omb"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">540</field>
+            <field name="sequence">860</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -462,7 +418,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_inst_omt"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">541</field>
+            <field name="sequence">870</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -473,7 +429,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_ctb"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">542</field>
+            <field name="sequence">880</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -484,7 +440,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_aei"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">543</field>
+            <field name="sequence">890</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -495,7 +451,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_bni"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">544</field>
+            <field name="sequence">900</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -506,7 +462,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_anz"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">545</field>
+            <field name="sequence">910</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -517,7 +473,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_pmt"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">546</field>
+            <field name="sequence">920</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -528,7 +484,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_dnm"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">547</field>
+            <field name="sequence">930</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -539,7 +495,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_uob"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">548</field>
+            <field name="sequence">940</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -550,7 +506,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_icb"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">549</field>
+            <field name="sequence">950</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -561,7 +517,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_bkp"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">550</field>
+            <field name="sequence">960</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -572,7 +528,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pub_pan"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">551</field>
+            <field name="sequence">970</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
