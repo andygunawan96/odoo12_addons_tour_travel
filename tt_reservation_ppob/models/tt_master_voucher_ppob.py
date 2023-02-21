@@ -8,6 +8,8 @@ _logger = logging.getLogger(__name__)
 voucher_types = [
     ('prepaid_mobile', 'Prepaid Mobile'),
     ('game', 'Game Voucher'),
+    ('pdam', 'PDAM'),
+    ('pbb', 'PBB'),
     ('others', 'Others')
 ]
 
