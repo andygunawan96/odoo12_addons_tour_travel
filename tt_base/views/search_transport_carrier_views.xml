@@ -63,8 +63,8 @@
         </field>
     </record>
 
-    <record id="transport_carrier_view_search" model="ir.ui.view">
-        <field name="name">transport.carrier.view.search</field>
+    <record id="transport_carrier_search_view_search" model="ir.ui.view">
+        <field name="name">transport.carrier.search.view.search</field>
         <field name="model">tt.transport.carrier.search</field>
         <field name="arch" type="xml">
             <search>
