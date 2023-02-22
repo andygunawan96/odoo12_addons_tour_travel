@@ -1416,7 +1416,7 @@ class TtReservation(models.Model):
                         break
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
-                    raise RequestException(1007,additional_message="agent balance")
+                    raise RequestException(1007,additional_message="agent balance %s" % (book_obj.agent_id.name))
 
                 if req.get("member"):
                     acquirer_seq_id = req.get('acquirer_seq_id')
