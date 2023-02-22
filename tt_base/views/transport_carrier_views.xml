@@ -63,6 +63,7 @@
         <search>
             <field name="name"/>
             <field name="code"/>
+            <field name="provider_type_id"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
         </search>
         </field>
