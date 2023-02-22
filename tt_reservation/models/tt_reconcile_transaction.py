@@ -47,8 +47,8 @@ class TtReconcileTransaction(models.Model):
     excel_file = fields.Binary('Excel File')
     total_lines = fields.Integer('Total Lines', compute='_compute_total_lines', store=True)
     currency_id = fields.Many2one('res.currency', 'Vendor Balance Currency',
-                                          default=lambda self: self.env.user.company_id.currency_id,
-                                          readonly=True)
+                                  default=lambda self: self.env.user.company_id.currency_id,
+                                  readonly=True)
     start_balance = fields.Monetary('Start Balance')
     end_balance = fields.Monetary('End Balance')
 
@@ -82,14 +82,21 @@ class TtReconcileTransaction(models.Model):
                 })
             elif rec.type == 'nta':
                 found_rec = self.env['tt.provider.%s' % (self.provider_type_id.code)].search([('pnr','=',rec.pnr),
-                                                                                     ('total_price','=',abs(rec.total)),
-                                                                                    ('reconcile_line_id','=',False)],limit=1)
+                                                                                              ('total_price','=',abs(rec.total)),
+                                                                                              ('reconcile_line_id','=',False)],limit=1)
 
                 ##kalau tidak ketemu di provider masing masing cari di offline
                 if not found_rec:
                     found_rec = self.env['tt.provider.offline'].search([('pnr', '=', rec.pnr),
-                                                                          ('vendor_amount', '=', abs(rec.total)),
-                                                                          ('reconcile_line_id', '=',False)], limit=1)
+                                                                        ('total_price', '=', abs(rec.total)),
+                                                                        ('reconcile_line_id', '=',False)], limit=1)
+
+                if not found_rec: #still not found after provider online & offline
+                    found_rec = self.compare_reissue_recon_data({
+                        'pnr': rec.pnr,
+                        'total': abs(rec.total)
+                    })
+
                 ##kalau tidak ketemu juga, cari di reschedule
                 # if not found_rec:
                 #     found_rec = self.compare_reissue_recon_data({
@@ -217,7 +224,7 @@ class TtReconcileTransaction(models.Model):
     def action_sync_balance(self):
         reconcile_obj = self.env['tt.reconcile.transaction'].search([('provider_id', '=', self.provider_id.id),
                                                                      ('transaction_date', '<', self.transaction_date)],
-                                                                     order='transaction_date desc', limit=1)
+                                                                    order='transaction_date desc', limit=1)
 
         if reconcile_obj and (self.transaction_date - reconcile_obj.transaction_date).days == 1 and self.provider_id.is_using_balance:
             self.start_balance = reconcile_obj.end_balance

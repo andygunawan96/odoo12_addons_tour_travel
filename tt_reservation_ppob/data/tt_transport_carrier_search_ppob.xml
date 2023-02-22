@@ -182,166 +182,12 @@
             ]"/>
         </record>
 
-        <record id="tt_transport_carrier_search_ppob_cable_tv_idv" model="tt.transport.carrier.search">
-            <field name="name">Indovision</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_idv"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">660</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_cable_tv_top" model="tt.transport.carrier.search">
-            <field name="name">Indovision Top TV</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_top"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">670</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_cable_tv_okv" model="tt.transport.carrier.search">
-            <field name="name">Indovision Oke Vision</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_okv"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">680</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_cable_tv_frm" model="tt.transport.carrier.search">
-            <field name="name">First Media</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_frm"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">690</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_cable_tv_ytv" model="tt.transport.carrier.search">
-            <field name="name">Yes</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_ytv"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">700</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_isp_cbn" model="tt.transport.carrier.search">
-            <field name="name">CBN</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_cbn"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">710</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_isp_isn" model="tt.transport.carrier.search">
-            <field name="name">Indosatnet</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_isn"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">720</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_isp_ctr" model="tt.transport.carrier.search">
-            <field name="name">Centrinnet</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_ctr"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">730</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_isp_tsd" model="tt.transport.carrier.search">
-            <field name="name">Telkom Indihome</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_tsd"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">740</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_telephone_tpn" model="tt.transport.carrier.search">
-            <field name="name">Telkom</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_telephone_tpn"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">750</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_insurance_smf" model="tt.transport.carrier.search">
-            <field name="name">Sinarmas Life PAYMENT</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_smf"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">760</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_insurance_sms" model="tt.transport.carrier.search">
-            <field name="name">Sinar Mas</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_sms"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">770</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_insurance_aia" model="tt.transport.carrier.search">
-            <field name="name">AIA Financial</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_aia"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">780</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
-        <record id="tt_transport_carrier_search_ppob_insurance_pru" model="tt.transport.carrier.search">
-            <field name="name">Prudential</field>
-            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_pru"/>
-            <field name="is_default" eval="False"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">790</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
-            ]"/>
-        </record>
-
         <record id="tt_transport_carrier_search_ppob_pdam" model="tt.transport.carrier.search">
             <field name="name">PDAM</field>
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">800</field>
+            <field name="sequence">660</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -352,7 +198,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pbb"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">810</field>
+            <field name="sequence">670</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -363,7 +209,7 @@
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_gas_pgn_a"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
-            <field name="sequence">820</field>
+            <field name="sequence">680</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
             ]"/>
@@ -372,6 +218,160 @@
         <record id="tt_transport_carrier_search_ppob_gas_pgn_b" model="tt.transport.carrier.search">
             <field name="name">PGN B</field>
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_gas_pgn_b"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">690</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_cable_tv_idv" model="tt.transport.carrier.search">
+            <field name="name">Indovision</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_idv"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">700</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_cable_tv_top" model="tt.transport.carrier.search">
+            <field name="name">Indovision Top TV</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_top"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">710</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_cable_tv_okv" model="tt.transport.carrier.search">
+            <field name="name">Indovision Oke Vision</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_okv"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">720</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_cable_tv_frm" model="tt.transport.carrier.search">
+            <field name="name">First Media</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_frm"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">730</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_cable_tv_ytv" model="tt.transport.carrier.search">
+            <field name="name">Yes</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_cable_tv_ytv"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">740</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_isp_cbn" model="tt.transport.carrier.search">
+            <field name="name">CBN</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_cbn"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">750</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_isp_isn" model="tt.transport.carrier.search">
+            <field name="name">Indosatnet</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_isn"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">760</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_isp_ctr" model="tt.transport.carrier.search">
+            <field name="name">Centrinnet</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_ctr"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">770</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_isp_tsd" model="tt.transport.carrier.search">
+            <field name="name">Telkom Indihome</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_isp_tsd"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">780</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_telephone_tpn" model="tt.transport.carrier.search">
+            <field name="name">Telkom</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_telephone_tpn"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">790</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_insurance_smf" model="tt.transport.carrier.search">
+            <field name="name">Sinarmas Life PAYMENT</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_smf"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">800</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_insurance_sms" model="tt.transport.carrier.search">
+            <field name="name">Sinar Mas</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_sms"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">810</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_insurance_aia" model="tt.transport.carrier.search">
+            <field name="name">AIA Financial</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_aia"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">820</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
+        <record id="tt_transport_carrier_search_ppob_insurance_pru" model="tt.transport.carrier.search">
+            <field name="name">Prudential</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_insurance_pru"/>
             <field name="is_default" eval="False"/>
             <field name="is_favorite" eval="False"/>
             <field name="sequence">830</field>

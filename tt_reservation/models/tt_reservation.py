@@ -678,7 +678,7 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if (sale.charge_code == 'rac' and sale.charge_type == 'RAC'):
+                if (sale.charge_code != 'rac' and sale.charge_type == 'RAC'):
                     agent_nta_total += sale.total * -1
             rec.agent_nta = agent_nta_total + rec.total_nta
 
@@ -1416,7 +1416,7 @@ class TtReservation(models.Model):
                         break
                 if balance_res['error_code'] != 0:
                     _logger.error('Agent Balance not enough')
-                    raise RequestException(1007,additional_message="agent balance")
+                    raise RequestException(1007,additional_message="agent balance %s" % (book_obj.agent_id.name))
 
                 if req.get("member"):
                     acquirer_seq_id = req.get('acquirer_seq_id')
