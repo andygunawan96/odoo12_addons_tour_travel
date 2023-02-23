@@ -2012,7 +2012,7 @@ class ReservationAirline(models.Model):
                             c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
                             c_code = p_charge_code.lower()
                         else:
-                            c_type = "%s%s" % (p_charge_type, idy)
+                            c_type = "%s%s" % (p_charge_type, idy) ## untuk service charge yg kembar contoh SSR
                             c_code = p_charge_type.lower()
                         sc_value[p_pax_type][c_type] = {}
                         sc_value[p_pax_type][c_type].update({
