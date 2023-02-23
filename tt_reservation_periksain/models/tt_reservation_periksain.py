@@ -673,7 +673,7 @@ class ReservationPeriksain(models.Model):
         # END
         for idx, provider in enumerate(self.provider_booking_ids):
             sc_value = {}
-            for p_sc in provider.cost_service_charge_ids:
+            for idy, p_sc in enumerate(provider.cost_service_charge_ids):
                 p_charge_code = p_sc.charge_code
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
@@ -692,13 +692,17 @@ class ReservationPeriksain(models.Model):
                         c_type = p_charge_type
                         c_code = p_charge_type.lower()
                     else:
-                        c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
-                        c_code = p_charge_code.lower()
+                        if p_charge_code == 'csc':
+                            c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
+                            c_code = p_charge_code.lower()
+                        else:
+                            c_type = "%s%s" % (p_charge_type, idy) ## untuk service charge yg kembar contoh SSR
+                            c_code = p_charge_type.lower()
                         sc_value[p_pax_type][c_type] = {}
                         sc_value[p_pax_type][c_type].update({
                             'amount': 0,
                             'foreign_amount': 0,
-                            'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
+                            'pax_count': p_sc.pax_count,
                             'total': 0
                         })
                 elif p_charge_type == 'RAC':
