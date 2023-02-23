@@ -214,6 +214,17 @@
         </field>
     </record>
 
+<!--    <record model="ir.actions.server" id="action_multi_action_recalculate_sales_service_charges">-->
+<!--        <field name="name">Recalculate Sale Service Charges</field>-->
+<!--        <field name="model_id" ref="tt_reservation.tt_reservation"/>-->
+<!--        <field name="binding_model_id" ref="tt_reservation.tt_reservation"/>-->
+<!--        <field name="state">code</field>-->
+<!--        <field name="code">-->
+<!--            if records:-->
+<!--            action = records.multi_recalculate_service_charges()-->
+<!--        </field>-->
+<!--    </record>-->
+
     <!-- Main Menu -->
     <!-- Reservations -->
     <menuitem id="main_reservations"
