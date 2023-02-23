@@ -635,6 +635,7 @@ class ReservationPpob(models.Model):
                 'email': cust_email,
                 'calling_code': "62",
                 'mobile': "315662000",
+                'is_search_allowed': False
             }
             contacts = [{
                 'first_name': cust_first_name,
