@@ -214,10 +214,10 @@
         </field>
     </record>
 
-<!--    <record model="ir.actions.server" id="action_multi_action_recalculate_sales_service_charges">-->
+<!--    <record model="ir.actions.server" id="action_multi_action_recalculate_sales_service_charges_hotel">-->
 <!--        <field name="name">Recalculate Sale Service Charges</field>-->
-<!--        <field name="model_id" ref="tt_reservation.tt_reservation"/>-->
-<!--        <field name="binding_model_id" ref="tt_reservation.tt_reservation"/>-->
+<!--        <field name="model_id" ref="tt_reservation_airline.tt_reservation_airline"/>-->
+<!--        <field name="binding_model_id" ref="tt_reservation_airline.tt_reservation_airline"/>-->
 <!--        <field name="state">code</field>-->
 <!--        <field name="code">-->
 <!--            if records:-->
