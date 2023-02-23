@@ -619,6 +619,17 @@ class TtReservation(models.Model):
             rec._compute_total_nta()
             rec._compute_agent_nta()
 
+    def multi_recalculate_service_charges(self):
+        for rec in self:
+            _logger.info(rec.name)
+            rec.calculate_service_charges()
+            rec._compute_total_fare()
+            rec._compute_total_tax()
+            rec._compute_grand_total()
+            rec._compute_total_commission()
+            rec._compute_total_nta()
+            rec._compute_agent_nta()
+
     @api.depends("sale_service_charge_ids")
     def _compute_total_fare(self):
         for rec in self:
