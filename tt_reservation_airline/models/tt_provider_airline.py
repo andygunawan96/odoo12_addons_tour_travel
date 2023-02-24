@@ -115,6 +115,7 @@ class TtProviderAirline(models.Model):
             raise UserError("Has been Issued.")
         self.write({
             'state': 'issued',
+            'is_hold_date_sync': True,
             'issued_uid': self.env.user.id,
             'issued_date': datetime.now()
         })
@@ -169,6 +170,7 @@ class TtProviderAirline(models.Model):
         if res['response']['status'] == 'CANCELLED':
             self.write({
                 'state': 'cancel',
+                'is_hold_date_sync': True,
                 'cancel_date': datetime.now()
             })
             self.booking_id.check_provider_state({'co_uid': self.cancel_uid.id})
@@ -321,6 +323,7 @@ class TtProviderAirline(models.Model):
         for rec in self:
             values = {
                 'state': 'void',
+                'is_hold_date_sync': True,
                 'cancel_uid': api_context['co_uid'],
                 'cancel_date': fields.Datetime.now(),
             }
@@ -341,6 +344,7 @@ class TtProviderAirline(models.Model):
         for rec in self:
             values = {
                 'state': 'refund',
+                'is_hold_date_sync': True,
                 'refund_uid': api_context['co_uid'],
                 'refund_date': fields.Datetime.now(),
             }
@@ -440,6 +444,7 @@ class TtProviderAirline(models.Model):
         for rec in self:
             values = {
                 'state': 'issued',
+                'is_hold_date_sync': True,
                 'issued_date': datetime.now(),
                 'issued_uid': context['co_uid'],
                 'sid_issued': context['signature'],
@@ -459,6 +464,7 @@ class TtProviderAirline(models.Model):
         for rec in self:
             rec.write({
                 'state': 'cancel',
+                'is_hold_date_sync': True,
                 'cancel_date': datetime.now(),
                 'cancel_uid': context['co_uid'],
                 'sid_cancel': context['signature'],
@@ -510,12 +516,22 @@ class TtProviderAirline(models.Model):
         self.state = 'cancel2'
 
     def action_cancel(self):
-        self.cancel_date = fields.Datetime.now()
-        self.cancel_uid = self.env.user.id
-        self.state = 'cancel'
+        # self.cancel_date = fields.Datetime.now()
+        # self.cancel_uid = self.env.user.id
+        # self.state = 'cancel'
+        self.write({
+            'state': 'cancel',
+            'cancel_date': fields.Datetime.now(),
+            'cancel_uid': self.env.user.id,
+            'is_hold_date_sync': True
+        })
 
     def action_refund(self, check_provider_state=False):
-        self.state = 'refund'
+        # self.state = 'refund'
+        self.write({
+            'state': 'refund',
+            'is_hold_date_sync': True
+        })
         if check_provider_state:
             self.booking_id.check_provider_state({'co_uid': self.env.user.id})
 

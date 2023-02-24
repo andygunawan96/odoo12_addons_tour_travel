@@ -750,33 +750,29 @@ class TtReservationBus(models.Model):
                 p_charge_code = p_sc.charge_code
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
+                c_code = ''
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
-                    if not sc_value[p_pax_type].get(p_charge_type) and p_charge_code != 'csc':
-                        sc_value[p_pax_type][p_charge_type] = {}
-                        sc_value[p_pax_type][p_charge_type].update({
+                    if p_charge_code == 'csc':
+                        c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
+                        sc_value[p_pax_type][c_type] = {
                             'amount': 0,
                             'foreign_amount': 0,
                             'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
                             'total': 0
-                        })
-                        c_type = p_charge_type
-                        c_code = p_charge_type.lower()
-                    else:
-                        if p_charge_code == 'csc':
-                            c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
-                            c_code = p_charge_code.lower()
-                        else:
-                            c_type = "%s%s" % (p_charge_type, idy) ## untuk service charge yg kembar contoh SSR
-                            c_code = p_charge_type.lower()
-                        sc_value[p_pax_type][c_type] = {}
-                        sc_value[p_pax_type][c_type].update({
+                        }
+                        c_code = p_charge_code
+                    elif not sc_value[p_pax_type].get(p_charge_type):
+                        c_type = "%s%s" % (p_charge_type, idy) ## untuk service charge yg kembar contoh SSR
+                        sc_value[p_pax_type][c_type] = {
                             'amount': 0,
                             'foreign_amount': 0,
-                            'pax_count': p_sc.pax_count,
+                            'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
                             'total': 0
-                        })
+                        }
+                    if not c_code:
+                        c_code = p_charge_type.lower()
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}

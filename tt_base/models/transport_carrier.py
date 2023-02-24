@@ -26,9 +26,9 @@ class TransportCarrier(models.Model):
     #     help='This field holds the image used as avatar for this contact, limited to 1024x1024px')
 
     is_duplicate_single_name = fields.Boolean('Duplicate Single Name', default=True, help='Duplicate Single Name (first name and last name has same value)')
-    adult_length_name = fields.Integer('Adult Length Name', default=40, help='Adult length name')
-    child_length_name = fields.Integer('Child Length Name', default=40, help='Child length name')
-    infant_length_name = fields.Integer('Adult and Infant Length Name', default=56, help='Total Adult+Infant length name')
+    adult_length_name = fields.Integer('Adult Length Name', default=57, help='Adult length name')
+    child_length_name = fields.Integer('Child Length Name', default=44, help='Child length name')
+    infant_length_name = fields.Integer('Adult and Infant Length Name', default=42, help='Total Adult+Infant length name')
     is_adult_birth_date_required = fields.Boolean('Is Adult Birth Date Required', default=True)
     required_identity_required_domestic = fields.Boolean('Is Identity Required Domestic', default=False) ## must be input before flight and for notif purpose
     required_identity_required_international = fields.Boolean('Is Identity Required International', default=False) ## must be input before flight and for notif purpose

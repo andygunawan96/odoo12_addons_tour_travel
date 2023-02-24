@@ -9245,5 +9245,819 @@
             <field name="sequence">8500</field>
             <field name="active" eval="True"/>
         </record>
+
+
+        <record id="tt_master_voucher_ppob_alfa100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Alfamart 100K</field>
+            <field name="code">ALFA100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8510</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_alfa25" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Alfamart 25K</field>
+            <field name="code">ALFA25</field>
+            <field name="value">25000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8520</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_alfa50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Alfamart 50K</field>
+            <field name="code">ALFA50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8530</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_ancol25" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher E-Ticket Ancol 25K</field>
+            <field name="code">ANCOL25</field>
+            <field name="value">25000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8540</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_bl50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Bukalapak 50K</field>
+            <field name="code">BL50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8550</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_blibli50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Blibli 50K</field>
+            <field name="code">BLIBLI50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8560</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_blife50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Breadlife 50K</field>
+            <field name="code">BLIFE50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8570</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_boga50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher 50K berbagai Merchant BOGA Group</field>
+            <field name="code">BOGA50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8580</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_care100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Carrefour Transmart 100K</field>
+            <field name="code">CARE100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8590</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_care50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Carrefour Transmart 50K</field>
+            <field name="code">CARE50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8600</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_ctcorp100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher 100K berbagai Merchant CTCORP Group</field>
+            <field name="code">CTCORP100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8610</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_ctcorp50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher 50K berbagai Merchant CTCORP Group</field>
+            <field name="code">CTCORP50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8620</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_dl100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Dreamline 100K</field>
+            <field name="code">DL100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8630</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_dl1000" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Dreamline 1000K</field>
+            <field name="code">DL1000</field>
+            <field name="value">1000000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8640</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_dl500" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Dreamline 500K</field>
+            <field name="code">DL500</field>
+            <field name="value">500000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8650</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fag100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Arena Group 100K</field>
+            <field name="code">FAG100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8660</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fag300" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Arena Group 300K</field>
+            <field name="code">FAG300</field>
+            <field name="value">300000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8670</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fbm200" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Bakmi Naga 250K</field>
+            <field name="code">FBM200</field>
+            <field name="value">250000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8680</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fbn100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Bakmi Naga 100K</field>
+            <field name="code">FBN100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8690</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fhd100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Haagen Dazs 100K</field>
+            <field name="code">FHD100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8700</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fhd300" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Haagen Dazs 300K</field>
+            <field name="code">FHD300</field>
+            <field name="value">300000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8710</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fhd500" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Haagen Dazs 500K</field>
+            <field name="code">FHD500</field>
+            <field name="value">500000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8720</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fkb100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Kafe Betawi 100K</field>
+            <field name="code">FKB100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8730</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_flj100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Lifejuice 100K</field>
+            <field name="code">FLJ100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8740</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fna100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Negiya 100K</field>
+            <field name="code">FNA100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8750</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fna50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Negiya 50K</field>
+            <field name="code">FNA50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8760</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fnp100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Nannys Pavillon 100K</field>
+            <field name="code">FNP100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8770</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fnp250" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Nannys Pavillon 250K</field>
+            <field name="code">FNP250</field>
+            <field name="value">250000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8780</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fnp50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Nannys Pavillon 50K</field>
+            <field name="code">FNP50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8790</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fnt100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Noble by Zhab Thai 100K</field>
+            <field name="code">FNT100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8800</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fnt50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Noble by Zhab Thai 50K</field>
+            <field name="code">FNT50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8810</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fpc100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Portal Café 100K</field>
+            <field name="code">FPC100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8820</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fpc50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Portal Café 50K</field>
+            <field name="code">FPC50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8830</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_frs100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Red Suki 100K</field>
+            <field name="code">FRS100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8840</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fsm100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Stevan Meat Shop 100K</field>
+            <field name="code">FSM100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8850</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fstk100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Steak 21 100K</field>
+            <field name="code">FSTK100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8860</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fsu100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Sunny Side Up 100K</field>
+            <field name="code">FSU100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8870</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fsu200" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Sunny Side Up 200K</field>
+            <field name="code">FSU200</field>
+            <field name="value">200000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8880</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fsu500" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Sunny Side Up 500K</field>
+            <field name="code">FSU500</field>
+            <field name="value">500000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8890</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fyo100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Yoshinoya 100K</field>
+            <field name="code">FYO100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8900</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_fyo50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Yoshinoya 50K</field>
+            <field name="code">FYO50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8910</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_gm100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Bakmi GM 100K</field>
+            <field name="code">GM100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8920</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_gm50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Bakmi GM 50K</field>
+            <field name="code">GM50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8930</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_gramed100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Gramedia 100K</field>
+            <field name="code">GRAMED100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8940</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_gramed50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Gramedia 50K</field>
+            <field name="code">GRAMED50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8950</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_hnm100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Fashion H&amp;M 100K</field>
+            <field name="code">HNM100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8960</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_hnm250" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Fashion H&amp;M 250K</field>
+            <field name="code">HNM250</field>
+            <field name="value">250000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8970</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_hnm50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Fashion H&amp;M 50K</field>
+            <field name="code">HNM50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8980</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_hss400" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher 400K Hotel Sofyan Soepomo</field>
+            <field name="code">HSS400</field>
+            <field name="value">400000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">8990</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_indomart100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Indomaret 100K</field>
+            <field name="code">INDOMART100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9000</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_indomart25" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Indomaret 25K</field>
+            <field name="code">INDOMART25</field>
+            <field name="value">25000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9010</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_indomart50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Indomaret 50K</field>
+            <field name="code">INDOMART50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9020</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_kimu50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Kimukatsu 50K</field>
+            <field name="code">KIMU50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9030</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_kintan50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Kintan Buffet 50K</field>
+            <field name="code">KINTAN50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9040</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_metrox100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Metrox 100K</field>
+            <field name="code">METROX100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9050</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_metrox50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Metrox 50K</field>
+            <field name="code">METROX50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9060</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_metrox500" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Metrox 500K</field>
+            <field name="code">METROX500</field>
+            <field name="value">500000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9070</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_mwok100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Master Wok 100K</field>
+            <field name="code">MWOK100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9080</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_mwok50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Master Wok 50K</field>
+            <field name="code">MWOK50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9090</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_onokb50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Onokabe 50K</field>
+            <field name="code">ONOKB50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9100</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_pdyn50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Paradise Dynasty 50K</field>
+            <field name="code">PDYN50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9110</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_pinn50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Paradise Inn 50K</field>
+            <field name="code">PINN50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9120</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_plunch50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Pepper Lunch 50K</field>
+            <field name="code">PLUNCH50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9130</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_pmade50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Putu Made 50K</field>
+            <field name="code">PMADE50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9140</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_shaburi50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Shaburi 50K</field>
+            <field name="code">SHABURI50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9150</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_ste25" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher ShareTea 25K</field>
+            <field name="code">STE25</field>
+            <field name="value">25000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9160</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_ste50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher ShareTea 50K</field>
+            <field name="code">STE50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9170</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_ste75" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher ShareTea 75K</field>
+            <field name="code">STE75</field>
+            <field name="value">75000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9180</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_tawan100" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Tawan 100K</field>
+            <field name="code">TAWAN100</field>
+            <field name="value">100000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9190</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_tawan250" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Tawan 250K</field>
+            <field name="code">TAWAN250</field>
+            <field name="value">250000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9200</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_tawan50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Tawan 50K</field>
+            <field name="code">TAWAN50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9210</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_vhb200" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Honest Bee 200K</field>
+            <field name="code">VHB200</field>
+            <field name="value">200000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9220</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_vhb350" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Honest Bee 350K</field>
+            <field name="code">VHB350</field>
+            <field name="value">350000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9230</field>
+            <field name="active" eval="True"/>
+        </record>
+
+
+        <record id="tt_master_voucher_ppob_zin50" model="tt.master.voucher.ppob">
+            <field name="name">Digital Voucher Bakerzin 50K</field>
+            <field name="code">ZIN50</field>
+            <field name="value">50000</field>
+            <field name="type">others</field>
+            <field name="provider_id" ref="tt_provider_ppob_espay"/>
+            <field name="sequence">9240</field>
+            <field name="active" eval="True"/>
+        </record>
     </data>
 </odoo>
