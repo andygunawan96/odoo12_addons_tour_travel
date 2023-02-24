@@ -1258,6 +1258,7 @@ class TtPassport(models.Model):
                 p_charge_type = p_sc.charge_type  # get charge type
                 p_pax_type = p_sc.pax_type  # get pax type
                 p_pricelist_id = p_sc.passport_pricelist_id.id
+                c_code = ''
                 if not sc_value.get(p_pricelist_id):  # if sc_value[pax type] not exists
                     sc_value[p_pricelist_id] = {}
                 if not sc_value[p_pricelist_id].get(p_pax_type):

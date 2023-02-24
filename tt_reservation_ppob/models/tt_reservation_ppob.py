@@ -148,6 +148,7 @@ class ReservationPpob(models.Model):
                 p_charge_code = p_sc.charge_code
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
+                c_code = ''
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
