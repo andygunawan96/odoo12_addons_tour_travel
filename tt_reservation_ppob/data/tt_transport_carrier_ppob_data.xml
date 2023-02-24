@@ -162,6 +162,16 @@
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
 
+        <record id="tt_transport_carrier_ppob_othervoucher" model="tt.transport.carrier">
+            <field name="name">Other Voucher</field>
+            <field name="code">other_voucher</field>
+            <field name="icao">e-voucher</field>
+            <field name="adult_length_name">9</field>
+            <field name="child_length_name">13</field>
+            <field name="active">1</field>
+            <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
+        </record>
+
         <record id="tt_transport_carrier_ppob_pdam" model="tt.transport.carrier">
             <field name="name">PDAM</field>
             <field name="code">pdam</field>

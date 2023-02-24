@@ -182,6 +182,17 @@
             ]"/>
         </record>
 
+        <record id="tt_transport_carrier_search_ppob_othervoucher" model="tt.transport.carrier.search">
+            <field name="name">Other Voucher</field>
+            <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_othervoucher"/>
+            <field name="is_default" eval="False"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">655</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_ppob.tt_provider_ppob_espay'))
+            ]"/>
+        </record>
+
         <record id="tt_transport_carrier_search_ppob_pdam" model="tt.transport.carrier.search">
             <field name="name">PDAM</field>
             <field name="carrier_id" ref="tt_reservation_ppob.tt_transport_carrier_ppob_pdam"/>

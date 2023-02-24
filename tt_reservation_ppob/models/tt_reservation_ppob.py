@@ -97,7 +97,8 @@ class ReservationPpob(models.Model):
                 'prepaid_mobile': {},
                 'game': {},
                 'pdam': {},
-                'pbb': {}
+                'pbb': {},
+                'others': {}
             }
             for vouch_key in voucher_data.keys():
                 vouch_data = self.env['tt.master.voucher.ppob'].search([('type', '=', vouch_key)])
