@@ -622,7 +622,7 @@ class TtReservation(models.Model):
     def multi_recalculate_service_charges(self):
         for rec in self:
             _logger.info(rec.name)
-            rec.calculate_service_charges()
+            rec.calculate_service_charge()
             rec._compute_total_fare()
             rec._compute_total_tax()
             rec._compute_grand_total()

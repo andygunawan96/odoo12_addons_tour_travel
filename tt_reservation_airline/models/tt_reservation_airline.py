@@ -1997,7 +1997,15 @@ class ReservationAirline(models.Model):
                     sc_value[p_pax_type] = {}
                 c_code = ''
                 if p_charge_type != 'RAC':
-                    if not sc_value[p_pax_type].get(p_charge_type) and p_charge_code != 'csc':
+                    if p_charge_code == 'csc':
+                        c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
+                        sc_value[p_pax_type][p_charge_type].update({
+                            'amount': 0,
+                            'foreign_amount': 0,
+                            'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
+                            'total': 0
+                        })
+                    if not sc_value[p_pax_type].get(p_charge_type):
                         sc_value[p_pax_type][p_charge_type] = {}
                         sc_value[p_pax_type][p_charge_type].update({
                             'amount': 0,
@@ -2005,22 +2013,11 @@ class ReservationAirline(models.Model):
                             'pax_count': p_sc.pax_count,  ## ini asumsi yang pertama yg plg benar pax countnya
                             'total': 0
                         })
-                        c_type = p_charge_type
-                        c_code = p_charge_type.lower()
-                    else:
-                        if p_charge_code == 'csc':
-                            c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
-                            c_code = p_charge_code.lower()
-                        else:
+                        if p_charge_type in ['SEAT','SSR']:
                             c_type = "%s%s" % (p_charge_type, idy) ## untuk service charge yg kembar contoh SSR
-                            c_code = p_charge_type.lower()
-                        sc_value[p_pax_type][c_type] = {}
-                        sc_value[p_pax_type][c_type].update({
-                            'amount': 0,
-                            'foreign_amount': 0,
-                            'pax_count': p_sc.pax_count,
-                            'total': 0
-                        })
+                        else:
+                            c_type = p_charge_type
+                    c_code = p_charge_type.lower()
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
