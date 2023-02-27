@@ -625,7 +625,7 @@ class HotelReservation(models.Model):
 
         ## ADD CUSTOMER BEHAVIOR
         for passenger_obj in self.passenger_ids:
-            passenger_obj.customer_id.add_behavior('hotel', 'star', dict(self._fields['hotel_rating'].selection).get(self.hotel_rating) if self.hotel_rating else '')
+            passenger_obj.customer_id.add_behavior('hotel', '%s' % dict(self._fields['hotel_rating'].selection).get(self.hotel_rating) if self.hotel_rating else '')
 
         try:
             if self.agent_type_id.is_send_email_issued:
