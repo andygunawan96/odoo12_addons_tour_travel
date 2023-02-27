@@ -720,181 +720,47 @@ class MasterActivity(models.Model):
                 })
 
             countries_dict = {}
-            country_objs = self.env['res.country'].sudo().search([])
-            state_objs = self.env['res.country.state'].sudo().search([])
-            city_objs = self.env['res.city'].sudo().search([])
-
-            for country in country_objs:
-                if country.code:
-                    countries_dict.update({
-                        country.code: {
-                            'name': country.name,
-                            'code': country.code,
-                            'uuid': str(country.id),
-                            'states': {}
-                        }
-                    })
-
-            for state in state_objs:
-                if state.country_id:
-                    if countries_dict.get(state.country_id.code):
-                        countries_dict[state.country_id.code]['states'].update({
-                            str(state.id): {
-                                'name': state.name,
-                                'uuid': str(state.id),
-                                'cities': {}
+            activity_loc_objs = self.env['tt.activity.master.locations'].search([('country_id', '!=', False)])
+            for loc in activity_loc_objs:
+                if loc.country_id.code:
+                    if not countries_dict.get(loc.country_id.code):
+                        countries_dict.update({
+                            loc.country_id.code: {
+                                'name': loc.country_id.name,
+                                'code': loc.country_id.code,
+                                'uuid': str(loc.country_id.id),
+                                'states': {}
                             }
                         })
-                    else:
-                        if state.country_id.code:
-                            countries_dict.update({
-                                state.country_id.code: {
-                                    'name': state.country_id.name,
-                                    'code': state.country_id.code,
-                                    'uuid': str(state.country_id.id),
-                                    'states': {
-                                        str(state.id): {
-                                            'name': state.name,
-                                            'uuid': str(state.id),
-                                            'cities': {}
-                                        }
-                                    }
+                    if loc.state_id:
+                        cur_state = str(loc.state_id.id)
+                        if not countries_dict[loc.country_id.code]['states'].get(cur_state):
+                            countries_dict[loc.country_id.code]['states'].update({
+                                cur_state: {
+                                    'name': loc.state_id.name,
+                                    'uuid': str(loc.state_id.id),
+                                    'cities': {}
                                 }
                             })
-
-            for city in city_objs:
-                if city.state_id:
-                    if city.state_id.country_id:
-                        if countries_dict.get(city.state_id.country_id.code):
-                            if countries_dict[city.state_id.country_id.code]['states'].get(str(city.state_id.id)):
-                                countries_dict[city.state_id.country_id.code]['states'][str(city.state_id.id)]['cities'].update({
-                                    str(city.id): {
-                                        'name': city.name,
-                                        'uuid': str(city.id),
-                                    }
-                                })
-                            else:
-                                countries_dict[city.state_id.country_id.code]['states'].update({
-                                    str(city.state_id.id): {
-                                        'name': city.state_id.name,
-                                        'uuid': str(city.state_id.id),
-                                        'cities': {
-                                            str(city.id): {
-                                                'name': city.name,
-                                                'uuid': str(city.id),
-                                            }
-                                        }
-                                    }
-                                })
-                        else:
-                            if city.state_id.country_id.code:
-                                countries_dict.update({
-                                    city.state_id.country_id.code: {
-                                        'name': city.state_id.country_id.name,
-                                        'code': city.state_id.country_id.code,
-                                        'uuid': str(city.state_id.country_id.id),
-                                        'states': {
-                                            str(city.state_id.id): {
-                                                'name': city.state_id.name,
-                                                'uuid': str(city.state_id.id),
-                                                'cities': {
-                                                    str(city.id): {
-                                                        'name': city.name,
-                                                        'uuid': str(city.id),
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                })
                     else:
-                        if city.country_id:
-                            if countries_dict.get(city.country_id.code):
-                                if countries_dict[city.country_id.code]['states'].get(str(city.state_id.id)):
-                                    countries_dict[city.country_id.code]['states'][str(city.state_id.id)]['cities'].update({
-                                        str(city.id): {
-                                            'name': city.name,
-                                            'uuid': str(city.id),
-                                        }
-                                    })
-                                else:
-                                    countries_dict[city.country_id.code]['states'].update({
-                                        str(city.state_id.id): {
-                                            'name': city.state_id.name,
-                                            'uuid': str(city.state_id.id),
-                                            'cities': {
-                                                str(city.id): {
-                                                    'name': city.name,
-                                                    'uuid': str(city.id),
-                                                }
-                                            }
-                                        }
-                                    })
-                            else:
-                                if city.country_id.code:
-                                    countries_dict.update({
-                                        city.country_id.code: {
-                                            'name': city.country_id.name,
-                                            'code': city.country_id.code,
-                                            'uuid': city.country_id.id,
-                                            'states': {
-                                                str(city.state_id.id): {
-                                                    'name': city.state_id.name,
-                                                    'uuid': str(city.state_id.id),
-                                                    'cities': {
-                                                        str(city.id): {
-                                                            'name': city.name,
-                                                            'uuid': str(city.id),
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    })
-                else:
-                    if city.country_id:
-                        if countries_dict.get(city.country_id.code):
-                            if countries_dict[city.country_id.code]['states'].get('0'):
-                                countries_dict[city.country_id.code]['states']['0']['cities'].update({
-                                    str(city.id): {
-                                        'name': city.name,
-                                        'uuid': str(city.id),
-                                    }
-                                })
-                            else:
-                                countries_dict[city.country_id.code]['states'].update({
-                                    '0': {
-                                        'name': 'No State',
-                                        'uuid': '0',
-                                        'cities': {
-                                            str(city.id): {
-                                                'name': city.name,
-                                                'uuid': str(city.id),
-                                            }
-                                        }
-                                    }
-                                })
-                        else:
-                            if city.country_id.code:
-                                countries_dict.update({
-                                    city.country_id.code: {
-                                        'name': city.country_id.name,
-                                        'code': city.country_id.code,
-                                        'uuid': str(city.country_id.id),
-                                        'states': {
-                                            '0': {
-                                                'name': 'No State',
-                                                'uuid': '0',
-                                                'cities': {
-                                                    str(city.id): {
-                                                        'name': city.name,
-                                                        'uuid': str(city.id),
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                })
+                        cur_state = '0'
+                        if not countries_dict[loc.country_id.code]['states'].get(cur_state):
+                            countries_dict[loc.country_id.code]['states'].update({
+                                cur_state: {
+                                    'name': 'No State',
+                                    'uuid': '0',
+                                    'cities': {}
+                                }
+                            })
+                    if loc.city_id:
+                        cur_city_id = str(loc.city_id.id)
+                        if not countries_dict[loc.country_id.code]['states'][cur_state]['cities'].get(cur_city_id):
+                            countries_dict[loc.country_id.code]['states'][cur_state]['cities'].update({
+                                cur_city_id: {
+                                    'name': loc.city_id.name,
+                                    'uuid': str(loc.city_id.id),
+                                }
+                            })
 
             values = {
                 'categories': categories_list,
@@ -1044,13 +910,13 @@ class MasterActivity(models.Model):
                             image_temp.append(img_temp)
                         else:
                             img_temp = {
-                                'path': 'http://static.skytors.id/tour_packages/not_found.png',
+                                'path': '',
                                 'url': '',
                             }
                             image_temp.append(img_temp)
                 else:
                     img_temp = {
-                        'path': 'http://static.skytors.id/tour_packages/not_found.png',
+                        'path': '',
                         'url': '',
                     }
                     image_temp.append(img_temp)
@@ -1215,13 +1081,13 @@ class MasterActivity(models.Model):
                         image_temp.append(img_temp)
                     else:
                         img_temp = {
-                            'path': 'http://static.skytors.id/tour_packages/not_found.png',
+                            'path': '',
                             'url': '',
                         }
                         image_temp.append(img_temp)
             else:
                 img_temp = {
-                    'path': 'http://static.skytors.id/tour_packages/not_found.png',
+                    'path': '',
                     'url': '',
                 }
                 image_temp.append(img_temp)
