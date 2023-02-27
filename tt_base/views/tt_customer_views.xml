@@ -104,10 +104,7 @@
                                     <field name="behavior_ids">
                                         <tree>
                                             <field name="provider_type_id"/>
-                                            <field name="behavior_type"/>
-                                            <field name="behavior_value"/>
                                             <field name="remark"/>
-                                            <field name="counter"/>
                                         </tree>
                                     </field>
                                 </page>

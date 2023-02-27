@@ -184,20 +184,7 @@ class TtCustomer(models.Model):
         for rec in self.behavior_ids:
             rec_dict = rec.to_dict()
             if not behavior_dict.get(rec_dict['provider_type']):
-                behavior_dict[rec_dict['provider_type']] = {}
-            if not behavior_dict[rec_dict['provider_type']].get(rec_dict['behavior_type']):
-                behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']] = {
-                    "value": rec_dict['behavior_value'],
-                    "counter": rec_dict['counter'],
-                    "remark": rec_dict['remark']
-                }
-            else:
-                ## check terbanyak
-                if rec_dict['counter'] > behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']]['counter']:
-                    behavior_dict[rec_dict['provider_type']][rec_dict['behavior_type']].update({
-                        "value": rec_dict['behavior_value'],
-                        "counter": rec_dict['counter']
-                    })
+                behavior_dict[rec_dict['provider_type']] = rec_dict['remark']
         return behavior_dict
 
     def copy_to_passenger(self):
@@ -653,39 +640,23 @@ class TtCustomer(models.Model):
     def create_or_update_customer_bitrix(self, data, context):
         return ERR.get_no_error()
 
-    def add_behavior(self, provider_type, behavior_type, behavior_value, remark=''):
-        check_behavior = True
-        if behavior_type == 'baggage':
-            number = re.findall(r'\d+', behavior_value)
-            if number:
-                behavior_value = "%s KG" % str(int(number[0]))
-            else:
-                behavior_value = ''
-        if behavior_value != '':
-            for behavior_obj in self.behavior_ids:
-                ## CHECK KALAU TYPE SAMA & PROVIDER SAMA & REMARK SAMA SAMA BARU DATA DI COMPARE KALAU TIDAK MASUK DATA BARU
-                if behavior_obj.behavior_type == behavior_type and provider_type == behavior_obj.provider_type_id.code and remark == behavior_obj.remark:
-                    # compare name
-                    similarity = 0
-                    for data_db in behavior_obj.behavior_value.split(' '):
-                        for new_data in behavior_value.split(' '):
-                            if data_db == new_data:
-                                similarity += 1
-                                break
-                    total_similarity = len(behavior_obj.behavior_value.split(' ')) if len(behavior_obj.behavior_value.split(' ')) > len(behavior_value.split(' ')) else len(behavior_value.split(' '))
-                    if similarity == total_similarity: #FOUND
-                        behavior_obj.counter += 1
-                        check_behavior = False
-                        break
-            if check_behavior:
-                self.env['tt.customer.behavior'].create({
-                    "customer_id": self.id,
-                    "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
-                    "behavior_type": behavior_type,
-                    "behavior_value": behavior_value,
-                    "counter": 1,
-                    "remark": remark
+    def add_behavior(self, provider_type, remark=''):
+        is_behavior_found = False
+        for behavior_obj in self.behavior_ids:
+            ## UNTUK BEHAVIOR SEAT SELALU UPDATE KURSI TERAKHIR & REMARK
+            if provider_type == behavior_obj.provider_type_id.code:
+                ## AIRLINE TRAIN  YG DI PILIH UPDATE REMARK
+                behavior_obj.update({
+                    "remark": remark,
                 })
+                is_behavior_found = True
+
+        if not is_behavior_found:
+            self.env['tt.customer.behavior'].create({
+                "customer_id": self.id,
+                "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
+                "remark": remark
+            })
 
 class TtCustomerIdentityNumber(models.Model):
     _name = "tt.customer.identity"
@@ -731,21 +702,14 @@ class TtCustomerIdentityNumber(models.Model):
 class TtCustomerBehavior(models.Model):
     _name = "tt.customer.behavior"
     _description = "Customer Behavior"
-    _rec_name = "behavior_type"
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    behavior_type = fields.Char('Type') #Baggage / meal / hotel dkk
-    behavior_value = fields.Char('Name')
-    counter = fields.Integer('Count')
     customer_id = fields.Many2one('tt.customer', 'Owner', required=True)
     remark = fields.Char('Additional Information')
 
     def to_dict(self):
         return {
             "provider_type": self.provider_type_id.name,
-            "behavior_type": self.behavior_type.capitalize() if self.behavior_type else '',
-            "behavior_value": self.behavior_value.capitalize() if self.behavior_value else '',
-            "counter": self.counter,
             "remark": self.remark
         }
 
