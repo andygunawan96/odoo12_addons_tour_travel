@@ -737,6 +737,8 @@ class MasterTour(models.Model):
             raise UserError(_('Please fill Provider!'))
         if not self.tour_line_ids:
             raise UserError(_('Please add at least 1 Tour Line(s)!'))
+        if not self.location_ids:
+            raise UserError(_('Please add at least 1 Tour Location(s)!'))
         if any(not rec.check_confirm_validity() for rec in self.room_ids):
             raise UserError(_('Please make sure every accommodation rooms in this tour have an active default pricing (pricing for min 1 pax)'))
 
