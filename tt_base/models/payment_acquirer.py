@@ -124,6 +124,9 @@ class PaymentAcquirer(models.Model):
         minimum_amount_default = self.minimum_amount + uniq
         if self.type == 'credit':
             minimum_amount_default += fee
+        elif self.type == 'creditcard_topup':
+            amount -= fee
+            uniq = 0
         minimum_amount['default'] = minimum_amount_default
 
         ###POINT
@@ -588,7 +591,10 @@ class PaymentAcquirerNumber(models.Model):
 
     def create_payment_acq_api(self, data):
         ### BAYAR PAKAI PAYMENT GATEWAY
-        provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
+        if variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]] != 'top.up':
+            provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
+        else:
+            provider_type = 'tt.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
         is_use_point = data.get('use_point', False)
         if not booking_obj:
@@ -622,12 +628,17 @@ class PaymentAcquirerNumber(models.Model):
     def create_payment_acq(self,data,booking_obj,provider_type, is_use_point):
         ## RULE TIME LIMIT PAYMENT ACQ < 1 jam, 10 menit = HOLD DATE - 10 menit
         ## UNTUK YG LEBIH DARI 1 JAM, 10 menit HOLE DATE HOLD DATE 60 menit
-        if booking_obj.hold_date < datetime.now() + timedelta(minutes=130):
-            hold_date = booking_obj.hold_date - timedelta(minutes=10)
-        elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
-            hold_date = datetime.now() + timedelta(minutes=30)
+        if booking_obj._name != 'tt.top.up':
+            ## RESERVASI
+            if booking_obj.hold_date < datetime.now() + timedelta(minutes=130):
+                hold_date = booking_obj.hold_date - timedelta(minutes=10)
+            elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
+                hold_date = datetime.now() + timedelta(minutes=30)
+            else:
+                hold_date = datetime.now() + timedelta(minutes=120)
         else:
-            hold_date = datetime.now() + timedelta(minutes=120)
+            ## TOP UP
+            hold_date = booking_obj.due_date - timedelta(minutes=10)
 
 
 
@@ -684,7 +695,10 @@ class PaymentAcquirerNumber(models.Model):
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number) - 1].create_date
             if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < payment_acq_number[len(payment_acq_number)-1].time_limit and payment_acq_number[len(payment_acq_number)-1].time_limit and payment_acq_number[len(payment_acq_number) - 1].state == 'close':
-                book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1]))], limit=1)
+                if data['provider'] != 'top.up':
+                    book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1]))], limit=1)
+                else:
+                    book_obj = self.env['tt.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0], data['order_number'].split('.')[1]))], limit=1)
                 res = {
                     'order_number': data['order_number'],
                     'create_date': book_obj.create_date and book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S") or '',

@@ -208,7 +208,8 @@ ACQUIRER_TYPE = [
     ('marketplace','Marketplace'),
     ('payment_link','Payment Link'),
     ('va', 'Virtual Account'),##open
-    ('payment_gateway', 'Payment Gateway')##closed
+    ('payment_gateway', 'Payment Gateway'),##closed
+    ('creditcard_topup', 'Credit Card'),##closed creditcard untuk top up, temporary provider type
 ]
 
 ACC_TRANSPORT_TYPE = {
@@ -283,7 +284,8 @@ PROVIDER_TYPE_PREFIX = {
     'SE': 'swabexpress',
     'IR': 'insurance',
     'BU': 'bus',
-    'SM': 'sentramedika'
+    'SM': 'sentramedika',
+    'TU': 'top.up'
 }
 
 PRODUCT_STATE = [

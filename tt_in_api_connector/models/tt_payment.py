@@ -144,9 +144,27 @@ class TtPaymentApiCon(models.Model):
                 pass
             # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
         elif action == 'get_amount':
-            book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])])
+            if data['provider_type'] != 'top.up':
+                book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])])
+                if book_obj:
+                    amount = book_obj.total - book_obj.total_discount
+                    phone_number = "".join(book_obj.contact_phone.split(' - '))
+                    currency = book_obj.currency_id.name
+                    name = book_obj.contact_id.name
+                    email = book_obj.contact_email
+
+            else:
+                book_obj = self.env['tt.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['confirm', 'request'])])
+                if book_obj:
+                    amount = book_obj.total
+                    for phone_obj in book_obj.agent_id.phone_ids:
+                        if phone_obj.phone_number:
+                            phone_number = phone_obj.phone_number
+                            break
+                    currency = book_obj.currency_id.name
+                    name = book_obj.request_uid.name
+                    email = book_obj.request_uid.email
             if book_obj:
-                amount = book_obj.total - book_obj.total_discount
                 payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
                 if payment_acq_number_obj:
                     amount += payment_acq_number_obj.fee_amount
@@ -166,10 +184,10 @@ class TtPaymentApiCon(models.Model):
                 #         timelimit = different_time_in_minutes - 5
                     values = {
                         "amount": amount,
-                        "currency": book_obj.currency_id.name,
-                        "phone_number": "".join(book_obj.contact_phone.split(' - ')),
-                        "name": book_obj.contact_id.name,
-                        "email": book_obj.contact_email,
+                        "currency": currency,
+                        "phone_number": phone_number,
+                        "name": name,
+                        "email": email,
                         "time_limit": timelimit,
                         'time_limit_datetime': payment_acq_number_obj.time_limit.strftime('%Y-%m-%d %H:%M:%S')
                     }
