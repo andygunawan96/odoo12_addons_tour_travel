@@ -1134,7 +1134,7 @@ class ProviderPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, agent_id, agent_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, **kwargs):
+    def get_pricing_data(self, agent_id, agent_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -1546,7 +1546,7 @@ class AgentPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, **kwargs):
+    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -2166,7 +2166,7 @@ class CustomerPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, customer_parent_type_code, customer_parent_id, provider_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, **kwargs):
+    def get_pricing_data(self, customer_parent_type_code, customer_parent_id, provider_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -2524,7 +2524,7 @@ class AgentCommission(object):
 
     def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city,
                          origin_country, destination_code, destination_city, destination_country, class_of_service_list,
-                         charge_code_list, tour_code_list, pricing_datetime, **kwargs):
+                         charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
