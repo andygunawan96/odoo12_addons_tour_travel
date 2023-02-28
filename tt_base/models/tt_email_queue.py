@@ -547,6 +547,5 @@ class TtEmailQueue(models.Model):
         except Exception as e:
             self.write({
                 'last_sent_attempt_date': datetime.now(),
-                'active': False,
                 'failure_reason': '%s : %s' % (traceback.format_exc(), str(e))
             })
