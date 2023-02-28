@@ -924,12 +924,12 @@ class MasterTour(models.Model):
                     })
                     country_id_list.append(rec2.country_id.id)
                     city_id_list.append(rec2.city_id.id)
-                    if search_request['country_id'] != 0:
-                        if search_request['country_id'] not in country_id_list:
-                            qualify = False
-                    if search_request['city_id'] != 0:
-                        if search_request['city_id'] not in city_id_list:
-                            qualify = False
+                if search_request['country_id'] != 0:
+                    if search_request['country_id'] not in country_id_list:
+                        qualify = False
+                if search_request['city_id'] != 0:
+                    if search_request['city_id'] not in city_id_list:
+                        qualify = False
 
                 if rec.tour_category == 'private':
                     if rec.agent_id != context['co_agent_id']:
@@ -947,8 +947,8 @@ class MasterTour(models.Model):
                     tour_line_list = []
                     for rec2 in rec.tour_line_ids:
                         if rec2.active:
-                            tour_line_list.append(rec2.to_dict())
-                            if rec2.departure_date:
+                            if rec2.departure_date and rec2.departure_date >= fields.Date.today():
+                                tour_line_list.append(rec2.to_dict())
                                 str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
                                 if search_request['departure_month'] != '00':
                                     if search_request['departure_year'] != '0000':
