@@ -70,7 +70,10 @@ class TtPaymentApiCon(models.Model):
                         # pay_acq_num[len(pay_acq_num)-1].fee_amount = float(data['fee'])
                         _logger.info("UPDATING PAY ACQ NUM TO state %s and fee %s" % (pay_acq_num[len(pay_acq_num)-1].state,pay_acq_num[len(pay_acq_num)-1].fee_amount))
 
-                        agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
+                        if data['provider_type'] != 'top.up':
+                            agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
+                        else:
+                            agent_id = self.env['tt.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
                         if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]):
                             # topup
                             context = {
@@ -98,43 +101,46 @@ class TtPaymentApiCon(models.Model):
                                 res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
                                 pay_acq_num[len(pay_acq_num) - 1].state = 'waiting'
 
-                    book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])], limit=1)
-                    _logger.info(data['order_number'])
-                    if book_obj:
-                        pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close','waiting','done'])],limit=1) ## SELECT ULANG KARENA BISA CONCURRENT, UNTUK AMBIL FEE AMOUNT
-                        reservation_transaction_amount = book_obj.total - book_obj.total_discount
-                        if pay_acq_num:
-                            reservation_transaction_amount += pay_acq_num.fee_amount
-                        website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
-                        if website_use_point_reward == 'True':
-                            if pay_acq_num.is_using_point_reward:
-                                reservation_transaction_amount -= pay_acq_num.point_reward_amount
-                        ##testing dulu
-                        # if reservation_transaction_amount == float(data['transaction_amount']):
-                        if reservation_transaction_amount == float(data['amount']):
-                            seq_id = ''
-                            if book_obj.payment_acquirer_number_id:
-                                seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
-                            values = {
-                                "amount": book_obj.total - book_obj.total_discount,
-                                "currency": book_obj.currency_id.name,
-                                "co_uid": book_obj.user_id.id,
-                                "is_btc": True if book_obj.agent_type_id.code == 'btc' else False,
-                                'member': False, # KALAU BAYAR PAKE ESPAY PASTI MEMBER FALSE
-                                'acquirer_seq_id': seq_id,
-                                'force_issued': True,
-                                'use_point': book_obj.is_using_point_reward
-                            }
-                            res = ERR.get_no_error(values)
+                    if data['provider_type'] != 'top.up':
+                        book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])], limit=1)
+                        _logger.info(data['order_number'])
+                        if book_obj:
+                            pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close','waiting','done'])],limit=1) ## SELECT ULANG KARENA BISA CONCURRENT, UNTUK AMBIL FEE AMOUNT
+                            reservation_transaction_amount = book_obj.total - book_obj.total_discount
+                            if pay_acq_num:
+                                reservation_transaction_amount += pay_acq_num.fee_amount
+                            website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
+                            if website_use_point_reward == 'True':
+                                if pay_acq_num.is_using_point_reward:
+                                    reservation_transaction_amount -= pay_acq_num.point_reward_amount
+                            ##testing dulu
+                            # if reservation_transaction_amount == float(data['transaction_amount']):
+                            if reservation_transaction_amount == float(data['amount']):
+                                seq_id = ''
+                                if book_obj.payment_acquirer_number_id:
+                                    seq_id = book_obj.payment_acquirer_number_id.payment_acquirer_id.seq_id
+                                values = {
+                                    "amount": book_obj.total - book_obj.total_discount,
+                                    "currency": book_obj.currency_id.name,
+                                    "co_uid": book_obj.user_id.id,
+                                    "is_btc": True if book_obj.agent_type_id.code == 'btc' else False,
+                                    'member': False, # KALAU BAYAR PAKE ESPAY PASTI MEMBER FALSE
+                                    'acquirer_seq_id': seq_id,
+                                    'force_issued': True,
+                                    'use_point': book_obj.is_using_point_reward
+                                }
+                                res = ERR.get_no_error(values)
+                            else:
+                                res = ERR.get_error(additional_message='Price not same')
                         else:
-                            res = ERR.get_error(additional_message='Price not same')
+                            res = ERR.get_error(additional_message='Reservation Already Paid or Expired')
+                        try:
+                            if res == '':
+                                res = ERR.get_error(500, additional_message="double payment")
+                        except:
+                            pass
                     else:
-                        res = ERR.get_error(additional_message='Reservation Already Paid or Expired')
-                    try:
-                        if res == '':
-                            res = ERR.get_error(500, additional_message="double payment")
-                    except:
-                        pass
+                        res = ERR.get_no_error()
                 except Exception as e:
                     _logger.error(traceback.format_exc())
                     raise e
