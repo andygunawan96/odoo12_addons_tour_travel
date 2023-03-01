@@ -111,7 +111,7 @@
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_rodextrip_airline" model="tt.provider">
-            <field name="name">Rodextrip Airline</field>
+            <field name="name">RT Airline</field>
             <field name="code">rodextrip_airline</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>

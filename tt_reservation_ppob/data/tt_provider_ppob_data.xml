@@ -16,7 +16,7 @@
         </record>
 
         <record id="tt_provider_ppob_rodextrip_ppob" model="tt.provider">
-            <field name="name">Rodextrip PPOB</field>
+            <field name="name">RT PPOB</field>
             <field name="code">rodextrip_ppob</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_ppob"/>

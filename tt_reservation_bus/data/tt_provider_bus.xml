@@ -8,7 +8,7 @@
             <field name="provider_type_id" ref="tt_provider_type_bus"/>
         </record>
         <record id="tt_provider_bus_rdx_kai" model="tt.provider">
-            <field name="name">Rodextrip Bus</field>
+            <field name="name">RT Bus</field>
             <field name="code">rodextrip_bus</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_bus"/>
