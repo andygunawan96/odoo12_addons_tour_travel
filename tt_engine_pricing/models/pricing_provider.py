@@ -75,9 +75,6 @@ class PricingProvider(models.Model):
             'user_info': user_info,
         }
         res = repr_obj.get_service_charge_pricing(**pricing_values)
-        _logger.info('### HERE ###')
-        _logger.info(json.dumps(res))
-        _logger.info('### HERE END ###')
 
     @api.multi
     @api.depends('provider_access_type', 'provider_ids', 'carrier_access_type', 'carrier_ids', 'agent_type_access_type', 'agent_type_ids', 'agent_access_type', 'agent_ids')

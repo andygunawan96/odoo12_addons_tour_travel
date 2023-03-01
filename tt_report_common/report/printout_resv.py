@@ -10,7 +10,6 @@ class PrintoutReservation(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        # print('docids : ' + str(docids))
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],

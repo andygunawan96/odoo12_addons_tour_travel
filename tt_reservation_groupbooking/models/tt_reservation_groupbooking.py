@@ -639,7 +639,6 @@ class ReservationGroupBooking(models.Model):
                     raise UserError(_('PNR(s) can\'t be Empty'))
         else:
             raise UserError(_('Provider(s) can\'t be Empty'))
-        print(self.issued_uid.id)
         if self.state_groupbooking == 'validate':
             raise UserError(_('Group Booking has been validated. You cannot go back to Sent. Please refresh the page.'))
         if self.state_groupbooking== 'done':
@@ -2446,7 +2445,6 @@ class ReservationGroupBooking(models.Model):
             _logger.error(traceback.format_exc())
             return e.error_dict()
         except Exception as e:
-            print('Error line : ' + str(e))
             _logger.error(traceback.format_exc())
             return ERR.get_error(1004, additional_message='Error create line. There\'s something wrong.')
 
@@ -2463,7 +2461,6 @@ class ReservationGroupBooking(models.Model):
                     iss_off_psg_obj.update(psg['identity'])
                 iss_off_pas_list.append(iss_off_psg_obj.id)
         except Exception as e:
-            print('Error line : ' + str(e))
             _logger.error(traceback.format_exc())
             return ERR.get_error(1004, additional_message='Error create passenger. There\'s something wrong.')
         res = Response().get_no_error(iss_off_pas_list)

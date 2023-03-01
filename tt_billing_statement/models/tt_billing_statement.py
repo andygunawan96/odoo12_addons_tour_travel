@@ -238,4 +238,3 @@ class TtBillingStatement(models.Model):
     def get_company_name(self):
         company_obj = self.env['res.company'].search([],limit=1)
         return company_obj.name
-    

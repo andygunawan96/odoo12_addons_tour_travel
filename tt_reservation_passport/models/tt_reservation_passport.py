@@ -1110,7 +1110,6 @@ class TtPassport(models.Model):
             })
 
             _logger.info("Get resp\n" + json.dumps(res_dict))
-            print(Response().get_no_error(res_dict))
             return Response().get_no_error(res_dict)
             # else:
             #     raise RequestException(1035)
@@ -1446,7 +1445,6 @@ class TtPassport(models.Model):
                     })
                 vals['passenger_passport_ids'].append(ssc['passenger_passport_id'])
                 ssc_list_final.append(vals)
-        print('Final : ' + str(ssc_list_final))
         return ssc_list_final
 
     def _create_passport_order(self, passengers, passenger_ids, context):
@@ -1497,7 +1495,6 @@ class TtPassport(models.Model):
             _logger.error(traceback.format_exc())
             return e.error_dict()
         except Exception as e:
-            print('Error Passport : ' + str(e))
             _logger.error(traceback.format_exc())
             return ERR.get_error(1004, additional_message='Error create Passenger Passport. There\'s something wrong.')
 
@@ -1700,7 +1697,6 @@ class TtPassport(models.Model):
                 if line.charge_type == 'RAC':
                     rec.total_commission += line.total
 
-            print('Total Fare : ' + str(rec.total_fare))
             rec.total = rec.total_fare + rec.total_tax + rec.total_disc
             rec.total_nta = rec.total - rec.total_commission
 

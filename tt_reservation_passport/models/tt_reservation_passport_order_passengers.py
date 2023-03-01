@@ -2,6 +2,8 @@ from odoo import models, fields, api, _
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+import traceback,logging
+_logger = logging.getLogger(__name__)
 
 STATE = [
     ('draft', 'Draft'),
@@ -143,7 +145,7 @@ class PassportOrderPassengers(models.Model):
         template = self.env.ref('tt_reservation_passport.template_mail_passport_interview')
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
-        print("Email Sent")
+        _logger.info("Email Sent")
 
     def action_fail_booked(self):
         for rec in self:

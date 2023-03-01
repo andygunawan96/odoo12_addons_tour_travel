@@ -565,7 +565,6 @@ class TtCustomer(models.Model):
                 raise RequestException(500, additional_message=user_res['error_msg'])
 
             # Create User B2C
-            print('User ' + user_res['response'].name + ' Created!')
             res = ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())

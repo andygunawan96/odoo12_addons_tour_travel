@@ -120,7 +120,6 @@ class TtSplitReservationWizard(models.TransientModel):
         for provider in book_obj.provider_booking_ids:
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_type == 'FARE':
-                    print(scs.to_dict())
                     total_pricing += scs.total
         if total_pricing < book_obj.total:
             pricing_diff = book_obj.total - total_pricing
@@ -202,7 +201,7 @@ class TtSplitReservationWizard(models.TransientModel):
         for provider in book_obj.provider_booking_ids:
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_type == 'FARE':
-                    print(scs.to_dict())
+                    _logger.info(scs.to_dict())
 
         total_pricing_new = 0
         for provider in new_book_obj.provider_booking_ids:
@@ -591,7 +590,6 @@ class TtSplitReservationWizard(models.TransientModel):
             'state_offline': book_obj.state_offline
         }
         new_book_obj = self.env['tt.reservation.offline'].sudo().create(new_vals)
-        print(book_obj.split_to_resv_ids)
         new_book_obj.update({
             'total': self.total_price,
             'total_commission_amount': self.new_commission

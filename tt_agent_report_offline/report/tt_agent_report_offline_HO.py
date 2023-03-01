@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import pytz, datetime
 
-import logging
+import logging, traceback
 _logger = logging.getLogger(__name__)
 
 
@@ -161,7 +161,6 @@ class AgentReportOffline(models.AbstractModel):
                 line_list.append(line)
                 line_idx += 1
         for rec in lines_commission:
-            print(rec)
             if rec['id'] in data_idx:
                 line = line_list[data_idx.get(rec['id'])]
                 if line['agent_id'] == rec['agent_id']:

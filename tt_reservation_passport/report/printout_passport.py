@@ -11,7 +11,6 @@ class PrintoutPassportHO(models.AbstractModel):
         """
 
     def get_values(self, ids):
-        print(ids)
         passport_obj = self.env['tt.reservation.passport'].browse(ids)
         vals = {
             'booked_name': passport_obj.sudo().booked_uid.name,
@@ -41,7 +40,6 @@ class PrintoutPassportCustomer(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        print('docids : ' + str(self.env['tt.reservation.passport'].browse(data['ids'])))
         return {
             'doc_ids': data['ids'],
             'doc_model': data['model'],
