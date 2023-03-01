@@ -11,7 +11,6 @@ class PrintoutVisaHO(models.AbstractModel):
         """
 
     def get_values(self, ids):
-        print(ids)
         visa_obj = self.env['tt.reservation.visa'].browse(ids)
         vals = {
             'booked_name': visa_obj.sudo().booked_uid.name,
@@ -21,7 +20,6 @@ class PrintoutVisaHO(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        # print('docids : ' + str(self.env['tt.reservation.visa'].browse(data['ids'])))
         agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             agent_id = rec.agent_id
@@ -46,7 +44,6 @@ class PrintoutVisaCustomer(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        print('docids : ' + str(self.env['tt.reservation.visa'].browse(data['ids'])))
         agent_id = False
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             agent_id = rec.agent_id

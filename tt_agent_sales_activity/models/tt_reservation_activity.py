@@ -1,7 +1,8 @@
 from odoo import models,api,fields
 from datetime import datetime, timedelta
 import base64
-
+import logging, traceback
+_logger = logging.getLogger(__name__)
 
 class ReservationActivity(models.Model):
 
@@ -269,7 +270,7 @@ class ReservationActivity(models.Model):
             try:
                 rec.invoice_id.action_cancel_invoice()
             except Exception as e:
-                print(str(e))
+                _logger.error(str(e))
 
     def action_issued_activity(self, data):
         super(ReservationActivity, self).action_issued_activity(data)

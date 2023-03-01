@@ -2,6 +2,8 @@ from odoo import models, fields, api, _
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
 from odoo.exceptions import UserError
+import traceback,logging
+_logger = logging.getLogger(__name__)
 
 STATE = [
     ('fail_booked', 'Failed (Book)'),
@@ -165,14 +167,14 @@ class VisaOrderPassengers(models.Model):
         template = self.env.ref('tt_reservation_visa.template_mail_visa_interview')
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
-        print("Email Interview Sent")
+        _logger.info("Email Interview Sent")
 
     def action_send_email_biometrics(self):
         """Dijalankan, jika user menekan tombol 'Send Email Biometrics'"""
         template = self.env.ref('tt_reservation_visa.template_mail_visa_biometrics')
         mail = self.env['mail.template'].browse(template.id)
         mail.send_mail(self.id)
-        print("Email Biometrics Sent")
+        _logger.info("Email Biometrics Sent")
 
     def action_fail_booked(self):
         for rec in self:

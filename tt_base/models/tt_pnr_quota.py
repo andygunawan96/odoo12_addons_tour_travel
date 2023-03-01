@@ -183,7 +183,6 @@ class TtPnrQuota(models.Model):
 
     def get_pnr_quota_api(self,data,context):
         try:
-            print(json.dumps(data))
             agent_obj = self.browse(context['co_agent_id'])
             try:
                 agent_obj.create_date

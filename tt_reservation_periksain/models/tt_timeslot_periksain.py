@@ -148,7 +148,6 @@ class TtTimeslotPeriksain(models.Model):
                 'availability': rec.get_availability(),
                 'group_booking': True if rec.agent_id else False
             })
-        print(json.dumps(timeslot_dict))
         return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):

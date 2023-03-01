@@ -11,7 +11,6 @@ class PrintoutInvoice(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
-        print('docids : ' + str(self.env['tt.reservation.groupbooking'].browse(data['ids'])))
         return {
             'doc_ids': data['ids'],
             'doc_model': data['model'],

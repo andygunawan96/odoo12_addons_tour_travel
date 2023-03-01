@@ -166,7 +166,6 @@ class AgentPricing(models.Model):
     def test_get_data(self):
         res = self.get_data()
         msg = 'Get Data : %s' % json.dumps(res)
-        print(msg)
         _logger.info(msg)
         return True
 

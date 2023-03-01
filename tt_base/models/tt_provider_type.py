@@ -31,7 +31,6 @@ class ProviderType(models.Model):
 
     def _register_hook(self):
         variables.PROVIDER_TYPE = self.get_provider_type()
-        print(variables.PROVIDER_TYPE)
 
     def to_dict(self):
         res = {

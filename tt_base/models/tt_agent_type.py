@@ -123,7 +123,6 @@ class TtAgentType(models.Model):
     # fixme : nanti akan diubah
     def calc_commission(self, amount, multiplier, carrier_id=False):
         rule_id = self.commission_rule_ids.filtered(lambda x: x.carrier_id.id == carrier_id or x.carrier_id.id == False)
-        print(rule_id)
         if rule_id:
             rule_id = rule_id[0]
         else:
@@ -132,18 +131,11 @@ class TtAgentType(models.Model):
             multiplier = rule_id.amount_multiplier == 'pppr' and multiplier or 1
             parent_commission = rule_id.amount * multiplier
             agent_commission = amount - parent_commission
-            print('Amount : ' + str(amount))
-            print('Parent Comm : ' + str(parent_commission))
-            print('Agent Comm : ' + str(agent_commission))
         else:
             parent_commission = rule_id.parent_agent_amount * amount / 100
             agent_commission = rule_id.percentage * amount / 100
-            print('Amount : ' + str(amount))
-            print('Parent Comm : ' + str(parent_commission))
-            print('Agent Comm : ' + str(agent_commission))
 
         ho_commission = amount - parent_commission - agent_commission
-        print('HO Comm : ' + str(ho_commission))
         return agent_commission, parent_commission, ho_commission
 
     @api.multi

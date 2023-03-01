@@ -779,7 +779,7 @@ class RoutesSchedule(models.Model):
         # _file2 = open('/var/log/tour_travel/test2.txt', 'w')
         # _file2.write(json.dumps(test2_res))
         # _file2.close()
-        print('DONE')
+        # print('DONE')
 
     @api.depends('journey_ids', 'origin', 'destination')
     def _compute_data(self):

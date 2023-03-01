@@ -47,7 +47,6 @@ class ApiMonitor(models.Model):
             })
 
             if monitor_data_obj.unverified_counter > monitor_data_obj.monitor_rule_id.ban_limit:
-                print('ban')
                 self.env['tt.ban.user'].ban_user_api({
                     'user_id': monitor_data_obj.user_id.id,
                     'duration_minutes': 180
@@ -57,7 +56,6 @@ class ApiMonitor(models.Model):
                     'hit_count': monitor_data_obj.unverified_counter
                 })
             elif monitor_data_obj.unverified_counter > monitor_data_obj.monitor_rule_id.notification_limit:
-                print('notif')
                 return ERR.get_no_error({
                     'send_telegram': 'notification',
                     'hit_count': monitor_data_obj.unverified_counter

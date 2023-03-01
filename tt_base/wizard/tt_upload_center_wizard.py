@@ -65,7 +65,6 @@ class SplitInvoice(models.TransientModel):
         if not pattern.match(filename):
             raise UserError('Filename Is Not Valid')
         try:
-            print("upload")
             path,url = self.create_directory_structure(filename)
             # path = '/home/rodex-it-05/Documents/test/upload_odoo/%s' % (self.filename)
             new_file = open(path,'wb')
