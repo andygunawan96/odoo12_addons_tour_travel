@@ -144,7 +144,6 @@ class TtTopUp(models.Model):
         })
 
     def action_validate_top_up(self):
-        print("validate")
         if self.state != 'request':
             raise UserError('Can only validate [request] state Top Up.')
         self.write({
@@ -234,7 +233,6 @@ class TtTopUp(models.Model):
                 agent_obj.create_date
             except:
                 raise RequestException(1008)
-            print(json.dumps(data))
 
             ##check apakah ada 3 active request
 

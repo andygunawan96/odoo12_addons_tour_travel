@@ -205,7 +205,6 @@ class AgentRegistration(models.Model):
             rec.total_fee = rec.registration_fee - rec.discount
 
     def check_address(self):
-        print('Check Address')
         if not self.address_ids:
             raise UserError('Please Input an Address')
 
@@ -333,7 +332,6 @@ class AgentRegistration(models.Model):
                     'commission': []
                 }
                 res.append(val)
-            print(res)
             res = Response().get_no_error(res)
             return res
         except Exception as e:
@@ -996,7 +994,6 @@ class AgentRegistration(models.Model):
         return vals_list
 
     def prepare_address(self, address):
-        print(address)
         address_list = []
         address_id = self.address_ids.create({
             'zip': address.get('zip'),
@@ -1015,7 +1012,6 @@ class AgentRegistration(models.Model):
 
     def input_regis_document_data(self, regis_doc):
         created_doc = self.create_registration_documents()
-        print(str(created_doc))
         document_type_env = self.env['tt.document.type'].sudo()
         doc_ids = []
         for rec_regis_doc in regis_doc:

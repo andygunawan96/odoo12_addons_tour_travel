@@ -1691,7 +1691,6 @@ class TtVisa(models.Model):
                     })
                 vals['passenger_visa_ids'].append(ssc['passenger_visa_id'])
                 ssc_list_2.append(vals)
-        print('SSC 2 : ' + str(ssc_list_2))
 
         return ssc_list_2
 
@@ -1761,7 +1760,7 @@ class TtVisa(models.Model):
             _logger.error(traceback.format_exc())
             return e.error_dict()
         except Exception as e:
-            print('Error Visa : ' + str(e))
+            _logger.error('Error Visa : ' + str(e))
             _logger.error(traceback.format_exc())
             return ERR.get_error(1004, additional_message='Error create Passenger Visa. There\'s something wrong.')
 
@@ -2169,7 +2168,6 @@ class TtVisa(models.Model):
                 # if line.charge_type == 'RAC':
                 #     rec.total_commission += line.total
 
-            print('Total Fare : ' + str(rec.total_fare))
             rec.total = rec.total_fare + rec.total_tax + rec.total_discount
 
     @api.depends("passenger_ids")

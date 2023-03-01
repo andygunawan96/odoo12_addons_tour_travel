@@ -2,7 +2,8 @@ from odoo import models,api,fields
 from datetime import datetime, timedelta
 import base64
 import pytz
-
+import traceback,logging
+_logger = logging.getLogger(__name__)
 
 class ReservationMitraKeluarga(models.Model):
 
@@ -317,7 +318,7 @@ class ReservationMitraKeluarga(models.Model):
             try:
                 rec.invoice_id.action_cancel_invoice()
             except Exception as e:
-                print(str(e))
+                _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
     def action_issued_mitrakeluarga(self,data):
         super(ReservationMitraKeluarga, self).action_issued_mitrakeluarga(data)
