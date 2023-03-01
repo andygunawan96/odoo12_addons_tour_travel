@@ -23,7 +23,7 @@
             <field name="provider_type_id" ref="tt_provider_type_activity"/>
         </record>
         <record id="tt_provider_activity_rodextrip_activity" model="tt.provider">
-            <field name="name">Rodextrip Activity</field>
+            <field name="name">RT Activity</field>
             <field name="code">rodextrip_activity</field>
             <field name="alias">RDAC</field>
             <field name="active" eval="True"/>

@@ -94,7 +94,7 @@
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
         <record id="tt_hotel_provider_rodextrip_hotel" model="tt.provider">
-            <field name="name">Rodextrip Hotel</field>
+            <field name="name">RT Hotel</field>
             <field name="alias">A13</field>
             <field name="code">rodextrip_hotel</field>
             <field name="active" eval="True"/>

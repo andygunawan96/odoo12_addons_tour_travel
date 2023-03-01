@@ -16,7 +16,7 @@
             <field name="provider_type_id" ref="tt_provider_type_tour"/>
         </record>
         <record id="tt_provider_tour_rodextrip_tour" model="tt.provider">
-            <field name="name">Rodextrip Tour</field>
+            <field name="name">RT Tour</field>
             <field name="code">rodextrip_tour</field>
             <field name="alias">RDTR</field>
             <field name="active" eval="True"/>

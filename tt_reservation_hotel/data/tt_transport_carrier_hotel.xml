@@ -114,7 +114,7 @@
             <field name="provider_type_id" ref="tt_reservation_hotel.tt_provider_type_hotel"/>
         </record>
         <record id="tt_transport_carrier_hotel_rodextrip_hotel" model="tt.transport.carrier">
-            <field name="name">Rodextrip Hotel</field>
+            <field name="name">RT Hotel</field>
             <field name="code">rodextrip_hotel</field>
             <field name="active" eval="True"/>
             <field name="is_adult_birth_date_required" eval="False"/>

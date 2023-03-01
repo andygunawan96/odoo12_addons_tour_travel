@@ -8,7 +8,7 @@
             <field name="provider_type_id" ref="tt_provider_type_train"/>
         </record>
         <record id="tt_provider_train_rdx_kai" model="tt.provider">
-            <field name="name">Rodextrip Train</field>
+            <field name="name">RT Train</field>
             <field name="code">rodextrip_train</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_train"/>

@@ -8,7 +8,7 @@
             <field name="provider_type_id" ref="tt_provider_type_visa"/>
         </record>
         <record id="tt_provider_visa_rodextrip" model="tt.provider">
-            <field name="name">Visa Rodextrip</field>
+            <field name="name">Visa RT</field>
             <field name="code">rodextrip_visa</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_visa"/>
