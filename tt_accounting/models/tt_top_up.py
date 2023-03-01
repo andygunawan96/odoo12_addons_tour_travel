@@ -234,7 +234,7 @@ class TtTopUp(models.Model):
                 agent_obj.create_date
             except:
                 raise RequestException(1008)
-            print(json.dumps(data))
+            _logger.info(json.dumps(data))
 
             ##check apakah ada 3 active request
 
