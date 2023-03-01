@@ -140,6 +140,8 @@ class TtPaymentApiCon(models.Model):
                         except:
                             pass
                     else:
+                        pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close', 'waiting', 'done'])],limit=1)  ## SELECT ULANG KARENA BISA CONCURRENT, UNTUK AMBIL FEE AMOUNT
+                        pay_acq_num.state = 'done'
                         res = ERR.get_no_error()
                 except Exception as e:
                     _logger.error(traceback.format_exc())

@@ -376,7 +376,10 @@ class TtTopUp(models.Model):
                 raise RequestException(1016,additional_message="State not request or confirm")
 
             top_up_obj.action_cancel_top_up(context) # ubah ke status cancel
-
+            if top_up_obj.acquirer_id.type == 'creditcard_topup':
+                payment_acq_number_objs = self.search([('number', 'ilike', top_up_obj.name)])
+                for payment_acq_number_obj in payment_acq_number_objs:
+                    payment_acq_number_obj.state = 'cancel2'
             return ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())
