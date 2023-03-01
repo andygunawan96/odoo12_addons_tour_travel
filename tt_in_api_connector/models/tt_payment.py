@@ -162,7 +162,7 @@ class TtPaymentApiCon(models.Model):
             else:
                 book_obj = self.env['tt.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['confirm', 'request'])])
                 if book_obj:
-                    amount = book_obj.total_with_fees - book_obj.fees ## karena harga amount + fees * 2 agar sama dengan frontend
+                    amount = book_obj.total_with_fees ## karena harga amount + fees * 2 agar sama dengan frontend
                     for phone_obj in book_obj.agent_id.phone_ids:
                         if phone_obj.phone_number:
                             phone_number = phone_obj.phone_number
