@@ -258,8 +258,8 @@ class TtTopUp(models.Model):
 
             ## kalau pake credit card amount di update + fees
             if acquirer_obj.type == 'creditcard_topup':
-                new_top_up.amount = new_top_up.amount + (new_top_up.fees * 2)
-            
+                new_top_up.amount = new_top_up.amount + (new_top_up.fees * 2) ## amount + (fee*2) agar tampilan harga sesuai dengan frontend
+
             ##make payment
             new_payment = self.env['tt.payment'].create({
                 'real_total_amount': new_top_up.total_with_fees,
