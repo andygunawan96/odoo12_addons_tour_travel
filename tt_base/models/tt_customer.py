@@ -641,22 +641,23 @@ class TtCustomer(models.Model):
         return ERR.get_no_error()
 
     def add_behavior(self, provider_type, remark=''):
-        is_behavior_found = False
-        for behavior_obj in self.behavior_ids:
-            ## UNTUK BEHAVIOR SEAT SELALU UPDATE KURSI TERAKHIR & REMARK
-            if provider_type == behavior_obj.provider_type_id.code:
-                ## AIRLINE TRAIN  YG DI PILIH UPDATE REMARK
-                behavior_obj.update({
-                    "remark": remark,
-                })
-                is_behavior_found = True
+        try:
+            is_behavior_found = False
+            for behavior_obj in self.behavior_ids:
+                if provider_type == behavior_obj.provider_type_id.code:
+                    behavior_obj.update({
+                        "remark": remark,
+                    })
+                    is_behavior_found = True
 
-        if not is_behavior_found:
-            self.env['tt.customer.behavior'].create({
-                "customer_id": self.id,
-                "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
-                "remark": remark
-            })
+            if not is_behavior_found:
+                self.env['tt.customer.behavior'].create({
+                    "customer_id": self.id,
+                    "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
+                    "remark": remark
+                })
+        except Exception as e:
+            _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
 class TtCustomerIdentityNumber(models.Model):
     _name = "tt.customer.identity"
