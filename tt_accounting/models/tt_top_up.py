@@ -255,6 +255,11 @@ class TtTopUp(models.Model):
             acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_seq_id'])],limit=1)
             if len(acquirer_obj.ids)<1:
                 raise RequestException(1017)
+
+            ## kalau pake credit card amount di update + fees
+            if acquirer_obj.type == 'creditcard_topup':
+                new_top_up.amount = new_top_up.amount + (new_top_up.fees * 2)
+            
             ##make payment
             new_payment = self.env['tt.payment'].create({
                 'real_total_amount': new_top_up.total_with_fees,

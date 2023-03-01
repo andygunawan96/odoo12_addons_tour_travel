@@ -15,7 +15,7 @@ class PaymentAcquirer(models.Model):
     _inherit = 'payment.acquirer'
 
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
-    type = fields.Selection(variables.ACQUIRER_TYPE, 'Payment Type')
+    type = fields.Selection(variables.ACQUIRER_TYPE, 'Payment Type', help="Credit card for top up")
     provider_id = fields.Many2one('tt.provider', 'Provider')
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_id = fields.Many2one('tt.bank', 'Bank')
@@ -125,7 +125,6 @@ class PaymentAcquirer(models.Model):
         if self.type == 'credit':
             minimum_amount_default += fee
         elif self.type == 'creditcard_topup':
-            amount -= fee
             uniq = 0
         minimum_amount['default'] = minimum_amount_default
 
