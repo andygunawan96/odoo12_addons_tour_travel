@@ -147,7 +147,7 @@ class TtPaymentApiCon(models.Model):
                             'name': data['order_number'],
                             'payment_ref': data['payment_ref'],
                             # 'fee': data['fee']
-                            'fee': pay_acq_num.fee_amount
+                            'fee': 0 ## testing 0 karena kalau pake data dari fee otomatis perpotong fee 2x
                         }
                         self.env['tt.top.up'].action_va_top_up(request, context,pay_acq_num[len(pay_acq_num) - 1].id)
                         res = ERR.get_no_error()
