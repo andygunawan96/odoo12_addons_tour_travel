@@ -305,6 +305,12 @@ class TtTopUp(models.Model):
 
             for rec in self.search(dom):
                 res.append(rec.to_dict())
+                if rec.acquirer_id.type == 'creditcard_topup':
+                    payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', 'ilike', rec.name), ('state', 'in', ['close'])],limit=1)
+                    if payment_acq_number_obj:
+                        res[-1].update({
+                            "url": payment_acq_number_obj.url
+                        })
             quota = [rec.to_dict() for rec in self.env['tt.pnr.quota'].search([('agent_id', '=', context['co_agent_id'])])]
             res = {
                 'top up': res,
@@ -377,7 +383,7 @@ class TtTopUp(models.Model):
 
             top_up_obj.action_cancel_top_up(context) # ubah ke status cancel
             if top_up_obj.acquirer_id.type == 'creditcard_topup':
-                payment_acq_number_objs = self.search([('name', 'ilike', top_up_obj.name)])
+                payment_acq_number_objs = self.env['payment.acquirer.number'].search([('number', 'ilike', top_up_obj.name)])
                 for payment_acq_number_obj in payment_acq_number_objs:
                     payment_acq_number_obj.state = 'cancel2'
             return ERR.get_no_error()
