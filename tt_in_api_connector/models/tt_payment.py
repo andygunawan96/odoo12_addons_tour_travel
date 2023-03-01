@@ -145,7 +145,7 @@ class TtPaymentApiCon(models.Model):
                             'virtual_account': data['virtual_account'],
                             'name': data['order_number'],
                             'payment_ref': data['payment_ref'],
-                            'fee': data['fee']
+                            'fee': pay_acq_num.fee_amount
                         }
                         self.env['tt.top.up'].action_va_top_up(request, context,pay_acq_num[len(pay_acq_num) - 1].id)
                         res = ERR.get_no_error()
