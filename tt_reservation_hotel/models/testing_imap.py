@@ -13,6 +13,8 @@ from email.mime.image import MIMEImage
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from mimetypes import guess_type as guess_mime_type
+import traceback,logging
+_logger = logging.getLogger(__name__)
 
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
 SCOPES = ['https://mail.google.com/']
@@ -88,14 +90,12 @@ def parse_parts(service, parts, folder_name, message):
                 # if the email part is text plain
                 if data:
                     text = urlsafe_b64decode(data).decode()
-                    print(text)
             elif mimeType == "text/html":
                 # if the email part is an HTML content
                 # save the HTML file and optionally open it in the browser
                 if not filename:
                     filename = "index.html"
                 filepath = os.path.join(folder_name, filename)
-                print("Saving HTML to", filepath)
                 # with open(filepath, "wb") as f:
                 #     f.write(urlsafe_b64decode(data))
             else:
@@ -107,7 +107,6 @@ def parse_parts(service, parts, folder_name, message):
                         if "attachment" in part_header_value:
                             # we get the attachment ID
                             # and make another request to get the attachment itself
-                            print("Saving the file:", filename, "size:", get_size_format(file_size))
                             attachment_id = body.get("attachmentId")
                             attachment = service.users().messages() \
                                         .attachments().get(id=attachment_id, userId='me', messageId=message['id']).execute()
@@ -140,10 +139,10 @@ def read_message(service, message):
             value = header.get("value")
             if name.lower() == 'from':
                 # we print the From address
-                print("From:", value)
+                _logger.info("From:", value)
             if name.lower() == "to":
                 # we print the To address
-                print("To:", value)
+                _logger.info("To:", value)
             if name.lower() == "subject":
                 # make our boolean True, the email has "subject"
                 has_subject = True
@@ -161,17 +160,17 @@ def read_message(service, message):
                     else:
                         folder_name = f"{folder_name}_{folder_counter}"
                 # os.mkdir(folder_name)
-                print("Subject:", value)
+                _logger.info("Subject:", value)
             if name.lower() == "date":
                 # we print the date when the message was sent
-                print("Date:", value)
+                _logger.info("Date:", value)
     if not has_subject:
         # if the email does not have a subject, then make a folder with "email" name
         # since folders are created based on subjects
         if not os.path.isdir(folder_name):
             os.mkdir(folder_name)
     parse_parts(service, parts, folder_name, message)
-    print("="*50)
+    _logger.info("="*50)
 
 # get the Gmail API service
 service = gmail_authenticate()

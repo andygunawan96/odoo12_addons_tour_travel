@@ -29,7 +29,6 @@ class PrintoutInvoiceTicket(models.AbstractModel):
             for val in line_list:
                 if val['pnr'] in line['pnr']:
                     found = True
-                    print(val)
                     val['vals_list'].append(self.get_airline_line(line))
                     break
             if not found:
@@ -40,7 +39,6 @@ class PrintoutInvoiceTicket(models.AbstractModel):
                 }
                 line_vals['vals_list'].append(self.get_airline_line(line))
                 line_list.append(line_vals)
-        print(line_list)
         return line_list
 
     def get_airline_line(self, line):
@@ -72,7 +70,6 @@ class PrintoutInvoiceTicket(models.AbstractModel):
 
     def get_train_line(self, line_obj):
         destination_env = self.env['tt.destinations'].sudo()
-        print(self.env.user.tz)
         tz = pytz.timezone(self.env.user.tz) or pytz.utc
         line_list = []
         for line in line_obj:

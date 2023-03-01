@@ -1,7 +1,8 @@
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
 import base64
-
+import traceback,logging
+_logger = logging.getLogger(__name__)
 
 class ReservationPPOB(models.Model):
 
@@ -261,7 +262,7 @@ class ReservationPPOB(models.Model):
             try:
                 rec.invoice_id.action_cancel_invoice()
             except Exception as e:
-                print(str(e))
+                _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
     def action_issued_ppob(self, data):
         super(ReservationPPOB, self).action_issued_ppob(data)

@@ -499,6 +499,11 @@ class TtReservation(models.Model):
                     if vals_for_update:
                         current_passenger.update(vals_for_update)
 
+                    ## update customer behavior 1 maret 2023 IVAN
+                    if psg.get('behaviors'):
+                        for provider_type in psg['behaviors']:
+                            current_passenger.add_behavior(provider_type.lower(), psg['behaviors'][provider_type])
+
                     if psg.get('identity'):
                         current_passenger.add_or_update_identity(psg['identity'])
                     if psg.get('ff_numbers'):
@@ -532,6 +537,12 @@ class TtReservation(models.Model):
                 })
 
             psg_obj = passenger_obj.create(psg)
+
+            ## update customer behavior 1 maret 2023 IVAN
+            if psg.get('behaviors'):
+                for provider_type in psg['behaviors']:
+                    psg_obj.add_behavior(provider_type.lower(), psg['behaviors'][provider_type])
+
             if psg.get('identity'):
                 psg_obj.add_or_update_identity(psg['identity'])
             if psg.get('identity_passport'):

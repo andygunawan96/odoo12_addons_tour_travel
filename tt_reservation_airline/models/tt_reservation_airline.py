@@ -455,17 +455,6 @@ class ReservationAirline(models.Model):
 
             book_obj = self.create(values)
 
-            ## update customer behavior 24 feb 2023 IVAN
-
-            for pax_dict in passengers:
-                if pax_dict.get('behaviors'):
-                    if pax_dict['behaviors'].get('Airline'):
-                        for pax_obj in book_obj.passenger_ids:
-                            if pax_dict['sequence'] == pax_obj.sequence:
-                                pax_obj.customer_id.add_behavior('airline', pax_dict['behaviors']['Airline'])
-                                if pax_dict.get('is_need_delete'): ## belum dari frontend
-                                    pax_obj.customer_id.add_behavior('airline', '')
-
             provider_ids, name_ids = book_obj._create_provider_api(booking_states, context, fare_rule_provider)
 
             # June 4, 2020 - SAM

@@ -203,7 +203,7 @@ class PassportSyncProducts(models.TransientModel):
                                 'attachments_ids': [(6, 0, attachments)]
                             })
                     else:
-                        print('error sync data' + rec)
+                        _logger.error('error sync data' + rec)
                     pass
 
     def url_to_base64(self, url):
@@ -287,7 +287,6 @@ class PassportPricelist(models.Model):
                 'immigration_consulate_list': immigration_consulate_list
             })
             response = passport
-            print(response)
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error(traceback.format_exc())
@@ -350,7 +349,6 @@ class PassportPricelist(models.Model):
                         'notes': []
                     })
                 list_of_passport.append(passport_vals)
-            print(list_of_passport)
             response = {
                 'list_of_passport': list_of_passport
             }
