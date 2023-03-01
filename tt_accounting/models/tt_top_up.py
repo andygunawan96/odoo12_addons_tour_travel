@@ -377,7 +377,7 @@ class TtTopUp(models.Model):
 
             top_up_obj.action_cancel_top_up(context) # ubah ke status cancel
             if top_up_obj.acquirer_id.type == 'creditcard_topup':
-                payment_acq_number_objs = self.search([('number', 'ilike', top_up_obj.name)])
+                payment_acq_number_objs = self.search([('name', 'ilike', top_up_obj.name)])
                 for payment_acq_number_obj in payment_acq_number_objs:
                     payment_acq_number_obj.state = 'cancel2'
             return ERR.get_no_error()
