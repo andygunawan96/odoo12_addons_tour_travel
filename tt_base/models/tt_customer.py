@@ -639,22 +639,23 @@ class TtCustomer(models.Model):
     def create_or_update_customer_bitrix(self, data, context):
         return ERR.get_no_error()
 
-    def add_behavior(self, provider_type, remark=''):
+    def add_behavior(self, provider_type, remark='', is_need_delete=False):
         try:
-            is_behavior_found = False
-            for behavior_obj in self.behavior_ids:
-                if provider_type == behavior_obj.provider_type_id.code:
-                    behavior_obj.update({
-                        "remark": remark,
-                    })
-                    is_behavior_found = True
+            if remark or is_need_delete:
+                is_behavior_found = False
+                for behavior_obj in self.behavior_ids:
+                    if provider_type == behavior_obj.provider_type_id.code:
+                        behavior_obj.update({
+                            "remark": remark,
+                        })
+                        is_behavior_found = True
 
-            if not is_behavior_found:
-                self.env['tt.customer.behavior'].create({
-                    "customer_id": self.id,
-                    "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
-                    "remark": remark
-                })
+                if not is_behavior_found:
+                    self.env['tt.customer.behavior'].create({
+                        "customer_id": self.id,
+                        "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
+                        "remark": remark
+                    })
         except Exception as e:
             _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
