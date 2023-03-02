@@ -79,5 +79,5 @@ class TtJourneyTrain(models.Model):
             })
             ## ADD BEHAVIOR 24 feb 2023 IVAN
             if seat.get('behaviors'):
-                if seat['behaviors'].get('Train'):
+                if seat['behaviors'].get('train'):
                     curr_seat.passenger_id.customer_id.add_behavior('train', seat['behaviors']['Train'])
