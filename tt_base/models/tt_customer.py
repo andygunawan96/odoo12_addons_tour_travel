@@ -127,7 +127,7 @@ class TtCustomer(models.Model):
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
 
-        behavior_dict = self.get_most_behavior()
+        behavior_dict = self.get_behavior()
 
         ff_list_dict = self.frequent_flyer_ids.to_dict()
 
@@ -179,7 +179,7 @@ class TtCustomer(models.Model):
 
         return res
 
-    def get_most_behavior(self):
+    def get_behavior(self):
         behavior_dict = {}
         for rec in self.behavior_ids:
             rec_dict = rec.to_dict()
@@ -710,7 +710,7 @@ class TtCustomerBehavior(models.Model):
 
     def to_dict(self):
         return {
-            "provider_type": self.provider_type_id.name,
+            "provider_type": self.provider_type_id.code,
             "remark": self.remark
         }
 
