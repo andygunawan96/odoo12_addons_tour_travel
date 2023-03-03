@@ -285,13 +285,15 @@ class TtAgent(models.Model):
             booker_list = []
             for rec2 in rec.booker_customer_ids:
                 booker_list.append({
-                    'seq_id': rec2.customer_id.seq_id,
-                    'name': rec2.customer_id.name
+                    rec2.customer_id.seq_id: {
+                        'name': rec2.customer_id.name
+                    }
                 })
             customer_parent_list.append({
-                'seq_id': rec.seq_id,
-                'name': rec.name,
-                'booker_list': booker_list
+                rec.seq_id: {
+                    'name': rec.name,
+                    'booker_list': booker_list
+                }
             })
 
         return ERR.get_no_error({
