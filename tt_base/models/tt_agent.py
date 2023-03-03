@@ -278,6 +278,26 @@ class TtAgent(models.Model):
             'is_show_point_reward': is_show_point_reward
         })
 
+    def get_corpor_list_agent_api(self, context):
+        customer_parent_list = []
+        agent_obj = self.browse(context['co_agent_id'])
+        for rec in agent_obj.customer_parent_ids.filtered(lambda x: x.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]):
+            booker_list = []
+            for rec2 in rec.booker_customer_ids:
+                booker_list.append({
+                    'seq_id': rec2.customer_id.seq_id,
+                    'name': rec2.customer_id.name
+                })
+            customer_parent_list.append({
+                'seq_id': rec.seq_id,
+                'name': rec.name,
+                'booker_list': booker_list
+            })
+
+        return ERR.get_no_error({
+            'customer_parent_list': customer_parent_list
+        })
+
     def get_data(self):
         res = {
             'id': self.id,
