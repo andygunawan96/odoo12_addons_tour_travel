@@ -28,7 +28,7 @@ class TtReservationCustomer(models.Model):
         res.update({
             'sale_service_charges': sale_service_charges,
             'temporary_field': json.loads(self.temporary_field) if self.temporary_field else [],
-            'behaviors': self.customer_id.get_most_behavior(),
+            'behaviors': self.customer_id.get_behavior(),
             'seq_id': self.customer_id.seq_id,
             'pax_type': pax_type
         })
