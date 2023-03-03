@@ -127,7 +127,7 @@ class TtCustomer(models.Model):
         for rec in self.identity_ids:
             identity_dict.update(rec.to_dict())
 
-        behavior_dict = self.get_most_behavior()
+        behavior_dict = self.get_behavior()
 
         ff_list_dict = self.frequent_flyer_ids.to_dict()
 
@@ -179,7 +179,7 @@ class TtCustomer(models.Model):
 
         return res
 
-    def get_most_behavior(self):
+    def get_behavior(self):
         behavior_dict = {}
         for rec in self.behavior_ids:
             rec_dict = rec.to_dict()
@@ -639,22 +639,23 @@ class TtCustomer(models.Model):
     def create_or_update_customer_bitrix(self, data, context):
         return ERR.get_no_error()
 
-    def add_behavior(self, provider_type, remark=''):
+    def add_behavior(self, provider_type, remark='', is_need_delete=False):
         try:
-            is_behavior_found = False
-            for behavior_obj in self.behavior_ids:
-                if provider_type == behavior_obj.provider_type_id.code:
-                    behavior_obj.update({
-                        "remark": remark,
-                    })
-                    is_behavior_found = True
+            if remark or is_need_delete:
+                is_behavior_found = False
+                for behavior_obj in self.behavior_ids:
+                    if provider_type == behavior_obj.provider_type_id.code:
+                        behavior_obj.update({
+                            "remark": remark,
+                        })
+                        is_behavior_found = True
 
-            if not is_behavior_found:
-                self.env['tt.customer.behavior'].create({
-                    "customer_id": self.id,
-                    "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
-                    "remark": remark
-                })
+                if not is_behavior_found:
+                    self.env['tt.customer.behavior'].create({
+                        "customer_id": self.id,
+                        "provider_type_id": self.env['tt.provider.type'].search([('code','=',provider_type)],limit=1).id,
+                        "remark": remark
+                    })
         except Exception as e:
             _logger.error("%s, %s" % (str(e), traceback.format_exc()))
 
@@ -709,7 +710,7 @@ class TtCustomerBehavior(models.Model):
 
     def to_dict(self):
         return {
-            "provider_type": self.provider_type_id.name,
+            "provider_type": self.provider_type_id.code,
             "remark": self.remark
         }
 

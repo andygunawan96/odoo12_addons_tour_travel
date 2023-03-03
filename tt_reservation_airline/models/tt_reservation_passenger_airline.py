@@ -30,7 +30,7 @@ class TtReservationCustomer(models.Model):
         res.update({
             'sale_service_charges': sale_service_charges,
             'fees': fee_list,
-            'behaviors': self.customer_id.get_most_behavior(),
+            'behaviors': self.customer_id.get_behavior(),
             'seq_id': self.customer_id.seq_id,
             'pax_type': pax_type,
         })
