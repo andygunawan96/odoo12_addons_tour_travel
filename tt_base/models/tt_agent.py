@@ -292,7 +292,7 @@ class TtAgent(models.Model):
             customer_parent_data.update({
                 rec.seq_id: {
                     'name': rec.name,
-                    'booker_list': booker_data
+                    'booker_data': booker_data
                 }
             })
 
