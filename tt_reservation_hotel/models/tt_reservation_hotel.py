@@ -623,10 +623,6 @@ class HotelReservation(models.Model):
         self.state = 'issued'
         self.calc_voucher_name()
 
-        ## ADD CUSTOMER BEHAVIOR
-        for passenger_obj in self.passenger_ids:
-            passenger_obj.customer_id.add_behavior('hotel', '%s' % dict(self._fields['hotel_rating'].selection).get(self.hotel_rating) if self.hotel_rating else '')
-
         try:
             if self.agent_type_id.is_send_email_issued:
                 mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'issued_hotel')], limit=1)
