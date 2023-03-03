@@ -129,7 +129,9 @@ class AccountingConnectorITM(models.Model):
                         }]
 
                         if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
+                            ho_prof = pax.get('total_commission') and pax['total_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
+                        elif int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
 
@@ -212,7 +214,9 @@ class AccountingConnectorITM(models.Model):
                         }]
 
                         if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                            ho_prof = pax.get('ho_commission') and pax['ho_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
+                            ho_prof = pax.get('total_commission') and pax['total_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
+                        elif int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                            ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
 
@@ -269,7 +273,9 @@ class AccountingConnectorITM(models.Model):
 
                 elif request['provider_type'] == 'hotel':
                     if prov.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] + prov['total_channel_upsell'] or prov['total_channel_upsell']
+                        ho_prof = prov.get('total_commission') and prov['total_commission'] + prov['total_channel_upsell'] or prov['total_channel_upsell']
+                    elif int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                        ho_prof = prov.get('total_commission') and prov['total_commission'] or 0
                     else:
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
 
