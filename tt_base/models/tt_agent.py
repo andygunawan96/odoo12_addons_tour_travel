@@ -279,25 +279,25 @@ class TtAgent(models.Model):
         })
 
     def get_corpor_list_agent_api(self, context):
-        customer_parent_list = []
+        customer_parent_data = {}
         agent_obj = self.browse(context['co_agent_id'])
         for rec in agent_obj.customer_parent_ids.filtered(lambda x: x.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]):
-            booker_list = []
+            booker_data = {}
             for rec2 in rec.booker_customer_ids:
-                booker_list.append({
+                booker_data.update({
                     rec2.customer_id.seq_id: {
                         'name': rec2.customer_id.name
                     }
                 })
-            customer_parent_list.append({
+            customer_parent_data.update({
                 rec.seq_id: {
                     'name': rec.name,
-                    'booker_list': booker_list
+                    'booker_list': booker_data
                 }
             })
 
         return ERR.get_no_error({
-            'customer_parent_list': customer_parent_list
+            'customer_parent_data': customer_parent_data
         })
 
     def get_data(self):
