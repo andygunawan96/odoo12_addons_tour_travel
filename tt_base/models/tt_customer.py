@@ -644,7 +644,7 @@ class TtCustomer(models.Model):
             if remark or is_need_delete:
                 is_behavior_found = False
                 for behavior_obj in self.behavior_ids:
-                    if provider_type == behavior_obj.provider_type_id.code:
+                    if provider_type.lower() == behavior_obj.provider_type_id.code.lower():
                         behavior_obj.update({
                             "remark": remark,
                         })
