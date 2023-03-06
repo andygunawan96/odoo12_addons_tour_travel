@@ -31,6 +31,7 @@ from . import tt_provider_type
 from . import tt_customer_parent
 from . import tt_customer_parent_type
 from . import tt_customer_parent_booker_rel
+from . import tt_osi_corporate_code
 from . import error_api
 from . import tt_ssr
 from . import tt_cabin_class

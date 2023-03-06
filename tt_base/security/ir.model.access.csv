@@ -405,8 +405,14 @@ access_tt_ssr_list_line_for_ssr_level_5,tt.ssr.list.line.for.ssr.level.5,model_t
 access_tt_customer_parent_booker_rel_for_customer_parent_level_1,tt.customer.parent.booker.rel.for.customer.parent.level.1,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_1,1,0,0,0
 access_tt_customer_parent_booker_rel_for_customer_parent_level_2,tt.customer.parent.booker.rel.for.customer.parent.level.2,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_2,1,0,1,0
 access_tt_customer_parent_booker_rel_for_customer_parent_level_3,tt.customer.parent.booker.rel.for.customer.parent.level.3,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_3,1,1,1,1
-access_tt_customer_parent_booker_rel_for_customer_parent_level_4,tt.customer.parent.booker.rel.for.customer.parent.level.4,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_4,1,1,1,0
+access_tt_customer_parent_booker_rel_for_customer_parent_level_4,tt.customer.parent.booker.rel.for.customer.parent.level.4,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_4,1,1,1,1
 access_tt_customer_parent_booker_rel_for_customer_parent_level_5,tt.customer.parent.booker.rel.for.customer.parent.level.5,model_tt_customer_parent_booker_rel,tt_base.group_customer_parent_level_5,1,1,1,1
+,,,,,,,
+access_tt_osi_corporate_code_for_customer_parent_level_1,tt.osi.corporate.code.for.customer.parent.level.1,model_tt_osi_corporate_code,tt_base.group_customer_parent_level_1,1,0,0,0
+access_tt_osi_corporate_code_for_customer_parent_level_2,tt.osi.corporate.code.for.customer.parent.level.2,model_tt_osi_corporate_code,tt_base.group_customer_parent_level_2,1,0,1,0
+access_tt_osi_corporate_code_for_customer_parent_level_3,tt.osi.corporate.code.for.customer.parent.level.3,model_tt_osi_corporate_code,tt_base.group_customer_parent_level_3,1,1,1,1
+access_tt_osi_corporate_code_for_customer_parent_level_4,tt.osi.corporate.code.for.customer.parent.level.4,model_tt_osi_corporate_code,tt_base.group_customer_parent_level_4,1,1,1,1
+access_tt_osi_corporate_code_for_customer_parent_level_5,tt.osi.corporate.code.for.customer.parent.level.5,model_tt_osi_corporate_code,tt_base.group_customer_parent_level_5,1,1,1,1
 ,,,,,,,
 access_tt_customer_parent_for_public,tt.customer.parent.for.public,model_tt_customer_parent,,1,0,0,0
 ,,,,,,,

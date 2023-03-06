@@ -41,6 +41,7 @@ class TtCustomerParent(models.Model):
     user_ids = fields.One2many('res.users', 'customer_parent_id', 'User')
     payment_acquirer_ids = fields.Char(string="Payment Acquirer", required=False, )  # payment_acquirer
     agent_bank_detail_ids = fields.One2many('agent.bank.detail', 'agent_id', 'Agent Bank')  # agent_bank_detail
+    osi_corporate_code_ids = fields.One2many('tt.osi.corporate.code', 'customer_parent_id', 'OSI Codes')
     tac = fields.Text('Terms and Conditions', readonly=True)
     tax_percentage = fields.Float('Tax (%)', default=0)
     tax_identity_number = fields.Char('NPWP')
