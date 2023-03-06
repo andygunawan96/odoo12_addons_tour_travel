@@ -1406,9 +1406,13 @@ class MasterTour(models.Model):
     def get_config_by_api(self):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-
+            self.env.cr.execute("""SELECT cnt.id FROM tt_tour_location_rel tour_loc_rel LEFT JOIN tt_master_tour mst_tour ON tour_loc_rel.product_id = mst_tour.id LEFT JOIN tt_tour_master_locations tour_loc ON tour_loc_rel.location_id = tour_loc.id LEFT JOIN res_country cnt ON tour_loc.country_id = cnt.id WHERE mst_tour.state IN ('confirm') AND mst_tour.active = True GROUP BY cnt.id;""")
+            tour_loc_countries = self.env.cr.dictfetchall()
+            selected_countries = []
+            for cnt in tour_loc_countries:
+                selected_countries.append(int(cnt['id']))
             countries_dict = {}
-            tour_loc_objs = self.env['tt.tour.master.locations'].search([('country_id', '!=', False)])
+            tour_loc_objs = self.env['tt.tour.master.locations'].search([('country_id', 'in', selected_countries)])
             for loc in tour_loc_objs:
                 if loc.country_id.code:
                     if not countries_dict.get(loc.country_id.code):

@@ -66,6 +66,7 @@ Key Features
         'views/tt_employee_views.xml',
         'views/tt_customer_parent_booker_rel_views.xml',
         'views/tt_customer_job_position_views.xml',
+        'views/tt_osi_corporate_code_views.xml',
         'views/tt_customer_views.xml',
         'views/tt_customer_views_customer.xml',
         'views/res_currency_views.xml',
