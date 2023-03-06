@@ -127,6 +127,9 @@
                             <separator string="Job Positions"/>
                             <field name="job_position_ids" context="{'default_customer_parent_id': id}"/>
                         </page>
+                        <page string="OSI Codes">
+                            <field name="osi_corporate_code_ids" context="{'default_customer_parent_id': id}"/>
+                        </page>
                         <page string="Addresses">
                             <field name="address_ids"/>
                         </page>
