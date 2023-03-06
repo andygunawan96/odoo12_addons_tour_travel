@@ -65,6 +65,13 @@
             <field name="is_using_balance" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
+        <record id="tt_provider_airline_transnusa" model="tt.provider">
+            <field name="name">Transnusa Web</field>
+            <field name="code">transnusa_web</field>
+            <field name="active" eval="True"/>
+            <field name="is_using_balance" eval="True"/>
+            <field name="provider_type_id" ref="tt_provider_type_airline"/>
+        </record>
         <record id="tt_provider_airline_sriwijaya" model="tt.provider">
             <field name="name">Sriwijaya</field>
             <field name="code">sriwijaya</field>
