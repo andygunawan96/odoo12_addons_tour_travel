@@ -50,7 +50,7 @@ class TtLetterGuarantee(models.Model):
         return super(TtLetterGuarantee, self).create(vals)
 
     def action_confirm(self):
-        if not self.env.user.has_group('tt_base.group_lg_po_level_4'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 59')
         self.write({
             'state': 'confirm',
@@ -59,7 +59,7 @@ class TtLetterGuarantee(models.Model):
         })
 
     def action_sent(self):
-        if not self.env.user.has_group('tt_base.group_lg_po_level_4'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 60')
         self.write({
             'state': 'sent',
@@ -68,7 +68,7 @@ class TtLetterGuarantee(models.Model):
         })
 
     def action_paid(self):
-        if not self.env.user.has_group('tt_base.group_lg_po_level_5'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 61')
         self.write({
             'state': 'paid',
@@ -77,7 +77,7 @@ class TtLetterGuarantee(models.Model):
         })
 
     def action_cancel(self):
-        if not self.env.user.has_group('tt_base.group_lg_po_level_5'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 62')
         self.write({
             'state': 'cancel',
@@ -86,7 +86,7 @@ class TtLetterGuarantee(models.Model):
         })
 
     def set_to_draft(self):
-        if not self.env.user.has_group('tt_base.group_lg_po_level_4'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 63')
         self.write({
             'state': 'draft',
