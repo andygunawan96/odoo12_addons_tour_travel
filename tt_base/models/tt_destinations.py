@@ -47,7 +47,7 @@ class Destinations(models.Model):
 
     @api.multi
     def unlink(self):
-        if not self.env.user.has_group('tt_base.group_destination_level_5'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_destination_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Action failed due to security restriction. Required Destination Level 5 permission.')
         return super(Destinations, self).unlink()
 
