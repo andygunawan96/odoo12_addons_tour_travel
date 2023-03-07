@@ -88,7 +88,7 @@ class TtCustomerParent(models.Model):
 
     @api.multi
     def unlink(self):
-        if not self.env.user.has_group('tt_base.group_customer_parent_level_5'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_customer_parent_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Action failed due to security restriction. Required Customer Parent Level 5 permission.')
         return super(TtCustomerParent, self).unlink()
 
@@ -201,7 +201,8 @@ class TtCustomerParent(models.Model):
                 'customer_parent_id': cor_data[0].id,
                 'customer_seq_id': cust_data[0].seq_id,
                 'customer_parent_type_name': cor_data[0].customer_parent_type_id.name,
-                'customer_parent_type_code': cor_data[0].customer_parent_type_id.code
+                'customer_parent_type_code': cor_data[0].customer_parent_type_id.code,
+                'customer_parent_osi_codes': cor_data[0].get_osi_cor_data()
             }
             booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', cor_data[0].id), ('customer_id', '=', cust_data[0].id)], limit=1)
             if booker_obj:
@@ -230,6 +231,15 @@ class TtCustomerParent(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
+
+    def get_osi_cor_data(self):
+        res = {}
+        for rec in self.osi_corporate_code_ids:
+            if not res.get(rec.carrier_id.code):
+                res.update({
+                    rec.carrier_id.code: rec.osi_code
+                })
+        return res
 
     def action_confirm(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id, self.env.ref('tt_base.group_tt_agent_user').id}.intersection(set(self.env.user.groups_id.ids))):

@@ -163,7 +163,7 @@ class TtAgent(models.Model):
         }
 
     def action_create_user(self):
-        if not self.env.user.has_group('tt_base.group_user_data_level_3'):
+        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_user_data_level_3').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 56')
         vals = {
             'name': 'Create User Wizard',
