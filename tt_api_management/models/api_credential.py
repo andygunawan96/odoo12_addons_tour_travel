@@ -260,6 +260,7 @@ class TtCustomerParentApiInherit(models.Model):
         res = {
             '%scustomer_parent_id' % prefix: self.id,
             '%scustomer_parent_name' % prefix: self.name,
+            '%scustomer_parent_osi_codes' % prefix: self.get_osi_cor_data()
         }
         if self.customer_parent_type_id:
             res.update(self.customer_parent_type_id.get_credential(prefix))
