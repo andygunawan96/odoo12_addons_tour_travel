@@ -48,6 +48,7 @@
                             <field name="customer_number"/>
                             <field name="customer_name"/>
                             <field name="customer_id_number"/>
+                            <field name="game_zone_id"/>
                             <field name="fare_type"/>
                             <field name="power"/>
                             <field name="is_family"/>
