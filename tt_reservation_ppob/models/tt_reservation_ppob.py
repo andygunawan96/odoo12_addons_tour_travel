@@ -434,10 +434,18 @@ class ReservationPpob(models.Model):
         try:
             search_req = data['search_RQ']
             search_cust_num = data['data'].get('customer_number') and str(data['data']['customer_number']) or str(search_req['customer_number'])
-            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search([('carrier_code', '=', str(search_req['product_code'])),
-                                                                       ('customer_number', '=', search_cust_num),
-                                                                       ('provider_id.code', '=', data['data']['provider']),
-                                                                       ('state', '=', 'booked'), ('booking_id.agent_id.id', '=', context['co_agent_id'])], limit=1)
+            search_query = [('carrier_code', '=', str(search_req['product_code'])),
+                            ('customer_number', '=', search_cust_num),
+                            ('provider_id.code', '=', data['data']['provider']),
+                            ('state', '=', 'booked'), ('booking_id.agent_id.id', '=', context['co_agent_id'])]
+            search_game_zone_id = ''
+            if data['data'].get('game_zone_id'):
+                search_game_zone_id = data['data']['game_zone_id']
+            elif search_req.get('game_zone_id'):
+                search_game_zone_id = search_req['game_zone_id']
+            if search_game_zone_id:
+                search_query.append(('game_zone_id', '=', str(search_game_zone_id)))
+            inq_prov_obj = self.env['tt.provider.ppob'].sudo().search(search_query, limit=1)
             if inq_prov_obj:
                 inq_prov_obj = inq_prov_obj[0]
 
@@ -541,6 +549,7 @@ class ReservationPpob(models.Model):
             'customer_number': data.get('customer_number') and data['customer_number'] or '',
             'customer_name': data.get('customer_name') and data['customer_name'] or 'Customer PPOB',
             'customer_id_number': data.get('customer_id_number') and data['customer_id_number'] or '',
+            'game_zone_id': data.get('game_zone_id') and data['game_zone_id'] or '',
             'unit_code': data.get('unit_code') and data['unit_code'] or '',
             'unit_name': data.get('unit_name') and data['unit_name'] or '',
             'unit_phone_number': data.get('unit_phone_number') and data['unit_phone_number'] or '',
