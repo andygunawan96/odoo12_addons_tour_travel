@@ -67,6 +67,16 @@ class TtAirlineApiCon(models.Model):
                                             request,
                                             'notification_code')
 
+    def send_duplicate_segment_notification(self,messages):
+        request = {
+            'code': 9909,
+            'message': messages,
+            "title": 'DUPLICATE SEGMENT FOUND'
+        }
+        return self.send_request_to_gateway('%s/notification' % (self.url),
+                                            request
+                                            ,'notification_code')
+
     def send_get_booking_from_vendor(self, req):
         request = {
             'proxy_co_uid': req.get('user_id',False),

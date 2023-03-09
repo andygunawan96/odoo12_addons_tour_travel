@@ -775,5 +775,77 @@
             ]"/>
             <field name="active" eval="False"/>
         </record>
+
+        <record id="tt_transport_carrier_airline_at_all" model="tt.transport.carrier.search">
+            <field name="name">Royal Air Maroc</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_at"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">168</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_mk_all" model="tt.transport.carrier.search">
+            <field name="name">Air Mauritius</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mk"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">169</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_pg_all" model="tt.transport.carrier.search">
+            <field name="name">Bangkok Airways</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_pg"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">170</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_fi_all" model="tt.transport.carrier.search">
+            <field name="name">Icelandair</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_fi"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">171</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_kl_all" model="tt.transport.carrier.search">
+            <field name="name">KLM Royal Dutch Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_kl"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">172</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_pc_all" model="tt.transport.carrier.search">
+            <field name="name">Pegasus Airlines</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_pc"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">173</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
     </data>
 </odoo>
