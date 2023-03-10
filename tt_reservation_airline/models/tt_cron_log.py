@@ -32,6 +32,7 @@ class TtCronLogInhResv(models.Model):
             # Notification Dupe Lion:
             # - Segment sama dalam kondisi Book 9 atau lebih pax
 
+            _logger.info("CRON NOTIFY DUPLICATE BOOKING - START")
             #### LION 1 SEGMENT TOO MANY PAX ###
             LION_PAX_RULES = 9
             lion_segment_objs = self.env['tt.segment.airline'].search([('booking_id.state','=','booked'),
@@ -119,8 +120,10 @@ class TtCronLogInhResv(models.Model):
             if messages_gds_dict:
                 self.env['tt.airline.api.con'].send_duplicate_segment_notification(messages_gds_dict)
             # send_duplicate_segment_notification
+            _logger.info("CRON NOTIFY DUPLICATE BOOKING - END")
         except Exception as e:
-            raise(e)
+            self.create_cron_log_folder()
+            self.write_cron_log('cron notify duplicate booking')
 
     def manage_msg_length(self,msg_dict,param_msg,add_msg):
         TELEGRAM_MSG_LIMIT = 3800
@@ -140,3 +143,76 @@ class TtCronLogInhResv(models.Model):
             self.manage_msg_length(msg_dict,leftover_msg,add_msg)##send leftover msg to recrursive
         else:
             msg_dict[msg_dict['ctr']] += param_msg
+
+
+    def cron_check_segment_booking_amadeus(self):
+        try:
+            _logger.info('Cron Check Segment Booking Amadeus : START')
+            state_list = ['issued', 'cancel', 'cancel2']
+            provider_list = ['amadeus']
+            now_obj = datetime.now()
+            start_obj = now_obj - timedelta(days=1)
+            start_obj = start_obj.replace(hour=0, minute=0, second=0)
+            end_obj = now_obj + timedelta(days=1)
+            end_obj = end_obj.replace(hour=23, minute=59, second=59)
+
+            params = [
+                ('departure_date', '>=', start_obj),
+                ('departure_date', '<=', end_obj),
+            ]
+
+            pnr_list = []
+            provider_id_list = []
+            provider_obj_list = []
+            objs = self.env['tt.segment.airline'].search(params)
+            for obj in objs:
+                try:
+                    if not obj.journey_id:
+                        continue
+
+                    journey_obj = obj.journey_id
+                    if not journey_obj.provider_booking_id:
+                        continue
+
+                    provider_obj = journey_obj.provider_booking_id
+                    if provider_obj.state not in state_list:
+                        continue
+                    pnr = provider_obj.pnr
+                    pnr2 = provider_obj.pnr2
+                    reference = provider_obj.reference
+                    if not pnr:
+                        continue
+                    if pnr in pnr_list:
+                        continue
+                    pnr_list.append(pnr)
+                    provider = provider_obj.provider_id.code if provider_obj.provider_id else ''
+                    if not provider:
+                        continue
+                    if provider != 'amadeus':
+                        continue
+
+                    if not pnr2:
+                        pnr2 = pnr
+                    if not reference:
+                        reference = pnr
+
+                    provider_id = provider_obj.id
+                    if provider_id in provider_id_list:
+                        continue
+                    provider_id_list.append(provider_id)
+                    provider_obj_list.append(provider_obj)
+                except:
+                    _logger.error('Cron Check Segment Booking Amadeus, Error Extract Data, %s' % traceback.format_exc())
+
+            _logger.info('Check Segment Booking Amadeus, %s record(s) found' % len(provider_obj_list))
+            for prov_obj in provider_obj_list:
+                try:
+                    _logger.info('Cron Check Segment Booking Amadeus, Action Check PNR %s' % prov_obj.pnr)
+                    prov_obj.action_check_segment_provider()
+                except:
+                    _logger.error('Cron Check Segment Booking Amadeus, Action Check PNR %s, %s' % (prov_obj.pnr, traceback.format_exc()))
+            _logger.info('Cron Check Segment Booking Amadeus : END')
+        except:
+            _logger.error('Error Cron Check Segment Booking Amadeus, %s' % traceback.format_exc())
+            self.create_cron_log_folder()
+            self.write_cron_log('cron auto check segment booking amadeus')

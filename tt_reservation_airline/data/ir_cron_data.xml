@@ -26,5 +26,18 @@
             <field name="model_id" ref="tt_base.model_tt_cron_log"/>
             <field name="code">model.cron_notify_duplicate_booking()</field>
         </record>
+
+        <record model="ir.cron" id="cron_check_segment_booking_amadeus">
+            <field name="name">Check Segment Booking Amadeus</field>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="nextcall" eval="((datetime.now() + timedelta(days=1)).replace(hour=20,minute=0,second=0).isoformat())"/>
+            <field name="active">True</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
+            <field name="code">model.cron_check_segment_booking_amadeus()</field>
+        </record>
     </data>
 </odoo>
