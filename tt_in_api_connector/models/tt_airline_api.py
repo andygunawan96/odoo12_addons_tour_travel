@@ -67,15 +67,19 @@ class TtAirlineApiCon(models.Model):
                                             request,
                                             'notification_code')
 
-    def send_duplicate_segment_notification(self,messages):
-        request = {
-            'code': 9909,
-            'message': messages,
-            "title": 'DUPLICATE SEGMENT FOUND'
-        }
-        return self.send_request_to_gateway('%s/notification' % (self.url),
-                                            request
-                                            ,'notification_code')
+    def send_duplicate_segment_notification(self,messages_dict):
+        total_length = len(messages_dict)-1## 1 of the key is for ctr so minus 1
+        for idx,values in messages_dict.items():
+            if idx == 'ctr':## skip ctr
+                continue
+            request = {
+                'code': 9909,
+                'message': values,
+                "title": 'DUPLICATE SEGMENT FOUND(BETA)\n(%s/%s)' % (idx+1,total_length)
+            }
+            self.send_request_to_gateway('%s/notification' % (self.url),
+                                                request
+                                                ,'notification_code')
 
     def send_get_booking_from_vendor(self, req):
         request = {
@@ -123,6 +127,24 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'void_booking',
+                                            timeout=120)
+    # END
+
+    # March 08, 2023 - SAM
+    def send_check_segment_vendor(self, req):
+        request = {
+            'proxy_co_uid': req.get('user_id',False),
+            'pnr': req.get('pnr', ''),
+            'pnr2': req.get('pnr2', ''),
+            'reference': req.get('reference', ''),
+            'provider': req.get('provider'),
+            'is_retrieved': req.get('is_retrieved',False),
+            'pricing_date': req.get('pricing_date',False),
+            'context': req.get('context', {}),
+        }
+        return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
+                                            request,
+                                            'check_segment_status',
                                             timeout=120)
     # END
 
