@@ -33,7 +33,7 @@ class ActivitySyncProducts(models.TransientModel):
 
     def check_json_length(self):
         file_ext = 'json'
-        self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext)
+        self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext, True)
 
     def generate_json(self):
         self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
@@ -42,7 +42,7 @@ class ActivitySyncProducts(models.TransientModel):
         self.env['tt.master.activity'].action_sync_products(self.provider_id.code, self.start_num, self.end_num)
 
     def config_product(self):
-        self.env['tt.master.activity'].action_sync_config(self.provider_id.code, self.start_num, self.end_num)
+        self.env['tt.master.activity'].action_sync_config(self.provider_id.code)
 
     def deactivate_product(self):
         products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
@@ -124,10 +124,10 @@ class MasterActivity(models.Model):
             _logger.info('Cannot convert to vendor price: ' + str(e))
         return computed_amount
 
-    def action_sync_config(self, provider_code, start, end):
+    def action_sync_config(self, provider_code):
         self.sync_config(provider_code)
 
-    def action_check_json_length(self, provider_code, file_ext='json'):
+    def action_check_json_length(self, provider_code, file_ext='json', is_human=False):
         search_dir = "/var/log/tour_travel/%s_master_data/" % provider_code
         file_prefix = "%s_master_data" % provider_code
         try:
@@ -143,7 +143,14 @@ class MasterActivity(models.Model):
             return int(s[0]) if s else -1, f
 
         max_file = max(list_of_files, key=extract_number)
-        raise UserError('Latest file is: %s' % max_file)
+        if is_human:
+            raise UserError('Latest file is: %s' % max_file)
+        else:
+            num_str = ''
+            for m in max_file:
+                if m.isdigit():
+                    num_str += str(m)
+            return int(num_str)
 
     def action_generate_json(self, provider_code):
         if provider_code == 'bemyguest':

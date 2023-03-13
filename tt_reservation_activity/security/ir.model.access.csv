@@ -91,6 +91,12 @@ tt_master_activity_sku_for_master_data_activity_level_3,tt.master.activity.sku.f
 tt_master_activity_sku_for_master_data_activity_level_4,tt.master.activity.sku.for.master.data.activity.level.4,model_tt_master_activity_sku,tt_base.group_master_data_activity_level_4,1,1,1,0
 tt_master_activity_sku_for_master_data_activity_level_5,tt.master.activity.sku.for.master.data.activity.level.5,model_tt_master_activity_sku,tt_base.group_master_data_activity_level_5,1,1,1,1
 ,,,,,,,
+tt_auto_sync_activity_setup_for_master_data_activity_level_1,tt.auto.sync.activity.setup.for.master.data.activity.level.1,model_tt_auto_sync_activity_setup,tt_base.group_master_data_activity_level_1,1,0,0,0
+tt_auto_sync_activity_setup_for_master_data_activity_level_2,tt.auto.sync.activity.setup.for.master.data.activity.level.2,model_tt_auto_sync_activity_setup,tt_base.group_master_data_activity_level_2,1,0,1,0
+tt_auto_sync_activity_setup_for_master_data_activity_level_3,tt.auto.sync.activity.setup.for.master.data.activity.level.3,model_tt_auto_sync_activity_setup,tt_base.group_master_data_activity_level_3,1,1,1,0
+tt_auto_sync_activity_setup_for_master_data_activity_level_4,tt.auto.sync.activity.setup.for.master.data.activity.level.4,model_tt_auto_sync_activity_setup,tt_base.group_master_data_activity_level_4,1,1,1,0
+tt_auto_sync_activity_setup_for_master_data_activity_level_5,tt.auto.sync.activity.setup.for.master.data.activity.level.5,model_tt_auto_sync_activity_setup,tt_base.group_master_data_activity_level_5,1,1,1,1
+,,,,,,,
 tt_reservation_passenger_activity_for_reservation_level_1,tt.reservation.passenger.activity.for.reservation.level.1,model_tt_reservation_passenger_activity,tt_base.group_reservation_level_1,1,0,0,0
 tt_reservation_passenger_activity_for_reservation_level_2,tt.reservation.passenger.activity.for.reservation.level.2,model_tt_reservation_passenger_activity,tt_base.group_reservation_level_2,1,0,1,0
 tt_reservation_passenger_activity_for_reservation_level_3,tt.reservation.passenger.activity.for.reservation.level.3,model_tt_reservation_passenger_activity,tt_base.group_reservation_level_3,1,1,1,0
