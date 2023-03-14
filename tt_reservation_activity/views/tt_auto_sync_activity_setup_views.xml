@@ -17,11 +17,12 @@
                             <group>
                                 <field name="provider_id"/>
                                 <field name="json_file_range"/>
+                                <field name="exec_delay_days"/>
                             </group>
                             <group>
                                 <field name="is_json_generated" readonly="1"/>
-                                <field name="latest_file_idx"/>
-                                <field name="next_exec_time"/>
+                                <field name="latest_file_idx" readonly="1"/>
+                                <field name="next_exec_time" readonly="1"/>
                             </group>
                         </group>
                     </sheet>
@@ -40,6 +41,7 @@
                 <tree>
                     <field name="provider_id"/>
                     <field name="json_file_range"/>
+                    <field name="exec_delay_days"/>
                     <field name="is_json_generated"/>
                     <field name="latest_file_idx"/>
                     <field name="next_exec_time"/>
