@@ -69,6 +69,69 @@
             </field>
         </record>
 
+        <record id="tt_agent_rate_form_view" model="ir.ui.view">
+            <field name="name">tt.agent.rate.form.view</field>
+            <field name="model">tt.agent.rate</field>
+            <field name="arch" type="xml">
+                <form string="Res Rate Form">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                    options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <!--<h1>-->
+                                <!--<field name="name" placeholder="TT Agent Type Placeholder" attrs="{'required' : True}"/>-->
+                            <!--</h1>-->
+                        </div>
+                        <group>
+                            <field name="agent_id"/>
+                            <field name="base_currency_id"/>
+                            <field name="to_currency_id"/>
+                            <field name="rate"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_agent_rate_tree_view" model="ir.ui.view">
+            <field name="name">tt.agent.rate.tree.view</field>
+            <field name="model">tt.agent.rate</field>
+            <field name="arch" type="xml">
+                <tree string="Res Rate Tree">
+                    <field name="agent_id"/>
+                    <field name="base_currency_id"/>
+                    <field name="to_currency_id"/>
+                    <field name="rate"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_agent_rate_action_view" model="ir.actions.act_window">
+            <field name="name">Agent Rate</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.agent.rate</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                <!-- Add Text Here -->
+              </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+              </p>
+            </field>
+            <field name="context">
+                {
+                    'form_view_ref': 'tt_base.tt_agent_rate_form_view',
+                    'tree_view_ref': 'tt_base.tt_agent_rate_tree_view'
+                }
+            </field>
+        </record>
+
         <!--<menuitem id="menu_action_rate_form"-->
                   <!--parent="tt_base.sub_menu_tour_travel_configuration"-->
                   <!--groups="base.group_user"-->
@@ -77,9 +140,16 @@
         <menuitem id="sub_menu_item_tour_travel_rate"
                   parent="tt_base.menu_tour_travel_configuration_currency"
                   groups="base.group_user"
-                  name="Rate"
+                  name="Vendor Rate"
                   sequence="2"
                   action="tt_provider_rate_action_view"/>
+
+        <menuitem id="sub_menu_item_tour_travel_agent_rate"
+                  parent="tt_base.menu_tour_travel_configuration_currency"
+                  groups="base.group_user"
+                  name="Agent Rate"
+                  sequence="3"
+                  action="tt_agent_rate_action_view"/>
 
     </data>
 </odoo>
