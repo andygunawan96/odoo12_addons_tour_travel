@@ -306,6 +306,14 @@ access_tt_provider_rate_for_currency_rate_level_3,tt.provider.rate.for.currency.
 access_tt_provider_rate_for_currency_rate_level_4,tt.provider.rate.for.currency.rate.level.4,model_tt_provider_rate,tt_base.group_currency_rate_level_4,1,1,1,0
 access_tt_provider_rate_for_currency_rate_level_5,tt.provider.rate.for.currency.rate.level.5,model_tt_provider_rate,tt_base.group_currency_rate_level_5,1,1,1,1
 ,,,,,,,
+access_tt_agent_rate_for_public,tt.provider.rate.for.public,model_tt_agent_rate,,1,0,0,0
+,,,,,,,
+access_tt_agent_rate_for_currency_rate_level_1,tt.provider.rate.for.currency.rate.level.1,model_tt_agent_rate,tt_base.group_currency_rate_level_1,1,0,0,0
+access_tt_agent_rate_for_currency_rate_level_2,tt.provider.rate.for.currency.rate.level.2,model_tt_agent_rate,tt_base.group_currency_rate_level_2,1,0,1,0
+access_tt_agent_rate_for_currency_rate_level_3,tt.provider.rate.for.currency.rate.level.3,model_tt_agent_rate,tt_base.group_currency_rate_level_3,1,1,1,0
+access_tt_agent_rate_for_currency_rate_level_4,tt.provider.rate.for.currency.rate.level.4,model_tt_agent_rate,tt_base.group_currency_rate_level_4,1,1,1,0
+access_tt_agent_rate_for_currency_rate_level_5,tt.provider.rate.for.currency.rate.level.5,model_tt_agent_rate,tt_base.group_currency_rate_level_5,1,1,1,1
+,,,,,,,
 access_res_currency_for_public,res.currency.for.public,model_res_currency,,1,0,0,0
 ,,,,,,,
 access_res_currency_for_currency_rate_level_1,res.currency.for.currency.rate.level.1,model_res_currency,tt_base.group_currency_rate_level_1,1,0,0,0
