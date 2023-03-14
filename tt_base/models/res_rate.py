@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 class ResRate(models.Model):
     _name = 'tt.provider.rate'
     _rec_name = 'currency_id'
-    _description = 'Tour & Travel - Rate'
+    _description = 'Tour & Travel - Vendor Rate'
     _order = 'date DESC'
 
     name = fields.Char()
