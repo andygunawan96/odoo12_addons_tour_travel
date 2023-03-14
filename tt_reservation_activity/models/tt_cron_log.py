@@ -43,3 +43,14 @@ class TtCronLogInhResv(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('Update status booking Activity')
+
+    def cron_auto_sync_activity(self):
+        try:
+            auto_sync_setups = self.env['tt.auto.sync.activity.setup'].search(['|',
+                                                                               ('next_exec_time', '<=', datetime.now()),
+                                                                               ('is_json_generated', '=', True)])
+            for rec in auto_sync_setups:
+                rec.execute_sync_products()
+        except Exception as e:
+            self.create_cron_log_folder()
+            self.write_cron_log('Auto Sync Activity')
