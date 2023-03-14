@@ -61,7 +61,7 @@ class TtAgent(models.Model):
             if len(rec.ledger_ids) > 0:
                 ledger_obj = self.env['tt.ledger'].search([('agent_id', '=', rec.id), ('source_of_funds_type', '=', 'credit_limit')],limit=1)
                 if len(ledger_obj.ids) > 0:
-                    rec.credit_limit = ledger_obj.balance
+                    rec.balance_credit_limit = ledger_obj.balance
             else:
                 rec.balance_credit_limit = 0
 

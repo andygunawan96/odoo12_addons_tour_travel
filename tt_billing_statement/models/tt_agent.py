@@ -105,15 +105,15 @@ class TtAgentInh(models.Model):
             _logger.info(pr+ ' : '+','.join([str(rec.name) for rec in agent_obj.billing_cycle_ids]))
 
             ##search invoice cor tersebut
-            invoice_list_obj = self.env['tt.ho.invoice'].search([('agent_id','=',agent_obj.id),('state','in',['draft','confirm'])])
+            invoice_ho_list_obj = self.env['tt.ho.invoice'].search([('agent_id','=',agent_obj.id),('state','in',['draft','confirm'])])
             invoice_list = []
-            for inv in invoice_list_obj:
-                _logger.info(inv.name)
-                if inv.state == 'draft':
-                    inv.action_confirm()
-                if inv.state == 'confirm': ## error billing billed inv. this happen during splitted invoice
-                    inv.action_bill2()
-                invoice_list.append([4,inv.id])
+            for inv_ho in invoice_ho_list_obj:
+                _logger.info(inv_ho.name)
+                if inv_ho.state == 'draft':
+                    inv_ho.action_confirm()
+                if inv_ho.state == 'confirm': ## error billing billed inv. this happen during splitted invoice
+                    inv_ho.action_bill2()
+                invoice_list.append([4,inv_ho.id])
                 ##inv.bill
 
             bill_day_list = []
