@@ -21,8 +21,9 @@ class TtAutoSyncActivitySetup(models.Model):
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     json_file_range = fields.Integer('Json File Range', default=3, required=True, help='Amount of Json files to read per rotation.')
     is_json_generated = fields.Boolean('Is Json Files Generated')
-    latest_file_idx = fields.Integer('Latest Json File Index', default=0, readonly=True)
-    next_exec_time = fields.Datetime('Next Execution Start Time', readonly=True, default=datetime.now())
+    latest_file_idx = fields.Integer('Latest Json File Index', default=0)
+    exec_delay_days = fields.Integer('Delay Between Executions (Days)', default=7)
+    next_exec_time = fields.Datetime('Next Execution Start Time', default=datetime.now())
     active = fields.Boolean('Active', default=True)
 
     def execute_sync_products(self):
@@ -31,7 +32,7 @@ class TtAutoSyncActivitySetup(models.Model):
             _logger.info('Auto Sync Activity: Generating Json for provider %s. Will start to sync products on next execution.' % self.provider_id.name)
             self.write({
                 'is_json_generated': True,
-                'next_exec_time': datetime.now() + timedelta(days=7)
+                'next_exec_time': datetime.now() + timedelta(days=self.exec_delay_days)
             })
         else:
             file_ext = 'json'
