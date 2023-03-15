@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from odoo.http import request
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
+from ...tools.db_connector import GatewayConnector
 import logging, traceback
 import json
 import base64
@@ -289,15 +290,22 @@ class MasterActivity(models.Model):
             file.close()
 
     def action_sync_products(self, provider_code, start, end):
-        file = []
         for i in range(int(start), int(end) + 1):
-            file_dat = open(
-                '/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(i)),
-                'r')
-            file = json.loads(file_dat.read())
-            file_dat.close()
-            if file:
-                self.sync_products(provider_code, file)
+            try:
+                file_dat = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(i)), 'r')
+                file = json.loads(file_dat.read())
+                file_dat.close()
+                if file:
+                    self.sync_products(provider_code, file)
+            except Exception as e:
+                _logger.error('Error: Failed to sync products activity (File Number: %s). \n %s : %s' % (str(i), traceback.format_exc(), str(e)))
+                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code)], limit=1)
+                data = {
+                    'code': 9902,
+                    'message': 'Activity Sync Products Failed (File Number: %s). %s : %s' % (str(i), traceback.format_exc(), str(e)),
+                    'provider': provider_obj and provider_obj[0] or '',
+                }
+                GatewayConnector().telegram_notif_api(data, {})
 
     # temporary function
     def update_activity_uuid_temp(self):
@@ -1399,6 +1407,8 @@ class MasterActivity(models.Model):
         option_list = 'options' in vals.keys() and vals.pop('options') or {}
         timeslot_list = 'timeslots' in vals.keys() and vals.pop('timeslots') or []
 
+        if vals.get('voucher_validity_date') == '':
+            vals.pop('voucher_validity_date')
         if activity_type_exist:
             activity_obj = activity_type_exist[0]
             activity_obj.sudo().write(vals)
