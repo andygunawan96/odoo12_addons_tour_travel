@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from odoo.http import request
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
+from ...tools.db_connector import GatewayConnector
 import logging, traceback
 import json
 import base64
@@ -33,7 +34,7 @@ class ActivitySyncProducts(models.TransientModel):
 
     def check_json_length(self):
         file_ext = 'json'
-        self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext)
+        self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext, True)
 
     def generate_json(self):
         self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
@@ -42,7 +43,7 @@ class ActivitySyncProducts(models.TransientModel):
         self.env['tt.master.activity'].action_sync_products(self.provider_id.code, self.start_num, self.end_num)
 
     def config_product(self):
-        self.env['tt.master.activity'].action_sync_config(self.provider_id.code, self.start_num, self.end_num)
+        self.env['tt.master.activity'].action_sync_config(self.provider_id.code)
 
     def deactivate_product(self):
         products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
@@ -124,10 +125,10 @@ class MasterActivity(models.Model):
             _logger.info('Cannot convert to vendor price: ' + str(e))
         return computed_amount
 
-    def action_sync_config(self, provider_code, start, end):
+    def action_sync_config(self, provider_code):
         self.sync_config(provider_code)
 
-    def action_check_json_length(self, provider_code, file_ext='json'):
+    def action_check_json_length(self, provider_code, file_ext='json', is_human=False):
         search_dir = "/var/log/tour_travel/%s_master_data/" % provider_code
         file_prefix = "%s_master_data" % provider_code
         try:
@@ -143,7 +144,14 @@ class MasterActivity(models.Model):
             return int(s[0]) if s else -1, f
 
         max_file = max(list_of_files, key=extract_number)
-        raise UserError('Latest file is: %s' % max_file)
+        if is_human:
+            raise UserError('Latest file is: %s' % max_file)
+        else:
+            num_str = ''
+            for m in max_file:
+                if m.isdigit():
+                    num_str += str(m)
+            return int(num_str)
 
     def action_generate_json(self, provider_code):
         if provider_code == 'bemyguest':
@@ -282,15 +290,22 @@ class MasterActivity(models.Model):
             file.close()
 
     def action_sync_products(self, provider_code, start, end):
-        file = []
         for i in range(int(start), int(end) + 1):
-            file_dat = open(
-                '/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(i)),
-                'r')
-            file = json.loads(file_dat.read())
-            file_dat.close()
-            if file:
-                self.sync_products(provider_code, file)
+            try:
+                file_dat = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(i)), 'r')
+                file = json.loads(file_dat.read())
+                file_dat.close()
+                if file:
+                    self.sync_products(provider_code, file)
+            except Exception as e:
+                _logger.error('Error: Failed to sync products activity (File Number: %s). \n %s : %s' % (str(i), traceback.format_exc(), str(e)))
+                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code)], limit=1)
+                data = {
+                    'code': 9902,
+                    'message': 'Activity Sync Products Failed (File Number: %s). %s : %s' % (str(i), traceback.format_exc(), str(e)),
+                    'provider': provider_obj and provider_obj[0] or '',
+                }
+                GatewayConnector().telegram_notif_api(data, {})
 
     # temporary function
     def update_activity_uuid_temp(self):
@@ -1392,6 +1407,8 @@ class MasterActivity(models.Model):
         option_list = 'options' in vals.keys() and vals.pop('options') or {}
         timeslot_list = 'timeslots' in vals.keys() and vals.pop('timeslots') or []
 
+        if vals.get('voucher_validity_date') == '':
+            vals.pop('voucher_validity_date')
         if activity_type_exist:
             activity_obj = activity_type_exist[0]
             activity_obj.sudo().write(vals)
