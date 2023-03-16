@@ -311,7 +311,12 @@ class Ledger(models.Model):
         for sc in provider_obj.cost_service_charge_ids:
             # Pada lionair ada r.ac positif
             if 'RAC' in sc.charge_type and not sc.is_ledger_created:
-                amount = abs(sc.get_total_for_payment())
+                ## FIXME TAMBAL DOWNSELL
+                if sc.charge_code == 'csc':
+                    amount = sc.get_total_for_payment() * -1
+                ## FIXME DEFAULT AWAL
+                else:
+                    amount = abs(sc.get_total_for_payment())
                 if amount == 0:
                     continue
                 agent_id = sc.commission_agent_id.id if sc.commission_agent_id else booking_obj.agent_id.id
@@ -323,8 +328,15 @@ class Ledger(models.Model):
                 used_sc_list.append(sc)
 
         for agent_id, amount in agent_commission.items():
-            ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                              3, booking_obj.currency_id.id,issued_uid, amount, 0)
+            ## FIXME DEFAULT AWAL
+            if amount > 0:
+                ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
+                                                  3, booking_obj.currency_id.id,issued_uid, amount, 0)
+            ## FIXME TAMBAL DOWNSELL
+            else:
+                ledger_values = self.prepare_vals(booking_obj._name, booking_obj.id, 'Commission : ' + booking_obj.name,
+                                                  booking_obj.name, datetime.now() + relativedelta(hours=7),
+                                                  3, booking_obj.currency_id.id, issued_uid, 0, amount*-1)
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })

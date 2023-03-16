@@ -1027,12 +1027,13 @@ class TtReservation(models.Model):
 
                             sc_pax = copy.deepcopy(sc_pax)
                             ## jika harga lebih dari 0 bikin rac upsell, jika kurang dari 0 discount tidak bikin rac
-                            if sc['amount'] > 0:
-                                sc_pax.update({
-                                    "charge_type": 'RAC',
-                                    "amount": sc_pax['amount'] * -1,
-                                })
-                                svc_list.append(sc_pax)
+                            ## FIXME DOWNSELL UPSELL TETAP BIKIN RAC 16 MARET 2023
+                            # if sc['amount'] > 0:
+                            sc_pax.update({
+                                "charge_type": 'RAC',
+                                "amount": sc_pax['amount'] * -1,
+                            })
+                            svc_list.append(sc_pax)
             if svc_list:
                 for rec in self.provider_booking_ids:
                     svc_list_to_save_backend = []
