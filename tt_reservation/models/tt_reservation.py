@@ -1350,7 +1350,7 @@ class TtReservation(models.Model):
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')
-                    raise RequestException(1009)
+                    raise RequestException(1009,additional_message="Please re-check your booking status first.")
                 # May 13, 2020 - SAM
                 # if book_obj.state not in ['booked']:
                 #     # _logger.error('Cannot issue not [Booked] State.')
