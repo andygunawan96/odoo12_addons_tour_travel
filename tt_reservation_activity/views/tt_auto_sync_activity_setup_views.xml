@@ -17,6 +17,7 @@
                             <group>
                                 <field name="provider_id"/>
                                 <field name="json_file_range"/>
+                                <field name="item_amt_per_json"/>
                                 <field name="exec_delay_days"/>
                             </group>
                             <group>
