@@ -20,6 +20,7 @@ class TtAutoSyncActivitySetup(models.Model):
 
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     json_file_range = fields.Integer('Json File Range', default=3, required=True, help='Amount of Json files to read per rotation.')
+    item_amt_per_json = fields.Integer('Item Amount Per Json', default=100, required=True)
     is_json_generated = fields.Boolean('Is Json Files Generated')
     latest_file_idx = fields.Integer('Latest Json File Index', default=0)
     exec_delay_days = fields.Integer('Delay Between Executions (Days)', default=7)
@@ -28,7 +29,7 @@ class TtAutoSyncActivitySetup(models.Model):
 
     def execute_sync_products(self):
         if not self.is_json_generated:
-            self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
+            self.env['tt.master.activity'].action_generate_json(self.provider_id.code, self.item_amt_per_json)
             _logger.info('Auto Sync Activity: Generating Json for provider %s. Will start to sync products on next execution.' % self.provider_id.name)
             self.write({
                 'is_json_generated': True,

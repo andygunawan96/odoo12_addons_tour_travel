@@ -153,7 +153,7 @@ class MasterActivity(models.Model):
                     num_str += str(m)
             return int(num_str)
 
-    def action_generate_json(self, provider_code):
+    def action_generate_json(self, provider_code, per_page_amt=100):
         if provider_code == 'bemyguest':
             req_post = {
                 'query': '',
@@ -163,7 +163,7 @@ class MasterActivity(models.Model):
                 'city': '',
                 'sort': 'price',
                 'page': 1,
-                'per_page': 100,
+                'per_page': per_page_amt,
                 'provider': provider_code
             }
 
@@ -219,7 +219,7 @@ class MasterActivity(models.Model):
                         if temp.get('product_detail'):
                             batch_data['product_detail'] += temp['product_detail']
                             item_count += 16
-                            if item_count >= 100:
+                            if item_count >= per_page_amt:
                                 folder_path = '/var/log/tour_travel/globaltix_master_data'
                                 if not os.path.exists(folder_path):
                                     os.mkdir(folder_path)
@@ -255,7 +255,7 @@ class MasterActivity(models.Model):
                     file.write(json.dumps(temp))
                     file.close()
                     temp_idx += 1
-                    if temp_idx == 100:
+                    if temp_idx == per_page_amt:
                         page += 1
             else:
                 _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
