@@ -115,7 +115,7 @@ class TtMasterActivityApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_config_provider', timeout=600)
 
     def search_provider(self, data):
-        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'search_provider', timeout=900)
+        return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'search_provider', timeout=1800)
 
     def get_details(self, data):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_details_provider', timeout=600)
@@ -128,4 +128,3 @@ class TtMasterActivityApiCon(models.Model):
 
     def get_countries(self, data):
         return self.send_request_to_gateway('%s/booking/activity' % (self.url), data, 'get_countries', timeout=600)
-
