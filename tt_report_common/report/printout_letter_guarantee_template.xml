@@ -298,7 +298,7 @@
                                     <br/>
                                     <br/>
                                     <br/>
-                                    <span t-field="doc.confirm_uid.name"/>
+                                    <span t-field="doc.sudo().confirm_uid.name"/>
                                 </div>
                             </div>
                         </div>

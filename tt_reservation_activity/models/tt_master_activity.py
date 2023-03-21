@@ -176,64 +176,43 @@ class MasterActivity(models.Model):
                 for page in range(total_pages):
                     self.write_bmg_json(provider_code, False, page + 1)
         elif provider_code == 'globaltix':
-            provider_obj = self.env['tt.provider'].search(
-                [('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
             provider_id = provider_obj and provider_obj[0].id or False
             if provider_id:
-                provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id)])
+                provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '!=', False)])
             else:
                 provider_code_objs = []
-            gt_country_ids = []
-            item_count = 0
-            storage_page = 1
-            batch_data = {
-                'product_detail': []
-            }
+            gt_country_codes = []
             for rec in provider_code_objs:
-                if rec.country_id.id not in gt_country_ids:
-                    gt_country_ids.append(rec.country_id.id)
-                    gt_page = 1
-                    temp = {}
-                    while not temp.get('page_not_found'):
-                        req_post = {
-                            'query': '',
-                            'category': '',
-                            'country': rec.code,
-                            'city': '',
-                            'page': gt_page,
-                            'provider': provider_code
-                        }
-
-                        res = self.env['tt.master.activity.api.con'].search_provider(req_post)
-                        gt_page += 1
-                        if res['error_code'] == 0:
-                            temp = res['response']
-                            if temp.get('page_not_found'):
-                                continue
-                        else:
-                            temp.update({
-                                'page_not_found': True
-                            })
-                            continue
-
-                        if temp.get('product_detail'):
-                            batch_data['product_detail'] += temp['product_detail']
-                            item_count += 16
-                            if item_count >= per_page_amt:
-                                folder_path = '/var/log/tour_travel/globaltix_master_data'
-                                if not os.path.exists(folder_path):
-                                    os.mkdir(folder_path)
-                                file = open(
-                                    '/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(
-                                        storage_page) + '.json', 'w')
-                                file.write(json.dumps(batch_data))
-                                file.close()
-
-                                batch_data = {
-                                    'product_detail': []
-                                }
-                                item_count = 0
-                                storage_page += 1
+                if str(rec.code) not in gt_country_codes:
+                    gt_country_codes.append(str(rec.code))
+            req_post = {
+                'country_codes': gt_country_codes,
+                'provider': provider_code
+            }
+            res = self.env['tt.master.activity.api.con'].search_provider(req_post)
+            if res['error_code'] == 0:
+                item_count = 0
+                storage_page = 1
+                batch_data = {
+                    'product_detail': []
+                }
+                for temp in res['response']:
+                    if temp.get('product_detail'):
+                        batch_data['product_detail'] += temp['product_detail']
+                        item_count += 16
+                        if item_count >= per_page_amt:
+                            folder_path = '/var/log/tour_travel/globaltix_master_data'
+                            if not os.path.exists(folder_path):
+                                os.mkdir(folder_path)
+                            file = open('/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json', 'w')
+                            file.write(json.dumps(batch_data))
+                            file.close()
+                            batch_data = {
+                                'product_detail': []
+                            }
+                            item_count = 0
+                            storage_page += 1
         elif provider_code == 'rodextrip_activity':
             req_post = {
                 'provider': provider_code
