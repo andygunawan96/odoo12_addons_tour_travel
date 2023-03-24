@@ -516,12 +516,7 @@ class MasterActivity(models.Model):
                     'provider_id': provider_id.id,
                 }
                 if product_obj:
-                    key_del_list = []
-                    for key, val in vals.items():
-                        if not val:
-                            key_del_list.append(key)
-                    for keydel in key_del_list:
-                        vals.pop(keydel)
+                    util.pop_empty_key(vals)
                     product_obj.write(vals)
                 else:
                     vals.update({
