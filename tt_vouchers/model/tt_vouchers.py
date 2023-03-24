@@ -1255,11 +1255,11 @@ class TtVoucherDetail(models.Model):
             for i in data['provider']:
                 # search the exact prvider
                 provider = self.env['tt.provider'].search([('code', '=', i)], limit=1)
-
+                provider_type_id = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])], limit=1)
                 # create data to check if current iteration provider is eligible for voucher discount
                 to_check = {
                     'voucher_id': voucher_detail.voucher_id.id,
-                    'provider_type_id': provider.provider_type_id.id,
+                    'provider_type_id': provider_type_id.id,
                     'provider_id': provider.id,
                     'provider_name': i,
                     'voucher_reference': data['voucher_reference']
