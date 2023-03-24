@@ -433,8 +433,8 @@ class MasterActivity(models.Model):
                         })
                         self.env.cr.commit()
                     temp.append(category_obj.id)
-                temp2 = []
 
+                temp2 = []
                 if rec['product'].get('country_id'):
                     rec_provider_codes = self.env['tt.provider.code'].sudo().search([('code', '=', rec['product']['country_id']), ('provider_id', '=', int(provider_id.id))])
                     for prov_data in rec_provider_codes:
@@ -485,69 +485,45 @@ class MasterActivity(models.Model):
                         cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
                 else:
                     cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
+
+                vals = {
+                    'name': rec['product'].get('title') and rec['product']['title'] or '',
+                    'type_ids': [(6, 0, types_temp)],
+                    'category_ids': [(6, 0, temp)],
+                    'location_ids': [(6, 0, temp2)],
+                    'currency_id': cur_obj and cur_obj[0].id or False,
+                    'basePrice': rec['product'].get('basePrice') and rec['product']['basePrice'] or 0,
+                    'priceIncludes': rec['product'].get('priceIncludes') and rec['product']['priceIncludes'] or '',
+                    'priceExcludes': rec['product'].get('priceExcludes') and rec['product']['priceExcludes'] or '',
+                    'description': rec['product'].get('description') and rec['product']['description'] or '',
+                    'highlights': rec['product'].get('highlights') and rec['product']['highlights'] or '',
+                    'additionalInfo': rec['product'].get('additionalInfo') and rec['product']['additionalInfo'] or '',
+                    'itinerary': rec['product'].get('itinerary') and rec['product']['itinerary'] or '',
+                    'warnings': rec['product'].get('warnings') and rec['product']['warnings'] or '',
+                    'safety': rec['product'].get('safety') and rec['product']['safety'] or '',
+                    'latitude': rec['product'].get('latitude') and rec['product']['latitude'] or 0,
+                    'longitude': rec['product'].get('longitude') and rec['product']['longitude'] or 0,
+                    'minPax': rec['product'].get('minPax') and rec['product']['minPax'] or 0,
+                    'maxPax': rec['product'].get('maxPax') and rec['product']['maxPax'] or 0,
+                    'reviewCount': rec['product'].get('reviewCount') and rec['product']['reviewCount'] or 0,
+                    'reviewAverageScore': rec['product'].get('reviewAverageScore') and rec['product']['reviewAverageScore'] or 0,
+                    'businessHoursFrom': rec['product'].get('businessHoursFrom') and rec['product']['businessHoursFrom'] or '',
+                    'businessHoursTo': rec['product'].get('businessHoursTo') and rec['product']['businessHoursTo'] or '',
+                    'hotelPickup': rec['product'].get('hotelPickup') and rec['product']['hotelPickup'] or False,
+                    'airportPickup': rec['product'].get('airportPickup') and rec['product']['airportPickup'] or False,
+                    'can_hold_booking': rec['product'].get('can_hold_booking') and rec['product']['can_hold_booking'] or False,
+                    'active': True,
+                    'provider_id': provider_id.id,
+                }
                 if product_obj:
-                    product_obj.update({
-                        'name': rec['product']['title'],
-                        'type_ids': [(6, 0, types_temp)],
-                        'category_ids': [(6, 0, temp)],
-                        'location_ids': [(6, 0, temp2)],
-                        'currency_id': cur_obj and cur_obj[0].id or False,
-                        'basePrice': rec['product']['basePrice'],
-                        'priceIncludes': rec['product']['priceIncludes'],
-                        'priceExcludes': rec['product']['priceExcludes'],
-                        'description': rec['product']['description'],
-                        'highlights': rec['product']['highlights'],
-                        'additionalInfo': rec['product']['additionalInfo'],
-                        'itinerary': rec['product']['itinerary'],
-                        'warnings': rec['product']['warnings'],
-                        'safety': rec['product']['safety'],
-                        'latitude': rec['product']['latitude'],
-                        'longitude': rec['product']['longitude'],
-                        'minPax': rec['product']['minPax'],
-                        'maxPax': rec['product']['maxPax'],
-                        'reviewCount': rec['product']['reviewCount'],
-                        'reviewAverageScore': rec['product']['reviewAverageScore'],
-                        'businessHoursFrom': rec['product']['businessHoursFrom'],
-                        'businessHoursTo': rec['product']['businessHoursTo'],
-                        'hotelPickup': rec['product']['hotelPickup'],
-                        'airportPickup': rec['product']['airportPickup'],
-                        'can_hold_booking': rec['product']['can_hold_booking'],
-                        'active': True,
-                        'provider_id': provider_id.id,
-                    })
+                    util.pop_empty_key(vals)
+                    product_obj.write(vals)
                 else:
-                    vals = {
-                        'uuid': rec['product']['uuid'],
-                        'name': rec['product']['title'],
-                        'type_ids': [(6, 0, types_temp)],
-                        'category_ids': [(6, 0, temp)],
-                        'location_ids': [(6, 0, temp2)],
-                        'currency_id': cur_obj and cur_obj[0].id or False,
-                        'basePrice': rec['product']['basePrice'],
-                        'priceIncludes': rec['product']['priceIncludes'],
-                        'priceExcludes': rec['product']['priceExcludes'],
-                        'description': rec['product']['description'],
-                        'highlights': rec['product']['highlights'],
-                        'additionalInfo': rec['product']['additionalInfo'],
-                        'itinerary': rec['product']['itinerary'],
-                        'warnings': rec['product']['warnings'],
-                        'safety': rec['product']['safety'],
-                        'latitude': rec['product']['latitude'],
-                        'longitude': rec['product']['longitude'],
-                        'minPax': rec['product']['minPax'],
-                        'maxPax': rec['product']['maxPax'],
-                        'reviewCount': rec['product']['reviewCount'],
-                        'reviewAverageScore': rec['product']['reviewAverageScore'],
-                        'businessHoursFrom': rec['product']['businessHoursFrom'],
-                        'businessHoursTo': rec['product']['businessHoursTo'],
-                        'hotelPickup': rec['product']['hotelPickup'],
-                        'airportPickup': rec['product']['airportPickup'],
-                        'can_hold_booking': rec['product']['can_hold_booking'],
-                        'active': True,
-                        'provider_id': provider_id.id,
-                    }
+                    vals.update({
+                        'uuid': rec['product']['uuid']
+                    })
                     product_obj = self.env['tt.master.activity'].sudo().create(vals)
-                    self.env.cr.commit()
+                self.env.cr.commit()
 
                 images = self.env['tt.activity.master.images'].search([('activity_id', '=', product_obj.id)])
                 images.sudo().unlink()

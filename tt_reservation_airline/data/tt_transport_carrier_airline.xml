@@ -104,9 +104,9 @@
             <field name="icao">LNI</field>
             <field name="call_sign">LION INTER</field>
             <field name="active">1</field>
-            <field name="adult_length_name">57</field>
-            <field name="child_length_name">44</field>
-            <field name="infant_length_name">42</field>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -690,6 +690,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -705,6 +708,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -720,6 +726,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -735,6 +744,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="True"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -750,6 +762,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="True"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -765,6 +780,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -780,6 +798,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -795,6 +816,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -810,6 +834,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -840,6 +867,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -855,6 +885,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -870,6 +903,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -885,6 +921,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -900,6 +939,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -915,6 +957,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -925,9 +970,9 @@
             <field name="icao">WON</field>
             <field name="call_sign">WINGS ABADI</field>
             <field name="active">1</field>
-            <field name="adult_length_name">57</field>
-            <field name="child_length_name">44</field>
-            <field name="infant_length_name">42</field>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -943,9 +988,9 @@
             <field name="icao">BTK</field>
             <field name="call_sign">BATIK</field>
             <field name="active">1</field>
-            <field name="adult_length_name">57</field>
-            <field name="child_length_name">44</field>
-            <field name="infant_length_name">42</field>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -961,9 +1006,9 @@
             <field name="icao">SJV</field>
             <field name="call_sign">PROSPER</field>
             <field name="active">1</field>
-            <field name="adult_length_name">57</field>
-            <field name="child_length_name">44</field>
-            <field name="infant_length_name">42</field>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -978,9 +1023,9 @@
             <field name="icao">TLM</field>
             <field name="call_sign">MENTARI</field>
             <field name="active">1</field>
-            <field name="adult_length_name">57</field>
-            <field name="child_length_name">44</field>
-            <field name="infant_length_name">42</field>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="is_adult_birth_date_required" eval="True"/>
             <field name="required_identity_required_domestic" eval="False"/>
             <field name="required_identity_required_international" eval="True"/>
@@ -1015,6 +1060,9 @@
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
             <field name="is_identity_can_be_empty" eval="False"/>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="provider_type_id" ref="tt_reservation_airline.tt_provider_type_airline"/>
         </record>
 
@@ -1208,9 +1256,9 @@
             <field name="call_sign">PELITA</field>
             <field name="active">1</field>
             <field name="is_adult_birth_date_required" eval="True"/>
-            <field name="adult_length_name">57</field>
-            <field name="child_length_name">44</field>
-            <field name="infant_length_name">42</field>
+            <field name="adult_length_name">42</field>
+            <field name="child_length_name">42</field>
+            <field name="infant_length_name">56</field>
             <field name="required_identity_required_domestic" eval="True"/>
             <field name="required_identity_required_international" eval="True"/>
             <field name="is_identity_can_be_expired" eval="False"/>
