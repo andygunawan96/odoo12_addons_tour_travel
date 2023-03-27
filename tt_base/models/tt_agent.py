@@ -542,7 +542,7 @@ class TtAgent(models.Model):
                 dom = [('agent_id', '=', agent_obj.id)]
 
             if req.get('pnr'):
-                dom.append(('pnr','=ilike',req['pnr']))
+                dom.append(('provider_booking_ids.pnr','=',req['pnr']))
             if req.get('order_number'):
                 dom.append(('name','=ilike',req['order_number']))
             if req.get('booker_name'):

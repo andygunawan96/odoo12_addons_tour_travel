@@ -17,7 +17,7 @@ TRANSACTION_TYPE = [
     ('airline', 'Airline'),
     ('train', 'Train'),
     ('ship', 'Ship'),
-    # ('visa', 'Visa'),
+    ('visa', 'Visa'),
     ('cruise', 'Cruise'),
     ('car', 'Car/Rent'),
     ('bus', 'Bus'),
@@ -27,7 +27,19 @@ TRANSACTION_TYPE = [
     # ('passport', 'Passport'),
     ('activity', 'Activity'),
     ('travel_doc', 'Travel Doc.'),
-    ('hotel', 'Hotel')
+    ('hotel', 'Hotel'),
+    ('insurance', 'Insurance'),
+    ('groupbooking', 'Group Booking'),
+    ('event', 'Event'),
+    ('insurance', 'Insurance'),
+    ('labpintar', 'Lab Pintar'),
+    ('medical', 'Medical (Nathos)'),
+    ('mitrakeluarga', 'Mitra Keluarga'),
+    ('periksain', 'Periksain'),
+    ('phc', 'PHC'),
+    ('ppob', 'PPOB'),
+    ('sentramedika', 'Sentra Medika'),
+    ('swabexpress', 'Swab Express'),
 ]
 
 CLASS_OF_SERVICE = [
