@@ -77,7 +77,7 @@
                             <field name="description" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                         </group>
                     </group>
-                    <group attrs="{'invisible': [('transaction_name', 'not in', ['tour','visa','periksain','phc','other'])]}">
+                    <group attrs="{'invisible': [('transaction_name', 'not in', ['tour','visa','periksain','phc','other', 'groupbooking', 'insurance', 'event', 'ppob', 'bus', 'labpintar', 'medical', 'mitrakeluarga', 'sentramediak', 'swabexpress'])]}">
                         <group>
                             <field name="pnr" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="description" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
