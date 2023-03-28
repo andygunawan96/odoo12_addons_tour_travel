@@ -9,4 +9,10 @@
                   parent="tt_base.top_menu_accounting"
                   name="Commission"
                   sequence="20"/>
+
+    <menuitem id="menu_transaction_accounting_tools"
+              parent="tt_base.top_menu_accounting"
+              name="Tools"
+              sequence="60"
+              groups="base.group_user"/>
 </odoo>
