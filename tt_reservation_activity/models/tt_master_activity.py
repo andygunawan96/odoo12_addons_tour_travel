@@ -479,12 +479,11 @@ class MasterActivity(models.Model):
                             temp2.append(new_loc.id)
 
                 types_temp = temp
+                cur_obj = False
                 if rec['product'].get('currency'):
                     cur_obj = self.env['res.currency'].search([('name', '=', rec['product']['currency'])], limit=1)
                     if not cur_obj:
                         cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
-                else:
-                    cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
 
                 vals = {
                     'name': rec['product'].get('title') and rec['product']['title'] or '',
@@ -522,6 +521,11 @@ class MasterActivity(models.Model):
                     vals.update({
                         'uuid': rec['product']['uuid']
                     })
+                    if not cur_obj:
+                        cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
+                        vals.update({
+                            'currency_id': cur_obj and cur_obj[0].id or False
+                        })
                     product_obj = self.env['tt.master.activity'].sudo().create(vals)
                 self.env.cr.commit()
 
