@@ -44,6 +44,7 @@ Key Features
 
         'wizard/force_issued_wizard_views.xml',
         'wizard/tt_check_segment_wizard_views.xml',
+        'wizard/tt_xls_pnr_matching_wizard_views.xml',
 
         'views/tt_reservation_airline.xml',
         'views/tt_provider_views.xml',
