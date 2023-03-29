@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_xls_pnr_matching_wizard_form_view" model="ir.ui.view">
+        <field name="name">Airline XLS PNR Matching Wizard</field>
+        <field name="model">tt.xls.pnr.matching.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Get Booking Airline Wizard" create="false">
+                <div class="oe_button_box" name="button_box">
+                    <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload XLS File" type="action"
+                            class="oe_stat_button" icon="fa-upload"
+                            context="{'default_target_field_name': 'xls_file'}"/>
+                </div>
+                <group>
+                    <field name="xls_file"/>
+                </group>
+                <footer>
+                    <button name="get_xls_file_with_pnr" string="Get XLS file with PNR" type="object" default_focus="1" class="oe_highlight"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="tt_xls_pnr_matching_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Airline XLS PNR Matching Wizard</field>
+        <field name="res_model">tt.xls.pnr.matching.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="submenu_transaction_airline_xls_pnr_matching"
+              parent="tt_accounting.menu_transaction_accounting_tools"
+              name="Airline XLS PNR Matching"
+              action="tt_reservation_airline.tt_xls_pnr_matching_wizard_action_view"
+              groups="base.group_system,tt_base.group_reservation_level_4"
+              sequence="10"/>
+
+</odoo>

@@ -58,7 +58,7 @@ tt_error_api_4010,4010,Failed to assign Seat,,,1,1
 tt_error_api_4011,4011,Missing Requirements,,,1,1
 tt_error_api_4012,4012,"Duplicate Session, Please create new session",,,1,1
 tt_error_api_4013,4013,"Data Validation Error",,,1,1
-tt_error_api_4014,4014,"You had already call this function",,,1,1
+tt_error_api_4014,4014,"You had called this function before",,,1,1
 tt_error_api_4015,4015,"Destinations are not allowed",,,1,1
 tt_error_api_4016,4016,"Failed to commit booking",,,1,1
 tt_error_api_4017,4017,"Failed to get booking",,,1,1
