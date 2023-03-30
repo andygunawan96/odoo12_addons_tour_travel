@@ -60,23 +60,25 @@ class TtReservationHotel(models.Model):
         return res
 
     def action_reverse_ledger_from_button(self):
+        old_state = self.state
         res = super(TtReservationHotel, self).action_reverse_ledger_from_button()
-        temp_post = self.posted_acc_actions or ''
-        setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_hotel', '=', True)])
-        if setup_list:
-            vendor_list = []
-            for rec in setup_list:
-                if rec.accounting_provider not in vendor_list:
-                    vendor_list.append(rec.accounting_provider)
-            self.send_ledgers_to_accounting('reverse', vendor_list)
-            if temp_post:
-                temp_post += ',reverse'
-            else:
-                temp_post += 'reverse'
-            self.write({
-                'posted_acc_actions': temp_post
-            })
+        if old_state == 'issued':
+            temp_post = self.posted_acc_actions or ''
+            setup_list = self.env['tt.accounting.setup'].search(
+                [('cycle', '=', 'real_time'), ('is_send_hotel', '=', True)])
+            if setup_list:
+                vendor_list = []
+                for rec in setup_list:
+                    if rec.accounting_provider not in vendor_list:
+                        vendor_list.append(rec.accounting_provider)
+                self.send_ledgers_to_accounting('reverse', vendor_list)
+                if temp_post:
+                    temp_post += ',reverse'
+                else:
+                    temp_post += 'reverse'
+                self.write({
+                    'posted_acc_actions': temp_post
+                })
         return res
 
     def send_transaction_batches_to_accounting(self, days):
