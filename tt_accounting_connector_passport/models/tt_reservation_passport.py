@@ -59,23 +59,25 @@ class TtReservationPassport(models.Model):
             })
 
     def action_reverse_passport(self,context):
+        old_state = self.state
         super(TtReservationPassport, self).action_reverse_passport(context)
-        temp_post = self.posted_acc_actions or ''
-        setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_passport', '=', True)])
-        if setup_list:
-            vendor_list = []
-            for rec in setup_list:
-                if rec.accounting_provider not in vendor_list:
-                    vendor_list.append(rec.accounting_provider)
-            self.send_ledgers_to_accounting('reverse', vendor_list)
-            if temp_post:
-                temp_post += ',reverse'
-            else:
-                temp_post += 'reverse'
-            self.write({
-                'posted_acc_actions': temp_post
-            })
+        if old_state == 'issued':
+            temp_post = self.posted_acc_actions or ''
+            setup_list = self.env['tt.accounting.setup'].search(
+                [('cycle', '=', 'real_time'), ('is_send_passport', '=', True)])
+            if setup_list:
+                vendor_list = []
+                for rec in setup_list:
+                    if rec.accounting_provider not in vendor_list:
+                        vendor_list.append(rec.accounting_provider)
+                self.send_ledgers_to_accounting('reverse', vendor_list)
+                if temp_post:
+                    temp_post += ',reverse'
+                else:
+                    temp_post += 'reverse'
+                self.write({
+                    'posted_acc_actions': temp_post
+                })
 
     def send_transaction_batches_to_accounting(self, days):
         start_datetime = datetime.strptime((date.today() - timedelta(days=days)).strftime('%Y-%m-%d') + ' 00:00:00', "%Y-%m-%d %H:%M:%S")
