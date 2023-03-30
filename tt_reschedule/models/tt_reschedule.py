@@ -288,7 +288,7 @@ class TtReschedule(models.Model):
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]", readonly=False, states={'done': [('readonly', True)]})
     reschedule_amount = fields.Monetary('Expected After Sales Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount', store=True)
     real_reschedule_amount = fields.Monetary('Real After Sales Amount from Vendor', default=0, readonly=True,
-                                         compute='_compute_real_reschedule_amount')
+                                         compute='_compute_real_reschedule_amount', store=True)
     reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
     reschedule_type_str = fields.Char('After Sales Type', readonly=True, compute='_compute_reschedule_type_str', store=True)
     change_ids = fields.One2many('tt.reschedule.changes', 'reschedule_id', 'Changes', readonly=True)
@@ -459,6 +459,15 @@ class TtReschedule(models.Model):
             for rec2 in rec.reschedule_line_ids:
                 resch_amount += rec2.real_reschedule_amount
             rec.real_reschedule_amount = resch_amount
+
+    def compute_real_reschedule_amount_btn(self):
+        self._compute_real_reschedule_amount()
+
+    # temporary function
+    def compute_all_real_reschedule_amount(self):
+        reschedule_objs = self.env['tt.reschedule'].search([])
+        for rec in reschedule_objs:
+            rec.compute_real_reschedule_amount_btn()
 
     @api.depends('admin_fee', 'reschedule_amount')
     @api.onchange('admin_fee', 'reschedule_amount')

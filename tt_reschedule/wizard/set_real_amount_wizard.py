@@ -19,3 +19,4 @@ class SetRealAmountWizard(models.TransientModel):
         self.reschedule_line_id.write({
             'real_reschedule_amount': self.real_reschedule_amount
         })
+        self.reschedule_line_id.reschedule_id.compute_real_reschedule_amount_btn()
