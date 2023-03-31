@@ -57,6 +57,7 @@
                                     attrs="{'invisible':['|',('res_model','=',False),('res_id','=',0)]}"/>
                         </group>
                         <group>
+                            <field name="request"/>
                             <field name="response"/>
                             <label for="create_uid" string="Created By"/>
                             <div>

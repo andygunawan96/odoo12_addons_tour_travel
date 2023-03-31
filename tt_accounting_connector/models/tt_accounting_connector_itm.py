@@ -5,6 +5,7 @@ import json
 import base64
 import time
 from datetime import datetime
+from random import randrange
 
 _logger = logging.getLogger(__name__)
 # url = 'http://cloud1.suvarna-mi.com:1293/Data15/RunTravelfileV3'
@@ -28,6 +29,12 @@ class AccountingConnectorITM(models.Model):
         }
         req_data = self.request_parser(vals)
         _logger.info('ITM Request Add Sales Order: %s', req_data)
+        if vals.get('accounting_queue_id'):
+            queue_obj = self.env['tt.accounting.queue'].browse(int(vals['accounting_queue_id']))
+            if queue_obj:
+                queue_obj.write({
+                    'request': json.dumps(req_data)
+                })
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
         response = requests.post(url, data=req_data, headers=headers)
         res = self.response_parser(response)
@@ -355,10 +362,11 @@ class AccountingConnectorITM(models.Model):
                 total_sales += request.get('total_commission') and request['total_commission'] or 0
                 total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
 
+            uniquecode = '%s_%s%s' % (request.get('order_number', ''), datetime.now().strftime('%m%d%H%M%S'), chr(randrange(65,90)))
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",
-                "UniqueCode": request.get('order_number', ''),
+                "UniqueCode": uniquecode,
                 "TravelFile": {
                     "TypeTransaction": 111,
                     "TransactionCode": "%s_%s" % ('_'.join(pnr_list), request.get('order_number', '')),
