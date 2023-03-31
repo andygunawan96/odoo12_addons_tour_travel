@@ -121,7 +121,7 @@ class SplitInvoice(models.TransientModel):
                     os.makedirs(hashed_path)
                 valid_path = True
 
-        return full_path,'%s%s%s' % (base_url,hash_only_path,filename)
+        return full_path,'%s/%s%s' % (base_url,hash_only_path,filename)
 
     def make_list_dir(self,hash,depth,length):
         result = []
