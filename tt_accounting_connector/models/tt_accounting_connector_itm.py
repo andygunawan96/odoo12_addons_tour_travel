@@ -389,6 +389,8 @@ class AccountingConnectorITM(models.Model):
                 },
                 "MethodSettlement": "NONE"
             }
+            if not self.validate_request(req):
+                raise Exception('Request cannot be sent because some field requirements are not met.')
         else:
             req = {}
 
@@ -419,3 +421,21 @@ class AccountingConnectorITM(models.Model):
             'status': status,
         })
         return res
+
+    def validate_request(self, vals):
+        validated = True
+        missing_fields = []
+        checked_fields_phase1 = ['LiveID', 'UniqueCode', 'TravelFile']
+        for rec in checked_fields_phase1:
+            if not vals.get(rec):
+                validated = False
+                missing_fields.append(rec)
+        if validated:
+            checked_fields_phase2 = ['TransactionCode', 'ReffCode', 'ContactCD']
+            for rec in checked_fields_phase2:
+                if not vals['TravelFile'].get(rec):
+                    validated = False
+                    missing_fields.append('TravelFile: %s' % rec)
+        if missing_fields:
+            _logger.error('ITM accounting request missing or empty fields: %s' % ', '.join(missing_fields))
+        return validated
