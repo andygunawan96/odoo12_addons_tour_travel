@@ -161,7 +161,7 @@ class ttCronTopUpValidator(models.Model):
                                                             result.top_up_validated(res['response']['top_up_id'])
                                                             self._cr.commit()
                                                     res = self.env['tt.payment.api.con'].send_payment(req)
-                                                    if res['error_code'] == 0:
+                                                    if res['error_code'] in [0, 1009, 4034]:
                                                         # tutup payment acq number
                                                         payment_acq_obj.state = 'done'
                                                     else:
