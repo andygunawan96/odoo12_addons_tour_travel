@@ -29,6 +29,12 @@ class AccountingConnectorITM(models.Model):
         }
         req_data = self.request_parser(vals)
         _logger.info('ITM Request Add Sales Order: %s', req_data)
+        if vals.get('accounting_queue_id'):
+            queue_obj = self.env['tt.accounting.queue'].browse(int(vals['accounting_queue_id']))
+            if queue_obj:
+                queue_obj.write({
+                    'request': json.dumps(req_data)
+                })
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
         response = requests.post(url, data=req_data, headers=headers)
         res = self.response_parser(response)

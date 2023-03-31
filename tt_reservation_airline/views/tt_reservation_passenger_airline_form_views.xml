@@ -6,6 +6,15 @@
         <field name="mode">primary</field>
         <field name="inherit_id" ref="tt_reservation.tt_reservation_passenger_form_view"/>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button string="Edit Passenger Info" name="%(tt_reservation_airline.tt_reservation_passenger_airline_edit_wizard_action_view)d" type="action" groups="tt_base.group_reservation_level_4"
+                        context="{
+                                    'default_reservation_passenger_id': id,
+                                    'default_first_name': first_name,
+                                    'default_last_name': last_name,
+                                    'default_title': title,
+                                }"/>
+            </xpath>
             <xpath expr="//group[@name='basic_info']" position="after">
                 <separator string="Frequent Flyers"/>
                 <field name="frequent_flyer_ids"/>

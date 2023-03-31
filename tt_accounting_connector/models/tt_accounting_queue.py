@@ -339,6 +339,9 @@ class TtAccountingQueue(models.Model):
             else:
                 request = {}
             if request:
+                request.update({
+                    'accounting_queue_id': self.id
+                })
                 res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_sales_order(request)
                 self.response = json.dumps(res)
                 self.state = res.get('status') and res['status'] or 'failed'
