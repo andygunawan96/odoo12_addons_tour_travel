@@ -11,6 +11,7 @@ from datetime import datetime
 import csv
 import os
 import re
+import copy
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -182,37 +183,46 @@ class MasterActivity(models.Model):
                 provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '!=', False)])
             else:
                 provider_code_objs = []
+            all_gt_country_codes = []
             gt_country_codes = []
+            check_gt_country_codes = []
             for rec in provider_code_objs:
-                if str(rec.code) not in gt_country_codes:
+                if str(rec.code) not in check_gt_country_codes:
+                    check_gt_country_codes.append(str(rec.code))
                     gt_country_codes.append(str(rec.code))
-            req_post = {
-                'country_codes': gt_country_codes,
-                'provider': provider_code
-            }
-            res = self.env['tt.master.activity.api.con'].search_provider(req_post)
-            if res['error_code'] == 0:
-                item_count = 0
-                storage_page = 1
-                batch_data = {
-                    'product_detail': []
+                    if len(gt_country_codes) >= 30:
+                        temp_gt_country_codes = copy.deepcopy(gt_country_codes)
+                        all_gt_country_codes.append(temp_gt_country_codes)
+                        gt_country_codes = []
+
+            storage_page = 1
+            item_count = 0
+            for rec_list in all_gt_country_codes:
+                req_post = {
+                    'country_codes': rec_list,
+                    'provider': provider_code
                 }
-                for temp in res['response']:
-                    if temp.get('product_detail'):
-                        batch_data['product_detail'] += temp['product_detail']
-                        item_count += 16
-                        if item_count >= per_page_amt:
-                            folder_path = '/var/log/tour_travel/globaltix_master_data'
-                            if not os.path.exists(folder_path):
-                                os.mkdir(folder_path)
-                            file = open('/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json', 'w')
-                            file.write(json.dumps(batch_data))
-                            file.close()
-                            batch_data = {
-                                'product_detail': []
-                            }
-                            item_count = 0
-                            storage_page += 1
+                res = self.env['tt.master.activity.api.con'].search_provider(req_post)
+                if res['error_code'] == 0:
+                    batch_data = {
+                        'product_detail': []
+                    }
+                    for temp in res['response']:
+                        if temp.get('product_detail'):
+                            batch_data['product_detail'] += temp['product_detail']
+                            item_count += 16
+                            if item_count >= per_page_amt:
+                                folder_path = '/var/log/tour_travel/globaltix_master_data'
+                                if not os.path.exists(folder_path):
+                                    os.mkdir(folder_path)
+                                file = open('/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json', 'w')
+                                file.write(json.dumps(batch_data))
+                                file.close()
+                                batch_data = {
+                                    'product_detail': []
+                                }
+                                item_count = 0
+                                storage_page += 1
         elif provider_code == 'rodextrip_activity':
             req_post = {
                 'provider': provider_code
