@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="tt_reservation_passenger_airline_edit_wizard_form_view" model="ir.ui.view">
+        <field name="name">Reschedule Set Real Amount Wizard</field>
+        <field name="model">tt.reservation.passenger.airline.edit.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reservation Passenger Edit Wizard">
+                <group>
+                    <group>
+                        <field name="reservation_passenger_id" invisible="1"/>
+                        <field name="title"/>
+                    </group>
+                    <group>
+                        <field name="first_name"/>
+                        <field name="last_name"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="submit_edit_reservation_passenger" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="tt_reservation_passenger_airline_edit_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Edit Passenger Info</field>
+        <field name="res_model">tt.reservation.passenger.airline.edit.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

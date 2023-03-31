@@ -3,3 +3,4 @@ from . import force_issued_wizard
 from . import tt_get_booking_from_vendor
 from . import tt_check_segment_wizard
 from . import tt_xls_pnr_matching_wizard
+from . import tt_reservation_passenger_edit_wizard
