@@ -5,6 +5,9 @@
         <field name="model">tt.reservation.passenger</field>
         <field name="arch" type="xml">
             <form>
+                <header>
+
+                </header>
                 <sheet>
                     <div>
                         <h1>
@@ -14,6 +17,8 @@
                     </div>
                     <group name="basic_info">
                         <group>
+                            <field name="first_name" invisible="1"/>
+                            <field name="last_name" invisible="1"/>
                             <field name="gender"/>
                             <field name="birth_date"/>
                             <field name="nationality_id"/>

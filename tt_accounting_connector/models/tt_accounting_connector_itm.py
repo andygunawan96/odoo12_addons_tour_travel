@@ -29,6 +29,12 @@ class AccountingConnectorITM(models.Model):
         }
         req_data = self.request_parser(vals)
         _logger.info('ITM Request Add Sales Order: %s', req_data)
+        if vals.get('accounting_queue_id'):
+            queue_obj = self.env['tt.accounting.queue'].browse(int(vals['accounting_queue_id']))
+            if queue_obj:
+                queue_obj.write({
+                    'request': json.dumps(req_data)
+                })
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
         response = requests.post(url, data=req_data, headers=headers)
         res = self.response_parser(response)
@@ -383,6 +389,8 @@ class AccountingConnectorITM(models.Model):
                 },
                 "MethodSettlement": "NONE"
             }
+            if not self.validate_request(req):
+                raise Exception('Request cannot be sent because some field requirements are not met.')
         else:
             req = {}
 
@@ -413,3 +421,21 @@ class AccountingConnectorITM(models.Model):
             'status': status,
         })
         return res
+
+    def validate_request(self, vals):
+        validated = True
+        missing_fields = []
+        checked_fields_phase1 = ['LiveID', 'UniqueCode', 'TravelFile']
+        for rec in checked_fields_phase1:
+            if not vals.get(rec):
+                validated = False
+                missing_fields.append(rec)
+        if validated:
+            checked_fields_phase2 = ['TransactionCode', 'ReffCode', 'ContactCD']
+            for rec in checked_fields_phase2:
+                if not vals['TravelFile'].get(rec):
+                    validated = False
+                    missing_fields.append('TravelFile: %s' % rec)
+        if missing_fields:
+            _logger.error('ITM accounting request missing or empty fields: %s' % ', '.join(missing_fields))
+        return validated
