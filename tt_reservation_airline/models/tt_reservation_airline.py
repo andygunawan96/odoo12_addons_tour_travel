@@ -1388,15 +1388,18 @@ class ReservationAirline(models.Model):
 
 
         booking_tmp = {
-            'direction': searchRQ.get('direction'),
+            'direction': searchRQ.get('direction', ''),
             'departure_date': searchRQ['journey_list'][0]['departure_date'],
             'arrival_date': searchRQ['journey_list'][-1]['departure_date'],
             'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
             'destination_id': dest_obj.get_id(searchRQ['journey_list'][dest_idx]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
-            'adult': searchRQ['adult'],
-            'child': searchRQ['child'],
-            'infant': searchRQ['infant'],
+            'adult': searchRQ.get('adult', 0),
+            'child': searchRQ.get('child', 0),
+            'infant': searchRQ.get('infant', 0),
+            'student': searchRQ.get('student', 0),
+            'labour': searchRQ.get('labour', 0),
+            'seaman': searchRQ.get('seaman', 0),
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],

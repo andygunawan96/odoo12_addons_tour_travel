@@ -87,6 +87,9 @@ class TtReservation(models.Model):
     adult = fields.Integer('Adult', default=1, readonly=True, states={'draft': [('readonly', False)]})
     child = fields.Integer('Child', default=0, readonly=True, states={'draft': [('readonly', False)]})
     infant = fields.Integer('Infant', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    student = fields.Integer('Student', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    labour = fields.Integer('Labour', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    seaman = fields.Integer('Seaman', default=0, readonly=True, states={'draft': [('readonly', False)]})
 
     departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
