@@ -1,0 +1,23 @@
+<odoo>
+    <record id="res_users_search_view_inh_accounting" model="ir.ui.view">
+        <field name="name">res.users.search.inh.accounting</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_search"/>
+        <field name="arch" type="xml">
+            <field name="agent_type_related_id" position="after">
+                <field name="accounting_uid" string="Accounting UID"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="res_user_form_view_inh_accounting" model="ir.ui.view">
+        <field name="name">res.user.form.view.inh.accounting</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]/group/field[@name='vendor_id']" position="after">
+                <field name="accounting_uid"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

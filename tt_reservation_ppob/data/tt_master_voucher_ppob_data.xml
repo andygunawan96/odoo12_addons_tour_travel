@@ -1497,7 +1497,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp20" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP20</field>
+            <field name="code">SP20</field>
             <field name="value">20000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
@@ -1506,7 +1506,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp25" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP25</field>
+            <field name="code">SP25</field>
             <field name="value">25000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
@@ -1515,7 +1515,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp30" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP30</field>
+            <field name="code">SP30</field>
             <field name="value">30000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
@@ -1524,7 +1524,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp40" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP240</field>
+            <field name="code">SP40</field>
             <field name="value">40000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
@@ -1533,7 +1533,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp50" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP50</field>
+            <field name="code">SP50</field>
             <field name="value">50000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
@@ -1542,7 +1542,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp75" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP75</field>
+            <field name="code">SP75</field>
             <field name="value">75000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
@@ -1551,7 +1551,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp100" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP100</field>
+            <field name="code">SP100</field>
             <field name="value">100000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
@@ -1560,7 +1560,7 @@
         </record>
         <record id="tt_master_voucher_ppob_spp150" model="tt.master.voucher.ppob">
             <field name="name">ShopeePay</field>
-            <field name="code">SPP150</field>
+            <field name="code">SP150</field>
             <field name="value">150000</field>
             <field name="type">prepaid_mobile</field>
             <field name="provider_id" ref="tt_provider_ppob_espay"/>
