@@ -169,6 +169,9 @@
                             <field name="adult"/>
                             <field name="child"/>
                             <field name="infant"/>
+                            <field name="student" attrs="{'invisible':[('student','&lt;', 1)]}"/>
+                            <field name="labour" attrs="{'invisible':[('labour','&lt;', 1)]}"/>
+                            <field name="seaman" attrs="{'invisible':[('seaman','&lt;', 1)]}"/>
                         </group>
                     </group>
 
