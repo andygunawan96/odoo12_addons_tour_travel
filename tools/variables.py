@@ -194,7 +194,10 @@ PAX_TYPE = [
     ('YCD', 'Elder'),
     ('ADT', 'Adult'),
     ('CHD', 'Child'),
-    ('INF', 'Infant')
+    ('INF', 'Infant'),
+    ('STU', 'Student'),
+    ('LBR', 'Labour'),
+    ('SEA', 'Seaman')
 ]
 
 PROVIDER_TYPE = []##akan di isi saat run oleh tt_provider_type.py
