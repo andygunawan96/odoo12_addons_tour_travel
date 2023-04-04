@@ -53,11 +53,12 @@
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Only Airline transactions can be sent.</p>
                         <group>
                             <group>
+                                <field name="is_create_customer_contact"/>
                                 <field name="is_send_topup"/>
-                                <field name="is_send_commission"/>
                             </group>
                             <group>
                                 <field name="is_send_refund"/>
+                                <field name="is_send_commission"/>
                             </group>
                         </group>
                         <separator string="Variables"/>
