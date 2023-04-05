@@ -56,7 +56,7 @@
             <field name="name">Game Voucher</field>
             <field name="code">game_voucher</field>
             <field name="icao">e-voucher</field>
-            <field name="adult_length_name">7</field>
+            <field name="adult_length_name">5</field>
             <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
@@ -136,8 +136,8 @@
             <field name="name">Postpaid Lion Air / Wings Air / Batik Air</field>
             <field name="code">postpaid_mobile_lwa</field>
             <field name="icao">e-voucher</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">15</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -146,8 +146,8 @@
             <field name="name">Postpaid Garuda Indonesia</field>
             <field name="code">postpaid_mobile_gri</field>
             <field name="icao">e-voucher</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">15</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -156,8 +156,8 @@
             <field name="name">Postpaid Sriwijaya Air</field>
             <field name="code">postpaid_mobile_swj</field>
             <field name="icao">e-voucher</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">15</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -166,8 +166,8 @@
             <field name="name">Other Voucher</field>
             <field name="code">other_voucher</field>
             <field name="icao">e-voucher</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">13</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -176,7 +176,7 @@
             <field name="name">PDAM</field>
             <field name="code">pdam</field>
             <field name="icao">pdam</field>
-            <field name="adult_length_name">11</field>
+            <field name="adult_length_name">6</field>
             <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
@@ -186,8 +186,8 @@
             <field name="name">PBB</field>
             <field name="code">pbb</field>
             <field name="icao">pbb</field>
-            <field name="adult_length_name">18</field>
-            <field name="child_length_name">18</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">22</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -196,8 +196,8 @@
             <field name="name">PGN A</field>
             <field name="code">gas_pgn_a</field>
             <field name="icao">gas</field>
-            <field name="adult_length_name">8</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -206,8 +206,8 @@
             <field name="name">PGN B</field>
             <field name="code">gas_pgn_b</field>
             <field name="icao">gas</field>
-            <field name="adult_length_name">8</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -216,8 +216,8 @@
             <field name="name">Indovision</field>
             <field name="code">cable_tv_idv</field>
             <field name="icao">cable tv</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -226,8 +226,8 @@
             <field name="name">Indovision Top TV</field>
             <field name="code">cable_tv_top</field>
             <field name="icao">cable tv</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -236,8 +236,8 @@
             <field name="name">Indovision Oke Vision</field>
             <field name="code">cable_tv_okv</field>
             <field name="icao">cable tv</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -246,8 +246,8 @@
             <field name="name">First Media</field>
             <field name="code">cable_tv_frm</field>
             <field name="icao">cable tv</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -256,8 +256,8 @@
             <field name="name">Yes</field>
             <field name="code">cable_tv_ytv</field>
             <field name="icao">cable tv</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -266,8 +266,8 @@
             <field name="name">CBN</field>
             <field name="code">isp_cbn</field>
             <field name="icao">internet</field>
-            <field name="adult_length_name">10</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -276,8 +276,8 @@
             <field name="name">Indosatnet</field>
             <field name="code">isp_isn</field>
             <field name="icao">internet</field>
-            <field name="adult_length_name">10</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -286,8 +286,8 @@
             <field name="name">Centrinnet</field>
             <field name="code">isp_ctr</field>
             <field name="icao">internet</field>
-            <field name="adult_length_name">10</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -296,8 +296,8 @@
             <field name="name">Telkom Indihome</field>
             <field name="code">isp_tsd</field>
             <field name="icao">internet</field>
-            <field name="adult_length_name">10</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -306,8 +306,8 @@
             <field name="name">Telkom</field>
             <field name="code">telephone_tpn</field>
             <field name="icao">telephone</field>
-            <field name="adult_length_name">10</field>
-            <field name="child_length_name">12</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">16</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -316,8 +316,8 @@
             <field name="name">Sinarmas Life PAYMENT</field>
             <field name="code">insurance_smf</field>
             <field name="icao">insurance</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">10</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">14</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -326,8 +326,8 @@
             <field name="name">Sinar Mas</field>
             <field name="code">insurance_sms</field>
             <field name="icao">insurance</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">10</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">14</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -336,8 +336,8 @@
             <field name="name">AIA Financial</field>
             <field name="code">insurance_aia</field>
             <field name="icao">insurance</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">10</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">14</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -346,8 +346,8 @@
             <field name="name">Prudential</field>
             <field name="code">insurance_pru</field>
             <field name="icao">insurance</field>
-            <field name="adult_length_name">9</field>
-            <field name="child_length_name">10</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">14</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -356,8 +356,8 @@
             <field name="name">ANZ PL</field>
             <field name="code">inst_nzp</field>
             <field name="icao">credit installment</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -366,8 +366,8 @@
             <field name="name">Citibank PL / Ready Cash</field>
             <field name="code">inst_ctc</field>
             <field name="icao">credit installment</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -376,8 +376,8 @@
             <field name="name">OTO Mobil</field>
             <field name="code">inst_omb</field>
             <field name="icao">credit installment</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -386,8 +386,8 @@
             <field name="name">OTO Motor</field>
             <field name="code">inst_omt</field>
             <field name="icao">credit installment</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -396,8 +396,8 @@
             <field name="name">Citibank</field>
             <field name="code">pub_ctb</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -406,8 +406,8 @@
             <field name="name">American Express (AMEX)</field>
             <field name="code">pub_aei</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -416,8 +416,8 @@
             <field name="name">BNI</field>
             <field name="code">pub_bni</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -426,8 +426,8 @@
             <field name="name">ANZ</field>
             <field name="code">pub_anz</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -436,8 +436,8 @@
             <field name="name">Permata Bank</field>
             <field name="code">pub_pmt</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -446,8 +446,8 @@
             <field name="name">Bank Danamon</field>
             <field name="code">pub_dnm</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -456,8 +456,8 @@
             <field name="name">UOB</field>
             <field name="code">pub_uob</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -466,8 +466,8 @@
             <field name="name">ICB Bumiputera</field>
             <field name="code">pub_icb</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -476,8 +476,8 @@
             <field name="name">Bukopin</field>
             <field name="code">pub_bkp</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
@@ -486,8 +486,8 @@
             <field name="name">Panin</field>
             <field name="code">pub_pan</field>
             <field name="icao">credit card</field>
-            <field name="adult_length_name">15</field>
-            <field name="child_length_name">16</field>
+            <field name="adult_length_name">5</field>
+            <field name="child_length_name">20</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_ppob.tt_provider_type_ppob"/>
         </record>
