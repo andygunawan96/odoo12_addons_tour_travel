@@ -28,7 +28,10 @@
                             ]"/>
                 <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
-
+                <separator/>
+                <filter name="sof_balance" string="SoF Balance" domain="[('source_of_funds_type','=','balance')]"/>
+                <filter name="sof_credit_limit" string="SoF Credit Limit" domain="[('source_of_funds_type','=','credit_limit')]"/>
+                <filter name="sof_point" string="SoF Point" domain="[('source_of_funds_type','=','point')]"/>
                 <group expand="0" string="Group By">
                     <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
                     <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
