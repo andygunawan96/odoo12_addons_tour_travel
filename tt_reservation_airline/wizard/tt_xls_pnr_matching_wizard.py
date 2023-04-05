@@ -37,7 +37,8 @@ class TtXlsPnrMatchingWizard(models.TransientModel):
         final_res = {}
         for rec in row_list:
             try:
-                airline_tickets = self.env['tt.ticket.airline'].search([('ticket_number', '=', str(rec[2]).split('.')[0])])
+                ticket_search = '%s%s' % (str(rec[0]).split('.')[0], str(rec[2]).split('.')[0])
+                airline_tickets = self.env['tt.ticket.airline'].search([('ticket_number', '=', ticket_search)])
                 airline_ticket = False
                 for ticket in airline_tickets:
                     if ticket.provider_id.issued_date.strftime('%d%b%y').upper() == rec[3]:
@@ -56,7 +57,7 @@ class TtXlsPnrMatchingWizard(models.TransientModel):
                     final_res[airline_ticket.provider_id.provider_id.code][airline_ticket.provider_id.pnr].append({
                         'date': airline_ticket.provider_id.issued_date.strftime('%d-%b-%y'),
                         'code': str(rec[0]).split('.')[0],
-                        'ticket_number': airline_ticket.ticket_number,
+                        'ticket_number': str(rec[2]).split('.')[0],
                         'pnr': airline_ticket.provider_id.pnr,
                         'per_ticket_nta': float(rec[-1].replace(',', '')),
                         'total_nta': is_first_pnr_counter and float(airline_ticket.provider_id.total_price) or 0,
@@ -94,8 +95,8 @@ class TtXlsPnrMatchingWizard(models.TransientModel):
 
         res = self.env['tt.upload.center.wizard'].upload_file_api(
             {
-                'filename': 'iata_data.xls',
-                'file_reference': 'IATA Data Convert Result',
+                'filename': 'iata_data_%s.xls' % datetime.now().strftime('%y%m%d_%H%M%S'),
+                'file_reference': 'IATA Data Convert Result (from %s)' % self.xls_file.filename,
                 'file': base64.encodebytes(stream.getvalue()),
                 'delete_date': datetime.today() + timedelta(minutes=10)
             },
