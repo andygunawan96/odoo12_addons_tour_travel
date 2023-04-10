@@ -56,9 +56,13 @@ class TtAgent(models.Model):
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
     default_acquirer_id = fields.Many2one('payment.acquirer','Default Acquirer')
 
-    ho_id = fields.Many2one('tt.agent', string="Head Office", default=lambda self: self.set_default_ho())
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=_get_ho_id_domain, default=lambda self: self.set_default_ho())
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
