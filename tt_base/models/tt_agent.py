@@ -216,7 +216,7 @@ class TtAgent(models.Model):
         except:
             return False
 
-    def set_default_agent(self):
+    def set_default_ho(self):
         try:
 
             return self.env.ref('tt_base.rodex_ho').id
