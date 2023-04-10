@@ -97,6 +97,7 @@ class ApiManagement(models.Model):
             values.update({
                 'sid': context['sid'],
                 'signature': self._generate_signature(),
+                'co_ho_id': _user.agent_id.ho_id.seq_id
             })
             response = _obj.get_credential()
             # April 11, 2019 - SAM
