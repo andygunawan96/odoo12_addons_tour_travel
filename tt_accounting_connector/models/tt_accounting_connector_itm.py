@@ -64,12 +64,17 @@ class AccountingConnectorITM(models.Model):
         live_id = live_id_obj.variable_value
         trans_id = trans_id_obj.variable_value
         item_key = item_key_obj.variable_value
+        use_contact_cd = False
         if customer_code_obj.variable_value == 'dynamic_customer_code':
             customer_code = ''
             if request.get('customer_parent_id'):
                 customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
                 try:
-                    customer_code = customer_obj.seq_id
+                    if customer_obj.accounting_uid:
+                        customer_code = customer_obj.accounting_uid
+                    else:
+                        use_contact_cd = True
+                        customer_code = customer_obj.seq_id
                 except:
                     customer_code = ''
         else:
@@ -363,30 +368,38 @@ class AccountingConnectorITM(models.Model):
                 total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
 
             uniquecode = '%s_%s%s' % (request.get('order_number', ''), datetime.now().strftime('%m%d%H%M%S'), chr(randrange(65,90)))
+            travel_file_data = {
+                "TypeTransaction": 111,
+                "TransactionCode": "%s_%s" % ('_'.join(pnr_list), request.get('order_number', '')),
+                "Date": "",
+                "ReffCode": request.get('order_number', ''),
+                "CustomerCode": "",
+                "CustomerName": "",
+                "TransID": trans_id,
+                "Description": '_'.join(pnr_list),
+                "ActivityDate": "",
+                "SupplierCode": supplier_list and supplier_list[0]['supplier_code'] or '',
+                "SupplierName": supplier_list and supplier_list[0]['supplier_name'] or '',
+                "TotalCost": request.get('total_nta', 0),
+                "TotalSales": total_sales,
+                "Source": "",
+                "UserName": "",
+                "SalesID": 0,
+                item_key: provider_list
+            }
+            if use_contact_cd:
+                travel_file_data.update({
+                    "ContactCD": customer_code,
+                })
+            else:
+                travel_file_data.update({
+                    "CustomerCode": customer_code,
+                })
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",
                 "UniqueCode": uniquecode,
-                "TravelFile": {
-                    "TypeTransaction": 111,
-                    "TransactionCode": "%s_%s" % ('_'.join(pnr_list), request.get('order_number', '')),
-                    "Date": "",
-                    "ReffCode": request.get('order_number', ''),
-                    "CustomerCode": "",
-                    "ContactCD": customer_code,
-                    "CustomerName": "",
-                    "TransID": trans_id,
-                    "Description": '_'.join(pnr_list),
-                    "ActivityDate": "",
-                    "SupplierCode": supplier_list and supplier_list[0]['supplier_code'] or '',
-                    "SupplierName": supplier_list and supplier_list[0]['supplier_name'] or '',
-                    "TotalCost": request.get('total_nta', 0),
-                    "TotalSales": total_sales,
-                    "Source": "",
-                    "UserName": "",
-                    "SalesID": 0,
-                    item_key: provider_list
-                },
+                "TravelFile": travel_file_data,
                 "MethodSettlement": "NONE"
             }
             if not self.validate_request(req):
@@ -431,11 +444,16 @@ class AccountingConnectorITM(models.Model):
                 validated = False
                 missing_fields.append(rec)
         if validated:
-            checked_fields_phase2 = ['TransactionCode', 'ReffCode', 'ContactCD']
+            checked_fields_phase2 = ['TransactionCode', 'ReffCode', 'CustomerCode']
             for rec in checked_fields_phase2:
                 if not vals['TravelFile'].get(rec):
-                    validated = False
-                    missing_fields.append('TravelFile: %s' % rec)
+                    if rec == 'CustomerCode':
+                        if not vals['TravelFile'].get('ContactCD'):
+                            validated = False
+                            missing_fields.append('TravelFile: CustomerCode / ContactCD')
+                    else:
+                        validated = False
+                        missing_fields.append('TravelFile: %s' % rec)
         if missing_fields:
             _logger.error('ITM accounting request missing or empty fields: %s' % ', '.join(missing_fields))
         return validated
