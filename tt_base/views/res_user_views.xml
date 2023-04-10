@@ -5,6 +5,7 @@
         <field name="inherit_id" ref="base.view_users_search"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
+                <field name="ho_id" string="Head Office"/>
                 <field name="agent_id" string="Agent"/>
                 <field name="agent_type_related_id" string="Agent Type Related"/>
                 <filter name="is_banned" string="Banned" domain="[('is_banned','=',True)]"/>
@@ -29,6 +30,7 @@
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]/group/field[@name='partner_id']" position="after">
                 <field name="is_user_template"/>
+                <field name='ho_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
                 <field name="agent_type_id" attrs="{'invisible': [('is_user_template','=',False)]}"/>
                 <field name='agent_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
                 <field name='agent_type_related_id' groups="base.group_user" attrs="{'invisible': [('is_user_template','=',True)]}"/>
@@ -80,6 +82,7 @@
         <field name="inherit_id" ref="base.view_users_tree"/>
         <field name="arch" type="xml">
             <field name="login" position="after">
+                <field name='ho_id' groups="base.group_user"/>
                 <field name='agent_id' groups="base.group_user"/>
             </field>
         </field>
@@ -93,6 +96,7 @@
             <tree create="false">
                 <field name="name"/>
                 <field name="login"/>
+                <field name="ho_id"/>
                 <field name="agent_id"/>
                 <field name="lang"/>
                 <field name="login_date"/>

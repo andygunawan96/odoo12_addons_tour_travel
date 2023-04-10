@@ -8,6 +8,7 @@
                 <field name="name"/>
                 <field name="legal_name"/>
                 <field name="agent_type_id"/>
+                <field name="ho_id"/>
                 <field name="parent_agent_id"/>
                 <field name="email"/>
                 <field name="email_cc"/>
@@ -32,6 +33,7 @@
 
                 <group expand="0" string="Group By">
                     <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="tt_base.group_tt_tour_travel"/>
                     <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel"/>
                     <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel"/>
                 </group>
@@ -95,6 +97,7 @@
                     <group string="Agent">
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
+                        <field name="ho_id" readonly="1"/>
                         <field name="parent_agent_id" readonly="1"/>
                         <field name="user_ids" readonly="1"/>
                         <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
@@ -181,6 +184,9 @@
             <field name="reference" position="replace">
                 <field name="reference" readonly="0"/>
             </field>
+            <field name="ho_id" position="replace">
+                <field name="ho_id" readonly="0"/>
+            </field>
             <field name="parent_agent_id" position="replace">
                 <field name="parent_agent_id" readonly="0"/>
             </field>
@@ -252,6 +258,7 @@
             <tree>
                 <field name="name"/>
                 <field name="agent_type_id"/>
+                <field name="ho_id"/>
                 <field name="parent_agent_id"/>
                 <field name="reference"/>
             </tree>

@@ -56,6 +56,7 @@ class TtAgent(models.Model):
     customer_ids = fields.One2many('tt.customer', 'agent_id', 'Customer')
     default_acquirer_id = fields.Many2one('payment.acquirer','Default Acquirer')
 
+    ho_id = fields.Many2one('tt.agent', string="Head Office", default=lambda self: self.set_default_ho())
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     history_ids = fields.Char(string="History", required=False, )  # tt_history
@@ -210,6 +211,14 @@ class TtAgent(models.Model):
 
     def set_default_agent(self):
         try:
+
+            return self.env.ref('tt_base.rodex_ho').id
+        except:
+            return False
+
+    def set_default_agent(self):
+        try:
+
             return self.env.ref('tt_base.rodex_ho').id
         except:
             return False
