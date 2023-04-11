@@ -17,7 +17,125 @@ class AccountingConnectorITM(models.Model):
     _name = 'tt.accounting.connector.itm'
     _description = 'Accounting Connector ITM'
 
-    # cuma support airline for now
+    def add_customer(self, vals):
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in ITM Accounting Setup!')
+
+        url = url_obj.variable_value
+        headers = {
+            'Content-Type': 'application/json',
+        }
+        req_data = self.request_parser_customer(vals)
+        _logger.info('ITM Request Add Customer: %s', req_data)
+        if vals.get('accounting_queue_id'):
+            queue_obj = self.env['tt.accounting.queue'].browse(int(vals['accounting_queue_id']))
+            if queue_obj:
+                queue_obj.write({
+                    'request': json.dumps(req_data)
+                })
+        # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
+        response = requests.post(url, data=req_data, headers=headers)
+        res = self.response_parser_customer(response)
+
+        if res['status'] == 'success':
+            _logger.info('Insert Customer Success')
+        else:
+            _logger.info('Insert Customer Failed')
+        _logger.info(res)
+
+        return res
+
+    def request_parser_customer(self, request):
+        live_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'live_id')], limit=1)
+        if not live_id_obj:
+            raise Exception('Please provide a variable with the name "live_id" in ITM Accounting Setup!')
+
+        live_id = live_id_obj.variable_value
+        req = {
+            "LiveID": live_id,
+            "MethodName": "TSystem..AP000_CreateContact",
+            "Params": [
+                {
+                    "ParamName": "ContactCd",
+                    "ParamValue": request.get('seq_id') and request['seq_id'] or ''
+                },
+                {
+                    "ParamName": "Name",
+                    "ParamValue": request.get('customer_parent_name') and request['customer_parent_name'] or ''
+                },
+                {
+                    "ParamName": "Fullname",
+                    "ParamValue": request.get('customer_parent_name') and request['customer_parent_name'] or ''
+                },
+                {
+                    "ParamName": "UniqueCd",
+                    "ParamValue": request.get('seq_id') and request['seq_id'] or ''
+                }
+            ]
+        }
+        if not self.validate_request_customer(req):
+            raise Exception('Request cannot be sent because some field requirements are not met.')
+
+        return json.dumps(req)
+
+    def response_parser_customer(self, response):
+        res = {
+            'status_code': response.status_code or 500,
+            'content': response.content or ''
+        }
+        if res.get('content'):
+            try:
+                res.update({
+                    'content': json.loads(res['content'].decode("UTF-8"))
+                })
+            except (UnicodeDecodeError, AttributeError):
+                pass
+        if res['content'].get('Messages'):
+            if all(msg.get('Type', '') == 'SUCCESS' for msg in res['content']['Messages']):
+                status = 'success'
+            elif any(msg.get('Type', '') == 'SUCCESS' for msg in res['content']['Messages']):
+                status = 'partial'
+            else:
+                status = 'failed'
+        else:
+            status = 'failed'
+        res.update({
+            'status': status,
+        })
+        return res
+
+    def validate_request_customer(self, vals):
+        validated = True
+        missing_fields = []
+        checked_fields_phase1 = ['LiveID', 'MethodName', 'Params']
+        for rec in checked_fields_phase1:
+            if not vals.get(rec):
+                validated = False
+                missing_fields.append(rec)
+        if validated:
+            checked_fields_phase2 = {
+                'ContactCd': False,
+                'Name': False,
+                'Fullname': False,
+                'UniqueCd': False
+            }
+            for rec in vals['Params']:
+                if rec.get('ParamName') in checked_fields_phase2.keys():
+                    checked_fields_phase2.update({
+                        rec['ParamName']: True
+                    })
+                    if not rec.get('ParamValue'):
+                        validated = False
+                        missing_fields.append(rec['ParamName'])
+            for key, val in checked_fields_phase2.items():
+                if not val:
+                    validated = False
+                    missing_fields.append(key)
+        if missing_fields:
+            _logger.error('ITM accounting create customer request missing or empty fields: %s' % ', '.join(missing_fields))
+        return validated
+
     def add_sales_order(self, vals):
         url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
@@ -65,6 +183,7 @@ class AccountingConnectorITM(models.Model):
         trans_id = trans_id_obj.variable_value
         item_key = item_key_obj.variable_value
         use_contact_cd = False
+        customer_name = ''
         if customer_code_obj.variable_value == 'dynamic_customer_code':
             customer_code = ''
             if request.get('customer_parent_id'):
@@ -75,6 +194,7 @@ class AccountingConnectorITM(models.Model):
                     else:
                         use_contact_cd = True
                         customer_code = customer_obj.seq_id
+                    customer_name = customer_obj.name
                 except:
                     customer_code = ''
         else:
@@ -374,7 +494,7 @@ class AccountingConnectorITM(models.Model):
                 "Date": "",
                 "ReffCode": request.get('order_number', ''),
                 "CustomerCode": "",
-                "CustomerName": "",
+                "CustomerName": customer_name,
                 "TransID": trans_id,
                 "Description": '_'.join(pnr_list),
                 "ActivityDate": "",
