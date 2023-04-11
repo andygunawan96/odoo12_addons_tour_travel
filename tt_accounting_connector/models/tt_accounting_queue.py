@@ -336,13 +336,18 @@ class TtAccountingQueue(models.Model):
                     'category': 'top_up',
                     'bank': trans_obj.acquirer_id.bank_id.name
                 })
+            elif self.res_model == 'tt.customer.parent':
+                request = trans_obj.to_dict_acc()
             else:
                 request = {}
             if request:
                 request.update({
                     'accounting_queue_id': self.id
                 })
-                res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_sales_order(request)
+                if self.res_model == 'tt.customer.parent':
+                    res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_customer(request)
+                else:
+                    res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_sales_order(request)
                 self.response = json.dumps(res)
                 self.state = res.get('status') and res['status'] or 'failed'
             else:
