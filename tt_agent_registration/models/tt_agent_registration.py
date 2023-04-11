@@ -47,6 +47,11 @@ class AgentRegistration(models.Model):
                                       readonly=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True, readonly=True,
                                     states={'draft': [('readonly', False)]})
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent ID', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})

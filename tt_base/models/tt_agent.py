@@ -215,15 +215,13 @@ class TtAgent(models.Model):
 
     def set_default_agent(self):
         try:
-
-            return self.env.ref('tt_base.rodex_ho').id
+            return self.env.user.ho_id.id
         except:
             return False
 
     def set_default_ho(self):
         try:
-
-            return self.env.ref('tt_base.rodex_ho').id
+            return self.env.user.ho_id.id
         except:
             return False
 
@@ -877,6 +875,11 @@ class AgentTarget(models.Model):
     _description = 'Historical Target Agent per Satuan waktu (tahun/bulan)'
 
     name = fields.Char('Target Name')
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     start_date = fields.Date('Start Date')
     end_date = fields.Date('End Date')
@@ -893,6 +896,11 @@ class AgentMOU(models.Model):
     # Catet Perjanian kerja sama antara citra dengan agent contoh: Fipro target e brpa klo kurang dia mesti bayar
 
     name = fields.Char('Target Name')
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False)
     agent_id = fields.Many2one('tt.agent', 'Agent', domain=[('parent_id', '=', False)], required=True)
 
     start_date = fields.Date('Start Date')

@@ -109,6 +109,10 @@ class MasterTour(models.Model):
     tour_line_ids = fields.One2many('tt.master.tour.lines', 'master_tour_id', 'Tour Lines')
     tour_line_amount = fields.Integer('Available Schedule(s)', readonly=True, compute='_compute_tour_line_amount')
 
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     is_can_hold = fields.Boolean('Can Be Hold', default=True, required=True)

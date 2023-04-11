@@ -38,6 +38,12 @@ class TtTopUp(models.Model):
     name = fields.Char('Document Number', required='True', readonly=True,
                        index=True, default=lambda self: 'New')
     due_date = fields.Datetime('Due Date', readonly=True)
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False, readonly=True,
+                               default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=True,
                                default=lambda self: self.env.user.agent_id)
     state = fields.Selection(TOP_UP_STATE,

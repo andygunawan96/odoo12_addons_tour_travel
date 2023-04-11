@@ -34,6 +34,11 @@ class AgentInvoiceLine(models.Model):
     reference = fields.Char('Reference')
 
     pnr = fields.Char("PNR",compute="_compute_invoice_line_pnr",store=True)
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, compute="_compute_invoice_line_pnr", store=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', compute="_compute_invoice_line_pnr", store=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', compute="_compute_invoice_line_pnr", store=True)
 
@@ -87,6 +92,7 @@ class AgentInvoiceLine(models.Model):
             if rec.res_model_resv and rec.res_id_resv:
                 try:
                     rec.pnr = self.env[rec.res_model_resv].browse(rec.res_id_resv).pnr
+                    rec.ho_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).ho_id.id
                     rec.agent_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).agent_id.id
                     rec.customer_parent_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).customer_parent_id.id
                 except:

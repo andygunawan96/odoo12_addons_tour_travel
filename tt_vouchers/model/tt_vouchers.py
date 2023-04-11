@@ -1565,6 +1565,11 @@ class TtVoucherusedDetail(models.Model):
     voucher_detail_id = fields.Many2one("tt.voucher.detail", readonly=True)
     voucher_date_use = fields.Datetime("Date use")
     voucher_agent_type_id = fields.Many2one("tt.agent.type", "Agent Type")
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    voucher_ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
     voucher_agent_id = fields.Many2one("tt.agent", "Agent ID")
     voucher_provider_type_id = fields.Many2one("tt.provider.type", "Provider Type")
     voucher_provider_id = fields.Many2one("tt.provider", "Provider ID")

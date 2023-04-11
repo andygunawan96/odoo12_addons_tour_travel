@@ -141,6 +141,12 @@ class TtReservation(models.Model):
     ho_commission = fields.Monetary(string='HO Commission', default=0, compute='_compute_ho_commission',store=True)
 
     # yang jual
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False,
+                               default=lambda self: self.env.user.ho_id,
+                               readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
                                default=lambda self: self.env.user.agent_id,
                                readonly=True, states={'draft': [('readonly', False)]})

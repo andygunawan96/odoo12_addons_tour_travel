@@ -7,6 +7,7 @@
             <search string="Search Adjustment">
                 <field name="name"/>
                 <field name="referenced_document"/>
+                <field name="ho_id" groups=""/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <separator/>
                 <filter string="All" name='all'/>
@@ -63,6 +64,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" attrs="{'invisible':[('ho_id','=', False)]}" groups=""/>
                             <field name="agent_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
                             <field name="agent_type_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
                             <field name="customer_parent_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>

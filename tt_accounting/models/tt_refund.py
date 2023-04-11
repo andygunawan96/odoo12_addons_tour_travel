@@ -99,6 +99,11 @@ class TtRefundLineCustomer(models.Model):
     citra_fee = fields.Monetary('Additional Fee', default=0, readonly=False)
     total_amount = fields.Monetary('Total Amount', default=0, required=True, readonly=True, compute='_compute_total_amount')
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', related='refund_id.ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='refund_id.agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id','=',agent_id)]")
@@ -155,6 +160,12 @@ class TtRefund(models.Model):
                                   " * The 'Done' status means the request has been done.\n"
                                   " * The 'Canceled' status is used for Agent or HO to cancel the request.\n"
                                   " * The 'Expired' status means the request has been expired.\n")
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, readonly=True,
+                               default=lambda self: self.env.user.agent_id)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True,
                                default=lambda self: self.env.user.agent_id)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',

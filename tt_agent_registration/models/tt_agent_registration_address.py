@@ -20,6 +20,11 @@ class AgentRegistrationAddress(models.Model):
     district_id = fields.Many2one('res.district', string='District')
     sub_district_id = fields.Many2one('res.sub.district', string='Sub District')
     customer_id = fields.Many2one('tt.customer', string='Customer')
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
     agent_id = fields.Many2one('tt.agent', string='Agent')
     active = fields.Boolean('Active', default=True)
 

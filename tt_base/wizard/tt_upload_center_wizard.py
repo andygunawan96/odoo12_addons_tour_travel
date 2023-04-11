@@ -19,6 +19,11 @@ class SplitInvoice(models.TransientModel):
     delete_time = fields.Datetime('Deleted Time')
     file = fields.Binary('File',required=True)
     target_field_name = fields.Char("Target Field")
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office ID', domain=_get_ho_id_domain)
     agent_id = fields.Many2one('tt.agent','Agent ID')
     owner_id = fields.Many2one('res.users','Owner ID')
 

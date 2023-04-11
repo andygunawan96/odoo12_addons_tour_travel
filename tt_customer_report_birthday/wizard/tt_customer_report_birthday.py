@@ -29,6 +29,10 @@ class CustomerReportBirthday(models.TransientModel):
     month_from = fields.Selection(months_list, default='01')
     month_to = fields.Selection(months_list, default='01')
 
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
     all_agent = fields.Boolean('All Agent', default=False)
     is_ho = fields.Boolean('Ho User', default=_check_ho_user)

@@ -12,6 +12,10 @@ def_folder = '/var/log/tour_travel/gmailcredentials'
 class IrMailServer(models.Model):
     _inherit = "ir.mail_server"
 
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', help="Head Office who uses this mail server", domain=_get_ho_id_domain, groups='base.group_erp_manager')
     smtp_user = fields.Char(string='Username', help="Optional username for SMTP authentication",
                             groups='base.group_erp_manager')
     smtp_pass = fields.Char(string='Password', help="Optional password for SMTP authentication",

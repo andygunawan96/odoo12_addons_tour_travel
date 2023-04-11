@@ -23,6 +23,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" groups=""/>
                             <field name="agent_id"/>
                             <field name="create_date"/>
                             <field name="due_date"/>
@@ -105,6 +106,7 @@
         <field name="arch" type="xml">
             <search string="Search Top Up">
                 <field name="name"/>
+                <field name="ho_id" groups=""/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
                 <separator/>
                 <filter string="All" name='all'/>

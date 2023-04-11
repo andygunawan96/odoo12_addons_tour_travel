@@ -17,6 +17,11 @@ class PaymentAcquirer(models.Model):
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     type = fields.Selection(variables.ACQUIRER_TYPE, 'Payment Type', help="Credit card for top up")
     provider_id = fields.Many2one('tt.provider', 'Provider')
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_id = fields.Many2one('tt.bank', 'Bank')
     account_number = fields.Char('Account Number')
@@ -558,6 +563,11 @@ class PaymentAcquirerNumber(models.Model):
 
     res_id = fields.Integer('Res ID')
     res_model = fields.Char('Res Model')
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True) # buat VA open biar ngga kembar
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')

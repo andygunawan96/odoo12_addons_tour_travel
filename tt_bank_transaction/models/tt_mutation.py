@@ -13,6 +13,10 @@ class TtBankAccount(models.Model):
     _description = 'collections of bank accounts'
     _rec_name = 'bank_account_owner'
 
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_account_owner = fields.Char('Owner Name')
     bank_account_number = fields.Char('Bank Number')

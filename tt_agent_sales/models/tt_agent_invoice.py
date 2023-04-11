@@ -57,6 +57,10 @@ class AgentInvoice(models.Model):
              " * The 'Paid' status is set when the payment total .\n"
              " * The 'Cancelled' status is used when user cancel invoice.")
     prev_state = fields.Char("Previous Status", readonly=True)
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False, readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True, states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',

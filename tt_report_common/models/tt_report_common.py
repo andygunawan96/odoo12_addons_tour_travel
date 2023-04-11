@@ -12,6 +12,10 @@ class TtReportCommonSetting(models.Model):
     name = fields.Char('Name')
     code = fields.Char('code')
     html = fields.Html('Footer HTML')
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent', default=lambda self: self.env.user.agent_id)  # , default=lambda self: self.env.user.agent_id
     active = fields.Boolean('Active', default=True)
 

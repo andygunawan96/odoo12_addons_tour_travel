@@ -10,6 +10,7 @@
                 <field name="provider_issued_date"/>
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
+                <field name="ho_id" groups=""/>
                 <field name="agent_id"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -62,6 +63,7 @@
                             <field name="provider_issued_date"/>
                             <field name="provider_type_id"/>
                             <field name="provider_id"/>
+                            <field name="ho_id" groups=""/>
                             <field name="agent_id"/>
                             <field name="currency_id"/>
                             <field name="rac_mode"/>

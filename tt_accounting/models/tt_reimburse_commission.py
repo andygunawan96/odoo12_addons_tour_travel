@@ -30,6 +30,11 @@ class TtReimburseCommission(models.Model):
     name = fields.Char('Name', compute='_compute_name_reimburse')
     res_model = fields.Char('Reservation Provider Name', index=True)
     res_id = fields.Integer('Reservation Provider ID', index=True, help='ID of the followed resource')
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain) # todo: compute store true
     agent_id = fields.Many2one('tt.agent', 'Agent', compute='compute_agent_id', store=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', readonly=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True)
@@ -78,6 +83,20 @@ class TtReimburseCommission(models.Model):
                     rec.agent_id = False
             else:
                 rec.agent_id = False
+
+    # @api.onchange('res_model', 'res_id')
+    # @api.depends('res_model', 'res_id')
+    # def compute_ho_id(self):
+    #     # todo: remove default HO ID, karena harusnya all new reservations (setelah O3) sudah punya HO ID
+    #     for rec in self:
+    #         obj = self.env[rec.res_model].browse(rec.res_id)
+    #         if obj:
+    #             if obj.booking_id:
+    #                 rec.ho_id = obj.booking_id.ho_id and obj.booking_id.ho_id.id or self.env.ref('tt_base.rodex_ho').id
+    #             else:
+    #                 rec.ho_id = self.env.ref('tt_base.rodex_ho').id
+    #         else:
+    #             rec.ho_id = self.env.ref('tt_base.rodex_ho').id
 
     def action_approve(self):
         if not self.env.user.has_group('tt_base.group_pricing_agent_level_3'):

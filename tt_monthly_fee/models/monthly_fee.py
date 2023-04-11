@@ -9,6 +9,10 @@ class MonthlyManagementFeeRule(models.Model):
     _name = 'tt.monthly.fee.rule'
     _description = 'Monthly Fee Rule'
 
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     confirm_uid = fields.Many2one('res.users', 'Confirmed by')
@@ -69,6 +73,11 @@ class MonthlyManagementFee(models.Model):
     _description = 'Monthly Fee Model'
 
     name = fields.Char('Name', required=True)
+
+    def _get_ho_id_domain(self):
+        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False, readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, states={'draft':[('readonly',False)]})
     confirm_uid = fields.Many2one('res.users', 'Confirmed by', copy=False)
     confirm_date = fields.Datetime('Confirm Date', copy=False)
