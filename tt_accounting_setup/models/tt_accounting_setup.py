@@ -19,7 +19,7 @@ class TtAccountingSetup(models.Model):
     is_recon_only = fields.Boolean('Only Send Reconciled Records', default=False)
     sequence = fields.Integer('Sequence', default=20)
     active = fields.Boolean('Active', default='True')
-    is_create_customer_contact = fields.Boolean('Create Customer Contact in Acc System', default=False)
+    is_create_customer = fields.Boolean('Create Customer in Acc System', default=False)
     is_send_topup = fields.Boolean('Send Top Up Transaction', default=False)
     is_send_refund = fields.Boolean('Send Refund Transaction', default=False)
     is_send_commission = fields.Boolean('Send Commission Transaction', default=False)
