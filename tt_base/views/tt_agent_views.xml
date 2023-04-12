@@ -179,6 +179,9 @@
             <field name="est_date" position="replace">
                 <field name="est_date" readonly="0"/>
             </field>
+            <field name="is_ho_agent" position="replace">
+                <field name="is_ho_agent" readonly="0"/>
+            </field>
             <field name="agent_type_id" position="replace">
                 <field name="agent_type_id" readonly="0"/>
             </field>
