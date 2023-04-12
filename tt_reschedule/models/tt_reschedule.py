@@ -81,11 +81,7 @@ class TtRescheduleLine(models.Model):
     reschedule_id = fields.Many2one('tt.reschedule', 'After Sales', readonly=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', required=True)
     currency_id = fields.Many2one('res.currency', readonly=True, default=lambda self: self.env.user.company_id.currency_id, related='reschedule_id.currency_id')
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, related='reschedule_id.ho_id')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], related='reschedule_id.ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='reschedule_id.agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Admin Fee Type', domain=[('id', '=', -1)], readonly=True, states={'confirm': [('readonly', False)]})

@@ -95,6 +95,7 @@
                     </group>
 
                     <group string="Agent">
+                        <field name="is_ho_agent" readonly="1"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
                         <field name="ho_id" readonly="1"/>

@@ -34,11 +34,7 @@ class AgentInvoiceLine(models.Model):
     reference = fields.Char('Reference')
 
     pnr = fields.Char("PNR",compute="_compute_invoice_line_pnr",store=True)
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, compute="_compute_invoice_line_pnr", store=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], compute="_compute_invoice_line_pnr", store=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', compute="_compute_invoice_line_pnr", store=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', compute="_compute_invoice_line_pnr", store=True)
 

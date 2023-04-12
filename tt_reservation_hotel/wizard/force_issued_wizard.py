@@ -12,11 +12,7 @@ class ForceIssuedWizard(models.TransientModel):
 
     provider_id = fields.Many2one('tt.provider.hotel', 'Provider', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', required=True, readonly=True, compute='_compute_booker_agent_id')
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False, readonly=True, compute='_compute_booker_agent_id')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, compute='_compute_booker_agent_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, compute='_compute_booker_agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, domain=[('id', '=', -1)])

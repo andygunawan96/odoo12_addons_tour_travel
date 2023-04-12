@@ -58,11 +58,8 @@ class TtAgent(models.Model):
 
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=_get_ho_id_domain, default=lambda self: self.set_default_ho())
+    is_ho_agent = fields.Boolean('Is HO Agent')
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
@@ -875,11 +872,7 @@ class AgentTarget(models.Model):
     _description = 'Historical Target Agent per Satuan waktu (tahun/bulan)'
 
     name = fields.Char('Target Name')
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
     start_date = fields.Date('Start Date')
     end_date = fields.Date('End Date')
@@ -896,11 +889,7 @@ class AgentMOU(models.Model):
     # Catet Perjanian kerja sama antara citra dengan agent contoh: Fipro target e brpa klo kurang dia mesti bayar
 
     name = fields.Char('Target Name')
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False)
     agent_id = fields.Many2one('tt.agent', 'Agent', domain=[('parent_id', '=', False)], required=True)
 
     start_date = fields.Date('Start Date')

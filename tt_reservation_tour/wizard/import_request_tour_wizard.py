@@ -17,10 +17,7 @@ class ImportRequestTourWizard(models.TransientModel):
     _name = "tt.import.request.tour.wizard"
     _description = 'Import Tour Request Wizard'
 
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False, readonly=True, default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, default=lambda self: self.env.user.agent_id.id)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', required=True, domain="[('agent_id', '=', agent_id)]")
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', required=True, domain="[('agent_id', '=', agent_id)]")

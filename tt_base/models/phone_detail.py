@@ -24,11 +24,7 @@ class PhoneDetail(models.Model):
     calling_code = fields.Char('Calling Code', required=True)
     calling_number = fields.Char('Calling Number', required=True)
     phone_number = fields.Char('Phone Number', store=True, compute='_compute_phone_number')
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', string='Agent')
     provider_id = fields.Many2one('tt.provider', string='Provider')
     customer_id = fields.Many2one('tt.customer', string='Customer',ondelete="cascade")

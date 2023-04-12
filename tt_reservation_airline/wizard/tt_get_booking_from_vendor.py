@@ -35,11 +35,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     provider = fields.Selection(provider_selection, string='Provider', required=True)
 
     parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related ="agent_id.parent_agent_id")
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', required=True, domain=[('id','=',-1)])
     user_id = fields.Many2one('res.users', 'User', required=True, domain=[('id','=',-1)])
@@ -282,11 +278,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
     pnr = fields.Char("PNR")
     status = fields.Char("Status")
     user_id = fields.Many2one("res.users","User")
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one("tt.agent","Agent")
     customer_parent_id = fields.Many2one("tt.customer.parent","Customer Parent")
 

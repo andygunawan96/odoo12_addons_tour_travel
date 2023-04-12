@@ -59,10 +59,7 @@ class PaymentTransaction(models.Model):
     cancel_date = fields.Datetime('Cancel Date',readonly=True)
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]})
 
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, required=False, readonly=True, states={'draft': [('readonly', False)]})
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain="[('parent_agent_id', '=', agent_id)]")
     # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})

@@ -33,10 +33,7 @@ class IssuedOfflinePassenger(models.Model):
                                    states={'draft': [('readonly', False)],
                                            'pending': [('readonly', False)]})
 
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, readonly=True, states={'draft': [('readonly', False)],
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True, states={'draft': [('readonly', False)],
                                                                            'pending': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True, states={'draft': [('readonly', False)],
                                                                            'pending': [('readonly', False)]})  # , default=lambda self: self.booking_id.agent_id.id

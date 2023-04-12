@@ -12,10 +12,7 @@ class ApiMonitor(models.Model):
 
     user_id = fields.Many2one('res.users', 'User')
     name = fields.Char('Name', related='user_id.name')
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, related='user_id.ho_id')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], related='user_id.ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='user_id.agent_id')
     monitor_data_ids = fields.One2many('tt.api.monitor.data', 'monitor_id', 'Monitor Data')
 

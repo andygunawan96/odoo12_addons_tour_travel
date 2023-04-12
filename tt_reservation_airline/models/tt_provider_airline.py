@@ -1197,10 +1197,7 @@ class TtProviderAirlinePricing(models.Model):
     provider_id = fields.Many2one('tt.provider.airline', 'Provider', readonly=1)
     raw_data = fields.Text('Raw Data')
 
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    rule_ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, readonly=1)
+    rule_ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=1)
     rule_agent_id = fields.Many2one('tt.agent', 'Agent', readonly=1)
     rule_agent_type_code = fields.Char('Agent Type Code', readonly=1)
     rule_provider_type_code = fields.Char('Provider Type Code', readonly=1)

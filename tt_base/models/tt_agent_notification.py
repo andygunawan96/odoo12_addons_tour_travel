@@ -12,11 +12,7 @@ class TtReservationNotification(models.Model):
     _order = 'id desc'
 
     active = fields.Boolean('Is Active')
-
-    def _get_ho_id_domain(self):
-        return [('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id)]
-
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=_get_ho_id_domain, readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id,readonly=True)
     is_read = fields.Boolean('Is Read', readonly=True)
     type = fields.Selection([('reservation','Reservation')], 'Type')
