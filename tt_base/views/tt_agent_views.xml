@@ -58,6 +58,9 @@
                         <button name="action_create_user" type="object" string="Create User" icon="fa-user"
                                 class="oe_stat_button" groups="tt_base.group_user_data_level_3">
                         </button>
+                        <button name="get_ho_parent_agent" type="object" string="Get HO" icon="fa-user"
+                                class="oe_stat_button" groups="tt_base.group_user_data_level_3">
+                        </button>
                     </div>
                     <field name="logo" widget='image' class="oe_avatar"/>  <!-- options='{"preview_image":"logo_thumb"}'-->
                     <div class="oe_title">

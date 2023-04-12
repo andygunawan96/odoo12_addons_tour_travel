@@ -821,6 +821,19 @@ class TtAgent(models.Model):
             email_cc = ",".join(email_cc_list)
         return email_cc
 
+    def get_ho_parent_agent(self):
+        if self.ho_id: ## kalau HO is set langsung ambil
+            raise UserError(_(self.ho_id.seq_id))
+        elif self.is_ho_agent:
+            # return self
+            raise UserError(_(self.seq_id))
+        elif self.parent_agent_id:
+            return self.parent_agent_id.get_ho_parent_agent()
+        else:
+            raise UserError(_('HO NOT FOUND FOR THIS AGENT'))
+            # return None
+
+
     def get_simple_agent_list_data(self):
         '''
         start_index=None, limit=None
@@ -864,6 +877,16 @@ class TtAgent(models.Model):
             })
         return payload
 
+    def get_agent_head_office_api(self):
+        res = []
+        agent_objs = self.search([('is_ho_agent', '=', True)])
+        for agent_obj in agent_objs:
+            res.append({
+                "name": agent_obj.name,
+                "seq_id": agent_obj.seq_id,
+            })
+        res = ERR.get_no_error(res)
+        return res
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']

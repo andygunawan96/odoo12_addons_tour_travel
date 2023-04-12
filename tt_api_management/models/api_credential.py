@@ -97,7 +97,7 @@ class ApiManagement(models.Model):
             values.update({
                 'sid': context['sid'],
                 'signature': self._generate_signature(),
-                'co_ho_id': _user.agent_id.ho_id.seq_id
+                'co_ho_seq_id': _user.agent_id.ho_id.seq_id
             })
             response = _obj.get_credential()
             # April 11, 2019 - SAM
@@ -129,6 +129,12 @@ class ApiManagement(models.Model):
                     raise Exception('User Role is not allowed.')
                 _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
                 values.update(_co_user.get_credential(prefix='co_'))
+            api_cred_obj = self.search([('api_key','=', data['api_key'])])
+            if api_cred_obj:
+                if api_cred_obj.user_id.agent_id.ho_id.seq_id != _user.agent_id.ho_id.seq_id:
+                    raise Exception('Co User and Api Key is not match')
+            else:
+                raise Exception('Api Key not found')
             response.update(values)
 
             # April 9, 2019 - SAM
