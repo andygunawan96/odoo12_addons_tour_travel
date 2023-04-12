@@ -63,7 +63,7 @@
                             </page>
                             <page string="Allowed Destination">
                                 <!--                                <button name="clear_destination_ids" type="object" string="Clear Destination" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                                <button name="compute_destination_ids" type="object" string="Compute Destination" groups="tt_base.group_tt_tour_travel"/>
+                                <button name="compute_destination_ids" type="object" string="Compute Destination" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="provider_destination_ids">
                                     <tree>
                                         <field name="country_id"/>

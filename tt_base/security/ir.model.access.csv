@@ -598,6 +598,9 @@ access_for_tt_email_queue_for_email_queue_level_4,tt_base.access_for_tt_email_qu
 access_for_tt_email_queue_for_email_queue_level_5,tt_base.access_for_tt_email_queue_for_email_queue_level_5,model_tt_email_queue,tt_base.group_email_queue_level_5,1,1,1,1
 ,,,,,,,
 access_for_ir_mail_server_for_access_right,tt_base.access_for_ir_mail_server_for_access_right,model_ir_mail_server,base.group_erp_manager,1,1,1,1
+access_for_ir_mail_server_for_user_data_level_3,tt_base.access_for_ir_mail_server_for_user_data_level_3,model_ir_mail_server,tt_base.group_user_data_level_3,1,1,1,0
+access_for_ir_mail_server_for_user_data_level_4,tt_base.access_for_ir_mail_server_for_user_data_level_4,model_ir_mail_server,tt_base.group_user_data_level_4,1,1,1,1
+access_for_ir_mail_server_for_user_data_level_5,tt_base.access_for_ir_mail_server_for_user_data_level_5,model_ir_mail_server,tt_base.group_user_data_level_5,1,1,1,1
 ,,,,,,,
 access_tt_vendor_for_public,tt.agent.type.for.public,model_tt_vendor,,1,0,0,0
 ,,,,,,,

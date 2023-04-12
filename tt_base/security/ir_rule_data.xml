@@ -62,6 +62,13 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_res_users_for_ho_user" model="ir.rule">
+        <field name="name">Res Users For HO User</field>
+        <field name="model_id" ref="model_res_users"/>
+        <field name="domain_force">['|',('ho_id','=',user.ho_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
     <record id="tt_res_users_for_agent" model="ir.rule">
         <field name="name">Res Users For Agent</field>
         <field name="model_id" ref="model_res_users"/>

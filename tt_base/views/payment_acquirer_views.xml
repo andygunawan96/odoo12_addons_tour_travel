@@ -23,7 +23,7 @@
                     </group>
                     <separator/>
                     <group expand="0" string="Group By">
-                        <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                        <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     </group>
                 </search>
             </field>
@@ -82,7 +82,7 @@
                                 <field name="is_calculate_credit_card_fee" attrs="{'invisible': [('type','not in',['payment_gateway', 'creditcard_topup'])]}"/>
                             </group>
                         </group>
-                        <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
+                        <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <page string="Agent Type">
                                 <group>
                                     <field name="agent_type_access_type"/>
@@ -158,7 +158,7 @@
                                 <field name="is_calculate_credit_card_fee" attrs="{'invisible': [('type','not in',['payment_gateway', 'creditcard_topup'])]}" readonly="1"/>
                             </group>
                         </group>
-                        <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel">
+                        <notebook attrs="{'invisible': [('type','not in','payment_gateway')]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <page string="Agent Type">
                                 <group>
                                     <field name="agent_type_access_type"/>

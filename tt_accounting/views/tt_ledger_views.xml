@@ -10,10 +10,10 @@
                 <field name="ref"/>
                 <field name="description"/>
                 <field name="source_of_funds_type"/>
-                <field name="transaction_type" groups="tt_base.group_tt_tour_travel"/>
+                <field name="transaction_type" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="ho_id" groups=""/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="yesterday" string="Yesterday"
@@ -34,11 +34,11 @@
                 <filter name="sof_credit_limit" string="SoF Credit Limit" domain="[('source_of_funds_type','=','credit_limit')]"/>
                 <filter name="sof_point" string="SoF Point" domain="[('source_of_funds_type','=','point')]"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_transaction_type" string="Transaction Type" domain="[]" context="{'group_by':'transaction_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_transaction_type" string="Transaction Type" domain="[]" context="{'group_by':'transaction_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -171,6 +171,21 @@
         </field>
     </record>
 
+    <record id="tt_ledger_tree_view_adm_inh" model="ir.ui.view">
+        <field name="name">tt.ledger.tree.view.adm.inh</field>
+        <field name="model">tt.ledger</field>
+        <field name="inherit_id" ref="tt_accounting.tt_ledger_tree_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_erp_manager')])]" />
+        <field name="priority">5</field>
+        <field name="arch" type="xml">
+            <field name="pnr" position="after">
+                <field name="display_provider_name"/>
+                <field name="agent_type_id"/>
+                <field name="ho_id"/>
+            </field>
+        </field>
+    </record>
+
     <record id="tt_ledger_cor_tree_view" model="ir.ui.view">
         <field name="name">tt.ledger.cor.tree.view</field>
         <field name="model">tt.ledger</field>
@@ -226,7 +241,7 @@
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action" sequence="10"
-              groups="tt_base.group_tt_tour_travel"
+              groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
     />
 
     <menuitem id="menu_transaction_ledger_agent_user" parent="tt_accounting.top_transaction_ledger"

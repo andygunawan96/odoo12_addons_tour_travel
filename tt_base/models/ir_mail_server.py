@@ -12,11 +12,11 @@ def_folder = '/var/log/tour_travel/gmailcredentials'
 class IrMailServer(models.Model):
     _inherit = "ir.mail_server"
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', help="Head Office who uses this mail server", domain=[('is_ho_agent', '=', True)], groups='base.group_erp_manager')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', help="Head Office who uses this mail server", domain=[('is_ho_agent', '=', True)], groups='base.group_erp_manager,tt_base.group_user_data_level_3')
     smtp_user = fields.Char(string='Username', help="Optional username for SMTP authentication",
-                            groups='base.group_erp_manager')
+                            groups='base.group_erp_manager,tt_base.group_user_data_level_3')
     smtp_pass = fields.Char(string='Password', help="Optional password for SMTP authentication",
-                            groups='base.group_erp_manager')
+                            groups='base.group_erp_manager,tt_base.group_user_data_level_3')
 
     def _check_folder_exists(self, folder_path):
         if not os.path.exists(folder_path):

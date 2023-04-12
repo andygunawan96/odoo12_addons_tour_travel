@@ -10,11 +10,11 @@
                 <field name="email"/>
                 <field name="agent_id"/>
                 <group expand="0" string="Group By">
-                    <filter string="Agent" name="agent_id" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Gender" name="gender" domain="[]" context="{'group_by':'gender'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Marital Status" name="marital_status" domain="[]" context="{'group_by':'marital_status'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Nationality" name="nationality_id" domain="[]" context="{'group_by':'nationality_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Religion" name="religion" domain="[]" context="{'group_by':'religion'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Agent" name="agent_id" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Gender" name="gender" domain="[]" context="{'group_by':'gender'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Marital Status" name="marital_status" domain="[]" context="{'group_by':'marital_status'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Nationality" name="nationality_id" domain="[]" context="{'group_by':'nationality_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Religion" name="religion" domain="[]" context="{'group_by':'religion'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -74,7 +74,7 @@
                                     <field name="position"/>
                                     <field name="religion"/>
                                     <field name="face_image_id"/>
-                                    <field name="register_uid" groups="tt_base.group_tt_tour_travel"/>
+                                    <field name="register_uid" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 </group>
                             </group>
 

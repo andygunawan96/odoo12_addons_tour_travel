@@ -11,7 +11,7 @@
                 <field name="referenced_pnr"/>
                 <field name="referenced_document"/>
                 <field name="notes"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
@@ -39,11 +39,11 @@
                 <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_reschedule_type" string="After Sales Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_reschedule_type" string="After Sales Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>

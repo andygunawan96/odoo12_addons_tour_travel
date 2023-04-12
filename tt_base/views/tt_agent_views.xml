@@ -32,10 +32,10 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -137,7 +137,7 @@
                         <page string="Third Party Key">
                             <field name="third_party_key_ids" readonly="1"/>
                         </page>
-                        <page string="Quota Partners" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}" groups="tt_base.group_tt_tour_travel">
+                        <page string="Quota Partners" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <field name="quota_partner_ids"/>
                         </page>
                         <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
