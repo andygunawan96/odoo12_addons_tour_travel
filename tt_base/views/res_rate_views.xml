@@ -89,7 +89,7 @@
                             <!--</h1>-->
                         </div>
                         <group>
-                            <field name="ho_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="base_currency_id"/>
                             <field name="to_currency_id"/>
                             <field name="rate"/>

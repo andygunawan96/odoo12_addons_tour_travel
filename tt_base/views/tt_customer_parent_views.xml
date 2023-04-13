@@ -8,6 +8,7 @@
             <search string="Search Customer Parent">
                 <field name="name"/>
                 <field name="customer_parent_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="parent_agent_id"/>
                 <group>
                     <filter string="All Type" name="all"/>
@@ -72,6 +73,7 @@
                     <group>
                         <group name="ctp_info">
                             <field name="customer_parent_type_id" readonly="1"/>
+                            <field name="ho_id" readonly="0" groups="base.group_erp_manager"/>
                             <field name="parent_agent_id" readonly="1"/>
                             <field name="tax_percentage" readonly="1"/>
                             <field name="is_send_email_cc"/>
@@ -191,6 +193,7 @@
             <tree create="false">
                 <field name="name"/>
                 <field name="customer_parent_type_id"/>
+                <field name="ho_id"/>
                 <field name="parent_agent_id"/>
                 <field name="state"/>
             </tree>

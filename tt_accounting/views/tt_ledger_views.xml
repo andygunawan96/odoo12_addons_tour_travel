@@ -11,7 +11,7 @@
                 <field name="description"/>
                 <field name="source_of_funds_type"/>
                 <field name="transaction_type" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                <field name="ho_id" groups=""/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <separator/>
@@ -64,7 +64,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="ho_id" groups=""/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="agent_type_id"/>
                             <field name="customer_parent_id"/>
