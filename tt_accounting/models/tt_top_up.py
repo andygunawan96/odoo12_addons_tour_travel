@@ -109,7 +109,7 @@ class TtTopUp(models.Model):
         })
 
     def action_reject_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 23')
         self.action_cancel_top_up({
             'co_uid':self.env.user.id

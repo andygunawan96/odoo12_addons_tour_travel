@@ -490,7 +490,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_confirm(self, kwargs={}):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 200')
         if not self.check_line_empty():
             if not self.check_passenger_empty():
@@ -536,7 +536,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_draft(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 202')
         self.state = 'draft'
         self.state_offline = 'draft'
@@ -654,7 +654,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_sent(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 204')
         if self.provider_type_id_name == 'hotel':
             for line in self.line_ids:
@@ -940,7 +940,7 @@ class IssuedOffline(models.Model):
             book.sync_service_charge()
 
     def set_back_to_confirm(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 208')
         self.state = 'draft'
         self.state_offline = 'confirm'

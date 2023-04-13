@@ -204,7 +204,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order FAILED (Booked)')
 
     def action_draft_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 326')
         self.write({
             'state_visa': 'draft',
@@ -264,7 +264,7 @@ class TtVisa(models.Model):
                 break
 
     def action_validate_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 328')
         is_validated = True
         for rec in self.passenger_ids:
@@ -459,7 +459,7 @@ class TtVisa(models.Model):
             return Response().get_error(error_message='contact b2b', error_code=500)
 
     def action_in_process_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 329')
         data = {
             'order_number': self.name,
@@ -519,7 +519,7 @@ class TtVisa(models.Model):
 
     # kirim data dan dokumen ke vendor
     def action_to_vendor_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 330')
         for provider in self.provider_booking_ids:
             provider.use_vendor = True
@@ -531,7 +531,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order SENT TO VENDOR')
 
     def action_vendor_process_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 331')
         self.write({
             'state_visa': 'vendor_process',
@@ -548,7 +548,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order PAYMENT')
 
     def action_in_process_consulate_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 332')
         is_payment = True
         for rec in self.passenger_ids:
@@ -630,7 +630,7 @@ class TtVisa(models.Model):
     def action_cancel_visa(self):
         # cek state visa.
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 333')
         if self.state_visa in ['in_process', 'payment']:
             self.can_refund = True
@@ -670,7 +670,7 @@ class TtVisa(models.Model):
         return self.payment_reservation_api('visa', req, context)
 
     def action_calc_expenses_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 334')
         # Calc visa vendor
         self.calc_visa_upsell_vendor()
