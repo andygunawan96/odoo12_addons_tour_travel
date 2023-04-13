@@ -59,6 +59,7 @@ class TtAgent(models.Model):
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     is_ho_agent = fields.Boolean('Is HO Agent')
+    website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
@@ -819,16 +820,21 @@ class TtAgent(models.Model):
 
     def get_ho_parent_agent(self):
         if self.ho_id: ## kalau HO is set langsung ambil
-            raise UserError(_(self.ho_id.seq_id))
+            return self.ho_id
         elif self.is_ho_agent:
-            # return self
-            raise UserError(_(self.seq_id))
+            return self
         elif self.parent_agent_id:
             return self.parent_agent_id.get_ho_parent_agent()
         else:
-            raise UserError(_('HO NOT FOUND FOR THIS AGENT'))
-            # return None
+            ## HO NOT FOUND
+            raise Exception('HO NOT FOUND')
 
+    def get_printout_agent_color(self):
+        base_color = '#FFFFFF'
+        agent_ho_obj = self.get_ho_parent_agent()
+        if agent_ho_obj.website_default_color:
+            base_color = self.ho_id.website_default_color if self.ho_id.website_default_color[0] == '#' else '#%s' % self.ho_id.website_default_color
+        return base_color
 
     def get_simple_agent_list_data(self):
         '''
