@@ -18,8 +18,19 @@ class TtReportCommonSetting(models.Model):
 
     def set_color_printout_api(self,data,context):
         try:
-            self.env['ir.config_parameter'].set_param('tt_base.website_default_color', data['color'])
-            res = ERR.get_no_error()
+            ## printout o3
+            if context.get('co_ho_seq_id'):
+                agent_id = self.env['tt.agent'].search([('seq_id','=', context.get('co_ho_seq_id'))], limit=1)
+                if agent_id:
+                    agent_id.website_default_color = data['color'] if data['color'][0] == '#' else "#%s" % data['color']
+                    res = ERR.get_no_error()
+                else:
+                    res = ERR.get_error(500)
+            else:
+                res = ERR.get_error(500)
+            ## printout o2
+            # self.env['ir.config_parameter'].set_param('tt_base.website_default_color', data['color'])
+            # res = ERR.get_no_error()
         except Exception as e:
             res = ERR.get_error(500, additional_message="can't change data color")
             _logger.error(traceback.format_exc())
@@ -28,6 +39,11 @@ class TtReportCommonSetting(models.Model):
     def set_report_footer_api(self, data, context):
         try:
             report_obj = self.search([('code','=',data['code']),('agent_id','=',context['co_agent_id'])], limit=1)
+            ho_id = None
+            if context.get('co_ho_seq_id'):
+                agent_ho_obj = self.env['tt.agent'].search([('seq_id','=',context['co_ho_seq_id'])], limit=1)
+                if agent_ho_obj:
+                    ho_id = agent_ho_obj.id
             if report_obj:
                 report_obj.html = data['html']
             else:
@@ -35,7 +51,8 @@ class TtReportCommonSetting(models.Model):
                     'code': data['code'],
                     'name': data['name'],
                     'agent_id': context['co_agent_id'],
-                    'html': data['html']
+                    'html': data['html'],
+                    'ho_id': ho_id
                 })
             res = ERR.get_no_error(self.get_data_report_footer(context))
         except Exception as e:
@@ -60,31 +77,34 @@ class TtReportCommonSetting(models.Model):
             'reschedule_ticket'
         ]
         data = self.search([('agent_id','=', context['co_agent_id'])])
-        data_code = self.search([('agent_id','=', self.env.ref('tt_base.rodex_ho').id)])
+        agent_obj = self.env['tt.agent'].search([('agent_id','=',context['co_agent_id'])], limit=1)
         res = []
-        for rec in data_code:
-            print = 0
-            if self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']:
-                print = 1
-            elif rec['code'] not in exclude:
-                print = 1
-            printout_check = 1
-            if print:
-                for printout_agent in data:
-                    if rec['code'] == printout_agent['code']:
+        if agent_obj:
+            agent_ho_obj = agent_obj.get_ho_parent_agent()
+            data_code = self.search([('agent_id','=', agent_ho_obj.id)])
+            for rec in data_code:
+                print = 0
+                if agent_ho_obj.id == context['co_agent_id']:
+                    print = 1
+                elif rec['code'] not in exclude:
+                    print = 1
+                printout_check = 1
+                if print:
+                    for printout_agent in data:
+                        if rec['code'] == printout_agent['code']:
+                            res.append({
+                                'code': rec.code,
+                                'name': rec.name,
+                                'html': printout_agent.html or ''
+                            })
+                            printout_check = 0
+                            break
+                    if printout_check:
                         res.append({
                             'code': rec.code,
                             'name': rec.name,
-                            'html': printout_agent.html or ''
+                            'html': rec.html or ''
                         })
-                        printout_check = 0
-                        break
-                if printout_check:
-                    res.append({
-                        'code': rec.code,
-                        'name': rec.name,
-                        'html': rec.html or ''
-                    })
         return res
 
     def get_footer(self, code, agent_id):
@@ -92,4 +112,12 @@ class TtReportCommonSetting(models.Model):
             html = self.search([('code', '=', code), ('agent_id','=', agent_id.id)], limit=1)
             if html:
                 return html
-        return self.search([('code', '=', code), ('agent_id','=', self.env.ref('tt_base.rodex_ho').id)], limit=1)
+            else:
+                ho_agent_obj = agent_id.get_ho_parent_agent()
+                html = self.search([('code', '=', code), ('agent_id', '=', ho_agent_obj.id)], limit=1)
+                if html:
+                    return html
+                else:
+                    return []
+        ## tidak ada agent kembalikan kosong karena tidak ada HO
+        return []
