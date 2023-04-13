@@ -61,6 +61,7 @@ class TtAgent(models.Model):
     is_ho_agent = fields.Boolean('Is HO Agent')
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
+    email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer

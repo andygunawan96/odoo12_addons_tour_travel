@@ -232,7 +232,10 @@ class TtBillingStatement(models.Model):
 
     def get_email_reply_to(self):
         try:
-            final_email = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_default_email_address', default='')
+            final_email = ''
+            if self.agent_id:
+                ho_agent_obj = self.agent_id.get_ho_parent_agent()
+                final_email = ho_agent_obj.email_server_id.smtp_user
         except Exception as e:
             _logger.error(str(e))
             final_email = ''
