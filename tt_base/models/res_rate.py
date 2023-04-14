@@ -67,10 +67,10 @@ class AgentResRate(models.Model):
         for rec in self:
             rec.name = "%s - %s" % (rec.ho_id.name, rec.base_currency_id.name)
 
-    def get_agent_currency_rate_api(self):
+    def get_agent_currency_rate_api(self, context):
         try:
             # _objs = self.search([('active','=',True)]) ## untuk all agent o3
-            _objs = self.search([('active','=',True), ('ho_id', '=', self.env.ref('tt_base.rodex_ho').id)]) ## untuk ambil agent HO
+            _objs = self.search([('active', '=', True), ('ho_id.seq_id', '=', context['co_ho_seq_id'])])  ## untuk ambil agent HO
             # response = [rec.get_ssr_data() for rec in _objs]
             response = {
                 "agent": {},

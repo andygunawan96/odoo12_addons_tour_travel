@@ -77,7 +77,7 @@ class TtReportCommonSetting(models.Model):
             'reschedule_ticket'
         ]
         data = self.search([('agent_id','=', context['co_agent_id'])])
-        agent_obj = self.env['tt.agent'].search([('agent_id','=',context['co_agent_id'])], limit=1)
+        agent_obj = self.env['tt.agent'].search([('id','=',context['co_agent_id'])], limit=1)
         res = []
         if agent_obj:
             agent_ho_obj = agent_obj.get_ho_parent_agent()
