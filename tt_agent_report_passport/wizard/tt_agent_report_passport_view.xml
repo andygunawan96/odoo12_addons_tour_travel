@@ -28,6 +28,6 @@
         parent="tt_reservation_passport.menu_passport_report"
         action="action_agent_report_passport_wz"
         sequence="1"
-        groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+        groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"
        />
 </odoo>

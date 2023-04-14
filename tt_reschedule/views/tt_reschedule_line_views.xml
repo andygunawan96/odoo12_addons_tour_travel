@@ -21,16 +21,16 @@
                             <field name="provider_id"/>
                             <field name="reschedule_type"/>
                             <field name="currency_id"/>
-                            <field name="reschedule_amount" groups="tt_base.group_tt_agent_user"/>
-                            <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
+                            <field name="reschedule_amount" groups="tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                            <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible':[('state','not in', ['final','done'])]}"/>
                         </group>
                         <group>
-                            <field name="admin_fee_dummy" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel" attrs="{'required':[('state','=','confirm')]}"/>
+                            <field name="admin_fee_dummy" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'required':[('state','=','confirm')]}"/>
                             <field name="admin_fee"/>
-                            <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="admin_fee_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="admin_fee_agent" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="total_amount"/>
                             <field name="is_po_required" invisible="1"/>
                         </group>
@@ -52,11 +52,11 @@
                 <field name="reschedule_type"/>
                 <field name="currency_id"/>
                 <field name="reschedule_amount" groups="tt_base.group_tt_agent_user"/>
-                <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel"/>
-                <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="admin_fee"/>
                 <field name="total_amount"/>
-                <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel"/>
+                <field name="real_reschedule_amount" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="state"/>
             </tree>
         </field>

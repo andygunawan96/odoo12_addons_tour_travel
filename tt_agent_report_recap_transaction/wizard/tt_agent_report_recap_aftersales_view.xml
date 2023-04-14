@@ -25,7 +25,7 @@
 
         <menuitem id="top_transaction_reports" parent="tt_base.main_transaction"
                   name="Reports" sequence='999'
-                  groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                  groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
 
         <menuitem
             id="menu_agent_report_recap_aftersales"
@@ -33,7 +33,7 @@
             parent="tt_agent_report_recap_transaction.top_transaction_reports"
             action="action_agent_report_recap_aftersales_wz"
             sequence="20"
-            groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+            groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"
         />
     </data>
 </odoo>

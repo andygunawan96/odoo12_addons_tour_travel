@@ -28,7 +28,7 @@
                 parent="tt_billing_statement.menu_billing_statement_billing_statement"
                 action="action_agent_report_billing_wz"
                 sequence="16"
-                groups="tt_base.group_tt_tour_travel"
+                groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
         />
     </data>
 </odoo>

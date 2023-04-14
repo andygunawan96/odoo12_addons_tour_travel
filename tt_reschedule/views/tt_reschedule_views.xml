@@ -186,7 +186,7 @@
                                     <field name="id" string="Sequence" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
-                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                     <field name="origin_id"/>
                                     <field name="destination_id"/>
                                     <field name="departure_date"/>
@@ -259,7 +259,7 @@
                                     <field name="old_id" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
-                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                     <field name="origin_id"/>
                                     <field name="destination_id"/>
                                     <field name="departure_date"/>
