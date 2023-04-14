@@ -1125,11 +1125,12 @@ class MasterTour(models.Model):
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
-                time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['arrival_date']
-                day = int(time_delta.days)
-                hours = int(time_delta.seconds / 3600)
-                minute = int((time_delta.seconds / 60) % 60)
-                list_obj[-1]['delay'] = self.get_delay(day, hours, minute)
+                if segment.departure_date and old_vals.get('arrival_date'):
+                    time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['arrival_date']
+                    day = int(time_delta.days)
+                    hours = int(time_delta.seconds / 3600)
+                    minute = int((time_delta.seconds / 60) % 60)
+                    list_obj[-1]['delay'] = self.get_delay(day, hours, minute)
             list_obj.append(vals)
             old_vals = vals
         return list_obj
