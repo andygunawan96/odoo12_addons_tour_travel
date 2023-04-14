@@ -28,6 +28,7 @@
                         <field name="path" groups="base.group_system"/>
                         <field name="url" widget="url"/>
                         <field name="agent_id"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="upload_uid"/>
 <!--                        <field name="will_be_deleted_date"/>-->
                         <field name="will_be_deleted_time"/>
