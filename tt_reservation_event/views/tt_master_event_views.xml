@@ -256,8 +256,8 @@
                             <field name="eligible_age" attrs="{'invisible': [('kid_friendly', '=', False)], 'required': [('kid_friendly', '!=', False)]}"/>
                         </group>
                         <group>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="event_vendor_id" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="event_vendor_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="provider_fare_code"/>
 <!--                            <field name="type_ids"/>-->
 <!--                            <field name="currency_id"/>-->

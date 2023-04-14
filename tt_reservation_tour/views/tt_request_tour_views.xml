@@ -17,7 +17,7 @@
                     <filter name="group_by_est_departure_time" string="Estimated Departure Time" domain="[]" context="{'group_by':'est_departure_time'}"/>
                     <filter name="group_by_est_return_time" string="Estimated Return Time" domain="[]" context="{'group_by':'est_return_time'}"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -109,7 +109,7 @@
                     <separator string="Tour Information"/>
                     <group>
                         <group>
-                            <field name="tour_ref_id" groups="tt_base.group_tt_tour_travel" attrs="{'invisible': [('state', 'not in', ['approved','done'])], 'required': [('state', 'in', ['approved','done'])]}"/>
+                            <field name="tour_ref_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('state', 'not in', ['approved','done'])], 'required': [('state', 'in', ['approved','done'])]}"/>
                             <field name="tour_ref_id_str" groups="tt_base.group_tt_agent_user" attrs="{'invisible': [('state', 'not in', ['approved','done'])]}"/>
                             <field name="tour_category"/>
                         </group>

@@ -7,10 +7,10 @@
             <search string="Search PPOB Inquiry">
                 <field name="name"/>
                 <field name="pnr"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
-                <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="carrier_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>
                 <group>
                     <filter string="All" name="all"/>
@@ -42,8 +42,8 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
                 </group>
             </search>
@@ -142,7 +142,7 @@
                         </tree>
                     </field>
                 </page>
-                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                     <field name="provider_booking_ids"/>
                 </page>
             </xpath>
@@ -158,7 +158,7 @@
                 <field name="agent_id"/>
                 <field name="agent_type_id"/>
                 <field name="booker_id"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="carrier_name"/>
                 <field name="pnr"/>
                 <field name="booked_uid"/>

@@ -68,7 +68,7 @@
                             <field name="hotelPickup"/>
                         </group>
                         <group>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="uuid"/>
                             <field name="type_ids"/>
                             <field name="category_ids">
@@ -136,7 +136,7 @@
                 <field name="type_ids"/>
                 <field name="currency_id"/>
                 <field name="basePrice"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="active"/>
             </tree>
         </field>

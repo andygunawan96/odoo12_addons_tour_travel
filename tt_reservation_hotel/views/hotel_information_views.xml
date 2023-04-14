@@ -157,8 +157,8 @@
                                                         <group>
                                                             <field name="nationality"/>
                                                             <!--                                                                <field name="nta_price" groups="tt_base.group_hotel_user,tt_base.group_tt_tour_travel_operator"/>-->
-                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel"/>
-                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                                             <field name="sale_price"/>
                                                             <field name="currency_id"/>
                                                             <field name="cancel_policy"/>
@@ -480,8 +480,8 @@
                                                         <group>
                                                             <field name="nationality"/>
                                                             <!--                                                                <field name="nta_price" groups="tt_base.group_hotel_user,tt_base.group_tt_tour_travel_operator"/>-->
-                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel"/>
-                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                                                            <field name="nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                                                            <field name="cost_price" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                                             <field name="sale_price"/>
                                                             <field name="currency_id"/>
                                                             <field name="cancel_policy"/>

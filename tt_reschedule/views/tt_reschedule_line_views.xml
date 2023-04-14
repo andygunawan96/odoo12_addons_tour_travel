@@ -51,7 +51,7 @@
                 <field name="provider_id"/>
                 <field name="reschedule_type"/>
                 <field name="currency_id"/>
-                <field name="reschedule_amount" groups="tt_base.group_tt_agent_user"/>
+                <field name="reschedule_amount" groups="tt_base.group_tt_agent_user,base.group_erp_manager"/>
                 <field name="reschedule_amount_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="admin_fee_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="admin_fee"/>

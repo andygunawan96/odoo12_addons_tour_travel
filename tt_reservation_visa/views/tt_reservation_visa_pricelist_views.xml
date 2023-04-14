@@ -43,18 +43,18 @@
                     </group>
                     <group>
                         <group string="NTA Calculation">
-                            <field name="visa_nta_price" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="delivery_nta_price" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="other_additional_price" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="visa_nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="delivery_nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="other_additional_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         </group>
                     </group>
                     <group>
                         <group string="Pricing">
                             <field name="currency_id" invisible="1"/>
-                            <field name="nta_price" groups="tt_base.group_tt_tour_travel" readonly="1"/>
-                            <field name="cost_price" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" readonly="1"/>
+                            <field name="cost_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="sale_price"/>
-                            <field name="commission_price" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="commission_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         </group>
                     </group>
                     <separator string="Requirements"/>

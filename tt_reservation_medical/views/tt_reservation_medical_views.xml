@@ -7,12 +7,12 @@
             <search string="Search medical Booking">
                 <field name="name"/>
                 <field name="pnr"/>
-                <field name="carrier_name" groups="tt_base.group_tt_tour_travel"/>
-                <field name="state_vendor" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_external_user"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="carrier_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="state_vendor" groups="tt_base.group_tt_tour_travel,base.group_erp_manager,tt_base.group_tt_external_user"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>
                 <field name="booker_id"/>
                 <field name="passenger_ids"/>
@@ -54,10 +54,10 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
                     <filter name="group_by_picked_timeslot" string="Timeslot" domain="[]" context="{'group_by':'picked_timeslot_id'}"/>
                 </group>
@@ -183,10 +183,10 @@
             </xpath>
 
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                     <field name="provider_booking_ids"/>
                 </page>
-                <page string="Splits" name="reservation_splits" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel" attrs="{'invisible': [('split_to_resv_ids', '=', [])]}">
+                <page string="Splits" name="reservation_splits" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('split_to_resv_ids', '=', [])]}">
                     <field name="split_to_resv_ids"/>
                 </page>
             </xpath>
@@ -344,7 +344,7 @@
                 <field name="agent_type_id"/>
                 <field name="customer_parent_id"/>
                 <field name="booker_id"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="carrier_name"/>
                 <field name="test_datetime"/>
                 <field name="adult"/>

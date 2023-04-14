@@ -95,7 +95,7 @@
 
                             <!--                        ### untuk default value adjustment -->
                             <field name="res_model" invisible="1"/>
-                            <field name="payment_acquirer_number_id" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="payment_acquirer_number_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="unique_amount_id" groups="base.group_system"/>
                             <field name="is_force_issued" groups="base.group_system"/>
                             <field name="is_halt_process" groups="base.group_system"/>
@@ -139,13 +139,13 @@
                             </div>
                             <field name="penalty_amount" readonly="1"/>
                             <field name="voucher_code" readonly="1"/>
-                            <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="payment_date" readonly="1" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="sid_booked" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="is_get_point_reward" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="is_using_point_reward" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="payment_method_to_ho" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="payment_date" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="sid_booked" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="is_get_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="is_using_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="payment_method_to_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         </group>
                     </group>
 
@@ -196,16 +196,16 @@
                         <group string="Total Information" class="oe_subtotal_footer oe_right">
                             <field name="total_fare" class="oe_subtotal_footer_separator"/>
                             <field name="total_tax" class="oe_subtotal_footer_separator"/>
-                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="total_nta" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="total_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="agent_nta" class="oe_subtotal_footer_separator" groups="base.group_system,tt_base.group_tt_agent_user"/>
-                            <field name="parent_agent_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="ho_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="parent_agent_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="ho_commission" class="oe_subtotal_footer_separator" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="total_discount" class="oe_subtotal_footer_separator"/>
                             <field name="total" class="oe_subtotal_footer_separator"/>
                         </group>
                         <group>
-                            <field name="notes" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="notes" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         </group>
                     </footer>
                 </sheet>

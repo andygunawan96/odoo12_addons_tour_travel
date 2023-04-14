@@ -8,7 +8,7 @@
                 <field name="description"/>
                 <field name="banner_color"/>
                 <field name="text_color"/>
-                <field name="journey_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="journey_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
             </tree>
         </field>
     </record>
