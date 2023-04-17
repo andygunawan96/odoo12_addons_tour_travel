@@ -116,9 +116,13 @@ class TtAgent(models.Model):
     @api.model
     def create(self, vals_list):
         ho_type_id = self.env.ref('tt_base.agent_type_ho').id
-        if vals_list['agent_type_id'] == ho_type_id:
+        if vals_list.get('agent_type_id') == ho_type_id:
             if vals_list.get('parent_agent_id'):
                 raise UserError('Cannot set HO parent agent.')
+        if vals_list.get('is_ho_agent'):
+            vals_list.update({
+                'ho_id': self.id
+            })
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
 
@@ -148,6 +152,10 @@ class TtAgent(models.Model):
                 raise UserError('Parent agent cannot be itself.')
             if self.agent_type_id.id == ho_type_id:
                 raise UserError('Cannot set HO parent agent.')
+        if vals.get('is_ho_agent'):
+            vals.update({
+                'ho_id': self.id
+            })
         super(TtAgent, self).write(vals)
 
     def create_walkin_obj_val(self,new_agent,agent_name):

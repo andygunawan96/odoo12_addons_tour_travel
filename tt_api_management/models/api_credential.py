@@ -96,8 +96,7 @@ class ApiManagement(models.Model):
             values = _user.get_credential(prefix='co_')
             values.update({
                 'sid': context['sid'],
-                'signature': self._generate_signature(),
-                'co_ho_seq_id': _user.agent_id.ho_id.seq_id
+                'signature': self._generate_signature()
             })
             response = _obj.get_credential()
             # April 11, 2019 - SAM
@@ -188,6 +187,7 @@ class ResUsersApiInherit(models.Model):
             '%suid' % prefix: self.id,
             '%suser_name' % prefix: self.name,
             '%suser_login' % prefix: self.login,
+            '%sho_id' % prefix: '',
             '%sagent_id' % prefix: '',
             '%sagent_name' % prefix: '',
             '%sagent_type_id' % prefix: '',
@@ -195,6 +195,8 @@ class ResUsersApiInherit(models.Model):
             '%sagent_type_code' % prefix: '',
             '%sagent_frontend_security' % prefix: [rec.code for rec in self.frontend_security_ids]
         }
+        if self.ho_id:
+            res.update(self.ho_id.get_ho_credential(prefix))
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))
         if self.customer_parent_id:
@@ -232,6 +234,14 @@ class TtAgentApiInherit(models.Model):
         }
         if self.agent_type_id:
             res.update(self.agent_type_id.get_credential(prefix))
+        return res
+
+    def get_ho_credential(self, prefix=''):
+        res = {
+            '%sho_id' % prefix: self.id,
+            '%sho_name' % prefix: self.name,
+            '%sho_seq_id' % prefix: self.seq_id
+        }
         return res
 
     def ban_user_api(self, duration=1576800):  # default = 3 tahun

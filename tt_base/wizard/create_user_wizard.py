@@ -26,6 +26,10 @@ class CreateUserWizard(models.TransientModel):
                 'default_agent_id': agent_id.id,
             },
         }
+        if agent_id.ho_id:
+            vals['context'].update({
+                'default_ho_id': agent_id.ho_id.id
+            })
         vals['context'].update({
             'default_groups_id': [(6, 0, default_groups_id.ids)],
             'default_frontend_security_ids': [(6, 0, default_frontend_security_ids.ids)]
@@ -76,6 +80,10 @@ class CreateCorporateUserWizard(models.TransientModel):
                 'default_customer_id': self.customer_id.id,
             },
         }
+        if self.agent_id.ho_id:
+            vals['context'].update({
+                'default_ho_id': self.agent_id.ho_id.id
+            })
         vals['context'].update({
             'default_groups_id': [(6, 0, default_groups_id.ids)],
             'default_frontend_security_ids': [(6, 0, default_frontend_security_ids.ids)]

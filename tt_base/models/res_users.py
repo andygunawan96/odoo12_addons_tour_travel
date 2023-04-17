@@ -104,6 +104,10 @@ class ResUsers(models.Model):
         if not vals.get('email'):
             vals['email'] = time.time()
         vals['notification_type'] = 'inbox'
+        admin_obj_id = self.env.ref('base.user_admin').id
+        if vals.get('sel_groups_2_3'):
+            if (vals['sel_groups_2_3'] == 3 and self.env.user.id != admin_obj_id) or (vals['sel_groups_2_3'] == 2 and not self.env.user.has_group('base.group_system')):
+                vals.pop('sel_groups_2_3')
         new_user = super(ResUsers, self).create(vals)
         # new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False
@@ -112,10 +116,20 @@ class ResUsers(models.Model):
     @api.multi
     def write(self, vals):
         admin_obj_id = self.env.ref('base.user_admin').id
-        if vals.get('sel_groups_2_3') == 3 and self.env.user.id != admin_obj_id:
-            vals.pop('sel_groups_2_3')
+        if vals.get('sel_groups_2_3'):
+            if (vals['sel_groups_2_3'] == 3 and self.env.user.id != admin_obj_id) or (vals['sel_groups_2_3'] == 2 and not self.env.user.has_group('base.group_system')):
+                vals.pop('sel_groups_2_3')
         if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id: #tidak boleh ganti pwd admin kalau bukan admin settings
             vals.pop('password')
+        # if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #tidak boleh remove is HO jika tidak punya access rights
+        #     ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
+        #     keys_to_del = []
+        #     for rec in vals.keys():
+        #         if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
+        #             if str(ho_group_id) in rec.split('_') and not vals[rec]:
+        #                 keys_to_del.append(rec)
+        #     for rec in keys_to_del:
+        #         vals.pop(rec)
         if vals.get('password'):
             self._check_password(vals['password'])
         return super(ResUsers, self).write(vals)

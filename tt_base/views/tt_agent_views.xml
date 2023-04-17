@@ -98,7 +98,7 @@
                         <field name="is_ho_agent" readonly="0" groups="base.group_erp_manager"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
-                        <field name="ho_id" readonly="0" groups="base.group_erp_manager"/>
+                        <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
                         <field name="website_default_color" groups="base.group_erp_manager" />
                         <field name="email_server_id" groups="base.group_erp_manager" />
                         <field name="parent_agent_id" readonly="1"/>
