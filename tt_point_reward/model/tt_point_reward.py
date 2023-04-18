@@ -18,6 +18,11 @@ class TtPointReward(models.Model):
     _rec_name = 'name'
     _order = "sequence asc"
 
+    def _compute_get_ho(self):
+        if self.env.user.agent_id:
+            return self.env.user.agent_id.get_ho_parent_agent().id
+        return False
+
     name = fields.Char("Point Reward Name", required=True, default='Point Reward')
     is_active = fields.Boolean('Is Active', default=True)
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Agent Type Access Type', default='all')
@@ -26,7 +31,7 @@ class TtPointReward(models.Model):
     point_reward_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_point_reward_rel","tt_point_reward_id", "tt_provider_type_id", "Provider Type")  # what product this voucher can be applied
     provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Access Type', default='all')
     point_reward_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_point_reward_rel", "tt_point_reward_id","tt_provier_id", "Provider ID")  # what provider this voucher can be applied
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.agent_id.get_ho_parent_agent())
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=_compute_get_ho)
     point_reward_rules_id = fields.Many2one('tt.point.reward.rules', 'Point Reward Rules')
     sequence = fields.Integer('Sequence')
 
