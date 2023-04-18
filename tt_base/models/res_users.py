@@ -108,6 +108,19 @@ class ResUsers(models.Model):
         if vals.get('sel_groups_2_3'):
             if (vals['sel_groups_2_3'] == 3 and self.env.user.id != admin_obj_id) or (vals['sel_groups_2_3'] == 2 and not self.env.user.has_group('base.group_system')):
                 vals.pop('sel_groups_2_3')
+        if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #jika tidak punya access rights tidak boleh create tanpa is HO and is Agent, harus ada salah satu
+            ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
+            agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
+            is_set_ho = False
+            is_set_agent = False
+            for rec in vals.keys():
+                if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
+                    if str(ho_group_id) in rec.split('_') and vals[rec]:
+                        is_set_ho = True
+                    elif str(agent_group_id) in rec.split('_') and vals[rec]:
+                        is_set_agent = True
+            if not is_set_ho and not is_set_agent:
+                raise UserError('Please set either "Is Tour Travel HO" or "Is Agent User"!')
         new_user = super(ResUsers, self).create(vals)
         # new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False
@@ -121,15 +134,38 @@ class ResUsers(models.Model):
                 vals.pop('sel_groups_2_3')
         if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id: #tidak boleh ganti pwd admin kalau bukan admin settings
             vals.pop('password')
-        # if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #tidak boleh remove is HO jika tidak punya access rights
-        #     ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
-        #     keys_to_del = []
-        #     for rec in vals.keys():
-        #         if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
-        #             if str(ho_group_id) in rec.split('_') and not vals[rec]:
-        #                 keys_to_del.append(rec)
-        #     for rec in keys_to_del:
-        #         vals.pop(rec)
+        if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #jika tidak punya access rights tidak boleh remove both is HO and is Agent, harus ada salah satu
+            ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
+            agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
+            keys_to_check = {
+                'ho': '',
+                'agent': ''
+            }
+            is_set_ho = False
+            is_set_agent = False
+            for rec in vals.keys():
+                if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
+                    if str(ho_group_id) in rec.split('_'):
+                        if not vals[rec]:
+                            keys_to_check.update({
+                                'ho': rec
+                            })
+                        else:
+                            is_set_ho = True
+                    elif str(agent_group_id) in rec.split('_'):
+                        if not vals[rec]:
+                            keys_to_check.update({
+                                'agent': rec
+                            })
+                        else:
+                            is_set_agent = True
+            if keys_to_check.get('ho') and keys_to_check.get('agent'):
+                vals.pop(keys_to_check['ho'])
+                vals.pop(keys_to_check['agent'])
+            elif keys_to_check.get('ho') and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent:
+                vals.pop(keys_to_check['ho'])
+            elif keys_to_check.get('agent') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho:
+                vals.pop(keys_to_check['agent'])
         if vals.get('password'):
             self._check_password(vals['password'])
         return super(ResUsers, self).write(vals)
