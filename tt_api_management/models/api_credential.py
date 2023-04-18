@@ -202,10 +202,9 @@ class ResUsersApiInherit(models.Model):
             '%sagent_type_code' % prefix: '',
             '%sagent_frontend_security' % prefix: [rec.code for rec in self.frontend_security_ids]
         }
-        if self.ho_id:
-            res.update(self.ho_id.get_ho_credential(prefix))
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))
+            res.update(self.agent_id.get_ho_credential(prefix))
         if self.customer_parent_id:
             res.update(self.customer_parent_id.get_credential(prefix))
         if self.customer_id:
@@ -244,10 +243,9 @@ class TtAgentApiInherit(models.Model):
         return res
 
     def get_ho_credential(self, prefix=''):
+        ho_agent_obj = self.get_ho_parent_agent()
         res = {
-            '%sho_id' % prefix: self.id,
-            '%sho_name' % prefix: self.name,
-            '%sho_seq_id' % prefix: self.seq_id
+            '%sho_seq_id' % prefix: ho_agent_obj.seq_id
         }
         return res
 
