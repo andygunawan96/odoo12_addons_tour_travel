@@ -15,6 +15,7 @@ Key Features
     'depends': ['tt_base'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
         'views/voucher_views.xml',

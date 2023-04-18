@@ -14,3 +14,4 @@ class TtPointRewardRules(models.Model):
     is_gradual_points = fields.Boolean('Is Gradual Points', default=True, help="""Gradual Points ex: price:50,000 for point:10,000 total payment:150,000 agent will get 30,000 points""")
     min_price = fields.Monetary(string='Minimum Price', default=0)
     points = fields.Float(string='Point', default=0)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.agent_id.get_ho_parent_agent())

@@ -23,6 +23,7 @@
                         </div>
                         <group>
                             <field name="provider_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="date"/>
                             <field name="currency_id"/>
                             <field name="rate_currency_id"/>
