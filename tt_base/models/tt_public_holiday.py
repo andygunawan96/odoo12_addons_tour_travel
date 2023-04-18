@@ -8,6 +8,7 @@ class TtPublicHoliday(models.Model):
 
     name = fields.Char('Name')
     date = fields.Date('Date')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False)
     country_id = fields.Many2one('res.country', 'Country', default=lambda self: self.env.user.company_id.country_id.id)
     active = fields.Boolean('Active', default=True)
 
@@ -19,10 +20,12 @@ class TtPublicHoliday(models.Model):
     def get_public_holiday_api(self, data, context):
         start_date = data['start_date']
         end_date = data.get('end_date') and data['end_date'] or data['start_date']
-
-        res = [{'date': rec.date, 'name': rec.name} for rec in self.sudo().search([('date', '>=', start_date), ('date', '<=', end_date),
+        res = []
+        if context.get('co_ho_seq_id'):
+            ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+            res = [{'date': rec.date, 'name': rec.name} for rec in self.sudo().search([('date', '>=', start_date), ('date', '<=', end_date),
                                                                     ('country_id', '=', int(data['country_id'])),
-                                                                    ('active', '=', True)])]
+                                                                    ('active', '=', True), ('ho_id', '=', ho_agent_obj)])]
         return {
             'error_code': 0,
             'error_msg': '',

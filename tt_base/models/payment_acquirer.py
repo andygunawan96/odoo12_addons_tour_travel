@@ -225,7 +225,8 @@ class PaymentAcquirer(models.Model):
         return ERR.get_no_error(values)
 
     def get_va_bank(self, req, context):
-        ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
+        ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1) #o3
+        # ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id) #o2
         existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id', '=', ho_agent_obj.id), ('type', '!=', 'cash')])
         values = []
         for acq in existing_payment_acquirer:
@@ -345,10 +346,11 @@ class PaymentAcquirer(models.Model):
                 # # payment gateway
                 # dengan ORDER NUMBER
                 if util.get_without_empty(req, 'order_number'):
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
                     dom = [
                         ('website_published', '=', True),
                         ('company_id', '=', self.env.user.company_id.id),
-                        ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
+                        ('agent_id', '=', ho_agent_obj.id),
                         ('type', 'in', ['payment_gateway']),  ## search yg mutasi bca / creditcard espay
                     ]
                     # pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])

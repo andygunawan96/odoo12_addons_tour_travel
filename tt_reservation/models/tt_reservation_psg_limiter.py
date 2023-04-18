@@ -25,6 +25,7 @@ class TtWhitelistedName(models.Model):
 
     name = fields.Char('Name')
     chances_left = fields.Integer('Chances Left')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
 class TtWhitelistedPassport(models.Model):
     _name = 'tt.whitelisted.passport'
@@ -33,3 +34,4 @@ class TtWhitelistedPassport(models.Model):
 
     passport = fields.Char('Passport Number')
     chances_left = fields.Integer('Chances Left')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])

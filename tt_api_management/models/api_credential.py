@@ -22,6 +22,13 @@ class ApiManagement(models.Model):
     api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator')
     device_type = fields.Selection(selection=variables.DEVICE_TYPE, default='general')
     user_id = fields.Many2one(comodel_name='res.users', string='User')
+    ho_id = fields.Char('Head Office', compute="_compute_ho_id", store=True)
+
+    def _compute_ho_id(self):
+        for rec in self:
+            if rec.user_id:
+                if rec.user_id.agent_id:
+                    rec.ho_id = rec.user_id.agent_id.get_ho_parent_agent()
 
     def to_dict(self):
         res = {

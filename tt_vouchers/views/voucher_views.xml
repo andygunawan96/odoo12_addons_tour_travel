@@ -65,6 +65,7 @@
                         <field name="voucher_multi_usage"/>
                         <field name="voucher_usage_value"/>
                         <field name="currency_id"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                     </group>
                     <separator string="Voucher Details"/>
                     <field name="voucher_detail_ids"/>

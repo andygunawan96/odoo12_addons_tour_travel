@@ -24,7 +24,8 @@ Key Features
         'views/api_webhook_views.xml',
         'views/api_blackout_views.xml',
         'wizard/user_encrypt_views.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml'
     ],
     'demo': [],
     'qweb': [],

@@ -617,16 +617,24 @@ class ReservationAirline(models.Model):
                                 break
 
                     if not safe:
+                        ## get HO agent
+                        ho_agent_obj = None
+                        if book_obj.agent_id:
+                            ho_agent_obj = book_obj.agent_id.get_ho_parent_agent()
                         # whitelist di sini
-                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
-                            [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
+                        dom = [('name', 'ilike', name.name), ('chances_left', '>', 0)]
+                        if ho_agent_obj:
+                            dom.append(('ho_id','=', ho_agent_obj))
+                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(dom, limit=1)
 
                         if whitelist_name:
                             whitelist_name.chances_left -= 1
                             return True
 
-                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
-                            [('passport','=',name.identity_number),('chances_left','>',0)],limit=1)
+                        dom = [('passport','=',name.identity_number),('chances_left','>',0)]
+                        if ho_agent_obj:
+                            dom.append(('ho_id', '=', ho_agent_obj))
+                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(dom, limit=1)
 
                         if whitelist_passport:
                             whitelist_passport.chances_left -= 1
@@ -1187,6 +1195,7 @@ class ReservationAirline(models.Model):
 
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
             # if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:## mestinya AND jika b2c maka userny harus sma
+
             res = book_obj.to_dict(context)
             psg_list = []
             for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
@@ -1996,6 +2005,7 @@ class ReservationAirline(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 c_code = ''
+                c_type = ''
                 if p_charge_type != 'RAC':
                     if p_charge_code == 'csc':
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
@@ -2026,6 +2036,8 @@ class ReservationAirline(models.Model):
                             }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
