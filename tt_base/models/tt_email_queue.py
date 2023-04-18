@@ -22,6 +22,7 @@ class TtEmailQueue(models.Model):
     res_id = fields.Integer('Related Model ID', index=True, help='Id of the followed resource')
     last_sent_attempt_date = fields.Datetime('Last Sent Attempt Date', readonly=True)
     failure_reason = fields.Text('Failure Reason', readonly=True)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)])
     active = fields.Boolean('Active', default=True)
 
     def create_email_queue(self, data, context=None):
@@ -39,6 +40,11 @@ class TtEmailQueue(models.Model):
                 else:
                     type_str = 'Issued'
 
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 #ini agent
                 template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
                 self.env['tt.email.queue'].sudo().create({
@@ -47,6 +53,7 @@ class TtEmailQueue(models.Model):
                     'template_id': template,
                     'res_model': resv._name,
                     'res_id': resv.id,
+                    'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                 })
 
                 ## HO INVOICE
@@ -58,8 +65,8 @@ class TtEmailQueue(models.Model):
                         'template_id': template,
                         'res_model': resv._name,
                         'res_id': resv.id,
+                        'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                     })
-
 
                 #ini customer
                 if resv.agent_id.is_send_email_cust:
@@ -70,6 +77,7 @@ class TtEmailQueue(models.Model):
                         'template_id': template,
                         'res_model': resv._name,
                         'res_id': resv.id,
+                        'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                     })
             else:
                 raise RequestException(1001)
@@ -81,6 +89,12 @@ class TtEmailQueue(models.Model):
 
             resv = self.env['tt.billing.statement'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
             if resv:
+
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 if resv.customer_parent_id:
                     customer_name = resv.customer_parent_id.name
                     template = self.env.ref('tt_billing_statement.template_mail_billing_statement').id
@@ -96,6 +110,7 @@ class TtEmailQueue(models.Model):
                     'template_id': template,
                     'res_model': resv._name,
                     'res_id': resv.id,
+                    'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                 })
             else:
                 raise RequestException(1001)
@@ -108,6 +123,12 @@ class TtEmailQueue(models.Model):
 
             resv = self.env['tt.pnr.quota'].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
             if resv:
+
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 template = self.env.ref('tt_base.template_mail_pnr_quota').id
                 self.env['tt.email.queue'].sudo().create({
                     'name': 'Pnr quota e-Billing for ' + resv.agent_id.name,
@@ -115,6 +136,7 @@ class TtEmailQueue(models.Model):
                     'template_id': template,
                     'res_model': resv._name,
                     'res_id': resv.id,
+                    'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                 })
             else:
                 raise RequestException(1001)
@@ -133,6 +155,11 @@ class TtEmailQueue(models.Model):
                 else:
                     type_str = 'Confirmed'
 
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 template = self.env.ref('tt_accounting.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'confirmed'))).id
                 self.env['tt.email.queue'].sudo().create({
                     'name': 'Refund ' + type_str + ': ' + resv.name,
@@ -140,6 +167,7 @@ class TtEmailQueue(models.Model):
                     'template_id': template,
                     'res_model': resv._name,
                     'res_id': resv.id,
+                    'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                 })
 
                 if resv.agent_id.is_send_email_cust and resv.booker_id.email:
@@ -150,6 +178,7 @@ class TtEmailQueue(models.Model):
                         'template_id': template,
                         'res_model': resv._name,
                         'res_id': resv.id,
+                        'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                     })
             else:
                 raise RequestException(1001)
@@ -169,6 +198,11 @@ class TtEmailQueue(models.Model):
                 else:
                     type_str = ''
 
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 if type_str:
                     template = self.env.ref('tt_vouchers.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'used'))).id
                     self.env['tt.email.queue'].sudo().create({
@@ -177,6 +211,7 @@ class TtEmailQueue(models.Model):
                         'template_id': template,
                         'res_model': resv._name,
                         'res_id': resv.id,
+                        'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                     })
 
                     if resv.voucher_id.voucher_customer_id.agent_id.is_send_email_cust and resv.voucher_id.voucher_customer_id.email:
@@ -206,6 +241,11 @@ class TtEmailQueue(models.Model):
                 else:
                     type_str = ''
 
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 if type_str:
                     template = self.env.ref('tt_reservation_tour.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'reminder'))).id
                     self.env['tt.email.queue'].sudo().create({
@@ -214,6 +254,7 @@ class TtEmailQueue(models.Model):
                         'template_id': template,
                         'res_model': resv._name,
                         'res_id': resv.id,
+                        'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                     })
 
                     if resv.booking_id.agent_id.is_send_email_cust and resv.booking_id.contact_email:
@@ -224,6 +265,7 @@ class TtEmailQueue(models.Model):
                             'template_id': template,
                             'res_model': resv._name,
                             'res_id': resv.id,
+                            'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                         })
             else:
                 raise RequestException(1001)
@@ -236,6 +278,12 @@ class TtEmailQueue(models.Model):
 
             resv = self.env[model_name].search([('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))], limit=1)
             if resv:
+
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 template = self.env.ref('tt_reservation_hotel.template_mail_' + data['provider_type']).id
                 self.env['tt.email.queue'].sudo().create({
                     'name': 'Confirmation for {} ( {} ) '.format(resv.name, resv.pnr),
@@ -243,6 +291,7 @@ class TtEmailQueue(models.Model):
                     'template_id': template,
                     'res_model': resv._name,
                     'res_id': resv.id,
+                    'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                 })
             else:
                 raise RequestException(1001)
@@ -257,6 +306,12 @@ class TtEmailQueue(models.Model):
                 [('name', '=ilike', data.get('order_number')), ('agent_id', '=', context.get('co_agent_id', -1))],
                 limit=1)
             if resv:
+
+                ho_agent_obj = None
+                agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
+                if agent_obj:
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+
                 template = self.env.ref('tt_reservation_hotel.template_mail_' + data['provider_type']).id
                 self.env['tt.email.queue'].sudo().create({
                     'name': 'Special Request {} ( {} ) '.format(resv.name, resv.pnr),
@@ -264,6 +319,7 @@ class TtEmailQueue(models.Model):
                     'template_id': template,
                     'res_model': resv._name,
                     'res_id': resv.id,
+                    'ho_id': ho_agent_obj.id if ho_agent_obj else ''
                 })
             else:
                 raise RequestException(1001)

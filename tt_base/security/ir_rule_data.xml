@@ -314,4 +314,18 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 
+    <record id="tt_email_queue_for_ho" model="ir.rule">
+        <field name="name">Email Queue For HO</field>
+        <field name="model_id" ref="model_tt_email_queue"/>
+        <field name="domain_force">[('ho_id','=',ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_email_queue_for_ho_user" model="ir.rule">
+        <field name="name">Email Queue For HO User</field>
+        <field name="model_id" ref="model_tt_email_queue"/>
+        <field name="domain_force">[('ho_id','=',ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
 </odoo>
