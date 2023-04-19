@@ -52,7 +52,7 @@
                     <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                     <group expand="0" string="Group By">
-                        <filter string="HO" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                        <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                         <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <filter string="Agent Type" name="agent_type_id" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <filter string="Customer Parent" name="customer_parent_id" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>

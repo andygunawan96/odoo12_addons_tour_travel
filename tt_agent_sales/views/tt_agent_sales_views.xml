@@ -35,7 +35,7 @@
                 <filter string="This Year" name="thisyear" domain="[('date_invoice','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_ho_id" string="HO" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter name="group_by_ho_id" string="Head Office" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                     <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>

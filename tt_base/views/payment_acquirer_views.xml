@@ -24,7 +24,7 @@
                     </group>
                     <separator/>
                     <group expand="0" string="Group By">
-                        <filter name="group_by_ho_id" string="HO" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                        <filter name="group_by_ho_id" string="Head Office" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                         <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     </group>
                 </search>
