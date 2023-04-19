@@ -1174,6 +1174,12 @@ class TtVoucherDetail(models.Model):
             _logger.error("%s voucher is not exist" % data['voucher_reference'])
             # return error
             return ERR.get_error(additional_message="Voucher is NOT Exist")
+        elif voucher_detail:
+            ## check ho
+            if voucher_detail.voucher_id.ho_id.seq_id != context['co_ho_seq_id']:
+                _logger.error("%s voucher is not exist" % data['voucher_reference'])
+                # return error
+                return ERR.get_error(additional_message="Voucher is NOT Exist")
 
         # voucher is exist hooray, now we'll check if the voucher could be use
         if voucher_detail.voucher_id.state != 'confirm':

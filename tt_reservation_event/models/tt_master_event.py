@@ -75,6 +75,7 @@ class MasterEvent(models.Model):
     soldout_uid = fields.Many2one('res.users', 'User sold-out')
     expired_date = fields.Datetime('Expired at')
     expired_uid = fields.Many2one('res.users', 'User Expired')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
 
     @api.model

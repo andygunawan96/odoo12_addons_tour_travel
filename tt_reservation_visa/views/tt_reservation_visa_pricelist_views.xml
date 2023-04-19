@@ -32,6 +32,7 @@
                             <field name="pax_type"/>
                             <field name="reference_code"/>
                             <field name="provider_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
 <!--                            <field name="active"/>-->
                         </group>
                         <group string="Document Information">

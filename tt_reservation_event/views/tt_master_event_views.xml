@@ -257,6 +257,7 @@
                         </group>
                         <group>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="event_vendor_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="provider_fare_code"/>
 <!--                            <field name="type_ids"/>-->

@@ -904,13 +904,15 @@ class TtAgent(models.Model):
             })
         return payload
 
-    def get_agent_head_office_api(self):
+    def get_agent_api(self):
         res = []
-        agent_objs = self.search([('is_ho_agent', '=', True)])
+        agent_objs = self.search([])
         for agent_obj in agent_objs:
             res.append({
                 "name": agent_obj.name,
                 "seq_id": agent_obj.seq_id,
+                "is_ho_agent": agent_obj.is_ho_agent,
+                "id": agent_obj.id
             })
         res = ERR.get_no_error(res)
         return res
