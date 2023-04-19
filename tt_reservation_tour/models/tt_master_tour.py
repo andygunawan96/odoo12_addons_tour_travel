@@ -192,6 +192,7 @@ class MasterTour(models.Model):
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
     file_name = fields.Char("Filename", compute="_compute_filename", store=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     active = fields.Boolean('Active', default=True)
 
     @api.depends("name")

@@ -12,6 +12,7 @@ class ApiBlackout(models.Model):
     end_date = fields.Date("End Date", required=True)
     active = fields.Boolean("Active",default=True)
     config_id = fields.Many2one(comodel_name='tt.api.config', string='Config ID')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def to_dict(self):
         return {

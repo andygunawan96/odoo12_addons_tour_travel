@@ -22,13 +22,7 @@ class ApiManagement(models.Model):
     api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator')
     device_type = fields.Selection(selection=variables.DEVICE_TYPE, default='general')
     user_id = fields.Many2one(comodel_name='res.users', string='User')
-    ho_id = fields.Char('Head Office', compute="_compute_ho_id", store=True)
-
-    def _compute_ho_id(self):
-        for rec in self:
-            if rec.user_id:
-                if rec.user_id.agent_id:
-                    rec.ho_id = rec.user_id.agent_id.get_ho_parent_agent()
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def to_dict(self):
         res = {
@@ -245,7 +239,9 @@ class TtAgentApiInherit(models.Model):
     def get_ho_credential(self, prefix=''):
         ho_agent_obj = self.get_ho_parent_agent()
         res = {
-            '%sho_seq_id' % prefix: ho_agent_obj.seq_id
+            '%sho_seq_id' % prefix: ho_agent_obj.seq_id,
+            '%sho_id' % prefix: ho_agent_obj.id,
+            '%sho_name' % prefix: ho_agent_obj.name,
         }
         return res
 

@@ -64,6 +64,7 @@
                                 <field name="module_id" invisible="1"/>
                                 <field name="module_state" invisible="1"/>
                                 <field name="agent_id"/>
+                                <field name="ho_id" groups="base.group_erp_manager"/>
                                 <field name="type"/>
                                 <field name="online_wallet" attrs="{'invisible': [('type','not in','payment_gateway')]}"/>
                             </group>
@@ -141,6 +142,7 @@
                                 <field name="module_id" invisible="1" readonly="1"/>
                                 <field name="module_state" invisible="1" readonly="1"/>
                                 <field name="agent_id" readonly="1"/>
+                                <field name="ho_id" groups="base.group_erp_manager"/>
                                 <field name="type" readonly="1"/>
                             </group>
                             <group name="acquirer_right">

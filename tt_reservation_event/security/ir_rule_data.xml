@@ -54,4 +54,18 @@
         <field name="domain_force">[('agent_id','=',user.agent_id.id),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
+
+    <record id="tt_master_event_for_ho" model="ir.rule">
+        <field name="name">Master Event For HO</field>
+        <field name="model_id" ref="model_tt_master_event"/>
+        <field name="domain_force">[('ho_id','=',ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_master_event_for_ho_user" model="ir.rule">
+        <field name="name">Master Event For HO User</field>
+        <field name="model_id" ref="model_tt_master_event"/>
+        <field name="domain_force">[('ho_id','=',ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
 </odoo>
