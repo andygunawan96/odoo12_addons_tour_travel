@@ -62,6 +62,7 @@ class TtTimeslotMitraKeluarga(models.Model):
 
     active = fields.Boolean('Active', default='True')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.depends('datetimeslot')

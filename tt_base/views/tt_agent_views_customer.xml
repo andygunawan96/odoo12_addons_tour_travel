@@ -54,6 +54,7 @@
                     </group>
 
                     <group string="Agent">
+                        <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
                         <field name="parent_agent_id" readonly="1"/>

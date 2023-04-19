@@ -21,6 +21,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                             <field name="agent_id" readonly="1"/>
                             <field name="agent_type_id"/>
                         </group>

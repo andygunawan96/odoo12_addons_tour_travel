@@ -105,7 +105,6 @@
             <field name="model">tt.agent.rate</field>
             <field name="arch" type="xml">
                 <tree string="Res Rate Tree">
-                    <field name="ho_id"/>
                     <field name="base_currency_id"/>
                     <field name="to_currency_id"/>
                     <field name="rate"/>

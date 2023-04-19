@@ -12,6 +12,7 @@
                     <field name="end_date"/>
                     <field name="total_timeslot"/>
                     <field name="timeslot_type"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="agent_id"/>
                     <field name="time_string"/>
                 </group>

@@ -24,6 +24,7 @@
                     <group>
                         <group>
                             <field name="sequence"/>
+                            <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                             <field name="agent_id" readonly="1"/>
                         </group>
                         <group>

@@ -17,6 +17,7 @@
                         <field name="total_pcr_timeslot"/>
                     </group>
                     <group>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="agent_id"/>
                         <field name="time_string" attrs="{'readonly': [('timeslot_type','in',['drive_thru'])]}"/>
                     </group>

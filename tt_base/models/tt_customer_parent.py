@@ -117,6 +117,11 @@ class TtCustomerParent(models.Model):
                 'default_customer_parent_id': self.id
             },
         }
+        temp_ho_obj = self.parent_agent_id.get_ho_parent_agent()
+        if temp_ho_obj:
+            vals['context'].update({
+                'default_ho_id': temp_ho_obj.id
+            })
         return vals
 
     @api.model
@@ -326,6 +331,20 @@ class TtCustomerParent(models.Model):
         self.write({
             'state': 'draft',
         })
+
+    # temporary function to set default ho for all agents
+    def set_all_default_ho(self):
+        all_recs = self.search([])
+        for rec in all_recs:
+            if not rec.ho_id:
+                if rec.parent_agent_id:
+                    ho_obj = rec.parent_agent_id.get_ho_parent_agent()
+                    ho_id = ho_obj and ho_obj.id or self.env.ref('tt_base.rodex_ho').id
+                else:
+                    ho_id = self.env.ref('tt_base.rodex_ho').id
+                rec.write({
+                    'ho_id': ho_id
+                })
 
     #ledger history
     #booking History

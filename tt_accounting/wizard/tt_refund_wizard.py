@@ -46,6 +46,7 @@ class TtRefundWizard(models.TransientModel):
             refund_obj = self.env['tt.refund'].search([('referenced_document','=',data['referenced_document_external']), ('state','!=','cancel')])
             if not refund_obj:
                 refund_obj = self.create({
+                    'ho_id': ctx['co_ho_id'],
                     'agent_id': ctx['co_agent_id'],
                     'agent_type_id': ctx['co_agent_type_id'],
                     'customer_parent_id': book_obj.customer_parent_id.id,
@@ -116,6 +117,7 @@ class TtRefundWizard(models.TransientModel):
             ref_type = 'regular'
         default_adm_fee = self.env['tt.refund'].get_refund_admin_fee_rule(self.agent_id.id, ref_type)
         refund_obj = self.env['tt.refund'].create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'booker_id': self.booker_id.id,

@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <search string="Search Passport Booking">
                 <field name="name"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>
@@ -44,6 +45,7 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
+                    <filter string="HO" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                     <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter string="Agent Type" name="agent_type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state_passport'}"/>
@@ -183,6 +185,7 @@
             <tree create="false">
                 <button type="object" string="Create Booking Passport" name="create_booking_passport_api"/>
                 <field name="name"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>

@@ -17,6 +17,7 @@
                             context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': agent_id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
@@ -26,7 +27,7 @@
                             context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
-                        'default_agent_id': agent_id,
+                        'default_ho_id': ho_id,
                         'default_customer_parent_id': customer_parent_id,
                         'default_referenced_document': name,
                         'default_referenced_pnr': pnr,
@@ -38,6 +39,7 @@
                             context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': agent_id,
                         'default_customer_parent_id': customer_parent_id,
                         'default_referenced_document': name,
@@ -84,6 +86,7 @@
                         <group>
                             <field name="id" invisible="1"/>
                             <field name="pnr"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="agent_type_id"/>
                             <field name="customer_parent_id"/>

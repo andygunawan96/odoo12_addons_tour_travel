@@ -10,6 +10,7 @@
                     <field name="seq_id"/>
                     <field name="name"/>
                     <field name="type"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="agent_id"/>
                     <field name="bank_id"/>
                     <field name="account_name"/>
@@ -23,6 +24,7 @@
                     </group>
                     <separator/>
                     <group expand="0" string="Group By">
+                        <filter name="group_by_ho_id" string="HO" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                         <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     </group>
                 </search>
@@ -63,6 +65,7 @@
                             <group name="acquirer_left">
                                 <field name="module_id" invisible="1"/>
                                 <field name="module_state" invisible="1"/>
+                                <field name="ho_id" groups="base.group_erp_manager"/>
                                 <field name="agent_id"/>
                                 <field name="type"/>
                                 <field name="online_wallet" attrs="{'invisible': [('type','not in','payment_gateway')]}"/>
@@ -140,6 +143,7 @@
                             <group name="acquirer_left">
                                 <field name="module_id" invisible="1" readonly="1"/>
                                 <field name="module_state" invisible="1" readonly="1"/>
+                                <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                                 <field name="agent_id" readonly="1"/>
                                 <field name="type" readonly="1"/>
                             </group>
@@ -216,6 +220,7 @@
                     <field name="amount"/>
                     <field name="unique_amount"/>
                     <field name="fee_amount"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="agent_id"/>
                     <group>
                         <filter string="All" name="all"/>
@@ -246,6 +251,7 @@
                             <field name="unique_amount" readonly="1"/>
                             <field name="unique_amount_id" readonly="1"/>
                             <field name="fee_amount" readonly="1"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="email" readonly="1"/>
                             <field name="url" readonly="1"/>

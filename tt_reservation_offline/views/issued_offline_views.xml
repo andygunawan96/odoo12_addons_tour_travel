@@ -12,6 +12,7 @@
                     <field name="pnr"/>
                     <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <field name="carrier_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
@@ -51,6 +52,7 @@
                     <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                     <group expand="0" string="Group By">
+                        <filter string="HO" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                         <filter string="Agent" name="agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <filter string="Agent Type" name="agent_type_id" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <filter string="Customer Parent" name="customer_parent_id" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
@@ -87,6 +89,7 @@
                                 context="{
                         'default_res_model': 'tt.reservation.offline',
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': agent_id,
                         'default_agent_type_id': agent_type_id,
                         'default_admin_fee_id': admin_fee_id
@@ -96,6 +99,7 @@
                                 context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': agent_id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
@@ -111,6 +115,7 @@
                                 context="{
                         'default_res_model': res_model,
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': agent_id,
                         'default_customer_parent_id': customer_parent_id,
                         'default_referenced_document': name,
@@ -137,6 +142,7 @@
                                     class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
                                     attrs="{'invisible': [('state_offline', '=', 'done')]}"
                                     context="{'default_agent_id': agent_id,
+                                              'default_ho_id': ho_id,
                                               'default_owner_id': confirm_uid,
                                               'default_target_field_name': 'attachment_ids'}"/>
 <!--                            <button name="print_ho_invoice"-->
@@ -160,6 +166,7 @@
                             <group>
                                 <!--                                ### untuk default value adjustment &ndash;&gt;-->
                                 <field name="res_model" invisible="1"/>
+                                <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                                 <field name="agent_id" readonly="1" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="agent_type_id" readonly="1"/>
                                 <field name="booker_id" required="1"/>

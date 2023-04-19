@@ -52,6 +52,7 @@
                     <button name="set_to_done" string="Set to Done" type="object" groups="base.group_system" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=','reject')]}"/>
                     <button name="set_all_cor_por_email_cc" string="Set All COR/POR Email CC" type="object" groups="base.group_system,base.user_admin"/>
+                    <button name="set_all_default_ho" string="Set All Default HO" type="object" groups="base.group_system"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
                 </header>
                 <sheet>
@@ -193,7 +194,6 @@
             <tree create="false">
                 <field name="name"/>
                 <field name="customer_parent_type_id"/>
-                <field name="ho_id"/>
                 <field name="parent_agent_id"/>
                 <field name="state"/>
             </tree>

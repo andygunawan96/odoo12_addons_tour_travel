@@ -57,6 +57,7 @@
                             <field name="datetimeslot_end"/>
                             <field name="max_book_datetime"/>
                             <field name="destination_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="currency_id" invisible="1"/>
                         </group>

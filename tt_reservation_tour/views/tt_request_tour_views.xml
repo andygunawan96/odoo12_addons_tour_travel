@@ -17,6 +17,7 @@
                     <filter name="group_by_est_departure_time" string="Estimated Departure Time" domain="[]" context="{'group_by':'est_departure_time'}"/>
                     <filter name="group_by_est_return_time" string="Estimated Return Time" domain="[]" context="{'group_by':'est_return_time'}"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
+                    <filter name="group_by_ho_id" string="HO" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                     <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
@@ -56,6 +57,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="booker_id"/>
                             <field name="contact_id"/>

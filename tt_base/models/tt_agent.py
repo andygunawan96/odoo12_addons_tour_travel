@@ -505,7 +505,8 @@ class TtAgent(models.Model):
     def action_show_agent_target_history(self):
         tree_view_id = self.env.ref('tt_base.view_agent_target_tree').id
         form_view_id = self.env.ref('tt_base.view_agent_target_form').id
-        return {
+
+        vals = {
             'name': _('Target History'),
             'type': 'ir.actions.act_window',
             'view_type': 'form',
@@ -518,6 +519,12 @@ class TtAgent(models.Model):
                 'default_currency_id': self.currency_id.id,
             },
         }
+        temp_ho_obj = self.get_ho_parent_agent()
+        if temp_ho_obj:
+            vals['context'].update({
+                'default_ho_id': temp_ho_obj.id
+            })
+        return vals
 
     def get_transaction_api(self,req,context):
         try:
@@ -837,6 +844,15 @@ class TtAgent(models.Model):
         else:
             ## HO NOT FOUND
             raise Exception('HO NOT FOUND')
+
+    #temporary function to set default ho for all agents
+    def set_all_default_ho(self):
+        all_recs = self.search([])
+        for rec in all_recs:
+            if not rec.ho_id:
+                rec.write({
+                    'ho_id': self.env.ref('tt_base.rodex_ho').id
+                })
 
     def get_printout_agent_color(self):
         base_color = '#FFFFFF'

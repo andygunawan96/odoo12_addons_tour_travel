@@ -24,8 +24,10 @@ class HOInvoice(models.TransientModel):
         if self.invoice_id2:
             target_invoice = self.invoice_id2
         else:
+            temp_ho_obj = self.invoice_id1.agent_id.get_ho_parent_agent()
             target_invoice = self.invoice_id1.env['tt.ho.invoice'].create({
                 'booker_id': self.invoice_id1.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.invoice_id1.agent_id.id,
                 'customer_parent_id': self.invoice_id1.customer_parent_id.id,
                 'customer_parent_type_id': self.invoice_id1.customer_parent_type_id.id,

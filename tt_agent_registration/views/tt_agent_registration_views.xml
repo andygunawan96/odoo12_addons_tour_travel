@@ -55,6 +55,7 @@
                         <group>
                             <group>
                                 <field name="create_uid"/>
+                                <field name="ho_id" groups="base.group_erp_manager"/>
                                 <field name="agent_id"/>
                                 <field name="agent_type_id" domain="[('can_be_registered','in',[True])]"/>
                                 <field name="reference_id"/>

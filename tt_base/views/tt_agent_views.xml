@@ -47,6 +47,7 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
+                    <button name="set_all_default_ho" string="Set All Default HO" type="object" groups="base.group_system"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -258,7 +259,6 @@
             <tree>
                 <field name="name"/>
                 <field name="agent_type_id"/>
-                <field name="ho_id"/>
                 <field name="parent_agent_id"/>
                 <field name="reference"/>
             </tree>
@@ -368,6 +368,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="start_date"/>
                             <field name="end_date"/>

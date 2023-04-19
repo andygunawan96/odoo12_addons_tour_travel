@@ -52,6 +52,7 @@
                         <field name="destination_id"/>
                         <field name="selected_count"/>
                         <field name="used_count"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="agent_id"/>
                         <field name="timeslot_type"/>
                         <field name="total_timeslot"/>

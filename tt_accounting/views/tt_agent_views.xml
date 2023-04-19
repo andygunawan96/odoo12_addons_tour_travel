@@ -11,6 +11,7 @@
                         context="{
                         'default_res_model': 'tt.agent',
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
@@ -66,6 +67,7 @@
                         context="{
                         'default_res_model': 'tt.agent',
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,

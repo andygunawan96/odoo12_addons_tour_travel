@@ -275,5 +275,15 @@ class ResUsers(models.Model):
     #         'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
     #     })
 
-
-
+    def set_all_default_ho(self):
+        all_recs = self.search([])
+        for rec in all_recs:
+            if not rec.is_user_template and not rec.ho_id:
+                if rec.agent_id:
+                    ho_obj = rec.agent_id.get_ho_parent_agent()
+                    ho_id = ho_obj and ho_obj.id or self.env.ref('tt_base.rodex_ho').id
+                else:
+                    ho_id = self.env.ref('tt_base.rodex_ho').id
+                rec.write({
+                    'ho_id': ho_id
+                })

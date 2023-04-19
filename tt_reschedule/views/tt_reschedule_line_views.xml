@@ -16,6 +16,7 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="ho_id" invisible="1" groups="base.group_erp_manager"/>
                             <field name="agent_id" invisible="1"/>
                             <field name="agent_type_id" invisible="1"/>
                             <field name="provider_id"/>
