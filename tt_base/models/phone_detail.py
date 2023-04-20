@@ -56,20 +56,21 @@ class PhoneDetail(models.Model):
             ('agent_id','=',self.agent_id.id),
             ('state','=','open')
         ])
-        agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
+        agent_obj = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
         check_number = self.env['payment.acquirer.number'].search(
-            ['|', ('number', 'ilike', self.calling_number[-8:]), ('email', '=', agent.email)])
-        if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent.email and agent.name:
-            ho_obj = self.env.ref('tt_base.rodex_ho')
+            ['|', ('number', 'ilike', self.calling_number[-8:]), ('email', '=', agent_obj.email)])
+        if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent_obj.email and agent_obj.name:
+            ho_obj = agent_obj.get_ho_parent_agent()
             bank_code_list = []
             existing_payment_acquirer_open = self.env['payment.acquirer'].search([('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
             for rec in existing_payment_acquirer_open:
                 bank_code_list.append(rec.bank_id.code)
             data = {
                 'number': self.calling_number[-8:],
-                'email': agent.email,
-                'name': agent.name,
-                'bank_code_list': bank_code_list
+                'email': agent_obj.email,
+                'name': agent_obj.name,
+                'bank_code_list': bank_code_list,
+                'co_ho_id': ho_obj.id
             }
             res = self.env['tt.payment.api.con'].set_VA(data)
             # res = self.env['tt.payment.api.con'].test(data)
@@ -92,15 +93,15 @@ class PhoneDetail(models.Model):
                                 'name': 'Your Virtual Account at %s' % (bank_obj.name),
                             })
                         self.env['payment.acquirer.number'].create({
-                            'agent_id': agent.id,
+                            'agent_id': agent_obj.id,
                             'payment_acquirer_id': existing_payment_acquirer.id,
                             'state': 'open',
                             'number': rec['number'],
-                            'email': agent.email,
+                            'email': agent_obj.email,
                         })
                 else:
                     raise UserError(_("Phone number has been use, please change first phone number"))
-                for rec in agent.phone_ids:
+                for rec in agent_obj.phone_ids:
                     rec.va_create = False
                 self.va_create = True
                 return {
@@ -109,9 +110,9 @@ class PhoneDetail(models.Model):
                 }
             else:
                 raise UserError(_(res['error_msg']))
-        elif not agent.email:
+        elif not agent_obj.email:
             raise UserError(_("Please fill email"))
-        elif not agent.name:
+        elif not agent_obj.name:
             raise UserError(_("Please fill agent name"))
         elif len(check_number) > 0:
             raise UserError(_("Phone number or email has been registered in our system please use other number"))
@@ -120,8 +121,8 @@ class PhoneDetail(models.Model):
 
     def delete_va_number(self):
 
-        agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
-        ho_obj = self.env.ref('tt_base.rodex_ho')
+        agent_obj = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
+        ho_obj = agent_obj.get_ho_parent_agent()
         bank_code_list = []
         existing_payment_acquirer_open = self.env['payment.acquirer'].search(
             [('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
@@ -129,9 +130,9 @@ class PhoneDetail(models.Model):
             bank_code_list.append(rec.bank_id.code)
         data = {
             "number": self.calling_number[-8:],
-            'email': agent.email,
-            'name': agent.name,
-            'bank_code_list': bank_code_list
+            'email': agent_obj.email,
+            'name': agent_obj.name,
+            'bank_code_list': bank_code_list,
         }
         self.va_create = False
         self.env.cr.commit()

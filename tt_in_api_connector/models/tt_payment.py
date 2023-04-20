@@ -263,7 +263,8 @@ class TtPaymentApiCon(models.Model):
             'name': req['name'],
             'email': req['email'],
             'bank_code_list': req['bank_code_list'],
-            'provider': 'espay'
+            'provider': 'espay',
+            'co_ho_id': req['co_ho_id']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va', timeout=600)
 
@@ -272,7 +273,8 @@ class TtPaymentApiCon(models.Model):
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
-            'provider': 'espay'
+            'provider': 'espay',
+            'co_ho_id': req['co_ho_id']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'test')
 
@@ -282,7 +284,8 @@ class TtPaymentApiCon(models.Model):
             'provider': 'espay',
             'email': req['email'],
             'name': req['name'],
-            'bank_code_list': req['bank_code_list']
+            'bank_code_list': req['bank_code_list'],
+            'co_ho_id': req['co_ho_id']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'delete_va')
 
@@ -291,7 +294,8 @@ class TtPaymentApiCon(models.Model):
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
-            'provider': 'espay'
+            'provider': 'espay',
+            'co_ho_id': req['co_ho_id']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_invoice')
 
@@ -300,7 +304,8 @@ class TtPaymentApiCon(models.Model):
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
-            'provider': 'espay'
+            'provider': 'espay',
+            'co_ho_id': req['co_ho_id']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'merchant_info')
 
@@ -323,7 +328,8 @@ class TtPaymentApiCon(models.Model):
     def get_merchant_info(self,req):
         request = {
             'provider': req['provider'],
-            'type': req['type']
+            'type': req['type'],
+            'co_ho_id': req['co_ho_id']
         }
         action = 'merchant_info'
         return self.send_request_to_gateway('%s/payment' % (self.url),

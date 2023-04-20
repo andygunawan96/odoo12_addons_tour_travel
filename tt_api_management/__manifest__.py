@@ -14,6 +14,8 @@ Key Features
     'website': "rodextravel.tours",
     'depends': ['tt_base','tt_engine_pricing'],
     'data': [
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'views/menu.xml',
         'views/api_credential_views.xml',
         'views/api_host_views.xml',
@@ -24,8 +26,7 @@ Key Features
         'views/api_webhook_views.xml',
         'views/api_blackout_views.xml',
         'wizard/user_encrypt_views.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule_data.xml'
+
     ],
     'demo': [],
     'qweb': [],
