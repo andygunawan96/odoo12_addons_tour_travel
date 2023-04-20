@@ -11,7 +11,7 @@
                 <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id"/>
                 <group expand="0" string="Group By">
-                    <filter string="HO" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
                     <filter string="Agent" name="agent_id" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter string="Gender" name="gender" domain="[]" context="{'group_by':'gender'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter string="Marital Status" name="marital_status" domain="[]" context="{'group_by':'marital_status'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
