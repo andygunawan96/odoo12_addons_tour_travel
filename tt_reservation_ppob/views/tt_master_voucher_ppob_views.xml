@@ -44,6 +44,19 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_ids" groups="base.group_erp_manager">
+                                <tree>
+                                    <field name="seq_id"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <group>
+                        <group>
                             <field name="name"/>
                             <field name="code"/>
                             <field name="provider_id"/>

@@ -40,6 +40,12 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_ids" groups="base.group_erp_manager">
+                                <tree>
+                                    <field name="seq_id"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
                             <field name="location_ids">
                                 <tree>
                                     <field name="city_id"/>
