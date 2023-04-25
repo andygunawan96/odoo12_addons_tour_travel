@@ -101,7 +101,7 @@ class MasterActivity(models.Model):
     provider_code = fields.Char('Provider Code', readonly=True)
     can_hold_booking = fields.Boolean('Can Hold Booking', default=False, readonly=True)
     active = fields.Boolean('Active', default=True)
-    ho_ids = fields.Many2many('tt.agent', 'tt_master_activity_ho_agent_rel', 'activity_id', 'ho_id', string='Allowed Head Office(s)')
+    ho_ids = fields.Many2many('tt.agent', 'tt_master_activity_ho_agent_rel', 'activity_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
 
     @api.depends('provider_id')
     @api.onchange('provider_id')
