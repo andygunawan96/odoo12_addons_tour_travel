@@ -63,6 +63,7 @@ class ProviderPricing(models.Model):
 
     line_ids = fields.One2many('tt.provider.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 

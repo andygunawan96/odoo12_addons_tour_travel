@@ -15,7 +15,7 @@ class AgentReportBalance(models.Model):
         return """
         agent.name as agent_name, agent.balance as agent_balance, agent.active as agent_status,
         agent_type.name as agent_type_name,
-        currency.name as currency_name        
+        currency.name as currency_name
         """
         # return """*"""
 
