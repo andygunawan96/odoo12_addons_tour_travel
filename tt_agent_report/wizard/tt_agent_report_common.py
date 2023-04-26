@@ -26,13 +26,27 @@ class AgentReportCommon(models.TransientModel):
     date_to = fields.Date(string='End Date')
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
-    agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
     all_ho = fields.Boolean('All Head Office', default=False)
+
+    def get_agent_domain(self):
+        if self.all_ho or not self.ho_id:
+            dom = []
+        else:
+            dom = [('ho_id','=',self.ho_id.id)]
+        return dom
+
+    agent_id = fields.Many2one('tt.agent', string='Agent', domain=get_agent_domain, default=lambda self: self.env.user.agent_id)
     all_agent = fields.Boolean('All Agent', default=False)
     is_admin = fields.Boolean('Admin User', default=_check_adm_user)
     is_ho = fields.Boolean('Ho User', default=_check_ho_user)
 
     subtitle_report = fields.Char('Subtitle', help='This field use for report subtitle')
+
+    @api.onchange('all_ho', 'ho_id')
+    def _onchange_domain_agent(self):
+        return {'domain': {
+            'agent_id': self.get_agent_domain()
+        }}
 
     @api.onchange('period')
     def _onchage_period(self):

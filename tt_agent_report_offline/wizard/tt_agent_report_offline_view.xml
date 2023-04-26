@@ -5,7 +5,7 @@
         <field name="model">tt.agent.report.offline.wizard</field>
         <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
         <field name="arch" type="xml">
-            <field name="agent_id" position="before">
+            <field name="all_ho" position="before">
                 <field name="provider_type"/>
                 <field name="state" required="1"/>
             </field>
@@ -17,7 +17,7 @@
         <field name="model">tt.agent.report.ho.offline.wizard</field>
         <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
         <field name="arch" type="xml">
-            <field name="agent_id" position="before">
+            <field name="all_ho" position="before">
                 <field name="provider_type"/>
                 <field name="state" required="1"/>
             </field>
