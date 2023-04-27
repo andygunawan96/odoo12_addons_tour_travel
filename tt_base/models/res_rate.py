@@ -25,13 +25,18 @@ class ResRate(models.Model):
         try:
             _objs = self.search([])
             # response = [rec.get_ssr_data() for rec in _objs]
-            currency_rate = [rec.get_currency_rate_data() for rec in _objs]
+            currency_rate = {}
+            for rec in _objs:
+                if rec.ho_id:
+                    if rec.ho_id.seq_id not in currency_rate:
+                        currency_rate[rec.ho_id.seq_id] = []
+                    currency_rate[rec.ho_id.seq_id].append(rec.get_currency_rate_data())
             response = {
                 'currency_rate_data': currency_rate,
             }
             res = Response().get_no_error(response)
         except Exception as e:
-            _logger.error('Error Get SSR API, %s, %s' % (str(e), traceback.format_exc()))
+            _logger.error('Error Get Currency Rate API, %s, %s' % (str(e), traceback.format_exc()))
             res = Response().get_error(str(e), 500)
         return res
 
@@ -85,7 +90,7 @@ class AgentResRate(models.Model):
                 response['agent'][obj.ho_id.seq_id][obj.base_currency_id.name] = obj.get_currency_rate_data()
             res = Response().get_no_error(response)
         except Exception as e:
-            _logger.error('Error Get SSR API, %s, %s' % (str(e), traceback.format_exc()))
+            _logger.error('Error Get Agent Rate API, %s, %s' % (str(e), traceback.format_exc()))
             res = Response().get_error(str(e), 500)
         return res
 
