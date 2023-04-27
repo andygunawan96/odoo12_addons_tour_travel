@@ -113,7 +113,7 @@ class ApiManagement(models.Model):
                 _co_user = self.env['res.users'].sudo().browse(co_uid)
 
                 if _co_user.is_banned:
-                    additional_msg = ""
+                    addtional_msg = ""
                     try:
                         addtional_msg = 'Until %s.' % datetime.strftime(
                             self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
@@ -129,7 +129,7 @@ class ApiManagement(models.Model):
                     raise Exception('User Role is not allowed.')
                 _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
                 values.update(_co_user.get_credential(prefix='co_'))
-            api_cred_obj = self.search([('api_key','=', data['api_key'])])
+            api_cred_obj = self.search([('api_key','=', data['api_key']), ('user_id','=', uid)])
             if api_cred_obj:
                 if api_cred_obj.user_id.agent_id.ho_id.seq_id != _user.agent_id.ho_id.seq_id:
                     raise Exception('Co User and Api Key is not match')
