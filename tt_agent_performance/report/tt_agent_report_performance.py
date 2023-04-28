@@ -32,9 +32,11 @@ class AgentReportPerformance(models.Model):
         """
 
     @staticmethod
-    def _where(date_from, date_to, agent_type):
+    def _where(date_from, date_to, agent_type, ho_id):
         where = """sales.create_date >= '{}' AND sales.create_date <= '{}' """.format(date_from, date_to)
         where += """AND sales.state != 'cancel'"""
+        if ho_id:
+            where += """ AND sales.ho_id = """ + str(ho_id)
         if agent_type != 'all':
             where += """ AND agent_type.code = '{}'""".format(agent_type)
         return where
@@ -48,8 +50,8 @@ class AgentReportPerformance(models.Model):
     def _report_title(data_form):
         data_form['title'] = 'Performance Report: ' + data_form['subtitle']
 
-    def _lines(self, date_from, date_to, agent_type):
-        query = "SELECT {} FROM {} WHERE {} ORDER BY {}".format(self._select(), self._from(), self._where(date_from, date_to, agent_type), self._order_by())
+    def _lines(self, date_from, date_to, agent_type, ho_id):
+        query = "SELECT {} FROM {} WHERE {} ORDER BY {}".format(self._select(), self._from(), self._where(date_from, date_to, agent_type, ho_id), self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -62,17 +64,18 @@ class AgentReportPerformance(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d')
 
-    def _get_lines_data(self, date_from, date_to, agent_type):
-        lines = self._lines(date_from, date_to, agent_type)
+    def _get_lines_data(self, date_from, date_to, agent_type, ho_id):
+        lines = self._lines(date_from, date_to, agent_type, ho_id)
         return lines
 
     def _prepare_valued(self, data_form):
         date_from = data_form['date_from']
         date_to = data_form['date_to']
+        ho_id = data_form['ho_id']
         if not data_form['state']:
             data_form['state'] = 'all'
         agent_type = data_form['agent_type']
-        line = self._get_lines_data(date_from, date_to, agent_type)
+        line = self._get_lines_data(date_from, date_to, agent_type, ho_id)
         self._report_title(data_form)
         return {
             'lines': line,

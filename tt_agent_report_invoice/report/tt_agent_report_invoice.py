@@ -54,7 +54,7 @@ class AgentReportInvoice(models.Model):
     ]
 
     @staticmethod
-    def _where(date_from, date_to, agent_id, state):
+    def _where(date_from, date_to, agent_id, ho_id, state):
         where = """invoice.create_date >= '%s' and invoice.create_date <= '%s'""" % (date_from, date_to)
         if state == 'draft':
             where += """ AND invoice.state IN ('draft')"""
@@ -66,6 +66,8 @@ class AgentReportInvoice(models.Model):
             where += """ AND invoice.state IN ('bill2')"""
         if state == 'cancel':
             where += """ AND invoice.state IN ('cancel')"""
+        if ho_id:
+            where += """ AND invoice.ho_id = %s """ % ho_id
         if agent_id:
             where += """ AND invoice.agent_id = %s """ % agent_id
         return where
@@ -74,7 +76,7 @@ class AgentReportInvoice(models.Model):
     def _order_by():
         return """ invoice.create_date """
 
-    def _lines(self, date_from, date_to, agent_id, state):
+    def _lines(self, date_from, date_to, agent_id, ho_id, state):
         # SELECT
         query = 'SELECT ' + self._select()
 
@@ -82,7 +84,7 @@ class AgentReportInvoice(models.Model):
         query += 'FROM ' + self._from()
 
         # WHERE
-        query += 'WHERE ' + self._where(date_from, date_to, agent_id, state)
+        query += 'WHERE ' + self._where(date_from, date_to, agent_id, ho_id, state)
 
         #ORDER BY
         query += 'ORDER BY ' + self._order_by()
@@ -106,8 +108,8 @@ class AgentReportInvoice(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
 
-    def _get_lines_data(self, date_from, date_to, agent_id, state):
-        lines = self._lines(date_from, date_to, agent_id, state)
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, state):
+        lines = self._lines(date_from, date_to, agent_id, ho_id, state)
         lines = self._convert_data(lines)
         # lines = []
         # if state != 'all':
@@ -133,10 +135,11 @@ class AgentReportInvoice(models.Model):
         if not data_form['state']:
             data_form['state'] = 'all'
         agent_id = data_form['agent_id']
+        ho_id = data_form['ho_id']
         state = data_form['state']
         # provider_type = data_form['provider_type']
         # line = self._get_lines_data(date_from, date_to, agent_id, provider_type, state)
-        line = self._get_lines_data(date_from, date_to, agent_id, state)
+        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, state)
         # line.sort(key=lambda x: x['invoice_id'])
         self._report_title(data_form)
         return {
