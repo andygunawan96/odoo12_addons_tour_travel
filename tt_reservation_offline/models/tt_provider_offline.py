@@ -539,6 +539,14 @@ class ProviderOffline(models.Model):
         for line in self.booking_id.line_ids:
             if line.pnr == self.pnr and line.carrier_id:
                 carrier_code = line.carrier_id.code
+
+        agent_obj = self.booking_id.agent_id
+        ho_agent_obj = agent_obj.get_ho_parent_agent()
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
         rule_param = {
             'provider': self.provider_id.code,
             'carrier_code': carrier_code,
@@ -546,6 +554,7 @@ class ProviderOffline(models.Model):
             'segment_count': segment_count,
             'show_commission': True,
             'pricing_datetime': '',
+            'context': context
         }
         repr_tool.calculate_pricing(**rule_param)
 
@@ -962,6 +971,14 @@ class ProviderOffline(models.Model):
             })
         repr_tool.add_ticket_fare(scs_dict)
 
+        agent_obj = self.booking_id.agent_id
+        ho_agent_obj = agent_obj.get_ho_parent_agent()
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
+
         rule_param = {
             'provider': self.provider_id.code,
             'carrier_code': carrier_code,
@@ -969,6 +986,7 @@ class ProviderOffline(models.Model):
             'segment_count': segment_count,
             'show_commission': True,
             'pricing_datetime': '',
+            'context': context
         }
         repr_tool.calculate_pricing(**rule_param)
 

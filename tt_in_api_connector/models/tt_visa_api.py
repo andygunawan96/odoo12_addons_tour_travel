@@ -10,15 +10,15 @@ class TtVisaApiCon(models.Model):
     def action_call(self, table_obj, action, data, context):
 
         if action == 'get_config_api':
-            res = self.env['tt.reservation.visa.pricelist'].get_config_api()
+            res = self.env['tt.reservation.visa.pricelist'].get_config_api(context)
         elif action == 'get_inventory_api':
             res = self.env['tt.reservation.visa.pricelist'].get_inventory_api()
         elif action == 'get_inventory_detail_api':
             res = self.env['tt.reservation.visa.pricelist'].get_product_detail_api(data)
         elif action == 'search_api':
-            res = self.env['tt.reservation.visa.pricelist'].search_api(data)
+            res = self.env['tt.reservation.visa.pricelist'].search_api(data, context)
         elif action == 'availability_api':
-            res = self.env['tt.reservation.visa.pricelist'].availability_api(data)
+            res = self.env['tt.reservation.visa.pricelist'].availability_api(data, context)
         elif action == 'create_booking_visa_api':
             res = table_obj.create_booking_visa_api(data, context)
         elif action == 'product_sync_webhook_nosend':

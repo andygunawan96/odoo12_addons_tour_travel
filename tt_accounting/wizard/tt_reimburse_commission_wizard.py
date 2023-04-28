@@ -175,6 +175,14 @@ class ReimburseCommissionWizard(models.TransientModel):
                 ycd_scs_list = []
                 rac_amount_total = 0
                 user_info = self.env['tt.agent'].sudo().get_agent_level(rec.booking_id.agent_id.id)
+
+                agent_obj = rec.booking_id.agent_id
+                ho_agent_obj = agent_obj.get_ho_parent_agent()
+
+                context = {
+                    "co_ho_id": ho_agent_obj.id,
+                    "co_ho_seq_id": ho_agent_obj.seq_id
+                }
                 if adt_count > 0:
                     if self.commission_tier_ids:
                         tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
@@ -232,7 +240,8 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'is_commission': True,
                         'is_retrieved': False,
                         'pricing_date': '',
-                        'show_upline_commission': True
+                        'show_upline_commission': True,
+                        'context': context
                     })
                     total_tier_price += tier_nta_amount['ADT']
                 if chd_count > 0:
@@ -292,7 +301,8 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'is_commission': True,
                         'is_retrieved': False,
                         'pricing_date': '',
-                        'show_upline_commission': True
+                        'show_upline_commission': True,
+                        'context': context
                     })
                     total_tier_price += tier_nta_amount['CHD']
                 if inf_count > 0:
@@ -352,7 +362,8 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'is_commission': True,
                         'is_retrieved': False,
                         'pricing_date': '',
-                        'show_upline_commission': True
+                        'show_upline_commission': True,
+                        'context': context
                     })
                     total_tier_price += tier_nta_amount['INF']
                 if ycd_count > 0:
@@ -412,7 +423,8 @@ class ReimburseCommissionWizard(models.TransientModel):
                         'is_commission': True,
                         'is_retrieved': False,
                         'pricing_date': '',
-                        'show_upline_commission': True
+                        'show_upline_commission': True,
+                        'context': context
                     })
                     total_tier_price += tier_nta_amount['YCD']
                 commission_list = adt_scs_list + chd_scs_list + inf_scs_list + ycd_scs_list
@@ -542,6 +554,15 @@ class ReimburseCommissionWizard(models.TransientModel):
                     'service_charges': []
                 }
                 rac_amount_total = 0
+
+                agent_obj = rec.booking_id.agent_id
+                ho_agent_obj = agent_obj.get_ho_parent_agent()
+
+                context = {
+                    "co_ho_id": ho_agent_obj.id,
+                    "co_ho_seq_id": ho_agent_obj.seq_id
+                }
+
                 if adt_count > 0:
                     if self.commission_tier_ids:
                         tier_list = self.commission_tier_ids.sorted(key=lambda r: r.lower_limit, reverse=True)
@@ -730,6 +751,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                     'segment_count': 1,
                     'show_commission': True,
                     'pricing_datetime': '',
+                    'context': context
                 }
                 repr_tool.calculate_pricing(**rule_param)
                 commission_list = sc_dict['service_charges']

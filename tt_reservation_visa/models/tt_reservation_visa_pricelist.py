@@ -317,10 +317,10 @@ class VisaPricelist(models.Model):
     #         if self.search(['reference_code','=',self.reference_code]):
     #             raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
 
-    def get_config_api(self):
+    def get_config_api(self, context):
         try:
             visa = {}
-            for rec in self.sudo().search([]):
+            for rec in self.sudo().search([('ho_id.seq_id','=',context['co_ho_seq_id'])]):
                 if not visa.get(rec.country_id.name): #kalau ngga ada bikin dict
                     visa[rec.country_id.name] = [] #append country
                 count = 0
@@ -420,10 +420,10 @@ class VisaPricelist(models.Model):
             return ERR.get_error(500)
         return res
 
-    def search_api(self, data):
+    def search_api(self, data, context):
         try:
             list_of_visa = []
-            for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate']),('reference_code','!=','')])): #agar kalau duplicate reference kosong tidak tampil (harus diisi manual / compute reference code)
+            for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate']),('reference_code','!=',''), ('ho_id.seq_id', '=', context['co_ho_seq_id'])])): #agar kalau duplicate reference kosong tidak tampil (harus diisi manual / compute reference code)
                 requirement = []
                 attachments = []
                 for rec1 in rec.requirement_ids:
@@ -485,11 +485,11 @@ class VisaPricelist(models.Model):
             return ERR.get_error(500)
         return res
 
-    def availability_api(self, data):
+    def availability_api(self, data, context):
         try:
             list_of_availability = []
             for idx, rec in enumerate(data['reference_code']):
-                if self.sudo().search([('reference_code', '=', rec)]):
+                if self.sudo().search([('reference_code', '=', rec),('ho_id.seq_id','=', context['co_ho_seq_id'])]):
                     list_of_availability.append(True)
                 else:
                     list_of_availability.append(False)

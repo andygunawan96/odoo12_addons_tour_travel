@@ -1501,6 +1501,14 @@ class IssuedOffline(models.Model):
                 segment_count = len(self.line_ids)
                 route_count = len(pnr_list)
 
+        agent_obj = self.agent_id
+        ho_agent_obj = agent_obj.get_ho_parent_agent()
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
+
         for rec in pnr_list:
             prov_code = ''
             carrier_code = ''
@@ -1553,6 +1561,7 @@ class IssuedOffline(models.Model):
                 'segment_count': segment_count,
                 'show_commission': True,
                 'pricing_datetime': '',
+                'context': context
             }
             repr_tool.calculate_pricing(**rule_param)
         return scs_dict['service_charges']

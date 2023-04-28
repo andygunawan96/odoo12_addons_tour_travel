@@ -1139,8 +1139,13 @@ class ProviderPricing(object):
         #     self.do_config()
         if not self.data:
             return {}
-
-        for rec_idx, rec in enumerate(self.data['provider_pricing_list']):
+        provider_pricing_list = []
+        if kwargs['context'].get('co_ho_id'):
+            if self.data.get(str(kwargs['context']['co_ho_id'])):
+                provider_pricing_list = self.data[str(kwargs['context']['co_ho_id'])]['provider_pricing_list']
+            else:
+                provider_pricing_list = []
+        for rec_idx, rec in enumerate(provider_pricing_list):
             if rec['state'] == 'disable':
                 continue
 
@@ -1552,7 +1557,13 @@ class AgentPricing(object):
         if not self.data:
             return {}
 
-        for rec_idx, rec in enumerate(self.data['agent_pricing_list']):
+        agent_pricing_data = []
+        if kwargs['context'].get('co_ho_id'):
+            if self.data.get(str(kwargs['context']['co_ho_id'])):
+                agent_pricing_data = self.data[str(kwargs['context']['co_ho_id'])]['agent_pricing_list']
+            else:
+                agent_pricing_data = []
+        for rec_idx, rec in enumerate(agent_pricing_data):
             if rec['state'] == 'disable':
                 continue
 
@@ -2530,7 +2541,14 @@ class AgentCommission(object):
         if not self.data:
             return {}
 
-        for rec_idx, rec in enumerate(self.data['agent_commission_list']):
+        agent_commission_data = []
+        if kwargs['context'].get('co_ho_id'):
+            if self.data.get(str(kwargs['context']['co_ho_id'])):
+                agent_commission_data = self.data[str(kwargs['context']['co_ho_id'])]['agent_commission_list']
+            else:
+                agent_commission_data = []
+
+        for rec_idx, rec in enumerate(agent_commission_data):
             if rec['state'] == 'disable':
                 continue
 
@@ -3209,6 +3227,7 @@ class RepricingToolsV2(object):
             'tour_code_list': tour_code_list,
             'pricing_datetime': pricing_datetime,
             'departure_date_list': departure_date_list,
+            'context': kwargs.get('context', {})
         }
         rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_type), str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id)] + class_of_service_list + charge_code_list + tour_code_list
         rule_key = ''.join(rule_key_list)
