@@ -19,7 +19,7 @@ class AccountingConnectorITM(models.Model):
 
     # cuma support airline for now
     def add_sales_order(self, vals):
-        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in ITM Accounting Setup!')
 
@@ -48,16 +48,16 @@ class AccountingConnectorITM(models.Model):
         return res
 
     def request_parser(self, request):
-        live_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'live_id')], limit=1)
+        live_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'live_id')], limit=1)
         if not live_id_obj:
             raise Exception('Please provide a variable with the name "live_id" in ITM Accounting Setup!')
-        trans_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'trans_id')], limit=1)
+        trans_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'trans_id')], limit=1)
         if not trans_id_obj:
             raise Exception('Please provide a variable with the name "trans_id" in ITM Accounting Setup!')
-        customer_code_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'customer_code')], limit=1)
+        customer_code_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'customer_code')], limit=1)
         if not customer_code_obj:
             raise Exception('Please provide a variable with the name "customer_code" in ITM Accounting Setup!')
-        item_key_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'item_key')], limit=1)
+        item_key_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'item_key')], limit=1)
         if not item_key_obj:
             raise Exception('Please provide a variable with the name "item_key" in ITM Accounting Setup!')
 
@@ -80,7 +80,7 @@ class AccountingConnectorITM(models.Model):
         else:
             customer_code = int(customer_code_obj.variable_value)
         if request['category'] == 'reservation':
-            include_service_taxes = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'is_include_service_taxes')], limit=1)
+            include_service_taxes = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'is_include_service_taxes')], limit=1)
             pnr_list = request.get('pnr') and request['pnr'].split(', ') or []
             provider_list = []
             supplier_list = []
@@ -92,7 +92,7 @@ class AccountingConnectorITM(models.Model):
                         temp_product_search = ('variable_name', '=', 'domestic_product')
                     else:
                         temp_product_search = ('variable_name', '=', 'international_product')
-                    sector_based_product = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), temp_product_search], limit=1)
+                    sector_based_product = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), temp_product_search], limit=1)
                     if sector_based_product:
                         sup_search_param.append(('product_code', '=', sector_based_product[0].variable_value))
 
@@ -154,8 +154,8 @@ class AccountingConnectorITM(models.Model):
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
                         }
 
-                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
-                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
                             _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
                             vat = 0
@@ -239,8 +239,8 @@ class AccountingConnectorITM(models.Model):
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
                         }
 
-                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
-                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                        vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
                             _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
                             vat = 0
@@ -307,8 +307,8 @@ class AccountingConnectorITM(models.Model):
                             "Nationality": pax['nationality_code']
                         })
 
-                    vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
-                    vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                    vat_var_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                    vat_perc_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                     if not vat_var_obj or not vat_perc_obj:
                         _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
                         vat = 0

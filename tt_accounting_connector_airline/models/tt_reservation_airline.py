@@ -17,11 +17,13 @@ class TtReservationAirline(models.Model):
         try:
             res = []
             if self.agent_id.is_sync_to_acc:
+                ho_obj = self.agent_id.get_ho_parent_agent()
                 for ven in vendor_list:
-                    data_exist = self.env['tt.accounting.queue'].search([('res_model', '=', self._name),
-                                                                         ('res_id', '=', self.id),
-                                                                         ('action', '=', func_action),
-                                                                         ('accounting_provider', '=', ven)])
+                    search_params = [('res_model', '=', self._name), ('res_id', '=', self.id),
+                                     ('action', '=', func_action), ('accounting_provider', '=', ven)]
+                    if ho_obj:
+                        search_params.append(('ho_id', '=', ho_obj.id))
+                    data_exist = self.env['tt.accounting.queue'].search(search_params)
                     if data_exist:
                         new_obj = data_exist[0]
                     else:
@@ -30,7 +32,8 @@ class TtReservationAirline(models.Model):
                             'transport_type': ACC_TRANSPORT_TYPE.get(self._name, ''),
                             'action': func_action,
                             'res_model': self._name,
-                            'res_id': self.id
+                            'res_id': self.id,
+                            'ho_id': ho_obj and ho_obj.id or False
                         })
                     res.append(new_obj.to_dict())
             return ERR.get_no_error(res)
@@ -42,8 +45,11 @@ class TtReservationAirline(models.Model):
     def action_issued_airline(self,data):
         super(TtReservationAirline, self).action_issued_airline(data)
         temp_post = self.posted_acc_actions or ''
-        setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+        ho_obj = self.agent_id and self.agent_id.get_ho_parent_agent() or False
+        search_params = [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)]
+        if ho_obj:
+            search_params.append(('ho_id', '=', ho_obj.id))
+        setup_list = self.env['tt.accounting.setup'].search(search_params)
         if setup_list:
             vendor_list = []
             for rec in setup_list:
@@ -63,8 +69,11 @@ class TtReservationAirline(models.Model):
         super(TtReservationAirline, self).action_reverse_airline(context)
         if old_state == 'issued':
             temp_post = self.posted_acc_actions or ''
-            setup_list = self.env['tt.accounting.setup'].search(
-                [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+            ho_obj = self.agent_id and self.agent_id.get_ho_parent_agent() or False
+            search_params = [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)]
+            if ho_obj:
+                search_params.append(('ho_id', '=', ho_obj.id))
+            setup_list = self.env['tt.accounting.setup'].search(search_params)
             if setup_list:
                 vendor_list = []
                 for rec in setup_list:
@@ -82,8 +91,11 @@ class TtReservationAirline(models.Model):
     def update_cost_service_charge_airline_api(self, req, context):
         res = super(TtReservationAirline, self).update_cost_service_charge_airline_api(req, context)
         temp_post = self.posted_acc_actions or ''
-        setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+        ho_obj = self.agent_id and self.agent_id.get_ho_parent_agent() or False
+        search_params = [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)]
+        if ho_obj:
+            search_params.append(('ho_id', '=', ho_obj.id))
+        setup_list = self.env['tt.accounting.setup'].search(search_params)
         if setup_list:
             vendor_list = []
             for rec in setup_list:
@@ -102,8 +114,11 @@ class TtReservationAirline(models.Model):
     def split_reservation_airline_api_1(self, data, context):
         res = super(TtReservationAirline, self).split_reservation_airline_api_1(data, context)
         temp_post = self.posted_acc_actions or ''
-        setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+        ho_obj = self.agent_id and self.agent_id.get_ho_parent_agent() or False
+        search_params = [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)]
+        if ho_obj:
+            search_params.append(('ho_id', '=', ho_obj.id))
+        setup_list = self.env['tt.accounting.setup'].search(search_params)
         if setup_list:
             vendor_list = []
             for rec in setup_list:
@@ -125,8 +140,11 @@ class TtReservationAirline(models.Model):
         for rec in transaction_list:
             temp_post = rec.posted_acc_actions or ''
             if 'reconcile' not in temp_post.split(',') and 'transaction_batch' not in temp_post.split(','):
-                setup_list = self.env['tt.accounting.setup'].search(
-                    [('cycle', '=', 'per_batch'), ('is_recon_only', '=', False), ('is_send_airline', '=', True)])
+                ho_obj = rec.agent_id and rec.agent_id.get_ho_parent_agent() or False
+                search_params = [('cycle', '=', 'per_batch'), ('is_recon_only', '=', False), ('is_send_airline', '=', True)]
+                if ho_obj:
+                    search_params.append(('ho_id', '=', ho_obj.id))
+                setup_list = self.env['tt.accounting.setup'].search(search_params)
                 if setup_list:
                     vendor_list = []
                     for rec2 in setup_list:
