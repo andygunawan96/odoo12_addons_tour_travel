@@ -190,7 +190,7 @@ class TtReservation(models.Model):
             if vals_list.get('agent_id'):
                 agent_id = self.env['tt.agent'].browse(vals_list['agent_id'])
                 if agent_id:
-                    vals_list['ho_id'] = agent_id.ho_id.id
+                    vals_list['ho_id'] = agent_id.get_ho_parent_agent().id
         except:
             pass
         return super(TtReservation, self).create(vals_list)
