@@ -679,6 +679,11 @@ class TtVoucherDetail(models.Model):
             # raise error
             return ERR.get_error(additional_message="Voucher doesn't exist")
 
+        #### check voucher head office 2 may 2023 IVAN ####
+        if voucher_detail:
+            if voucher_detail.voucher_id.ho_id.id != context.get('co_ho_id'):
+                return ERR.get_error(additional_message="Voucher doesn't exist")
+        ##############
         ######################
         # check to see if voucher is eligible
         #####################
@@ -1344,7 +1349,13 @@ class TtVoucherDetail(models.Model):
             'provider': result_array,
             'is_agent': voucher_detail.is_agent
         }
-
+        ### check jika voucher bisa di pakai tapi provider tidak sesuai sehingga potongan voucher=0 ###
+        voucher_can_be_use = False
+        for provider_dict in result['provider']:
+            if provider_dict['able_to_use']:
+                voucher_can_be_use = True
+        if not voucher_can_be_use:
+            return ERR.get_error(additional_message="Voucher can't be use")
         ##TAMBAHKAN SERVICE CHARGE DISCOUNT KE RESERVASI
         if data.get('order_number'):
             book_obj = self.env['tt.reservation.%s' % (data['provider_type'])].search([('name','=',data['order_number'])],limit=1)
