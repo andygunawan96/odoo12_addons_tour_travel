@@ -6,6 +6,7 @@
         <field name="inherit_id" ref="base.ir_mail_server_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="is_gmail"/>
             </xpath>
         </field>

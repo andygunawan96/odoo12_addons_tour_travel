@@ -22,10 +22,9 @@ class TtPublicHoliday(models.Model):
         end_date = data.get('end_date') and data['end_date'] or data['start_date']
         res = []
         if context.get('co_ho_seq_id'):
-            ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
             res = [{'date': rec.date, 'name': rec.name} for rec in self.sudo().search([('date', '>=', start_date), ('date', '<=', end_date),
                                                                     ('country_id', '=', int(data['country_id'])),
-                                                                    ('active', '=', True), ('ho_id', '=', ho_agent_obj)])]
+                                                                    ('active', '=', True), ('ho_id.id', '=', context['co_ho_id'])])]
         return {
             'error_code': 0,
             'error_msg': '',

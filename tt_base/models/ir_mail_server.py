@@ -21,6 +21,7 @@ class IrMailServer(models.Model):
     smtp_pass = fields.Char(string='Password', help="Optional password for SMTP authentication",
                             groups='base.group_erp_manager,tt_base.group_user_data_level_3')
     is_gmail = fields.Boolean('Gmail Oauth2')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     def _check_folder_exists(self, folder_path):
         if not os.path.exists(folder_path):
@@ -28,17 +29,28 @@ class IrMailServer(models.Model):
 
     def set_email_from_gateway(self, data):
         self._check_folder_exists(def_folder)
-
-        mail_server = self.search([('smtp_user', '=', data['email'])], limit=1)
+        dom = [('smtp_user', '=', data['email'])]
+        if data['ho_id']:
+            dom.append(('ho_id.id','=', data['ho_id']))
+        mail_server = self.search(dom, limit=1)
         if not mail_server:
-            self.create({
+            data_create = {
                 "name": data['email'],
                 "smtp_user": data['email'],
                 "is_gmail": True,
                 "smtp_host": "Google Mail",
                 "smtp_port": "443",
                 "smtp_encryption": "none"
-            })
+            }
+            if data['ho_id']:
+                data_create.update({
+                    'ho_id': data['ho_id']
+                })
+            mail_server = self.create(data_create)
+        if data['ho_id']:
+            agent_obj = self.env['tt.agent'].browse(data['ho_id'])
+            if agent_obj and not agent_obj.email_server_id:
+                agent_obj.email_server_id.id = mail_server.id
 
         ## JSON CREDS
         _file = open("%s/%s.json" % (def_folder, data['email']), 'w+')
