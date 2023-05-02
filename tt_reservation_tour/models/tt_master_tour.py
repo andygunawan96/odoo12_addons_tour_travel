@@ -913,7 +913,8 @@ class MasterTour(models.Model):
             search_params = [('state', '=', 'confirm')]
             if search_request.get('tour_query'):
                 search_params.append(('name', 'ilike', search_request['tour_query']))
-
+            if context:
+                search_params.append(('ho_id', '=', context['co_ho_id']))
             master_tour_list = self.env['tt.master.tour'].search(search_params)
             for rec in master_tour_list:
                 location_list = []
@@ -1037,7 +1038,10 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_params = [('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)]
+            if context:
+                search_params.append(('ho_id','=',context['co_ho_id']))
+            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1067,7 +1071,10 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_params = [('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)]
+            if context:
+                search_params.append(('ho_id','=',context['co_ho_id']))
+            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1405,10 +1412,10 @@ class MasterTour(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1025)
 
-    def get_config_by_api(self):
+    def get_config_by_api(self, context):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            self.env.cr.execute("""SELECT cnt.id FROM tt_tour_location_rel tour_loc_rel LEFT JOIN tt_master_tour mst_tour ON tour_loc_rel.product_id = mst_tour.id LEFT JOIN tt_tour_master_locations tour_loc ON tour_loc_rel.location_id = tour_loc.id LEFT JOIN res_country cnt ON tour_loc.country_id = cnt.id WHERE mst_tour.state IN ('confirm') AND mst_tour.active = True GROUP BY cnt.id;""")
+            self.env.cr.execute("""SELECT cnt.id FROM tt_tour_location_rel tour_loc_rel LEFT JOIN tt_master_tour mst_tour ON tour_loc_rel.product_id = mst_tour.id LEFT JOIN tt_tour_master_locations tour_loc ON tour_loc_rel.location_id = tour_loc.id LEFT JOIN res_country cnt ON tour_loc.country_id = cnt.id WHERE mst_tour.state IN ('confirm') AND mst_tour.active = True AND mst_tour.ho_id = %s GROUP BY cnt.id;""" % context['co_ho_id'])
             tour_loc_countries = self.env.cr.dictfetchall()
             selected_countries = []
             for cnt in tour_loc_countries:

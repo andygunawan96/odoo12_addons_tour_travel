@@ -52,7 +52,7 @@ class TtMasterTourApiCon(models.Model):
     def action_call(self,table_obj,action,data,context):
 
         if action == 'get_config':
-            res = table_obj.get_config_by_api()
+            res = table_obj.get_config_by_api(context)
         elif action == 'search':
             res = table_obj.search_tour_api(data,context)
         elif action == 'update_availability':
