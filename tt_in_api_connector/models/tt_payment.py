@@ -159,7 +159,7 @@ class TtPaymentApiCon(models.Model):
             # payment_acq = self.env['payment.acquirer.number'].search([('number', '=', data['virtual_account'])])
         elif action == 'get_amount':
             if data['provider_type'] != 'top.up':
-                book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked'])])
+                book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['booked','halt_booked']), ('ho_id','=', context['co_ho_id'])])
                 if book_obj:
                     amount = book_obj.total - book_obj.total_discount
                     phone_number = "".join(book_obj.contact_phone.split(' - '))
@@ -168,7 +168,7 @@ class TtPaymentApiCon(models.Model):
                     email = book_obj.contact_email
 
             else:
-                book_obj = self.env['tt.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['confirm', 'request'])])
+                book_obj = self.env['tt.%s' % data['provider_type']].search([('name', '=', data['order_number']), ('state', 'in', ['confirm', 'request']), ('ho_id','=', context['co_ho_id'])])
                 if book_obj:
                     amount = book_obj.total_with_fees ## karena harga amount + fees * 2 agar sama dengan frontend
                     for phone_obj in book_obj.agent_id.phone_ids:
@@ -179,7 +179,7 @@ class TtPaymentApiCon(models.Model):
                     name = book_obj.request_uid.name
                     email = book_obj.request_uid.email
             if book_obj:
-                payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number'])])
+                payment_acq_number_obj = self.env['payment.acquirer.number'].search([('number', '=', data['payment_acq_number']), ('ho_id','=', context['co_ho_id'])])
                 if payment_acq_number_obj:
                     amount += payment_acq_number_obj.fee_amount
                     different_time = payment_acq_number_obj.time_limit - datetime.now()
@@ -212,7 +212,7 @@ class TtPaymentApiCon(models.Model):
                 res = ERR.get_error(additional_message='Reservation Not Found')
         elif action == 'top_up': ##b2c auto top up different price
             _logger.info("##############STARTING AUTO TOP UP B2C CLOSED PAYMENT##############")
-            pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close','done'])])
+            pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', data['order_number']), ('state', 'in', ['close','done']), ('ho_id','=', context['co_ho_id'])])
             agent_id = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])]).agent_id
             if not self.env['tt.payment'].search([('reference', '=', data['payment_ref'])]) and pay_acq_num and agent_id:
                 # topup
@@ -242,13 +242,13 @@ class TtPaymentApiCon(models.Model):
             _logger.info("##############ERROR AUTO TOP UP B2C CLOSED PAYMENT##############")
             return ERR.get_error(500)
         elif action == 'get_payment_acquirer_payment_gateway':
-            res = self.env['payment.acquirer.number'].create_payment_acq_api(data)
+            res = self.env['payment.acquirer.number'].create_payment_acq_api(data, context)
         elif action == 'get_payment_acquirer_payment_gateway_frontend':
-            res = self.env['payment.acquirer.number'].get_payment_acq_api(data)
+            res = self.env['payment.acquirer.number'].get_payment_acq_api(data, context)
         elif action == 'set_va_number':
-            res = self.env['payment.acquirer.number'].set_va_number_api(data)
+            res = self.env['payment.acquirer.number'].set_va_number_api(data, context)
         elif action == 'set_va_number_fail':
-            res = self.env['payment.acquirer.number'].set_va_number_fail_api(data)
+            res = self.env['payment.acquirer.number'].set_va_number_fail_api(data, context)
         elif action == 'use_pnr_quota':
             res = self.env['tt.reservation'].use_pnr_quota_api(data,context)
         elif action == 'set_sync_reservation':
