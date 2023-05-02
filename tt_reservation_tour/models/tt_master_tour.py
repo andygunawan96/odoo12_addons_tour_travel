@@ -913,7 +913,7 @@ class MasterTour(models.Model):
             search_params = [('state', '=', 'confirm')]
             if search_request.get('tour_query'):
                 search_params.append(('name', 'ilike', search_request['tour_query']))
-            if context:
+            if context.get('co_ho_id'):
                 search_params.append(('ho_id', '=', context['co_ho_id']))
             master_tour_list = self.env['tt.master.tour'].search(search_params)
             for rec in master_tour_list:
@@ -1175,7 +1175,10 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_params = [('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)]
+            if context.get('co_ho_id'):
+                search_params.append(('ho_id', '=', int(context['co_ho_id'])))
+            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
