@@ -793,6 +793,9 @@ class MasterActivity(models.Model):
 
             sql_query = 'select themes.* from tt_master_activity themes left join tt_activity_location_rel locrel on locrel.product_id = themes.id left join tt_activity_master_locations loc on loc.id = locrel.location_id '
 
+            if context.get('co_ho_id'):
+                sql_query += 'left join tt_master_activity_ho_agent_rel act_ho_rel on act_ho_rel.activity_id = themes.id '
+
             if category:
                 sql_query += 'left join tt_activity_category_rel catrel on catrel.activity_id = themes.id '
 
@@ -805,6 +808,9 @@ class MasterActivity(models.Model):
                 sql_query += "themes.name ilike '" + str(query) + "' "
             else:
                 sql_query += 'themes.active = True and themes."basePrice" > 0 '
+
+            if context.get('co_ho_id'):
+                sql_query += 'and act_ho_rel.ho_id = ' + str(context['co_ho_id']) + ' '
 
             if type_id:
                 sql_query += 'and typerel.type_id = ' + str(type_id) + ' '
@@ -1025,6 +1031,8 @@ class MasterActivity(models.Model):
             if not activity_id:
                 raise RequestException(1022, additional_message='Activity not found.')
             activity_id = activity_id[0]
+            if context.get('co_ho_id') and int(context['co_ho_id']) not in activity_id.ho_ids.ids:
+                raise RequestException(1022, additional_message='Activity not found.')
             provider = provider_obj.code
             result_id_list = self.env['tt.master.activity.lines'].search([('activity_id', '=', activity_id.id)])
             res = {
@@ -1295,21 +1303,17 @@ class MasterActivity(models.Model):
 
     def get_autocomplete_api(self, req, context):
         try:
-            query = req.get('name') and '%' + req['name'] + '%' or False
-            sql_query = 'select * from tt_master_activity where active = True and "basePrice" > 0'
-            if query:
-                sql_query += ' and name ilike %'+query+'%'
-            self.env.cr.execute(sql_query)
-
-            result_id_list = self.env.cr.dictfetchall()
+            search_params = []
+            if req.get('name'):
+                search_params.append(('name', 'ilike', req['name']))
+            if context.get('co_ho_id'):
+                search_params.append(('ho_ids', '=', int(context['co_ho_id'])))
+            result_id_list = self.env['tt.master.activity'].search(search_params)
             result_list = []
-
             for result in result_id_list:
-                result = {
-                    'name': result.get('name') and result['name'] or '',
-                }
-                result_list.append(result)
-
+                result_list.append({
+                    'name': result.name and result.name or '',
+                })
             return ERR.get_no_error(result_list)
         except RequestException as e:
             _logger.error(traceback.format_exc())
