@@ -599,7 +599,7 @@ class PaymentAcquirerNumber(models.Model):
             provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         else:
             provider_type = 'tt.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
-        booking_obj = self.env[provider_type].search([('name','=',data['order_number']), ('ho_id','=', context['co_ho_id'])])
+        booking_obj = self.env[provider_type].search([('name','=',data['order_number']), ('ho_id.id','=', context['co_ho_id'])])
         is_use_point = data.get('use_point', False)
         if not booking_obj:
             raise RequestException(1001)
