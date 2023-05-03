@@ -131,7 +131,8 @@ class ApiManagement(models.Model):
                 values.update(_co_user.get_credential(prefix='co_'))
             api_cred_obj = self.search([('api_key','=', data['api_key']), ('user_id','=', uid)])
             if api_cred_obj:
-                if api_cred_obj.user_id.agent_id.ho_id.seq_id != _user.agent_id.ho_id.seq_id:
+                ## check cred
+                if api_cred_obj.user_id.agent_id.get_ho_parent_agent().seq_id != _user.agent_id.get_ho_parent_agent().seq_id:
                     raise Exception('Co User and Api Key is not match')
             else:
                 raise Exception('Api Key not found')
