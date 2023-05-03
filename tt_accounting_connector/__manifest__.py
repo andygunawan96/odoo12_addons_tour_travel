@@ -17,6 +17,7 @@ Key Features
     'depends' : ['tt_base', 'tt_accounting', 'tt_accounting_setup', 'tt_in_api_connector'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/ir_cron_data.xml',
         'views/tt_agent_views.xml',
         'views/ledger_views.xml',

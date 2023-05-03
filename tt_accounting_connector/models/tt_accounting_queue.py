@@ -26,6 +26,7 @@ class TtAccountingQueue(models.Model):
     send_uid = fields.Many2one('res.users', 'Last Sent By', readonly=True)
     send_date = fields.Datetime('Last Sent Date', readonly=True)
     action = fields.Char('Action', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
 
     def to_dict(self):
         return {
@@ -72,7 +73,7 @@ class TtAccountingQueue(models.Model):
                 request = trans_obj.to_dict()
                 ledger_list = []
                 is_send_commission = False
-                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider','=', self.accounting_provider)],limit=1)
+                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider','=', self.accounting_provider), ('ho_id', '=', self.ho_id.id)],limit=1)
                 if accounting_obj:
                     is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
@@ -340,7 +341,8 @@ class TtAccountingQueue(models.Model):
                 request = {}
             if request:
                 request.update({
-                    'accounting_queue_id': self.id
+                    'accounting_queue_id': self.id,
+                    'ho_id': self.ho_id.id
                 })
                 res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_sales_order(request)
                 self.response = json.dumps(res)
@@ -365,7 +367,7 @@ class TtAccountingQueue(models.Model):
                 request = trans_obj.to_dict()
                 ledger_list = []
                 is_send_commission = False
-                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider', '=', self.accounting_provider)], limit=1)
+                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider', '=', self.accounting_provider), ('ho_id', '=', self.ho_id.id)], limit=1)
                 if accounting_obj:
                     is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
