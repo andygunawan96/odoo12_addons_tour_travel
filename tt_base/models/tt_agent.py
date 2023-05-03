@@ -88,6 +88,7 @@ class TtAgent(models.Model):
     point_reward = fields.Monetary(string="Point Reward")
     actual_point_reward = fields.Monetary(string="Actual Point Reward")
     unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward")
+    is_use_point_reward = fields.Boolean('Is Use Point Reward', default=False)
 
     state = fields.Selection([("draft", "Draft"), ("done", "Done")],'State', default='done')
 

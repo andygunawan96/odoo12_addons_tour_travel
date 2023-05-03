@@ -46,10 +46,11 @@ class TtPointReward(models.Model):
 
     def add_point_reward(self, reservation_obj, total_price, co_uid):
         if not reservation_obj.is_get_point_reward:
+            ho_agent_obj = reservation_obj.agent_id.get_ho_parent_agent()
             try:
                 total_point = 0
                 ## check agent type yg sesuai
-                point_reward_data_obj = self.search([('is_active','=', True)])
+                point_reward_data_obj = self.search([('is_active','=', True), ('ho_id','=', ho_agent_obj.id)])
                 for rec in point_reward_data_obj:
                     is_agent_type = False
                     is_provider_type = False

@@ -1480,8 +1480,8 @@ class TtReservation(models.Model):
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
                 is_use_point = False
-                website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
-                if website_use_point_reward == 'True':
+                website_use_point_reward = book_obj.agent_id.get_ho_parent_agent().is_use_point_reward
+                if website_use_point_reward:
                     is_use_point = req.get('use_point')
 
                 total_use_point = 0
@@ -1602,7 +1602,7 @@ class TtReservation(models.Model):
                         #     print("5k woi")
 
                 ## add point reward for agent
-                if website_use_point_reward == 'True' and payment_method_use_to_ho != 'credit_limit':
+                if website_use_point_reward and payment_method_use_to_ho != 'credit_limit':
                     ## ASUMSI point reward didapat dari total harga yg di bayar
                     ## karena kalau per pnr per pnr 55 rb & rules point reward kelipatan 10 rb agent rugi 1 point
                     self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
