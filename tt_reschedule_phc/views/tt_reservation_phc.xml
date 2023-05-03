@@ -10,7 +10,6 @@
                         context="{
                 'default_res_model': res_model,
                 'default_res_id': id,
-                'default_ho_id': ho_id,
                 'default_agent_id': agent_id,
                 'default_customer_parent_id': customer_parent_id,
                 'default_booker_id': booker_id,
@@ -26,7 +25,6 @@
                         context="{
                 'default_res_model': res_model,
                 'default_res_id': id,
-                'default_ho_id': ho_id,
                 'default_agent_id': agent_id,
                 'default_customer_parent_id': customer_parent_id,
                 'default_booker_id': booker_id,
