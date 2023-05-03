@@ -109,7 +109,7 @@ class MasterTour(models.Model):
     tour_line_ids = fields.One2many('tt.master.tour.lines', 'master_tour_id', 'Tour Lines')
     tour_line_amount = fields.Integer('Available Schedule(s)', readonly=True, compute='_compute_tour_line_amount')
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     is_can_hold = fields.Boolean('Can Be Hold', default=True, required=True)
@@ -192,7 +192,6 @@ class MasterTour(models.Model):
     import_other_info = fields.Binary('Import JSON')
     export_other_info = fields.Binary('Export JSON')
     file_name = fields.Char("Filename", compute="_compute_filename", store=True)
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     active = fields.Boolean('Active', default=True)
 
     @api.depends("name")
