@@ -119,7 +119,7 @@ class FrontendBannerLine(models.Model):
     frontend_banner_line_id = fields.Many2one('tt.frontend.banner', 'Image List')
     image_id = fields.Many2one('tt.upload.center', 'Image', invisible=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     sequence = fields.Char('Sequence')
     active = fields.Boolean('Active', default=True)
 

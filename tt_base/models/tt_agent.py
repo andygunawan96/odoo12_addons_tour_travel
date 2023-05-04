@@ -60,7 +60,7 @@ class TtAgent(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     is_ho_agent = fields.Boolean('Is HO Agent')
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
@@ -217,14 +217,6 @@ class TtAgent(models.Model):
                 rec.quota_total_duration = rec.quota_ids[0].expired_date
 
     def set_default_agent(self):
-        try:
-            if self.env.user.has_group('base.group_erp_manager'):
-                return False
-            return self.env.user.ho_id.id
-        except:
-            return False
-
-    def set_default_ho(self):
         try:
             if self.env.user.has_group('base.group_erp_manager'):
                 return False

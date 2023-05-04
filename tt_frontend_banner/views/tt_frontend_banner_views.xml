@@ -50,7 +50,7 @@
                         <field name="sequence"/>
                         <field name="url"/>
                         <field name="image_id"/>
-                        <field name="ho_id"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="provider_type_id"/>
                     </group>
                     <group>
@@ -69,7 +69,6 @@
                 <field name="sequence"/>
                 <field name="url"/>
                 <field name="image_id"/>
-                <field name="ho_id"/>
                 <field name="provider_type_id"/>
             </tree>
         </field>

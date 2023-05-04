@@ -18,7 +18,7 @@ class PaymentAcquirer(models.Model):
     type = fields.Selection(variables.ACQUIRER_TYPE, 'Payment Type', help="Credit card for top up")
     provider_id = fields.Many2one('tt.provider', 'Provider')
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_id = fields.Many2one('tt.bank', 'Bank')
     account_number = fields.Char('Account Number')
@@ -268,14 +268,6 @@ class PaymentAcquirer(models.Model):
 
             return True
         return False
-
-    def set_default_ho(self):
-        try:
-            if self.env.user.has_group('base.group_erp_manager'):
-                return False
-            return self.env.user.ho_id.id
-        except:
-            return False
 
     ## test function for payment acquirer
     def test_validate(self,acq):
