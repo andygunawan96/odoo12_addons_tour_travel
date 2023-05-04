@@ -18,7 +18,7 @@ class TtCustomerParent(models.Model):
     logo = fields.Binary('Customer Logo')
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=False)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.set_default_ho())
     parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)  # , default=lambda self: self.env.user.agent_id
 
     balance = fields.Monetary(string="Balance")
@@ -191,6 +191,14 @@ class TtCustomerParent(models.Model):
             rec.write({
                 'is_send_email_cc': True
             })
+
+    def set_default_ho(self):
+        try:
+            if self.env.user.has_group('base.group_erp_manager'):
+                return False
+            return self.env.user.ho_id.id
+        except:
+            return False
 
     def get_corporate_data_api(self, data, context):
         try:

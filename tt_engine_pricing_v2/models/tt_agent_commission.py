@@ -65,9 +65,17 @@ class AgentCommission(models.Model):
 
     line_ids = fields.One2many('tt.agent.commission.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+
+    def set_default_ho(self):
+        try:
+            if self.env.user.has_group('base.group_erp_manager'):
+                return False
+            return self.env.user.ho_id.id
+        except:
+            return False
 
     @api.depends('agent_type_name', 'provider_type_name', 'agent_name', 'provider_name', 'carrier_name')
     def _compute_name(self):

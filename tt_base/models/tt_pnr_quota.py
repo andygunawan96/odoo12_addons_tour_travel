@@ -30,7 +30,7 @@ class TtPnrQuota(models.Model):
     start_date = fields.Date('Start')
     expired_date = fields.Date('Valid Until', store=True)
     usage_ids = fields.One2many('tt.pnr.quota.usage', 'pnr_quota_id','Quota Usage', readonly=True, domain=['|',('active', '=', True),('active', '=', False)])
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
     transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
@@ -134,6 +134,14 @@ class TtPnrQuota(models.Model):
                     rec.total_amount = minimum - rec.transaction_amount_internal + rec.transaction_amount_external
             else:
                 rec.total_amount = minimum + rec.transaction_amount_external
+
+    def set_default_ho(self):
+        try:
+            if self.env.user.has_group('base.group_erp_manager'):
+                return False
+            return self.env.user.ho_id.id
+        except:
+            return False
 
     def payment_pnr_quota_api(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_pnr_quota_level_3').id}.intersection(set(self.env.user.groups_id.ids))):

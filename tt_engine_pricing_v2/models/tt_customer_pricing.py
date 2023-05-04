@@ -40,7 +40,7 @@ class CustomerPricing(models.Model):
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.set_default_ho())
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id)
 
     customer_parent_type_name = fields.Char('Customer Parent Type Name', compute='_compute_customer_parent_type_name', store=True)
@@ -70,6 +70,14 @@ class CustomerPricing(models.Model):
 
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
+
+    def set_default_ho(self):
+        try:
+            if self.env.user.has_group('base.group_erp_manager'):
+                return False
+            return self.env.user.ho_id.id
+        except:
+            return False
 
     @api.depends('agent_id', 'provider_type_name', 'provider_name', 'carrier_name', 'customer_parent_type_name', 'customer_parent_name')
     def _compute_name(self):

@@ -40,7 +40,7 @@ class TtCustomer(models.Model):
                                  ('owner','Owner')],'Job Position')
     user_ids = fields.One2many('res.users', 'customer_id', 'User')
     # customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
     agent_id = fields.Many2one('tt.agent', 'Agent', default=lambda self: self.env.user.agent_id)  # , default=lambda self: self.env.user.agent_id
     agent_as_staff_id = fields.Many2one('tt.agent', 'Agent as Staff')  # , default=lambda self: self.env.user.agent_id
     # user_agent_id = fields.Many2one('tt.agent', 'Agent User', default=lambda self: self.env.user.agent_id)
@@ -179,6 +179,14 @@ class TtCustomer(models.Model):
             })
 
         return res
+
+    def set_default_ho(self):
+        try:
+            if self.env.user.has_group('base.group_erp_manager'):
+                return False
+            return self.env.user.ho_id.id
+        except:
+            return False
 
     def get_behavior(self):
         behavior_dict = {}
