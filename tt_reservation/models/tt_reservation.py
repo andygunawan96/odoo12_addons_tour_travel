@@ -499,6 +499,10 @@ class TtReservation(models.Model):
                         vals_for_update.update({
                             'birth_date': psg['birth_date']
                         })
+                    if ho_agent_obj:
+                        vals_for_update.update({
+                            'ho_id': ho_agent_obj.id
+                        })
 
                     #manual aja
                     # [vals_for_update.update({
