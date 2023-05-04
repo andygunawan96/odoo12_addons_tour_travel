@@ -412,4 +412,18 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 
+    <record id="tt_vendor_for_ho" model="ir.rule">
+        <field name="name">Vendor Usage For HO</field>
+        <field name="model_id" ref="model_tt_vendor"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_vendor_for_ho_user" model="ir.rule">
+        <field name="name">Vendor For HO User</field>
+        <field name="model_id" ref="model_tt_vendor"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
 </odoo>

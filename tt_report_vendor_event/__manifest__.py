@@ -18,6 +18,7 @@ Key Features
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'wizard/tt_report_vendor_event_view.xml',
         'report/tt_report_vendor_event_menu.xml',
         'views/temporary_views.xml',

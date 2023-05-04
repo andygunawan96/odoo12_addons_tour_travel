@@ -75,8 +75,15 @@ class TtBankTransaction(models.Model):
     transaction_connection = fields.Selection(variables.BANK_STATEMENT)
     transaction_process = fields.Selection([('unprocess', 'Un-Process'), ('process', 'Processed')])
     top_up_id = fields.Many2one('tt.top.up', 'Top up')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def create_bank_statement(self, req):
+        bank_account_obj = self.env['tt.bank.accounts'].browse(req['bank_account_id'])
+        ho_id = ''
+        if bank_account_obj.ho_id:
+            ho_id = bank_account_obj.ho_id.id
+        elif bank_account_obj.agent_id:
+            ho_id = bank_account_obj.agent_id.get_ho_parent_agent().id
         result = self.env['tt.bank.transaction'].create({
             'bank_account_id': req['bank_account_id'],
             'bank_transaction_date_id': req['date_id'],
@@ -93,6 +100,7 @@ class TtBankTransaction(models.Model):
             'transaction_message': req['transaction_message'],
             'transaction_connection': "not_connect",
             'transaction_process': "unprocess",
+            'ho_id': ho_id
         })
 
         return result
