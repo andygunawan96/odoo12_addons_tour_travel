@@ -342,4 +342,88 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 
+    <record id="tt_agent_notification_for_ho" model="ir.rule">
+        <field name="name">Agent Notification For HO</field>
+        <field name="model_id" ref="model_tt_agent_notification"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_agent_notification_for_ho_user" model="ir.rule">
+        <field name="name">Agent Notification For HO User</field>
+        <field name="model_id" ref="model_tt_agent_notification"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_for_ho" model="ir.rule">
+        <field name="name">PNR Quota For HO</field>
+        <field name="model_id" ref="model_tt_pnr_quota"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_for_ho_user" model="ir.rule">
+        <field name="name">PNR Quota For HO User</field>
+        <field name="model_id" ref="model_tt_pnr_quota"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_price_list_for_ho" model="ir.rule">
+        <field name="name">PNR Quota Price List For HO</field>
+        <field name="model_id" ref="model_tt_pnr_quota_price_list"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_price_list_for_ho_user" model="ir.rule">
+        <field name="name">PNR Quota Price List For HO User</field>
+        <field name="model_id" ref="model_tt_pnr_quota_price_list"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_price_package_for_ho" model="ir.rule">
+        <field name="name">PNR Quota Price Package For HO</field>
+        <field name="model_id" ref="model_tt_pnr_quota_price_package"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_price_package_for_ho_user" model="ir.rule">
+        <field name="name">PNR Quota Price Package For HO User</field>
+        <field name="model_id" ref="model_tt_pnr_quota_price_package"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_usage_for_ho" model="ir.rule">
+        <field name="name">PNR Quota Usage For HO</field>
+        <field name="model_id" ref="model_tt_pnr_quota_usage"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_pnr_quota_usage_for_ho_user" model="ir.rule">
+        <field name="name">PNR Quota Usage For HO User</field>
+        <field name="model_id" ref="model_tt_pnr_quota_usage"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_vendor_for_ho" model="ir.rule">
+        <field name="name">Vendor Usage For HO</field>
+        <field name="model_id" ref="model_tt_vendor"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_vendor_for_ho_user" model="ir.rule">
+        <field name="name">Vendor For HO User</field>
+        <field name="model_id" ref="model_tt_vendor"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
 </odoo>

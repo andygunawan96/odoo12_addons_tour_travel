@@ -474,7 +474,7 @@ class TtReservation(models.Model):
 
         res_ids = []
         # identity_req = ['identity_number','identity_country_of_issued_id','identity_expdate','identity_type']
-
+        ho_agent_obj = self.env['tt.agent'].browse(context['co_ho_id'])
         for psg in passengers:
             country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
             psg['nationality_id'] = country and country[0].id or False
@@ -500,6 +500,10 @@ class TtReservation(models.Model):
                     if psg.get('birth_date') != (current_passenger.birth_date and datetime.strftime(current_passenger.birth_date,"%Y-%m-%d") or False):
                         vals_for_update.update({
                             'birth_date': psg['birth_date']
+                        })
+                    if ho_agent_obj:
+                        vals_for_update.update({
+                            'ho_id': ho_agent_obj.id
                         })
 
                     #manual aja
@@ -528,7 +532,8 @@ class TtReservation(models.Model):
             psg.update({
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
                 'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
-                'register_uid': context['co_uid']
+                'register_uid': context['co_uid'],
+                'ho_id': ho_agent_obj.id
             })
             # sepertinya tidak terpakai
             # #if ada phone, kalau dari frontend cache passenger

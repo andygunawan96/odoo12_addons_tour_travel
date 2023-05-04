@@ -205,6 +205,7 @@ class TtCustomerParent(models.Model):
             res = {
                 'customer_parent_name': cor_data[0].name,
                 'customer_parent_id': cor_data[0].id,
+                'customer_parent_seq_id': cor_data[0].seq_id,
                 'customer_seq_id': cust_data[0].seq_id,
                 'customer_parent_type_name': cor_data[0].customer_parent_type_id.name,
                 'customer_parent_type_code': cor_data[0].customer_parent_type_id.code,

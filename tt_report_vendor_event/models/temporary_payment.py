@@ -16,6 +16,7 @@ class temporaryPayment(models.Model):
     user_id = fields.Many2one('res.users', 'User ID', readonly=True)
     transfer_image_path = fields.Char('Image Path')
     title = fields.Char('title', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def get_data_api(self, user_id):
         data = self.env['tt.event.reservation.temporary.payment'].sudo().search(['user_id', '=', user_id])
