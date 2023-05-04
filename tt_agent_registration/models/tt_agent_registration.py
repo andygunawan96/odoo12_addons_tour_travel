@@ -174,14 +174,14 @@ class AgentRegistration(models.Model):
             if rec.agent_type_id:
                 # Set parent agent berdasarkan registration upline di agent type
                 if not rec.agent_type_id.registration_upline_ids:
-                    """ Jika registration upline ids kosong, langsung set ke HO """
-                    rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
+                    """ Jika registration upline ids kosong, langsung set ke HO yang lagi login """
+                    rec.parent_agent_id = rec.env.user.ho_id.id
                 else:
                     if rec.reg_upline_contains(rec.agent_type_id, rec.env.user.agent_id.agent_type_id):
-                        rec.parent_agent_id = rec.env.user.agent_id
+                        rec.parent_agent_id = rec.env.user.agent_id.id
                     else:
                         if rec.reg_upline_contains(rec.agent_type_id, rec.env.ref('tt_base.agent_type_ho')):
-                            rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
+                            rec.parent_agent_id = rec.env.user.ho_id.id
                         else:
                             pass
             else:
@@ -448,7 +448,7 @@ class AgentRegistration(models.Model):
                 )
             comm_left -= rec['amount']
         if comm_left > 0:
-            agent_obj = self.env['tt.agent'].search([('id', '=', self.env.ref('tt_base.rodex_ho').id)])
+            agent_obj = self.reference_id.get_ho_parent_agent()
             ledger.create_ledger_vanilla(
                 self._name,
                 self.id,
@@ -458,7 +458,7 @@ class AgentRegistration(models.Model):
                 3,
                 self.currency_id.id,
                 self.env.user.id,
-                agent_obj.id,
+                agent_obj and agent_obj.id or False,
                 False,
                 comm_left,
                 0,
@@ -871,7 +871,7 @@ class AgentRegistration(models.Model):
                 if context['co_agent_id'] != self.env.ref('tt_base.agent_b2c').id:
                     reference_id = context['co_agent_id'],
                 else:
-                    reference_id = self.env.ref('tt_base.rodex_ho').id
+                    reference_id = context['co_ho_id']
                 header.update({
                     'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],

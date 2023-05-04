@@ -79,15 +79,14 @@ class PhoneDetail(models.Model):
             # res = self.env['tt.payment.api.con'].merchant_info(data)
             if res['error_code'] == 0:
                 if len(res['response']) > 0:
-                    ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
                     for rec in res['response']:
                         bank_obj = self.env['tt.bank'].search([('code', '=', rec['code'])],limit=1)
-                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_agent_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
+                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
                         if not existing_payment_acquirer:
                             existing_payment_acquirer = self.env['payment.acquirer'].create({
                                 'type': 'va',
                                 'bank_id': bank_obj.id,
-                                'agent_id': ho_agent_obj.id,
+                                'agent_id': ho_obj.id,
                                 'provider': 'manual',
                                 'website_published': False,
                                 'name': 'Your Virtual Account at %s' % (bank_obj.name),

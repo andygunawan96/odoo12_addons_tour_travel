@@ -203,6 +203,7 @@ class ReservationOffline(models.Model):
                     if srvc.charge_type not in ['RAC', 'DISC'] and srvc.charge_code != 'csc':
                         price_unit += srvc.amount
                     elif srvc.charge_type == 'RAC' and srvc.charge_code != 'csc':
+                        ho_obj = self.agent_id.get_ho_parent_agent()
                         if is_use_credit_limit:
                             if not srvc.commission_agent_id:
                                 agent_id = self.agent_id.id
@@ -211,7 +212,7 @@ class ReservationOffline(models.Model):
                             if agent_id not in commission_list:
                                 commission_list[agent_id] = 0
                             commission_list[agent_id] += srvc.amount * -1
-                        elif srvc.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                        elif not srvc.commission_agent_id.is_ho_agent:
                             price_unit += srvc.amount
                 ### FARE
                 self.env['tt.ho.invoice.line.detail'].create({

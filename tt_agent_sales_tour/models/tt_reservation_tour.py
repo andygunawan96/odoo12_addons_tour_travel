@@ -549,7 +549,7 @@ class ReservationTour(models.Model):
                                 if agent_id not in commission_list:
                                     commission_list[agent_id] = 0
                                 commission_list[agent_id] += cost_charge.amount * -1
-                            elif cost_charge.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                            elif not cost_charge.commission_agent_id.is_ho_agent:
                                 price_unit += cost_charge.amount
                     ### FARE
                     self.env['tt.ho.invoice.line.detail'].create({

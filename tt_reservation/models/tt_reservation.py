@@ -251,6 +251,7 @@ class TtReservation(models.Model):
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
 
         vals.update({
+            'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
@@ -442,6 +443,7 @@ class TtReservation(models.Model):
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
 
         vals.update({
+            'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
@@ -520,6 +522,7 @@ class TtReservation(models.Model):
                     res_ids.append(current_passenger)
                     continue
 
+            psg['ho_id'] = context['co_ho_id']
             psg['agent_id'] = context['co_agent_id']
 
             psg.update({
@@ -715,21 +718,19 @@ class TtReservation(models.Model):
 
     @api.depends("sale_service_charge_ids")
     def _compute_parent_agent_commission(self):
-        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != id_ho:
+                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and not sale.commission_agent_id.is_ho_agent:
                     commission_total += abs(sale.total)
             rec.parent_agent_commission = commission_total
 
     @api.depends("sale_service_charge_ids")
     def _compute_ho_commission(self):
-        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == id_ho:
+                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.is_ho_agent:
                     commission_total += abs(sale.total)
             rec.ho_commission = commission_total
 
@@ -792,7 +793,7 @@ class TtReservation(models.Model):
         #         })
         include_total_nta = False
         if context and context.get('co_agent_id'):
-            include_total_nta = context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id
+            include_total_nta = context['co_agent_id'] == context['co_ho_id']
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
             if self.payment_acquirer_number_id.state == 'close':
@@ -833,6 +834,7 @@ class TtReservation(models.Model):
         res = {
             'order_number': self.name,
             'book_id': self.id,
+            'ho_id': self.ho_id.id if self.ho_id else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'agent_name': self.agent_id.name if self.agent_id else '',
             'customer_parent_name': self.customer_parent_id.name if self.customer_parent_id else '',
@@ -1299,6 +1301,7 @@ class TtReservation(models.Model):
                 'res_model': book_obj._name,
                 'res_id': book_obj.id,
                 'booker_id': booker_obj.id,
+                'ho_id': context.get('co_ho_id', book_obj.ho_id.id),
                 'agent_id': context.get('co_agent_id', book_obj.agent_id.id),
                 'customer_parent_id': context.get('co_customer_parent_id', book_obj.customer_parent_id.id),
                 'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy)
@@ -1562,7 +1565,7 @@ class TtReservation(models.Model):
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         try:
-                            ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id','=',self.env.ref('tt_base.rodex_ho').id)])
+                            ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id.is_ho_agent','=',True)])
                             amount = 0
                             for ledger in ledger_obj:
                                 amount += ledger.debit
@@ -1727,7 +1730,8 @@ class TtReservation(models.Model):
                 for prices in rec.sale_service_charge_ids:
                     if prices.charge_type == 'RAC':
                         if prices.charge_code in ['dif','fac','hoc']:
-                            prices.commission_agent_id = self.env.ref('tt_base.rodex_ho').id
+                            ho_obj = self.agent_id.get_ho_parent_agent()
+                            prices.commission_agent_id = ho_obj and ho_obj.id or False
                         elif prices.charge_code == 'rac':
                             prices.commission_agent_id = False
                         elif prices.charge_code != 'rac':

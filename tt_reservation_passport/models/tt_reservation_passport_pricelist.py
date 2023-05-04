@@ -250,6 +250,8 @@ class PassportPricelist(models.Model):
     duration = fields.Integer('Duration (day(s))', help="in day(s)", required=True, default=1)
     commercial_duration = fields.Char('Duration', compute='_compute_duration', readonly=1)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+
     @api.multi
     @api.depends('cost_price', 'sale_price')
     @api.onchange('cost_price', 'sale_price')

@@ -996,7 +996,7 @@ class TtRefund(models.Model):
                     **{'refund_id': self.id}
                 )
 
-                ho_agent = self.env.ref('tt_base.rodex_ho')
+                ho_agent = self.agent_id.get_ho_parent_id()
                 credit = 0
                 debit = self.final_admin_fee_ho
                 self.env['tt.ledger'].create_ledger_vanilla(
@@ -1075,7 +1075,7 @@ class TtRefund(models.Model):
             credit = value < 0 and value * -1 or 0
 
             ledger_type = 4
-            ho_agent = self.env.ref('tt_base.rodex_ho')
+            ho_agent = self.agent_id.get_ho_parent_id()
 
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,

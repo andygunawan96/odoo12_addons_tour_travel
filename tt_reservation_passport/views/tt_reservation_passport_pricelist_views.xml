@@ -31,6 +31,7 @@
                             <field name="process_type"/>
                             <field name="reference_code"/>
                             <field name="provider_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                         </group>
                         <group string="Document Information">
                             <field name="country_id"/>

@@ -604,7 +604,11 @@ class AccountingConnectorJurnalID(models.Model):
             passenger_data = ''
             desc = ''
             list_desc = []
-            is_user_ho = int(vals.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id
+            is_user_ho = False
+            if vals.get('agent_id'):
+                agent_obj = self.env['tt.agent'].browse(int(vals['agent_id']))
+                if agent_obj and agent_obj.is_ho_agent:
+                    is_user_ho = True
             ## AIRLINE & TRAIN
             for provider_booking in vals['provider_bookings']:
                 ## HOTEL

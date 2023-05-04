@@ -433,6 +433,7 @@ class TtPassport(models.Model):
         if diff_nta_upsell > 0:
             ledger = self.env['tt.ledger']
             for rec in self:
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -442,7 +443,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     diff_nta_upsell,
                     0,
@@ -455,6 +456,7 @@ class TtPassport(models.Model):
             """ Jika diff nta upsell < 0 """
             ledger = self.env['tt.ledger']
             for rec in self:
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -464,7 +466,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     diff_nta_upsell,
@@ -510,6 +512,7 @@ class TtPassport(models.Model):
 
                 doc_type = ','.join(str(e) for e in doc_type)
 
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -519,7 +522,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     ho_profit,
                     0,
@@ -539,7 +542,7 @@ class TtPassport(models.Model):
                         doc_type.append(sc.passport_pricelist_id.passport_type)
 
                 doc_type = ','.join(str(e) for e in doc_type)
-
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -549,7 +552,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     abs(ho_profit),
@@ -1391,7 +1394,7 @@ class TtPassport(models.Model):
                 'cost_service_charge_ids': [(6, 0, ssc)]
             })
             vals_fixed = {
-                'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
+                'commission_agent_id': pricelist_obj.ho_id.id,
                 'amount': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'charge_code': 'fixed',
                 'charge_type': 'RAC',

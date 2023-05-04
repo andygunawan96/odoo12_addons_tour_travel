@@ -120,10 +120,6 @@ class TtAgent(models.Model):
         if vals_list.get('agent_type_id') == ho_type_id:
             if vals_list.get('parent_agent_id'):
                 raise UserError('Cannot set HO parent agent.')
-        if vals_list.get('is_ho_agent'):
-            vals_list.update({
-                'ho_id': self.id
-            })
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
 
@@ -139,11 +135,16 @@ class TtAgent(models.Model):
             'website_published': True
         })
 
-        new_agent.write({
+        write_vals = {
             'customer_parent_walkin_id': walkin_obj.id,
             'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code)),
             'default_acquirer_id': new_acquirer.id
-        })
+        }
+        if vals_list.get('is_ho_agent'):
+            write_vals.update({
+                'ho_id': new_agent.id
+            })
+        new_agent.write(write_vals)
         return new_agent
 
     def write(self, vals):

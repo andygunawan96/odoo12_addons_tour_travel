@@ -163,7 +163,7 @@ class TtPnrQuota(models.Model):
                                                             2,
                                                             rec.currency_id.id,
                                                             self.env.user.id,
-                                                            self.env.ref('tt_base.rodex_ho').id,
+                                                            self.env.user.ho_id.id,
                                                             False,
                                                             debit=rec.total_amount,
                                                             credit=0,

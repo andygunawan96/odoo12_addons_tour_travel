@@ -570,7 +570,7 @@ class TtReschedule(models.Model):
                 )
 
                 if rec.admin_fee_ho:
-                    ho_agent = self.env.ref('tt_base.rodex_ho')
+                    ho_agent = self.agent_id.get_ho_parent_agent()
                     credit = 0
                     debit = rec.admin_fee_ho
                     ledger_type = 6

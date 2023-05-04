@@ -327,7 +327,7 @@ class PaymentAcquirer(models.Model):
                 unique = 0
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO
-                    dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                    dom.append(('agent_id', '=', context['co_ho_id']))
                     unique = self.generate_unique_amount(amount).get_unique_amount()
                 elif req['transaction_type'] == 'billing':
                     dom.append(('agent_id', '=', co_agent_id))

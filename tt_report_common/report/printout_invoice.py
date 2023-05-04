@@ -1313,11 +1313,12 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
-        ho_obj = self.env.ref('tt_base.rodex_ho')
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
+        ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.get_ho_parent_agent()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2171,7 +2172,7 @@ class PrintoutInvoiceHOINV(models.AbstractModel):
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
             'base_color': base_color,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': self.env.ref('tt_base.rodex_ho'),
+            'ho_obj': resv_obj.ho_id or False,
             'is_invoice': True
         }
         if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain', 'tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
@@ -3888,8 +3889,10 @@ class PrintoutBilling(models.AbstractModel):
         billing_footer = self.env['tt.report.common.setting'].get_footer('billing_statement', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
+        ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.get_ho_parent_agent()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3902,7 +3905,7 @@ class PrintoutBilling(models.AbstractModel):
             'header_width': str(header_width),
             'billing_footer': billing_footer and billing_footer[0].html or '',
             'base_color': base_color,
-            'ho_obj': self.env.ref('tt_base.rodex_ho'),
+            'ho_obj': ho_obj,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3937,12 +3940,13 @@ class PrintoutTopUp(models.AbstractModel):
             })
             agent_id = rec.agent_id
         top_up_footer = self.env['tt.report.common.setting'].get_footer('top_up', agent_id)
-        ho_obj = self.env.ref('tt_base.rodex_ho')
         header_width = 90
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
+        ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.get_ho_parent_agent()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3985,8 +3989,10 @@ class PrintoutRefund(models.AbstractModel):
         header_width = 90
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
+        ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.get_ho_parent_agent()
         return_dat = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -4001,12 +4007,10 @@ class PrintoutRefund(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
-        if data['data'].get('is_ho'):
-            ho_obj = self.env.ref('tt_base.rodex_ho')
-            if ho_obj:
-                return_dat.update({
-                    'ho_obj': ho_obj
-                })
+        if data['data'].get('is_ho') and ho_obj:
+            return_dat.update({
+                'ho_obj': ho_obj
+            })
 
         return return_dat
 
@@ -4056,11 +4060,12 @@ class PrintoutVoucher(models.AbstractModel):
 
         temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-        ho_obj = self.env.ref('tt_base.rodex_ho')
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
+        ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.get_ho_parent_agent()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -4071,7 +4076,7 @@ class PrintoutVoucher(models.AbstractModel):
             'header_width': str(header_width),
             'base_color': base_color,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': ho_obj and ho_obj or False
+            'ho_obj': ho_obj or False
         }
 
 
@@ -4094,11 +4099,12 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
         #     agent_id = rec.agent_id
         lg_po_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee_po', agent_id)
         lg_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee', agent_id)
-        ho_obj = self.env.ref('tt_base.rodex_ho')
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
+        ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.get_ho_parent_agent()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -4109,5 +4115,5 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
             'header_width': str(header_width),
             'base_color': base_color,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': ho_obj and ho_obj or False
+            'ho_obj': ho_obj or False
         }

@@ -377,11 +377,12 @@ class PricingAgent(models.Model):
 
             """ Jika masih ada diff """
             if remaining_diff > 0:
+                ho_obj = agent_id.get_ho_parent_agent()
                 vals = {
-                    'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
-                    'agent_id': self.env.ref('tt_base.rodex_ho').id,
-                    'agent_name': self.env.ref('tt_base.rodex_ho').name,
-                    'agent_type_id': self.env.ref('tt_base.rodex_ho').agent_type_id.id,
+                    'commission_agent_id': ho_obj and ho_obj.id or False,
+                    'agent_id': ho_obj and ho_obj.id or False,
+                    'agent_name': ho_obj and ho_obj.name or False,
+                    'agent_type_id': self.env.ref('tt_base.agent_type_ho').id,
                     'type': 'RAC',
                     'code': 'dif',
                     'amount': remaining_diff,

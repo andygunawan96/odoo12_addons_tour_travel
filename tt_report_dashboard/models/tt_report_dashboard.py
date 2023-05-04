@@ -277,10 +277,10 @@ class TtReportDashboard(models.Model):
     #####################################################
     # this is the function that's being called by the gateway
     # in short this is the main function
-    def get_report_json_api(self, data, context = []):
+    def get_report_json_api(self, data, context = {}):
         # is_ho = 1
         # check if agent is ho
-        is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
+        is_ho = context['co_agent_id'] == context['co_ho_id']
         if is_ho and data['agent_seq_id'] == "":
             data['agent_seq_id'] = False
         elif is_ho and data['agent_seq_id'] != "":

@@ -915,7 +915,7 @@ class ReservationGroupBooking(models.Model):
     def create_final_ho_ledger(self):
         for rec in self:
             ledger = self.env['tt.ledger']
-
+            ho_obj = rec.agent_id.get_ho_parent_agent()
             if rec.nta_price > rec.vendor_amount:
                 ledger.create_ledger_vanilla(
                     self._name,
@@ -926,7 +926,7 @@ class ReservationGroupBooking(models.Model):
                     3,
                     rec.currency_id.id,
                     self.env.user.id,
-                    self.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     rec.ho_final_amount,
                     0,
@@ -945,7 +945,7 @@ class ReservationGroupBooking(models.Model):
                     3,
                     rec.currency_id.id,
                     self.env.user.id,
-                    self.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     rec.ho_final_amount,
@@ -1144,7 +1144,7 @@ class ReservationGroupBooking(models.Model):
                 elif scs.charge_type == 'RAC':
                     if scs.commission_agent_id.id == self.agent_id.id:
                         agent_comm += abs(scs.total)
-                    elif scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    elif scs.commission_agent_id.is_ho_agent:
                         ho_comm += abs(scs.total)
                     else:
                         parent_comm += abs(scs.total)
@@ -1187,14 +1187,14 @@ class ReservationGroupBooking(models.Model):
             """ Jika ho_diff != 0, lakukan pembulatan komisi ho di pricing """
             if ho_diff < self.ho_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    if scs.commission_agent_id.is_ho_agent:
                         if scs.charge_code != 'hoc':
                             scs.amount -= ho_diff
                             scs.total -= ho_diff
                             break
             elif ho_diff > self.ho_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    if scs.commission_agent_id.is_ho_agent:
                         if scs.charge_code != 'hoc':
                             scs.amount += ho_diff
                             scs.total += ho_diff
@@ -1203,16 +1203,14 @@ class ReservationGroupBooking(models.Model):
             """ Jika parent_diff != 0, lakukan pembulatan komisi parent di pricing """
             if parent_diff < self.parent_agent_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id != self.env.ref(
-                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                    if not scs.commission_agent_id.is_ho_agent and scs.commission_agent_id.id != self.agent_id.id:
                         if scs.charge_type != 'FARE':
                             scs.amount -= ho_diff
                             scs.total -= ho_diff
                         break
             elif parent_diff > self.parent_agent_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id != self.env.ref(
-                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                    if not scs.commission_agent_id.is_ho_agent and scs.commission_agent_id.id != self.agent_id.id:
                         if scs.charge_type != 'FARE':
                             scs.amount += parent_diff
                             scs.total += parent_diff
@@ -1286,7 +1284,7 @@ class ReservationGroupBooking(models.Model):
             return ''
 
     def get_fee_amount(self, agent_id, provider_type_id, input_commission, passenger_id=None):
-        ho_agent = self.env.ref('tt_base.rodex_ho').sudo()
+        ho_agent = agent_id.get_ho_parent_agent().sudo()
 
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 

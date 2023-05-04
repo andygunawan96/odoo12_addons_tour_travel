@@ -128,6 +128,13 @@ class AccountingConnectorJasaweb(models.Model):
             if request['category'] == 'refund' and trans_type == 'Admin Fee':
                 trans_type = 'Refund Admin Fee'
 
+            ho_name = ''
+            if rec.get('agent_id'):
+                agent_obj = self.env['tt.agent'].browse(int(rec['agent_id']))
+                if agent_obj:
+                    ho_obj = agent_obj.get_ho_parent_agent()
+                    if ho_obj:
+                        ho_name = ho_obj.name
             req.append({
                 'reference_number': rec.get('ref', ''),
                 'name': rec.get('name', ''),
@@ -141,7 +148,7 @@ class AccountingConnectorJasaweb(models.Model):
                 'description': rec.get('description', ''),
                 'agent_id': rec.get('agent_id', 0),
                 'company_sender': rec.get('agent_name', ''),
-                'company_receiver': self.env.ref('tt_base.rodex_ho').name,
+                'company_receiver': ho_name,
                 'state': 'Done',
                 'display_provider_name': rec.get('display_provider_name', ''),
                 'pnr': rec.get('pnr', ''),

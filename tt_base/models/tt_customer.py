@@ -296,7 +296,7 @@ class TtCustomer(models.Model):
     def get_customer_list_api(self,req,context):
         try:
             agent_id_list = [context['co_agent_id']]
-            if context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id:
+            if context['co_agent_id'] == context['co_ho_id']:
                 agent_id_list += self.env['tt.agent'].search([('is_share_cust_ho', '=', True)]).ids
             dom = [('agent_id','in',agent_id_list), ('is_search_allowed','=',True)]
 
@@ -529,13 +529,13 @@ class TtCustomer(models.Model):
         #     'domain': [('agent_id', '=', self.env.user.agent_id.id)]
         # }
 
-    def create_customer_user_api(self, data):
+    def create_customer_user_api(self, data, context):
         try:
             # Create Agent B2C
             name = (data['first_name'] or '') + ' ' + (data.get('last_name') or '')
             vals_list = {
                 'agent_type_id': self.env.ref('tt_base.agent_type_btc').id,
-                'parent_agent_id': self.env.ref('tt_base.rodex_ho').id,
+                'parent_agent_id': context['co_ho_id'],
                 'name': name,
                 'email': data.get('email'),
                 'is_send_email_cust': True
