@@ -130,6 +130,7 @@ class TtAgent(models.Model):
         new_acquirer = self.env['payment.acquirer'].create({
             'name': 'Cash',
             'provider': 'manual',
+            'ho_id': new_agent.ho_id.id,
             'agent_id': new_agent.id,
             'type': 'cash',
             'website_published': True
