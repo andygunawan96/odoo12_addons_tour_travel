@@ -137,7 +137,7 @@ class Ledger(models.Model):
             agent_obj = self.env['tt.agent'].browse(int(agent_id))
             ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
             if ho_obj:
-                vals['ho_id']: ho_obj.id
+                vals['ho_id'] = ho_obj.id
 
         if kwargs:
             vals.update(kwargs)
