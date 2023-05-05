@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="activity_assign_products_wizard" model="ir.ui.view">
+			<field name="name">Activity Assign Products Wizard</field>
+			<field name="model">activity.assign.products.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Message">
+					<group>
+                        <group>
+                            <field name="provider_id"/>
+                        </group>
+                        <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="ho_ids" groups="base.group_erp_manager"/>
+                        </group>
+					</group>
+					<footer>
+						<button string="Sync Activity Products" name="ho_self_assign" type="object" class="btn-primary" groups="tt_base.group_master_data_activity_level_2"/>
+						<button string="Assign to Selected HO" name="assign_to_selected_ho" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Assign to Multiple HO(s)" name="assign_to_multiple_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Assign to All HO(s)" name="assign_to_all_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Cancel" class="btn-default" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_activity_assign_products_wizard" model="ir.actions.act_window">
+			<field name="name">Activity Assign Products Wizard</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">activity.assign.products.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="activity_assign_products_wizard"/>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem
+				id="sub_menu_activity_assign_products_wizard"
+				name="Activity Product Management"
+				parent="tt_reservation_activity.menu_tour_travel_activity_config"
+				action="action_activity_assign_products_wizard"
+				sequence="5"
+				groups="tt_base.group_master_data_activity_level_2"
+		/>
+
+	</data>
+</odoo>

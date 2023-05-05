@@ -28,6 +28,7 @@ Key Features
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
         'wizard/force_issued_wizard_views.xml',
+        'wizard/activity_assign_products_wizard_views.xml',
         'views/menu_item_base.xml',
         'views/tt_activity_voucher_wizard.xml',
         'views/tt_activity_sync_product_wizard.xml',
