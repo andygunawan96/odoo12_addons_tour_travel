@@ -354,6 +354,7 @@ class TtProviderTour(models.Model):
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
                     scs['description'] = self.pnr and self.pnr or ''
+                    scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
                 if scs['total'] != 0:
                     scs['passenger_tour_ids'] = [(6, 0, scs['passenger_tour_ids'])]
                     service_chg_obj.create(scs)

@@ -166,6 +166,7 @@ class TtProviderPassport(models.Model):
             if 'commission_agent_id' in scs:
                 scs['commission_agent_id'] = scs['commission_agent_id']
             scs['description'] = self.pnr and self.pnr or ''
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if scs['total'] != 0:
                 service_chg_obj.create(scs)
 
