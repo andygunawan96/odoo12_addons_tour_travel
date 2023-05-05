@@ -2544,9 +2544,12 @@ class PrintoutKwintasi(models.AbstractModel):
         invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
+        ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.get_ho_parent_agent()
         val = {
+            'ho_obj': ho_obj,
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': doc_objs,
