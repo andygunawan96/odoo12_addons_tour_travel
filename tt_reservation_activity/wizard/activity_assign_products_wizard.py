@@ -23,7 +23,7 @@ class ActivityAssignProductsWizard(models.TransientModel):
             raise UserError('User does not belong to any Head Office.')
         if not self.env.user.has_group('tt_base.group_master_data_activity_level_2'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 359')
-        all_activities = self.env['tt.master.activity'].search([('provider_id', '=', self.provider_id.id)])
+        all_activities = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
         for rec in all_activities:
             if self.ho_id.id not in rec.ho_ids.ids:
                 rec.write({
@@ -36,7 +36,7 @@ class ActivityAssignProductsWizard(models.TransientModel):
             raise UserError('Please select Head Office!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 360')
-        all_activities = self.env['tt.master.activity'].search([('provider_id', '=', self.provider_id.id)])
+        all_activities = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
         for rec in all_activities:
             if self.ho_id.id not in rec.ho_ids.ids:
                 rec.write({
@@ -49,7 +49,7 @@ class ActivityAssignProductsWizard(models.TransientModel):
             raise UserError('Please select Head Office(s)!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 361')
-        all_activities = self.env['tt.master.activity'].search([('provider_id', '=', self.provider_id.id)])
+        all_activities = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
         for rec in all_activities:
             for rec2 in self.ho_ids:
                 if rec2.id not in rec.ho_ids.ids:
@@ -61,7 +61,7 @@ class ActivityAssignProductsWizard(models.TransientModel):
     def assign_to_all_hos(self):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 362')
-        all_activities = self.env['tt.master.activity'].search([('provider_id', '=', self.provider_id.id)])
+        all_activities = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
         all_hos = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
         for rec in all_activities:
             for rec2 in all_hos:
