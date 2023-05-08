@@ -466,9 +466,10 @@ class MasterTour(models.Model):
                     'provider_id': provider_obj and provider_obj.id or False,
                     'carrier_id': carrier_obj and carrier_obj.id or False,
                     'currency_id': currency_obj and currency_obj.id or False,
-                    'active': True
+                    'active': True,
+                    'ho_id': self.env.user.ho_id.id
                 }
-                new_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                new_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), ('ho_id', '=', self.env.user.ho_id.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if new_tour_obj:
                     new_tour_obj = new_tour_obj[0]
                     new_tour_obj.sudo().write(vals)
