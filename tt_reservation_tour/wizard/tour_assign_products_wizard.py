@@ -14,8 +14,6 @@ class TourAssignProductsWizard(models.TransientModel):
         return [('provider_type_id.id', '=', int(domain_id))]
 
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
-    ho_ids = fields.Many2many('tt.agent', 'tt_tour_assign_prod_ho_agent_rel', 'tour_assign_prod_id', 'ho_id',
-                              string='Head Office(s)', domain=[('is_ho_agent', '=', True)])
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     def assign_to_selected_ho(self):
