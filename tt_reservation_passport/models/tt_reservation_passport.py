@@ -1317,7 +1317,8 @@ class TtPassport(models.Model):
                         curr_dict = {
                             'passport_pricelist_id': p_pricelist,
                             'booking_passport_id': self.id,
-                            'description': provider.pnr
+                            'description': provider.pnr,
+                            'ho_id': self.ho_id.id if self.ho_id else ''
                         }
                         curr_dict.update(c_val)
                         values.append((0, 0, curr_dict))
