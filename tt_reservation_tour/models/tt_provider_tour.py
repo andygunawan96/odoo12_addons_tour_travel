@@ -414,6 +414,7 @@ class TtProviderTour(models.Model):
             # scs.pop('currency')
             # scs.pop('foreign_currency')
             scs['passenger_tour_ids'] = [(6,0,scs['passenger_tour_ids'])]
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if scs['total'] != 0:
                 service_chg_obj.create(scs)
 
