@@ -111,16 +111,20 @@ class ResUsers(models.Model):
         if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #jika tidak punya access rights tidak boleh create tanpa is HO and is Agent, harus ada salah satu
             ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
             agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
+            corpor_group_id = self.env.ref('tt_base.group_tt_corpor_user').id
             is_set_ho = False
             is_set_agent = False
+            is_set_corpor = False
             for rec in vals.keys():
                 if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
                     if str(ho_group_id) in rec.split('_') and vals[rec]:
                         is_set_ho = True
                     elif str(agent_group_id) in rec.split('_') and vals[rec]:
                         is_set_agent = True
-            if not is_set_ho and not is_set_agent:
-                raise UserError('Please set either "Is Tour Travel HO" or "Is Agent User"!')
+                    elif str(corpor_group_id) in rec.split('_') and vals[rec]:
+                        is_set_corpor = True
+            if not is_set_ho and not is_set_agent and not is_set_corpor:
+                raise UserError('Please set either "Is Tour Travel HO" or "Is Agent User" or "Is Corporate User"!')
         new_user = super(ResUsers, self).create(vals)
         # new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False
@@ -137,12 +141,15 @@ class ResUsers(models.Model):
         if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #jika tidak punya access rights tidak boleh remove both is HO and is Agent, harus ada salah satu
             ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
             agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
+            corpor_group_id = self.env.ref('tt_base.group_tt_corpor_user').id
             keys_to_check = {
                 'ho': '',
-                'agent': ''
+                'agent': '',
+                'corpor': ''
             }
             is_set_ho = False
             is_set_agent = False
+            is_set_corpor = False
             for rec in vals.keys():
                 if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
                     if str(ho_group_id) in rec.split('_'):
@@ -159,13 +166,23 @@ class ResUsers(models.Model):
                             })
                         else:
                             is_set_agent = True
-            if keys_to_check.get('ho') and keys_to_check.get('agent'):
+                    elif str(corpor_group_id) in rec.split('_'):
+                        if not vals[rec]:
+                            keys_to_check.update({
+                                'corpor': rec
+                            })
+                        else:
+                            is_set_corpor = True
+            if keys_to_check.get('ho') and keys_to_check.get('agent') and keys_to_check.get('corpor'):
                 vals.pop(keys_to_check['ho'])
                 vals.pop(keys_to_check['agent'])
-            elif keys_to_check.get('ho') and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent:
+                vals.pop(keys_to_check['corpor'])
+            elif keys_to_check.get('ho') and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent and not self.has_group('tt_base.tt_base.group_tt_corpor_user') and not is_set_corpor:
                 vals.pop(keys_to_check['ho'])
-            elif keys_to_check.get('agent') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho:
+            elif keys_to_check.get('agent') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.tt_base.group_tt_corpor_user') and not is_set_corpor:
                 vals.pop(keys_to_check['agent'])
+            elif keys_to_check.get('corpor') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent:
+                vals.pop(keys_to_check['corpor'])
         if vals.get('password'):
             self._check_password(vals['password'])
         return super(ResUsers, self).write(vals)
