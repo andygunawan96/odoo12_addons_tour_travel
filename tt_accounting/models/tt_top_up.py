@@ -169,6 +169,9 @@ class TtTopUp(models.Model):
                                        self.validated_amount + abs(self.subsidy), ## Buat Ledger Amount sejumlah payment yg di validated + subsidy unique amount jika ada, ABS supaya selalu +
                                        description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
+        ho_obj = self.agent_id.get_ho_parent_agent()
+        if ho_obj:
+            vals['ho_id'] = ho_obj.id
         new_aml = ledger_obj.create(vals)
         self.write({
             'state': 'approved',
@@ -251,6 +254,11 @@ class TtTopUp(models.Model):
                 'request_uid': context['co_uid'],
                 'request_date': datetime.now()
             })
+            ho_obj = agent_obj.get_ho_parent_agent()
+            if ho_obj:
+                data.update({
+                    'ho_id': ho_obj.id
+                })
             new_top_up = self.create(data)
 
             acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_seq_id'])],limit=1)
@@ -266,6 +274,7 @@ class TtTopUp(models.Model):
                 'real_total_amount': new_top_up.total,
                 'currency_id': new_top_up.currency_id.id,
                 'agent_id': new_top_up.agent_id.id,
+                'ho_id': new_top_up.ho_id.id,
                 'acquirer_id': acquirer_obj.id,
                 'top_up_id': new_top_up.id,
                 'confirm_uid': context['co_uid'],
@@ -446,4 +455,3 @@ class TtTopUp(models.Model):
             'url': book_obj.printout_top_up_id.url,
         }
         return url
-
