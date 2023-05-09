@@ -39,7 +39,9 @@
                         <field name="is_active"/>
                     </group>
                     <separator string="Point Reward Rules"/>
-                    <field name="point_reward_rules_id" options="{'no_create_edit': False,'color_field': 'color'}"/>
+                    <group>
+                        <field name="point_reward_rules_id" options="{'create_edit': True,'color_field': 'color'}"/>
+                    </group>
                     <notebook>
                         <page string="Agent Type">
                             <group>

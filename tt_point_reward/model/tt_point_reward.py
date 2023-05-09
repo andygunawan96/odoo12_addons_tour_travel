@@ -32,7 +32,7 @@ class TtPointReward(models.Model):
     provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Access Type', default='all')
     point_reward_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_point_reward_rel", "tt_point_reward_id","tt_provier_id", "Provider ID")  # what provider this voucher can be applied
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=_compute_get_ho)
-    point_reward_rules_id = fields.Many2one('tt.point.reward.rules', 'Point Reward Rules')
+    point_reward_rules_id = fields.Many2one('tt.point.reward.rules', 'Point Reward Rules', domain='[("ho_id", "=", ho_id)]')
     sequence = fields.Integer('Sequence')
 
     @api.model
