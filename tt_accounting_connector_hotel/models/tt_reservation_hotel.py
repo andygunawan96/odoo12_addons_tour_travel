@@ -64,7 +64,8 @@ class TtReservationHotel(models.Model):
                 'posted_acc_actions': temp_post
             })
         return res
-
+    
+    # def action_reverse_hotel
     def action_reverse_ledger_from_button(self):
         old_state = self.state
         res = super(TtReservationHotel, self).action_reverse_ledger_from_button()

@@ -78,7 +78,7 @@ class TestSearch(models.Model):
                 # provider = provider.split('_')[0]
                 provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
                 provider_id = provider_obj.id
-                city_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)]) if rec.res_id]
+                city_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)]) if rec.res_id and rec.res_id not in city_ids]
 
         f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
         f2 = f2.read()
@@ -136,7 +136,7 @@ class TestSearch(models.Model):
         codes = {}
         for code in provider_codes:
             # codes.append({'provider': code.provider_id.name, 'name': code.name, 'external_id': code.code})
-            codes[self.masking_provider(code.provider_id.code)] = code.code
+            codes[code.provider_id.code] = code.code
         return codes
 
     def prepare_landmark_distance(self, landmarks):
@@ -722,6 +722,8 @@ class TestSearch(models.Model):
                             'total': scs['amount'] * scs['pax_count'],
                             'currency_id': self.env['res.currency'].get_id(scs.get('currency'), default_param_idr=True),
                             'foreign_currency_id': self.env['res.currency'].get_id(scs.get('foreign_currency'), default_param_idr=True),
+                            'description': '',
+                            'ho_id': '',
                         })
                         self.env['tt.service.charge'].create(scs)
 
@@ -1278,8 +1280,10 @@ class TestSearch(models.Model):
 
         # Part untuk tentukan vendor "A" cman di negara yg di mau
         if self.env['ir.config_parameter'].sudo().get_param('hotel.search.use.country.allowed') in ['1',1,'true','True']:
-            vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', city_id.country_id.id), ('is_apply', '=', True)])
-            vendor_ids = [rec.provider_id for rec in vendor_ids]
+            vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False), ('provider_destination_ids', '=', False)])
+            prov_dest_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', city_id.country_id.id), ('is_apply', '=', True)])
+            vendor_ids = [rec for rec in vendor_ids]
+            vendor_ids += [rec.provider_id for rec in prov_dest_ids if rec if rec.provider_id.name]
         else:
             vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
 

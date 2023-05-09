@@ -294,7 +294,7 @@ class TransportBookingProvider(models.Model):
             "rooms": room_obj,
             "provider_name": self.provider_id.name,
             "provider_code": self.provider_id.code,
-            "provider": self.provider_id.alias,
+            "provider": self.provider_id.code, #self.provider_id.alias
             "passengers": passengers,
             "hotel_name": self.booking_id.hotel_name,
             "hotel_city": self.hotel_city,

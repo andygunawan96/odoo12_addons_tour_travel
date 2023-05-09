@@ -1371,6 +1371,7 @@ class HotelReservation(models.Model):
             refund_line_ids.append(line_obj.id)
 
             res_vals = {
+                'ho_id': hotel_obj.ho_id.id,
                 'agent_id': hotel_obj.agent_id.id,
                 'customer_parent_id': hotel_obj.customer_parent_id.id,
                 'booker_id': hotel_obj.booker_id.id,

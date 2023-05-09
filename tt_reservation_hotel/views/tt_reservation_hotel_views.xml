@@ -543,7 +543,7 @@
                         </tree>
                     </field>
                 </page>
-                <page string="Vendor">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                     <field name="provider_booking_ids"/>
                 </page>
             </xpath>
