@@ -3095,7 +3095,7 @@ class RepricingToolsV2(object):
     def add_ancillary_fare(self, fare_data):
         self.ancillary_fare_list.append(fare_data)
 
-    def get_provider_less(self, agent_id='', agent_type_code='', provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', departure_date_list=[], **kwargs):
+    def get_provider_less(self, agent_id='', agent_type_code='', provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', departure_date_list=[], context={}, **kwargs):
         if not self.ticket_fare_list:
             raise Exception('Ticket Fare List is empty')
 
@@ -3142,6 +3142,7 @@ class RepricingToolsV2(object):
             'charge_code_list': charge_code_list,
             'pricing_datetime': datetime.now().strftime(FORMAT_DATETIME),
             'departure_date_list': departure_date_list,
+            'context': context,
         }
         rule_obj = self.provider_pricing.get_pricing_data(**rule_param)
         pricing_less_list = []
@@ -3159,7 +3160,7 @@ class RepricingToolsV2(object):
         }
         return payload
 
-    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], tour_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, departure_date_list=[], **kwargs):
+    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], tour_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, departure_date_list=[], context={}, **kwargs):
         '''
             pricing_datetime = %Y-%m-%d %H:%M:%S
         '''
@@ -3227,8 +3228,10 @@ class RepricingToolsV2(object):
             'tour_code_list': tour_code_list,
             'pricing_datetime': pricing_datetime,
             'departure_date_list': departure_date_list,
-            'context': kwargs.get('context', {})
+            'context': context
         }
+        co_ho_id = context['co_ho_id'] if context and context.get('co_ho_id') else ''
+        rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city,destination_country, pricing_datetime, self.provider_type, str(self.agent_type),str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id), '-',str(co_ho_id)] + class_of_service_list + charge_code_list + tour_code_list
         rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_type), str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id)] + class_of_service_list + charge_code_list + tour_code_list
         rule_key = ''.join(rule_key_list)
         if rule_key in self.provider_data_dict:
