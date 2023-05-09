@@ -327,12 +327,19 @@ class TtReschedule(models.Model):
             'create_date': self.create_date.strftime("%Y-%m-%d %H:%M:%S")
         }
 
-    def get_reschedule_admin_fee_rule(self, agent_id):
-        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')], order='sequence, id desc')
+    def get_reschedule_admin_fee_rule(self, agent_id, ho_id=False):
+        search_param = [('after_sales_type', '=', 'after_sales')]
+        agent_obj = self.env['tt.agent'].browse(int(agent_id))
+        if ho_id:
+            ho_obj = self.env['tt.agent'].browse(int(ho_id))
+        else:
+            ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+        if ho_obj:
+            search_param.append(('ho_id', '=', ho_obj.id))
+        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
         if not reschedule_admin_fee_list:
             current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
         else:
-            agent_obj = self.env['tt.agent'].browse(int(agent_id))
             qualified_admin_fee = []
             for admin_fee in reschedule_admin_fee_list:
                 is_agent = False

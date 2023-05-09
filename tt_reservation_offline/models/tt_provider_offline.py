@@ -583,6 +583,7 @@ class ProviderOffline(models.Model):
         service_chg_obj = self.env['tt.service.charge']
         for scs in scs_list:
             scs['passenger_offline_ids'] = [(6, 0, scs['passenger_offline_ids'])]
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if abs(scs['total']) != 0:
                 service_chg_obj.create(scs)
 
@@ -1015,6 +1016,7 @@ class ProviderOffline(models.Model):
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list:
             scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
+            scs_2['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if abs(scs_2['total']) != 0:
                 service_chg_obj.create(scs_2)
 

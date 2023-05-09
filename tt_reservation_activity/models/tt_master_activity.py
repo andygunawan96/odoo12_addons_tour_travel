@@ -526,11 +526,16 @@ class MasterActivity(models.Model):
                     'provider_id': provider_id.id,
                 }
                 if product_obj:
+                    if self.env.user.ho_id.id not in product_obj.ho_ids.ids:
+                        vals.update({
+                            'ho_ids': [(4, self.env.user.ho_id.id)]
+                        })
                     util.pop_empty_key(vals)
                     product_obj.write(vals)
                 else:
                     vals.update({
-                        'uuid': rec['product']['uuid']
+                        'uuid': rec['product']['uuid'],
+                        'ho_ids': [(6,0,[self.env.user.ho_id.id])]
                     })
                     if not cur_obj:
                         cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)

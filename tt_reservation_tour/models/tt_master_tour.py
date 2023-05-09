@@ -281,7 +281,7 @@ class MasterTour(models.Model):
             if file:
                 self.sync_products(provider, file)
 
-    def copy_tour(self):
+    def copy_tour(self, return_obj=False):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 295')
         new_tour_obj = self.copy()
@@ -408,16 +408,19 @@ class MasterTour(models.Model):
             'other_info_ids': [(6, 0, other_info_ids)]
         })
 
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        action_num = self.env.ref('tt_reservation_tour.tt_master_tour_view_action').id
-        menu_num = self.env.ref('tt_reservation_tour.submenu_tour_pricelist').id
-        return {
-            'type': 'ir.actions.act_url',
-            'name': new_tour_obj.name,
-            'target': 'self',
-            'url': base_url + "/web#id=" + str(new_tour_obj.id) + "&action=" + str(
-                action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
-        }
+        if return_obj:
+            return new_tour_obj
+        else:
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            action_num = self.env.ref('tt_reservation_tour.tt_master_tour_view_action').id
+            menu_num = self.env.ref('tt_reservation_tour.submenu_tour_pricelist').id
+            return {
+                'type': 'ir.actions.act_url',
+                'name': new_tour_obj.name,
+                'target': 'self',
+                'url': base_url + "/web#id=" + str(new_tour_obj.id) + "&action=" + str(
+                    action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
+            }
 
     def sync_products(self, provider=None, data=None, page=None):
         file = data
@@ -463,9 +466,10 @@ class MasterTour(models.Model):
                     'provider_id': provider_obj and provider_obj.id or False,
                     'carrier_id': carrier_obj and carrier_obj.id or False,
                     'currency_id': currency_obj and currency_obj.id or False,
-                    'active': True
+                    'active': True,
+                    'ho_id': self.env.user.ho_id.id
                 }
-                new_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                new_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), ('ho_id', '=', self.env.user.ho_id.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if new_tour_obj:
                     new_tour_obj = new_tour_obj[0]
                     new_tour_obj.sudo().write(vals)

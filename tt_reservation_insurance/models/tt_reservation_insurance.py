@@ -854,6 +854,7 @@ class ReservationInsurance(models.Model):
                         'pax_type': p_type,
                         'booking_insurance_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_insurance_id'] = self.id

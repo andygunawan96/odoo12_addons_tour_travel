@@ -60,7 +60,7 @@ class TtAgent(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     is_ho_agent = fields.Boolean('Is HO Agent')
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.set_default_ho())
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
@@ -130,6 +130,7 @@ class TtAgent(models.Model):
         new_acquirer = self.env['payment.acquirer'].create({
             'name': 'Cash',
             'provider': 'manual',
+            'ho_id': new_agent.ho_id.id,
             'agent_id': new_agent.id,
             'type': 'cash',
             'website_published': True
@@ -162,6 +163,7 @@ class TtAgent(models.Model):
 
     def create_walkin_obj_val(self,new_agent,agent_name):
         return{
+            'ho_id': new_agent.ho_id.id,
             'parent_agent_id': new_agent.id,
             'customer_parent_type_id': self.env.ref('tt_base.customer_type_fpo').id,
             'name': agent_name + ' FPO',
@@ -215,14 +217,6 @@ class TtAgent(models.Model):
                 rec.quota_total_duration = rec.quota_ids[0].expired_date
 
     def set_default_agent(self):
-        try:
-            if self.env.user.has_group('base.group_erp_manager'):
-                return False
-            return self.env.user.ho_id.id
-        except:
-            return False
-
-    def set_default_ho(self):
         try:
             if self.env.user.has_group('base.group_erp_manager'):
                 return False

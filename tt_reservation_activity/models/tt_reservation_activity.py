@@ -492,6 +492,7 @@ class ReservationActivity(models.Model):
                     curr_dict['pax_type'] = p_type
                     curr_dict['booking_activity_id'] = self.id
                     curr_dict['description'] = provider.pnr
+                    curr_dict['ho_id'] = self.ho_id.id if self.ho_id else ''
                     curr_dict.update(c_val)
                     values.append((0, 0, curr_dict))
 

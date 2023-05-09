@@ -76,7 +76,8 @@ class ReservationVisa(models.Model):
             'invoice_id': invoice_id.id,
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),
-            'admin_fee': self.payment_acquirer_number_id.fee_amount
+            'admin_fee': self.payment_acquirer_number_id.fee_amount,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False
         })
 
         invoice_line_id = inv_line_obj.id
@@ -108,7 +109,8 @@ class ReservationVisa(models.Model):
             'invoice_id': ho_invoice_id.id,
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),
-            'admin_fee': 0
+            'admin_fee': 0,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False
         })
 
         ho_invoice_line_id = ho_inv_line_obj.id

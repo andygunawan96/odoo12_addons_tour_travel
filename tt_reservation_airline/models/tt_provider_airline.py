@@ -755,6 +755,7 @@ class TtProviderAirline(models.Model):
                 'foreign_currency_id': foreign_currency_id,
                 'provider_airline_booking_id': self.id,
                 'description': self.pnr and self.pnr or str(self.sequence),
+                'ho_id': self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             })
             scs.pop('currency')
             scs.pop('foreign_currency')

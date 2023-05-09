@@ -81,7 +81,7 @@ class SplitInvoice(models.TransientModel):
             except:
                 _logger.error(traceback.format_exc())
 
-            ho_agent_obj = None
+            ho_agent_obj = False
             agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
             if agent_obj:
                 ho_agent_obj = agent_obj.get_ho_parent_agent()
@@ -94,7 +94,7 @@ class SplitInvoice(models.TransientModel):
                 'agent_id': context['co_agent_id'],
                 'upload_uid': context['co_uid'],
                 'will_be_deleted_time': delete_time,
-                'ho_id': ho_agent_obj.id if ho_agent_obj else ''
+                'ho_id': ho_agent_obj and ho_agent_obj.id or False
             })
 
             _logger.info('Finish Upload')

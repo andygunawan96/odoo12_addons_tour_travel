@@ -40,7 +40,7 @@ class CustomerPricing(models.Model):
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id)
 
     customer_parent_type_name = fields.Char('Customer Parent Type Name', compute='_compute_customer_parent_type_name', store=True)

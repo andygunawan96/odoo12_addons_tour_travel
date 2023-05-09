@@ -297,18 +297,25 @@ class TtRefund(models.Model):
                 temp_total += rec2.real_refund_amount
             rec.real_refund_amount = temp_total
 
-    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular'):
+    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular', ho_id=False):
+        search_param = [('after_sales_type', '=', 'refund')]
         if refund_type == 'quick':
-            search_param = ('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_quick_refund').id)
+            search_param.append(('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_quick_refund').id))
             default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_quick')
         else:
-            search_param = ('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_regular_refund').id)
+            search_param.append(('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_regular_refund').id))
             default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund'), search_param], order='sequence, id desc')
+        agent_obj = self.env['tt.agent'].browse(int(agent_id))
+        if ho_id:
+            ho_obj = self.env['tt.agent'].browse(int(ho_id))
+        else:
+            ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+        if ho_obj:
+            search_param.append(('ho_id', '=', ho_obj.id))
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
         if not refund_admin_fee_list:
             current_refund_env = default_refund_env
         else:
-            agent_obj = self.env['tt.agent'].browse(int(agent_id))
             qualified_admin_fee = []
             for admin_fee in refund_admin_fee_list:
                 is_agent = False
