@@ -13,7 +13,7 @@ class AgentReportCommon(models.TransientModel):
         return self.env.user.has_group('base.group_erp_manager')
 
     def _check_ho_user(self):
-        return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id
+        return self.env.user.agent_id.is_ho_agent
 
     company_id = fields.Many2one('res.company', string='Company', readonly=True,
                                  default=lambda self: self.env.user.company_id)

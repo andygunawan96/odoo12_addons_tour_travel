@@ -15,8 +15,8 @@
                     <group>
                         <field name="is_admin" invisible="1"/>
                         <field name="is_ho" invisible="1"/>
-                        <field name="all_ho" attrs="{'invisible': [('is_admin', '=', False)]}"/>
-                        <field name="ho_id" attrs="{'invisible': ['|', ('is_admin', '=', False), ('all_ho', '=', True)]}"/>
+                        <field name="all_ho" attrs="{'invisible': [('is_admin', '=', False)]}" groups="base.group_erp_manager"/>
+                        <field name="ho_id" attrs="{'invisible': ['|', ('is_admin', '=', False), ('all_ho', '=', True)]}" groups="base.group_erp_manager"/>
                         <field name="all_agent" attrs="{'invisible': [('is_ho', '=', False)]}"/>
                         <field name="agent_id" attrs="{'invisible': ['|', ('is_ho', '=', False), ('all_agent', '=', True)]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
                     </group>
