@@ -6,7 +6,7 @@
     'summary': 'Point Reward Module',
     'description': """
 Tour & Travel - Point Reward
-=======================
+=============================
 Key Features
 ------------
     """,

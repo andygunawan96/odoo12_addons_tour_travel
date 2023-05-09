@@ -790,6 +790,7 @@
                         <button name="v2_sent_all_hotel_to_comparer" class="oe_stat_button" string="2b. Proses Hotel Raw uncompared" type="object" icon="fa-plus"/>
                         <button name="v2_proceeding_hotel_comparer" class="oe_stat_button" string="2c. Merge Compared Hotel" type="object" icon="fa-plus"/>
                         <button name="v3_partial_send_cache" class="oe_stat_button" string="3a. Partial Update Data" type="object" icon="fa-plus"/>
+                        <button name="v3_render_hotel_code" class="oe_stat_button" string="3b. Hotel Mapped for Vendor" type="object" icon="fa-plus"/>
                     </group>
                 </sheet>
             </form>
@@ -831,6 +832,16 @@
         <field name="code">
             if records:
                 action = records.mass_recalc_state()
+        </field>
+    </record>
+    <record model="ir.actions.server" id="action_mass_comp_internal_code">
+        <field name="name">Mass Comp. Internal Code</field>
+        <field name="model_id" ref="tt_reservation_hotel.model_tt_hotel_master"/>
+        <field name="binding_model_id" ref="tt_reservation_hotel.model_tt_hotel_master"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.comp_internal_code()
         </field>
     </record>
 </odoo>

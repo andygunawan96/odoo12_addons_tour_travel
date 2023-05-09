@@ -158,7 +158,7 @@ class TtRefund(models.Model):
                                   " * The 'Expired' status means the request has been expired.\n")
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True,
-                               default=lambda self: self.env.user.agent_id)
+                               default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True,
                                default=lambda self: self.env.user.agent_id)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
