@@ -101,6 +101,7 @@
                         <field name="reference" readonly="1"/>
                         <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
                         <field name="website_default_color" groups="base.group_erp_manager" />
+                        <field name="is_use_point_reward" groups="base.group_erp_manager" />
                         <field name="email_server_id" groups="base.group_erp_manager" />
                         <field name="parent_agent_id" readonly="1"/>
                         <field name="user_ids" readonly="1"/>
