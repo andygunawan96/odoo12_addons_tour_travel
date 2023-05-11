@@ -197,7 +197,7 @@ class ResUsersApiInherit(models.Model):
             '%sagent_type_code' % prefix: '',
             '%sagent_frontend_security' % prefix: [rec.code for rec in self.frontend_security_ids]
         }
-        if {self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids)):
+        if {self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.groups_id.ids)):
             res.update({
                 'is_system_admin': True
             })
