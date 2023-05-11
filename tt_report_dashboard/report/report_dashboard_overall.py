@@ -200,8 +200,7 @@ class ReportDashboardOverall(models.Model):
 
     # this function responsible to build and execute query to get agent
     def get_agent_lines(self):
-        query = "SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, ho.seq_id as ho_seq_id FROM tt_agent agent" \
-                "LEFT JOIN tt_agent ho ON ho.id = agent.ho_id ORDER BY agent.name"
+        query = "SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, ho.seq_id as ho_seq_id FROM tt_agent agent LEFT JOIN tt_agent ho ON ho.id = agent.ho_id ORDER BY agent.name"
 
         self.env.cr.execute(query)
         _logger.info(query)
