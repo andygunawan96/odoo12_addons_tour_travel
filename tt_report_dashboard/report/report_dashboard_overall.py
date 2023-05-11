@@ -199,9 +199,15 @@ class ReportDashboardOverall(models.Model):
         return self.env.cr.dictfetchall()
 
     # this function responsible to build and execute query to get agent
-    def get_agent_lines(self):
-        query = "SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, ho.seq_id as ho_seq_id FROM tt_agent agent LEFT JOIN tt_agent ho ON ho.id = agent.ho_id ORDER BY agent.name"
-
+    def get_agent_lines(self, ho_id=''):
+        query = """
+                SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, ho.seq_id as ho_seq_id 
+                FROM tt_agent agent 
+                LEFT JOIN tt_agent ho ON ho.id = agent.ho_id 
+                """
+        if ho_id:
+            query += """WHERE ho.id = {} """.format(int(ho_id))
+        query += """ORDER BY agent.name"""
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
@@ -337,6 +343,11 @@ class ReportDashboardOverall(models.Model):
     # return [{'seq_id': xxx, 'name': 'John', 'agent_type_id': 'xx'}]
     def get_agent_all(self):
         lines = self.get_agent_lines()
+        # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
+        return lines
+
+    def get_agent_by_ho(self, ho_id):
+        lines = self.get_agent_lines(ho_id)
         # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
         return lines
 
