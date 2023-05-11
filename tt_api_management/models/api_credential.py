@@ -199,7 +199,7 @@ class ResUsersApiInherit(models.Model):
         }
         if {self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.groups_id.ids)):
             res.update({
-                'is_system_admin': True
+                '%sis_system_admin' % prefix: True
             })
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))
