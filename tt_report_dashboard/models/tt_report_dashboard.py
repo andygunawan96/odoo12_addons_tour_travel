@@ -278,7 +278,8 @@ class TtReportDashboard(models.Model):
     # this is the function that's being called by the gateway
     # in short this is the main function
     def get_report_json_api(self, data, context = {}):
-        is_admin = context.get('co_is_system_admin')
+        logged_user = self.env['res.users'].browse(int(context['co_uid']))
+        is_admin = logged_user.has_group('base.group_erp_manager') or logged_user.has_group('base.group_system')
         if is_admin and data['ho_seq_id'] == "":
             data['ho_seq_id'] = False
         elif is_admin and data['ho_seq_id'] != "":
@@ -288,7 +289,7 @@ class TtReportDashboard(models.Model):
 
         # is_ho = 1
         # check if agent is ho
-        is_ho = context['co_agent_id'] == context['co_ho_id']
+        is_ho = context['co_agent_id'] == context['co_ho_id'] or is_admin
         if is_ho and data['agent_seq_id'] == "":
             data['agent_seq_id'] = False
         elif is_ho and data['agent_seq_id'] != "":

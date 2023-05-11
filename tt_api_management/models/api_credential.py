@@ -197,10 +197,6 @@ class ResUsersApiInherit(models.Model):
             '%sagent_type_code' % prefix: '',
             '%sagent_frontend_security' % prefix: [rec.code for rec in self.frontend_security_ids]
         }
-        if {self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.groups_id.ids)):
-            res.update({
-                '%sis_system_admin' % prefix: True
-            })
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))
             res.update(self.agent_id.get_ho_credential(prefix))
