@@ -279,6 +279,13 @@ class TtReportDashboard(models.Model):
     # in short this is the main function
     def get_report_json_api(self, data, context = {}):
         is_admin = context.get('co_is_system_admin')
+        if is_admin and data['ho_seq_id'] == "":
+            data['ho_seq_id'] = False
+        elif is_admin and data['ho_seq_id'] != "":
+            pass
+        else:
+            data['ho_seq_id'] = self.env['tt.agent'].browse(context['co_ho_id']).seq_id
+
         # is_ho = 1
         # check if agent is ho
         is_ho = context['co_agent_id'] == context['co_ho_id']
