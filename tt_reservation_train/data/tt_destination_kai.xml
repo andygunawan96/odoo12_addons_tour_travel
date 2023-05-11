@@ -4707,7 +4707,7 @@
 
 
         <record id="tt_destination_airline_smt" model="tt.destinations">
-            <field name="name">Semarangtawang</field>
+            <field name="name">Semarang Tawang Bank Jateng</field>
             <field name="code">SMT</field>
             <field name="icao">SMT</field>
             <field name="city">Semarang</field>

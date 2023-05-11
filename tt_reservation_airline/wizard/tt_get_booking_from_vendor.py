@@ -377,8 +377,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                     "first_name": booker_obj.first_name or "",
                     "last_name": booker_obj.last_name or "",
                     "email": booker_obj.email,
-                    "calling_code": booker_obj.phone_ids and booker_obj.phone_ids[
-                        0].calling_code or '',
+                    "calling_code": booker_obj.phone_ids and booker_obj.phone_ids[0].calling_code or '',
                     "mobile": booker_obj.phone_ids and booker_obj.phone_ids[0].calling_number or '',
                     "nationality_code": booker_obj.nationality_id.code,
                     "is_also_booker": True,
