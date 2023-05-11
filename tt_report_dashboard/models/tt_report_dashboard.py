@@ -278,6 +278,7 @@ class TtReportDashboard(models.Model):
     # this is the function that's being called by the gateway
     # in short this is the main function
     def get_report_json_api(self, data, context = {}):
+        is_admin = context.get('co_is_system_admin')
         # is_ho = 1
         # check if agent is ho
         is_ho = context['co_agent_id'] == context['co_ho_id']
@@ -379,22 +380,41 @@ class TtReportDashboard(models.Model):
             res = self.get_book_issued_ratio(data)
         else:
             return ERR.get_error(1001, "Cannot find action")
-        if is_ho:
+        if is_admin:
             res['dependencies'] = {
+                'is_admin': 1,
                 'is_ho': 1,
+                'current_ho': self.env['tt.agent'].search([('seq_id', '=', data['ho_seq_id'])], limit=1).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
+                'ho_list': self.env['report.tt_report_dashboard.overall'].get_ho_all(),
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
-                'from_data': data
+                'form_data': data
+            }
+        elif is_ho:
+            res['dependencies'] = {
+                'is_admin': 0,
+                'is_ho': 1,
+                'current_ho': self.env['tt.agent'].browse(context['co_ho_id']).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
+                'ho_list': [],
+                'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
+                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
+                'provider_type': variables.PROVIDER_TYPE,
+                'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
+                'form_data': data
             }
         else:
             res['profit_ho'] = 0
             res['profit_agent'] = 0
             res['dependencies'] = {
+                'is_admin': 0,
                 'is_ho': 0,
+                'current_ho': self.env['tt.agent'].browse(context['co_ho_id']).name,
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
+                'ho_list': [],
                 'agent_type': [],
                 'agent_list': [],
                 'provider_type': variables.PROVIDER_TYPE,

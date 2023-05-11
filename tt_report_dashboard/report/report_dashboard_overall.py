@@ -191,9 +191,16 @@ class ReportDashboardOverall(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
+    def get_ho_lines(self):
+        query = "SELECT COALESCE(ho.seq_id, '') as seq_id, ho.name FROM tt_agent ho WHERE ho.is_ho_agent = 'True' ORDER BY name"
+
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
     # this function responsible to build and execute query to get agent
     def get_agent_lines(self):
-        query = "SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id FROM tt_agent agent ORDER BY name"
+        query = "SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, agent.ho_id FROM tt_agent agent ORDER BY name"
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -316,6 +323,14 @@ class ReportDashboardOverall(models.Model):
     #   the catch is it is the function you call from other page or module or elsewhere
     #   it's like a get-set function in OOP
     ##########################################
+
+    # get all ho
+    # input - none
+    # return [{'seq_id': xxx, 'name': 'John'}]
+    def get_ho_all(self):
+        lines = self.get_ho_lines()
+        # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
+        return lines
 
     # get all agent
     # input - none
