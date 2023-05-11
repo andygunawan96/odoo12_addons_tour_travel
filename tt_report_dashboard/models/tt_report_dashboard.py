@@ -409,7 +409,7 @@ class TtReportDashboard(models.Model):
                 'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
                 'ho_list': [],
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
-                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
+                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_by_ho(self.env['tt.agent'].browse(context['co_ho_id']).id),
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'form_data': data
