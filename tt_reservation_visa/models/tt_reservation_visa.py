@@ -2261,8 +2261,7 @@ class TtVisa(models.Model):
                         pax_pnr_data['upsell'] += rec3.amount
                     if rec3.charge_type == 'DISC':
                         pax_pnr_data['discount'] -= rec3.amount
-                pax_pnr_data['parent_agent_commission'] = pax_pnr_data['total_commission'] - pax_pnr_data[
-                    'agent_commission'] - pax_pnr_data['ho_commission']
+                pax_pnr_data['parent_agent_commission'] = pax_pnr_data['total_commission'] - pax_pnr_data['agent_commission'] - pax_pnr_data['ho_commission']
                 if pax_ticketed:
                     pax_data['pnr_list'].append(pax_pnr_data)
             pax_list.append(pax_data)
