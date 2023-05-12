@@ -2299,10 +2299,11 @@ class VisaSyncProductsChildren(models.TransientModel):
             data_vendor = self.env['tt.reservation.visa.pricelist'].search([('provider_id.code', '=', 'rodextrip_visa')])
             for rec in data_vendor:
                 rec.active = False
+            ho_obj = self.env['tt.agent'].search([('seq_id','=', data['ho_seq_id'])])
             for rec in data['data']:
                 master_data = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', rec['reference_code'] + '_rdx')], limit=1)
                 if master_data:
-                    master_data.update({
+                    data_update = {
                         'commercial_duration': rec['commercial_duration'],
                         'commission_price': rec['commission_price'],
                         'cost_price': rec['cost_price'],
@@ -2319,12 +2320,17 @@ class VisaSyncProductsChildren(models.TransientModel):
                         'pax_type': rec['pax_type'],
                         'process_type': rec['process_type'],
                         'reference_code': rec['reference_code'] + '_rdx',
-                        'provider_id': self.env['tt.provider'].search([('code', '=', rec['provider_id'])]).id,
+                        'provider_id': self.env['tt.provider'].search([('code', '=', data['provider'])]).id,
                         'sale_price': rec['sale_price'],
                         'visa_nta_price': rec['visa_nta_price'],
                         'visa_type': rec['visa_type'],
-                        'active': True
-                    })
+                        'active': True,
+                    }
+                    if ho_obj.id not in master_data.ho_ids.ids:
+                        data_update.update({
+                            'ho_ids': [(4, ho_obj.id)]
+                        })
+                    master_data.update(data_update)
                     master_data.requirement_ids.unlink()
                     master_data.attachments_ids.unlink()
                     master_data.visa_location_ids.unlink()
@@ -2346,18 +2352,19 @@ class VisaSyncProductsChildren(models.TransientModel):
                         'pax_type': rec['pax_type'],
                         'process_type': rec['process_type'],
                         'reference_code': rec['reference_code'] + '_rdx',
-                        'provider_id': self.env['tt.provider'].search([('code', '=', rec['provider_id'])]).id,
+                        'provider_id': self.env['tt.provider'].search([('code', '=', data['provider'])], limit=1).id,
                         'sale_price': rec['sale_price'],
                         'visa_nta_price': rec['visa_nta_price'],
                         'visa_type': rec['visa_type'],
-                        'active': True
+                        'active': True,
+                        'ho_ids': [(4, ho_obj.id)]
                     })
-                for data in rec['requirement_ids']:
+                for data_requirement in rec['requirement_ids']:
                     self.env['tt.reservation.visa.requirements'].create({
                         'pricelist_id': master_data.id,
-                        'name': data['name'],
-                        'reference_code': data['reference_code'] + '_rdx',
-                        'type_id': self.env['tt.traveldoc.type'].create(data['type_id']).id
+                        'name': data_requirement['name'],
+                        'reference_code': data_requirement['reference_code'] + '_rdx',
+                        'type_id': self.env['tt.traveldoc.type'].create(data_requirement['type_id']).id
                     })
                 upload = self.env['tt.upload.center.wizard']
                 co_agent_id = self.env.user.agent_id.id
@@ -2367,29 +2374,31 @@ class VisaSyncProductsChildren(models.TransientModel):
                     'co_uid': co_uid
                 }
                 attachments = []
-                for data in rec['attachments_ids']:
-                    data['file'] = self.env['visa.sync.product.wizard'].url_to_base64(data['url'])
-                    # data['filename'], data['file_reference'], data['file']
-                    # KASIH TRY EXCEPT
-                    upload = upload.upload_file_api(data, context)
-                    attachments.append(
-                        self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1).id)
+                for data_attachment in rec['attachments_ids']:
+                    try:
+                        data_attachment['file'] = self.env['visa.sync.product.wizard'].url_to_base64(data['url'])
+                        # data['filename'], data['file_reference'], data['file']
+                        # KASIH TRY EXCEPT
+                        upload = upload.upload_file_api(data_attachment, context)
+                        attachments.append(self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1).id)
                 #     pass
                 #     #tt upload center
                 #     self.env['tt.upload.center'].create({
                 #         'pricelist_id': master_data.id,
                 #     })
+                    except Exception as e:
+                        _logger.error("%s, %s" % (str(e), traceback.format_exc()))
                 if attachments:
                     master_data.update({
                         'attachments_ids': [(6, 0, attachments)]
                     })
-                for data in rec['visa_location_ids']:
+                for data_visa_location in rec['visa_location_ids']:
                     self.env['tt.master.visa.locations'].create({
                         'pricelist_id': master_data.id,
-                        'name': data['name'],
-                        'location_type': data['location_type'],
-                        'address': data['address'],
-                        'city': data['city']
+                        'name': data_visa_location['name'],
+                        'location_type': data_visa_location['location_type'],
+                        'address': data_visa_location['address'],
+                        'city': data_visa_location['city']
                     })
             response = {
                 'success': True
