@@ -2155,7 +2155,7 @@ class TourSyncProductsChildren(models.TransientModel):
                             'name': rec3.name,
                             'payment_percentage': rec3.payment_percentage,
                             'description': rec3.description,
-                            'due_date': rec3.due_date,
+                            'due_date': rec3.due_date and rec3.due_date.strftime("%Y-%m-%d") or False,
                         })
                     tour_line_dict.update({
                         'payment_rules_ids': payment_rules_list
