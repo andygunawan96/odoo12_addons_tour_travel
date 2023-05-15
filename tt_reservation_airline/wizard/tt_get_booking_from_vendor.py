@@ -465,7 +465,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 "CHD": pax_type_res.get('CHD',0),
                 "INF": pax_type_res.get('INF',0)
             },
-            "promo_codes": [],
+            "promo_codes": retrieve_res.get('promo_codes', []),
             "schedule_id": 1
         })
 
@@ -498,7 +498,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "child": pax_type_res.get('CHD',0),
             "infant": pax_type_res.get('INF',0),
             "booking_state_provider": schedules_req_list, ## ini itu schedule
-            "promo_codes": [],
+            "promo_codes": retrieve_res.get('promo_codes', []),
         }
 
         create_res = self.env['tt.reservation.airline'].create_booking_airline_api(create_req,context={
@@ -547,7 +547,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "hold_date": retrieve_res.get('hold_date'),
             "tickets": ticket_req_list,##
             "error_msg": "",
-            "promo_codes": [],
+            "promo_codes": retrieve_res.get('promo_codes', []),
             "reference": retrieve_res['reference'],
             "expired_date": "",
             "status": retrieve_res['status'],

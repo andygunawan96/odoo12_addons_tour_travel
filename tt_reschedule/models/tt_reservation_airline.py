@@ -1079,6 +1079,7 @@ class ReservationAirline(models.Model):
                             })
                             old_segment_list.append(seg_obj.id)
 
+                        new_segment_obj_list = []
                         for seg in journey['segments']:
                             # seg_key = '{origin}-{destination}'.format(**seg)
                             # if seg_key not in resv_segment_dict:
@@ -1146,6 +1147,7 @@ class ReservationAirline(models.Model):
                             })
                             n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
                             new_segment_list.append(n_seg_obj.id)
+                            new_segment_obj_list.append(n_seg_obj)
 
                             leg_values = {
                                 'segment_id': n_seg_obj.id,
@@ -1193,14 +1195,34 @@ class ReservationAirline(models.Model):
                             # })
                             # old_segment_list.append(prov_segment_data.id)
 
-                        if journey_prov_data.is_vtl_flight != journey.get('is_vtl_flight', False):
-                            journey_prov_data.write({
-                                'is_vtl_flight': journey['is_vtl_flight']
-                            })
+                        # if journey_prov_data.is_vtl_flight != journey.get('is_vtl_flight', False):
+                        #     journey_prov_data.write({
+                        #         'is_vtl_flight': journey['is_vtl_flight']
+                        #     })
+                        origin_id = journey_prov_data.origin_id.id if journey_prov_data.origin_id else None
+                        destination_id = journey_prov_data.destination_id.id if journey_prov_data.destination_id else None
+                        departure_date = journey['departure_date'] if journey.get('departure_date') else ''
+                        arrival_date = journey['arrival_date'] if journey.get('arrival_date') else ''
+                        journey_code = journey['journey_code'] if journey.get('journey_code') else ''
+                        if new_segment_obj_list:
+                            if new_segment_obj_list[0].origin_id:
+                                origin_id = new_segment_obj_list[0].origin_id.id
+                            if new_segment_obj_list[-1].destination_id:
+                                destination_id = new_segment_obj_list[-1].destination_id.id
+                        journey_prov_data.write({
+                            'origin_id': origin_id,
+                            'destination_id': destination_id,
+                            'departure_date': departure_date,
+                            'arrival_date': arrival_date,
+                            'journey_code': journey_code,
+                        })
                 else:
                     journey_id_dict_temp = {}
                     # September 23, 2022 - SAM
+                    journey_obj_id_list = []
+                    journey_obj_list = []
                     for journey in commit_data['journeys']:
+                        new_segment_obj_list = []
                         for seg in journey['segments']:
                             seg_key = '{origin}-{destination}'.format(**seg)
                             if seg_key not in resv_segment_dict:
@@ -1306,6 +1328,7 @@ class ReservationAirline(models.Model):
                             })
                             n_seg_obj = self.env['tt.segment.reschedule'].sudo().create(n_seg_values)
                             new_segment_list.append(n_seg_obj.id)
+                            new_segment_obj_list.append(n_seg_obj)
 
                             leg_values = {
                                 'segment_id': n_seg_obj.id,
@@ -1340,6 +1363,14 @@ class ReservationAirline(models.Model):
                                 'provider_id': provider_obj.id if provider_obj else None,
                                 'journey_id': journey_id_dict_temp[seg_key]['journey_id'],
                             })
+
+                            if journey_id_dict_temp[seg_key] and journey_id_dict_temp[seg_key].id not in journey_obj_id_list:
+                                journey_obj_id_list.append(journey_id_dict_temp[seg_key].id)
+                                journey_obj_list.append(journey_id_dict_temp[seg_key])
+                                journey_id_dict_temp[seg_key].write({
+                                    'journey_code': journey['journey_code'] if journey.get('journey_code') else '',
+                                })
+
                             n_resv_seg_obj = self.env['tt.segment.airline'].sudo().create(n_seg_values)
                             leg_values.update({
                                 'segment_id': n_resv_seg_obj.id,
@@ -1357,6 +1388,16 @@ class ReservationAirline(models.Model):
                         #     journey_prov_data.write({
                         #         'is_vtl_flight': journey['is_vtl_flight']
                         #     })
+
+                    for journey_obj in journey_obj_list:
+                        if journey_obj_list.segment_ids:
+                            journey_obj.write({
+                                'origin_id': journey_obj_list.segment_ids[0].origin_id.id if journey_obj_list.segment_ids[0].origin_id else None,
+                                'destination_id': journey_obj_list.segment_ids[-1].destination_id.id if journey_obj_list.segment_ids[-1].destination_id else None,
+                                'departure_date': journey_obj_list.segment_ids[0].departure_date if journey_obj_list.segment_ids[0].departure_date else '',
+                                'arrival_date': journey_obj_list.segment_ids[-1].arrival_date if journey_obj_list.segment_ids[-1].arrival_date else '',
+
+                            })
                 # END
 
                 # # TODO CEK DATA SSR DAN SEAT
@@ -1961,6 +2002,8 @@ class ReservationAirline(models.Model):
                 'child': child,
                 'infant': infant,
                 'departure_date': airline_obj.journey_ids[0].departure_date[:10],
+                'origin_id': airline_obj.journey_ids[0].origin_id.id if airline_obj.journey_ids[0].origin_id else None,
+                'destination_id': airline_obj.journey_ids[-1].destination_id.id if airline_obj.journey_ids[-1].destination_id else None,
             })
             airline_obj.calculate_service_charge()
 
