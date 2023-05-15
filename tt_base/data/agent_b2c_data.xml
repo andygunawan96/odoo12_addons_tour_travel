@@ -4,6 +4,7 @@
         <record id="agent_b2c" model="tt.agent">
             <field name="name">Rodextrip</field>
             <field name="agent_type_id" ref="agent_type_btc"/>
+            <field name="is_btc_agent">True</field>
             <field name="email">info@rodextrip.com</field>
             <field name="is_send_email_cust" eval="True"/>
         </record>

@@ -59,6 +59,7 @@ class TtAgent(models.Model):
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     is_ho_agent = fields.Boolean('Is HO Agent')
+    is_btc_agent = fields.Boolean('Is BTC Agent')
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
@@ -141,6 +142,8 @@ class TtAgent(models.Model):
             'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code)),
             'default_acquirer_id': new_acquirer.id
         }
+        if vals_list.get('is_ho_agent') and vals_list.get('is_btc_agent'):
+            vals_list.pop('is_btc_agent')
         if vals_list.get('is_ho_agent'):
             write_vals.update({
                 'ho_id': new_agent.id
@@ -155,11 +158,28 @@ class TtAgent(models.Model):
                 raise UserError('Parent agent cannot be itself.')
             if self.agent_type_id.id == ho_type_id:
                 raise UserError('Cannot set HO parent agent.')
+        if vals.get('is_ho_agent') and vals.get('is_btc_agent'):
+            vals.pop('is_btc_agent')
         if vals.get('is_ho_agent'):
             vals.update({
-                'ho_id': self.id
+                'ho_id': self.id,
+                'is_btc_agent': False
+            })
+        if vals.get('is_btc_agent'):
+            vals.update({
+                'is_ho_agent': False
             })
         super(TtAgent, self).write(vals)
+
+    @api.onchange('is_ho_agent')
+    def _compute_is_btc(self):
+        if self.is_ho_agent and self.is_btc_agent:
+            self.is_btc_agent = False
+
+    @api.onchange('is_btc_agent')
+    def _compute_is_ho(self):
+        if self.is_btc_agent and self.is_ho_agent:
+            self.is_ho_agent = False
 
     def create_walkin_obj_val(self,new_agent,agent_name):
         return{

@@ -3,7 +3,7 @@
     <data noupdate="1">
         <record id="rodex_ho" model="tt.agent">
             <field name="name">Rodextrip.com</field>
-            <field name="agent_type_id" ref="agent_type_ho"/>
+            <field name="is_ho_agent">True</field>
         </record>
 
         <record id="base_top_up_admin" model="res.users">

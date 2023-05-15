@@ -97,6 +97,7 @@
 
                     <group string="Agent">
                         <field name="is_ho_agent" readonly="0" groups="base.group_erp_manager"/>
+                        <field name="is_btc_agent" readonly="1"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
                         <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
@@ -182,6 +183,9 @@
             </field>
             <field name="est_date" position="replace">
                 <field name="est_date" readonly="0"/>
+            </field>
+            <field name="is_btc_agent" position="replace">
+                <field name="is_btc_agent" readonly="0"/>
             </field>
             <field name="agent_type_id" position="replace">
                 <field name="agent_type_id" readonly="0"/>
