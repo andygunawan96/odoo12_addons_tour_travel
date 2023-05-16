@@ -103,6 +103,13 @@ class TtCustomerParent(models.Model):
     #                     'customer_id': rec2.id
     #                 })
 
+    def to_dict_acc(self):
+        return {
+            'seq_id': self.seq_id,
+            'customer_parent_name': self.name,
+            'customer_parent_type': self.customer_parent_type_id and self.customer_parent_type_id.name or ''
+        }
+
     def action_create_corporate_user(self):
         vals = {
             'name': 'Create Corporate User Wizard',

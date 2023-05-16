@@ -751,6 +751,7 @@ class TtReservationBus(models.Model):
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
                 c_code = ''
+                c_type = ''
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
@@ -773,6 +774,8 @@ class TtReservationBus(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}

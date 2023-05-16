@@ -461,6 +461,8 @@ class ReservationActivity(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -1296,11 +1298,14 @@ class ReservationActivity(models.Model):
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
-        desc_txt += 'Activity: ' + self.activity_id.name + '<br/>'
-        desc_txt += 'Product: ' + self.activity_product_id.name + '<br/>'
-        desc_txt += 'Visit Date: ' + self.visit_date.strftime('%d %b %Y')
-        if self.timeslot:
-            desc_txt += ' (' + self.timeslot + ')'
+        for rec in self.provider_booking_ids:
+            for rec2 in rec.activity_detail_ids:
+                desc_txt += 'Activity: ' + rec2.activity_id.name + '<br/>'
+                desc_txt += 'Product: ' + rec2.activity_product_id.name + '<br/>'
+                desc_txt += 'Visit Date: ' + rec2.visit_date.strftime('%d %b %Y')
+                if rec2.timeslot:
+                    desc_txt += ' (' + rec2.timeslot + ')'
+                desc_txt += '<br/><br/>'
         return desc_txt
 
     def get_passenger_pricing_breakdown(self):

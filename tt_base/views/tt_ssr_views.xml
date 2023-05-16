@@ -122,6 +122,14 @@
                                 <field name="notes"/>
                             </group>
                         </group>
+                        <group>
+                            <group>
+                                <field name="is_pre_booking" widget="boolean_toggle"/>
+                                <field name="is_post_booking_booked" widget="boolean_toggle"/>
+                                <field name="is_post_booking_issued" widget="boolean_toggle"/>
+                            </group>
+                            <group></group>
+                        </group>
                         <separator string="SSR Lines"/>
                         <field name="line_ids"/>
                     </sheet>
@@ -139,7 +147,10 @@
                     <field name="category_id"/>
                     <field name="provider_id"/>
                     <field name="provider_type_id"/>
-                    <field name="active"/>
+                    <field name="is_pre_booking" widget="boolean_toggle"/>
+                    <field name="is_post_booking_booked" widget="boolean_toggle"/>
+                    <field name="is_post_booking_issued" widget="boolean_toggle"/>
+                    <field name="active" widget="boolean_toggle"/>
                 </tree>
             </field>
         </record>
