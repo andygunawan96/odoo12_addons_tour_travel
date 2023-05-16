@@ -121,7 +121,7 @@ class TtAccountingQueue(models.Model):
                             temp_prov_price_dict['agent_nta'] += sale.total
                         if sale.charge_type == 'RAC':
                             temp_prov_price_dict['total_commission'] -= sale.total
-                            if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                            if sale.commission_agent_id.is_ho_agent:
                                 temp_prov_price_dict['ho_commission'] -= sale.total
                         if sale.charge_type != 'RAC':
                             temp_prov_price_dict['agent_nta'] += sale.total
@@ -152,7 +152,7 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type == 'RAC':
                                     temp_tick_price_dict['total_commission'] -= sale.amount
-                                    if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                                    if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC':
                                     temp_tick_price_dict['agent_nta'] += sale.amount
@@ -188,7 +188,7 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type == 'RAC':
                                     temp_tick_price_dict['total_commission'] -= sale.amount
-                                    if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                                    if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC':
                                     temp_tick_price_dict['agent_nta'] += sale.amount

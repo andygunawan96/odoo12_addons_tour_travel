@@ -67,7 +67,7 @@ class AgentReportLedger(models.AbstractModel):
         return lines
 
     def _get_user_agent_type(self, data_form):
-        if self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+        if self.env.user.agent_id.is_ho_agent:
             data_form['agent_type'] = 'ho'
         else:
             data_form['agent_type'] = 'non ho'

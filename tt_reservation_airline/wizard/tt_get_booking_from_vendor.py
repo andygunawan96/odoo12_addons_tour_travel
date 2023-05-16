@@ -84,7 +84,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     def _onchange_pnr(self):
         if self.pnr:
             return {'domain': {
-                'agent_id': [('agent_type_id','!=',self.env.ref('tt_base.agent_type_ho').id)]
+                'agent_id': [('is_ho_agent','!=',True)]
             }}
 
     @api.onchange("is_database_contact")

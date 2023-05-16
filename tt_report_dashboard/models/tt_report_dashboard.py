@@ -977,11 +977,11 @@ class TtReportDashboard(models.Model):
                         summary_chanel[person_index]['profit'] += 0
                     summary_chanel[person_index]['reservation'] += 1
 
-            summary_ho = False
-            for i in summary_chanel:
-                if i['agent_type_name'] == self.env.ref('tt_base.agent_type_ho').name:
-                    summary_ho = True
-                    break
+            # summary_ho = False
+            # for i in summary_chanel:
+            #     if i['agent_type_name'] == self.env.ref('tt_base.agent_type_ho').name:
+            #         summary_ho = True
+            #         break
             list_id = []
             # proceed profit
             for i in profit:

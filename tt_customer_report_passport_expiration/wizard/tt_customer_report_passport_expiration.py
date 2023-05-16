@@ -8,7 +8,7 @@ class CustomerReportPassportExpiration(models.TransientModel):
     _description = 'Customer Report Passport Expiration Wizard'
 
     def _check_ho_user(self):
-        return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id
+        return self.env.user.agent_id.is_ho_agent
 
     int_value = fields.Integer('Number Value')
     type_value = fields.Selection([('days','Day(s)'),
@@ -40,8 +40,7 @@ class CustomerReportPassportExpiration(models.TransientModel):
             data['form']['agent_name'] = ''
         else:
             agent_id = data['form']['agent_id'][0] if 'agent_id' in data['form'].keys() else False
-            if agent_id != self.env.user.agent_id.id and self.env.user.agent_id.agent_type_id.id != self.env.ref(
-                    'tt_base.agent_type_ho').id:
+            if agent_id != self.env.user.agent_id.id and not self.env.user.agent_id.is_ho_agent:
                 agent_id = self.env.user.agent_id.id
             agent_name = self.env['tt.agent'].sudo().browse(agent_id).name if agent_id else 'All Agent'
             data['form']['agent_id'] = agent_id

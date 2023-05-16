@@ -1577,7 +1577,7 @@ class ReservationGroupBooking(models.Model):
                     if scs.get('charge_type') == 'RAC':
                         if not scs.get('commission_agent_id') or scs.get('commission_agent_id') == rec.agent_id.id:
                             rec.agent_commission -= scs['total']
-                        elif scs.get('commission_agent_id') == rec.agent_id.parent_agent_id.id and rec.agent_id.parent_agent_id.id != self.env.ref('tt_base.agent_type_ho').id:
+                        elif scs.get('commission_agent_id') == rec.agent_id.parent_agent_id.id and not rec.agent_id.parent_agent_id.is_ho_agent:
                             rec.parent_agent_commission -= scs['total']
                         else:
                             rec.ho_commission -= scs['total']
