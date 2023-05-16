@@ -50,7 +50,8 @@ class ActivityResendVoucher(models.TransientModel):
         req = {
             'provider': self.provider_name,
             'book_id': self.pnr,
-            'user_email_address': self.user_email_add
+            'user_email_address': self.user_email_add,
+            'ho_id': self.agent_id.get_ho_parent_agent().id
         }
         res = self.env['tt.activity.api.con'].resend_voucher(req)
         if res['response'].get('success'):
@@ -236,6 +237,7 @@ class ReservationActivity(models.Model):
             'provider': self.activity_id.provider_id.code,
             'book_id': self.id,
             'pnr': self.pnr,
+            'ho_id': self.agent_id.get_ho_parent_agent().id
         }
         res = self.env['tt.activity.api.con'].issued_booking_vendor(req)
 
@@ -781,7 +783,8 @@ class ReservationActivity(models.Model):
                 'order_number': obj.name,
                 'uuid': obj.booking_uuid,
                 'pnr': obj.pnr,
-                'provider': provider
+                'provider': provider,
+                'ho_id': obj.agent_id.get_ho_parent_agent().id
             }
             attachment_objs = []
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)

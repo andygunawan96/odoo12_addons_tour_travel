@@ -31,16 +31,16 @@ class TtTourApiCon(models.Model):
 
         return res
 
-    def get_balance(self,provider):
-        return self.send_request_to_gateway('%s/account/tour' % (self.url),{'provider': provider},'get_vendor_balance')
+    def get_balance(self,provider, ho_id):
+        return self.send_request_to_gateway('%s/account/tour' % (self.url),{'provider': provider},'get_vendor_balance', ho_id=ho_id)
 
-    def send_tour_payment_expired_notification(self,data,context):
+    def send_tour_payment_expired_notification(self,data,context, ho_id):
         request = {
             'code': 9901,
             'message': 'Tour Payment Expired: {}\n\nOrder Number : {}\nTour : {}\nDue Date : {}'.format(data['url'], data['tour_name'],data['order_number'],data['due_date']),
             "title": 'TOUR PAYMENT EXPIRED'
         }
-        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code', ho_id=ho_id)
 
 
 class TtMasterTourApiCon(models.Model):
@@ -80,12 +80,12 @@ class TtMasterTourApiCon(models.Model):
     def get_details_provider(self, data):
         return self.send_request_to_gateway('%s/booking/tour' % (self.url), data, 'get_details_provider')
 
-    def send_tour_request_notification(self,data,context):
+    def send_tour_request_notification(self,data,context, ho_id):
         request = {
             'code': 9908,
             'message': 'New Tour Request: {}\n\nCo User Name : {}\nCo User Agent : {}\n\nRequest Number : {}'.format(data['url'], context['co_user_name'],context['co_agent_name'],data['req_number']),
             "title": 'TOUR PACKAGE REQUEST'
         }
-        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code', ho_id)
 
 

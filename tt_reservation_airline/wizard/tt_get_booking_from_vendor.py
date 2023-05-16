@@ -138,7 +138,10 @@ class TtGetBookingFromVendor(models.TransientModel):
                 'is_retrieved': True,
                 'pricing_date': str(self.pricing_date)
             })
-
+        if self.agent_id:
+            req.update({
+                'ho_id': self.agent_id.get_ho_parent_agent().id
+            })
         res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(req)
         if res['error_code'] != 0:
             raise UserError(res['error_msg'])

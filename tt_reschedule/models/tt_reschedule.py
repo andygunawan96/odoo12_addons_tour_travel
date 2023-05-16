@@ -660,9 +660,10 @@ class TtReschedule(models.Model):
     def check_po_required(self):
         required = False
         for rec in self.reschedule_line_ids:
-            if rec.provider_id.is_using_po:
-                if not rec.letter_of_guarantee_ids:
-                    required = True
+            for agent_obj in rec.provider_id.provider_ho_data_ids:
+                if agent_obj.is_using_po:
+                    if not rec.letter_of_guarantee_ids:
+                        required = True
         return required
 
     def action_done(self, bypass_po=False):

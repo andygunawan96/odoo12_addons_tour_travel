@@ -9,6 +9,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id),('is_reconcile','=',True)]")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     date_from = fields.Date('Start Date')
     date_to = fields.Date('End Date')
 
@@ -29,10 +30,10 @@ class TtReconcileTransactionWizard(models.TransientModel):
                 'date_to': self.date_to and datetime.strftime(self.date_to,'%Y-%m-%d') or ''
             }
         }
-        response = self.env['tt.api.con'].send_reconcile_request(request)
+        response = self.env['tt.api.con'].send_reconcile_request(request, self.ho_id.id)
         if response['error_code'] != 0:
             raise UserError(response['error_msg'])
-        recon_obj_list = self.save_reconcile_data(response['response'])
+        recon_obj_list = self.save_reconcile_data(response['response'], self.ho_id.id)
         return recon_obj_list
 
     def dummy_send_recon(self):
@@ -49,7 +50,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
             raise UserError("Failed")
         self.save_reconcile_data(recon_resp['response'])
 
-    def save_reconcile_data(self,data):
+    def save_reconcile_data(self,data, ho_id):
         provider_obj = self.env['tt.provider'].search([('code','=',data['provider_code'])])
         if not provider_obj:
             raise UserError("Provider Not Found")
@@ -72,6 +73,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
                     currency = self.env.ref("base." + transaction['currency']).id
                     transaction.update({
                         'currency_id': currency,
+                        'ho_id': ho_id
                     })
                 except:
                     pass

@@ -121,7 +121,8 @@ class ttCronTopUpValidator(models.Model):
                                                 'member': False, # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
                                                 'acquirer_seq_id': seq_id,
                                                 'force_issued': True,
-                                                'use_point': book_obj.payment_acquirer_number_id.is_using_point_reward
+                                                'use_point': book_obj.payment_acquirer_number_id.is_using_point_reward,
+                                                'ho_id': book_obj.agent_id.get_ho_parent_agent().id
                                             }
                                             res = self.env['tt.payment.api.con'].send_payment(req)
                                             _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1], json.dumps(res)))
@@ -209,7 +210,8 @@ class ttCronTopUpValidator(models.Model):
                                 'member': False,  # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
                                 'acquirer_seq_id': seq_id,
                                 'force_issued': True,
-                                'use_point': book_obj.payment_acquirer_number_id.is_using_point_reward
+                                'use_point': book_obj.payment_acquirer_number_id.is_using_point_reward,
+                                'ho_id': book_obj.agent_id.get_ho_parent_agent().id
                             }
                             res = self.env['tt.payment.api.con'].send_payment(req)
                             _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1],json.dumps(res)))

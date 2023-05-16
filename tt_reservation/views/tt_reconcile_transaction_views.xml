@@ -134,6 +134,7 @@
                             <field name="pnr"/>
                             <field name="transaction_code"/>
                             <field name="type"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                         </group>
                         <group>
                             <field name="state"/>

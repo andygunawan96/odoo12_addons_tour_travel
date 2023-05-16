@@ -604,7 +604,7 @@ class IssuedOffline(models.Model):
                 scs.is_ledger_created = True
         try:
             self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
-                                                                     self.get_total_amount())
+                                                                     self.get_total_amount(), self.agent_id.get_ho_parent_agent().id)
         except Exception as e:
             _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
 

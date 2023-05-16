@@ -578,7 +578,7 @@ class ReservationGroupBooking(models.Model):
                 scs.is_ledger_created = True
         try:
             self.env['tt.groupbooking.api.con'].send_approve_notification(self.name, self.env.user.name,
-                                                                     self.get_total_amount())
+                                                                     self.get_total_amount(), self.agent_id.get_ho_parent_agent().id)
         except Exception as e:
             _logger.error("Send ISSUED GROUP BOOKING Approve Notification Telegram Error")
 

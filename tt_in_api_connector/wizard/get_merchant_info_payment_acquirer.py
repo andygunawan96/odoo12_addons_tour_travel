@@ -11,8 +11,11 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
 
     def sync_info(self):
         try:
-            ho_obj = self.ho_id
-            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider, 'type': 'close', 'co_ho_id': ho_obj.id})
+            if self.ho_id:
+                ho_obj = self.ho_id
+            else:
+                ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider, 'type': 'close'}, ho_obj.id)
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:
 
@@ -34,7 +37,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                             'website_published': True
                         })
 
-            res = self.env['tt.payment.api.con'].get_merchant_info({'provider': self.provider, 'type': 'open', 'co_ho_id': ho_obj.id})
+            res = self.env['tt.payment.api.con'].get_merchant_info({'provider': self.provider, 'type': 'open'}, ho_obj.id)
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:
                 bank_code_list = [x['bankCode'] for x in res['response']]
