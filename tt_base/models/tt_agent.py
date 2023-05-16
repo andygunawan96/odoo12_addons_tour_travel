@@ -60,6 +60,7 @@ class TtAgent(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
     is_ho_agent = fields.Boolean('Is HO Agent')
     is_btc_agent = fields.Boolean('Is BTC Agent')
+    btc_agent_type_id = fields.Many2one('tt.agent.type', 'Default BTC Agent Type')
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")

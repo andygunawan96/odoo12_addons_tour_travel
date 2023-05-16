@@ -97,10 +97,11 @@
 
                     <group string="Agent">
                         <field name="is_ho_agent" readonly="0" groups="base.group_erp_manager"/>
-                        <field name="is_btc_agent" readonly="1"/>
+                        <field name="is_btc_agent" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                        <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
+                        <field name="btc_agent_type_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
-                        <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
                         <field name="website_default_color" groups="base.group_erp_manager" />
                         <field name="is_use_point_reward" groups="base.group_erp_manager" />
                         <field name="email_server_id" groups="base.group_erp_manager" />
@@ -185,7 +186,10 @@
                 <field name="est_date" readonly="0"/>
             </field>
             <field name="is_btc_agent" position="replace">
-                <field name="is_btc_agent" readonly="0"/>
+                <field name="is_btc_agent" readonly="0" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+            </field>
+            <field name="btc_agent_type_id" position="replace">
+                <field name="btc_agent_type_id" readonly="0" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
             </field>
             <field name="agent_type_id" position="replace">
                 <field name="agent_type_id" readonly="0"/>

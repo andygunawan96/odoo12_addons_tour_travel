@@ -533,8 +533,9 @@ class TtCustomer(models.Model):
         try:
             # Create Agent B2C
             name = (data['first_name'] or '') + ' ' + (data.get('last_name') or '')
+            ho_parent_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
             vals_list = {
-                'agent_type_id': self.env.ref('tt_base.agent_type_btc').id,
+                'agent_type_id': ho_parent_obj.btc_agent_type_id.id,
                 'parent_agent_id': context['co_ho_id'],
                 'name': name,
                 'email': data.get('email'),

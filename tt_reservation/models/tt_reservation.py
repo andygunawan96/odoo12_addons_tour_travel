@@ -197,7 +197,7 @@ class TtReservation(models.Model):
 
     def write(self, vals):
         if vals.get('hold_date'):
-            if self.agent_type_id.id == self.env.ref('tt_base.agent_type_btc').id:
+            if self.agent_id.is_btc_agent:
                 vals.pop('hold_date')
                 if not self.hold_date:
                     if vals.get('booked_date'):

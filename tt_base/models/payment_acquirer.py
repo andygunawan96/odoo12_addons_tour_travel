@@ -335,7 +335,7 @@ class PaymentAcquirer(models.Model):
                 values = {}
                 now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
                 # tanpa ORDER NUMBER
-                if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc') or req['order_number'].split('.')[0] == 'PH' and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids: #PHC pakai process channel operator
+                if not self.env['tt.agent'].browse(co_agent_id).is_btc_agent or req['order_number'].split('.')[0] == 'PH' and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids: #PHC pakai process channel operator
                     for acq in self.sudo().search(dom):
                         # self.test_validate(acq) utk testing saja
                         if self.validate_time(acq, now_time):
