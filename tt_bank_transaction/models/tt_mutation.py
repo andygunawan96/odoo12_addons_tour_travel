@@ -6,7 +6,9 @@ import json
 import re
 from ...tools.ERR import RequestException
 from ...tools import ERR
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class TtBankAccount(models.Model):
     _name = 'tt.bank.accounts'
@@ -106,73 +108,80 @@ class TtBankTransaction(models.Model):
         return result
 
     def get_data(self, data):
-        result = self.env['tt.bank.api.con'].get_transaction(data)
-        if result['error_code'] != 0:
-            raise Exception("Unable to get bank Transaction, %s" % (result['error_msg']))
+        if self.ho_id:
+            data.update({
+                "ho_id": self.ho_id.id
+            })
+            result = self.env['tt.bank.api.con'].get_transaction(data)
+            if result['error_code'] != 0:
+                raise Exception("Unable to get bank Transaction, %s" % (result['error_msg']))
 
 
-        #look for currency_id
-        currency_id = self.env['res.currency'].sudo().search([('name', 'ilike', result['response']['Currency'])]).read()
-        bank_owner = self.env['tt.bank.accounts'].sudo().browse(int(data['account_id']))
+            #look for currency_id
+            currency_id = self.env['res.currency'].sudo().search([('name', 'ilike', result['response']['Currency'])]).read()
+            bank_owner = self.env['tt.bank.accounts'].sudo().browse(int(data['account_id']))
 
-        #get bank code
-        bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
+            #get bank code
+            bank_code = self.env['tt.bank'].sudo().browse(int(bank_owner[0]['bank_id'][0]))
 
 
-        temp_day = datetime.now(pytz.timezone('Asia/Jakarta'))
-        date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
+            temp_day = datetime.now(pytz.timezone('Asia/Jakarta'))
+            date = bank_owner.bank_transaction_date_ids.filtered(lambda x: x.date == temp_day.strftime("%Y-%m-%d"))
 
-        if not date:
-            new_day = {
-                'bank_id': bank_owner.id,
-                'date': temp_day.strftime("%Y-%m-%d")
-            }
-            date = self.env['tt.bank.transaction.date'].create_new_day(new_day)
-
-        #get starting balance
-        balance_modified = result['response']['StartBalance']
-
-        #add data to transaction
-        for i in result['response']['Data']:
-            if not self.search([('transaction_message', '=', i['Trailer']), ('transaction_original', '=', i['TransactionAmount'])]):
-                temp_date = i['TransactionDate'].split("-")
-
-                debit_value = 0
-                credit_value = 0
-                if i['TransactionType'] == 'D':
-                    balance_modified = float(balance_modified) + float(i['TransactionAmount'])
-                    debit_value = float(i['TransactionAmount'])
-                else:
-                    balance_modified = float(balance_modified) + float(i['TransactionAmount'])
-                    credit_value = float(i['TransactionAmount'])
-
-                data = {
-                    'bank_account_id': bank_owner[0]['id'],
-                    'date_id': date.id,
-                    'currency_id': currency_id[0]['id'],
-                    'transaction_date': i['TransactionDate'],
-                    'transaction_bank_branch': i['BranchCode'],
-                    'transaction_type': i['TransactionType'],
-                    'transaction_original': i['TransactionAmount'],
-                    'transaction_amount': i['TransactionAmount'],
-                    'transaction_debit': debit_value,
-                    'transaction_credit': credit_value,
-                    'bank_balance': balance_modified,
-                    'transaction_name': i['TransactionName'],
-                    'transaction_message': i['Trailer']
+            if not date:
+                new_day = {
+                    'bank_id': bank_owner.id,
+                    'date': temp_day.strftime("%Y-%m-%d")
                 }
-                added = self.create_bank_statement(data)
-                # create transaction code
-                merge_date = "".join(temp_date)
-                transaction_code = "MUT." + str(merge_date) + str(bank_code.code) + str(added.id)
+                date = self.env['tt.bank.transaction.date'].create_new_day(new_day)
 
-                added.write({
-                    'transaction_code': transaction_code
-                })
-                if i['TransactionType'] == 'D':
-                    balance_modified = float(balance_modified) + float(i['TransactionAmount'])
-                else:
-                    balance_modified = float(balance_modified) + float(i['TransactionAmount'])
+            #get starting balance
+            balance_modified = result['response']['StartBalance']
+
+            #add data to transaction
+            for i in result['response']['Data']:
+                if not self.search([('transaction_message', '=', i['Trailer']), ('transaction_original', '=', i['TransactionAmount'])]):
+                    temp_date = i['TransactionDate'].split("-")
+
+                    debit_value = 0
+                    credit_value = 0
+                    if i['TransactionType'] == 'D':
+                        balance_modified = float(balance_modified) + float(i['TransactionAmount'])
+                        debit_value = float(i['TransactionAmount'])
+                    else:
+                        balance_modified = float(balance_modified) + float(i['TransactionAmount'])
+                        credit_value = float(i['TransactionAmount'])
+
+                    data = {
+                        'bank_account_id': bank_owner[0]['id'],
+                        'date_id': date.id,
+                        'currency_id': currency_id[0]['id'],
+                        'transaction_date': i['TransactionDate'],
+                        'transaction_bank_branch': i['BranchCode'],
+                        'transaction_type': i['TransactionType'],
+                        'transaction_original': i['TransactionAmount'],
+                        'transaction_amount': i['TransactionAmount'],
+                        'transaction_debit': debit_value,
+                        'transaction_credit': credit_value,
+                        'bank_balance': balance_modified,
+                        'transaction_name': i['TransactionName'],
+                        'transaction_message': i['Trailer'],
+                        'ho_id': self.ho_id.id
+                    }
+                    added = self.create_bank_statement(data)
+                    # create transaction code
+                    merge_date = "".join(temp_date)
+                    transaction_code = "MUT." + str(merge_date) + str(bank_code.code) + str(added.id)
+
+                    added.write({
+                        'transaction_code': transaction_code
+                    })
+                    if i['TransactionType'] == 'D':
+                        balance_modified = float(balance_modified) + float(i['TransactionAmount'])
+                    else:
+                        balance_modified = float(balance_modified) + float(i['TransactionAmount'])
+        else:
+            _logger.error('Please fill ho_id for %s' % self.transaction_code)
 
     def process_data(self):
         #get data from top up

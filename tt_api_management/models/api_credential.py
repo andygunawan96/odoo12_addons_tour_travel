@@ -130,10 +130,13 @@ class ApiManagement(models.Model):
                 _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
                 values.update(_co_user.get_credential(prefix='co_'))
             api_cred_obj = self.search([('api_key','=', data['api_key']), ('user_id','=', uid)])
-            if api_cred_obj and data.get('co_user'):
+            if api_cred_obj:
                 ## check cred
-                if api_cred_obj.user_id.agent_id.get_ho_parent_agent().seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system'):
-                    raise Exception('Co User and Api Key is not match')
+                if api_cred_obj.ho_id and data.get('co_user'):
+                    if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system'):
+                        raise Exception('Co User and Api Key is not match')
+                ## update cred ho
+                values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
             elif data.get('co_user'):
                 raise Exception('Api Key not found')
             response.update(values)
@@ -251,7 +254,7 @@ class TtAgentApiInherit(models.Model):
             if rec.is_api_user:
                 self.env['tt.ban.user'].ban_user(rec.id, duration)
                 try:
-                    self.env['tt.api.con'].send_ban_user_error_notification(rec.name, 'error payment quota')
+                    self.env['tt.api.con'].send_ban_user_error_notification(rec.name, 'error payment quota', rec.get_ho_parent_agent().id)
                 except Exception as e:
                     _logger.error('Ban User Error %s %s' % (str(e), traceback.format_exc()))
 

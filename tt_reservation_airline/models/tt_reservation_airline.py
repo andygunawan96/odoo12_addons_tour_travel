@@ -1556,7 +1556,8 @@ class ReservationAirline(models.Model):
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
                 if payment_res['error_code'] != 0:
                     try:
-                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
+                        ho_id = self.agent_id.get_ho_parent_agent().id
+                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context, ho_id)
                     except Exception as e:
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
                     raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
@@ -2126,7 +2127,8 @@ class ReservationAirline(models.Model):
             # Contoh ketika auto update sia, booked uid menjadi punya sistem
             # Pengaruh saat deteksi agent untuk pricing
             # 'user_id': self.booked_uid.id
-            'user_id': self.user_id.id
+            'user_id': self.user_id.id,
+            'ho_id': self.agent_id.get_ho_parent_agent().id
             # END
         }
         self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
@@ -2317,7 +2319,7 @@ class ReservationAirline(models.Model):
 
         if not has_ticket_ori:
             # gateway get ticket
-            req = {"data": []}
+            req = {"data": [], 'ho_id': book_obj.agent_id.get_ho_parent_agent().id}
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req['data'].append({
                     'pnr': provider_booking_obj.pnr,

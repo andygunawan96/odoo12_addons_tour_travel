@@ -69,10 +69,9 @@ class PhoneDetail(models.Model):
                 'number': self.calling_number[-8:],
                 'email': agent_obj.email,
                 'name': agent_obj.name,
-                'bank_code_list': bank_code_list,
-                'co_ho_id': ho_obj.id
+                'bank_code_list': bank_code_list
             }
-            res = self.env['tt.payment.api.con'].set_VA(data)
+            res = self.env['tt.payment.api.con'].set_VA(data, ho_obj.id)
             # res = self.env['tt.payment.api.con'].test(data)
             # res = self.env['tt.payment.api.con'].delete_VA(data)
             # res = self.env['tt.payment.api.con'].set_invoice(data)
@@ -131,12 +130,12 @@ class PhoneDetail(models.Model):
             "number": self.calling_number[-8:],
             'email': agent_obj.email,
             'name': agent_obj.name,
-            'bank_code_list': bank_code_list,
+            'bank_code_list': bank_code_list
         }
         self.va_create = False
         self.env.cr.commit()
         if len(data) != 0:
-            res = self.env['tt.payment.api.con'].delete_VA(data)
+            res = self.env['tt.payment.api.con'].delete_VA(data, agent_obj.get_ho_parent_agent().id)
             if res['error_code'] == 0:
                 for rec in self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids.filtered(lambda x: x.state == 'open'):
                     rec.unlink()

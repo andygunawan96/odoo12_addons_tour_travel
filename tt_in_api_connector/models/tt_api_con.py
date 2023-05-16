@@ -76,14 +76,16 @@ class TtApiCon(models.Model):
             "signature": signature,
         }
 
-    def send_request_to_gateway(self,url,data,service_name,content_type='json',request_type='', timeout=30):
+    def send_request_to_gateway(self,url,data,service_name,content_type='json',request_type='', timeout=30, ho_id=''):
         try:
             authorization = tools.config.get('backend_authorization', '')
             credential = util.decode_authorization(authorization)
             self.uid = credential.get('uid', -1)
             self.username = credential.get('username','')
             self.password = credential.get('password','')
-            self.api_key = self.env['tt.api.credential'].search([('user_id','=',self.uid),('api_role','=','admin')],limit=1).api_key
+            if not ho_id:
+                ho_id = self.env.user.agent_id.get_ho_parent_agent().id
+            self.api_key = self.env['tt.api.credential'].search([('ho_id','=',ho_id),('api_role','=','admin')],limit=1).api_key
         except Exception as e:
             _logger.error('Backend Connector Config Error, ###%s###' % traceback.format_exc())
         signature = self._gateway_sign_in(data.get('proxy_co_uid',''))
@@ -101,13 +103,13 @@ class TtApiCon(models.Model):
                                             request
                                             ,'notification_code')
 
-    def send_ban_user_error_notification(self, user_name, reason):
+    def send_ban_user_error_notification(self, user_name, reason, ho_id):
         request = {
             'code': 9901,
             'message': 'Ban user {} {}'.format(user_name, reason),
             "title": 'User ban <b>%s</b>' % (user_name)
         }
-        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code', ho_id=ho_id)
 
     def send_new_ssr_notification(self, code, title, message, **kwargs):
         request = {
@@ -120,11 +122,11 @@ class TtApiCon(models.Model):
     def send_webhook_to_children(self, request):
         return self.send_request_to_gateway('%s/content' % self.url, request, 'send_webhook_to_children', timeout=request.get('timeout', 300))
 
-    def send_reconcile_request(self,request):
+    def send_reconcile_request(self,request, ho_id):
         return self.send_request_to_gateway('%s/account/%s' % (self.url,request['provider_type']),
                                             request['data'],
                                             'reconcile',
-                                            timeout=120)
+                                            timeout=120, ho_id=ho_id)
     def send_sync_status_visa(self, request):
         return self.send_request_to_gateway('%s/content' % self.url, request, 'sync_status_visa', timeout=300)
 

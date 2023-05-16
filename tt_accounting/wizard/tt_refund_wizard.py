@@ -107,7 +107,7 @@ class TtRefundWizard(models.TransientModel):
                 if referenced_document_external != '':
                     referenced_document_external += ', '
                 referenced_document_external = rec.pnr2
-                self.env['tt.refund.api.con'].send_refund_request(data)
+                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
         if referenced_document_external == '':
             referenced_document_external = self.referenced_document_external
 

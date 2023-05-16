@@ -2,7 +2,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError
 from ...tools import ERR
 from ...tools.ERR import RequestException
-import logging,traceback
+import logging,traceback,json
 
 _logger = logging.getLogger(__name__)
 
@@ -16,24 +16,14 @@ class TtProvider(models.Model):
     alias = fields.Char(string='Alias')
     code = fields.Char('Code', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    provider_ledger_ids = fields.One2many('tt.provider.ledger', 'provider_id', 'Vendor Ledgers')
-    email = fields.Char(string="Email", required=False, )
     currency_id = fields.Many2one('res.currency', 'Currency')
-    address_ids = fields.One2many('address.detail', 'provider_id', string='Addresses')
-    phone_ids = fields.One2many('phone.detail', 'provider_id', string='Phones')
+    email = fields.Char(string="Email", required=False, )
     social_media_ids = fields.One2many('social.media.detail', 'provider_id', 'Social Media')
-    provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes')
-    rate_ids = fields.One2many('tt.provider.rate', 'provider_id', 'Provider Codes')
-    payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_id', 'Payment Acquirers')
-    provider_destination_ids = fields.One2many('tt.provider.destination', 'provider_id', 'Destination')
-    provider_currency_ids = fields.One2many('tt.provider.currency', 'provider_id', 'Rate(s)')
+    provider_ho_data_ids = fields.One2many('tt.provider.ho.data', 'provider_id', 'Provider HO Data')
     active = fields.Boolean('Active', default=True)
-    balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
     track_balance = fields.Boolean('Do balance tracking')
     is_reconcile = fields.Boolean('Can be Reconciled')
-    is_using_balance = fields.Boolean('Is Using Balance')
-    is_using_lg = fields.Boolean('Is Using Letter of Guarantee')
-    is_using_po = fields.Boolean('Is Using Purchase Order')
+
 
     #kasus concurrent update
     # def sync_balance(self):
@@ -52,32 +42,6 @@ class TtProvider(models.Model):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_provider_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Action failed due to security restriction. Required Provider Level 5 permission.')
         return super(TtProvider, self).unlink()
-
-    def sync_balance(self):
-        ##send request to gateway
-        self.create_provider_ledger(self.env['tt.%s.api.con' % (self.provider_type_id.code)].get_balance(self.code)['response']['balance'])
-
-
-    def create_provider_ledger(self,balance):
-        self.env['tt.provider.ledger'].sudo().create({
-            'balance': balance,
-            'provider_id': self.id
-        })
-
-    def create_provider_ledger_api(self,data,context):
-        try:
-            if 'rodextrip' in data['provider_code']: #asumsi hard code kalau provider rodextrip_x maka di masukkan rodextrip airline semua biar 1 saldo
-                provider_obj = self.search([('code', '=', 'rodextrip_airline')], limit=1)
-            else:
-                provider_obj = self.search([('code','=',data['provider_code'])], limit=1)
-            if provider_obj:
-                provider_obj.create_provider_ledger(data['balance'])
-            else:
-                raise RequestException(1002)
-        except:
-            _logger.error(traceback.format_exc())
-            return Exception("Create Provider Ledger Failed")
-        return ERR.get_no_error()
 
     def to_dict(self):
         return {
@@ -111,24 +75,6 @@ class TtProvider(models.Model):
                     'country_id': country.id,
                 })
 
-    def get_vendor_balance_api(self,context):
-        try:
-            provider_obj = self.search([('track_balance', '=', True)])
-            res = []
-            for rec in provider_obj:
-                code_name = 'rodextrip' if 'rodextrip' in rec.code else rec.code
-                provider_values = {
-                    "code": code_name.capitalize(),
-                    "provider_type": rec.provider_type_id.code,
-                    "balance": rec.balance,
-                    "currency": rec.currency_id and rec.currency_id.name or ''
-                }
-                res.append(provider_values)
-            return ERR.get_no_error(res)
-        except Exception as e:
-            _logger.error(traceback.format_exc())
-            return RequestException(500)
-
     def get_provider_list_api(self, data, context):
         try:
             provider_type_obj = self.env['tt.provider.type'].search([('code','=', data['provider_type'])], limit=1)
@@ -143,7 +89,6 @@ class TtProvider(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return RequestException(500)
-
 
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'
@@ -258,9 +203,85 @@ class TtProviderLedger(models.Model):
     _description = 'Provider Balance Ledger'
     _order = 'id DESC'
 
-    provider_id = fields.Many2one('tt.provider', 'Provider')
-    currency_id = fields.Many2one('res.currency',related='provider_id.currency_id')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', 'Provider HO Data')
+    currency_id = fields.Many2one('res.currency',related='provider_ho_data_id.currency_id')
     balance = fields.Monetary('Balance')
+
+class TtProviderHOData(models.Model):
+    _name = 'tt.provider.ho.data'
+    _inherit = 'tt.history'
+    _description = 'Provider Head Office Data'
+    _order = 'id DESC'
+
+    name = fields.Char('Name')
+    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_ledger_ids = fields.One2many('tt.provider.ledger', 'provider_ho_data_id', 'Vendor Ledgers')
+    currency_id = fields.Many2one('res.currency', 'Currency')
+    address_ids = fields.One2many('address.detail', 'provider_id', string='Addresses')
+    phone_ids = fields.One2many('phone.detail', 'provider_id', string='Phones')
+    rate_ids = fields.One2many('tt.provider.rate', 'provider_id', 'Provider Codes')
+    payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_id', 'Payment Acquirers')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
+    balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
+    provider_destination_ids = fields.One2many('tt.provider.destination', 'provider_id', 'Destination')
+    provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes')
+    provider_currency_ids = fields.One2many('tt.provider.currency', 'provider_id', 'Rate(s)')
+    is_using_balance = fields.Boolean('Is Using Balance')
+    is_using_lg = fields.Boolean('Is Using Letter of Guarantee')
+    is_using_po = fields.Boolean('Is Using Purchase Order')
+    active = fields.Boolean('Active', default=True)
+
+    def sync_balance(self, agent_obj=False):
+        ##send request to gateway
+        ho_id = self.ho_id.id
+        get_vendor_balance_dict = self.env['tt.%s.api.con' % (self.provider_id.provider_type_id.code)].get_balance(self.provider_id.code, ho_id)
+        if get_vendor_balance_dict['error_code'] == 0:
+            self.create_provider_ledger(get_vendor_balance_dict['response']['balance'])
+        else:
+            _logger.error(json.dumps(get_vendor_balance_dict))
+            raise UserError('%s' % get_vendor_balance_dict['error_msg'])
+
+
+    def create_provider_ledger(self,balance):
+        self.env['tt.provider.ledger'].sudo().create({
+            'balance': balance,
+            'provider_ho_data_id': self.id,
+        })
+
+    def create_provider_ledger_api(self,data,context):
+        try:
+            if 'rodextrip' in data['provider_code']: #asumsi hard code kalau provider rodextrip_x maka di masukkan rodextrip airline semua biar 1 saldo
+                provider_obj = self.search([('code', '=', 'rodextrip_airline')], limit=1)
+            else:
+                provider_obj = self.search([('code','=',data['provider_code'])], limit=1)
+            if provider_obj:
+                provider_obj.create_provider_ledger(data['balance'])
+            else:
+                raise RequestException(1002)
+        except:
+            _logger.error(traceback.format_exc())
+            return Exception("Create Provider Ledger Failed")
+        return ERR.get_no_error()
+
+    def get_vendor_balance_api(self,context):
+        try:
+            provider_obj = self.search([('ho_id', '=', context['co_ho_id'], ('provider_id.track_balance'))])
+            res = []
+            for rec in provider_obj:
+                code_name = 'rodextrip' if 'rodextrip' in rec.code else rec.code
+                provider_values = {
+                    "code": code_name.capitalize(),
+                    "provider_type": rec.provider_type_id.code,
+                    "balance": rec.balance,
+                    "currency": rec.currency_id and rec.currency_id.name or ''
+                }
+                res.append(provider_values)
+            return ERR.get_no_error(res)
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            return RequestException(500)
+
+
 
 class ResCity(models.Model):
     _inherit = "res.city"

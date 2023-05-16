@@ -257,57 +257,52 @@ class TtPaymentApiCon(models.Model):
             raise RequestException(999)
         return res
 
-    def set_VA(self, req):
+    def set_VA(self, req, ho_id):
         data = {
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
             'bank_code_list': req['bank_code_list'],
-            'provider': 'espay',
-            'co_ho_id': req['co_ho_id']
+            'provider': 'espay'
         }
-        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va', timeout=600)
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_va', timeout=600, ho_id=ho_id)
 
-    def test(self, req):
+    def test(self, req, ho_id):
         data = {
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
-            'provider': 'espay',
-            'co_ho_id': req['co_ho_id']
+            'provider': 'espay'
         }
-        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'test')
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'test', ho_id=ho_id)
 
-    def delete_VA(self, req):
+    def delete_VA(self, req, ho_id):
         data = {
             'phone_number': req['number'],
             'provider': 'espay',
             'email': req['email'],
             'name': req['name'],
-            'bank_code_list': req['bank_code_list'],
-            'co_ho_id': req['co_ho_id']
+            'bank_code_list': req['bank_code_list']
         }
-        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'delete_va')
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'delete_va', ho_id=ho_id)
 
-    def set_invoice(self, req):
+    def set_invoice(self, req, ho_id):
         data = {
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
-            'provider': 'espay',
-            'co_ho_id': req['co_ho_id']
+            'provider': 'espay'
         }
-        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_invoice')
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'set_invoice', ho_id=ho_id)
 
-    def merchant_info(self, req):
+    def merchant_info(self, req, ho_id):
         data = {
             'phone_number': req['number'],
             'name': req['name'],
             'email': req['email'],
-            'provider': 'espay',
-            'co_ho_id': req['co_ho_id']
+            'provider': 'espay'
         }
-        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'merchant_info')
+        return self.send_request_to_gateway('%s/payment' % (self.url), data, 'merchant_info', ho_id=ho_id)
 
     def send_payment(self, req):
         request = {
@@ -323,19 +318,18 @@ class TtPaymentApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/%s' % (self.url, provider),
                                             request,
                                             action,
-                                            timeout=180)
+                                            timeout=180, ho_id=req['ho_id'])
 
-    def get_merchant_info(self,req):
+    def get_merchant_info(self,req, ho_id):
         request = {
             'provider': req['provider'],
             'type': req['type'],
-            'co_ho_id': req['co_ho_id']
         }
         action = 'merchant_info'
         return self.send_request_to_gateway('%s/payment' % (self.url),
                                             request,
                                             action,
-                                            timeout=60)
+                                            timeout=60, ho_id=ho_id)
 
 
     def sync_reservation_btbo_quota_pnr(self,req):
@@ -352,4 +346,4 @@ class TtPaymentApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/%s' % (self.url, req['provider_type']),
                                             request,
                                             action,
-                                            timeout=60)
+                                            timeout=60, ho_id=req['ho_id'])

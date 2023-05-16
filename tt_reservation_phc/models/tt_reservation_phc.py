@@ -701,8 +701,9 @@ class Reservationphc(models.Model):
                     'code': 9920,
                     'message': "%s\n\n%s" % (passenger_obj.name, self.env['tt.reservation.phc'].get_verified_summary())
                 }
+                ho_id = passenger_obj.booking_id.agent_id.get_ho_parent_agent().id
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
-                                                               'notification_code')
+                                                               'notification_code', ho_id=ho_id)
                 return ERR.get_no_error({
                     "transaction_code": req['ticket_number'],
                     "message": "success"
@@ -1061,8 +1062,8 @@ class Reservationphc(models.Model):
                     phc_status_res = self.env['tt.phc.api.con'].sync_status_with_phc({
                         'carrier_code': self.carrier_name,
                         'ticket_number': rec.ticket_number,
-                        'provider': self.provider_booking_ids[0].provider_id.code
-                    })
+                        'provider': self.provider_booking_ids[0].provider_id.code,
+                    }, ho_id=self.agent_id.get_parent_ho_agent().id)
                     if phc_status_res['error_code'] == 0:
                         if phc_status_res['response']['verified']:
                             rec.verify = phc_status_res['response']['verified']
