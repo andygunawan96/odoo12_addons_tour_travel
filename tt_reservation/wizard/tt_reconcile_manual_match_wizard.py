@@ -27,7 +27,7 @@ class TtReconcileManualMatchWizard(models.TransientModel):
                 provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search(search_domain)
             selection = []
             for rec in provider_type:
-                selection.append((rec.id,'{}  |  {:,}  |  {}'.format(rec.pnr or '######',rec.vendor_amount and int(rec.vendor_amount) or 0,rec.issued_date and str(rec.issued_date)[:19] or 'No Date')))
+                selection.append((rec.id,'{}  |  {:,}  |  {}'.format(rec.pnr or '######',rec.total_price and int(rec.total_price) or 0,rec.issued_date and str(rec.issued_date)[:19] or 'No Date')))
             return selection
         except:
             return []
