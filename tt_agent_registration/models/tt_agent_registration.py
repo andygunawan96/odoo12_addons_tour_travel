@@ -341,44 +341,33 @@ class AgentRegistration(models.Model):
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
             return res
 
-    def get_all_registration_documents_api(self):
-        regis_doc_env = self.env['tt.document.type']
-        regis_doc_ids = regis_doc_env.search([])
+    def get_all_registration_documents_api(self, context):
+        search_params = []
+        if context.get('co_ho_id'):
+            search_params.append(('ho_id', '=', int(context['co_ho_id'])))
+        agent_type_ids = self.env['tt.agent.type'].search(search_params)
 
         agent_type_list = []
-        agent_type_env = self.env['tt.agent.type']
-        agent_type_ids = agent_type_env.search([])
-
         for agent_type in agent_type_ids:
-            val = {
+            agent_type_list.append({
                 'id': agent_type.id,
                 'name': agent_type.name,
                 'code': agent_type.code,
                 'docs': []
-            }
-            agent_type_list.append(val)
+            })
 
+        regis_doc_ids = self.env['tt.document.type'].search([])
         for rec in regis_doc_ids:
             if rec.document_type == 'registration':
-                agent_types = []
-                for agent_type in rec['agent_type_ids']:
-                    agent_type_vals = {
-                        'id': agent_type['id'],
-                        'name': agent_type['name'],
-                        'code': agent_type['code']
-                    }
-                    agent_types.append(agent_type_vals)
-
                 val = {
                     'id': rec.id,
                     'document_type': rec.document_type,
                     'display_name': rec.display_name,
                     'description': rec.description
                 }
-
                 for agent_type in agent_type_list:
-                    for doc_agent_type in agent_types:
-                        if doc_agent_type['id'] == agent_type['id']:
+                    for doc_agent_type in rec.agent_type_ids:
+                        if doc_agent_type.id == agent_type['id']:
                             agent_type['docs'].append(val)
         return Response().get_no_error(agent_type_list)
 
@@ -882,7 +871,8 @@ class AgentRegistration(models.Model):
                     'reference_id': reference_id,
                     'parent_agent_id': parent_agent_id,
                     'tac': agent_type.terms_and_condition,
-                    'create_uid': context['co_uid']
+                    'create_uid': context['co_uid'],
+                    'ho_id': context['co_ho_id']
                 })
                 create_obj = self.create(header)
                 regis_doc_ids = create_obj.input_regis_document_data(regis_doc)
@@ -957,10 +947,13 @@ class AgentRegistration(models.Model):
                 parent_agent_id = self.env.ref('tt_base.rodex_ho').id
         return parent_agent_id
 
-    def get_config_api(self):
+    def get_config_api(self, context):
         try:
             agent_type = []
-            for rec in self.env['tt.agent.type'].search([('can_be_registered','=',True)]):
+            search_params = [('can_be_registered','=',True)]
+            if context.get('co_ho_id'):
+                search_params.append(('ho_id', '=', int(context['co_ho_id'])))
+            for rec in self.env['tt.agent.type'].search(search_params):
                 agent_type.append({
                     'name': rec.name,
                     'registration_fee': rec.registration_fee,
