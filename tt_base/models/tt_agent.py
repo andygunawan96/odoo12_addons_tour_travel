@@ -921,7 +921,8 @@ class TtAgent(models.Model):
 
     def get_agent_api(self):
         res = []
-        agent_objs = self.search([])
+        # agent_objs = self.search([]) ## ALL AGENT
+        agent_objs = self.search([('is_ho_agent','=', True)]) ## HANYA HO
         for agent_obj in agent_objs:
             res.append({
                 "name": agent_obj.name,
