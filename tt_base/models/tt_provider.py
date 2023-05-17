@@ -268,7 +268,7 @@ class TtProviderHOData(models.Model):
             provider_obj = self.search([('ho_id', '=', context['co_ho_id']), ('provider_id.track_balance','=', True)])
             res = []
             for rec in provider_obj:
-                code_name = 'rodextrip' if 'rodextrip' in rec.code else rec.code
+                code_name = 'rodextrip' if 'rodextrip' in rec.provider_id.code else rec.provider_id.code
                 provider_values = {
                     "code": code_name.capitalize(),
                     "provider_type": rec.provider_type_id.code,
