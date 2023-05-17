@@ -52,6 +52,13 @@ class TtSSRList(models.Model):
     image_url = fields.Char('Image Url', default='')
     line_ids = fields.One2many('tt.ssr.list.line', 'ssr_id', 'Lines')
     active = fields.Boolean('Active', default=True)
+    is_pre_booking = fields.Boolean('Pre Booking', default=True)
+    is_post_booking_booked = fields.Boolean('Post Booking (BOOKED)', default=True)
+    is_post_booking_issued = fields.Boolean('Post Booking (ISSUED)', default=True)
+    is_economy = fields.Boolean('Economy Class', default=True)
+    is_premium_economy = fields.Boolean('Premium Economy Class', default=True)
+    is_business = fields.Boolean('Business Class', default=True)
+    is_first_class = fields.Boolean('First Class', default=True)
 
     def to_dict(self):
         line_ids = [rec.to_dict() for rec in self.line_ids]
@@ -66,6 +73,13 @@ class TtSSRList(models.Model):
             'provider_type_id': self.provider_type_id and self.provider_type_id.to_dict() or {},
             'line_ids': line_ids,
             'image_url': self.image_url and self.image_url or '',
+            'is_pre_booking': self.is_pre_booking,
+            'is_post_booking_booked': self.is_post_booking_booked,
+            'is_post_booking_issued': self.is_post_booking_issued,
+            'is_economy': self.is_economy,
+            'is_premium_economy': self.is_premium_economy,
+            'is_business': self.is_business,
+            'is_first_class': self.is_first_class,
         }
         return res
 
@@ -117,6 +131,13 @@ class TtSSRList(models.Model):
             'provider_id': self.provider_id and self.provider_id.get_data() or '',
             'lines': lines,
             'image_url': self.image_url and self.image_url or '',
+            'is_pre_booking': self.is_pre_booking,
+            'is_post_booking_booked': self.is_post_booking_booked,
+            'is_post_booking_issued': self.is_post_booking_issued,
+            'is_economy': self.is_economy,
+            'is_premium_economy': self.is_premium_economy,
+            'is_business': self.is_business,
+            'is_first_class': self.is_first_class,
         }
         return res
 
