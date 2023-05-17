@@ -49,7 +49,7 @@
 
         <menuitem id="sub_menu_tour_travel_user_ban_user"
                   parent="tt_base.top_tour_travel_administration"
-                  groups="tt_base.group_banned_users_level_1"
+                  groups="tt_base.group_banned_users_level_1,base.group_erp_manager"
                   name="Banned Users"
                   sequence="3"
                   action="tt_ban_user_action_view"/>
