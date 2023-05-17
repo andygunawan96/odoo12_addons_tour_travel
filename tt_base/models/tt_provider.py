@@ -271,7 +271,7 @@ class TtProviderHOData(models.Model):
                 code_name = 'rodextrip' if 'rodextrip' in rec.provider_id.code else rec.provider_id.code
                 provider_values = {
                     "code": code_name.capitalize(),
-                    "provider_type": rec.provider_type_id.code,
+                    "provider_type": rec.provider_id.provider_type_id.code,
                     "balance": rec.balance,
                     "currency": rec.currency_id and rec.currency_id.name or ''
                 }
