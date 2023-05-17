@@ -38,5 +38,5 @@ class CreateCustomerParentWizard(models.TransientModel):
             'name': cust_parent_obj.name,
             'target': 'self',
             'url': base_url + "/web#id=" + str(cust_parent_obj.id) + "&action=" + str(
-                action_num) + "&model=tt.refund&view_type=form&menu_id=" + str(menu_num),
+                action_num) + "&model=tt.customer.parent&view_type=form&menu_id=" + str(menu_num),
         }
