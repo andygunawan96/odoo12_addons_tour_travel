@@ -277,6 +277,8 @@ class VisaPricelist(models.Model):
 
     ho_ids = fields.Many2many('tt.agent', 'tt_master_activity_ho_agent_rel', 'activity_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office Owner', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
+
     @api.multi
     @api.depends('cost_price', 'sale_price')
     @api.onchange('cost_price', 'sale_price')
@@ -301,7 +303,16 @@ class VisaPricelist(models.Model):
     def create(self, values):
         if values.get('reference_code'):
             if self.search([('reference_code','=',values['reference_code'])]):
-                values['reference_code'] = ''
+                raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
+        values.update({
+            "ho_id": self.env.user.agent_id.get_ho_parent_agent().id,
+            "ho_ids": [(4, self.env.user.agent_id.get_ho_parent_agent().id)]
+        })
+        if not values.get('reference_code') and values.get('provider_id'):
+            provider_obj = self.env['tt.provider'].browse(values.provider_id)
+            values.update({
+                "reference_code": "%s_%s_%s" % (provider_obj.code, values.name, str(len(self.search([]))))
+            })
         res = super(VisaPricelist, self).create(values)
         return res
 
