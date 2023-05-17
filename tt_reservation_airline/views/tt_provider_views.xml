@@ -37,6 +37,7 @@
                             <field name="provider_id"/>
                             <field name="balance_due"/>
                             <field name="total_price"/>
+                            <field name="total_price_cost"/>
                             <field name="penalty_amount"/>
                             <field name="penalty_currency"/>
                             <field name="reconcile_line_id"/>

@@ -68,7 +68,8 @@ class TtProviderAirline(models.Model):
     penalty_amount = fields.Float('Penalty Amount', default=0, readonly=True, states={'draft': [('readonly', False)]})
     reschedule_uid = fields.Many2one('res.users', 'Rescheduled By', readonly=True, states={'draft': [('readonly', False)]})
     reschedule_date = fields.Datetime('Rescheduled Date', readonly=True, states={'draft': [('readonly', False)]})
-    total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]}, help='Issued Total Price (For reconcile)')
+    total_price_cost = fields.Float('Total Price (Cost)', default=0, readonly=True, states={'draft': [('readonly', False)]})
     penalty_currency = fields.Char('Penalty Currency', default='', readonly=True, states={'draft': [('readonly', False)]})
     # END
 
@@ -245,6 +246,11 @@ class TtProviderAirline(models.Model):
             # todo ini buat ngecek klo key nya ada baru di update value nya
             if key not in provider_data_keys:
                 continue
+            if key == 'total_price':
+                values['total_price_cost'] = provider_data[key]
+                if self.state == 'issued':
+                    continue
+
             values[key] = provider_data[key]
             # todo ini buat update data info pnr di ledger sama service charges (sblm booking itu sequence isi nya)
             if key == 'pnr':
@@ -262,6 +268,9 @@ class TtProviderAirline(models.Model):
 
         if provider_data.get('hold_date'):
             values['hold_date'] = datetime.strptime(provider_data['hold_date'], "%Y-%m-%d %H:%M:%S")
+
+        if provider_data.get('expired_date'):
+            values['expired_date'] = datetime.strptime(provider_data['expired_date'], "%Y-%m-%d %H:%M:%S")
 
         # June 4, 2020 - SAM
         # Menambahkan info warning dari bookingan
@@ -877,6 +886,7 @@ class TtProviderAirline(models.Model):
             # April 29, 2020 - SAM
             'reference': self.reference,
             'total_price': self.total_price,
+            'total_price_cost': self.total_price_cost if self.total_price_cost else self.total_price,
             'penalty_amount': self.penalty_amount,
             'penalty_currency': self.penalty_currency and self.penalty_currency or '',
             'is_advance_purchase': self.is_advance_purchase,
