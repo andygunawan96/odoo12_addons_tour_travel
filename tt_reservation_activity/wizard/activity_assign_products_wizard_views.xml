@@ -18,7 +18,7 @@
 					<footer>
 <!--						<button string="Assign to Selected HO" name="assign_to_selected_ho" type="object" class="btn-primary" groups="base.group_erp_manager"/>-->
 						<button string="Assign to Selected HO(s)" name="assign_to_multiple_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
-						<button string="Assign to All HO(s)" name="assign_to_all_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Remove from Selected HO(s)" name="delete_from_multiple_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
 						<button string="Cancel" class="btn-default" special="cancel" />
 					</footer>
 				</form>

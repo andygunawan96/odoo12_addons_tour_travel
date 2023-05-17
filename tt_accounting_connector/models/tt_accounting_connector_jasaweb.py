@@ -106,13 +106,23 @@ class AccountingConnectorJasaweb(models.Model):
             total_nta = 0
 
         for rec in request['ledgers']:
+            ho_name = ''
+            is_ho_agent = False
+            if rec.get('agent_id'):
+                agent_obj = self.env['tt.agent'].browse(int(rec['agent_id']))
+                if agent_obj:
+                    ho_obj = agent_obj.get_ho_parent_agent()
+                    if ho_obj:
+                        ho_name = ho_obj.name
+                    is_ho_agent = agent_obj.is_ho_agent
+
             if rec['transaction_type'] == 1:
                 trans_type = 'Top Up / Agent Payment'
             elif rec['transaction_type'] == 2:
                 trans_type = 'Transport Booking'
             elif rec['transaction_type'] == 3:
                 trans_type = 'Commission'
-                if rec['agent_type_id'] == self.env.ref('tt_base.agent_type_ho').id:
+                if is_ho_agent:
                     trans_type += ' HO'
                 else:
                     trans_type += ' Channel'
@@ -128,13 +138,6 @@ class AccountingConnectorJasaweb(models.Model):
             if request['category'] == 'refund' and trans_type == 'Admin Fee':
                 trans_type = 'Refund Admin Fee'
 
-            ho_name = ''
-            if rec.get('agent_id'):
-                agent_obj = self.env['tt.agent'].browse(int(rec['agent_id']))
-                if agent_obj:
-                    ho_obj = agent_obj.get_ho_parent_agent()
-                    if ho_obj:
-                        ho_name = ho_obj.name
             req.append({
                 'reference_number': rec.get('ref', ''),
                 'name': rec.get('name', ''),

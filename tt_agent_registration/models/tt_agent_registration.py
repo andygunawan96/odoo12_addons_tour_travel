@@ -58,16 +58,17 @@ class AgentRegistration(models.Model):
 
     def get_promotion_ids(self):
         promotions_list = []
-        promotion_objs = self.env['tt.agent.registration.promotion'].search([])
+        promotion_objs = self.env['tt.agent.registration.promotion'].search([('agent_type_id', '=', self.reference_id.agent_type_id.id)])
         for rec in promotion_objs:
-            if rec.agent_type_id.id == self.reference_id.agent_type_id.id:
-                if rec.start_date <= date.today() <= rec.end_date:
-                    promotions_list.append(rec.id)
+            if rec.start_date <= date.today() <= rec.end_date:
+                promotions_list.append(rec.id)
         if not promotions_list:
-            promotion_obj = self.env['tt.agent.registration.promotion'].search([
-                ('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id),
-                ('default', '=', True)
-            ], limit=1)
+            search_params = [('default', '=', True)]
+            ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+            agent_type_obj = ho_obj and ho_obj.agent_type_id or False
+            if agent_type_obj:
+                search_params.append(('agent_type_id', '=', agent_type_obj.id))
+            promotion_obj = self.env['tt.agent.registration.promotion'].search(search_params, limit=1)
             if promotion_obj:
                 promotions_list.append(promotion_obj.id)
         return [('id', 'in', promotions_list)]
@@ -180,7 +181,9 @@ class AgentRegistration(models.Model):
                     if rec.reg_upline_contains(rec.agent_type_id, rec.env.user.agent_id.agent_type_id):
                         rec.parent_agent_id = rec.env.user.agent_id.id
                     else:
-                        if rec.reg_upline_contains(rec.agent_type_id, rec.env.ref('tt_base.agent_type_ho')):
+                        ho_obj = rec.env.user.agent_id.get_ho_parent_agent()
+                        agent_type_obj = ho_obj and ho_obj.agent_type_id or False
+                        if rec.reg_upline_contains(rec.agent_type_id, agent_type_obj):
                             rec.parent_agent_id = rec.env.user.ho_id.id
                         else:
                             pass
@@ -318,10 +321,12 @@ class AgentRegistration(models.Model):
             if not res:
                 _logger.info('Response kosong. Input Normal Price.')
                 # Jika agent type tidak memiliki promotion, maka hanya return Normal Price (tanpa komisi)
-                normal_price_promotion = promotion_env.search([
-                    ('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id),
-                    ('default', '=', True)
-                ], limit=1)
+                search_params = [('default', '=', True)]
+                if context.get('co_ho_id'):
+                    ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+                    if ho_obj.agent_type_id:
+                        search_params.append(('agent_type_id', '=', ho_obj.agent_type_id.id))
+                normal_price_promotion = promotion_env.search(search_params, limit=1)
 
                 val = {
                     'id': normal_price_promotion.id,
@@ -919,32 +924,27 @@ class AgentRegistration(models.Model):
 
     def set_parent_agent_id_api(self, agent_type_id, agent_id):
         if agent_id:
+            ho_obj = self.env['tt.agent'].browse(agent_id).get_ho_parent_agent()
             """ Kalo daftar agent dengan login dulu """
             if agent_id == self.env.ref('tt_base.agent_b2c').id:
                 """ Kalo B2C, parent set to HO """
-                parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                parent_agent_id = ho_obj and ho_obj.id or False
             else:
                 # Set parent agent berdasarkan registration upline di agent type
                 if not agent_type_id.registration_upline_ids:
                     """ Jika registration upline ids kosong, langsung set ke HO """
-                    parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                    parent_agent_id = ho_obj and ho_obj.id or False
                 else:
                     if self.reg_upline_contains(agent_type_id, self.env['tt.agent'].browse(agent_id).agent_type_id):
                         parent_agent_id = agent_id
                     else:
-                        if self.reg_upline_contains(self.env.ref('tt_base.agent_type_ho'), self.env['tt.agent'].browse(agent_id).agent_type_id):
-                            parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                        agent_type_obj = ho_obj and ho_obj.agent_type_id or False
+                        if self.reg_upline_contains(agent_type_obj, self.env['tt.agent'].browse(agent_id).agent_type_id):
+                            parent_agent_id = ho_obj and ho_obj.id or False
                         else:
-                            parent_agent_id = self.env.ref('tt_base.rodex_ho').id  # Sementara
+                            parent_agent_id = ho_obj and ho_obj.id or False  # Sementara
         else:
-            """ Kalo tidak login """
-            if agent_id:
-                if agent_id == self.env.ref('tt_base.agent_b2c').id:
-                    parent_agent_id = self.env.ref('tt_base.rodex_ho').id
-                else:
-                    parent_agent_id = agent_id
-            else:
-                parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+            parent_agent_id = self.env.ref('tt_base.rodex_ho').id
         return parent_agent_id
 
     def get_config_api(self, context):

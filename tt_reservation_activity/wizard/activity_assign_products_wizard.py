@@ -45,15 +45,16 @@ class ActivityAssignProductsWizard(models.TransientModel):
                     })
                     _logger.info('Assigning Activity %s to HO %s' % (rec.name, rec2.name))
 
-    def assign_to_all_hos(self):
+    def delete_from_multiple_hos(self):
+        if not self.ho_ids:
+            raise UserError('Please select Head Office(s)!')
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 361')
         all_activities = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
-        all_hos = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
         for rec in all_activities:
-            for rec2 in all_hos:
-                if rec2.id not in rec.ho_ids.ids:
+            for rec2 in self.ho_ids:
+                if rec2.id in rec.ho_ids.ids:
                     rec.write({
-                        'ho_ids': [(4, rec2.id)]
+                        'ho_ids': [(3, rec2.id)]
                     })
-                    _logger.info('Assigning Activity %s to HO %s' % (rec.name, rec2.name))
+                    _logger.info('Removing Activity %s from HO %s' % (rec.name, rec2.name))
