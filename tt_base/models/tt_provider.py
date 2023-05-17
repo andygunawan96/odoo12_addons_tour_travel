@@ -265,7 +265,7 @@ class TtProviderHOData(models.Model):
 
     def get_vendor_balance_api(self,context):
         try:
-            provider_obj = self.search([('ho_id', '=', context['co_ho_id'], ('provider_id.track_balance'))])
+            provider_obj = self.search([('ho_id', '=', context['co_ho_id']), ('provider_id.track_balance','=', True)])
             res = []
             for rec in provider_obj:
                 code_name = 'rodextrip' if 'rodextrip' in rec.code else rec.code
