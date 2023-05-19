@@ -28,7 +28,7 @@ class ttCronTopUpValidator(models.Model):
                     if transaction:
                         date_exist = transaction.bank_transaction_date_ids.filtered(lambda x: x.date == datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"))
                         if date_exist:
-                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C' and x.transaction_connection != 'connect') #check mutasi bank yg belum connect saja
+                            result = date_exist.transaction_ids.filtered(lambda x: x.transaction_amount == top_up_obj.total and x.transaction_type == 'C' and x.transaction_connection != 'connect' and transaction.ho_id == x.ho_id) #check mutasi bank yg belum connect saja && check ho_id yg sama
                             if result:
                                 if result.transaction_message == '':
                                     reference_code = result.transaction_code
@@ -77,7 +77,7 @@ class ttCronTopUpValidator(models.Model):
                                         reference_code = result.transaction_code
                                     else:
                                         reference_code = result.transaction_message
-                                    resv_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' %(payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))])
+                                    resv_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj.number.split('.')[0]]].search([('name', '=', '%s.%s' %(payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1])), ('ho_id','=', payment_acq_obj.ho_id.id)])
                                     if not self.env['tt.payment'].search([('reference', '=', reference_code),('total_amount','=', payment_acq_obj.amount + payment_acq_obj.unique_amount)]): #update
                                         # topup
                                         context = {
@@ -106,7 +106,7 @@ class ttCronTopUpValidator(models.Model):
                                             res = self.env['tt.top.up'].action_va_top_up(request, context, payment_acq_obj.id)
                                             result.top_up_validated(res['response']['top_up_id'])
                                             self._cr.commit()
-                                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in', ['booked','issued','halt_booked'])], limit=1)
+                                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj.number.split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1])), ('state', 'in', ['booked','issued','halt_booked'])], limit=1)
 
                                     if book_obj:
                                         #login gateway, payment
@@ -125,7 +125,7 @@ class ttCronTopUpValidator(models.Model):
                                                 'ho_id': book_obj.agent_id.get_ho_parent_agent().id
                                             }
                                             res = self.env['tt.payment.api.con'].send_payment(req)
-                                            _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1], json.dumps(res)))
+                                            _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1], json.dumps(res)))
                                             if res['error_code'] == 0 and res['response']['state'] == 'issued':
                                                 # tutup payment acq number
                                                 payment_acq_obj.state = 'done'
@@ -185,7 +185,7 @@ class ttCronTopUpValidator(models.Model):
                                                     GatewayConnector().telegram_notif_api(data, {})
                                         elif book_obj.state == 'issued':
                                             payment_acq_obj.state = 'done'
-                                            _logger.info('Cron Top Up Validator Already issued for order number %s.%s change payment acquirer number status' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1]))
+                                            _logger.info('Cron Top Up Validator Already issued for order number %s.%s change payment acquirer number status' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1]))
                                         self._cr.commit()
                                 else:
                                     _logger.error("%s ID, is not found within transaction" % payment_acq_obj.id)
@@ -194,7 +194,7 @@ class ttCronTopUpValidator(models.Model):
                 ## UNTUK CRON YG SUDAH BAYAR TAPI BELUM ISSUED PAYMENT BY BCA & Espay STATE WAITING
                 payment_acq_objs = self.env['payment.acquirer.number'].search([('state', '=', 'waiting')])
                 for payment_acq_obj in payment_acq_objs:
-                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj['number'].split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1])), ('state', 'in',['booked','issued','halt_booked'])],limit=1)
+                    book_obj = self.env['tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[payment_acq_obj.number.split('.')[0]]].search([('name', '=', '%s.%s' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1])), ('state', 'in',['booked','issued','halt_booked'])],limit=1)
                     if book_obj:
                         if book_obj.state in ['issued', 'done']:
                             payment_acq_obj.state = 'done'
@@ -214,7 +214,7 @@ class ttCronTopUpValidator(models.Model):
                                 'ho_id': book_obj.agent_id.get_ho_parent_agent().id
                             }
                             res = self.env['tt.payment.api.con'].send_payment(req)
-                            _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj['number'].split('.')[0], payment_acq_obj['number'].split('.')[1],json.dumps(res)))
+                            _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1],json.dumps(res)))
                             if res['error_code'] != 0:
                                 # payment_acq_obj.state = 'waiting' ## update state waktu next cron agar tidak concurrent
                                 if book_obj.agent_type_id.code == 'btc':
@@ -228,7 +228,7 @@ class ttCronTopUpValidator(models.Model):
                                         request = {
                                             'amount': different_price,
                                             'currency_code': book_obj.currency,
-                                            'payment_ref': '%s_autotopup' % payment_acq_obj['number'],
+                                            'payment_ref': '%s_autotopup' % payment_acq_obj.number,
                                             'payment_seq_id': payment_acq_obj.payment_acquirer_id.seq_id,
                                             'subsidy': 0,
                                             'fee': 0
@@ -239,7 +239,7 @@ class ttCronTopUpValidator(models.Model):
                                             request = {
                                                 'virtual_account': '',
                                                 'name': res['response']['name'],
-                                                'payment_ref': '%s_autotopup' % payment_acq_obj['number'],
+                                                'payment_ref': '%s_autotopup' % payment_acq_obj.number,
                                                 ##jangan di ubah nanti ngebug top up approved dobule dengan case, 2 payment acq number status closed dari agent yg sama kemudian di trf 2 2nya, confurrent update
                                                 'fee': 0
                                             }
@@ -279,7 +279,7 @@ class ttCronTopUpValidator(models.Model):
                                     GatewayConnector().telegram_notif_api(data, {})
                         elif book_obj.state == 'issued':
                             payment_acq_obj.state = 'done'
-                            _logger.info('Cron Top Up Validator Already issued for order number %s change payment acquirer number status' % (payment_acq_obj['number']))
+                            _logger.info('Cron Top Up Validator Already issued for order number %s change payment acquirer number status' % (payment_acq_obj.number))
                         self._cr.commit()
             except Exception as e:
                 self.create_cron_log_folder()

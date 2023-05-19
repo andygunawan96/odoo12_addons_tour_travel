@@ -34,6 +34,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                             'name': bank_res['productName'],
                             'bank_id': bank_obj.id,
                             'agent_id': ho_obj.id,
+                            'ho_id': ho_obj.id,
                             'website_published': True
                         })
 
@@ -53,6 +54,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                                 'type': 'va',
                                 'bank_id': bank_obj.id,
                                 'agent_id': ho_obj.id,
+                                'ho_id': ho_obj.id,
                                 'website_published': False,
                                 'name': 'Your Virtual Account at %s' % (bank_obj.name),
                             })
