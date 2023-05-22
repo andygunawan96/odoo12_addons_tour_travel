@@ -29,7 +29,6 @@ Key Features
 
         'views/menu_item_base.xml',
         'wizard/force_issued_wizard_views.xml',
-        'wizard/ppob_assign_vouchers_wizard_views.xml',
         'views/tt_master_voucher_ppob_views.xml',
         'views/tt_bill_ppob_views.xml',
         'views/tt_provider_views.xml',

@@ -101,10 +101,11 @@ class ReservationPpob(models.Model):
                 'others': {}
             }
             for vouch_key in voucher_data.keys():
-                search_params = [('type', '=', vouch_key)]
-                if context.get('co_ho_id'):
-                    search_params.append(('ho_ids', '=', int(context['co_ho_id'])))
-                vouch_data = self.env['tt.master.voucher.ppob'].search(search_params)
+                # search_params = [('type', '=', vouch_key)]
+                # if context.get('co_ho_id'):
+                #     search_params.append(('ho_ids', '=', int(context['co_ho_id'])))
+                # vouch_data = self.env['tt.master.voucher.ppob'].search(search_params)
+                vouch_data = self.env['tt.master.voucher.ppob'].search([('type', '=', vouch_key)])
                 similar_disp_names = {}
                 for rec in vouch_data:
                     if not voucher_data[vouch_key].get(rec.provider_id.code):
