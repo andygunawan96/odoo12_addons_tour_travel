@@ -55,6 +55,6 @@
               action="tt_base.tt_skipped_keys_action_views"
               name="History Skip"
               sequence="2"
-              groups="base.group_system,tt_base.group_history_skip_level_1"/>
+              groups="base.group_system"/>
 
 </odoo>

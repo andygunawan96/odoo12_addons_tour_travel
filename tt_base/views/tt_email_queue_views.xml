@@ -99,7 +99,7 @@
 
     <menuitem id="menu_email_queue"
               parent="tt_base.top_tour_travel_administration"
-              groups="tt_base.group_email_queue_level_1,base.group_system"
+              groups="base.group_erp_manager"
               name="Email Queue"
               sequence="5"
               action="tt_email_queue_action_view"/>
