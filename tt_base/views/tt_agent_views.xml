@@ -102,9 +102,9 @@
                         <field name="btc_agent_type_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
-                        <field name="website_default_color" groups="base.group_erp_manager" />
-                        <field name="is_use_point_reward" groups="base.group_erp_manager" />
-                        <field name="email_server_id" groups="base.group_erp_manager" />
+                        <field name="website_default_color" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}" />
+                        <field name="is_use_point_reward" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}" />
+                        <field name="email_server_id" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}" />
                         <field name="parent_agent_id" readonly="1"/>
                         <field name="user_ids" readonly="1"/>
                         <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
