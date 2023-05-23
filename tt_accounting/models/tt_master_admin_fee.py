@@ -152,7 +152,6 @@ class TtMasterAdminFeeLine(models.Model):
     is_per_pnr = fields.Boolean('Is Per PNR', default=True)
     is_per_pax = fields.Boolean('Is Per Pax', default=True)
     is_per_journey = fields.Boolean('Is Per Journey', default=False)
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     balance_for = fields.Selection([('ho', 'Head Office'), ('agent', 'Agent')], 'Balance For', default='ho')
     master_admin_fee_id = fields.Many2one('tt.master.admin.fee', 'Master Admin Fee')
 

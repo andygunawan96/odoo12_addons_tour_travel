@@ -59,7 +59,6 @@
                             <field name="is_per_pnr"/>
                             <field name="is_per_pax"/>
                             <field name="is_per_journey"/>
-                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="balance_for"/>
                         </tree>
                         <form>
