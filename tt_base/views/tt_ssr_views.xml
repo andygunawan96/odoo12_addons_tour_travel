@@ -128,7 +128,12 @@
                                 <field name="is_post_booking_booked" widget="boolean_toggle"/>
                                 <field name="is_post_booking_issued" widget="boolean_toggle"/>
                             </group>
-                            <group></group>
+                            <group>
+                                <field name="is_economy" widget="boolean_toggle"/>
+                                <field name="is_premium_economy" widget="boolean_toggle"/>
+                                <field name="is_business" widget="boolean_toggle"/>
+                                <field name="is_first_class" widget="boolean_toggle"/>
+                            </group>
                         </group>
                         <separator string="SSR Lines"/>
                         <field name="line_ids"/>

@@ -1649,10 +1649,12 @@ class ReservationAirline(models.Model):
                     continue
 
                 write_vals = {
-                    'total_price': commit_data['total_price'],
                     'balance_due': commit_data['balance_due'],
                     'balance_due_str': commit_data['balance_due_str'],
                 }
+                if rsv_prov_obj.state != 'issued':
+                    write_vals['total_price'] = commit_data['total_price']
+
                 if not is_webhook:
                     write_vals.update({
                         'reschedule_uid': reschedule_uid,
