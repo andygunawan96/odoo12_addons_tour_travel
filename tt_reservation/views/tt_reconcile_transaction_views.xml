@@ -11,6 +11,7 @@
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Open" name='open' domain="[('state', '=', 'open')]"/>
+                <filter name="ho_id" groups="base.group_erp_manager"/>
             </search>
         </field>
     </record>
@@ -46,6 +47,7 @@
                         <field name="start_balance" readonly="1"/>
                         <field name="end_balance" readonly="1"/>
                         <field name="transaction_date"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                     </group>
                     <separator string="Line(s)"/>
                     <field name="reconcile_lines_ids"/>
@@ -85,6 +87,7 @@
                 <field name="start_balance"/>
                 <field name="end_balance"/>
                 <field name="total_lines"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <!--                <field name="state"/>-->
             </tree>
         </field>
@@ -134,7 +137,6 @@
                             <field name="pnr"/>
                             <field name="transaction_code"/>
                             <field name="type"/>
-                            <field name="ho_id" groups="base.group_erp_manager"/>
                         </group>
                         <group>
                             <field name="state"/>
