@@ -41,7 +41,7 @@ class TtXlsPnrMatchingWizard(models.TransientModel):
                 airline_tickets = self.env['tt.ticket.airline'].search([('ticket_number', '=', ticket_search)])
                 airline_ticket = False
                 for ticket in airline_tickets:
-                    if ticket.provider_id.issued_date.strftime('%d%b%y').upper() == rec[3]:
+                    if ticket.provider_id.issued_date.strftime('%d%b%y').upper() == rec[3] and ticket.provider_id.booking_id.ho_id.id == self.env.user.ho_id.id:
                         airline_ticket = ticket
                 if airline_ticket:
                     if not final_res.get(airline_ticket.provider_id.provider_id.code):

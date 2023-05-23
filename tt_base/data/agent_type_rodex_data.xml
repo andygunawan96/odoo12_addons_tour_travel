@@ -5,7 +5,6 @@
             <field name="code">ho</field>
             <field name="active">True</field>
             <field name="seq_prefix">HO</field>
-            <field name="ho_id" ref="rodex_ho"/>
         </record>
         <record id="agent_type_citra" model="tt.agent.type">
             <field name="name">Agent Citra</field>
@@ -13,7 +12,6 @@
             <field name="active">True</field>
             <field name="registration_fee">98000000</field>
             <field name="seq_prefix">CR</field>
-            <field name="ho_id" ref="rodex_ho"/>
             <field name="is_send_email_issued" eval="True"/>
         </record>
         <record id="agent_type_japro" model="tt.agent.type">
@@ -21,7 +19,6 @@
             <field name="code">japro</field>
             <field name="active">True</field>
             <field name="registration_fee">2900000</field>
-            <field name="ho_id" ref="rodex_ho"/>
             <field name="seq_prefix">JP</field>
         </record>
         <record id="agent_type_btbo" model="tt.agent.type">
@@ -30,7 +27,6 @@
             <field name="active">True</field>
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BO</field>
-            <field name="ho_id" ref="rodex_ho"/>
             <field name="is_using_invoice" eval="False"/>
         </record>
         <record id="agent_type_btbr" model="tt.agent.type">
@@ -39,7 +35,6 @@
             <field name="active">True</field>
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BR</field>
-            <field name="ho_id" ref="rodex_ho"/>
             <field name="is_using_invoice" eval="False"/>
         </record>
         <record id="agent_type_btbo2" model="tt.agent.type">
@@ -48,7 +43,6 @@
             <field name="active">True</field>
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BD</field>
-            <field name="ho_id" ref="rodex_ho"/>
             <field name="is_using_pnr_quota" eval="True"/>
             <field name="is_using_invoice" eval="False"/>
         </record>
@@ -58,7 +52,6 @@
             <field name="active">True</field>
             <field name="registration_fee">0</field>
             <field name="seq_prefix">BC</field>
-            <field name="ho_id" ref="rodex_ho"/>
             <field name="is_send_email_issued" eval="True"/>
             <field name="is_send_email_booked" eval="True"/>
         </record>

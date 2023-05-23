@@ -4,6 +4,42 @@
         <record id="rodex_ho" model="tt.agent">
             <field name="name">Rodextrip.com</field>
             <field name="is_ho_agent">True</field>
+            <field name="agent_type_id" ref="tt_base.agent_type_ho"/>
+        </record>
+
+        <record id="agent_type_ho_inh" model="tt.agent.type">
+            <field name="inherit_id" ref="tt_base.agent_type_ho"/>
+            <field name="ho_id" ref="rodex_ho"/>
+        </record>
+
+        <record id="agent_type_citra_inh" model="tt.agent.type">
+            <field name="inherit_id" ref="tt_base.agent_type_citra"/>
+            <field name="ho_id" ref="rodex_ho"/>
+        </record>
+
+        <record id="agent_type_japro_inh" model="tt.agent.type">
+            <field name="inherit_id" ref="tt_base.agent_type_japro"/>
+            <field name="ho_id" ref="rodex_ho"/>
+        </record>
+
+        <record id="agent_type_btbo_inh" model="tt.agent.type">
+            <field name="inherit_id" ref="tt_base.agent_type_btbo"/>
+            <field name="ho_id" ref="rodex_ho"/>
+        </record>
+
+        <record id="agent_type_btbr_inh" model="tt.agent.type">
+            <field name="inherit_id" ref="tt_base.agent_type_btbr"/>
+            <field name="ho_id" ref="rodex_ho"/>
+        </record>
+
+        <record id="agent_type_btbo2_inh" model="tt.agent.type">
+            <field name="inherit_id" ref="tt_base.agent_type_btbo2"/>
+            <field name="ho_id" ref="rodex_ho"/>
+        </record>
+
+        <record id="agent_type_btc_inh" model="tt.agent.type">
+            <field name="inherit_id" ref="tt_base.agent_type_btc"/>
+            <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="base_top_up_admin" model="res.users">
