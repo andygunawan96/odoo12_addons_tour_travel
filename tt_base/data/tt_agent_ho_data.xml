@@ -8,36 +8,43 @@
         </record>
 
         <record id="agent_type_ho_inh" model="tt.agent.type">
+            <field name="name">HO</field>
             <field name="inherit_id" ref="tt_base.agent_type_ho"/>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="agent_type_citra_inh" model="tt.agent.type">
+            <field name="name">Agent Citra</field>
             <field name="inherit_id" ref="tt_base.agent_type_citra"/>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="agent_type_japro_inh" model="tt.agent.type">
+            <field name="name">Agent JaPro</field>
             <field name="inherit_id" ref="tt_base.agent_type_japro"/>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="agent_type_btbo_inh" model="tt.agent.type">
+            <field name="name">Agent BTBO</field>
             <field name="inherit_id" ref="tt_base.agent_type_btbo"/>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="agent_type_btbr_inh" model="tt.agent.type">
+            <field name="name">Agent BTBR</field>
             <field name="inherit_id" ref="tt_base.agent_type_btbr"/>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="agent_type_btbo2_inh" model="tt.agent.type">
+            <field name="name">Agent BTBO 2</field>
             <field name="inherit_id" ref="tt_base.agent_type_btbo2"/>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="agent_type_btc_inh" model="tt.agent.type">
+            <field name="name">Agent BTC</field>
             <field name="inherit_id" ref="tt_base.agent_type_btc"/>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
