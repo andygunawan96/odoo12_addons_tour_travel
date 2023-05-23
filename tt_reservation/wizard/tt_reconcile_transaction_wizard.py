@@ -57,13 +57,14 @@ class TtReconcileTransactionWizard(models.TransientModel):
         recon_data_list = []
         for period in data['transaction_periods']:
             existing_recon_data = self.env['tt.reconcile.transaction'].search([('provider_id','=',provider_obj.id),
-                                                                               ('transaction_date','=',period['transaction_date'])])
+                                                                               ('transaction_date','=',period['transaction_date']), ('ho_id', '=', ho_id)])
             if existing_recon_data:
                 recon_data = existing_recon_data
             else:
                 recon_data = self.env['tt.reconcile.transaction'].create({
                     'provider_id': provider_obj.id,
-                    'transaction_date': period['transaction_date']
+                    'transaction_date': period['transaction_date'],
+                    'ho_id': ho_id
                 })
 
             found_trans_lines = []
