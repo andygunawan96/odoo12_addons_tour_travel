@@ -2266,10 +2266,10 @@ class ReservationAirline(models.Model):
         else:
             co_uid = self.env.user.id
         attachments = []
-        for base64 in data['response']:
+        for idx, base64 in enumerate(data['response'], start=1):
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Airline Ticket Original %s.pdf' % book_obj.name,
+                    'filename': 'Airline Ticket Original %s-%s.pdf' % (book_obj.name, idx),
                     'file_reference': 'Airline Ticket Original',
                     'file': base64['base64'],
                     'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
