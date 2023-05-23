@@ -527,6 +527,10 @@ class MasterActivity(models.Model):
                     'provider_id': provider_id.id,
                 }
                 if product_obj:
+                    if not product_obj.owner_ho_id:
+                        vals.update({
+                            'owner_ho_id': self.env.user.ho_id.id
+                        })
                     if self.env.user.ho_id.id not in product_obj.ho_ids.ids:
                         vals.update({
                             'ho_ids': [(4, self.env.user.ho_id.id)]
@@ -536,6 +540,7 @@ class MasterActivity(models.Model):
                 else:
                     vals.update({
                         'uuid': rec['product']['uuid'],
+                        'owner_ho_id': self.env.user.ho_id.id,
                         'ho_ids': [(6,0,[self.env.user.ho_id.id])]
                     })
                     if not cur_obj:
@@ -1037,7 +1042,7 @@ class MasterActivity(models.Model):
             if not activity_id:
                 raise RequestException(1022, additional_message='Activity not found.')
             activity_id = activity_id[0]
-            if context.get('co_ho_id') and int(context['co_ho_id']) not in activity_id.ho_ids.ids:
+            if context.get('co_ho_id') and int(context['co_ho_id']) not in activity_id.ho_ids.ids and activity_id.owner_ho_id.id != int(context['co_ho_id']) and activity_id.ho_ids:
                 raise RequestException(1022, additional_message='Activity not found.')
             provider = provider_obj.code
             result_id_list = self.env['tt.master.activity.lines'].search([('activity_id', '=', activity_id.id)])
@@ -1313,7 +1318,9 @@ class MasterActivity(models.Model):
             if req.get('name'):
                 search_params.append(('name', 'ilike', req['name']))
             if context.get('co_ho_id'):
-                search_params.append(('ho_ids', '=', int(context['co_ho_id'])))
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
             result_id_list = self.env['tt.master.activity'].search(search_params)
             result_list = []
             for result in result_id_list:
