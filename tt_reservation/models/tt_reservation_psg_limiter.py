@@ -17,6 +17,7 @@ class TtAirlineRule(models.Model):
     rebooking_limit = fields.Integer('Rebooking Limit',default=2,help="Book while another booking is still valid")
     churning_limit = fields.Integer('Churning Limit',default=2,help="Cancel then rebook")
     adm = fields.Char('ADM /P/R', default="30USD")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     active = fields.Boolean("Active",default=True)
 
 class TtWhitelistedName(models.Model):
