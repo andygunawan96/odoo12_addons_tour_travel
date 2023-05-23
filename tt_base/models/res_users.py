@@ -121,7 +121,7 @@ class ResUsers(models.Model):
             elif vals['groups_id'][0][0] == 4:
                 if (vals['groups_id'][0][1] == 3 and self.env.user.id != admin_obj_id) or (vals['groups_id'][0][1] == 2 and not self.env.user.has_group('base.group_system')):
                     vals.pop('groups_id')
-        if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #jika tidak punya access rights tidak boleh create tanpa is HO and is Agent, harus ada salah satu
+        if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id and not vals.get('groups_id'): #jika tidak punya access rights tidak boleh create tanpa is HO and is Agent, harus ada salah satu
             ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
             agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
             corpor_group_id = self.env.ref('tt_base.group_tt_corpor_user').id
@@ -164,7 +164,7 @@ class ResUsers(models.Model):
                     vals.pop('groups_id')
         if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id: #tidak boleh ganti pwd admin kalau bukan admin settings
             vals.pop('password')
-        if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id: #jika tidak punya access rights tidak boleh remove both is HO and is Agent, harus ada salah satu
+        if not self.env.user.has_group('base.group_erp_manager') and self.env.user.id != admin_obj_id and not vals.get('groups_id'): #jika tidak punya access rights tidak boleh remove both is HO and is Agent, harus ada salah satu
             ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
             agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
             corpor_group_id = self.env.ref('tt_base.group_tt_corpor_user').id
