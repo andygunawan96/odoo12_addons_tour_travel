@@ -3,6 +3,9 @@ import datetime
 import json
 from num2words import num2words
 import pytz
+import odoo.tools as tools
+
+static_url = tools.config.get('static_url','')
 
 
 class PrintoutTicketForm(models.AbstractModel):
@@ -157,6 +160,7 @@ class PrintoutTicketForm(models.AbstractModel):
             'airline_ticket_footer': airline_ticket_footer and airline_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta'),
             'qr_code_data': False
@@ -265,6 +269,7 @@ class PrintoutTicketBusForm(models.AbstractModel):
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url
         }
         if 'is_with_price' in data:
             vals.update({
@@ -339,7 +344,8 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             'price_lines': values,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': base_color
+            'base_color': base_color,
+            'static_url': static_url
         }
         if 'is_with_price' in data:
             vals.update({
@@ -428,6 +434,7 @@ class PrintoutTicketEventForm(models.AbstractModel):
             'header_width': str(header_width),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         if 'is_with_price' in data:
@@ -548,6 +555,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
             'reschedule_fee': self.get_reschedule_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
             'hotel_ticket_footer': hotel_ticket_footer and hotel_ticket_footer[0].html or '',
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         if 'is_with_price' in data:
@@ -836,6 +844,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'footer_ppob_bpjs': footer_ppob_bpjs and footer_ppob_bpjs[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
 
@@ -947,6 +956,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
             'header_width': str(header_width),
             'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         return vals
@@ -1333,6 +1343,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'ho_obj': ho_obj,
             'header_width': str(header_width),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         return vals
@@ -1752,6 +1763,7 @@ class PrintoutInvoice(models.AbstractModel):
             'terbilang': terbilang,
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'is_invoice': True
         }
@@ -2171,6 +2183,7 @@ class PrintoutInvoiceHOINV(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'ho_obj': resv_obj.ho_id or False,
             'is_invoice': True
@@ -2558,6 +2571,7 @@ class PrintoutKwintasi(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'is_invoice': False,
         }
@@ -2638,6 +2652,7 @@ class PrintoutExpenses(models.AbstractModel):
             #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
         return vals
@@ -2738,6 +2753,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -2875,6 +2891,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -2962,6 +2979,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3049,6 +3067,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3136,6 +3155,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3223,6 +3243,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3313,6 +3334,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3396,6 +3418,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3481,6 +3504,7 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3571,6 +3595,7 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3663,6 +3688,7 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3757,6 +3783,7 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3908,6 +3935,7 @@ class PrintoutBilling(models.AbstractModel):
             'header_width': str(header_width),
             'billing_footer': billing_footer and billing_footer[0].html or '',
             'base_color': base_color,
+            'static_url': static_url,
             'ho_obj': ho_obj,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
@@ -3962,6 +3990,7 @@ class PrintoutTopUp(models.AbstractModel):
             'ho_obj': ho_obj,
             'top_up_footer': top_up_footer and top_up_footer[0].html or '',
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -4007,6 +4036,7 @@ class PrintoutRefund(models.AbstractModel):
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids']), data['data'].get('is_ho')),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -4044,6 +4074,7 @@ class PrintoutReschedule(models.AbstractModel):
             'docs': temp_docs,
             'header_width': str(header_width),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -4078,6 +4109,7 @@ class PrintoutVoucher(models.AbstractModel):
             'doc_expire_date': temp_docs.voucher_expire_date and temp_docs.voucher_expire_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
             'header_width': str(header_width),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'ho_obj': ho_obj or False
         }
@@ -4117,6 +4149,7 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
             'lg_footer': lg_footer and lg_footer[0].html or '',
             'header_width': str(header_width),
             'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'ho_obj': ho_obj or False
         }
