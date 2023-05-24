@@ -73,8 +73,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
                 try:
                     currency = self.env.ref("base." + transaction['currency']).id
                     transaction.update({
-                        'currency_id': currency,
-                        'ho_id': ho_id
+                        'currency_id': currency
                     })
                 except:
                     pass
