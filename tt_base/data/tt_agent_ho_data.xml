@@ -5,41 +5,40 @@
             <field name="name">Rodextrip.com</field>
             <field name="is_ho_agent">True</field>
             <field name="agent_type_id" ref="tt_base.agent_type_ho"/>
+            <field name="btc_agent_type_id" ref="tt_base.agent_type_btc"/>
         </record>
 
         <record id="tt_base.agent_type_ho" model="tt.agent.type">
-            <field name="name">HO</field>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="tt_base.agent_type_citra" model="tt.agent.type">
-            <field name="name">Agent Citra</field>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="tt_base.agent_type_japro" model="tt.agent.type">
-            <field name="name">Agent JaPro</field>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="tt_base.agent_type_btbo" model="tt.agent.type">
-            <field name="name">Agent BTBO</field>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="tt_base.agent_type_btbr" model="tt.agent.type">
-            <field name="name">Agent BTBR</field>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="tt_base.agent_type_btbo2" model="tt.agent.type">
-            <field name="name">Agent BTBO 2</field>
             <field name="ho_id" ref="rodex_ho"/>
         </record>
 
         <record id="tt_base.agent_type_btc" model="tt.agent.type">
-            <field name="name">Agent BTC</field>
             <field name="ho_id" ref="rodex_ho"/>
+        </record>
+
+        <record id="base.user_admin" model="res.users">
+            <field name="ho_id" ref="rodex_ho"/>
+            <field name="agent_id" ref="rodex_ho"/>
         </record>
 
     </data>

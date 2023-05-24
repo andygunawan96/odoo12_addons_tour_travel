@@ -57,6 +57,10 @@ class CreateHOAgentWizard(models.TransientModel):
             'ho_id': new_ho_obj.id
         })
 
+        new_ho_obj.write({
+            'btc_agent_type_id': btc_agent_type_obj.id
+        })
+
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         if self.env.user.agent_id.is_ho_agent:
             action_num = self.env.ref('tt_base.tt_agent_all_action_view').id

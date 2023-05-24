@@ -4,6 +4,7 @@
         <record id="agent_b2c" model="tt.agent">
             <field name="name">Rodextrip</field>
             <field name="agent_type_id" ref="agent_type_btc"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="is_btc_agent">True</field>
             <field name="email">info@rodextrip.com</field>
             <field name="is_send_email_cust" eval="True"/>
@@ -11,6 +12,7 @@
 
         <record id="agent_b2c_user" model="res.users">
             <field name="name">Rodextrip User</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.agent_b2c"/>
             <field name="login">agent_b2c</field>
             <field name="password">2ebaebb25402547966930e235e93c004</field>

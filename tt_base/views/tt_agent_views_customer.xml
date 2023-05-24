@@ -35,7 +35,6 @@
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
                             <!--                            <field name="credit_limit"/>-->
-                            <field name="credit_limit" readonly="1"/>
                             <field name="is_using_pnr_quota" groups="tt_base.group_agent_level_4"
                                    invisible="1"/>
                             <field name="is_send_email_cust" groups="tt_base.group_agent_level_4"/>
@@ -46,6 +45,7 @@
                             <!--                            <field name="credit_limit"/>-->
                         </group>
                         <group>
+                            <field name="credit_limit" readonly="1"/>
                             <field name="est_date" readonly="1"/>
 <!--                            <field name="agent_bank_detail_ids" invisible="1"/>-->
                             <!--                            <field name="mou_start"/>-->

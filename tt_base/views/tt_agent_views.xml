@@ -86,9 +86,9 @@
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
-                            <field name="credit_limit" attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')]}"/>
                         </group>
                         <group>
+                            <field name="credit_limit" attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')]}"/>
                             <field name="est_date" readonly="1"/>
                             <!--                            <field name="mou_start"/>-->
                             <!--                            <field name="mou_end"/>-->
