@@ -5,13 +5,13 @@
         <field name="model">tt.reconcile.transaction</field>
         <field name="arch" type="xml">
             <search string="Search Reconcile">
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
                 <field name="transaction_date"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Open" name='open' domain="[('state', '=', 'open')]"/>
-                <filter name="ho_id" groups="base.group_erp_manager"/>
             </search>
         </field>
     </record>
