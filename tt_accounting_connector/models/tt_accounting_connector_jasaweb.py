@@ -100,7 +100,7 @@ class AccountingConnectorJasaweb(models.Model):
         elif request['category'] == 'top_up':
             transport_type = 'Top Up'
             total_nta = 0
-            pay_method = request.get('acquirer_type', '') in ['payment_gateway', 'va'] and 'Payment Gateway' or 'Rodex Gateway'
+            pay_method = request.get('acquirer_type', '') in ['payment_gateway', 'va'] and 'Payment Gateway' or 'Orbis Gateway'
         else:
             transport_type = ''
             total_nta = 0

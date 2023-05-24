@@ -18,7 +18,7 @@ SESSION_NT = session.Session()
 class MasterEvent(models.Model):
     _name = "tt.master.event"
     _inherit = ['tt.history']
-    _description = "Rodex Event Model"
+    _description = "Orbis Event Model"
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_event.tt_provider_type_event').id

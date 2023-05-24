@@ -11,8 +11,8 @@ Tour & Travel - Accounting Setup
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['tt_base','tt_accounting'],
 
     # always loaded

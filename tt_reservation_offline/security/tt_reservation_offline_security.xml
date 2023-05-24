@@ -14,7 +14,7 @@
     </record>
 
     <record id="tt_reservation_offline_rule" model="ir.rule">
-        <field name="name">Issued Offline - Rodex</field>
+        <field name="name">Issued Offline - Orbis</field>
         <field name="model_id" ref="model_tt_reservation_offline"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--,('sub_agent_id.id','=',user.agent_id.id)-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--Record rule biasanya 4-->

@@ -5,10 +5,6 @@
             <field name="key">tt_base.website_default_color</field>
             <field name="value">#FF0000</field>
         </record>
-        <record id="website_default_email_address" model="ir.config_parameter">
-            <field name="key">tt_base.website_default_email_address</field>
-            <field name="value">cs@rodextrip.com</field>
-        </record>
         <record id="redirect_url_signup_rodex" model="ir.config_parameter">
             <field name="key">tt_base.redirect_url_signup_rodex</field>
             <field name="value">/</field>

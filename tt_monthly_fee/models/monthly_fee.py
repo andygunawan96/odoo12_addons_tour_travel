@@ -215,7 +215,7 @@ class MonthlyManagementFee(models.Model):
 
     @api.one
     def action_send_email(self, with_notif=True):
-        template = self.env.ref('tt_rodex_aftersales.email_aftersales_1', False)
+        template = self.env.ref('tt_orbis_aftersales.email_aftersales_1', False)
         mail_id = self.env['ir.mail_server'].search([('name', 'ilike', 'info')], limit=1)
         if mail_id:
             template.mail_server_id = mail_id[0].id

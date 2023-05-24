@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class DynamicPrintInvoiceLine(models.Model):
     _name = "tt.dynamic.print.invoice.line"
-    _description = 'Rodex Dynamic Print Invoice Line Model'
+    _description = 'Orbis Dynamic Print Invoice Line Model'
 
     invoice_line_detail_id = fields.Many2one('tt.agent.invoice.line.detail', 'Invoice Line Detail', readonly=True)
     invoice_line_id = fields.Many2one('tt.agent.invoice.line', 'Invoice Line', readonly=True, related='invoice_line_detail_id.invoice_line_id')

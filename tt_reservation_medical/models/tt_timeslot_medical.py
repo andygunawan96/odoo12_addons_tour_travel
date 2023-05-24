@@ -60,7 +60,7 @@ ADMIN_FEE_ANTIGEN_DRIVETHRU = 10000
 
 class TtTimeslotmedical(models.Model):
     _name = 'tt.timeslot.medical'
-    _description = 'Rodex Model Timeslot medical'
+    _description = 'Orbis Model Timeslot medical'
     _order = 'datetimeslot,id'
     _rec_name = 'timeslot_display_name'
 
@@ -318,7 +318,7 @@ class TtTimeslotmedical(models.Model):
 
 class TtTimeslotmedicaldefault(models.Model):
     _name = 'tt.timeslot.medical.default'
-    _description = 'Rodex Model Timeslot medical Default'
+    _description = 'Orbis Model Timeslot medical Default'
     _order = 'sequence'
 
     name = fields.Char("Name", required=True)

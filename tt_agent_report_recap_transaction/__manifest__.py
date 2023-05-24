@@ -11,8 +11,8 @@ Tour & Travel - Agent Report Recap Transaction
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['base', 'tt_base', 'tt_agent_report'],
 
     # always loaded

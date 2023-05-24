@@ -81,10 +81,10 @@ class VisaSyncProducts(models.TransientModel):
         }
         res = self.env['tt.visa.api.con'].get_product_vendor(req)
         if res['error_code'] == 0:
-            folder_path = '/var/log/tour_travel/rodextrip_visa_master_data'
+            folder_path = '/var/log/tour_travel/rt_visa_master_data'
             if not os.path.exists(folder_path):
                 os.mkdir(folder_path)
-            file = open('/var/log/tour_travel/rodextrip_visa_master_data/rodextrip_visa_master_data.json', 'w')
+            file = open('/var/log/tour_travel/rt_visa_master_data/rt_visa_master_data.json', 'w')
             file.write(json.dumps(res['response']))
             file.close()
         else:
@@ -97,7 +97,7 @@ class VisaSyncProducts(models.TransientModel):
         for rec in list_product:
             rec.active = False
         file = []
-        file_dat = open('/var/log/tour_travel/rodextrip_visa_master_data/rodextrip_visa_master_data.json','r')
+        file_dat = open('/var/log/tour_travel/rt_visa_master_data/rt_visa_master_data.json','r')
         file = json.loads(file_dat.read())
         file_dat.close()
         if file:

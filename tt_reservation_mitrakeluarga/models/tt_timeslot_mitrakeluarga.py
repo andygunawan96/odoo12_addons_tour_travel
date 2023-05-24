@@ -20,7 +20,7 @@ ADDRESS_SURCHARGE = 100000## Fee per bookingan
 
 class TtTimeslotMitraKeluarga(models.Model):
     _name = 'tt.timeslot.mitrakeluarga'
-    _description = 'Rodex Model Timeslot Swab Express'
+    _description = 'Orbis Model Timeslot Swab Express'
     _order = 'datetimeslot'
     _rec_name = 'timeslot_display_name'
 
@@ -184,7 +184,7 @@ class TtTimeslotMitraKeluarga(models.Model):
 
 class TtTimeslotMitraKeluargadefault(models.Model):
     _name = 'tt.timeslot.mitrakeluarga.default'
-    _description = 'Rodex Model Timeslot Swab Express Default'
+    _description = 'Orbis Model Timeslot Swab Express Default'
     _order = 'sequence'
 
     name = fields.Char("Name", required=True)

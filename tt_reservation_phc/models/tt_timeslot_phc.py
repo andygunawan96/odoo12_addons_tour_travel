@@ -26,7 +26,7 @@ ADMIN_FEE_PCR_DRIVETHRU = 10000
 
 class TtTimeslotphc(models.Model):
     _name = 'tt.timeslot.phc'
-    _description = 'Rodex Model Timeslot phc'
+    _description = 'Orbis Model Timeslot phc'
     _order = 'datetimeslot,id'
     _rec_name = 'timeslot_display_name'
 
@@ -253,7 +253,7 @@ class TtTimeslotphc(models.Model):
 
 class TtTimeslotphcdefault(models.Model):
     _name = 'tt.timeslot.phc.default'
-    _description = 'Rodex Model Timeslot PHC Default'
+    _description = 'Orbis Model Timeslot PHC Default'
     _order = 'sequence'
 
     name = fields.Char("Name", required=True)

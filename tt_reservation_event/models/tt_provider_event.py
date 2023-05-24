@@ -8,7 +8,7 @@ class TtProviderEvent(models.Model):
     _name = 'tt.provider.event'
     _rec_name = 'pnr'
     _order = 'event_date'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')

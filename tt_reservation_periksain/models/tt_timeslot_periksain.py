@@ -16,7 +16,7 @@ MAX_PER_SLOT = 5
 
 class TtTimeslotPeriksain(models.Model):
     _name = 'tt.timeslot.periksain'
-    _description = 'Rodex Model Timeslot Periksain'
+    _description = 'Orbis Model Timeslot Periksain'
     _order = 'datetimeslot'
     _rec_name = 'timeslot_display_name'
 

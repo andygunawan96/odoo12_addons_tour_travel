@@ -11,8 +11,8 @@ Tour & Travel - Reservation Report Airline
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'tt_base', 'tt_agent_report', 'tt_reservation_airline'],
 
     # always loaded

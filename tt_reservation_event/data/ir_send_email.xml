@@ -16,7 +16,7 @@
 <![CDATA[
 <p>Dear ${object.vendor_id.name}</p>
 
-<p>There has been a purchase through rodex system</p>
+<p>There has been a purchase through orbis system</p>
 ${object.email_content}
 
 <p>This is an auto-generated email.</p>

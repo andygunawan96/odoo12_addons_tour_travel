@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 
 class TtReconcileManualMatchWizard(models.TransientModel):
     _name = "tt.reconcile.manual.match.wizard"
-    _description = 'Rodex Wizard Reconcile Manual Match Wizard'
+    _description = 'Orbis Wizard Reconcile Manual Match Wizard'
 
     reconcile_transaction_line_id = fields.Many2one('tt.reconcile.transaction.lines','Transaction Line',readonly=True)
     current_total_price = fields.Monetary('Current Total Price',readonly=True)

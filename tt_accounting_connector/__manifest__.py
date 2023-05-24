@@ -12,8 +12,8 @@ Tour & Travel - Accounting Connector
 Key Features
 ------------
 """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends' : ['tt_base', 'tt_accounting', 'tt_accounting_setup', 'tt_in_api_connector'],
     'data': [
         'security/ir.model.access.csv',

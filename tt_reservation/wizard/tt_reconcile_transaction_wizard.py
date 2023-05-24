@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 
 class TtReconcileTransactionWizard(models.TransientModel):
     _name = "tt.reconcile.transaction.wizard"
-    _description = 'Rodex Wizard Reconcile Transaction Wizard'
+    _description = 'Orbis Wizard Reconcile Transaction Wizard'
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id),('is_reconcile','=',True)]")

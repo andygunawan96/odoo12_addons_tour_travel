@@ -11,7 +11,7 @@ _logger = logging.getLogger()
 
 class TtXlsPnrMatchingWizard(models.TransientModel):
     _name = "tt.xls.pnr.matching.wizard"
-    _description = 'Rodex Wizard XLS PNR Matching'
+    _description = 'Orbis Wizard XLS PNR Matching'
 
     xls_file = fields.Many2one('tt.upload.center', 'Original XLS File')
 

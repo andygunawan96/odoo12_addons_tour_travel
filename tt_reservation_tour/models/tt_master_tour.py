@@ -263,10 +263,10 @@ class MasterTour(models.Model):
         else:
             raise UserError(res['error_msg'])
         if temp:
-            folder_path = '/var/log/tour_travel/rodextrip_tour_master_data'
+            folder_path = '/var/log/tour_travel/rt_tour_master_data'
             if not os.path.exists(folder_path):
                 os.mkdir(folder_path)
-            file = open('/var/log/tour_travel/rodextrip_tour_master_data/rodextrip_tour_master_data.json', 'w')
+            file = open('/var/log/tour_travel/rt_tour_master_data/rt_tour_master_data.json', 'w')
             file.write(json.dumps(temp))
             file.close()
 
@@ -275,7 +275,7 @@ class MasterTour(models.Model):
 
         file = []
         for i in range(int(start), int(end) + 1):
-            file_dat = open('/var/log/tour_travel/rodextrip_tour_master_data/rodextrip_tour_master_data.json', 'r')
+            file_dat = open('/var/log/tour_travel/rt_tour_master_data/rt_tour_master_data.json', 'r')
             file = json.loads(file_dat.read())
             file_dat.close()
             if file:

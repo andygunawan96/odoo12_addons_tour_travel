@@ -3,7 +3,7 @@ from datetime import datetime
 #move invoice
 class HOInvoice(models.TransientModel):
     _name = "tt.ho.invoice.wizard"
-    _description = 'Rodex Invoice Move Wizard Model'
+    _description = 'Orbis Invoice Move Wizard Model'
 
     invoice_id1 = fields.Many2one('tt.ho.invoice','Source Invoice', readonly="1")
 
