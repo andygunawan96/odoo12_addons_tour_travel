@@ -1446,9 +1446,16 @@ class MasterTour(models.Model):
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
             sql_query = """SELECT cnt.id FROM tt_tour_location_rel tour_loc_rel 
                            LEFT JOIN tt_master_tour mst_tour ON tour_loc_rel.product_id = mst_tour.id 
+                           LEFT JOIN tt_master_tour_ho_agent_rel tour_ho_rel on tour_ho_rel.tour_id = mst_tour.id 
                            LEFT JOIN tt_tour_master_locations tour_loc ON tour_loc_rel.location_id = tour_loc.id 
                            LEFT JOIN res_country cnt ON tour_loc.country_id = cnt.id 
-                           WHERE mst_tour.state IN ('confirm') AND mst_tour.active = True GROUP BY cnt.id;"""
+                           WHERE mst_tour.state IN ('confirm') AND mst_tour.active = True """
+
+            sql_query += 'AND (tour_ho_rel.ho_id IS NULL'
+            if context.get('co_ho_id'):
+                sql_query += ' OR mst_tour.owner_ho_id = ' + str(context['co_ho_id']) + ''
+                sql_query += ' OR tour_ho_rel.ho_id = ' + str(context['co_ho_id']) + ''
+            sql_query += ') GROUP BY cnt.id;'
 
             self.env.cr.execute(sql_query)
             tour_loc_countries = self.env.cr.dictfetchall()
