@@ -11,12 +11,13 @@
                             <field name="provider_id"/>
                         </group>
                         <group>
-                            <field name="ho_id" groups="base.group_erp_manager"/>
+<!--                            <field name="ho_id" groups="base.group_erp_manager"/>-->
+							<field name="ho_ids" groups="base.group_erp_manager"/>
                         </group>
 					</group>
 					<footer>
-						<button string="Assign to Selected HO" name="assign_to_selected_ho" type="object" class="btn-primary" groups="base.group_erp_manager"/>
-						<button string="Copy to Selected HO" name="copy_to_selected_ho" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Assign to Selected HO(s)" name="assign_to_multiple_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Remove from Selected HO(s)" name="delete_from_multiple_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
 						<button string="Cancel" class="btn-default" special="cancel" />
 					</footer>
 				</form>

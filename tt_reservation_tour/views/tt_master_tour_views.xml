@@ -72,6 +72,13 @@
                     </div>
                     <group>
                         <group>
+                            <field name="owner_ho_id" groups="base.group_erp_manager"/>
+                            <field name="ho_ids" groups="base.group_erp_manager">
+                                <tree>
+                                    <field name="seq_id"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
                             <field name="location_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
                                     <field name="city_id"/>
@@ -88,7 +95,6 @@
                         <group>
                             <field name="tour_code" readonly="1"/>
                             <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="carrier_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="currency_id" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="description" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
