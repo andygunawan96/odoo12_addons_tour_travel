@@ -862,7 +862,8 @@ class AgentRegistration(models.Model):
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
                 address_ids = self.prepare_address(address)
-                if context['co_agent_id'] != self.env.ref('tt_base.agent_b2c').id:
+                agent_obj = self.env['tt.agent'].browse(int(context['co_agent_id']))
+                if not agent_obj.is_btc_agent:
                     reference_id = context['co_agent_id'],
                 else:
                     reference_id = context['co_ho_id']
@@ -924,9 +925,10 @@ class AgentRegistration(models.Model):
 
     def set_parent_agent_id_api(self, agent_type_id, agent_id):
         if agent_id:
-            ho_obj = self.env['tt.agent'].browse(agent_id).get_ho_parent_agent()
+            agent_obj = self.env['tt.agent'].browse(agent_id)
+            ho_obj = agent_obj.get_ho_parent_agent()
             """ Kalo daftar agent dengan login dulu """
-            if agent_id == self.env.ref('tt_base.agent_b2c').id:
+            if agent_obj.is_btc_agent:
                 """ Kalo B2C, parent set to HO """
                 parent_agent_id = ho_obj and ho_obj.id or False
             else:

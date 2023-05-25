@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from datetime import datetime
 
 
 class CreateHOAgentWizard(models.TransientModel):
@@ -59,6 +60,15 @@ class CreateHOAgentWizard(models.TransientModel):
 
         new_ho_obj.write({
             'btc_agent_type_id': btc_agent_type_obj.id
+        })
+
+        btc_user_obj = self.env['res.users'].create({
+            'name': self.btc_name + ' User',
+            'ho_id': new_ho_obj.id,
+            'agent_id': btc_agent_obj.id,
+            'login': 'btc_user_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
+            'groups_id': [(6, 0, self.env.ref('tt_base.agent_b2c_user').groups_id.ids)],
+            'frontend_security_ids': [(6, 0, self.env.ref('tt_base.agent_b2c_user').frontend_security_ids.ids)]
         })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')

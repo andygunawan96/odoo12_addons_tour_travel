@@ -752,7 +752,7 @@ class TtReservation(models.Model):
         except:
             raise RequestException(1008)
 
-        if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+        if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_id.is_btc_agent or book_obj.user_id.agent_id.is_btc_agent:
             payment_acq_number = ''
             bank_code = ''
             url = ''
