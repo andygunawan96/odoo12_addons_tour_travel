@@ -16,6 +16,7 @@ class TtProvider(models.Model):
     alias = fields.Char(string='Alias')
     code = fields.Char('Code', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+    provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes') ## yg pakai baru hotel, asumsi code selalu sama untuk semua HO
     currency_id = fields.Many2one('res.currency', 'Currency')
     email = fields.Char(string="Email", required=False, )
     social_media_ids = fields.One2many('social.media.detail', 'provider_id', 'Social Media')
@@ -170,7 +171,7 @@ class TtProviderDestination(models.Model):
     _name = 'tt.provider.destination'
     _description = 'Provider Destination'
 
-    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', 'Provider HO Data')
     country_id = fields.Many2one('res.country', 'Country', required=True)
     is_apply = fields.Boolean('Apply Search', default=True)
     is_all_city = fields.Boolean('Apply to all City', default=True)
@@ -190,7 +191,7 @@ class TtProviderCurrency(models.Model):
     _name = 'tt.provider.currency'
     _description = 'Provider Currency'
 
-    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', 'Provider HO Data')
     currency_id = fields.Many2one('res.currency', 'Currency', required=True)
     date = fields.Date('Date', default=fields.Date.today())
     buy_rate = fields.Float('Buy Rate', default=1)
@@ -217,15 +218,15 @@ class TtProviderHOData(models.Model):
     provider_id = fields.Many2one('tt.provider', 'Provider')
     provider_ledger_ids = fields.One2many('tt.provider.ledger', 'provider_ho_data_id', 'Vendor Ledgers')
     currency_id = fields.Many2one('res.currency', 'Currency')
-    address_ids = fields.One2many('address.detail', 'provider_id', string='Addresses')
-    phone_ids = fields.One2many('phone.detail', 'provider_id', string='Phones')
-    rate_ids = fields.One2many('tt.provider.rate', 'provider_id', 'Provider Codes')
-    payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_id', 'Payment Acquirers')
+    address_ids = fields.One2many('address.detail', 'provider_ho_data_id', string='Addresses')
+    phone_ids = fields.One2many('phone.detail', 'provider_ho_data_id', string='Phones')
+    rate_ids = fields.One2many('tt.provider.rate', 'provider_ho_data_id', 'Provider Codes')
+    payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_ho_data_id', 'Payment Acquirers')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
     balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
-    provider_destination_ids = fields.One2many('tt.provider.destination', 'provider_id', 'Destination')
-    provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes')
-    provider_currency_ids = fields.One2many('tt.provider.currency', 'provider_id', 'Rate(s)')
+    provider_destination_ids = fields.One2many('tt.provider.destination', 'provider_ho_data_id', 'Destination')
+
+    provider_currency_ids = fields.One2many('tt.provider.currency', 'provider_ho_data_id', 'Rate(s)')
     is_using_balance = fields.Boolean('Is Using Balance')
     is_using_lg = fields.Boolean('Is Using Letter of Guarantee')
     is_using_po = fields.Boolean('Is Using Purchase Order')

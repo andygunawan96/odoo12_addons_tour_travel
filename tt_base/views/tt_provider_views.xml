@@ -47,6 +47,10 @@
                                 <field name="social_media_ids" readonly="1"/>
                             </page>
 
+                            <page string="Provider Codes">
+                                <field name="provider_code_ids"/>
+                            </page>
+
 
 
                         </notebook>
@@ -184,9 +188,6 @@
                             </page>
                             <page string="Phones">
                                 <field name="phone_ids" readonly="1"/>
-                            </page>
-                            <page string="Provider Codes">
-                                <field name="provider_code_ids"/>
                             </page>
                             <page string="Allowed Destination">
                                 <!--                                <button name="clear_destination_ids" type="object" string="Clear Destination" groups="tt_base.group_tt_tour_travel_operator"/>-->

@@ -26,7 +26,7 @@ class PhoneDetail(models.Model):
     phone_number = fields.Char('Phone Number', store=True, compute='_compute_phone_number')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', string='Agent')
-    provider_id = fields.Many2one('tt.provider', string='Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', string='Provider HO Data')
     customer_id = fields.Many2one('tt.customer', string='Customer',ondelete="cascade")
     customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent')
     va_create = fields.Boolean('VA Create', default=False)

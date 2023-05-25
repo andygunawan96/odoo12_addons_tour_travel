@@ -28,7 +28,7 @@ class AddressDetail(models.Model):
     customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', string='Agent')
-    provider_id = fields.Many2one('tt.provider', string='Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', string='Provider HO Data')
     active = fields.Boolean('Active', default=True)
 
     # @api.onchange('agent_id')

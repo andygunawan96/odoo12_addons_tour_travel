@@ -16,7 +16,7 @@ class PaymentAcquirer(models.Model):
 
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     type = fields.Selection(variables.ACQUIRER_TYPE, 'Payment Type', help="Credit card for top up")
-    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', 'Provider HO Data')
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent')

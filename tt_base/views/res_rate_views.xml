@@ -22,7 +22,7 @@
                             <!--</h1>-->
                         </div>
                         <group>
-                            <field name="provider_id"/>
+                            <field name="provider_ho_data_id"/>
                             <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="date"/>
                             <field name="currency_id"/>
@@ -40,7 +40,7 @@
             <field name="model">tt.provider.rate</field>
             <field name="arch" type="xml">
                 <tree string="Res Rate Tree">
-                    <field name="provider_id"/>
+                    <field name="provider_ho_data_id"/>
                     <field name="date"/>
                     <field name="currency_id"/>
                     <field name="rate_currency_id" invisible="1"/>

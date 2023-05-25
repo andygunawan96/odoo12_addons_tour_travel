@@ -11,7 +11,7 @@ class ResRate(models.Model):
     _order = 'date DESC'
 
     name = fields.Char()
-    provider_id = fields.Many2one('tt.provider', 'Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', 'Provider HO Data')
     date = fields.Date(string="Date", required=False)
     currency_id = fields.Many2one('res.currency', 'Currency')
     rate_currency_id = fields.Many2one('res.currency', 'Rate Currency', default=lambda self: self.env.ref('base.IDR'))
