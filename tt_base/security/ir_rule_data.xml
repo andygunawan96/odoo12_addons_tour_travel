@@ -135,35 +135,35 @@
     <record id="tt_res_users_for_ho" model="ir.rule">
         <field name="name">Res Users For HO</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('ho_id','=',user.ho_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_res_users_for_ho_user" model="ir.rule">
         <field name="name">Res Users For HO User</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('ho_id','=',user.ho_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_res_users_for_agent" model="ir.rule">
         <field name="name">Res Users For Agent</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">[('ho_id','=',user.ho_id.id),'|',('agent_id','=',user.agent_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_res_users_for_agent_user" model="ir.rule">
         <field name="name">Res Users For Agent User</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('agent_id','=',user.agent_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
+        <field name="domain_force">[('ho_id','=',user.ho_id.id),'|',('agent_id','=',user.agent_id.id),('is_user_template', '=', True)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
     <record id="tt_res_users_for_corpor_user" model="ir.rule">
         <field name="name">Res Users For Corporate User</field>
         <field name="model_id" ref="model_res_users"/>
-        <field name="domain_force">['|',('is_user_template', '=', True),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--NO AGENT CHECK-->
+        <field name="domain_force">[('ho_id','=',user.ho_id.id),'|',('is_user_template', '=', True),('customer_parent_id','=',user.customer_parent_id.id)]</field>  <!--NO AGENT CHECK-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 

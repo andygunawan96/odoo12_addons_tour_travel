@@ -13,21 +13,33 @@
                         <field name="currency_id"/>
                     </group>
                     <group>
-                        <field name="btc_name"/>
-                        <field name="btc_email"/>
-                        <field name="btc_currency_id"/>
+                        <field name="agent_type_name"/>
+                        <field name="agent_type_code"/>
+                        <field name="agent_type_seq_prefix"/>
                     </group>
                 </group>
                 <group>
                     <group>
-                        <field name="agent_type_name"/>
-                        <field name="agent_type_code"/>
-                        <field name="agent_type_seq_prefix"/>
+                        <field name="btc_name"/>
+                        <field name="btc_email"/>
+                        <field name="btc_currency_id"/>
                     </group>
                     <group>
                         <field name="btc_agent_type_name"/>
                         <field name="btc_agent_type_code"/>
                         <field name="btc_agent_type_seq_prefix"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="child_name"/>
+                        <field name="child_email"/>
+                        <field name="child_currency_id"/>
+                    </group>
+                    <group>
+                        <field name="child_agent_type_name"/>
+                        <field name="child_agent_type_code"/>
+                        <field name="child_agent_type_seq_prefix"/>
                     </group>
                 </group>
                 <footer>
