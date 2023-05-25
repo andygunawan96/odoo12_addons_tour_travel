@@ -95,7 +95,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template ho ops manager
         self.env['res.users'].create({
-            'name': 'Template HO Operational Manager (%s)' % self.btc_name,
+            'name': 'Template HO Operational Manager (%s)' % self.agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_ho_user_operational_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
@@ -106,7 +106,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template ho accounting manager
         self.env['res.users'].create({
-            'name': 'Template HO Accounting Manager (%s)' % self.btc_name,
+            'name': 'Template HO Accounting Manager (%s)' % self.agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_ho_user_accounting_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
@@ -117,7 +117,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template ho product manager
         self.env['res.users'].create({
-            'name': 'Template HO All Product Management Manager (%s)' % self.btc_name,
+            'name': 'Template HO All Product Management Manager (%s)' % self.agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_ho_user_all_product_management_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
@@ -128,7 +128,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template ho btb manager
         self.env['res.users'].create({
-            'name': 'Template HO BTB Manager (%s)' % self.btc_name,
+            'name': 'Template HO BTB Manager (%s)' % self.agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_ho_user_btb_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
@@ -139,7 +139,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template ho ticketing
         self.env['res.users'].create({
-            'name': 'Template HO Ticketing Manager (%s)' % self.btc_name,
+            'name': 'Template HO Ticketing Manager (%s)' % self.agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_ho_ticketing_user_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
@@ -150,7 +150,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template btc user
         self.env['res.users'].create({
-            'name': 'Template BTC Agent (%s)' % self.btc_name,
+            'name': 'Template BTC Agent (%s)' % self.btc_agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_btc_agent_user_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
@@ -161,7 +161,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template agent finance manager
         self.env['res.users'].create({
-            'name': 'Template Agent Finance Manager (%s)' % self.btc_name,
+            'name': 'Template Agent Finance Manager (%s)' % self.child_agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_agent_finance_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
@@ -172,7 +172,7 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template agent manager
         self.env['res.users'].create({
-            'name': 'Template Agent Manager (%s)' % self.btc_name,
+            'name': 'Template Agent Manager (%s)' % self.child_agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_agent_user_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
