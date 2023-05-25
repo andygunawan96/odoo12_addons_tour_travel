@@ -12,7 +12,7 @@ from . import payment_acquirer
 from . import agent_bank_detail
 from . import customer_bank_detail
 from . import tt_access_activity
-from . import res_bank
+from . import tt_bank
 from . import res_currency
 from . import res_rate
 from . import res_social_media_type
