@@ -11,6 +11,7 @@
                         <field name="name"/>
                         <field name="email"/>
                         <field name="currency_id"/>
+                        <field name="redirect_url_signup"/>
                     </group>
                     <group>
                         <field name="agent_type_name"/>

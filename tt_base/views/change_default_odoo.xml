@@ -46,14 +46,14 @@
     <template id="auth_signup_reset_password_inherit" name="Auth Signup Reset Password Inherit"
               inherit_id="auth_signup.reset_password">
         <xpath expr="//input[@name='redirect']" position="attributes">
-            <attribute name="t-att-value">redirectrodex</attribute>
+            <attribute name="t-att-value">redirectorbis</attribute>
         </xpath>
     </template>
 
     <template id="auth_signup_signup_inherit" name="Auth Signup Signup Inherit"
               inherit_id="auth_signup.signup">
         <xpath expr="//input[@name='redirect']" position="attributes">
-            <attribute name="t-att-value">redirectrodex</attribute>
+            <attribute name="t-att-value">redirectorbis</attribute>
         </xpath>
     </template>
 

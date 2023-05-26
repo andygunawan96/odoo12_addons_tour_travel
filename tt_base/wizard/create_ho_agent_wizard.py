@@ -9,6 +9,7 @@ class CreateHOAgentWizard(models.TransientModel):
     name = fields.Char('Head Office Name', required=True)
     email = fields.Char('Head Office Email')
     currency_id = fields.Many2one('res.currency', required=True, default=lambda self: self.env.user.company_id.currency_id.id, string='Head Office Currency')
+    redirect_url_signup = fields.Char('Redirect URL Signup', default='/', required=True)
     agent_type_name = fields.Char('Head Office Agent Type Name', required=True)
     agent_type_code = fields.Char('Head Office Agent Type Code', required=True)
     agent_type_seq_prefix = fields.Char('Head Office Agent Type Seq Prefix', size=2, required=True)
@@ -37,6 +38,7 @@ class CreateHOAgentWizard(models.TransientModel):
             'name': self.name,
             'currency_id': self.currency_id.id,
             'email': self.email,
+            'redirect_url_signup': self.redirect_url_signup,
             'is_ho_agent': True,
             'agent_type_id': new_ho_agent_type_obj.id
         })

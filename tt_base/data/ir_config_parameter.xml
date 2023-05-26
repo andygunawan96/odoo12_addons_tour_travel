@@ -5,8 +5,8 @@
             <field name="key">tt_base.website_default_color</field>
             <field name="value">#FF0000</field>
         </record>
-        <record id="redirect_url_signup_rodex" model="ir.config_parameter">
-            <field name="key">tt_base.redirect_url_signup_rodex</field>
+        <record id="redirect_url_signup_orbis" model="ir.config_parameter">
+            <field name="key">tt_base.redirect_url_signup_orbis</field>
             <field name="value">/</field>
         </record>
         <record id="website_use_point_reward" model="ir.config_parameter">

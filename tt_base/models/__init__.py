@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from . import official_odoo_inh
 from . import tt_frontend_security
 from . import res_users_ip
 from . import tt_history

@@ -100,6 +100,7 @@
                         <field name="is_btc_agent" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
                         <field name="btc_agent_type_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
+                        <field name="redirect_url_signup" readonly="1" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
                         <field name="website_default_color" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
@@ -190,6 +191,9 @@
             </field>
             <field name="btc_agent_type_id" position="replace">
                 <field name="btc_agent_type_id" readonly="0" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
+            </field>
+            <field name="redirect_url_signup" position="replace">
+                <field name="redirect_url_signup" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
             </field>
             <field name="agent_type_id" position="replace">
                 <field name="agent_type_id" readonly="0"/>
