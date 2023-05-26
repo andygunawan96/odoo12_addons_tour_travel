@@ -10,7 +10,18 @@ class AuthSignupHomeInherit(AuthSignupHome):
 
     def get_auth_signup_config(self):
         original_values = super(AuthSignupHomeInherit,self).get_auth_signup_config()
-        qcontext = self.get_auth_signup_qcontext()
+        qcontext = request.params.copy()
+        if not qcontext.get('token') and request.session.get('auth_signup_token'):
+            qcontext['token'] = request.session.get('auth_signup_token')
+        if qcontext.get('token'):
+            try:
+                # retrieve the user info (name, login or email) corresponding to a signup token
+                token_infos = request.env['res.partner'].sudo().signup_retrieve_info(qcontext.get('token'))
+                for k, v in token_infos.items():
+                    qcontext.setdefault(k, v)
+            except:
+                qcontext['error'] = _("Invalid signup token")
+                qcontext['invalid_token'] = True
         redirect_param = '/'
         user_obj = request.env['res.users'].sudo().search([('login', '=', qcontext.get('login'))], limit=1)
         if user_obj and user_obj.agent_id:
