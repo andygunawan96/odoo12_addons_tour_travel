@@ -4,7 +4,7 @@ from odoo.addons.auth_signup.models.res_partner import SignupError, now
 import os
 import pickle
 import codecs
-from ...tools import ERR, gmail
+from ....tools import ERR, gmail
 import logging
 import time
 import json

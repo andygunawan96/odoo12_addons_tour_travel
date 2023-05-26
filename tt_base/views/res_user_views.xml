@@ -1,4 +1,5 @@
 <odoo>
+    <!--    Change Default Official Odoo-->
     <record id="res_users_search_view_inh" model="ir.ui.view">
         <field name="name">res.users.search.inh</field>
         <field name="model">res.users</field>
