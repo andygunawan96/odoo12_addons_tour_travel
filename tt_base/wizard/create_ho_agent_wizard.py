@@ -82,7 +82,8 @@ class CreateHOAgentWizard(models.TransientModel):
             'currency_id': self.child_currency_id.id,
             'email': self.child_email,
             'agent_type_id': child_agent_type_obj.id,
-            'ho_id': new_ho_obj.id
+            'ho_id': new_ho_obj.id,
+            'parent_agent_id': new_ho_obj.id
         })
 
         # agent btc user
