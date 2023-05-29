@@ -33,14 +33,14 @@
                 </group>
                 <group>
                     <group>
-                        <field name="child_name"/>
-                        <field name="child_email"/>
-                        <field name="child_currency_id"/>
+                        <field name="sub_agent_name"/>
+                        <field name="sub_agent_email"/>
+                        <field name="sub_agent_currency_id"/>
                     </group>
                     <group>
-                        <field name="child_agent_type_name"/>
-                        <field name="child_agent_type_code"/>
-                        <field name="child_agent_type_seq_prefix"/>
+                        <field name="sub_agent_type_name"/>
+                        <field name="sub_agent_type_code"/>
+                        <field name="sub_agent_type_seq_prefix"/>
                     </group>
                 </group>
                 <footer>

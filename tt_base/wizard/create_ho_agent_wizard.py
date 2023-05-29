@@ -19,12 +19,12 @@ class CreateHOAgentWizard(models.TransientModel):
     btc_agent_type_name = fields.Char('Default BTC Agent Type Name', required=True)
     btc_agent_type_code = fields.Char('Default BTC Agent Type Code', required=True)
     btc_agent_type_seq_prefix = fields.Char('Default BTC Agent Type Seq Prefix', size=2, required=True)
-    child_name = fields.Char('Initial Child Agent Name', required=True)
-    child_email = fields.Char('Initial Child Agent Email')
-    child_currency_id = fields.Many2one('res.currency', required=True, default=lambda self: self.env.user.company_id.currency_id.id, string='Initial Child Agent Currency')
-    child_agent_type_name = fields.Char('Initial Child Agent Type Name', required=True)
-    child_agent_type_code = fields.Char('Initial Child Agent Type Code', required=True)
-    child_agent_type_seq_prefix = fields.Char('Initial Child Agent Type Seq Prefix', size=2, required=True)
+    sub_agent_name = fields.Char('Initial Sub Agent Name', required=True)
+    sub_agent_email = fields.Char('Initial Sub Agent Email')
+    sub_agent_currency_id = fields.Many2one('res.currency', required=True, default=lambda self: self.env.user.company_id.currency_id.id, string='Initial Sub Agent Currency')
+    sub_agent_type_name = fields.Char('Initial Sub Agent Type Name', required=True)
+    sub_agent_type_code = fields.Char('Initial Sub Agent Type Code', required=True)
+    sub_agent_type_seq_prefix = fields.Char('Initial Sub Agent Type Seq Prefix', size=2, required=True)
 
     def submit_ho_agent(self):
         new_ho_agent_type_obj = self.env['tt.agent.type'].create({
@@ -70,18 +70,18 @@ class CreateHOAgentWizard(models.TransientModel):
             'btc_agent_type_id': btc_agent_type_obj.id
         })
 
-        child_agent_type_obj = self.env['tt.agent.type'].create({
-            'name': self.child_agent_type_name,
-            'code': self.child_agent_type_code,
-            'seq_prefix': self.child_agent_type_seq_prefix,
+        sub_agent_type_obj = self.env['tt.agent.type'].create({
+            'name': self.sub_agent_type_name,
+            'code': self.sub_agent_type_code,
+            'seq_prefix': self.sub_agent_type_seq_prefix,
             'ho_id': new_ho_obj.id
         })
 
-        child_agent_obj = self.env['tt.agent'].create({
-            'name': self.child_name,
-            'currency_id': self.child_currency_id.id,
-            'email': self.child_email,
-            'agent_type_id': child_agent_type_obj.id,
+        sub_agent_obj = self.env['tt.agent'].create({
+            'name': self.sub_agent_name,
+            'currency_id': self.sub_agent_currency_id.id,
+            'email': self.sub_agent_email,
+            'agent_type_id': sub_agent_type_obj.id,
             'ho_id': new_ho_obj.id,
             'parent_agent_id': new_ho_obj.id
         })
@@ -164,22 +164,22 @@ class CreateHOAgentWizard(models.TransientModel):
 
         # template agent finance manager
         self.env['res.users'].create({
-            'name': 'Template Agent Finance Manager (%s)' % self.child_agent_type_name,
+            'name': 'Template Agent Finance Manager (%s)' % self.sub_agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_agent_finance_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
-            'agent_type_id': child_agent_type_obj.id,
+            'agent_type_id': sub_agent_type_obj.id,
             'groups_id': [(6, 0, self.env.ref('tt_base.template_citra_agent_finance_manager').groups_id.ids)],
             'frontend_security_ids': [(6, 0, self.env.ref('tt_base.template_citra_agent_finance_manager').frontend_security_ids.ids)]
         })
 
         # template agent manager
         self.env['res.users'].create({
-            'name': 'Template Agent Manager (%s)' % self.child_agent_type_name,
+            'name': 'Template Agent Manager (%s)' % self.sub_agent_type_name,
             'ho_id': new_ho_obj.id,
             'login': 'template_agent_user_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
             'is_user_template': True,
-            'agent_type_id': child_agent_type_obj.id,
+            'agent_type_id': sub_agent_type_obj.id,
             'groups_id': [(6, 0, self.env.ref('tt_base.template_citra_agent_user_manager').groups_id.ids)],
             'frontend_security_ids': [(6, 0, self.env.ref('tt_base.template_citra_agent_user_manager').frontend_security_ids.ids)]
         })
