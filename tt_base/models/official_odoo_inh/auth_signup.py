@@ -1,4 +1,4 @@
-from odoo import http, api, fields, models
+from odoo import http, api, fields, models, _
 import logging
 from odoo.http import request
 from odoo.addons.auth_signup.controllers.main import AuthSignupHome
