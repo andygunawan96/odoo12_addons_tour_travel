@@ -468,4 +468,32 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 
+    <record id="tt_letter_guarantee_for_ho" model="ir.rule">
+        <field name="name">Letter Guarantee For HO</field>
+        <field name="model_id" ref="model_tt_letter_guarantee"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_letter_guarantee_for_ho_user" model="ir.rule">
+        <field name="name">Letter Guarantee For HO User</field>
+        <field name="model_id" ref="model_tt_letter_guarantee"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_letter_guarantee_lines_for_ho" model="ir.rule">
+        <field name="name">Letter Guarantee Lines For HO</field>
+        <field name="model_id" ref="model_tt_letter_guarantee_lines"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_letter_guarantee_lines_for_ho_user" model="ir.rule">
+        <field name="name">Letter Guarantee Lines For HO User</field>
+        <field name="model_id" ref="model_tt_letter_guarantee_lines"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
 </odoo>
