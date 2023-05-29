@@ -252,7 +252,7 @@ class MasterTour(models.Model):
     def write(self, vals):
         admin_obj_id = self.env.ref('base.user_admin').id
         root_obj_id = self.env.ref('base.user_root').id
-        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id, self.owner_ho_id.id]:
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id] and self.env.user.ho_id.id != self.owner_ho_id.id:
             raise UserError('You do not have permission to edit this record.')
         return super(MasterTour, self).write(vals)
 
