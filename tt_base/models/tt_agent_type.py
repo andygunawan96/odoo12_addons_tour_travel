@@ -39,7 +39,7 @@ class TtAgentType(models.Model):
         sequence_obj = self.env['ir.sequence'].sudo().create({
             'name': new_agent_type.name,
             'code': 'tt.agent.type.%s' % (new_agent_type.code),
-            'prefix': '{}.%(day)s%(sec)s'.format(new_agent_type.seq_prefix),
+            'prefix': '{}.{}%(day)s%(sec)s'.format(new_agent_type.seq_prefix, str(new_agent_type.id)),
             'padding': 3
         })
         new_agent_type.sequence_prefix_id = sequence_obj.id
