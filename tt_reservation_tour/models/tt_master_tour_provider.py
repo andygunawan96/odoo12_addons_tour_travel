@@ -17,7 +17,11 @@ class MasterTourProvider(models.Model):
     total_price = fields.Monetary('Total Price', default=0)
     details = fields.Html('Details', default='')
     is_lg_required = fields.Boolean('Is LG Required', readonly=True, compute='compute_is_lg_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantee(s)', readonly=True)
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantee(s)', readonly=True, domain=_get_res_model_domain)
 
     @api.onchange('provider_id')
     def compute_is_lg_required(self):
