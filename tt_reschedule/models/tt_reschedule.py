@@ -95,7 +95,11 @@ class TtRescheduleLine(models.Model):
                              default='confirm', related='reschedule_id.state', store=True)
     admin_fee_dummy = fields.Boolean('Generate Admin Fee Options')
     is_po_required = fields.Boolean('Is PO Required', readonly=True, compute='compute_is_po_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Purchase Order(s)', readonly=True)
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Purchase Order(s)', readonly=True, domain=_get_res_model_domain)
 
     @api.model
     def create(self, vals):
