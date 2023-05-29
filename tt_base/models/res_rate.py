@@ -27,10 +27,10 @@ class ResRate(models.Model):
             # response = [rec.get_ssr_data() for rec in _objs]
             currency_rate = {}
             for rec in _objs:
-                if rec.ho_id:
-                    if rec.ho_id.seq_id not in currency_rate:
-                        currency_rate[rec.ho_id.seq_id] = []
-                    currency_rate[rec.ho_id.seq_id].append(rec.get_currency_rate_data())
+                if rec.provider_ho_data_id:
+                    if rec.provider_ho_data_id.ho_id.seq_id not in currency_rate:
+                        currency_rate[rec.provider_ho_data_id.ho_id.seq_id] = []
+                    currency_rate[rec.provider_ho_data_id.ho_id.seq_id].append(rec.get_currency_rate_data())
             response = {
                 'currency_rate_data': currency_rate,
             }
@@ -43,7 +43,7 @@ class ResRate(models.Model):
     def get_currency_rate_data(self):
         res = {
             'name': self.name,
-            'provider': self.provider_id.code,
+            'provider': self.provider_ho_data_id.provider_id.code,
             'date': self.date.strftime('%Y-%m-%d'),
             'base_currency': self.currency_id.name,
             'to_currency':  self.rate_currency_id.name,
