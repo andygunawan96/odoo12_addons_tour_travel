@@ -141,6 +141,14 @@ class MasterActivity(models.Model):
         res = super(MasterActivity, self).create(vals)
         return res
 
+    @api.multi
+    def write(self, vals):
+        admin_obj_id = self.env.ref('base.user_admin').id
+        root_obj_id = self.env.ref('base.user_root').id
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id, self.owner_ho_id.id]:
+            raise UserError('You do not have permission to edit this record.')
+        return super(MasterActivity, self).write(vals)
+
     def action_sync_config(self, provider_code):
         self.sync_config(provider_code)
 

@@ -248,6 +248,14 @@ class MasterTour(models.Model):
         res = super(MasterTour, self).create(vals)
         return res
 
+    @api.multi
+    def write(self, vals):
+        admin_obj_id = self.env.ref('base.user_admin').id
+        root_obj_id = self.env.ref('base.user_root').id
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id, self.owner_ho_id.id]:
+            raise UserError('You do not have permission to edit this record.')
+        return super(MasterTour, self).write(vals)
+
     def action_get_internal_tour_json(self):
         raise UserError(_("This Provider does not support Sync Products."))
 

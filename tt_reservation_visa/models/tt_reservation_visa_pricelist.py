@@ -316,7 +316,12 @@ class VisaPricelist(models.Model):
         res = super(VisaPricelist, self).create(values)
         return res
 
+    @api.multi
     def write(self, values):
+        admin_obj_id = self.env.ref('base.user_admin').id
+        root_obj_id = self.env.ref('base.user_root').id
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id, self.owner_ho_id.id]:
+            raise UserError('You do not have permission to edit this record.')
         if values.get('reference_code'):
             if self.search([('reference_code','=',values['reference_code']),('id','not in',self.ids)]):
                 raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
