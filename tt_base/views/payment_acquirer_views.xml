@@ -72,7 +72,7 @@
                             </group>
                             <group name="acquirer_right">
                                 <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}"/>
-                                <field name="provider_ho_data_id" attrs="{'invisible': [('type','not in',['va'])]}"/>
+                                <field name="provider_id" attrs="{'invisible': [('type','not in',['va'])]}"/>
                                 <field name="account_number" attrs="{'invisible': [('type','not in',['payment_gateway','transfer','edc','va'])]}"/>
                                 <field name="account_name" attrs="{'invisible': [('type','not in',['payment_gateway','transfer','edc','va'])]}"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['edc'])]}"/>
@@ -149,7 +149,7 @@
                             </group>
                             <group name="acquirer_right">
                                 <field name="bank_id" attrs="{'invisible': [('type','=','cash')]}" readonly="1"/>
-                                <field name="provider_ho_data_id" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
+                                <field name="provider_id" attrs="{'invisible': [('type','not in',['va','payment_gateway'])]}" readonly="1"/>
                                 <field name="account_number" attrs="{'invisible': [('type','not in',['transfer','edc','va','payment_gateway'])]}" readonly="1"/>
                                 <field name="account_name" attrs="{'invisible': [('type','not in',['transfer','edc','va','payment_gateway'])]}" readonly="1"/>
                                 <field name="cust_fee" attrs="{'invisible': [('type','not in',['edc'])]}" readonly="1"/>
@@ -198,7 +198,7 @@
                 <tree string="Payment Acquirer">
                     <field name="sequence" widget="handle"/>
                     <field name="name"/>
-                    <field name="provider_ho_data_id"/>
+                    <field name="provider_id"/>
                     <field name="agent_id"/>
                     <field name="bank_id"/>
                     <field name="account_name"/>

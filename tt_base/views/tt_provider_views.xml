@@ -52,6 +52,15 @@
                             </page>
 
 
+                            <page string="Payment Acquirers">
+                                <field name="payment_acquirer_ids">
+                                    <tree>
+                                        <field name="id"/>
+
+                                    </tree>
+                                </field>
+                            </page>
+
 
                         </notebook>
                     </sheet>
@@ -226,15 +235,6 @@
                                     <tree create="false">
                                         <field name="create_date"/>
                                         <field name="balance"/>
-                                    </tree>
-                                </field>
-                            </page>
-
-                            <page string="Payment Acquirers">
-                                <field name="payment_acquirer_ids">
-                                    <tree>
-                                        <field name="id"/>
-
                                     </tree>
                                 </field>
                             </page>

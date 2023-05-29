@@ -19,6 +19,7 @@ class TtProvider(models.Model):
     provider_code_ids = fields.One2many('tt.provider.code', 'provider_id', 'Provider Codes') ## yg pakai baru hotel, asumsi code selalu sama untuk semua HO
     currency_id = fields.Many2one('res.currency', 'Currency')
     email = fields.Char(string="Email", required=False, )
+    payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_id', 'Payment Acquirers')
     social_media_ids = fields.One2many('social.media.detail', 'provider_id', 'Social Media')
     provider_ho_data_ids = fields.One2many('tt.provider.ho.data', 'provider_id', 'Provider HO Data')
     active = fields.Boolean('Active', default=True)
@@ -221,7 +222,7 @@ class TtProviderHOData(models.Model):
     address_ids = fields.One2many('address.detail', 'provider_ho_data_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'provider_ho_data_id', string='Phones')
     rate_ids = fields.One2many('tt.provider.rate', 'provider_ho_data_id', 'Provider Codes')
-    payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_ho_data_id', 'Payment Acquirers')
+
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
     balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
     provider_destination_ids = fields.One2many('tt.provider.destination', 'provider_ho_data_id', 'Destination')
