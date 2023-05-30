@@ -64,7 +64,7 @@ class TtReservationTour(models.Model):
         if old_state == 'issued':
             temp_post = self.posted_acc_actions or ''
             setup_list = self.env['tt.accounting.setup'].search(
-                [('cycle', '=', 'real_time'), ('is_send_tour', '=', True)])
+                [('cycle', '=', 'real_time'), ('is_send_tour', '=', True), ('is_send_reverse_transaction', '=', True)])
             if setup_list:
                 vendor_list = []
                 for rec in setup_list:
