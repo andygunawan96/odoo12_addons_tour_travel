@@ -834,7 +834,7 @@ class TtReschedule(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.grand_total,
+            'pay_amount': invoice_id.grand_total,
         })
 
         ##membuat payment dalam draft
@@ -852,7 +852,7 @@ class TtReschedule(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'ho_invoice_id': ho_invoice_id.id,
             'payment_id': ho_payment_obj.id,
-            'pay_amount': ho_inv_line_obj.total,
+            'pay_amount': ho_invoice_id.grand_total,
         })
 
     def generate_changes(self):
