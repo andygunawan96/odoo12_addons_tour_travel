@@ -132,8 +132,8 @@ class ApiManagement(models.Model):
             api_cred_obj = self.search([('api_key','=', data['api_key']), ('user_id','=', uid)])
             if api_cred_obj:
                 ## check cred
-                if api_cred_obj.ho_id and data.get('co_user'):
-                    if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system'):
+                if api_cred_obj.ho_id and data.get('co_user') and api_cred_obj.api_role != 'operator':
+                    if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system') and api_cred_obj.api_role == 'manager':
                         raise Exception('Co User and Api Key is not match')
                 ## update cred ho
                 values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
