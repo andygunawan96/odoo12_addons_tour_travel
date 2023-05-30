@@ -23,6 +23,8 @@ class TtAccountingSetup(models.Model):
     is_send_topup = fields.Boolean('Send Top Up Transaction', default=False)
     is_send_refund = fields.Boolean('Send Refund Transaction', default=False)
     is_send_commission = fields.Boolean('Send Commission Transaction', default=False)
+    is_send_reverse_transaction = fields.Boolean('Send Reverse Transaction', default=False)
+    is_send_update_transaction = fields.Boolean('Send Update Transaction', default=False)
     variable_ids = fields.One2many('tt.accounting.setup.variables', 'accounting_setup_id', 'Variables')
     provider_supplier_ids = fields.One2many('tt.accounting.setup.suppliers', 'accounting_setup_id', 'Provider Suppliers')
     notes = fields.Char('Notes')

@@ -68,7 +68,7 @@ class TtReservationEvent(models.Model):
         super(TtReservationEvent, self).action_fail_refund(context)
         temp_post = self.posted_acc_actions or ''
         ho_obj = self.agent_id and self.agent_id.get_ho_parent_agent() or False
-        search_params = [('cycle', '=', 'real_time'), ('is_send_event', '=', True)]
+        search_params = [('cycle', '=', 'real_time'), ('is_send_event', '=', True), ('is_send_reverse_transaction', '=', True)]
         if ho_obj:
             search_params.append(('ho_id', '=', ho_obj.id))
         setup_list = self.env['tt.accounting.setup'].search(search_params)
