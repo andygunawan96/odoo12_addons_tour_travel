@@ -64,7 +64,7 @@ class TtReservationAirline(models.Model):
         if old_state == 'issued':
             temp_post = self.posted_acc_actions or ''
             setup_list = self.env['tt.accounting.setup'].search(
-                [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+                [('cycle', '=', 'real_time'), ('is_send_airline', '=', True), ('is_send_reverse_transaction', '=', True)])
             if setup_list:
                 vendor_list = []
                 for rec in setup_list:
@@ -83,7 +83,7 @@ class TtReservationAirline(models.Model):
         res = super(TtReservationAirline, self).update_cost_service_charge_airline_api(req, context)
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True), ('is_send_update_transaction', '=', True)])
         if setup_list:
             vendor_list = []
             for rec in setup_list:
@@ -103,7 +103,7 @@ class TtReservationAirline(models.Model):
         res = super(TtReservationAirline, self).split_reservation_airline_api_1(data, context)
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True)])
+            [('cycle', '=', 'real_time'), ('is_send_airline', '=', True), ('is_send_update_transaction', '=', True)])
         if setup_list:
             vendor_list = []
             for rec in setup_list:

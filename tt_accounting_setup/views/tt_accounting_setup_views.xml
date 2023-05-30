@@ -54,9 +54,11 @@
                         <group>
                             <group>
                                 <field name="is_create_customer"/>
-                                <field name="is_send_topup"/>
+                                <field name="is_send_reverse_transaction"/>
+                                <field name="is_send_update_transaction"/>
                             </group>
                             <group>
+                                <field name="is_send_topup"/>
                                 <field name="is_send_refund"/>
                                 <field name="is_send_commission"/>
                             </group>

@@ -62,7 +62,7 @@ class TtReservationEvent(models.Model):
         super(TtReservationEvent, self).action_fail_refund(context)
         temp_post = self.posted_acc_actions or ''
         setup_list = self.env['tt.accounting.setup'].search(
-            [('cycle', '=', 'real_time'), ('is_send_event', '=', True)])
+            [('cycle', '=', 'real_time'), ('is_send_event', '=', True), ('is_send_reverse_transaction', '=', True)])
         if setup_list:
             vendor_list = []
             for rec in setup_list:
