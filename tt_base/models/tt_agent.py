@@ -119,9 +119,13 @@ class TtAgent(models.Model):
 
     @api.model
     def create(self, vals_list):
+        is_ho = False
         if vals_list.get('is_ho_agent'):
             if vals_list.get('parent_agent_id'):
                 raise UserError('Cannot set HO parent agent.')
+            if vals_list.get('is_btc_agent'):
+                vals_list.pop('is_btc_agent')
+            is_ho = True
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
 
@@ -132,7 +136,7 @@ class TtAgent(models.Model):
         new_acquirer = self.env['payment.acquirer'].create({
             'name': 'Cash',
             'provider': 'manual',
-            'ho_id': new_agent.ho_id.id,
+            'ho_id': is_ho and new_agent.id or new_agent.ho_id.id,
             'agent_id': new_agent.id,
             'type': 'cash',
             'website_published': True
@@ -143,9 +147,7 @@ class TtAgent(models.Model):
             'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code)),
             'default_acquirer_id': new_acquirer.id
         }
-        if vals_list.get('is_ho_agent') and vals_list.get('is_btc_agent'):
-            vals_list.pop('is_btc_agent')
-        if vals_list.get('is_ho_agent'):
+        if is_ho:
             write_vals.update({
                 'ho_id': new_agent.id
             })
