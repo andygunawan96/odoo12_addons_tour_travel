@@ -139,7 +139,7 @@ class ApiManagement(models.Model):
                 if api_cred_obj.api_role == 'manager':
                     ## update sesuai ho agent
                     values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
-                else:
+                elif api_cred_obj.api_role == 'admin':
                     ## update sesuai
                     values.update(_co_user.agent_id.get_ho_parent_agent().get_ho_credential(prefix='co_'))
             elif data.get('co_user'):
