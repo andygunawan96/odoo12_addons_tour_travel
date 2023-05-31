@@ -46,6 +46,12 @@ class CustomerReportBirthday(models.TransientModel):
     is_admin = fields.Boolean('Admin User', default=_check_adm_user)
     is_ho = fields.Boolean('Ho User', default=_check_ho_user)
 
+    @api.onchange('all_ho', 'ho_id')
+    def _onchange_domain_agent(self):
+        return {'domain': {
+            'agent_id': self.get_agent_domain()
+        }}
+
     def _print_report_excel(self, data):
         raise UserError(_("Not implemented."))
 
