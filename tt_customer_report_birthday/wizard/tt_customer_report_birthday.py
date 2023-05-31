@@ -109,7 +109,7 @@ class CustomerReportBirthday(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['month_from', 'month_to'])[0]
+            'form': self.read(['month_from', 'month_to', 'all_ho', 'ho_id', 'all_agent', 'agent_id'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)
@@ -121,7 +121,7 @@ class CustomerReportBirthday(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['month_from', 'month_to', 'agent_id', 'all_agent'])[0]
+            'form': self.read(['month_from', 'month_to', 'all_ho', 'ho_id', 'all_agent', 'agent_id'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)
