@@ -5,3 +5,4 @@ from . import create_user_wizard
 from . import create_ho_agent_wizard
 from . import create_customer_parent_wizard
 from . import notification_pop_up_wizard
+from . import create_ho_transport_carrier_search_config_wizard
