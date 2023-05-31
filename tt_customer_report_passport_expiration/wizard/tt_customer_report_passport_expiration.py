@@ -7,6 +7,9 @@ class CustomerReportPassportExpiration(models.TransientModel):
     _name = 'tt.customer.report.passport.expiration.wizard'
     _description = 'Customer Report Passport Expiration Wizard'
 
+    def _check_adm_user(self):
+        return self.env.user.has_group('base.group_erp_manager')
+
     def _check_ho_user(self):
         return self.env.user.agent_id.is_ho_agent
 
@@ -15,9 +18,25 @@ class CustomerReportPassportExpiration(models.TransientModel):
                                    ('months','Month(s)')],'Type')
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
-    agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
+    all_ho = fields.Boolean('All Head Office', default=False)
+
+    def get_agent_domain(self):
+        if self.all_ho or not self.ho_id:
+            dom = []
+        else:
+            dom = [('ho_id', '=', self.ho_id.id)]
+        return dom
+
+    agent_id = fields.Many2one('tt.agent', string='Agent', domain=get_agent_domain, default=lambda self: self.env.user.agent_id)
     all_agent = fields.Boolean('All Agent', default=False)
+    is_admin = fields.Boolean('Admin User', default=_check_adm_user)
     is_ho = fields.Boolean('Ho User', default=_check_ho_user)
+
+    @api.onchange('all_ho', 'ho_id')
+    def _onchange_domain_agent(self):
+        return {'domain': {
+            'agent_id': self.get_agent_domain()
+        }}
 
     def _print_report_excel(self, data):
         raise UserError(_("Not implemented."))
@@ -64,7 +83,7 @@ class CustomerReportPassportExpiration(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['month_from', 'month_to'])[0]
+            'form': self.read(['int_value', 'type_value', 'all_ho', 'ho_id', 'agent_id', 'all_agent'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)
@@ -76,7 +95,7 @@ class CustomerReportPassportExpiration(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['int_value', 'type_value', 'agent_id', 'all_agent'])[0]
+            'form': self.read(['int_value', 'type_value', 'all_ho', 'ho_id', 'agent_id', 'all_agent'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)
