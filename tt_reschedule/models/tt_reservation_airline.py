@@ -2046,6 +2046,7 @@ class ReservationAirline(models.Model):
             'title': title,
             'message': message,
         }
+        ## tambah context
         GatewayConnector().telegram_notif_api(data, {})
         return True
 

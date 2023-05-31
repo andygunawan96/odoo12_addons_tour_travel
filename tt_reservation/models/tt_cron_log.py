@@ -119,6 +119,7 @@ class TtCronLogInhResv(models.Model):
                     'message': 'Reconcile Done, Provider:\n' + '\n-'.join(ok_provider),
                     'provider': 'Cron Reconcile',
                 }
+                ## tambah context
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,'notification_code')
 
             if error_list:

@@ -161,6 +161,7 @@ class TtTimeslotPeriksain(models.Model):
             return 'Date/Time is not specified.'
 
     def get_config_cron(self):
+        ## tambah context
         result = self.env['tt.periksain.api.con'].get_config_cron()
         return result
 

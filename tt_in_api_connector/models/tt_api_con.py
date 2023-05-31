@@ -76,7 +76,7 @@ class TtApiCon(models.Model):
             "signature": signature,
         }
 
-    def send_request_to_gateway(self,url,data,service_name,content_type='json',request_type='', timeout=30, ho_id=''):
+    def send_request_to_gateway(self,url,data,service_name,content_type='json',request_type='', timeout=30, ho_id=False):
         try:
             authorization = tools.config.get('backend_authorization', '')
             credential = util.decode_authorization(authorization)

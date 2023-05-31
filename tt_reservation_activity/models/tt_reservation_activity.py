@@ -229,6 +229,7 @@ class ReservationActivity(models.Model):
             'message': 'PNR %s is now %s, current balance: %s' % (pnr, state, balance),
             'provider': self.provider_name,
         }
+        ## tambah context
         GatewayConnector().telegram_notif_api(data, {})
 
     def action_issued_vendor(self):
@@ -1269,6 +1270,7 @@ class ReservationActivity(models.Model):
             'message': 'Activity Booking Status Updated: ' + desc,
             'provider': self.provider_name,
         }
+        ## tambah context
         GatewayConnector().telegram_notif_api(data, {})
 
     def action_activity_print_invoice(self):

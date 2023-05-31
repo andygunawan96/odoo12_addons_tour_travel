@@ -981,6 +981,7 @@ class TtProviderAirline(models.Model):
                     'message': '\n'.join(msg),
                     'provider': self.provider_id.code,
                 }
+                ## tambah context
                 GatewayConnector().telegram_notif_api(data, {})
                 return False
 
@@ -998,6 +999,7 @@ class TtProviderAirline(models.Model):
                 'message': '\n'.join(msg),
                 'provider': self.provider_id.code,
             }
+            ## tambah context
             GatewayConnector().telegram_notif_api(data, {})
         except:
             _logger.error('Action reprice provider, error notif telegram, %s, %s' % (self.pnr, traceback.format_exc()))
@@ -1053,6 +1055,7 @@ class TtProviderAirline(models.Model):
                     'message': '\n'.join(msg),
                     'provider': self.provider_id.code,
                 }
+                ## tambah context
                 GatewayConnector().telegram_notif_api(data, {})
                 raise UserError('Error void, %s' % res['error_msg'])
 
@@ -1068,6 +1071,7 @@ class TtProviderAirline(models.Model):
                 'message': '\n'.join(msg),
                 'provider': self.provider_id.code,
             }
+            ## tambah context
             GatewayConnector().telegram_notif_api(data, {})
         except UserError as e:
             raise UserError(str(e))

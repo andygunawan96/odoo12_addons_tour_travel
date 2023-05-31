@@ -317,6 +317,7 @@ class MasterActivity(models.Model):
                     'message': 'Activity Sync Products Failed (File Number: %s). %s : %s' % (str(i), traceback.format_exc(), str(e)),
                     'provider': provider_obj and provider_obj[0] or '',
                 }
+                ## tambah context
                 GatewayConnector().telegram_notif_api(data, {})
 
     # temporary function

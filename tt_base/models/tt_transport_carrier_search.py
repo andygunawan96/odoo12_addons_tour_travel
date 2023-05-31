@@ -16,6 +16,7 @@ class TransportCarrier(models.Model):
     carrier_id = fields.Many2one('tt.transport.carrier','Carrier',required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',related="carrier_id.provider_type_id")
     is_default = fields.Boolean("Default Search", help="Usually on ALL")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, default=lambda self: self.env.user.ho_id)
     is_favorite = fields.Boolean("Favorite Search", help="Will make this search appear on top of the list")
     is_excluded_from_b2c = fields.Boolean('Excluded From B2C', help='Will Make this search disappear from B2C')
     sequence = fields.Integer("Sequence",default=200)

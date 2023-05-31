@@ -172,6 +172,7 @@ class ttCronTopUpValidator(models.Model):
                                                             'title': 'ERROR ISSUED using BCA',
                                                             'message': 'Error issued BCA order number %s\n%s' % (book_obj.name, res['error_msg']),
                                                         }
+                                                        ## tambah context
                                                         GatewayConnector().telegram_notif_api(data, {})
 
                                                 else:
@@ -182,6 +183,7 @@ class ttCronTopUpValidator(models.Model):
                                                         'message': 'Error issued bca mutation, order number %s\n%s' % (
                                                         book_obj.name, res['error_msg']),
                                                     }
+                                                    ## tambah context
                                                     GatewayConnector().telegram_notif_api(data, {})
                                         elif book_obj.state == 'issued':
                                             payment_acq_obj.state = 'done'
@@ -263,6 +265,7 @@ class ttCronTopUpValidator(models.Model):
                                             'title': 'ERROR ISSUED using %s' % payment_vendor_name,
                                             'message': 'Error issued %s order number %s\n%s' % (payment_vendor_name, book_obj.name, res['error_msg']),
                                         }
+                                        ## tambah context
                                         GatewayConnector().telegram_notif_api(data, {})
 
                                 else:
@@ -276,6 +279,7 @@ class ttCronTopUpValidator(models.Model):
                                         'title': 'ERROR ISSUED',
                                         'message': 'Error issued %s, order number %s\n%s' % (payment_vendor_name, book_obj.name, res['error_msg']),
                                     }
+                                    ## tambah context
                                     GatewayConnector().telegram_notif_api(data, {})
                         elif book_obj.state == 'issued':
                             payment_acq_obj.state = 'done'
