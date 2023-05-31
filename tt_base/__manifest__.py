@@ -98,6 +98,7 @@ Key Features
         'wizard/notification_pop_up_wizard.xml',
         'wizard/create_ho_agent_wizard_view.xml',
         'wizard/create_customer_parent_wizard_view.xml',
+        'wizard/create_ho_transport_carrier_search_config_wizard_view.xml',
         'views/tt_upload_center_views.xml',
         'views/tt_vendor_views.xml',
         'views/ir_model_data_views.xml',
