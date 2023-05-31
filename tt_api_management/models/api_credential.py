@@ -136,7 +136,12 @@ class ApiManagement(models.Model):
                     if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system') and api_cred_obj.api_role == 'manager':
                         raise Exception('Co User and Api Key is not match')
                 ## update cred ho
-                values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
+                if api_cred_obj.api_role == 'manager':
+                    ## update sesuai ho agent
+                    values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
+                else:
+                    ## update sesuai
+                    values.update(_co_user.agent_id.get_ho_parent_agent().get_ho_credential(prefix='co_'))
             elif data.get('co_user'):
                 raise Exception('Api Key not found')
             response.update(values)
