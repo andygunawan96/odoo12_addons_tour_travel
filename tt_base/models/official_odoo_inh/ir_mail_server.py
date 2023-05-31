@@ -50,7 +50,7 @@ class IrMailServer(models.Model):
         if data['ho_id']:
             agent_obj = self.env['tt.agent'].browse(data['ho_id'])
             if agent_obj and not agent_obj.email_server_id:
-                agent_obj.email_server_id.id = mail_server.id
+                agent_obj.email_server_id = mail_server
 
         ## JSON CREDS
         _file = open("%s/%s.json" % (def_folder, data['email']), 'w+')
