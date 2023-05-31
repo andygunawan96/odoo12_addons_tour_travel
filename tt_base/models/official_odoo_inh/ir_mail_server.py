@@ -31,7 +31,7 @@ class IrMailServer(models.Model):
         self._check_folder_exists(def_folder)
         dom = [('smtp_user', '=', data['email'])]
         if data['ho_id']:
-            dom.append(('ho_id.id','=', data['ho_id']))
+            dom.append(('ho_id','=', data['ho_id']))
         mail_server = self.search(dom, limit=1)
         if not mail_server:
             data_create = {
