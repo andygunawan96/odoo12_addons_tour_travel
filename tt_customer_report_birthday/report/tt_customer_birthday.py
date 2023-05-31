@@ -30,13 +30,15 @@ class CustomerRerportBirthday(models.Model):
         """
 
     @staticmethod
-    def _where(month_from, month_to, agent_id):
+    def _where(month_from, month_to, agent_id, ho_id):
         if month_from > month_to:
             where = """EXTRACT (MONTH FROM customer.birth_date) >= '%s' AND EXTRACT (MONTH FROM customer.birth_date) <= 12""" %(month_from)
             where += """ OR EXTRACT (MONTH FROM customer.birth_date) <= '%s'""" %(month_to)
         else:
             where = """EXTRACT (MONTH FROM customer.birth_date) >= '%s' AND EXTRACT (month FROM customer.birth_date) <= '%s'""" % (month_from, month_to)
         where += """ AND customer.active = True"""
+        if ho_id:
+            where += """ AND customer.ho_id = %s""" % ho_id
         if agent_id:
             where += """ AND customer.agent_id = %s""" % agent_id
         return where
@@ -50,10 +52,10 @@ class CustomerRerportBirthday(models.Model):
     def _report_title(data_form):
         data_form['title'] = 'Birthday Report: ' + data_form['subtitle']
 
-    def _lines(self, month_from, month_to, agent_id):
+    def _lines(self, month_from, month_to, agent_id, ho_id):
         query = "SELECT {} ".format(self._select())
         query += "FROM {} ".format(self._from())
-        query += "WHERE {} ".format(self._where(month_from, month_to, agent_id))
+        query += "WHERE {} ".format(self._where(month_from, month_to, agent_id, ho_id))
         query += "ORDER BY {}".format(self._order_by())
 
         self.env.cr.execute(query)
@@ -67,8 +69,8 @@ class CustomerRerportBirthday(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
 
-    def _get_lines_data(self, date_from, date_to, agent_id):
-        lines = self._lines(date_from, date_to, agent_id)
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id):
+        lines = self._lines(date_from, date_to, agent_id, ho_id)
         # lines = self._convert_data(lines)
         return lines
 
@@ -76,7 +78,8 @@ class CustomerRerportBirthday(models.Model):
         month_from = data_form['month_from']
         month_to = data_form['month_to']
         agent_id = data_form['agent_id']
-        line = self._get_lines_data(month_from, month_to, agent_id)
+        ho_id = data_form['ho_id']
+        line = self._get_lines_data(month_from, month_to, agent_id, ho_id)
         self._report_title(data_form)
         return {
             'lines': line,

@@ -23,14 +23,27 @@ class CustomerReportBirthday(models.TransientModel):
     _name = 'tt.customer.report.birthday.wizard'
     _description = 'Customer Report Birthday Wizard'
 
+    def _check_adm_user(self):
+        return self.env.user.has_group('base.group_erp_manager')
+
     def _check_ho_user(self):
         return self.env.user.agent_id.is_ho_agent
 
     month_from = fields.Selection(months_list, default='01')
     month_to = fields.Selection(months_list, default='01')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
-    agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
+    all_ho = fields.Boolean('All Head Office', default=False)
+
+    def get_agent_domain(self):
+        if self.all_ho or not self.ho_id:
+            dom = []
+        else:
+            dom = [('ho_id','=',self.ho_id.id)]
+        return dom
+
+    agent_id = fields.Many2one('tt.agent', string='Agent', domain=get_agent_domain, default=lambda self: self.env.user.agent_id)
     all_agent = fields.Boolean('All Agent', default=False)
+    is_admin = fields.Boolean('Admin User', default=_check_adm_user)
     is_ho = fields.Boolean('Ho User', default=_check_ho_user)
 
     def _print_report_excel(self, data):
@@ -47,6 +60,18 @@ class CustomerReportBirthday(models.TransientModel):
 
         # ============= subtitle process ==========
         data['form']['subtitle'] = "{} to {}".format(self.month_from, self.month_to)
+
+        # ============= ho id and name ==========
+        if self.all_ho == True:
+            data['form']['ho_id'] = ''
+            data['form']['ho_name'] = 'All Head Office'
+        else:
+            ho_id = data['form']['ho_id'][0] if 'ho_id' in data['form'].keys() else False
+            if ho_id != self.env.user.ho_id.id and not self.env.user.has_group('base.group_erp_manager'):
+                ho_id = self.env.user.ho_id.id
+            ho_name = self.env['tt.agent'].sudo().browse(ho_id).name if ho_id else 'All Head Office'
+            data['form']['ho_id'] = ho_id
+            data['form']['ho_name'] = ho_name
 
         # ============= agent id and name ==========
         if self.all_agent == True:
