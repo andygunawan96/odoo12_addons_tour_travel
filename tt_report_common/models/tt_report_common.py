@@ -10,7 +10,7 @@ class TtReportCommonSetting(models.Model):
 
     sequence = fields.Integer('Sequence')
     name = fields.Char('Name')
-    code = fields.Char('code')
+    code = fields.Char('code', readonly=True)
     html = fields.Html('Footer HTML')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent', default=lambda self: self.env.user.agent_id)  # , default=lambda self: self.env.user.agent_id
