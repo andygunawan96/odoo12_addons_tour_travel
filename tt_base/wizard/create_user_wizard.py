@@ -63,7 +63,7 @@ class CreateCorporateUserWizard(models.TransientModel):
 
     def create_cor_user(self):
         form_view_ref = self.env.ref('base.view_users_form', False)
-        user_template = self.env['res.users'].browse(self.env.ref("tt_base.template_corpor_user_manager").id) # asumsi yg di buat corpor manager
+        user_template = self.env['res.users'].sudo().browse(self.env.ref("tt_base.template_corpor_user_manager").id) # asumsi yg di buat corpor manager
 
         default_groups_id = user_template.groups_id
         default_frontend_security_ids = user_template.frontend_security_ids
