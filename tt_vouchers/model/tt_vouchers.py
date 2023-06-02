@@ -48,7 +48,7 @@ class TtVoucher(models.Model):
     voucher_customer_id = fields.Many2one('tt.customer', 'Customer', domain=[], readonly=True, states={'draft': [('readonly', False)]})
     is_customer_exclusive = fields.Boolean('Is Customer Exclusive', readonly=True, states={'draft': [('readonly', False)]})
     terms_conditions = fields.Html('Terms and Conditions', readonly=True, states={'draft': [('readonly', False)]})
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
 
     @api.onchange('agent_access_type', 'voucher_agent_eligibility_ids')
     def agent_eligibility_change(self):
@@ -501,6 +501,7 @@ class TtVoucherDetail(models.Model):
     display_name = fields.Char('Display Name', compute='_compute_display_name')
     is_agent = fields.Boolean("For Agent", default=False)
     printout_voucher_id = fields.Many2one('tt.upload.center', 'Printout Voucher', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], related='voucher_id.ho_id', store=True)
 
     @api.depends('voucher_reference_code', 'voucher_period_reference')
     @api.onchange('voucher_reference_code', 'voucher_period_reference')
@@ -668,7 +669,7 @@ class TtVoucherDetail(models.Model):
         # voucher_detail = voucher.voucher_detail_ids.filtered(lambda x: x['voucher_period_reference'] == data[
         #     'voucher_reference_period'])
 
-        voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference_period'])])
+        voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference_period']), ('ho_id', '=', context['co_ho_id'])])
 
         # check if voucher detail is actually exist
         if not voucher_detail:
@@ -680,9 +681,9 @@ class TtVoucherDetail(models.Model):
             return ERR.get_error(additional_message="Voucher doesn't exist")
 
         #### check voucher head office 2 may 2023 IVAN ####
-        if voucher_detail:
-            if voucher_detail.voucher_id.ho_id.id != context.get('co_ho_id'):
-                return ERR.get_error(additional_message="Voucher doesn't exist")
+        # if voucher_detail:
+        #     if voucher_detail.voucher_id.ho_id.id != context.get('co_ho_id'):
+        #         return ERR.get_error(additional_message="Voucher doesn't exist")
         ##############
         ######################
         # check to see if voucher is eligible
@@ -1171,20 +1172,14 @@ class TtVoucherDetail(models.Model):
         # voucher_detail = voucher.voucher_detail_ids.filtered(
         #     lambda x: x['voucher_period_reference'] == data['voucher_reference_period'])
 
-        voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference_period'])])
+        voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference_period']), ('ho_id', '=', context['co_ho_id'])])
 
         if not voucher_detail:
             # no voucher detail found
             # write to logger
             _logger.error("%s voucher is not exist" % data['voucher_reference'])
             # return error
-            return ERR.get_error(additional_message="Voucher is NOT Exist")
-        elif voucher_detail:
-            ## check ho
-            if voucher_detail.voucher_id.ho_id.seq_id != context['co_ho_seq_id']:
-                _logger.error("%s voucher is not exist" % data['voucher_reference'])
-                # return error
-                return ERR.get_error(additional_message="Voucher is NOT Exist")
+            return ERR.get_error(additional_message="Voucher does NOT Exist")
 
         # voucher is exist hooray, now we'll check if the voucher could be use
         if voucher_detail.voucher_id.state != 'confirm':
@@ -1454,7 +1449,7 @@ class TtVoucherDetail(models.Model):
                 data['voucher_reference_period'] = data['voucher_reference']
 
                 # search directly to voucher detail, since we'll not be using voucher (parent) reference
-                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference'])])
+                voucher_detail = self.env['tt.voucher.detail'].search([('voucher_period_reference', '=', data['voucher_reference']), ('ho_id', '=', context['co_ho_id'])])
                 # get all of necessary data
                 provider_type = self.env['tt.provider.type'].search([('code', '=', simulate['response'][0]['provider_type_code'])], limit=1)
                 provider = self.env['tt.provider'].search([('code', '=', simulate['response'][0]['provider_code'])], limit=1)
@@ -1477,6 +1472,7 @@ class TtVoucherDetail(models.Model):
                     'voucher_date_use': data['date'],
                     'voucher_agent_type': context['co_agent_type_id'],
                     'voucher_agent': context['co_agent_id'],
+                    'voucher_ho': context['co_ho_id'],
                     'voucher_provider_type': provider_type.id,
                     'voucher_provider': provider.id,
                     'currency': voucher.currency_id.id,
@@ -1599,6 +1595,7 @@ class TtVoucherusedDetail(models.Model):
             'voucher_detail_id': int(data['voucher_detail_id']),
             'voucher_date_use': data['voucher_date_use'],
             'voucher_agent_type_id': int(data['voucher_agent_type']),
+            'voucher_ho_id': int(data['voucher_ho']),
             'voucher_agent_id': int(data['voucher_agent']),
             'voucher_provider_type_id': int(data['voucher_provider_type']),
             'voucher_provider_id': int(data['voucher_provider']),

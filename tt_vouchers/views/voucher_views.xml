@@ -35,6 +35,7 @@
                 <field name="voucher_value"/>
                 <field name="currency_id"/>
                 <field name="voucher_customer_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -58,6 +59,7 @@
                         </h1>
                     </div>
                     <group>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="voucher_reference_code"/>
                         <field name="voucher_coverage"/>
                         <field name="voucher_type"/>
@@ -65,7 +67,6 @@
                         <field name="voucher_multi_usage"/>
                         <field name="voucher_usage_value"/>
                         <field name="currency_id"/>
-                        <field name="ho_id" groups="base.group_erp_manager"/>
                     </group>
                     <separator string="Voucher Details"/>
                     <field name="voucher_detail_ids"/>
