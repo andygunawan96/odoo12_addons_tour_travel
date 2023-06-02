@@ -81,7 +81,7 @@ class TtReportCommonSetting(models.Model):
         res = []
         if agent_obj:
             agent_ho_obj = agent_obj.get_ho_parent_agent()
-            data_code = self.search([('agent_id','=', agent_ho_obj.id)])
+            data_code = self.search([('agent_id','=', self.env.ref('tt_base.rodex_ho').id)])
             for rec in data_code:
                 print = 0
                 if agent_ho_obj.id == context['co_agent_id']:

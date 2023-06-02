@@ -270,10 +270,10 @@ class ttCronTopUpValidator(models.Model):
 
                                 else:
                                     ## NOTIF TELE
-                                    if payment_acq_obj.unique_amount == 0:
-                                        payment_vendor_name = 'BCA mutation'
-                                    else:
+                                    if payment_acq_obj.unique_amount == 0: ## PAYMENT GATEWAY ESPAY
                                         payment_vendor_name = 'Espay'
+                                    else: ## TRANSFER MANUAL
+                                        payment_vendor_name = 'BCA mutation'
                                     data = {
                                         'code': 9903,
                                         'title': 'ERROR ISSUED',

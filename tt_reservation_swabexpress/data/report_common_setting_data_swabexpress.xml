@@ -5,6 +5,7 @@
             <field name="code">swabexpress_antigen_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Antigen
@@ -18,6 +19,7 @@
             <field name="code">swabexpress_pcr_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR
@@ -31,6 +33,7 @@
             <field name="code">swabexpress_pcr_priority_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR Priority
