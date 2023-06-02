@@ -76,13 +76,14 @@ class TtReportCommonSetting(models.Model):
             'visa_ticket_ho',
             'reschedule_ticket'
         ]
-        data = self.search([('agent_id','=', context['co_agent_id'])])
+        data_agent_report_common_obj = self.search([('agent_id','=', context['co_agent_id'])])
         agent_obj = self.env['tt.agent'].search([('id','=',context['co_agent_id'])], limit=1)
         res = []
         if agent_obj:
             agent_ho_obj = agent_obj.get_ho_parent_agent()
-            data_code = self.search([('agent_id','=', self.env.ref('tt_base.rodex_ho').id)])
-            for rec in data_code:
+            data_ho_admin_report_common_obj = self.search([('agent_id','=', self.env.ref('tt_base.rodex_ho').id)])
+            data_ho_report_common_ho_obj = self.search([('agent_id','=', agent_ho_obj.id)])
+            for rec in data_ho_admin_report_common_obj:
                 print = 0
                 if agent_ho_obj.id == context['co_agent_id']:
                     print = 1
@@ -90,7 +91,7 @@ class TtReportCommonSetting(models.Model):
                     print = 1
                 printout_check = 1
                 if print:
-                    for printout_agent in data:
+                    for printout_agent in data_agent_report_common_obj: ## default agent
                         if rec['code'] == printout_agent['code']:
                             res.append({
                                 'code': rec.code,
@@ -99,11 +100,19 @@ class TtReportCommonSetting(models.Model):
                             })
                             printout_check = 0
                             break
-                    if printout_check:
+                    if printout_check: ## default HO
+                        for printout_ho in data_ho_report_common_ho_obj:
+                            if rec['code'] == printout_ho['code']:
+                                res.append({
+                                    'code': rec.code,
+                                    'name': rec.name,
+                                    'html': printout_ho.html or ''
+                                })
+                    if printout_check: ## default kosong
                         res.append({
                             'code': rec.code,
                             'name': rec.name,
-                            'html': rec.html or ''
+                            'html': ''
                         })
         return res
 
