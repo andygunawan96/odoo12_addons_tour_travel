@@ -109,12 +109,12 @@ class TtReportCommonSetting(models.Model):
 
     def get_footer(self, code, agent_id):
         if agent_id != False:
-            html = self.search([('code', '=', code), ('agent_id','=', agent_id.id)], limit=1)
+            html = self.sudo().search([('code', '=', code), ('agent_id','=', agent_id.id)], limit=1)
             if html:
                 return html
             else:
                 ho_agent_obj = agent_id.get_ho_parent_agent()
-                html = self.search([('code', '=', code), ('agent_id', '=', ho_agent_obj.id)], limit=1)
+                html = self.sudo().search([('code', '=', code), ('agent_id', '=', ho_agent_obj.id)], limit=1)
                 if html:
                     return html
                 else:
