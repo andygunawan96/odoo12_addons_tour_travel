@@ -97,7 +97,7 @@ class FrontendBanner(models.Model):
             ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
 
         for img in image_objs.image_line_ids:
-            if ho_agent_obj == img.ho_id:
+            if ho_agent_obj.id == img.ho_id.id:
                 imgs.append({
                     'url': img.image_id['url'],
                     'active': img.active,
