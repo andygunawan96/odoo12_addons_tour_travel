@@ -853,7 +853,8 @@ class AgentRegistration(models.Model):
 
         if check == 0:
             try:
-                agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
+                # agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
+                agent_type = self.env['tt.agent.type'].sudo().browse(int(other.get('agent_type', 0)))
                 parent_agent_id = self.set_parent_agent_id_api(agent_type, context['co_agent_id'])
                 social_media_ids = self.create_social_media_agent_regis(other)
                 # promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 10)], limit=1)
@@ -957,6 +958,7 @@ class AgentRegistration(models.Model):
                 search_params.append(('ho_id', '=', int(context['co_ho_id'])))
             for rec in self.env['tt.agent.type'].search(search_params):
                 agent_type.append({
+                    'id': rec.id,
                     'name': rec.name,
                     'registration_fee': rec.registration_fee,
                     'is_allow_regis': rec.can_register_agent,
