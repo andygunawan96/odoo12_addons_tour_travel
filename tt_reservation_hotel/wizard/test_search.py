@@ -1,3 +1,5 @@
+import copy
+
 from odoo import api, fields, models, _
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
@@ -1240,7 +1242,7 @@ class TestSearch(models.Model):
             })
         return providers
 
-    def get_provider_for_destination_dest_name(self, dest_name):
+    def get_provider_for_destination_dest_name(self, dest_name, context):
         def provider_to_dic(provider_id, city_id):
             def vendor_rate_to_dic(recs):
                 # vals = {
@@ -1254,17 +1256,18 @@ class TestSearch(models.Model):
                     vals[rec.currency_id.name] = rec.sell_rate
                 return vals
 
-            resp = city_id and city_id.get_city_country_provider_code(city_id.id, provider_id.code) or {'city_id': False, 'country_id': False}
+            resp = city_id and city_id.get_city_country_provider_code(city_id.id, provider_id.provider_id.code) or {'city_id': False, 'country_id': False}
             if provider_id.active:
-                if provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id:
+                if provider_id.provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id:
                     resp['city_id'] = dest_name.upper()
                 vals = {
-                    'provider_id': provider_id.id,
-                    'name': provider_id.name,
-                    'provider': provider_id.code or provider_id.name.lower(),
+                    'provider_id': provider_id.provider_id.id,
+                    'name': provider_id.provider_id.name,
+                    'provider': provider_id.provider_id.code or provider_id.provider_id.name.lower(),
                     'provider_city_id': resp['city_id'],
                     'provider_country_id': resp['country_id'],
-                    'currency_rule': vendor_rate_to_dic(provider_id.rate_ids),
+                    # 'currency_rule': vendor_rate_to_dic(provider_id.rate_ids),
+                    'currency_rule': [],
                 }
                 return vals
             return False
@@ -1280,12 +1283,13 @@ class TestSearch(models.Model):
 
         # Part untuk tentukan vendor "A" cman di negara yg di mau
         if self.env['ir.config_parameter'].sudo().get_param('hotel.search.use.country.allowed') in ['1',1,'true','True']:
-            vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False), ('provider_destination_ids', '=', False)])
-            prov_dest_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', city_id.country_id.id), ('is_apply', '=', True)])
+            provider_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+            vendor_ids = self.env['tt.provider.ho.data'].search([('provider_id', 'in', provider_ids.ids), ('ho_id', '=', context['co_ho_id']), ('provider_destination_ids', '=', False)])
+            # prov_dest_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', city_id.country_id.id), ('is_apply', '=', True)])
             vendor_ids = [rec for rec in vendor_ids]
-            vendor_ids += [rec.provider_id for rec in prov_dest_ids if rec if rec.provider_id.name]
+            # vendor_ids += [rec.provider_id for rec in prov_dest_ids if rec if rec.provider_id.name]
         else:
-            vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+            vendor_ids = self.env['tt.provider.ho.data'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False), ('ho_id', '=', context['co_ho_id'])])
 
         for rec in vendor_ids:
             a = provider_to_dic(rec, city_id)
