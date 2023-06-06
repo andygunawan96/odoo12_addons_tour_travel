@@ -28,7 +28,7 @@ class TransportCarrier(models.Model):
 
     @api.multi
     def write(self, vals):
-        if 'ho_id' not in vals:
+        if 'ho_id' not in vals and not self.ho_id:
             vals['ho_id'] = self.env.user.agent_id.get_ho_parent_agent().id
         return super(TransportCarrier, self).write(vals)
 
