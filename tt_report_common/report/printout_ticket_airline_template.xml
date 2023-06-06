@@ -78,7 +78,7 @@
         <t t-set="data_pax" t-value="psg['passenger_id']"/>
         <t t-foreach="length.journey_ids" t-as="line">
             <t t-foreach="line.segment_ids" t-as="segment_obj">
-                <t t-if="data_pax.fee_ids">
+                <t t-if="data_pax.fee_ids and len(line.segment_ids) > 1">
                     <t t-foreach="data_pax.fee_ids" t-as="fee_id">
                         <t t-if="segment_obj.segment_code == fee_id.journey_code">
                             <t t-set="any_ssr" t-value="1"/>

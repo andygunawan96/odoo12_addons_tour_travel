@@ -95,7 +95,11 @@ class TtRescheduleLine(models.Model):
                              default='confirm', related='reschedule_id.state', store=True)
     admin_fee_dummy = fields.Boolean('Generate Admin Fee Options')
     is_po_required = fields.Boolean('Is PO Required', readonly=True, compute='compute_is_po_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Purchase Order(s)', readonly=True)
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Purchase Order(s)', readonly=True, domain=_get_res_model_domain)
 
     @api.model
     def create(self, vals):
@@ -822,7 +826,7 @@ class TtReschedule(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.grand_total,
+            'pay_amount': invoice_id.grand_total,
         })
 
         ##membuat payment dalam draft
@@ -840,7 +844,7 @@ class TtReschedule(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'ho_invoice_id': ho_invoice_id.id,
             'payment_id': ho_payment_obj.id,
-            'pay_amount': ho_inv_line_obj.total,
+            'pay_amount': ho_invoice_id.grand_total,
         })
 
     def generate_changes(self):

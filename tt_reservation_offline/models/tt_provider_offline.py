@@ -65,7 +65,11 @@ class ProviderOffline(models.Model):
 
     is_lg_required = fields.Boolean('Is LG Required', readonly=True, compute='compute_is_lg_required')
     is_po_required = fields.Boolean('Is PO Required', readonly=True, compute='compute_is_po_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantees / Purchase Orders', readonly=True)
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantees / Purchase Orders', readonly=True, domain=_get_res_model_domain)
 
     @api.onchange('provider_id')
     def compute_is_lg_required(self):
