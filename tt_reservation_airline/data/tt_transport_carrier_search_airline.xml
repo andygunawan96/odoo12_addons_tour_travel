@@ -871,5 +871,53 @@
             ]"/>
             <field name="active" eval="False"/>
         </record>
+
+        <record id="tt_transport_carrier_airline_ca_all" model="tt.transport.carrier.search">
+            <field name="name">Air China</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ca"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">173</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_qv_all" model="tt.transport.carrier.search">
+            <field name="name">Air China</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qv"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">174</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_vj_all" model="tt.transport.carrier.search">
+            <field name="name">Air China</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_vj"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">175</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="tt_transport_carrier_airline_tp_all" model="tt.transport.carrier.search">
+            <field name="name">Air China</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tp"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">173</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
     </data>
 </odoo>
