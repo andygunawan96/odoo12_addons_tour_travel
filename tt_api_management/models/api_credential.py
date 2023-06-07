@@ -135,11 +135,12 @@ class ApiManagement(models.Model):
                 if '_co_user' in locals():
                     is_admin = _co_user.has_group('base.group_erp_manager') or _co_user.has_group('base.group_system')
                     is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.get_ho_parent_agent().id
-                    if not is_admin and api_cred_obj.api_role == 'admin' and not is_ho:
-                        agent_frontend_security = values.get('co_agent_frontend_security', [])
-                        code_to_delete = 'admin'
-                        agent_frontend_security = [i for i in agent_frontend_security if i != code_to_delete]
-                        values['co_agent_frontend_security'] = agent_frontend_security
+                    if api_cred_obj.api_role == 'admin' and not is_admin:
+                        if not is_ho:
+                            agent_frontend_security = values.get('co_agent_frontend_security', [])
+                            code_to_delete = 'admin'
+                            agent_frontend_security = [i for i in agent_frontend_security if i != code_to_delete]
+                            values['co_agent_frontend_security'] = agent_frontend_security
                 ## check cred
                 if api_cred_obj.ho_id and data.get('co_user') and api_cred_obj.api_role != 'operator':
                     if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system') and api_cred_obj.api_role == 'manager':
