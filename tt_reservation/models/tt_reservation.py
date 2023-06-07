@@ -717,7 +717,7 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if (sale.charge_code != 'rac' and sale.charge_type == 'RAC'):
+                if (sale.charge_code != 'rac' and sale.charge_type == 'RAC') and sale.charge_code != 'csc':
                     agent_nta_total += sale.total * -1
             rec.agent_nta = agent_nta_total + rec.total_nta
 
