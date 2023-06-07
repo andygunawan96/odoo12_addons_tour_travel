@@ -23,6 +23,7 @@ class TtCronLog(models.Model):
         file.write(traceback.format_exc()+"\n"+additional_message)
         file.close()
         try:
+            ## tambah context
             self.env['tt.api.con'].send_cron_error_notification(action_name)
         except Exception as e:
             _logger.error("Send Cron Error Notification Telegram Error")

@@ -7,11 +7,12 @@
                 <field name="name"/>
                 <field name="event_name"/>
                 <field name="pnr"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>
                 <group>
                     <filter string="All" name="all"/>
@@ -122,8 +123,8 @@
                     <field name="event_id" string="Event" readonly="0" attrs="{'invisible': [('event_id', '!=', False)]}"/>
                     <field name="event_name" string="Event"/>
                     <field name="event_vendor_id" string="Vendor" attrs="{'invisible': [('event_vendor_id', '!=', False)]}"/>
-                    <field name="event_vendor" string="Vendor" groups="tt_base.group_tt_tour_travel"/>
-                    <field name="event_product_uuid" string="Event UUID" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="event_vendor" string="Vendor" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <field name="event_product_uuid" string="Event UUID" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <field name="special_request"/>
                 </group>
             </xpath>
@@ -176,11 +177,11 @@
                 <!--<page string="Passengers" name="passenger">-->
                     <!--<field name="passenger_ids"/>-->
                 <!--</page>-->
-                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                     <field name="provider_booking_ids">
                         <tree>
                             <field name="pnr"/>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="event_product"/>
                             <field name="balance_due"/>
                             <field name="currency_id"/>
@@ -203,7 +204,7 @@
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="event_id"/>
                 <field name="pnr"/>
                 <field name="date"/>

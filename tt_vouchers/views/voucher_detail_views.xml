@@ -54,6 +54,7 @@
                                 string="Voucher" type="object" icon="fa-print"/>
                     </div>
                     <group>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="voucher_reference_code"/>
                         <field name="voucher_period_reference"/>
                         <field name="voucher_start_date"/>

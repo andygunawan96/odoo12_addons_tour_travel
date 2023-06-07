@@ -10,12 +10,13 @@ SESSION_NT = session.Session()
 
 class temporaryPayment(models.Model):
     _name = "tt.event.reservation.temporary.payment"
-    _description = "Rodex Event Module"
+    _description = "Orbis Event Module"
 
     event_reservation_ids = fields.Many2many('tt.event.reservation', 'rel_event_reservation','event_id', 'temporary_id', 'Event Reservation', readonly=True)
     user_id = fields.Many2one('res.users', 'User ID', readonly=True)
     transfer_image_path = fields.Char('Image Path')
     title = fields.Char('title', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def get_data_api(self, user_id):
         data = self.env['tt.event.reservation.temporary.payment'].sudo().search(['user_id', '=', user_id])

@@ -141,11 +141,5 @@
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
-        <record id="tt_provider_airline_pelita_api" model="tt.provider">
-            <field name="name">Pelita Air Service API</field>
-            <field name="code">pelita_api</field>
-            <field name="active" eval="True"/>
-            <field name="provider_type_id" ref="tt_provider_type_airline"/>
-        </record>
     </data>
 </odoo>

@@ -7,7 +7,8 @@
             <search string="Search HO Invoice">
                 <field name="name"/>
                 <field name="pnr"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
@@ -34,9 +35,10 @@
                 <filter string="This Year" name="thisyear" domain="[('date_invoice','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_ho_id" string="Agent" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -62,6 +64,7 @@
                             context="{
                         'default_res_model': 'tt.agent.invoice',
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': agent_id,
                         'default_customer_parent_id': customer_parent_id,
                         'default_referenced_document': name,
@@ -98,6 +101,7 @@
                             <field name="is_use_credit_limit"/>
                         </group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <label for="confirmed_uid" string="Confirm By"/>
                             <div>
@@ -179,7 +183,7 @@
             <tree create="false" edit="false">
                 <field name="date_invoice"/>
                 <field name="name"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>

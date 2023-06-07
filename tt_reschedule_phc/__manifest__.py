@@ -12,18 +12,18 @@ Tour & Travel - After Sales PHC
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base_setup', 'tt_reschedule', 'tt_reservation_phc'],
     'data': [
         'data/ir_sequence_data.xml',
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'wizard/tt_reschedule_phc_wizard_views.xml',
         'wizard/set_real_amount_wizard_views.xml',
         'views/tt_reservation_phc.xml',
         'views/tt_reschedule_phc_line_views.xml',
         'views/tt_reschedule_phc_views.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule_data.xml',
     ],
     'demo': [],
     'qweb': [],

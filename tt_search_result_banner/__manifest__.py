@@ -11,14 +11,15 @@ Tour & Travel - Search Result Banner
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'tt_base'],
 
     # always loaded
     'data': [
         'data/master_cabin_class.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'views/tt_search_result_banner_views.xml',
     ],
     'demo': [],

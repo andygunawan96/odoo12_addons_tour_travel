@@ -17,6 +17,8 @@ class PaymentAcquirer(models.Model):
     seq_id = fields.Char('Sequence ID', index=True, readonly=True)
     type = fields.Selection(variables.ACQUIRER_TYPE, 'Payment Type', help="Credit card for top up")
     provider_id = fields.Many2one('tt.provider', 'Provider')
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_id = fields.Many2one('tt.bank', 'Bank')
     account_number = fields.Char('Account Number')
@@ -143,7 +145,6 @@ class PaymentAcquirer(models.Model):
                 'code': self.bank_id.code or '',
             },
             'type': self.type,
-            'provider_id': self.provider_id.id or '',
             'currency': 'IDR',
             'price_component': {
                 'amount': amount,
@@ -200,7 +201,6 @@ class PaymentAcquirer(models.Model):
                 'code': payment_acq.bank_id.code or '',
             },
             'type': payment_acq.type,
-            'provider_id': payment_acq.provider_id.id or '',
             'currency': 'IDR',
             'price_component': {
                 'amount': amount,
@@ -223,7 +223,8 @@ class PaymentAcquirer(models.Model):
         return ERR.get_no_error(values)
 
     def get_va_bank(self, req, context):
-        ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
+        ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1) #o3
+        # ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id) #o2
         existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id', '=', ho_agent_obj.id), ('type', '!=', 'cash')])
         values = []
         for acq in existing_payment_acquirer:
@@ -324,7 +325,7 @@ class PaymentAcquirer(models.Model):
                 unique = 0
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO
-                    dom.append(('agent_id', '=', self.env.ref('tt_base.rodex_ho').id))
+                    dom.append(('agent_id', '=', context['co_ho_id']))
                     unique = self.generate_unique_amount(amount).get_unique_amount()
                 elif req['transaction_type'] == 'billing':
                     dom.append(('agent_id', '=', co_agent_id))
@@ -332,7 +333,7 @@ class PaymentAcquirer(models.Model):
                 values = {}
                 now_time = datetime.now(pytz.timezone('Asia/Jakarta'))
                 # tanpa ORDER NUMBER
-                if self.env['tt.agent'].browse(co_agent_id).agent_type_id != self.env.ref('tt_base.agent_type_btc') or req['order_number'].split('.')[0] == 'PH' and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids: #PHC pakai process channel operator
+                if not self.env['tt.agent'].browse(co_agent_id).is_btc_agent or req['order_number'].split('.')[0] == 'PH' and self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids: #PHC pakai process channel operator
                     for acq in self.sudo().search(dom):
                         # self.test_validate(acq) utk testing saja
                         if self.validate_time(acq, now_time):
@@ -343,10 +344,11 @@ class PaymentAcquirer(models.Model):
                 # # payment gateway
                 # dengan ORDER NUMBER
                 if util.get_without_empty(req, 'order_number'):
+                    ho_agent_obj = agent_obj.get_ho_parent_agent()
                     dom = [
                         ('website_published', '=', True),
                         ('company_id', '=', self.env.user.company_id.id),
-                        ('agent_id', '=', self.env.ref('tt_base.rodex_ho').id),
+                        ('agent_id', '=', ho_agent_obj.id),
                         ('type', 'in', ['payment_gateway']),  ## search yg mutasi bca / creditcard espay
                     ]
                     # pay_acq_num = self.env['payment.acquirer.number'].search([('number', 'ilike', req['order_number']), ('state', '=', 'closed')])
@@ -558,6 +560,7 @@ class PaymentAcquirerNumber(models.Model):
 
     res_id = fields.Integer('Res ID')
     res_model = fields.Char('Res Model')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True) # buat VA open biar ngga kembar
     payment_acquirer_id = fields.Many2one('payment.acquirer','Payment Acquirer')
     number = fields.Char('Number')
@@ -588,13 +591,13 @@ class PaymentAcquirerNumber(models.Model):
         for rec in self:
             rec.display_name_payment = "{} - {}".format(rec.payment_acquirer_id.name if rec.payment_acquirer_id.name != False else '',rec.number)
 
-    def create_payment_acq_api(self, data):
+    def create_payment_acq_api(self, data, context):
         ### BAYAR PAKAI PAYMENT GATEWAY
         if variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]] != 'top.up':
             provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
         else:
             provider_type = 'tt.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]
-        booking_obj = self.env[provider_type].search([('name','=',data['order_number'])])
+        booking_obj = self.env[provider_type].search([('name','=',data['order_number']), ('ho_id','=', context['co_ho_id'])])
         is_use_point = data.get('use_point', False)
         if not booking_obj:
             raise RequestException(1001)
@@ -603,7 +606,7 @@ class PaymentAcquirerNumber(models.Model):
         if data.get('voucher_reference'):
             booking_obj.voucher_code = data['voucher_reference']
 
-        payment_acq_number = self.search([('number', 'ilike', data['order_number'])])
+        payment_acq_number = self.search([('number', 'ilike', data['order_number']), ('ho_id', '=', context['co_ho_id'])])
         if payment_acq_number:
             #check datetime
             date_now = datetime.now()
@@ -612,19 +615,19 @@ class PaymentAcquirerNumber(models.Model):
                 for rec in payment_acq_number:
                     if rec.state == 'close':
                         rec.state = 'cancel'
-                payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point)
+                payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point, context)
                 booking_obj.payment_acquirer_number_id = payment.id
                 payment = {'order_number': payment.number}
             else:
                 payment = {'order_number': payment_acq_number[len(payment_acq_number)-1].number}
                 booking_obj.payment_acquirer_number_id = payment_acq_number[len(payment_acq_number)-1].id
         else:
-            payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point)
+            payment = self.create_payment_acq(data,booking_obj,provider_type, is_use_point, context)
             booking_obj.payment_acquirer_number_id = payment.id
             payment = {'order_number': payment.number}
         return ERR.get_no_error(payment)
 
-    def create_payment_acq(self,data,booking_obj,provider_type, is_use_point):
+    def create_payment_acq(self,data,booking_obj,provider_type, is_use_point, context):
         ## RULE TIME LIMIT PAYMENT ACQ < 1 jam, 10 menit = HOLD DATE - 10 menit
         ## UNTUK YG LEBIH DARI 1 JAM, 10 menit HOLE DATE HOLD DATE 60 menit
         if booking_obj._name != 'tt.top.up':
@@ -641,7 +644,7 @@ class PaymentAcquirerNumber(models.Model):
 
 
 
-        payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['acquirer_seq_id'])])
+        payment_acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['acquirer_seq_id']), ('ho_id', '=', context['co_ho_id'])])
 
         amount = data['amount']
         point_amount = 0
@@ -683,21 +686,22 @@ class PaymentAcquirerNumber(models.Model):
             'is_using_point_reward': is_use_point,
             'point_reward_amount': point_amount,
             'agent_id': booking_obj.agent_id.id,
-            'fee_amount': data['fee_amount']
+            'fee_amount': data['fee_amount'],
+            'ho_id': context['co_ho_id']
         })
         return payment
 
-    def get_payment_acq_api(self, data):
-        payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
+    def get_payment_acq_api(self, data, context):
+        payment_acq_number = self.search([('number', 'ilike', data['order_number']), ('ho_id', '=', context['co_ho_id'])], order='create_date desc', limit=1)
         if payment_acq_number:
             # check datetime
             date_now = datetime.now()
             time_delta = date_now - payment_acq_number[len(payment_acq_number) - 1].create_date
             if divmod(time_delta.seconds, 3600)[0] == 0 or datetime.now() < payment_acq_number[len(payment_acq_number)-1].time_limit and payment_acq_number[len(payment_acq_number)-1].time_limit and payment_acq_number[len(payment_acq_number) - 1].state == 'close':
                 if data['provider'] != 'top.up':
-                    book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1]))], limit=1)
+                    book_obj = self.env['tt.reservation.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0],data['order_number'].split('.')[1])), ('ho_id', '=', context['co_ho_id'])], limit=1)
                 else:
-                    book_obj = self.env['tt.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0], data['order_number'].split('.')[1]))], limit=1)
+                    book_obj = self.env['tt.%s' % data['provider']].search([('name', '=', '%s.%s' % (data['order_number'].split('.')[0], data['order_number'].split('.')[1])), ('ho_id', '=', context['co_ho_id'])], limit=1)
                 res = {
                     'order_number': data['order_number'],
                     'create_date': book_obj.create_date and book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S") or '',
@@ -716,8 +720,8 @@ class PaymentAcquirerNumber(models.Model):
         else:
             return ERR.get_error(additional_message='Order Number not found')
 
-    def set_va_number_api(self, data):
-        payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
+    def set_va_number_api(self, data, context):
+        payment_acq_number = self.search([('number', 'ilike', data['order_number']), ('ho_id', '=', context['co_ho_id'])], order='create_date desc', limit=1)
         if payment_acq_number:
             payment_acq_number.va_number = data.get('va_number')
             payment_acq_number.bank_name = data.get('bank_name')
@@ -728,8 +732,8 @@ class PaymentAcquirerNumber(models.Model):
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
 
-    def set_va_number_fail_api(self, data):
-        payment_acq_number = self.search([('number', 'ilike', data['order_number'])], order='create_date desc', limit=1)
+    def set_va_number_fail_api(self, data, context):
+        payment_acq_number = self.search([('number', 'ilike', data['order_number']), ('ho_id', '=', context['co_ho_id'])], order='create_date desc', limit=1)
         if payment_acq_number:
             payment_acq_number.state = 'fail'
             provider_type = 'tt.reservation.%s' % variables.PROVIDER_TYPE_PREFIX[data['order_number'].split('.')[0]]

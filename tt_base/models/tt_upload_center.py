@@ -14,6 +14,7 @@ class TtUploadFile(models.Model):
     file_reference = fields.Text('File Reference',readonly=True)
     path = fields.Char('Path', readonly=True)
     url = fields.Char('URL', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office Owner', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent','Owner', readonly=True)
     upload_uid = fields.Many2one('res.users','Uploaded By', readonly=True)
     active = fields.Boolean('Active',default=True)

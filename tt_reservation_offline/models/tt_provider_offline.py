@@ -543,6 +543,14 @@ class ProviderOffline(models.Model):
         for line in self.booking_id.line_ids:
             if line.pnr == self.pnr and line.carrier_id:
                 carrier_code = line.carrier_id.code
+
+        agent_obj = self.booking_id.agent_id
+        ho_agent_obj = agent_obj.get_ho_parent_agent()
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
         rule_param = {
             'provider': self.provider_id.code,
             'carrier_code': carrier_code,
@@ -550,6 +558,7 @@ class ProviderOffline(models.Model):
             'segment_count': segment_count,
             'show_commission': True,
             'pricing_datetime': '',
+            'context': context
         }
         repr_tool.calculate_pricing(**rule_param)
 
@@ -578,6 +587,7 @@ class ProviderOffline(models.Model):
         service_chg_obj = self.env['tt.service.charge']
         for scs in scs_list:
             scs['passenger_offline_ids'] = [(6, 0, scs['passenger_offline_ids'])]
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if abs(scs['total']) != 0:
                 service_chg_obj.create(scs)
 
@@ -793,8 +803,7 @@ class ProviderOffline(models.Model):
                 'total': basic_admin_fee * line_obj.obj_qty * days_int_current,
             })
 
-            ho_agent = self.env['tt.agent'].sudo().search(
-                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            ho_agent = self.env['tt.agent'].sudo().search([('is_ho_agent', '=', True)], limit=1)
             scs_list.append({
                 'commission_agent_id': ho_agent and ho_agent[0].id or False,
                 'amount': -basic_admin_fee * line_obj.obj_qty * days_int_current,
@@ -952,8 +961,7 @@ class ProviderOffline(models.Model):
                 'total': basic_admin_fee * line_obj.obj_qty * days_int_current,
             })
 
-            ho_agent = self.env['tt.agent'].sudo().search(
-                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            ho_agent = self.env['tt.agent'].sudo().search([('is_ho_agent', '=', True)], limit=1)
             scs_dict['service_charges'].append({
                 'commission_agent_id': ho_agent and ho_agent[0].id or False,
                 'amount': -basic_admin_fee * line_obj.obj_qty * days_int_current,
@@ -966,6 +974,14 @@ class ProviderOffline(models.Model):
             })
         repr_tool.add_ticket_fare(scs_dict)
 
+        agent_obj = self.booking_id.agent_id
+        ho_agent_obj = agent_obj.get_ho_parent_agent()
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
+
         rule_param = {
             'provider': self.provider_id.code,
             'carrier_code': carrier_code,
@@ -973,6 +989,7 @@ class ProviderOffline(models.Model):
             'segment_count': segment_count,
             'show_commission': True,
             'pricing_datetime': '',
+            'context': context
         }
         repr_tool.calculate_pricing(**rule_param)
 
@@ -1001,6 +1018,7 @@ class ProviderOffline(models.Model):
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list:
             scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
+            scs_2['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if abs(scs_2['total']) != 0:
                 service_chg_obj.create(scs_2)
 

@@ -34,5 +34,9 @@
             <field name="key">rewrite.city</field>
             <field name="value">semarang,</field>
         </record>
+        <record id="hotel_search_use_country_allowed" model="ir.config_parameter">
+            <field name="key">hotel.search.use.country.allowed</field>
+            <field name="value">true</field>
+        </record>
     </data>
 </odoo>

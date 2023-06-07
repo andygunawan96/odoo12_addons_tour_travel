@@ -12,8 +12,8 @@ Tour & Travel - Reservation Event
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_agent_sales'],
     'data': [
         'data/ir_sequence_data.xml',

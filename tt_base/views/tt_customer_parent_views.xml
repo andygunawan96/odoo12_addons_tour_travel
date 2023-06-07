@@ -8,6 +8,7 @@
             <search string="Search Customer Parent">
                 <field name="name"/>
                 <field name="customer_parent_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="parent_agent_id"/>
                 <group>
                     <filter string="All Type" name="all"/>
@@ -27,9 +28,9 @@
                 </group>
 
                 <group expand="0" string="Group By">
-                    <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="State" name="state" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Customer Parent Type" name="customer_parent_type_id" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="State" name="state" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -51,6 +52,7 @@
                     <button name="set_to_done" string="Set to Done" type="object" groups="base.group_system" attrs="{'invisible':[('state','=','done')]}"/>
                     <button name="set_to_draft" string="Set to Draft" type="object" groups="base.group_system,tt_base.group_tt_agent_user" attrs="{'invisible':[('state','!=','reject')]}"/>
                     <button name="set_all_cor_por_email_cc" string="Set All COR/POR Email CC" type="object" groups="base.group_system,base.user_admin"/>
+                    <button name="set_all_default_ho" string="Set All Default HO" type="object" groups="base.group_system"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirm,request,validate,done"/>
                 </header>
                 <sheet>
@@ -72,6 +74,7 @@
                     <group>
                         <group name="ctp_info">
                             <field name="customer_parent_type_id" readonly="1"/>
+                            <field name="ho_id" readonly="0" groups="base.group_erp_manager"/>
                             <field name="parent_agent_id" readonly="1"/>
                             <field name="tax_percentage" readonly="1"/>
                             <field name="is_send_email_cc"/>

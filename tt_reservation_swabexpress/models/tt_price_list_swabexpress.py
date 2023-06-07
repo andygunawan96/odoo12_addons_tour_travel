@@ -16,7 +16,7 @@ MAX_PER_SLOT = 5
 
 class TtPriceListSwabExpress(models.Model):
     _name = 'tt.price.list.swabexpress'
-    _description = 'Rodex Model Price List Swab Express'
+    _description = 'Orbis Model Price List Swab Express'
     _rec_name = 'name'
     _order = 'min_pax'
 

@@ -28,11 +28,11 @@ _logger = logging.getLogger(__name__)
 SCOPES = ['https://mail.google.com/']
 ##AUTH
 def_folder = '/var/log/tour_travel/gmailcredentials'
-def gmail_authenticate(creds):
+def gmail_authenticate(creds, email_name):
     if creds:
         if creds.refresh_token and creds.expiry - datetime.now() < timedelta(minutes=10):
-            if os.path.exists("%s/update_status_email.txt" % (def_folder)):
-                update_status_email_file = read_file_update()
+            if os.path.exists("%s/update_status_email_%s.txt" % (def_folder, email_name)):
+                update_status_email_file = read_file_update(email_name)
             else:
                 update_status_email_file = {## Block, karena pasti sdh mau expired
                     "last_update": time.time(),
@@ -53,10 +53,10 @@ def gmail_authenticate(creds):
                     "last_update": time.time(),
                     "is_update": True
                 })
-                write_file_update(update_status_email_file)
+                write_file_update(update_status_email_file, email_name)
                 try:
                     creds.refresh(Request())
-                    with open("%s/token.pickle" % def_folder, "wb") as token:
+                    with open("%s/%s.pickle" % (def_folder, email_name), "wb") as token:
                         pickle.dump(creds, token)
                 except Exception as e:
                     _logger.error('Error update credential backend')
@@ -72,19 +72,19 @@ def gmail_authenticate(creds):
                     "is_update": False,
                     "last_update": time.time(),
                 })
-                write_file_update(update_status_email_file)
+                write_file_update(update_status_email_file, email_name)
         return build('gmail', 'v1', credentials=creds, cache_discovery=False)
     else:
         _logger.error('Error please set email first')
         return False
 
-def write_file_update(update_status_email_file):
-    _file = open("%s/update_status_email.txt" % def_folder, 'w')
+def write_file_update(update_status_email_file, email_name):
+    _file = open("%s/update_status_email_%s.txt" % (def_folder, email_name), 'w')
     _file.write(json.dumps(update_status_email_file))
     _file.close()
 
-def read_file_update():
-    file = open("%s/update_status_email.txt" % (def_folder), "r")
+def read_file_update(email_name):
+    file = open("%s/update_status_email_%s.txt" % (def_folder, email_name), "r")
     data = file.read()
     file.close()
     return json.loads(data)
@@ -335,8 +335,8 @@ def send_message(service, destination, obj, body, attachments=[], type='plain', 
     ).execute()
 
 
-def connect_gmail(creds):
-    gmail_auth = gmail_authenticate(creds)
+def connect_gmail(creds, email_name):
+    gmail_auth = gmail_authenticate(creds, email_name)
     return gmail_auth
 
 def search_email(gmail_auth, keyword, limit_messages=100):

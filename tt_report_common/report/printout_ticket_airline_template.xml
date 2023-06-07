@@ -78,7 +78,7 @@
         <t t-set="data_pax" t-value="psg['passenger_id']"/>
         <t t-foreach="length.journey_ids" t-as="line">
             <t t-foreach="line.segment_ids" t-as="segment_obj">
-                <t t-if="data_pax.fee_ids and len(line.segment_ids) > 1">
+                <t t-if="data_pax.fee_ids">
                     <t t-foreach="data_pax.fee_ids" t-as="fee_id">
                         <t t-if="segment_obj.segment_code == fee_id.journey_code">
                             <t t-set="any_ssr" t-value="1"/>
@@ -247,12 +247,12 @@
                                 <t t-if="length.reference != segment_obj.pnr">
                                     <span style="font-size: 16px;">Interline Code: <span t-field="length.reference"/></span><br/>
                                 </t>
-                                <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
+                                <img t-att-src="static_url + '/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <t t-if="segment_obj.operating_airline_id">
                                     <t t-if="segment_obj.carrier_id.id != segment_obj.operating_airline_id.id">
                                         <b><span style="font-size: 14px;">Operated By:</span></b><br/>
-                                        <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.operating_airline_id.code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
+                                        <img t-att-src="static_url + '/public/airline_logo/'+ segment_obj.operating_airline_id.code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                         <span style="font-size: 13px;"><span t-field="segment_obj.operating_airline_id.name"/></span><br/>
                                     </t>
                                 </t>
@@ -298,7 +298,7 @@
                             <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0 0; border-color: #CCC; padding: 10px 10px 10px 20px; margin-right: 10px; border: 1px solid #BBB;">
                                 <!--<span style="font-size: 15px; color: #DC5413">STATUS : CONFIRMED</span><br/>-->
                                 <b><span style="font-size: 16px;">PNR: <span t-field="segment_obj.pnr"/></span></b><br/>
-                                <img t-att-src="'https://static.rodextrip.com/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
+                                <img t-att-src="static_url + '/public/airline_logo/'+ segment_obj.carrier_code +'.png'" style="height: 70px; width: 70px; max-height: 20px; width:auto; max_width:20px;"/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.carrier_id.name"/></span><br/>
                                 <span style="font-size: 13px; font-weight:450;"><span t-field="segment_obj.carrier_code"/> - <span t-field="segment_obj.carrier_number"/></span><br/>
                                 <span style="font-size: 13px;"><span t-field="segment_obj.class_of_service"/> - <span t-field="segment_obj.cabin_class"/></span><br/>

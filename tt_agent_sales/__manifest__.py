@@ -11,8 +11,8 @@ Tour & Travel - Agent Sales
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['base', 'base_setup', 'tt_base','tt_accounting', 'tt_payment'],
 
     # always loaded

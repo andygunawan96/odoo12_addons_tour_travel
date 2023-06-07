@@ -54,10 +54,10 @@ class TtAirlineApiCon(models.Model):
 
         return res
 
-    def get_balance(self,provider):
-        return self.send_request_to_gateway('%s/account/airline' % (self.url),{'provider': provider},'get_vendor_balance',timeout=60)
+    def get_balance(self,provider, ho_id):
+        return self.send_request_to_gateway('%s/account/airline' % (self.url),{'provider': provider},'get_vendor_balance',timeout=60, ho_id=ho_id)
 
-    def send_force_issued_not_enough_balance_notification(self,order_number,context):
+    def send_force_issued_not_enough_balance_notification(self,order_number,context, ho_id):
         request = {
             'code': 9901,
             'message': 'Agent/Customer doesn\'t have enough balance, but issued on vendor.\n\nCo User Name : {}\nCo User Agent : {}\n\mOrder Number : {}'.format(context['co_user_name'],context['co_agent_name'],order_number),
@@ -65,7 +65,7 @@ class TtAirlineApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request,
-                                            'notification_code')
+                                            'notification_code', ho_id=ho_id)
 
     def send_duplicate_segment_notification(self,messages_dict):
         total_length = len(messages_dict)-1## 1 of the key is for ctr so minus 1
@@ -92,7 +92,7 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'retrieve_booking',
-                                            timeout=120)
+                                            timeout=120, ho_id=req['ho_id'])
 
     # June 2, 2021 - SAM
     def send_reprice_booking_vendor(self, req):
@@ -109,7 +109,7 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'reprice_booking',
-                                            timeout=120)
+                                            timeout=120, ho_id=req.get('context').get('co_ho_id'))
     # END
 
     # March 28, 2022 - SAM
@@ -127,7 +127,7 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'void_booking',
-                                            timeout=120)
+                                            timeout=120, ho_id=req.get('context').get('co_ho_id'))
     # END
 
     # March 08, 2023 - SAM
@@ -145,7 +145,7 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'check_segment_status',
-                                            timeout=120)
+                                            timeout=120, ho_id=req.get('context').get('co_ho_id'))
     # END
 
     def send_sync_refund_status(self, req):
@@ -158,7 +158,7 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'refund_status',
-                                            timeout=120)
+                                            timeout=120, ho_id=req['ho_id'])
 
     def send_get_booking_for_sync(self, req):
         request = {
@@ -169,7 +169,7 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline' % (self.url),
                                             request,
                                             'get_booking',
-                                            timeout=180)
+                                            timeout=180, ho_id=req.get('ho_id'))
     def send_get_original_ticket(self, req):
         request = req
         request.update({
@@ -178,16 +178,16 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'get_original_ticket',
-                                            timeout=180)
+                                            timeout=180, ho_id=req.get('ho_id'))
 
-    def cancel_booking(self, req):
+    def cancel_booking(self, req, ho_id):
         request = {
             'order_number': req.get('order_number'),
         }
         return self.send_request_to_gateway('%s/booking/airline' % (self.url),
                                             request,
                                             'cancel',
-                                            timeout=180)
+                                            timeout=180, ho_id=ho_id)
 
     # December 29, 2021 - SAM
     def send_vendor_ticket_email(self, req):
@@ -200,5 +200,5 @@ class TtAirlineApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/airline/private' % (self.url),
                                             request,
                                             'send_vendor_ticket_itinerary',
-                                            timeout=120)
+                                            timeout=120, ho_id=req.get('ho_id'))
     # END

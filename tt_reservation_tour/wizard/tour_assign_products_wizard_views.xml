@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="tour_assign_products_wizard" model="ir.ui.view">
+			<field name="name">Tour Assign Products Wizard</field>
+			<field name="model">tour.assign.products.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Message">
+					<group>
+                        <group>
+                            <field name="provider_id"/>
+                        </group>
+                        <group>
+<!--                            <field name="ho_id" groups="base.group_erp_manager"/>-->
+							<field name="ho_ids" groups="base.group_erp_manager"/>
+                        </group>
+					</group>
+					<footer>
+						<button string="Assign to Selected HO(s)" name="assign_to_multiple_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Remove from Selected HO(s)" name="delete_from_multiple_hos" type="object" class="btn-primary" groups="base.group_erp_manager"/>
+						<button string="Cancel" class="btn-default" special="cancel" />
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record id="action_tour_assign_products_wizard" model="ir.actions.act_window">
+			<field name="name">Tour Assign Products Wizard</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">tour.assign.products.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="tour_assign_products_wizard"/>
+			<field name="target">new</field>
+		</record>
+
+		<menuitem
+				id="sub_menu_tour_assign_products_wizard"
+				name="Tour Product Management"
+				parent="tt_reservation_tour.menu_tour_travel_tour_config"
+				action="action_tour_assign_products_wizard"
+				sequence="3"
+				groups="base.group_erp_manager"
+		/>
+
+	</data>
+</odoo>

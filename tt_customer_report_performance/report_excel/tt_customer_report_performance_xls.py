@@ -79,50 +79,58 @@ class CustomerReportPerformanceXls(models.TransientModel):
                 'average_passport_spent_per_order': 0,
                 'offline_order': 0,
                 'offline_spent': 0,
-                'average_offline_spent_per_order': 0,
-                'event_order': 0,
-                'event_spent': 0,
-                'average_event_spent_per_order': 0,
-                'ppob_order': 0,
-                'ppob_spent': 0,
-                'average_ppob_spent_per_order': 0,
-                'phc_order': 0,
-                'phc_spent': 0,
-                'average_phc_spent_per_order': 0,
-                'periksain_order': 0,
-                'periksain_spent': 0,
-                'average_periksain_spent_per_order': 0,
-                'medical_order': 0,
-                'medical_spent': 0,
-                'average_medical_spent_per_order': 0,
-                'bus_order': 0,
-                'bus_spent': 0,
-                'average_bus_spent_per_order': 0,
-                'insurance_order': 0,
-                'insurance_spent': 0,
-                'average_insurance_spent_per_order': 0,
-                'swabexpress_order': 0,
-                'swabexpress_spent': 0,
-                'average_swabexpress_spent_per_order': 0,
-                'labpintar_order': 0,
-                'labpintar_spent': 0,
-                'average_labpintar_spent_per_order': 0,
-                'mitrakeluarga_order': 0,
-                'mitrakeluarga_spent': 0,
-                'average_mitrakeluarga_spent_per_order': 0,
-                'sentramedika_order': 0,
-                'sentramedika_spent': 0,
-                'average_sentramedika_spent_per_order': 0,
-                'groupbooking_order': 0,
-                'groupbooking_spent': 0,
-                'average_groupbooking_spent_per_order': 0,
+                'average_offline_spent_per_order': 0
             }
             for j in temp_array:
-                temp_result['%s_order' % j['provider_type_name'].lower()] += 1
-                try:
-                    temp_result['%s_spent' % j['provider_type_name'].lower()] += float(j['charge_total'])
-                except:
-                    temp_result['%s_spent' % j['provider_type_name'].lower()] += 0.0
+                if j['provider_type_name'].lower() == 'airline':
+                    temp_result['airline_order'] += 1
+                    try:
+                        temp_result['airline_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['airline_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'train':
+                    temp_result['train_order'] += 1
+                    try:
+                        temp_result['train_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['airline_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'activity':
+                    temp_result['activity_order'] += 1
+                    try:
+                        temp_result['activity_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['airline_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'tour':
+                    temp_result['tour_order'] += 1
+                    try:
+                        temp_result['tour_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['airline_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'hotel':
+                    temp_result['hotel_order'] += 1
+                    try:
+                        temp_result['hotel_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['hotel_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'visa':
+                    temp_result['visa_order'] += 1
+                    try:
+                        temp_result['visa_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['visa_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'passport':
+                    temp_result['passport_order'] += 1
+                    try:
+                        temp_result['passport_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['passport_spent'] += 0.0
+                if j['provider_type_name'].lower() == 'offline':
+                    temp_result['offline_order'] += 1
+                    try:
+                        temp_result['offline_spent'] += float(j['charge_total'])
+                    except:
+                        temp_result['offline_spent'] += 0.0
+
                 temp_result['number_of_sales'] += 1
                 try:
                     temp_result['total_spent'] += float(j['charge_total'])
@@ -133,17 +141,41 @@ class CustomerReportPerformanceXls(models.TransientModel):
             else:
                 temp_result['average_spent_per_order'] = 0
 
-            if isinstance(queue, list):
-                for i in queue:
-                    if temp_result['%s_order' % i] > 0:
-                        temp_result['average_%s_spent_per_order' % i] = temp_result['%s_spent' % i] / float(temp_result['%s_order' % i])
-                    else:
-                        temp_result['average_%s_spent_per_order' % i] = 0
+            if temp_result['airline_order'] > 0:
+                temp_result['average_airline_spent_per_order'] = temp_result['airline_spent'] / float(temp_result['airline_order'])
             else:
-                if temp_result['%s_order' % queue] > 0:
-                    temp_result['average_%s_spent_per_order' % queue] = temp_result['%s_spent' % queue] / float(temp_result['%s_order' % queue])
-                else:
-                    temp_result['average_%s_spent_per_order' % queue] = 0
+                temp_result['average_airline_spent_per_order'] = 0
+
+            if temp_result['train_order'] > 0:
+                temp_result['average_train_spent_per_order'] = temp_result['train_spent'] / float(temp_result['train_order'])
+            else:
+                temp_result['average_train_spent_per_order'] = 0
+
+            if temp_result['activity_order'] > 0:
+                temp_result['average_activity_spent_per_order'] = temp_result['activity_spent'] / float(temp_result['activity_order'])
+            else:
+                temp_result['average_tour_spent_per_order'] = 0
+
+            if temp_result['tour_order'] > 0:
+                temp_result['average_tour_spent_per_order'] = temp_result['tour_spent'] / float(temp_result['tour_order'])
+            else:
+                temp_result['average_tour_spent_per_order'] = 0
+
+            if temp_result['hotel_order'] > 0:
+                temp_result['average_hotel_spent_per_order'] = temp_result['hotel_spent'] / float(temp_result['hotel_order'])
+            else:
+                temp_result['average_hotel_spent_per_order'] = 0
+
+            if temp_result['offline_order'] > 0:
+                temp_result['average_offline_spent_per_order'] = temp_result['offline_spent'] / float(temp_result['offline_order'])
+            else:
+                temp_result['average_offline_spent_per_order'] = 0
+
+            if temp_result['passport_order'] > 0:
+                temp_result['average_passport_spent_per_order'] = temp_result['passport_spent'] / float(temp_result['passport_order'])
+
+            if temp_result['visa_order'] > 0:
+                temp_result['average_visa_spent_per_order'] = temp_result['visa_spent'] / float(temp_result['visa_order'])
 
             result.append(temp_result)
         column = 6

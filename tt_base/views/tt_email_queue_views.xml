@@ -43,6 +43,7 @@
                             </div>
                             <group>
                                 <group>
+                                    <field name="ho_id" groups="base.group_erp_manager"/>
                                     <field name="type"/>
                                     <field name="template_id"/>
                                 </group>
@@ -98,7 +99,7 @@
 
     <menuitem id="menu_email_queue"
               parent="tt_base.top_tour_travel_administration"
-              groups="base.group_system"
+              groups="base.group_erp_manager"
               name="Email Queue"
               sequence="5"
               action="tt_email_queue_action_view"/>

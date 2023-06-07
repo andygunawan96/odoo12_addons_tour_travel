@@ -25,9 +25,11 @@ class CustomerRerportPassportExpiration(models.Model):
         """
 
     @staticmethod
-    def _where(date_before, agent_id):
+    def _where(date_before, agent_id, ho_id):
         where = """cidentity.identity_type = 'passport' AND cidentity.identity_expdate <= '%s'""" % (date_before)
         where += """ AND customer.active = True"""
+        if ho_id:
+            where += """ AND customer.ho_id = %s""" % ho_id
         if agent_id:
             where += """ AND customer.agent_id = %s""" % agent_id
         return where
@@ -41,10 +43,10 @@ class CustomerRerportPassportExpiration(models.Model):
     def _report_title(data_form):
         data_form['title'] = 'Passport Expiration Report: ' + data_form['subtitle']
 
-    def _lines(self, date_before, agent_id):
+    def _lines(self, date_before, agent_id, ho_id):
         query = "SELECT {} ".format(self._select())
         query += "FROM {} ".format(self._from())
-        query += "WHERE {} ".format(self._where(date_before, agent_id))
+        query += "WHERE {} ".format(self._where(date_before, agent_id, ho_id))
         query += "ORDER BY {}".format(self._order_by())
 
         self.env.cr.execute(query)
@@ -58,15 +60,16 @@ class CustomerRerportPassportExpiration(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self, value).strftime('%Y-%m-%d %H:%M:%S')
 
-    def _get_lines_data(self, date_before, agent_id):
-        lines = self._lines(date_before, agent_id)
+    def _get_lines_data(self, date_before, agent_id, ho_id):
+        lines = self._lines(date_before, agent_id, ho_id)
         # lines = self._convert_data(lines)
         return lines
 
     def _prepare_valued(self, data_form):
         date_befre = data_form['date_before']
         agent_id = data_form['agent_id']
-        line = self._get_lines_data(date_befre, agent_id)
+        ho_id = data_form['ho_id']
+        line = self._get_lines_data(date_befre, agent_id, ho_id)
         self._report_title(data_form)
         return {
             'lines': line,

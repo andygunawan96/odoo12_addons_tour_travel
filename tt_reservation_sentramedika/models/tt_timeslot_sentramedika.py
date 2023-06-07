@@ -20,7 +20,7 @@ ADDRESS_SURCHARGE = 100000## Fee per bookingan
 
 class TtTimeslotSentraMedika(models.Model):
     _name = 'tt.timeslot.sentramedika'
-    _description = 'Rodex Model Timeslot Sentra Medika'
+    _description = 'Orbis Model Timeslot Sentra Medika'
     _order = 'datetimeslot'
     _rec_name = 'timeslot_display_name'
 
@@ -64,6 +64,7 @@ class TtTimeslotSentraMedika(models.Model):
 
     active = fields.Boolean('Active', default='True')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.depends('datetimeslot')
@@ -177,7 +178,7 @@ class TtTimeslotSentraMedika(models.Model):
 
 class TtTimeslotsentramedikadefault(models.Model):
     _name = 'tt.timeslot.sentramedika.default'
-    _description = 'Rodex Model Timeslot Sentra Medika Default'
+    _description = 'Orbis Model Timeslot Sentra Medika Default'
     _order = 'sequence'
 
     name = fields.Char("Name", required=True)

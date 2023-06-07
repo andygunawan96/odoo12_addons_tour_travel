@@ -36,6 +36,7 @@ class TtLetterGuarantee(models.Model):
     paid_uid = fields.Many2one('res.users', 'Paid by', readonly=True)
     cancel_date = fields.Datetime('Cancelled Date', readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Cancelled by', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     @api.model
     def create(self, vals):
@@ -46,6 +47,12 @@ class TtLetterGuarantee(models.Model):
         else:
             vals.update({
                 'name': self.env['ir.sequence'].next_by_code('tt.letter.guarantee.seq')
+            })
+        resv_obj = self.env[vals['res_model']].browse(vals['res_id'])
+        if resv_obj.agent_id:
+            ho_agent_obj = resv_obj.agent_id.get_ho_parent_agent()
+            vals.update({
+                'ho_id': ho_agent_obj.id
             })
         return super(TtLetterGuarantee, self).create(vals)
 
@@ -122,3 +129,13 @@ class TtLetterGuaranteeLines(models.Model):
     lg_id = fields.Many2one('tt.letter.guarantee', 'Letter of Guarantee', required=True, readonly=True, ondelete='cascade')
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('paid', 'Paid'),
                               ('cancel', 'Cancelled')], 'State', related='lg_id.state', store=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+
+    @api.model
+    def create(self, vals):
+        if vals['lg_id']:
+            letter_guarantee_obj = self.env['tt.letter.guarantee.lines'].browse(vals['lg_id'])
+            vals.update({
+                'ho_id': letter_guarantee_obj.ho_id.id
+            })
+        return super(TtLetterGuaranteeLines, self).create(vals)

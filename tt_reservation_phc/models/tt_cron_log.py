@@ -61,6 +61,7 @@ class TtCronLogInhphc(models.Model):
                 'code': 9909,
                 'message': "Daily Summary\n\n %s" % (self.env['tt.reservation.phc'].get_verified_summary())
             }
+            ## tambah context
             self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
                                                            'notification_code')
         except Exception as e:

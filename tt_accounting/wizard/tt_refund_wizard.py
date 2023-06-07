@@ -10,6 +10,7 @@ class TtRefundWizard(models.TransientModel):
     _name = "tt.refund.wizard"
     _description = 'Refund Wizard'
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
 
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
@@ -45,6 +46,7 @@ class TtRefundWizard(models.TransientModel):
             refund_obj = self.env['tt.refund'].search([('referenced_document','=',data['referenced_document_external']), ('state','!=','cancel')])
             if not refund_obj:
                 refund_obj = self.create({
+                    'ho_id': ctx['co_ho_id'],
                     'agent_id': ctx['co_agent_id'],
                     'agent_type_id': ctx['co_agent_type_id'],
                     'customer_parent_id': book_obj.customer_parent_id.id,
@@ -105,7 +107,7 @@ class TtRefundWizard(models.TransientModel):
                 if referenced_document_external != '':
                     referenced_document_external += ', '
                 referenced_document_external = rec.pnr2
-                self.env['tt.refund.api.con'].send_refund_request(data)
+                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
         if referenced_document_external == '':
             referenced_document_external = self.referenced_document_external
 
@@ -115,6 +117,7 @@ class TtRefundWizard(models.TransientModel):
             ref_type = 'regular'
         default_adm_fee = self.env['tt.refund'].get_refund_admin_fee_rule(self.agent_id.id, ref_type)
         refund_obj = self.env['tt.refund'].create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'booker_id': self.booker_id.id,

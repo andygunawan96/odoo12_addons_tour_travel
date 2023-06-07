@@ -31,6 +31,7 @@
                     </div>
                     <group>
                         <group name="ctp_info">
+                            <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                             <field name="customer_parent_type_id" readonly="1"/>
                             <field name="parent_agent_id"/>
                             <field name="tax_percentage" attrs="{'readonly':[('state','!=','draft')]}"/>

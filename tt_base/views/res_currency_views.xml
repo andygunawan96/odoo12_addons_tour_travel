@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
+        <!--    Change Default Official Odoo-->
         <record id="res_currency_form_view" model="ir.ui.view">
             <field name="name">res.currency.form.view</field>
             <field name="model">res.currency</field>

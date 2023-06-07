@@ -1,6 +1,20 @@
 <odoo>
+    <record id="tt_reservation_groupbooking_for_ho" model="ir.rule">
+        <field name="name">Reservation Group Booking For HO</field>
+        <field name="model_id" ref="model_tt_reservation_groupbooking"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_reservation_groupbooking_for_ho_user" model="ir.rule">
+        <field name="name">Reservation Group Booking For HO User</field>
+        <field name="model_id" ref="model_tt_reservation_groupbooking"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
     <record id="tt_reservation_groupbooking_rule" model="ir.rule">
-        <field name="name">Issued Group Booking - Rodex</field>
+        <field name="name">Issued Group Booking - Orbis</field>
         <field name="model_id" ref="model_tt_reservation_groupbooking"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>  <!--,('sub_agent_id.id','=',user.agent_id.id)-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>  <!--Record rule biasanya 4-->

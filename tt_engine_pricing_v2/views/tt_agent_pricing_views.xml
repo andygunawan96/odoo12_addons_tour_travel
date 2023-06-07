@@ -29,6 +29,7 @@
 <!--                            <field name="agent_type_id"/>-->
                         </group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>

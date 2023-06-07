@@ -11,8 +11,8 @@ Tour & Travel - Agent Sales Insurance
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['base', 'base_setup', 'tt_agent_sales','tt_reservation_insurance'],
 
     # always loaded

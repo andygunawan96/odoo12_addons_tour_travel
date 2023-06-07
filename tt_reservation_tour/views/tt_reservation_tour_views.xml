@@ -7,11 +7,12 @@
             <search string="Search Tour Booking">
                 <field name="name"/>
                 <field name="pnr"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>
                 <group>
                     <filter string="All" name="all"/>
@@ -48,10 +49,11 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_ho_id" string="Head Office" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
                     <filter name="group_by_payment_method_tour" string="Tour Payment Method" domain="[]" context="{'group_by':'payment_method_tour'}"/>
                 </group>
@@ -74,7 +76,7 @@
                     <button name="print_itinerary"
                             class="oe_stat_button" states="booked,issued,done,refund,rescheduled,reissue"
                             string="Print Itinerary" type="object" icon="fa-print"
-                            groups="tt_base.group_tt_tour_travel"/>
+                            groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </div>
             </xpath>
             <field name="pnr" position="after">
@@ -84,8 +86,8 @@
                 <separator string="Tour Information"/>
                 <group>
                     <group>
-                        <field name="tour_id" readonly="1" groups="tt_base.group_tt_tour_travel"/>
-                        <field name="tour_lines_id" readonly="1" groups="tt_base.group_tt_tour_travel"/>
+                        <field name="tour_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                        <field name="tour_lines_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <field name="tour_id_str" readonly="1" groups="tt_base.group_tt_agent_user"/>
                         <field name="payment_method_tour" readonly="1" attrs="{'invisible': [('state', 'not in', ('issued'))]}"/>
                     </group>
@@ -193,7 +195,7 @@
                 </page>
             </xpath>
             <xpath expr="//page[@name='anchor']" position="before">
-                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel">
+                <page string="Vendor" name="vendor" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                     <field name="provider_booking_ids"/>
                     <!--                        &lt;!&ndash;<tree>&ndash;&gt;-->
                     <!--                        &lt;!&ndash;<field name="pnr"/>&ndash;&gt;-->
@@ -223,7 +225,7 @@
                 <field name="customer_parent_id"/>
                 <field name="customer_parent_type_id"/>
                 <field name="booker_id"/>
-                <field name="provider_name" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_name" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="tour_id"/>
                 <field name="tour_lines_id"/>
                 <field name="booked_uid"/>

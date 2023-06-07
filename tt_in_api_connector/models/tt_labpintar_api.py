@@ -32,7 +32,7 @@ class TtLabPintarApiCon(models.Model):
             raise RequestException(999)
         return res
 
-    def send_confirm_order_notification(self,document_number,confirm_name,timeslot,address):
+    def send_confirm_order_notification(self,document_number,confirm_name,timeslot,address, ho_id):
         request = {
             'code': 9930,
             'message': '{} has been Confirmed by {}\n{}\n{}'.format(document_number,confirm_name,timeslot,address),
@@ -40,7 +40,7 @@ class TtLabPintarApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_code')
+                                            ,'notification_code', ho_id=ho_id)
 
     def sync_status_with_phc(self, req):
         request = {
@@ -52,9 +52,9 @@ class TtLabPintarApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/phc/private' % (self.url),
                                             request,
                                             action,
-                                            timeout=180)
+                                            timeout=180, ho_id=req.get('ho_id'))
 
-    def send_cancel_order_notification(self,document_number,confirm_name,timeslot,address):
+    def send_cancel_order_notification(self,document_number,confirm_name,timeslot,address,ho_id):
         request = {
             'code': 9932,
             'message': '{} has been cancel by {}\n{}\n{}'.format(document_number,confirm_name,timeslot,address),
@@ -62,4 +62,4 @@ class TtLabPintarApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_code')
+                                            ,'notification_code', ho_id=ho_id)

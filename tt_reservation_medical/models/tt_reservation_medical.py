@@ -709,8 +709,9 @@ class Reservationmedical(models.Model):
                     'code': 9920,
                     'message': "%s\n\n%s" % (passenger_obj.name, self.env['tt.reservation.medical'].get_verified_summary())
                 }
+                ho_id = passenger_obj.booking_id.agent_id.get_ho_parent_agent().id
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
-                                                               'notification_code')
+                                                               'notification_code', ho_id=ho_id)
                 return ERR.get_no_error({
                     "transaction_code": req['ticket_number'],
                     "message": "success"

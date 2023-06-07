@@ -2,8 +2,217 @@
 <odoo>
     <data noupdate="1">
         <!--        new template-->
+        <record id="template_sys_adm_user" model="res.users">
+            <field name="name">Template System Admin User</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="login">template_sys_adm_user</field>
+            <field name="password">7p4Sqpvpx4$N?H5JUXw6</field>
+            <field name="is_user_template" eval="True"/>
+            <field name="groups_id"
+                   eval="[(6,0,[ref('base.group_erp_manager'),
+                             ref('tt_base.group_master_data_hotel_level_4'),
+                             ref('tt_base.group_master_data_passport_level_4'),
+                             ref('tt_base.group_master_data_activity_level_4'),
+                             ref('tt_base.group_master_data_visa_level_4'),
+                             ref('tt_base.group_master_data_tour_level_4'),
+                             ref('tt_base.group_master_data_ppob_level_4'),
+                             ref('tt_base.group_master_data_event_level_4'),
+                             ref('tt_base.group_master_data_periksain_level_4'),
+                             ref('tt_base.group_master_data_phc_level_4'),
+                             ref('tt_base.group_master_data_medical_level_4'),
+                             ref('tt_base.group_master_data_swabexpress_level_4'),
+                             ref('tt_base.group_master_data_labpintar_level_4'),
+                             ref('tt_base.group_master_data_mitrakeluarga_level_4'),
+                             ref('tt_base.group_master_data_bus_level_4'),
+                             ref('tt_base.group_master_data_sentramedika_level_4'),
+                             ref('tt_base.group_tour_request_level_4'),
+                             ref('tt_base.group_reservation_level_4'),
+                             ref('tt_base.group_reservation_provider_level_4'),
+                             ref('tt_base.group_service_charge_level_5'),
+                             ref('tt_base.group_agent_invoice_level_4'),
+                             ref('tt_base.group_billing_statement_level_4'),
+                             ref('tt_base.group_top_up_level_4'),
+                             ref('tt_base.group_refund_level_4'),
+                             ref('tt_base.group_after_sales_master_level_4'),
+                             ref('tt_base.group_after_sales_level_4'),
+                             ref('tt_base.group_payment_level_4'),
+                             ref('tt_base.group_payment_acquirer_level_5'),
+                             ref('tt_base.group_adjustment_level_4'),
+                             ref('tt_base.group_lg_po_level_4'),
+                             ref('tt_base.group_reconcile_level_4'),
+                             ref('tt_base.group_ledger_level_3'),
+                             ref('tt_base.group_agent_registration_master_level_4'),
+                             ref('tt_base.group_agent_registration_level_4'),
+                             ref('tt_base.group_agent_level_4'),
+                             ref('tt_base.group_agent_type_level_4'),
+                             ref('tt_base.group_pnr_quota_level_4'),
+                             ref('tt_base.group_customer_level_4'),
+                             ref('tt_base.group_customer_parent_level_3'),
+                             ref('tt_base.group_customer_parent_type_level_4'),
+                             ref('tt_base.group_vendor_level_4'),
+                             ref('tt_base.group_upload_center_level_4'),
+                             ref('tt_base.group_frontend_banner_level_4'),
+                             ref('tt_base.group_location_level_4'),
+                             ref('tt_base.group_currency_rate_level_4'),
+                             ref('tt_base.group_unique_amount_level_2'),
+                             ref('tt_base.group_provider_level_4'),
+                             ref('tt_base.group_provider_type_level_4'),
+                             ref('tt_base.group_ssr_level_4'),
+                             ref('tt_base.group_bank_level_4'),
+                             ref('tt_base.group_bank_transactions_level_4'),
+                             ref('tt_base.group_agent_bank_detail_level_4'),
+                             ref('tt_base.group_customer_bank_detail_level_4'),
+                             ref('tt_base.group_monthly_fee_level_4'),
+                             ref('tt_base.group_destination_level_4'),
+                             ref('tt_base.group_route_level_4'),
+                             ref('tt_base.group_transport_carrier_level_4'),
+                             ref('tt_base.group_loyalty_program_level_4'),
+                             ref('tt_base.group_frequent_flyer_level_4'),
+                             ref('tt_base.group_social_info_level_4'),
+                             ref('tt_base.group_rule_whitelist_level_4'),
+                             ref('tt_base.group_public_holiday_level_5'),
+                             ref('tt_base.group_report_level_4'),
+                             ref('tt_base.group_pricing_provider_level_5'),
+                             ref('tt_base.group_pricing_agent_level_5'),
+                             ref('tt_base.group_pricing_customer_level_5'),
+                             ref('tt_base.group_search_configuration_level_4'),
+                             ref('tt_base.group_voucher_level_4'),
+                             ref('tt_base.group_point_reward_level_4'),
+                             ref('tt_base.group_user_data_level_3')])]"/>
+            <field name="frontend_security_ids"
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_swabexpress'),
+                                ref('tt_base.able_to_ticketing_mitra_keluarga'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
+                                ref('tt_base.able_to_see_commission'),
+                                ref('tt_base.report')])]"
+            />
+        </record>
+
+        <!--        new template-->
+        <record id="template_sys_adm_manager" model="res.users">
+            <field name="name">Template System Admin Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="login">template_sys_adm_manager</field>
+            <field name="password">PUPZJYtCgS*LBG8EaAuu</field>
+            <field name="is_user_template" eval="True"/>
+            <field name="groups_id"
+                   eval="[(6,0,[ref('base.group_erp_manager'),
+                                ref('tt_base.group_master_data_hotel_level_5'),
+                                ref('tt_base.group_master_data_passport_level_5'),
+                                ref('tt_base.group_master_data_visa_level_5'),
+                                ref('tt_base.group_master_data_activity_level_5'),
+                                ref('tt_base.group_master_data_tour_level_5'),
+                                ref('tt_base.group_master_data_ppob_level_5'),
+                                ref('tt_base.group_master_data_event_level_5'),
+                                ref('tt_base.group_master_data_bus_level_5'),
+                                ref('tt_base.group_master_data_periksain_level_5'),
+                                ref('tt_base.group_master_data_phc_level_5'),
+                                ref('tt_base.group_master_data_medical_level_5'),
+                                ref('tt_base.group_master_data_swabexpress_level_5'),
+                                ref('tt_base.group_master_data_labpintar_level_5'),
+                                ref('tt_base.group_master_data_mitrakeluarga_level_5'),
+                                ref('tt_base.group_tour_request_level_5'),
+                                ref('tt_base.group_reservation_level_5'),
+                                ref('tt_base.group_reservation_provider_level_5'),
+                                ref('tt_base.group_service_charge_level_5'),
+                                ref('tt_base.group_agent_invoice_level_5'),
+                                ref('tt_base.group_billing_statement_level_5'),
+                                ref('tt_base.group_top_up_level_5'),
+                                ref('tt_base.group_refund_level_5'),
+                                ref('tt_base.group_after_sales_master_level_5'),
+                                ref('tt_base.group_after_sales_level_5'),
+                                ref('tt_base.group_payment_level_5'),
+                                ref('tt_base.group_payment_acquirer_level_5'),
+                                ref('tt_base.group_adjustment_level_5'),
+                                ref('tt_base.group_lg_po_level_5'),
+                                ref('tt_base.group_reconcile_level_5'),
+                                ref('tt_base.group_ledger_level_5'),
+                                ref('tt_base.group_agent_registration_master_level_5'),
+                                ref('tt_base.group_agent_registration_level_5'),
+                                ref('tt_base.group_agent_level_5'),
+                                ref('tt_base.group_agent_type_level_5'),
+                                ref('tt_base.group_pnr_quota_level_5'),
+                                ref('tt_base.group_customer_level_5'),
+                                ref('tt_base.group_customer_parent_level_5'),
+                                ref('tt_base.group_customer_parent_type_level_5'),
+                                ref('tt_base.group_vendor_level_5'),
+                                ref('tt_base.group_upload_center_level_5'),
+                                ref('tt_base.group_frontend_banner_level_5'),
+                                ref('tt_base.group_location_level_5'),
+                                ref('tt_base.group_currency_rate_level_5'),
+                                ref('tt_base.group_unique_amount_level_5'),
+                                ref('tt_base.group_provider_level_5'),
+                                ref('tt_base.group_provider_type_level_5'),
+                                ref('tt_base.group_ssr_level_5'),
+                                ref('tt_base.group_bank_level_5'),
+                                ref('tt_base.group_bank_transactions_level_5'),
+                                ref('tt_base.group_agent_bank_detail_level_5'),
+                                ref('tt_base.group_customer_bank_detail_level_5'),
+                                ref('tt_base.group_monthly_fee_level_5'),
+                                ref('tt_base.group_destination_level_5'),
+                                ref('tt_base.group_route_level_5'),
+                                ref('tt_base.group_transport_carrier_level_5'),
+                                ref('tt_base.group_loyalty_program_level_5'),
+                                ref('tt_base.group_frequent_flyer_level_5'),
+                                ref('tt_base.group_social_info_level_5'),
+                                ref('tt_base.group_rule_whitelist_level_5'),
+                                ref('tt_base.group_public_holiday_level_5'),
+                                ref('tt_base.group_report_level_5'),
+                                ref('tt_base.group_pricing_provider_level_5'),
+                                ref('tt_base.group_pricing_agent_level_5'),
+                                ref('tt_base.group_pricing_customer_level_5'),
+                                ref('tt_base.group_search_configuration_level_5'),
+                                ref('tt_base.group_voucher_level_5'),
+                                ref('tt_base.group_point_reward_level_5'),
+                                ref('tt_base.group_new_city_records_level_5'),
+                                ref('tt_base.group_history_skip_level_5'),
+                                ref('tt_base.group_banned_users_level_5'),
+                                ref('tt_base.group_frontend_security_level_5'),
+                                ref('tt_base.group_email_queue_level_5'),
+                                ref('tt_base.group_error_api_list_level_5'),
+                                ref('tt_base.group_user_data_level_5'),
+                                ref('tt_base.group_api_management_level_5')])]"/>
+            <field name="frontend_security_ids"
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_swabexpress'),
+                                ref('tt_base.able_to_ticketing_mitra_keluarga'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
+                                ref('tt_base.able_to_see_commission'),
+                                ref('tt_base.report')])]"
+            />
+        </record>
+
+        <!--        new template-->
         <record id="template_ho_ticketing_user_operator" model="res.users">
             <field name="name">Template HO Ticketing Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_ticketing_user_operator</field>
             <field name="password">tV?=H~P$2u9jW?6XxhzG</field>
             <field name="is_user_template" eval="True"/>
@@ -98,6 +307,7 @@
         <!--        new template-->
         <record id="template_ho_ticketing_user_supervisor" model="res.users">
             <field name="name">Template HO Ticketing Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_ticketing_user_supervisor</field>
             <field name="password">j6vqTY4j4qT6LG=QqEWh</field>
             <field name="is_user_template" eval="True"/>
@@ -192,6 +402,7 @@
         <!--        new template-->
         <record id="template_ho_ticketing_user_manager" model="res.users">
             <field name="name">Template HO Ticketing Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_ticketing_user_manager</field>
             <field name="password">PxEv8#P_ZuaJ5+~9hCAT</field>
             <field name="is_user_template" eval="True"/>
@@ -286,6 +497,7 @@
         <!--        new template-->
         <record id="template_ho_ticketing_finance_operator" model="res.users">
             <field name="name">Template HO Ticketing Finance Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_ticketing_finance_operator</field>
             <field name="password">jK27^Ef-vww=@W?CUUpX</field>
             <field name="is_user_template" eval="True"/>
@@ -382,6 +594,7 @@
         <!--        new template-->
         <record id="template_ho_ticketing_finance_supervisor" model="res.users">
             <field name="name">Template HO Ticketing Finance Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_ticketing_finance_supervisor</field>
             <field name="password">phnbUv7$qZ*8Va5=PtPL</field>
             <field name="is_user_template" eval="True"/>
@@ -478,6 +691,7 @@
         <!--        new template-->
         <record id="template_ho_ticketing_finance_manager" model="res.users">
             <field name="name">Template HO Ticketing Finance Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_ticketing_finance_manager</field>
             <field name="password">u_PJXy%aC*+^yBQ9kMbE</field>
             <field name="is_user_template" eval="True"/>
@@ -574,19 +788,19 @@
         <!--        new template-->
         <record id="template_ho_user_operational_operator" model="res.users">
             <field name="name">Template HO Operational Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_operational_operator</field>
             <field name="password">yqSpbxT7j+HF9S$BP^mM</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
-                             ref('base.group_erp_manager'),
                              ref('tt_base.group_master_data_hotel_level_3'),
                              ref('tt_base.group_master_data_passport_level_3'),
-                             ref('tt_base.group_master_data_activity_level_3'),
+                             ref('tt_base.group_master_data_activity_level_1'),
                              ref('tt_base.group_master_data_visa_level_3'),
                              ref('tt_base.group_master_data_tour_level_3'),
-                             ref('tt_base.group_master_data_ppob_level_3'),
+                             ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_3'),
                              ref('tt_base.group_master_data_periksain_level_4'),
                              ref('tt_base.group_master_data_phc_level_4'),
@@ -676,19 +890,19 @@
         <!--        new template-->
         <record id="template_ho_user_operational_supervisor" model="res.users">
             <field name="name">Template HO Operational Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_operational_supervisor</field>
             <field name="password">JB6rLWWcES-PfsC9dj#7</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
-                             ref('base.group_erp_manager'),
                              ref('tt_base.group_master_data_hotel_level_3'),
                              ref('tt_base.group_master_data_passport_level_3'),
-                             ref('tt_base.group_master_data_activity_level_3'),
+                             ref('tt_base.group_master_data_activity_level_1'),
                              ref('tt_base.group_master_data_visa_level_3'),
                              ref('tt_base.group_master_data_tour_level_3'),
-                             ref('tt_base.group_master_data_ppob_level_3'),
+                             ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_3'),
                              ref('tt_base.group_master_data_periksain_level_4'),
                              ref('tt_base.group_master_data_phc_level_4'),
@@ -751,7 +965,7 @@
                              ref('tt_base.group_search_configuration_level_3'),
                              ref('tt_base.group_voucher_level_4'),
                              ref('tt_base.group_point_reward_level_4'),
-                             ref('tt_base.group_user_data_level_1')])]"/>
+                             ref('tt_base.group_user_data_level_2')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -778,19 +992,19 @@
         <!--        new template-->
         <record id="template_ho_user_operational_manager" model="res.users">
             <field name="name">Template HO Operational Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_operational_manager</field>
             <field name="password">gXpfVe*msS#3A%s%kB@T</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
-                             ref('base.group_erp_manager'),
                              ref('tt_base.group_master_data_hotel_level_4'),
                              ref('tt_base.group_master_data_passport_level_4'),
-                             ref('tt_base.group_master_data_activity_level_4'),
+                             ref('tt_base.group_master_data_activity_level_1'),
                              ref('tt_base.group_master_data_visa_level_4'),
                              ref('tt_base.group_master_data_tour_level_4'),
-                             ref('tt_base.group_master_data_ppob_level_4'),
+                             ref('tt_base.group_master_data_ppob_level_1'),
                              ref('tt_base.group_master_data_event_level_4'),
                              ref('tt_base.group_master_data_periksain_level_4'),
                              ref('tt_base.group_master_data_phc_level_4'),
@@ -880,6 +1094,7 @@
         <!--        new template-->
         <record id="template_ho_user_accounting_operator" model="res.users">
             <field name="name">Template HO Accounting Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_accounting_operator</field>
             <field name="password">wpa89%82E2-hD8ws_Xn6</field>
             <field name="is_user_template" eval="True"/>
@@ -981,6 +1196,7 @@
         <!--        new template-->
         <record id="template_ho_user_accounting_supervisor" model="res.users">
             <field name="name">Template HO Accounting Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_accounting_supervisor</field>
             <field name="password">tyjy6K9u*fAbf=t!Bu4T</field>
             <field name="is_user_template" eval="True"/>
@@ -1082,6 +1298,7 @@
         <!--        new template-->
         <record id="template_ho_user_accounting_manager" model="res.users">
             <field name="name">Template HO Accounting Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_accounting_manager</field>
             <field name="password">AcQ?84=cQFJxGeg%%7v*</field>
             <field name="is_user_template" eval="True"/>
@@ -1183,6 +1400,7 @@
         <!--        new template-->
         <record id="template_ho_user_marketing_operator" model="res.users">
             <field name="name">Template HO Marketing Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_marketing_operator</field>
             <field name="password">dSu5SN%WFPJGD%y6pKd%</field>
             <field name="is_user_template" eval="True"/>
@@ -1284,6 +1502,7 @@
         <!--        new template-->
         <record id="template_ho_user_marketing_supervisor" model="res.users">
             <field name="name">Template HO Marketing Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_marketing_supervisor</field>
             <field name="password">Gd^%@uRGR9ddbMvPUGx*</field>
             <field name="is_user_template" eval="True"/>
@@ -1385,6 +1604,7 @@
         <!--        new template-->
         <record id="template_ho_user_marketing_manager" model="res.users">
             <field name="name">Template HO Marketing Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_marketing_manager</field>
             <field name="password">aB2~9R%5GDxh2fE#p!Cf</field>
             <field name="is_user_template" eval="True"/>
@@ -1486,6 +1706,7 @@
         <!--        new template-->
         <record id="template_ho_user_btb_operator" model="res.users">
             <field name="name">Template HO BTB Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_btb_operator</field>
             <field name="password">a-^gVh^#JyAR=bre8wsL</field>
             <field name="is_user_template" eval="True"/>
@@ -1587,6 +1808,7 @@
         <!--        new template-->
         <record id="template_ho_user_btb_supervisor" model="res.users">
             <field name="name">Template HO BTB Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_btb_supervisor</field>
             <field name="password">hkAd=q9Pr24DBR8@+YHN</field>
             <field name="is_user_template" eval="True"/>
@@ -1688,6 +1910,7 @@
         <!--        new template-->
         <record id="template_ho_user_btb_manager" model="res.users">
             <field name="name">Template HO BTB Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_btb_manager</field>
             <field name="password">TAr6?k$=QVJmn2^4SAnE</field>
             <field name="is_user_template" eval="True"/>
@@ -1789,13 +2012,13 @@
         <!--        new template-->
         <record id="template_ho_user_agent_management_operator" model="res.users">
             <field name="name">Template HO Agent Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_agent_management_operator</field>
             <field name="password">yVUfq2-Cbz5~S#-VJj%T</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
-                             ref('base.group_erp_manager'),
                              ref('tt_base.group_master_data_hotel_level_1'),
                              ref('tt_base.group_master_data_passport_level_1'),
                              ref('tt_base.group_master_data_activity_level_1'),
@@ -1892,13 +2115,13 @@
         <!--        new template-->
         <record id="template_ho_user_agent_management_supervisor" model="res.users">
             <field name="name">Template HO Agent Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_agent_management_supervisor</field>
             <field name="password">updBV4V+=mLN$$nk5U9h</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
-                             ref('base.group_erp_manager'),
                              ref('tt_base.group_master_data_hotel_level_1'),
                              ref('tt_base.group_master_data_passport_level_1'),
                              ref('tt_base.group_master_data_activity_level_1'),
@@ -1995,13 +2218,13 @@
         <!--        new template-->
         <record id="template_ho_user_agent_management_manager" model="res.users">
             <field name="name">Template HO Agent Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_agent_management_manager</field>
             <field name="password">ccU28m+q66fM6F-*ExZv</field>
             <field name="is_user_template" eval="True"/>
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_tour_travel'),
-                             ref('base.group_erp_manager'),
                              ref('tt_base.group_master_data_hotel_level_1'),
                              ref('tt_base.group_master_data_passport_level_1'),
                              ref('tt_base.group_master_data_activity_level_1'),
@@ -2098,6 +2321,7 @@
         <!--        new template-->
         <record id="template_ho_user_hotel_management_operator" model="res.users">
             <field name="name">Template HO Hotel Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_hotel_management_operator</field>
             <field name="password">wj9e$EgJ=2HD2%_R6?dP</field>
             <field name="is_user_template" eval="True"/>
@@ -2199,6 +2423,7 @@
         <!--        new template-->
         <record id="template_ho_user_hotel_management_supervisor" model="res.users">
             <field name="name">Template HO Hotel Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_hotel_management_supervisor</field>
             <field name="password">K#jhD2D9TAM*zQRK5N-A</field>
             <field name="is_user_template" eval="True"/>
@@ -2300,6 +2525,7 @@
         <!--        new template-->
         <record id="template_ho_user_hotel_management_manager" model="res.users">
             <field name="name">Template HO Hotel Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_hotel_management_manager</field>
             <field name="password">zVHjsx7$u775V?jZ@tEX</field>
             <field name="is_user_template" eval="True"/>
@@ -2400,6 +2626,7 @@
         <!--        new template-->
         <record id="template_ho_user_passport_management_operator" model="res.users">
             <field name="name">Template HO Passport Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_passport_management_operator</field>
             <field name="password">VdFwC^y87wUf?YCR^Mfe</field>
             <field name="is_user_template" eval="True"/>
@@ -2501,6 +2728,7 @@
         <!--        new template-->
         <record id="template_ho_user_passport_management_supervisor" model="res.users">
             <field name="name">Template HO Passport Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_passport_management_supervisor</field>
             <field name="password">MC!g%Jd5fJSFbE3t$a+^</field>
             <field name="is_user_template" eval="True"/>
@@ -2602,6 +2830,7 @@
         <!--        new template-->
         <record id="template_ho_user_passport_management_manager" model="res.users">
             <field name="name">Template HO Passport Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_passport_management_manager</field>
             <field name="password">mde!Fp~+2tGnr4tLbBh5</field>
             <field name="is_user_template" eval="True"/>
@@ -2702,6 +2931,7 @@
         <!--        new template-->
         <record id="template_ho_user_visa_management_operator" model="res.users">
             <field name="name">Template HO Visa Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_visa_management_operator</field>
             <field name="password">Xg48JVY7P9DFF$Y5xnB?</field>
             <field name="is_user_template" eval="True"/>
@@ -2803,6 +3033,7 @@
         <!--        new template-->
         <record id="template_ho_user_visa_management_supervisor" model="res.users">
             <field name="name">Template HO Visa Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_visa_management_supervisor</field>
             <field name="password">Ut9gS8My$Bv+9KhtR!yP</field>
             <field name="is_user_template" eval="True"/>
@@ -2904,6 +3135,7 @@
         <!--        new template-->
         <record id="template_ho_user_visa_management_manager" model="res.users">
             <field name="name">Template HO Visa Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_visa_management_manager</field>
             <field name="password">Mwd%$+Qn7#gwQPhT2Tp%</field>
             <field name="is_user_template" eval="True"/>
@@ -3004,6 +3236,7 @@
         <!--        new template-->
         <record id="template_ho_user_activity_management_operator" model="res.users">
             <field name="name">Template HO Activity Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_activity_management_operator</field>
             <field name="password">m27~4DWpC*F~Wa9TB35d</field>
             <field name="is_user_template" eval="True"/>
@@ -3105,6 +3338,7 @@
         <!--        new template-->
         <record id="template_ho_user_activity_management_supervisor" model="res.users">
             <field name="name">Template HO Activity Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_activity_management_supervisor</field>
             <field name="password">v2Es^5MfhCJ?nTpzU!k!</field>
             <field name="is_user_template" eval="True"/>
@@ -3206,6 +3440,7 @@
         <!--        new template-->
         <record id="template_ho_user_activity_management_manager" model="res.users">
             <field name="name">Template HO Activity Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_activity_management_manager</field>
             <field name="password">GGtb_4tXaKfFypE5pZpJ</field>
             <field name="is_user_template" eval="True"/>
@@ -3306,6 +3541,7 @@
         <!--        new template-->
         <record id="template_ho_user_tour_management_operator" model="res.users">
             <field name="name">Template HO Tour Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_tour_management_operator</field>
             <field name="password">B+wM4PqMt6YR%@=g=VS#</field>
             <field name="is_user_template" eval="True"/>
@@ -3407,6 +3643,7 @@
         <!--        new template-->
         <record id="template_ho_user_tour_management_supervisor" model="res.users">
             <field name="name">Template HO Tour Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_tour_management_supervisor</field>
             <field name="password">Q5yY6K*Dn@uNvBbCy#sg</field>
             <field name="is_user_template" eval="True"/>
@@ -3508,6 +3745,7 @@
         <!--        new template-->
         <record id="template_ho_user_tour_management_manager" model="res.users">
             <field name="name">Template HO Tour Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_tour_management_manager</field>
             <field name="password">W6g#~E@R8yKRfY2Y6%PV</field>
             <field name="is_user_template" eval="True"/>
@@ -3608,6 +3846,7 @@
         <!--        new template-->
         <record id="template_ho_user_ppob_management_operator" model="res.users">
             <field name="name">Template HO PPOB Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_ppob_management_operator</field>
             <field name="password">JZ@zTK6*hPk35e*4=Q9Y</field>
             <field name="is_user_template" eval="True"/>
@@ -3709,6 +3948,7 @@
         <!--        new template-->
         <record id="template_ho_user_ppob_management_supervisor" model="res.users">
             <field name="name">Template HO PPOB Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_ppob_management_supervisor</field>
             <field name="password">h@!A~UBn?L%haF3bY5L_</field>
             <field name="is_user_template" eval="True"/>
@@ -3810,6 +4050,7 @@
         <!--        new template-->
         <record id="template_ho_user_ppob_management_manager" model="res.users">
             <field name="name">Template HO PPOB Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_ppob_management_manager</field>
             <field name="password">EyFUVf_6$a2_k9Mhk#WE</field>
             <field name="is_user_template" eval="True"/>
@@ -3910,6 +4151,7 @@
         <!--        new template-->
         <record id="template_ho_user_event_management_operator" model="res.users">
             <field name="name">Template HO Event Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_event_management_operator</field>
             <field name="password">k6^PB$pFju5?D#3EK2@Q</field>
             <field name="is_user_template" eval="True"/>
@@ -4011,6 +4253,7 @@
         <!--        new template-->
         <record id="template_ho_user_event_management_supervisor" model="res.users">
             <field name="name">Template HO Event Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_event_management_supervisor</field>
             <field name="password">F48LuYN=Wxg-@7ufsZ9x</field>
             <field name="is_user_template" eval="True"/>
@@ -4112,6 +4355,7 @@
         <!--        new template-->
         <record id="template_ho_user_event_management_manager" model="res.users">
             <field name="name">Template HO Event Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_event_management_manager</field>
             <field name="password">gk2ZYL+DrF?7zDfpgBPD</field>
             <field name="is_user_template" eval="True"/>
@@ -4212,6 +4456,7 @@
         <!--        new template-->
         <record id="template_ho_user_medical_management_operator" model="res.users">
             <field name="name">Template HO Medical Vendor Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_medical_management_operator</field>
             <field name="password">a~xEP4Nx4=Y_k3jru_qm</field>
             <field name="is_user_template" eval="True"/>
@@ -4313,6 +4558,7 @@
         <!--        new template-->
         <record id="template_ho_user_medical_management_supervisor" model="res.users">
             <field name="name">Template HO Medical Vendor Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_medical_management_supervisor</field>
             <field name="password">nS%_B#5efa7sZ6zQbk4%</field>
             <field name="is_user_template" eval="True"/>
@@ -4414,6 +4660,7 @@
         <!--        new template-->
         <record id="template_ho_user_medical_management_manager" model="res.users">
             <field name="name">Template HO Medical Vendor Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_medical_management_manager</field>
             <field name="password">VC$EsfT*5?m2#fZXJbZ!</field>
             <field name="is_user_template" eval="True"/>
@@ -4514,6 +4761,7 @@
         <!--        new template-->
         <record id="template_ho_user_bus_management_operator" model="res.users">
             <field name="name">Template HO Bus Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_bus_management_operator</field>
             <field name="password">tpVe+KMUHfjLy?gJ4D?6</field>
             <field name="is_user_template" eval="True"/>
@@ -4615,6 +4863,7 @@
         <!--        new template-->
         <record id="template_ho_user_bus_management_supervisor" model="res.users">
             <field name="name">Template HO Bus Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_bus_management_supervisor</field>
             <field name="password">R+3hf-8WtgpW3TBbtm5y</field>
             <field name="is_user_template" eval="True"/>
@@ -4716,6 +4965,7 @@
         <!--        new template-->
         <record id="template_ho_user_bus_management_manager" model="res.users">
             <field name="name">Template HO Bus Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_bus_management_manager</field>
             <field name="password">k~fKJ8TjsHFN_xw2rVCx</field>
             <field name="is_user_template" eval="True"/>
@@ -4816,6 +5066,7 @@
         <!--        new template-->
         <record id="template_ho_user_all_product_management_operator" model="res.users">
             <field name="name">Template HO All Product Management Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_all_product_management_operator</field>
             <field name="password">AB_Ny@QMh5xXv2Yq%d4^</field>
             <field name="is_user_template" eval="True"/>
@@ -4917,6 +5168,7 @@
         <!--        new template-->
         <record id="template_ho_user_all_product_management_supervisor" model="res.users">
             <field name="name">Template HO All Product Management Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_all_product_management_supervisor</field>
             <field name="password">x-Hf^qf9*g!hM!Q6XL6A</field>
             <field name="is_user_template" eval="True"/>
@@ -5018,6 +5270,7 @@
         <!--        new template-->
         <record id="template_ho_user_all_product_management_manager" model="res.users">
             <field name="name">Template HO All Product Management Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_ho_user_all_product_management_manager</field>
             <field name="password">jGguJ7CKaB%Wr8PuwL#+</field>
             <field name="is_user_template" eval="True"/>
@@ -5118,6 +5371,7 @@
         <!--        new template-->
         <record id="template_external_user_event_manager" model="res.users">
             <field name="name">Template External User Event Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_event_manager</field>
             <field name="password">RmSzL%YJV!=3~+U_h5VC</field>
             <field name="is_user_template" eval="True"/>
@@ -5147,6 +5401,7 @@
         <!--        new template-->
         <record id="template_external_user_periksain_operator" model="res.users">
             <field name="name">Template External User Periksain Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_periksain_operator</field>
             <field name="password">k5C^X*Y689Jam+mccC7x</field>
             <field name="is_user_template" eval="True"/>
@@ -5176,6 +5431,7 @@
         <!--        new template-->
         <record id="template_external_user_periksain_manager" model="res.users">
             <field name="name">Template External User Periksain Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_periksain_manager</field>
             <field name="password">UGL8GyVB$A*Q~aXn$r9z</field>
             <field name="is_user_template" eval="True"/>
@@ -5205,6 +5461,7 @@
         <!--        new template-->
         <record id="template_external_user_phc_operator" model="res.users">
             <field name="name">Template External User PHC Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_phc_operator</field>
             <field name="password">P9jkY_qNj4#rsLMyr@2?</field>
             <field name="is_user_template" eval="True"/>
@@ -5234,6 +5491,7 @@
         <!--        new template-->
         <record id="template_external_user_phc_manager" model="res.users">
             <field name="name">Template External User PHC Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_phc_manager</field>
             <field name="password">y%7k#P$E5jy!^eQ?a@Vk</field>
             <field name="is_user_template" eval="True"/>
@@ -5263,6 +5521,7 @@
         <!--        new template-->
         <record id="template_external_user_medical_operator" model="res.users">
             <field name="name">Template External User Medical Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_medical_operator</field>
             <field name="password">MSc6Ta@BE_W?qH9vb3vv</field>
             <field name="is_user_template" eval="True"/>
@@ -5292,6 +5551,7 @@
         <!--        new template-->
         <record id="template_external_user_medical_manager" model="res.users">
             <field name="name">Template External User Medical Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_medical_manager</field>
             <field name="password">g^=Pa2gdkHf=-~+u!3-q</field>
             <field name="is_user_template" eval="True"/>
@@ -5321,6 +5581,7 @@
         <!--        new template-->
         <record id="template_external_user_swabexpress_operator" model="res.users">
             <field name="name">Template External User Swab Express Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_swabexpress_operator</field>
             <field name="password">aYVTD7U9Wc#UJY^eNeQ9</field>
             <field name="is_user_template" eval="True"/>
@@ -5350,6 +5611,7 @@
         <!--        new template-->
         <record id="template_external_user_swabexpress_manager" model="res.users">
             <field name="name">Template External User Swab Express Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_swabexpress_manager</field>
             <field name="password">DHg8sbgakU*CVvSwCe3E</field>
             <field name="is_user_template" eval="True"/>
@@ -5379,6 +5641,7 @@
         <!--        new template-->
         <record id="template_external_user_labpintar_operator" model="res.users">
             <field name="name">Template External User Lab Pintar Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_labpintar_operator</field>
             <field name="password">Gmvt2Nss@fZVK_5UxY$Z</field>
             <field name="is_user_template" eval="True"/>
@@ -5408,6 +5671,7 @@
         <!--        new template-->
         <record id="template_external_user_labpintar_manager" model="res.users">
             <field name="name">Template External User Lab Pintar Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_labpintar_manager</field>
             <field name="password">pUj#fF!-p3?CrNe~-!KK</field>
             <field name="is_user_template" eval="True"/>
@@ -5437,6 +5701,7 @@
         <!--        new template-->
         <record id="template_external_user_mitrakeluarga_operator" model="res.users">
             <field name="name">Template External User Mitra Keluarga Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_mitrakeluarga_operator</field>
             <field name="password">u!pC%U#DdECZ6-25m5J9</field>
             <field name="is_user_template" eval="True"/>
@@ -5466,6 +5731,7 @@
         <!--        new template-->
         <record id="template_external_user_mitrakeluarga_manager" model="res.users">
             <field name="name">Template External User Mitra Keluarga Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_external_user_mitrakeluarga_manager</field>
             <field name="password">M~gkaYth%cE5n+3^SK_9</field>
             <field name="is_user_template" eval="True"/>
@@ -5495,6 +5761,7 @@
         <!--        new template-->
         <record id="template_corpor_user_operator" model="res.users">
             <field name="name">Template Corporate User Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_corpor_user_operator</field>
             <field name="password">krG^xnf52yvF_Y%!EjU$</field>
             <field name="is_user_template" eval="True"/>
@@ -5588,6 +5855,7 @@
         <!--        new template-->
         <record id="template_corpor_user_supervisor" model="res.users">
             <field name="name">Template Corporate User Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_corpor_user_supervisor</field>
             <field name="password">nuU?T!SqRFB*yt7QUVZ!</field>
             <field name="is_user_template" eval="True"/>
@@ -5681,6 +5949,7 @@
         <!--        new template-->
         <record id="template_corpor_user_manager" model="res.users">
             <field name="name">Template Corporate User Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_corpor_user_manager</field>
             <field name="password">ZVXyM3xMnd=hq5q9^xXt</field>
             <field name="is_user_template" eval="True"/>
@@ -5774,6 +6043,7 @@
         <!--        new template-->
         <record id="template_citra_agent_user_operator" model="res.users">
             <field name="name">Template Citra Agent Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_citra_agent_user_operator</field>
             <field name="password">F*2fE*=*+~#fNBUQzj8u</field>
             <field name="is_user_template" eval="True"/>
@@ -5876,6 +6146,7 @@
         <!--        new template-->
         <record id="template_citra_agent_user_supervisor" model="res.users">
             <field name="name">Template Citra Agent Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_citra_agent_user_supervisor</field>
             <field name="password">nc+K*LZ$9HzTae_3E72A</field>
             <field name="is_user_template" eval="True"/>
@@ -5978,6 +6249,7 @@
         <!--        new template-->
         <record id="template_citra_agent_user_manager" model="res.users">
             <field name="name">Template Citra Agent Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_citra_agent_user_manager</field>
             <field name="password">a7JkV7%6?Lw5-T^$x3%u</field>
             <field name="is_user_template" eval="True"/>
@@ -6081,6 +6353,7 @@
         <!--        new template-->
         <record id="template_citra_agent_finance_operator" model="res.users">
             <field name="name">Template Citra Agent Finance Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_citra_agent_finance_operator</field>
             <field name="password">zqrS9N*3-3@Unx62N?Nq</field>
             <field name="is_user_template" eval="True"/>
@@ -6183,6 +6456,7 @@
         <!--        new template-->
         <record id="template_citra_agent_finance_supervisor" model="res.users">
             <field name="name">Template Citra Agent Finance Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_citra_agent_finance_supervisor</field>
             <field name="password">rWwkN?3P!Pe$Hb5RwXW#</field>
             <field name="is_user_template" eval="True"/>
@@ -6285,6 +6559,7 @@
         <!--        new template-->
         <record id="template_citra_agent_finance_manager" model="res.users">
             <field name="name">Template Citra Agent Finance Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_citra_agent_finance_manager</field>
             <field name="password">r%J@NVMhf##4d#FaDWk8</field>
             <field name="is_user_template" eval="True"/>
@@ -6387,6 +6662,7 @@
         <!--        new template-->
         <record id="template_citra_agent_adjustment_manager" model="res.users">
             <field name="name">Template Citra Agent Adjustment Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_citra_agent_adjustment_manager</field>
             <field name="password">pfCDZDfWtksndVfLsT7z</field>
             <field name="is_user_template" eval="True"/>
@@ -6490,6 +6766,7 @@
         <!--        new template-->
         <record id="template_japro_agent_user_operator" model="res.users">
             <field name="name">Template Japro Agent Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_japro_agent_user_operator</field>
             <field name="password">w8gef7s*BRr#!r#f*s-X</field>
             <field name="is_user_template" eval="True"/>
@@ -6592,6 +6869,7 @@
         <!--        new template-->
         <record id="template_japro_agent_user_supervisor" model="res.users">
             <field name="name">Template Japro Agent Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_japro_agent_user_supervisor</field>
             <field name="password">ws^uf$2fKMG7D~V_UzC*</field>
             <field name="is_user_template" eval="True"/>
@@ -6694,6 +6972,7 @@
         <!--        new template-->
         <record id="template_japro_agent_user_manager" model="res.users">
             <field name="name">Template Japro Agent Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_japro_agent_user_manager</field>
             <field name="password">Xdcz9+ekaN~D4~kHPKwR</field>
             <field name="is_user_template" eval="True"/>
@@ -6797,6 +7076,7 @@
         <!--        new template-->
         <record id="template_japro_agent_finance_operator" model="res.users">
             <field name="name">Template Japro Agent Finance Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_japro_agent_finance_operator</field>
             <field name="password">WNy+xwsWwFf5CLcKn@6p</field>
             <field name="is_user_template" eval="True"/>
@@ -6899,6 +7179,7 @@
         <!--        new template-->
         <record id="template_japro_agent_finance_supervisor" model="res.users">
             <field name="name">Template Japro Agent Finance Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_japro_agent_finance_supervisor</field>
             <field name="password">x9Je~gZG3?Y~huA@qmWv</field>
             <field name="is_user_template" eval="True"/>
@@ -7001,6 +7282,7 @@
         <!--        new template-->
         <record id="template_japro_agent_finance_manager" model="res.users">
             <field name="name">Template Japro Agent Finance Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_japro_agent_finance_manager</field>
             <field name="password">Rbth2%^VyQxMzf+6$xvS</field>
             <field name="is_user_template" eval="True"/>
@@ -7104,6 +7386,7 @@
         <!--        new template-->
         <record id="template_japro_agent_adjustment_manager" model="res.users">
             <field name="name">Template Japro Agent Adjustment Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_japro_agent_adjustment_manager</field>
             <field name="password">anPHreSySgxdVpfgMarR</field>
             <field name="is_user_template" eval="True"/>
@@ -7208,6 +7491,7 @@
         <!--        new template-->
         <record id="template_btbo_agent_user_operator" model="res.users">
             <field name="name">Template BTBO Agent Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo_agent_user_operator</field>
             <field name="password">C3R4JPkDv9B?D3K~a^5E</field>
             <field name="is_user_template" eval="True"/>
@@ -7288,6 +7572,7 @@
         <!--        new template-->
         <record id="template_btbo_agent_user_supervisor" model="res.users">
             <field name="name">Template BTBO Agent Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo_agent_user_supervisor</field>
             <field name="password">qQh^8cvwPK5Lu~2A*f@t</field>
             <field name="is_user_template" eval="True"/>
@@ -7368,6 +7653,7 @@
         <!--        new template-->
         <record id="template_btbo_agent_user_manager" model="res.users">
             <field name="name">Template BTBO Agent Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo_agent_user_manager</field>
             <field name="password">usjq+?Czxs3~kFr4_h%k</field>
             <field name="is_user_template" eval="True"/>
@@ -7449,6 +7735,7 @@
         <!--        new template-->
         <record id="template_btbo_user_api" model="res.users">
             <field name="name">Template BTBO User API</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo_user_api</field>
             <field name="password">cL2=wrNK7er8VuL@yS2J</field>
             <field name="is_user_template" eval="True"/>
@@ -7461,6 +7748,7 @@
         <!--        new template-->
         <record id="template_btbo2_agent_user_operator" model="res.users">
             <field name="name">Template BTBO2 Agent Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo2_agent_user_operator</field>
             <field name="password">S-8dL^LU7r+4WVgJqSp8</field>
             <field name="is_user_template" eval="True"/>
@@ -7542,6 +7830,7 @@
         <!--        new template-->
         <record id="template_btbo2_agent_user_supervisor" model="res.users">
             <field name="name">Template BTBO2 Agent Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo2_agent_user_supervisor</field>
             <field name="password">H396@5~3VF9^M3X_RLkZ</field>
             <field name="is_user_template" eval="True"/>
@@ -7623,6 +7912,7 @@
         <!--        new template-->
         <record id="template_btbo2_agent_user_manager" model="res.users">
             <field name="name">Template BTBO2 Agent Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo2_agent_user_manager</field>
             <field name="password">y~uDFs6F8GXgk~je%wht</field>
             <field name="is_user_template" eval="True"/>
@@ -7705,6 +7995,7 @@
         <!--        new template-->
         <record id="template_btbo2_agent_user_vendor_report" model="res.users">
             <field name="name">Template BTBO2 Agent Vendor Report</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo2_agent_user_vendor_report</field>
             <field name="password">mqRv0EKoUE04PA!ZFpf2</field>
             <field name="is_user_template" eval="True"/>
@@ -7788,6 +8079,7 @@
         <!--        new template-->
         <record id="template_btbo2_user_api" model="res.users">
             <field name="name">Template BTBO2 User API</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbo2_user_api</field>
             <field name="password">C@Lt@%$F!7mYY6~Q%fDF</field>
             <field name="is_user_template" eval="True"/>
@@ -7800,6 +8092,7 @@
         <!--        new template-->
         <record id="template_btbr_agent_user_operator" model="res.users">
             <field name="name">Template BTBR Agent Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbr_agent_user_operator</field>
             <field name="password">bcn4!$qPX5v6sk~t#FNx</field>
             <field name="is_user_template" eval="True"/>
@@ -7902,6 +8195,7 @@
         <!--        new template-->
         <record id="template_btbr_agent_user_supervisor" model="res.users">
             <field name="name">Template BTBR Agent Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbr_agent_user_supervisor</field>
             <field name="password">Y!zDK45qT-57q?BGk?+4</field>
             <field name="is_user_template" eval="True"/>
@@ -8006,6 +8300,7 @@
         <!--        new template-->
         <record id="template_btbr_agent_user_manager" model="res.users">
             <field name="name">Template BTBR Agent Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbr_agent_user_manager</field>
             <field name="password">dSs^dC9cWgsga5GT*fqs</field>
             <field name="is_user_template" eval="True"/>
@@ -8111,6 +8406,7 @@
         <!--        new template-->
         <record id="template_btbr_agent_finance_operator" model="res.users">
             <field name="name">Template BTBR Agent Finance Operator</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbr_agent_finance_operator</field>
             <field name="password">MBx96ze6FYr+rb_757h%</field>
             <field name="is_user_template" eval="True"/>
@@ -8213,6 +8509,7 @@
         <!--        new template-->
         <record id="template_btbr_agent_finance_supervisor" model="res.users">
             <field name="name">Template BTBR Agent Finance Supervisor</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbr_agent_finance_supervisor</field>
             <field name="password">Qb8Y5u@U+6YRkfLr$+AU</field>
             <field name="is_user_template" eval="True"/>
@@ -8317,6 +8614,7 @@
         <!--        new template-->
         <record id="template_btbr_agent_finance_manager" model="res.users">
             <field name="name">Template BTBR Agent Finance Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbr_agent_finance_manager</field>
             <field name="password">FHkxnCySqWuwk?7$9HY?</field>
             <field name="is_user_template" eval="True"/>
@@ -8419,6 +8717,7 @@
         <!--        new template-->
         <record id="template_btbr_agent_adjustment_manager" model="res.users">
             <field name="name">Template BTBR Agent Adjustment Manager</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btbr_agent_adjustment_manager</field>
             <field name="password">nwvGtFgGW9pv5rdJZKEL</field>
             <field name="is_user_template" eval="True"/>
@@ -8522,6 +8821,7 @@
         <!--        new template-->
         <record id="template_btc_agent_user" model="res.users">
             <field name="name">Template BTC Agent</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="login">template_btc_agent_user</field>
             <field name="password">nv$A_GcMYmn+S33m8cNg</field>
             <field name="is_user_template" eval="True"/>

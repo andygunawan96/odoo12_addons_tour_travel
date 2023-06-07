@@ -4,7 +4,6 @@
 
         <record model="mail.template" id="template_mail_refund_confirmed">
 			<field name="name">Template Mail Refund Confirm</field>
-			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund Requested: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
             <field name="email_cc"/>
@@ -33,7 +32,6 @@
 
 		<record model="mail.template" id="template_mail_refund_finalized">
 			<field name="name">Template Mail Refund Finalize</field>
-			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund In Process: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
             <field name="email_cc"/>
@@ -62,7 +60,6 @@
 
 		<record model="mail.template" id="template_mail_refund_done">
 			<field name="name">Template Mail Refund Done</field>
-			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund Process Completed: ${object.name}</field>
 			<field name="email_to">${object.agent_id.email}</field>
             <field name="email_cc"/>
@@ -81,7 +78,7 @@
 <p>Request Date: ${object.confirm_date}</p>
 <p>Est. Refund Date: ${object.refund_date}</p>
 <br/>
-<p>Your refund details has been attached in this E-mail, and the refunded amount has been added to your Rodextrip balance. Thank you for your trust and support in using our service.</p>
+<p>Your refund details has been attached in this E-mail, and the refunded amount has been added to your Orbisway balance. Thank you for your trust and support in using our service.</p>
 <br/>
 <p>Regards,</p>
 <p>${object.get_company_name()}</p>
@@ -91,7 +88,6 @@
 
 		<record model="mail.template" id="template_mail_refund_confirmed_cust">
 			<field name="name">Template Mail Refund Confirm Customer</field>
-			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund Requested: ${object.name}</field>
 			<field name="email_to">${object.booker_id.email}</field>
             <field name="email_cc"/>
@@ -120,7 +116,6 @@
 
 		<record model="mail.template" id="template_mail_refund_finalized_cust">
 			<field name="name">Template Mail Refund Finalize Customer</field>
-			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund In Process: ${object.name}</field>
 			<field name="email_to">${object.booker_id.email}</field>
             <field name="email_cc"/>
@@ -149,7 +144,6 @@
 
 		<record model="mail.template" id="template_mail_refund_done_cust">
 			<field name="name">Template Mail Refund Done Customer</field>
-			<field name="email_from">info@rodextrip.com</field>
 			<field name="subject">Refund Process Completed: ${object.name}</field>
 			<field name="email_to">${object.booker_id.email}</field>
             <field name="email_cc"/>

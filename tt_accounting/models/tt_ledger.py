@@ -52,6 +52,8 @@ class Ledger(models.Model):
                                  default=lambda self: self.env.user.company_id)
 
     ref = fields.Char('Reference', readonly=True, copy=False)
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent', index=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
@@ -131,6 +133,12 @@ class Ledger(models.Model):
         else:
             vals['agent_id'] = agent_id
 
+        if agent_id:
+            agent_obj = self.env['tt.agent'].browse(int(agent_id))
+            ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+            if ho_obj:
+                vals['ho_id'] = ho_obj.id
+
         if kwargs:
             vals.update(kwargs)
         new_ledger = self.create(vals)
@@ -147,6 +155,7 @@ class Ledger(models.Model):
             'currency_id': self.currency_id.id,
             'transaction_type': self.transaction_type,
             'reverse_id': self.id,
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'pnr': self.pnr,
@@ -337,6 +346,12 @@ class Ledger(models.Model):
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
+            agent_obj = self.env['tt.agent'].browse(int(agent_id))
+            ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+            if ho_obj:
+                ledger_values.update({
+                    'ho_id': ho_obj.id
+                })
             pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
             values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
             self.sudo().create(values)

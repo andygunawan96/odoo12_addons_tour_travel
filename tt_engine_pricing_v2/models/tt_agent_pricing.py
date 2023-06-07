@@ -66,6 +66,7 @@ class AgentPricing(models.Model):
 
     line_ids = fields.One2many('tt.agent.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
@@ -203,17 +204,19 @@ class AgentPricing(models.Model):
     def get_agent_pricing_api(self):
         try:
             objs = self.env['tt.agent.pricing'].sudo().search([])
-            agent_pricing_data = {
-                'agent_pricing_list': []
-            }
+            agent_pricing_data = {}
             date_now = datetime.now().strftime(FORMAT_DATETIME)
             expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
             expired_date = expired_date.strftime(FORMAT_DATETIME)
             for obj in objs:
                 if not obj.active:
                     continue
-
-                vals = obj.get_data()
+                if obj.ho_id:
+                    if str(obj.ho_id.id) not in agent_pricing_data:
+                        agent_pricing_data[str(obj.ho_id.id)] = {
+                            'agent_pricing_list': []
+                        }
+                    vals = obj.get_data()
                 # December 23, 2021 - SAM
                 # Update struktur pricing agent
 
@@ -225,7 +228,7 @@ class AgentPricing(models.Model):
                 #         'expired_date': expired_date,
                 #     }
                 # agent_pricing_data[agent_type_code]['agent_pricing_list'].append(vals)
-                agent_pricing_data['agent_pricing_list'].append(vals)
+                    agent_pricing_data[str(obj.ho_id.id)]['agent_pricing_list'].append(vals)
 
             payload = {
                 'agent_pricing_data': agent_pricing_data

@@ -2,6 +2,7 @@
 <odoo>
     <data noupdate="1">
         <record id="tt_transport_carrier_search_sq_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Singapore Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
             <field name="is_default" eval="True"/>
@@ -14,6 +15,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_sq_amadeus" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Singapore Airlines GDS</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
             <field name="is_default" eval="False"/>
@@ -25,6 +27,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_sq_sia" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Singapore Airlines NDC</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sq"/>
             <field name="is_default" eval="False"/>
@@ -36,6 +39,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_cx_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Cathay Pacific</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_cx"/>
             <field name="is_default" eval="True"/>
@@ -47,6 +51,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ci_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">China Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ci"/>
             <field name="is_default" eval="True"/>
@@ -57,6 +62,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ga_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Garuda Indonesia</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
             <field name="is_default" eval="True"/>
@@ -70,6 +76,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ga_gds" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Garuda Indonesia GDS</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
             <field name="is_default" eval="False"/>
@@ -81,6 +88,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ga_ags" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Garuda Indonesia AGS</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
             <field name="is_default" eval="False"/>
@@ -92,6 +100,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ga_altea" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Garuda Indonesia Altea</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ga"/>
             <field name="is_default" eval="False"/>
@@ -104,6 +113,7 @@
 
 
         <record id="tt_transport_carrier_search_tr_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Scoot</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tr"/>
             <field name="is_default" eval="True"/>
@@ -114,6 +124,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_mi_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Silk Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mi"/>
             <field name="is_default" eval="True"/>
@@ -124,6 +135,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_jt_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Lion Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jt"/>
             <field name="is_default" eval="True"/>
@@ -135,6 +147,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_jt_api_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Lion Air API</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jt"/>
             <field name="is_default" eval="True"/>
@@ -147,6 +160,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ka_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Cathay Dragon</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ka"/>
             <field name="is_default" eval="True"/>
@@ -157,6 +171,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_bi_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Royal Brunei</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_bi"/>
             <field name="is_default" eval="True"/>
@@ -167,6 +182,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_tk_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Turkish Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tk"/>
             <field name="is_default" eval="True"/>
@@ -177,6 +193,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_br_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Eva Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_br"/>
             <field name="is_default" eval="True"/>
@@ -187,6 +204,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_cz_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">China Southern</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_cz"/>
             <field name="is_default" eval="True"/>
@@ -197,6 +215,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_aa_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">American Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_aa"/>
             <field name="is_default" eval="True"/>
@@ -207,6 +226,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_px_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air Niugini</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_px"/>
             <field name="is_default" eval="True"/>
@@ -217,6 +237,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_dl_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Delta Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dl"/>
             <field name="is_default" eval="True"/>
@@ -227,6 +248,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ms_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Egypt Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ms"/>
             <field name="is_default" eval="True"/>
@@ -237,6 +259,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ha_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Hawaiian Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ha"/>
             <field name="is_default" eval="True"/>
@@ -247,6 +270,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_fj_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air Pacific Limited</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_fj"/>
             <field name="is_default" eval="True"/>
@@ -257,6 +281,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ps_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Ukraine International Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ps"/>
             <field name="is_default" eval="True"/>
@@ -267,6 +292,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_od_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Malindo Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_od"/>
             <field name="is_default" eval="True"/>
@@ -277,6 +303,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_mh_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Malaysia Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mh"/>
             <field name="is_default" eval="True"/>
@@ -287,6 +314,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_pr_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Philippine Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_pr"/>
             <field name="is_default" eval="True"/>
@@ -297,6 +325,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_qr_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Qatar Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qr"/>
             <field name="is_default" eval="True"/>
@@ -308,6 +337,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_os_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Austrian Airlines AG</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_os"/>
             <field name="is_default" eval="True"/>
@@ -318,6 +348,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_et_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Ethiopian Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_et"/>
             <field name="is_default" eval="True"/>
@@ -328,6 +359,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ey_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Etihad Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ey"/>
             <field name="is_default" eval="True"/>
@@ -338,6 +370,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_nh_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">All Nippon Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_nh"/>
             <field name="is_default" eval="True"/>
@@ -348,6 +381,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ke_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Korean Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ke"/>
             <field name="is_default" eval="True"/>
@@ -358,6 +392,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_mu_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">China Eastern</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mu"/>
             <field name="is_default" eval="True"/>
@@ -368,6 +403,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_dl_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Delta Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dl"/>
             <field name="is_default" eval="True"/>
@@ -378,6 +414,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_7c_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Jeju Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_7c"/>
             <field name="is_default" eval="True"/>
@@ -388,6 +425,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_qf_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Qantas</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qf"/>
             <field name="is_default" eval="True"/>
@@ -398,6 +436,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_vn_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Vietnam Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_vn"/>
             <field name="is_default" eval="True"/>
@@ -408,6 +447,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_hr_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Hahn Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_hr"/>
             <field name="is_default" eval="True"/>
@@ -418,6 +458,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_tg_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Thai Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tg"/>
             <field name="is_default" eval="True"/>
@@ -428,6 +469,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_we_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Thai Smile Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_we"/>
             <field name="is_default" eval="True"/>
@@ -438,6 +480,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_va_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Virgin Australia</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_va"/>
             <field name="is_default" eval="True"/>
@@ -448,6 +491,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_mf_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Xiamen Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mf"/>
             <field name="is_default" eval="True"/>
@@ -458,6 +502,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_oz_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Asiana Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_oz"/>
             <field name="is_default" eval="True"/>
@@ -468,6 +513,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ac_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air Canada</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ac"/>
             <field name="is_default" eval="True"/>
@@ -478,6 +524,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_lh_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Lufthansa</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_lh"/>
             <field name="is_default" eval="True"/>
@@ -488,6 +535,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_jl_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Japan Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_jl"/>
             <field name="is_default" eval="True"/>
@@ -498,6 +546,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_nz_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air New Zealand</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_nz"/>
             <field name="is_default" eval="True"/>
@@ -508,6 +557,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ul_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Srilankan Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ul"/>
             <field name="is_default" eval="True"/>
@@ -518,6 +568,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_lo_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Polish Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_lo"/>
             <field name="is_default" eval="True"/>
@@ -528,6 +579,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_dt_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">TAAG Angola Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_dt"/>
             <field name="is_default" eval="True"/>
@@ -538,6 +590,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_gp_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">APG Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_gp"/>
             <field name="is_default" eval="True"/>
@@ -548,6 +601,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_sc_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Shandong Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sc"/>
             <field name="is_default" eval="True"/>
@@ -558,6 +612,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_qg_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Citilink</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qg"/>
             <field name="is_default" eval="True"/>
@@ -570,6 +625,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_8b_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">TransNusa Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_8b"/>
             <field name="is_default" eval="True"/>
@@ -580,6 +636,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_il_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Trigana Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_il"/>
             <field name="is_default" eval="True"/>
@@ -590,6 +647,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_sj_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Sriwijaya Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sj"/>
             <field name="is_default" eval="True"/>
@@ -601,6 +659,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ak_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">AirAsia</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ak"/>
             <field name="is_default" eval="True"/>
@@ -613,6 +672,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_3k_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Jet Star</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_3k"/>
             <field name="is_default" eval="True"/>
@@ -624,6 +684,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ip_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Pelita Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ip"/>
             <field name="is_default" eval="True"/>
@@ -635,6 +696,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_ek_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Emirates</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ek"/>
             <field name="is_default" eval="True"/>
@@ -646,6 +708,7 @@
         </record>
 
         <record id="tt_transport_carrier_search_wy_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Oman Air</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_wy"/>
             <field name="is_default" eval="True"/>
@@ -657,6 +720,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_ty_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air Caledonie</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ty"/>
             <field name="is_default" eval="True"/>
@@ -669,6 +733,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_lq_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Lanmei Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_lq"/>
             <field name="is_default" eval="True"/>
@@ -681,6 +746,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_am_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Aeromexico</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_am"/>
             <field name="is_default" eval="True"/>
@@ -693,6 +759,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_ad_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Azul Linhas Aeresas</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ad"/>
             <field name="is_default" eval="True"/>
@@ -705,6 +772,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_nx_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air Macau</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_nx"/>
             <field name="is_default" eval="True"/>
@@ -717,6 +785,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_kq_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Kenya Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_kq"/>
             <field name="is_default" eval="True"/>
@@ -729,6 +798,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_lx_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Swiss International Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_lx"/>
             <field name="is_default" eval="True"/>
@@ -741,6 +811,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_hx_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Hong Kong Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_hx"/>
             <field name="is_default" eval="True"/>
@@ -753,6 +824,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_ux_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air Europa</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ux"/>
             <field name="is_default" eval="True"/>
@@ -765,6 +837,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_sv_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Saudia</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_sv"/>
             <field name="is_default" eval="True"/>
@@ -777,6 +850,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_at_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Royal Air Maroc</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_at"/>
             <field name="is_default" eval="True"/>
@@ -789,6 +863,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_mk_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air Mauritius</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_mk"/>
             <field name="is_default" eval="True"/>
@@ -801,6 +876,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_pg_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Bangkok Airways</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_pg"/>
             <field name="is_default" eval="True"/>
@@ -813,6 +889,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_fi_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Icelandair</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_fi"/>
             <field name="is_default" eval="True"/>
@@ -825,6 +902,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_kl_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">KLM Royal Dutch Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_kl"/>
             <field name="is_default" eval="True"/>
@@ -837,6 +915,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_pc_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Pegasus Airlines</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_pc"/>
             <field name="is_default" eval="True"/>
@@ -849,6 +928,7 @@
         </record>
 
         <record id="tt_transport_carrier_airline_ay_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Finnair</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ay"/>
             <field name="is_default" eval="True"/>
@@ -861,59 +941,12 @@
         </record>
 
         <record id="tt_transport_carrier_airline_af_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="name">Air France</field>
             <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_af"/>
             <field name="is_default" eval="True"/>
             <field name="is_favorite" eval="False"/>
             <field name="sequence">172</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
-            ]"/>
-            <field name="active" eval="False"/>
-        </record>
-
-        <record id="tt_transport_carrier_airline_ca_all" model="tt.transport.carrier.search">
-            <field name="name">Air China</field>
-            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_ca"/>
-            <field name="is_default" eval="True"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">173</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
-            ]"/>
-            <field name="active" eval="False"/>
-        </record>
-
-        <record id="tt_transport_carrier_airline_qv_all" model="tt.transport.carrier.search">
-            <field name="name">Air China</field>
-            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_qv"/>
-            <field name="is_default" eval="True"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">174</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
-            ]"/>
-            <field name="active" eval="False"/>
-        </record>
-
-        <record id="tt_transport_carrier_airline_vj_all" model="tt.transport.carrier.search">
-            <field name="name">Air China</field>
-            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_vj"/>
-            <field name="is_default" eval="True"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">175</field>
-            <field name="provider_ids" eval="[
-                (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
-            ]"/>
-            <field name="active" eval="False"/>
-        </record>
-
-        <record id="tt_transport_carrier_airline_tp_all" model="tt.transport.carrier.search">
-            <field name="name">Air China</field>
-            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_tp"/>
-            <field name="is_default" eval="True"/>
-            <field name="is_favorite" eval="False"/>
-            <field name="sequence">173</field>
             <field name="provider_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_provider_airline_amadeus'))
             ]"/>

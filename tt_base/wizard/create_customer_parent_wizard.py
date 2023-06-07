@@ -26,7 +26,7 @@ class CreateCustomerParentWizard(models.TransientModel):
         })
 
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        if self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+        if self.env.user.agent_id.is_ho_agent:
             action_num = self.env.ref('tt_base.tt_customer_parent_action_view').id
             menu_num = self.env.ref('tt_base.menu_customer_customer_parent').id
         else:
@@ -38,5 +38,5 @@ class CreateCustomerParentWizard(models.TransientModel):
             'name': cust_parent_obj.name,
             'target': 'self',
             'url': base_url + "/web#id=" + str(cust_parent_obj.id) + "&action=" + str(
-                action_num) + "&model=tt.refund&view_type=form&menu_id=" + str(menu_num),
+                action_num) + "&model=tt.customer.parent&view_type=form&menu_id=" + str(menu_num),
         }

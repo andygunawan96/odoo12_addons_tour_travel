@@ -39,6 +39,7 @@
                     </h1>
                     <group name="Agent">
                         <group string="Agent">
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="period"/>
                             <label for="start_date" string="Date Range"/>
@@ -143,6 +144,7 @@
                 <sheet>
                     <group name="">
                         <group string="Apply On">
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="agent_type_id"/>
 <!--                            <label>Notes: Please fill "ONLY ONE" between this field.</label>-->
