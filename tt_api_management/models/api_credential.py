@@ -134,7 +134,8 @@ class ApiManagement(models.Model):
                 ########### check admin user in sharing frontend by api_key #############
                 if '_co_user' in locals():
                     is_admin = _co_user.has_group('base.group_erp_manager') or _co_user.has_group('base.group_system')
-                    if not is_admin and api_cred_obj.api_role == 'admin':
+                    is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.get_ho_parent_agent().id
+                    if not is_admin and api_cred_obj.api_role == 'admin' and not is_ho:
                         agent_frontend_security = values.get('co_agent_frontend_security', [])
                         code_to_delete = 'admin'
                         agent_frontend_security = [i for i in agent_frontend_security if i != code_to_delete]
