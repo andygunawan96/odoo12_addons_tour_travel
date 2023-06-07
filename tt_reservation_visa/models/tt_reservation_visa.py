@@ -1352,7 +1352,7 @@ class TtVisa(models.Model):
                                 })
                                 break
 
-                for psg in book_obj.passenger_ids:
+                for idx,psg in enumerate(book_obj.passenger_ids):
                     vals = {
                         'provider_id': provider_obj.id,
                         'passenger_id': psg.id,
@@ -1360,6 +1360,9 @@ class TtVisa(models.Model):
                         'pricelist_id': psg.pricelist_id.id
                     }
                     provider_obj.passenger_ids.create(vals)
+                    psg.update({
+                        'price_list_code': passengers[idx]['master_visa_Id']
+                    })
 
                 for visa in visa_list:
                     for svc in visa['service_charges']:
@@ -1372,7 +1375,8 @@ class TtVisa(models.Model):
                             "foreign_amount": svc['foreign_amount'],
                             "charge_code": svc['charge_code'],
                             "charge_type": svc['charge_type'],
-                            "commission_agent_id": svc.get('commission_agent_id', False)
+                            "commission_agent_id": svc.get('commission_agent_id', False),
+                            "price_list_code": svc.get('visa_id')
                         })
                         total_price += svc['amount'] * visa['pax_count']
 
