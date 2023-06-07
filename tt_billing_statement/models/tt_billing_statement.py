@@ -87,7 +87,7 @@ class TtBillingStatement(models.Model):
 
     def unlink_all_printout(self, type='All'):
         for rec in self:
-            rec.printout_billing_statement_id.unlink()
+            rec.printout_billing_statement_id.sudo().unlink()
 
     def compute_date_billing_all(self):
         if not self.env.user.has_group('base.group_system'):

@@ -594,8 +594,8 @@ class AgentInvoice(models.Model):
 
     def unlink_all_printout(self, type='All'):
         for rec in self:
-            rec.printout_invoice_id.unlink()
-            rec.printout_kwitansi_id.unlink()
+            rec.printout_invoice_id.sudo().unlink()
+            rec.printout_kwitansi_id.sudo().unlink()
 
     def open_dynamic_print_wizard(self):
         wizard_model = self.env['tt.dynamic.print.invoice.wizard']
