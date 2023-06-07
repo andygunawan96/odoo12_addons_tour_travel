@@ -16,6 +16,7 @@
                 <field name="customer_parent_type_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>
                 <field name="country_id"/>
+                <field name="passenger_ids"/>
                 <group>
                     <filter string="All" name="all"/>
                     <filter string="Request" name="draft" domain="[('state_visa','=','draft')]"/>
