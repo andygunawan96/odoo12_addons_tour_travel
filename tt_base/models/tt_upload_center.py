@@ -18,7 +18,7 @@ class TtUploadFile(models.Model):
     upload_uid = fields.Many2one('res.users','Uploaded By', readonly=True)
     active = fields.Boolean('Active',default=True)
     will_be_deleted_date = fields.Date('Will be deleted on')
-    will_be_deleted_time = fields.Datetime('Will be deleted on', readonly=True)
+    will_be_deleted_time = fields.Datetime('Will be deleted time on', readonly=True)
     sequence = fields.Integer('Sequence',default=100)
 
     @api.model
