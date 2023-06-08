@@ -372,6 +372,7 @@ class TtEmailQueue(models.Model):
                         attachment_id_list.append(attachment_obj.id)
                     else:
                         _logger.info(upload_data['error_msg'])
+                        ref_obj.unlink_all_printout()
                         raise Exception(_('Failed to convert ticket attachment!'))
                     ###########GOOGLE API ATTACHMENT OAUTH2##################
                     # attachment_obj = self.env['ir.attachment'].create({
@@ -405,6 +406,7 @@ class TtEmailQueue(models.Model):
                             resv_has_invoice = True
                         else:
                             _logger.info(upload_data['error_msg'])
+                            rec.invoice_id.unlink_all_printout()
                             raise Exception(_('Failed to convert invoice attachment!'))
                         ###########GOOGLE API ATTACHMENT OAUTH2##################
                         # attachment_obj = self.env['ir.attachment'].create({
@@ -444,6 +446,7 @@ class TtEmailQueue(models.Model):
                     attachment_id_list.append(attachment_obj.id)
                 else:
                     _logger.info(upload_data['error_msg'])
+                    ref_obj.unlink_all_printout()
                     raise Exception(_('Failed to convert billing attachment!'))
             else:
                 raise Exception(_('Failed to get billing attachment!'))
