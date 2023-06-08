@@ -125,9 +125,9 @@ class AccountingConnectorAccurate(models.Model):
 
 
     ##BELUM GANTI
-    def get_sales_order(self):
+    def get_sales_order(self, vals={}):
         url_obj = self.env['tt.accounting.setup.variables'].search(
-            [('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'url')], limit=1)
+            [('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals.get('ho_id', 0))), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Accurate Accounting Setup!')
 

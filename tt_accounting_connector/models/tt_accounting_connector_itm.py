@@ -18,7 +18,7 @@ class AccountingConnectorITM(models.Model):
     _description = 'Accounting Connector ITM'
 
     def add_customer(self, vals):
-        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in ITM Accounting Setup!')
 
@@ -47,7 +47,7 @@ class AccountingConnectorITM(models.Model):
         return res
 
     def request_parser_customer(self, request):
-        live_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'live_id')], limit=1)
+        live_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'live_id')], limit=1)
         if not live_id_obj:
             raise Exception('Please provide a variable with the name "live_id" in ITM Accounting Setup!')
 
@@ -211,7 +211,7 @@ class AccountingConnectorITM(models.Model):
             supplier_list = []
             idx = 0
             for prov in request['provider_bookings']:
-                sup_search_param = [('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('provider_id.code', '=', prov['provider'])]
+                sup_search_param = [('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('provider_id.code', '=', prov['provider'])]
                 if request.get('sector_type'):
                     if request['sector_type'] == 'Domestic':
                         temp_product_search = ('variable_name', '=', 'domestic_product')
