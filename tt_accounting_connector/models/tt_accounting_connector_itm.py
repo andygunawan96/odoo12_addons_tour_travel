@@ -58,19 +58,19 @@ class AccountingConnectorITM(models.Model):
             "Params": [
                 {
                     "ParamName": "ContactCd",
-                    "ParamValue": request.get('seq_id') and request['seq_id'] or ''
+                    "ParamValue": request.get('seq_id') and request['seq_id'] or ""
                 },
                 {
                     "ParamName": "Name",
-                    "ParamValue": request.get('customer_parent_name') and request['customer_parent_name'] or ''
+                    "ParamValue": request.get('customer_parent_name') and "'%s'" % request['customer_parent_name'] or ""
                 },
                 {
                     "ParamName": "Fullname",
-                    "ParamValue": request.get('customer_parent_name') and request['customer_parent_name'] or ''
+                    "ParamValue": request.get('customer_parent_name') and "'%s'" % request['customer_parent_name'] or ""
                 },
                 {
                     "ParamName": "UniqueCd",
-                    "ParamValue": request.get('seq_id') and request['seq_id'] or ''
+                    "ParamValue": request.get('seq_id') and request['seq_id'] or ""
                 }
             ]
         }
