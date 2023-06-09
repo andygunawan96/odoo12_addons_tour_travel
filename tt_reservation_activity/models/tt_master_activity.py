@@ -802,7 +802,6 @@ class MasterActivity(models.Model):
             if req.get('type'):
                 temp_type_id = req['type'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type']), ('type', '=', 'type')]) or ''
                 type_id = temp_type_id and temp_type_id[0].id or 0
-            # sub_category = sub_category != '0' and sub_category or ''
 
             get_cat_instead = 0
             category = ''
@@ -863,22 +862,17 @@ class MasterActivity(models.Model):
             if req.get('city'):
                 sql_query += "and (loc.country_id = " + str(country) + " and loc.city_id = " + str(city) + ") "
 
-            if provider in ['globaltix', 'bemyguest', 'rodextrip_activity']:
-                if provider_id:
-                    sql_query += "and themes.provider_id = " + str(provider_id.id) + " "
+            if provider in ['globaltix', 'bemyguest', 'rodextrip_activity'] and provider_id:
+                sql_query += "and themes.provider_id = " + str(provider_id.id) + " "
 
             if query:
                 sql_query += 'and themes.active = True and themes."basePrice" > 0 '
             sql_query += 'group by themes.id '
 
-            _logger.info(sql_query)
-
             self.env.cr.execute(sql_query)
-
             result_id_list = self.env.cr.dictfetchall()
             result_list = []
             dupe_id_check = []
-            _logger.info(json.dumps(result_id_list))
             for result in result_id_list:
                 if int(result['id']) not in dupe_id_check:
                     dupe_id_check.append(int(result['id']))
