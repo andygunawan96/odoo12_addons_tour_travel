@@ -842,13 +842,13 @@ class MasterActivity(models.Model):
 
             sql_query += 'and (act_ho_rel.ho_id IS NULL'
             if context.get('co_ho_id'):
-                sql_query += ' or themes.owner_ho_id = "' + str(context['co_ho_id']) + '"'
-                sql_query += ' or act_ho_rel.ho_id = "' + str(context['co_ho_id']) + '"'
+                sql_query += ' or themes.owner_ho_id = ' + str(context['co_ho_id']) + ''
+                sql_query += ' or act_ho_rel.ho_id = ' + str(context['co_ho_id']) + ''
             elif context.get('ho_seq_id'):
                 ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
                 if ho_obj:
-                    sql_query += ' or themes.owner_ho_id = "' + str(ho_obj[0].id) + '"'
-                    sql_query += ' or act_ho_rel.ho_id = "' + str(ho_obj[0].id) + '"'
+                    sql_query += ' or themes.owner_ho_id = ' + str(ho_obj[0].id) + ''
+                    sql_query += ' or act_ho_rel.ho_id = ' + str(ho_obj[0].id) + ''
             sql_query += ') '
 
             if type_id:
@@ -865,7 +865,7 @@ class MasterActivity(models.Model):
 
             if provider in ['globaltix', 'bemyguest', 'rodextrip_activity']:
                 if provider_id:
-                    sql_query += "and themes.provider_id = '" + str(provider_id.id) + "' "
+                    sql_query += "and themes.provider_id = " + str(provider_id.id) + " "
 
             if query:
                 sql_query += 'and themes.active = True and themes."basePrice" > 0 '
