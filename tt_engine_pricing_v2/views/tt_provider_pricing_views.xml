@@ -100,6 +100,7 @@
                 <field name="name"/>
                 <field name="description"/>
                 <field name="provider_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="state"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
@@ -114,6 +115,7 @@
             <field name="name"/>
             <field name="provider_name"/>
             <field name="carrier_name"/>
+            <field name="ho_id" groups="base.group_erp_manager"/>
             <filter name="enabled" string="Enabled" domain="[('state','=','enable')]"/>
             <filter name="disabled" string="Disabled" domain="[('state','=','disable')]"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>

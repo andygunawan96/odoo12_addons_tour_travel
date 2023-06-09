@@ -274,6 +274,7 @@
                 <field name="agent_type_id"/>
                 <field name="parent_agent_id"/>
                 <field name="reference"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
             </tree>
         </field>
     </record>
@@ -289,6 +290,7 @@
                 <field name="email"/>
                 <field name="est_date"/>
                 <field name="agent_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <!--                <field name="currency_id"/>-->
                 <templates>
                     <t t-name="kanban-box">

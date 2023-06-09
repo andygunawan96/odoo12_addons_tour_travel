@@ -77,6 +77,7 @@
                 <field name="name"/>
                 <field name="template_id"/>
                 <field name="last_sent_attempt_date"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="active"/>
             </tree>
         </field>

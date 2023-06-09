@@ -114,6 +114,7 @@
                 <field name="refund_type_id"/>
                 <field name="min_amount_ho"/>
                 <field name="min_amount_agent"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
             </tree>
         </field>
     </record>
