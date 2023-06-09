@@ -258,11 +258,11 @@ class MasterActivity(models.Model):
                 temp_idx = 0
                 # for rec in temp:
                 if temp.get('product_detail'):
-                    folder_path = '/var/log/tour_travel/rt_activity_master_data'
+                    folder_path = '/var/log/tour_travel/rodextrip_activity_master_data'
                     if not os.path.exists(folder_path):
                         os.mkdir(folder_path)
                     file = open(
-                        '/var/log/tour_travel/rt_activity_master_data/rt_activity_master_data' + str(
+                        '/var/log/tour_travel/rodextrip_activity_master_data/rodextrip_activity_master_data' + str(
                             page) + '.json', 'w')
                     file.write(json.dumps(temp))
                     file.close()
@@ -270,7 +270,7 @@ class MasterActivity(models.Model):
                     if temp_idx == per_page_amt:
                         page += 1
             else:
-                _logger.error('ACTIVITY ERROR, Generate rt_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
+                _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
         else:
             pass
 
