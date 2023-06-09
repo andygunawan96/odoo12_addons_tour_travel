@@ -143,6 +143,7 @@
                 <field name="name"/>
                 <field name="customer_parent_type_id"/>
                 <field name="parent_agent_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="state"/>
             </tree>
         </field>

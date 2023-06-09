@@ -85,6 +85,7 @@
         <field name="arch" type="xml">
             <field name="login" position="after">
                 <field name='agent_id' groups="base.group_user"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
             </field>
         </field>
     </record>
@@ -98,6 +99,7 @@
                 <field name="name"/>
                 <field name="login"/>
                 <field name="agent_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="lang"/>
                 <field name="login_date"/>
             </tree>

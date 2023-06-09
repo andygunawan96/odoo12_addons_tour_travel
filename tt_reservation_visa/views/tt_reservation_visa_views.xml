@@ -205,6 +205,7 @@
             <tree create="false">
 <!--                <button type="object" string="Create Booking Visa" name="create_booking_visa_api"/>-->
                 <field name="name"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="agent_type_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="contact_id"/>

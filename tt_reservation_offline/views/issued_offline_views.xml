@@ -345,6 +345,7 @@
                     <!--                    <button type="object" string="Create Issued Offline" name="create_booking_reservation_offline_api"/>-->
                     <field name="name"/>
                     <field name="offline_provider_type"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="agent_id"/>
                     <field name="pnr"/>
                     <field name="carrier_name"/>

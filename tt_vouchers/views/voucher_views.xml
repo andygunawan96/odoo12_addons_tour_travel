@@ -9,6 +9,7 @@
                 <field name="voucher_reference_code"/>
                 <field name="voucher_value"/>
                 <field name="voucher_customer_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
 
                 <group expand="0" string="Group By">
                     <filter name="group_by_voucher_type" string="Voucher Type" domain="[]" context="{'group_by':'voucher_type'}"/>

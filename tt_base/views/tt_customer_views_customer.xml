@@ -118,6 +118,7 @@
                 <field name="gender"/>
                 <field name="marital_status"/>
                 <field name="agent_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
             </tree>
         </field>
     </record>
