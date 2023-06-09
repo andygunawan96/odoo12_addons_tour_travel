@@ -99,6 +99,7 @@ class ApiManagement(models.Model):
                 'sid': context['sid'],
                 'signature': self._generate_signature()
             })
+            _co_user = None
             response = _obj.get_credential()
             # April 11, 2019 - SAM
             # Sementara host IP dikosongkan hingga menemukan cara untuk mendapatkan host IP user
@@ -132,7 +133,7 @@ class ApiManagement(models.Model):
             api_cred_obj = self.search([('api_key','=', data['api_key']), ('user_id','=', uid)])
             if api_cred_obj:
                 ########### check admin user in sharing frontend by api_key #############
-                if '_co_user' in locals():
+                if _co_user:
                     is_admin = _co_user.has_group('base.group_erp_manager') or _co_user.has_group('base.group_system')
                     is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.get_ho_parent_agent().id
                     if api_cred_obj.api_role == 'admin' and not is_admin:
