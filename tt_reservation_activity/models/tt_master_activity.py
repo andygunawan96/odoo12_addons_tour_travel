@@ -842,13 +842,13 @@ class MasterActivity(models.Model):
 
             sql_query += 'and (act_ho_rel.ho_id IS NULL'
             if context.get('co_ho_id'):
-                sql_query += ' or themes.owner_ho_id = ' + str(context['co_ho_id']) + ''
-                sql_query += ' or act_ho_rel.ho_id = ' + str(context['co_ho_id']) + ''
+                sql_query += ' or themes.owner_ho_id = "' + str(context['co_ho_id']) + '"'
+                sql_query += ' or act_ho_rel.ho_id = "' + str(context['co_ho_id']) + '"'
             elif context.get('ho_seq_id'):
                 ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
                 if ho_obj:
-                    sql_query += ' or themes.owner_ho_id = ' + str(ho_obj[0].id) + ''
-                    sql_query += ' or act_ho_rel.ho_id = ' + str(ho_obj[0].id) + ''
+                    sql_query += ' or themes.owner_ho_id = "' + str(ho_obj[0].id) + '"'
+                    sql_query += ' or act_ho_rel.ho_id = "' + str(ho_obj[0].id) + '"'
             sql_query += ') '
 
             if type_id:
@@ -871,11 +871,14 @@ class MasterActivity(models.Model):
                 sql_query += 'and themes.active = True and themes."basePrice" > 0 '
             sql_query += 'group by themes.id '
 
+            _logger.info(sql_query)
+
             self.env.cr.execute(sql_query)
 
             result_id_list = self.env.cr.dictfetchall()
             result_list = []
             dupe_id_check = []
+            _logger.info(json.dumps(result_id_list))
             for result in result_id_list:
                 if int(result['id']) not in dupe_id_check:
                     dupe_id_check.append(int(result['id']))
