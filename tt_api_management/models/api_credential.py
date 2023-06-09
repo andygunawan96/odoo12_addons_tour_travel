@@ -99,6 +99,7 @@ class ApiManagement(models.Model):
                 'sid': context['sid'],
                 'signature': self._generate_signature()
             })
+            _co_user = None
             response = _obj.get_credential()
             # April 11, 2019 - SAM
             # Sementara host IP dikosongkan hingga menemukan cara untuk mendapatkan host IP user
@@ -132,7 +133,7 @@ class ApiManagement(models.Model):
             api_cred_obj = self.search([('api_key','=', data['api_key']), ('user_id','=', uid)])
             if api_cred_obj:
                 ########### check admin user in sharing frontend by api_key #############
-                if '_co_user' in locals():
+                if _co_user:
                     is_admin = _co_user.has_group('base.group_erp_manager') or _co_user.has_group('base.group_system')
                     is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.get_ho_parent_agent().id
                     if api_cred_obj.api_role == 'admin' and not is_admin:
@@ -142,14 +143,14 @@ class ApiManagement(models.Model):
                             agent_frontend_security = [i for i in agent_frontend_security if i != code_to_delete]
                             values['co_agent_frontend_security'] = agent_frontend_security
                 ## check cred
-                if api_cred_obj.ho_id and data.get('co_user') and api_cred_obj.api_role != 'operator':
+                if api_cred_obj.ho_id and data.get('co_user') and api_cred_obj.api_role != 'operator' and _co_user:
                     if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system') and api_cred_obj.api_role == 'manager':
                         raise Exception('Co User and Api Key is not match')
                 ## update cred ho
                 if api_cred_obj.api_role == 'manager':
                     ## update sesuai ho agent
                     values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
-                elif api_cred_obj.api_role == 'admin':
+                elif api_cred_obj.api_role == 'admin' and _co_user:
                     ## update sesuai
                     values.update(_co_user.agent_id.get_ho_parent_agent().get_ho_credential(prefix='co_'))
             elif data.get('co_user'):
