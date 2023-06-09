@@ -942,6 +942,9 @@ class MasterTour(models.Model):
                 search_params.append(('name', 'ilike', search_request['tour_query']))
             if context.get('co_ho_id'):
                 search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            elif context.get('ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
             else:
                 search_params.append(('ho_ids', '=', False))
             master_tour_list = self.env['tt.master.tour'].search(search_params)
