@@ -797,21 +797,10 @@ class TtProviderAirline(models.Model):
 
     # May 14, 2020 - SAM
     def delete_passenger_fees(self):
-        pnr_text = self.pnr if self.pnr else str(self.sequence)
         for psg in self.booking_id.passenger_ids:
-            # June 30, 2021 - SAM
-            # unlink dengan metode update One2many
-            fee_id_list = []
-            for fee in psg.fee_ids:
-                # if fee.pnr != pnr_text:
-                if fee.provider_id and fee.provider_id.id != self.id:
-                    fee_id_list.append((4, fee.id))
-                    continue
-                # fee.unlink()
-                fee_id_list.append((2, fee.id))
-            psg.write({
-                'fee_ids': fee_id_list
-            })
+            # unlink fees punya-nya current provider
+            for fee in psg.fee_ids.filtered(lambda fees: fees.provider_id and fees.provider_id.id == self.id):
+                fee.unlink()
 
     def delete_passenger_tickets(self):
         # June 30, 2021 - SAM
