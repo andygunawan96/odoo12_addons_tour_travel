@@ -121,7 +121,7 @@ class MasterActivity(models.Model):
         try:
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             provider_id = provider_id[0]
-            multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
+            multiplier = self.env['tt.provider.rate'].sudo().search([('provider_ho_data_id.provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
             computed_amount = base_amount * multiplier[0].sell_rate
         except Exception as e:
             computed_amount = self.env['res.currency']._compute(from_currency_id, self.env.user.company_id.currency_id, base_amount)
