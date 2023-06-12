@@ -301,4 +301,6 @@ class ReservationAirline(models.Model):
         if updated_obj.is_invoice_created:
             for inv_obj in updated_obj.invoice_line_ids:
                 inv_obj.pnr = updated_obj.pnr
+            for ho_inv_obj in updated_obj.ho_invoice_line_ids:
+                ho_inv_obj.pnr = updated_obj.pnr
         return resp
