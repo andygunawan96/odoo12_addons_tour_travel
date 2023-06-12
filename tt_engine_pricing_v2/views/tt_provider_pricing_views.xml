@@ -57,16 +57,6 @@
                         <page string="Agents" name="agents">
                             <group>
                                 <group>
-                                    <field name="agent_access_type" widget="radio"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
-                            <group string="Agent List">
-                                <field name="agent_ids" nolabel="1"/>
-                            </group>
-                            <group>
-                                <group>
                                     <field name="agent_type_access_type" widget="radio"/>
                                 </group>
                                 <group>
@@ -74,6 +64,16 @@
                             </group>
                             <group string="Agent Type List">
                                 <field name="agent_type_ids" nolabel="1"/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Agent List">
+                                <field name="agent_ids" nolabel="1"/>
                             </group>
                         </page>
                     </notebook>
