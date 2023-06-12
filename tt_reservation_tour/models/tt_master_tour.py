@@ -772,12 +772,11 @@ class MasterTour(models.Model):
             raise UserError(_('Please make sure every accommodation rooms in this tour have an active default pricing (pricing for min 1 pax)'))
 
         self.state = 'confirm'
-        prefix = self.provider_id.alias and self.provider_id.alias + '~' or ''
         if not self.tour_code:
             if self.tour_type == 'private':
-                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.fit')
+                self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.fit')
             else:
-                self.tour_code = prefix + self.env['ir.sequence'].next_by_code('master.tour.code.group')
+                self.tour_code = self.env['ir.sequence'].next_by_code('master.tour.code.group')
         for rec in self.tour_line_ids:
             rec.action_validate()
 

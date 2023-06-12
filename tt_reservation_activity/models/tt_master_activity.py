@@ -374,7 +374,7 @@ class MasterActivity(models.Model):
                 }
                 for index in ['categories', 'types']:
                     if file.get(index):
-                        for rec in file[index]['data']:
+                        for rec in file[index]:
                             obj_id = self.env['tt.activity.category'].search([('name', '=', rec['name'])], limit=1)
                             if obj_id:
                                 obj_id = obj_id[0]
