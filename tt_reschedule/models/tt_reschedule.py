@@ -732,7 +732,8 @@ class TtReschedule(models.Model):
                 'customer_parent_type_id': self.customer_parent_type_id.id,
                 'state': 'confirm',
                 'confirmed_uid': self.env.user.id,
-                'confirmed_date': datetime.now()
+                'confirmed_date': datetime.now(),
+                'pnr': self.pnr
             })
 
         is_use_credit_limit = False
@@ -751,7 +752,8 @@ class TtReschedule(models.Model):
                 'state': state,
                 'confirmed_uid': self.env.user.id,
                 'confirmed_date': datetime.now(),
-                'is_use_credit_limit': is_use_credit_limit
+                'is_use_credit_limit': is_use_credit_limit,
+                'pnr': self.pnr
             })
 
         desc_str = self.name + ' ('
