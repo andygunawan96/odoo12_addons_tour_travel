@@ -679,6 +679,68 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     'room_night': i.get('room_count', 0) * i.get('nights', 0)
                                 }
                                 hotel_recaps.append(temp_dict)
+            else:
+                # current_number != iterate order number
+                # set current order number to iterated number
+                temp_order_number = i['order_number']
+                ord_number_popped = False
+
+                upsell = 0
+                for svc_csc in channel_pricing:
+                    if svc_csc['order_number'] == temp_order_number and svc_csc['charge_type'] == 'CSC' and isinstance(svc_csc['service_charge_amount'], float):  # check order number sama & upsell int
+                        upsell += svc_csc['service_charge_amount']
+                # lets do some preparation to print the first line (data basically)
+                counter += 1
+                row_data += 1
+                sty_table_data_center = style.table_data_center_border
+                sty_table_data = style.table_data_border
+                sty_datetime = style.table_data_datetime_border
+                sty_date = style.table_data_date_border
+                sty_amount = style.table_data_amount_border
+                if row_data % 2 == 0:
+                    sty_table_data_center = style.table_data_center_even_border
+                    sty_table_data = style.table_data_even_border
+                    sty_datetime = style.table_data_datetime_even_border
+                    sty_date = style.table_data_date_even_border
+                    sty_amount = style.table_data_amount_even_border
+
+                incr.reset()
+                # print the whole data of reservation
+                sheet.write(row_data, incr.get_number(), counter, sty_table_data_center)
+                sheet.write(row_data, incr.generate_number(), i['provider_type'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['carrier_name'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['agent_type_name'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['agent_name'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['customer_parent_type_name'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['customer_parent_name'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['create_by'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['issued_by'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['issued_date'], sty_date)
+                sheet.write(row_data, incr.generate_number(), i['agent_email'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['provider_name'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['order_number'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['adult'], sty_amount)
+                sheet.write(row_data, incr.generate_number(), i['child'], sty_amount)
+                sheet.write(row_data, incr.generate_number(), i['infant'], sty_amount)
+                sheet.write(row_data, incr.generate_number(), i.get('direction', '-'), sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['state'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['pnr'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)  ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
+                if values['data_form']['is_ho']:
+                    sheet.write(row_data, incr.generate_number(), i['total_nta'], sty_amount)
+                    sheet.write(row_data, incr.generate_number(), i['total_commission'], sty_amount)
+                sheet.write(row_data, incr.generate_number(), i['grand_total'], sty_amount)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
 
         # check if there are indexes marked for being RT with single PNR
         for sing_pnr in rt_single_pnr_idx:
