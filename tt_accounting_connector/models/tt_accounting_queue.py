@@ -115,7 +115,7 @@ class TtAccountingQueue(models.Model):
                     }
                     prov_sale_id_list = []
                     for sale in prov.cost_service_charge_ids:
-                        if sale.charge_code != 'csc':
+                        if sale.charge_code != 'csc' and sale.charge_type != 'DISC':
                             temp_prov_price_dict['total_nta'] += sale.total
                         if sale.charge_type == 'RAC' and sale.charge_code == 'rac':
                             temp_prov_price_dict['agent_commission'] -= sale.total
@@ -147,7 +147,7 @@ class TtAccountingQueue(models.Model):
                                 'tax_service_charges': []
                             }
                             for sale in tick.passenger_id.cost_service_charge_ids.filtered(lambda x: x.id in prov_sale_id_list):
-                                if sale.charge_code != 'csc':
+                                if sale.charge_code != 'csc' and sale.charge_type != 'DISC':
                                     temp_tick_price_dict['total_nta'] += sale.amount
                                 if sale.charge_type == 'RAC' and sale.charge_code == 'rac':
                                     temp_tick_price_dict['agent_commission'] -= sale.amount
@@ -184,7 +184,7 @@ class TtAccountingQueue(models.Model):
                                 'tax_service_charges': []
                             }
                             for sale in tick.cost_service_charge_ids.filtered(lambda x: x.id in prov_sale_id_list):
-                                if sale.charge_code != 'csc':
+                                if sale.charge_code != 'csc' and sale.charge_type != 'DISC':
                                     temp_tick_price_dict['total_nta'] += sale.amount
                                 if sale.charge_type == 'RAC' and sale.charge_code == 'rac':
                                     temp_tick_price_dict['agent_commission'] -= sale.amount
