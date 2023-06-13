@@ -268,7 +268,7 @@ class AccountingConnectorITM(models.Model):
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
 
                         pax_setup = {
-                            'ho_profit': ho_prof,
+                            'ho_profit': pax.get('parent_agent_commission') and ho_prof + pax['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
                             'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
@@ -353,7 +353,7 @@ class AccountingConnectorITM(models.Model):
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
 
                         pax_setup = {
-                            'ho_profit': ho_prof,
+                            'ho_profit': pax.get('parent_agent_commission') and ho_prof + pax['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
                             'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
@@ -412,7 +412,7 @@ class AccountingConnectorITM(models.Model):
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
 
                     prov_setup = {
-                        'ho_profit': ho_prof,
+                        'ho_profit': prov.get('parent_agent_commission') and ho_prof + prov['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
                         'total_comm': prov.get('total_commission') and prov['total_commission'] or 0,
                         'total_nta': prov.get('total_nta') and prov['total_nta'] or 0,
                         'agent_nta': prov.get('agent_nta') and prov['agent_nta'] or 0
