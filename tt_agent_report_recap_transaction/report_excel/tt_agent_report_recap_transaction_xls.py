@@ -572,7 +572,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         sheet.write(row_data, incr.generate_number(), '', sty_amount)
                         sheet.write(row_data, incr.generate_number(), i['ledger_description'], sty_table_data)
 
-                # lets recap
+                    # lets recap
                     # see line 189 for code explanation of this if provider airline
                     if i['provider_type'].lower() == 'airline':
                         if i['direction'] == 'RT':
@@ -679,10 +679,11 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                     'room_night': i.get('room_count', 0) * i.get('nights', 0)
                                 }
                                 hotel_recaps.append(temp_dict)
-            else:
+            elif temp_order_number != i['order_number']:
                 # current_number != iterate order number
                 # set current order number to iterated number
                 temp_order_number = i['order_number']
+                current_pnr = i.get('pnr') and i['pnr'] or ''
                 ord_number_popped = False
 
                 upsell = 0
@@ -704,6 +705,39 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     sty_date = style.table_data_date_even_border
                     sty_amount = style.table_data_amount_even_border
 
+                # filter from service charge data
+                temp_charge_agent = list(filter(lambda x: x['order_number'] == i['order_number'], service_charge))
+                temp_charge = list(filter(lambda x: x['booking_pnr'] == current_pnr, temp_charge_agent))
+
+                # see line 134 for explenation of this next few lines of code
+                nta_total = 0
+                commission = 0
+                this_resv_agent_nta_total = 0
+                this_resv_agent_commission = 0
+                this_pnr_agent_nta_total = 0
+                this_pnr_agent_commission = 0
+
+                for k in temp_charge:
+                    if k['booking_charge_type'] == 'RAC':
+                        commission -= k['booking_charge_total']
+                        nta_total += k['booking_charge_total']
+                        if k['booking_charge_code'] == 'rac':
+                            this_pnr_agent_commission -= k['booking_charge_total']
+                            this_pnr_agent_nta_total += k['booking_charge_total']
+                    else:
+                        if k['booking_charge_type'] != 'DISC' and k['booking_charge_total']:
+                            nta_total += k['booking_charge_total']
+                            this_pnr_agent_nta_total += k['booking_charge_total']
+                grand_total = nta_total + commission
+
+                for k in temp_charge_agent:
+                    if k['booking_charge_type'] == 'RAC':
+                        if k['booking_charge_code'] == 'rac':
+                            this_resv_agent_commission -= k['booking_charge_total']
+                            this_resv_agent_nta_total += k['booking_charge_total']
+                    elif k['booking_charge_type'] != 'DISC' and k['booking_charge_total']:
+                        this_resv_agent_nta_total += k['booking_charge_total']
+
                 incr.reset()
                 # print the whole data of reservation
                 sheet.write(row_data, incr.get_number(), counter, sty_table_data_center)
@@ -718,7 +752,7 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, incr.generate_number(), i['issued_date'], sty_date)
                 sheet.write(row_data, incr.generate_number(), i['agent_email'], sty_table_data)
                 sheet.write(row_data, incr.generate_number(), i['provider_name'], sty_table_data)
-                sheet.write(row_data, incr.generate_number(), i['order_number'], sty_table_data)
+                sheet.write(row_data, incr.generate_number(), i['order_number'], sty_amount)
                 sheet.write(row_data, incr.generate_number(), i['adult'], sty_amount)
                 sheet.write(row_data, incr.generate_number(), i['child'], sty_amount)
                 sheet.write(row_data, incr.generate_number(), i['infant'], sty_amount)
@@ -729,8 +763,8 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                 sheet.write(row_data, incr.generate_number(), i['currency_name'], sty_table_data_center)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-                sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+                sheet.write(row_data, incr.generate_number(), this_resv_agent_nta_total, sty_amount)
+                sheet.write(row_data, incr.generate_number(), this_resv_agent_commission, sty_amount)
                 sheet.write(row_data, incr.generate_number(), i.get('commission_booker', 0), sty_amount)
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)  ### IVAN 22 dec 2022 untuk data lama upsell tidak masuk ke komisi data baru upsell sudah masuk ke komisi, aftersales recap belum masuk
                 if values['data_form']['is_ho']:
@@ -741,6 +775,124 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
                 sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+
+                # lets recap
+                # see line 189 for code explanation of this if provider airline
+                if i['provider_type'].lower() == 'airline':
+                    if i['direction'] == 'RT':
+                        rt_single_pnr_idx.append(idx)
+                    data_index = next((index for (index, d) in enumerate(airline_recaps) if d["id"] == i['issued_uid']),
+                                      -1)
+                    if data_index >= 0:
+                        if i['provider_name'] and (
+                                'amadeus' in i['provider_name'] or 'sabre' in i['provider_name'] or 'sia' in i[
+                            'provider_name']):
+                            airline_recaps[data_index]['GDS'] += 1
+                            airline_recaps[data_index]['pax_GDS'] += i['adult']
+                            airline_recaps[data_index]['pax_GDS'] += i['child']
+                            airline_recaps[data_index]['pax_GDS'] += i['infant']
+                        else:
+                            airline_recaps[data_index]['non_GDS'] += 1
+                            airline_recaps[data_index]['pax_non_GDS'] += i['adult']
+                            airline_recaps[data_index]['pax_non_GDS'] += i['child']
+                            airline_recaps[data_index]['pax_non_GDS'] += i['infant']
+                    else:
+                        temp_dict = {
+                            'id': i['issued_uid'],
+                            'name': i['issued_by'],
+                            'GDS': 0,
+                            'pax_GDS': 0,
+                            'non_GDS': 0,
+                            'pax_non_GDS': 0
+                        }
+                        airline_recaps.append(temp_dict)
+                        if i['provider_name'] and (
+                                'amadeus' in i['provider_name'] or 'sabre' in i['provider_name'] or 'sia' in i[
+                            'provider_name']):
+                            airline_recaps[data_index]['GDS'] += 1
+                            airline_recaps[data_index]['pax_GDS'] += i['adult']
+                            airline_recaps[data_index]['pax_GDS'] += i['child']
+                            airline_recaps[data_index]['pax_GDS'] += i['infant']
+                        else:
+                            airline_recaps[data_index]['non_GDS'] += 1
+                            airline_recaps[data_index]['pax_non_GDS'] += i['adult']
+                            airline_recaps[data_index]['pax_non_GDS'] += i['child']
+                            airline_recaps[data_index]['pax_non_GDS'] += i['infant']
+
+                # if provider is hotel
+                # we'll make a little summary too
+                # so check if reservation happened to be a hotel reservation
+                # then
+                if i['provider_type'].lower() == 'hotel':
+                    # using the same logic of getting user in a list, but this time is hotel recaps list
+                    # instead of airline_recaps list
+                    data_index = next((index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['issued_uid']),
+                                      -1)
+
+                    # if data index >= 0 then there's data with match user
+                    # we only need to update the data
+                    if data_index >= 0:
+                        hotel_recaps[data_index]['counter'] += 1
+                        hotel_recaps[data_index]['room_night'] += i.get('room_count', 0) * i.get('nights', 0)
+                    else:
+                        # if data is not yet exist then create some temp dictionary
+                        temp_dict = {
+                            'id': i['issued_uid'],
+                            'name': i['issued_by'],
+                            'counter': 1,
+                            'room_night': i.get('room_count', 0) * i.get('nights', 0)
+                        }
+                        # and add to hotel recaps list
+                        hotel_recaps.append(temp_dict)
+
+                # okay so special case for offline
+                # since offline is not a provider rather how the reservation issued process
+                # and within offline provider, there's a note of what kind provider of reservation data being issued manually a.k.a offline
+                if i['provider_type'].lower() == 'offline':
+                    # if data is offline then we'll do another check if reservation is airline or hotel
+                    # see line 189 for explanation of airline code explanation
+                    if i['offline_provider'].lower() == 'airline':
+                        data_index = next(
+                            (index for (index, d) in enumerate(airline_recaps) if d["id"] == i['issued_uid']), -1)
+                        if data_index >= 0:
+                            if i['provider_name'] and (
+                                    'amadeus' in i['provider_name'] or 'sabre' in i['provider_name'] or 'sia' in i[
+                                'provider_name']):
+                                airline_recaps[data_index]['GDS'] += 1
+                            else:
+                                airline_recaps[data_index]['non_GDS'] += 1
+                        else:
+                            temp_dict = {
+                                'id': i['issued_uid'],
+                                'name': i['issued_by'],
+                                'pax_GDS': 0,
+                                'GDS': 0,
+                                'non_GDS': 0,
+                                'pax_non_GDS': 0
+                            }
+                            airline_recaps.append(temp_dict)
+                            if i['provider_name'] and (
+                                    'amadeus' in i['provider_name'] or 'sabre' in i['provider_name'] or 'sia' in i[
+                                'provider_name']):
+                                airline_recaps[data_index]['GDS'] += 1
+                            else:
+                                airline_recaps[data_index]['non_GDS'] += 1
+
+                    # and see line 460 for if hotel code explanation
+                    if i['provider_type'].lower() == 'hotel':
+                        data_index = next(
+                            (index for (index, d) in enumerate(hotel_recaps) if d["id"] == i['issued_uid']), -1)
+                        if data_index >= 0:
+                            hotel_recaps[data_index]['counter'] += 1
+                            hotel_recaps[data_index]['room_night'] += i.get('room_count', 0) * i.get('nights', 0)
+                        else:
+                            temp_dict = {
+                                'id': i['issued_uid'],
+                                'name': i['issued_by'],
+                                'counter': 1,
+                                'room_night': i.get('room_count', 0) * i.get('nights', 0)
+                            }
+                            hotel_recaps.append(temp_dict)
 
         # check if there are indexes marked for being RT with single PNR
         for sing_pnr in rt_single_pnr_idx:
