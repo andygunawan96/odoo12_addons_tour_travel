@@ -198,7 +198,7 @@ class MasterActivity(models.Model):
             if file:
                 total_pages = file['total_pages']
                 for page in range(total_pages):
-                    self.write_bmg_json(provider_code, False, page + 1)
+                    self.write_bmg_json(provider_code, per_page_amt, False, page + 1)
         elif provider_code == 'globaltix':
             provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
             provider_id = provider_obj and provider_obj[0].id or False
@@ -274,7 +274,7 @@ class MasterActivity(models.Model):
         else:
             pass
 
-    def write_bmg_json(self, provider=None, data=None, page=None):
+    def write_bmg_json(self, provider=None, per_page_amt=100, data=None, page=None):
         file = False
         req_post = {
             'query': '',
@@ -284,7 +284,7 @@ class MasterActivity(models.Model):
             'city': '',
             'sort': 'price',
             'page': page,
-            'per_page': 100,
+            'per_page': per_page_amt,
             'provider': provider
         }
 
