@@ -348,9 +348,7 @@ class AccountingConnectorITM(models.Model):
                             "Nationality": "ID"
                         }]
 
-                        if pax.get('total_channel_upsell') and is_ho_transaction:
-                            ho_prof = pax.get('total_commission') and pax['total_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
-                        elif is_ho_transaction:
+                        if is_ho_transaction:
                             ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
@@ -407,9 +405,7 @@ class AccountingConnectorITM(models.Model):
                         idx += 1
 
                 elif request['provider_type'] == 'hotel':
-                    if prov.get('total_channel_upsell') and is_ho_transaction:
-                        ho_prof = prov.get('total_commission') and prov['total_commission'] + prov['total_channel_upsell'] or prov['total_channel_upsell']
-                    elif is_ho_transaction:
+                    if is_ho_transaction:
                         ho_prof = prov.get('total_commission') and prov['total_commission'] or 0
                     else:
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
