@@ -260,9 +260,7 @@ class AccountingConnectorITM(models.Model):
                             "Nationality": "ID"
                         }]
 
-                        if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                            ho_prof = pax.get('total_commission') and pax['total_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
-                        elif int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                        if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
                             ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
@@ -345,9 +343,7 @@ class AccountingConnectorITM(models.Model):
                             "Nationality": "ID"
                         }]
 
-                        if pax.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                            ho_prof = pax.get('total_commission') and pax['total_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
-                        elif int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                        if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
                             ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
@@ -404,9 +400,7 @@ class AccountingConnectorITM(models.Model):
                         idx += 1
 
                 elif request['provider_type'] == 'hotel':
-                    if prov.get('total_channel_upsell') and int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
-                        ho_prof = prov.get('total_commission') and prov['total_commission'] + prov['total_channel_upsell'] or prov['total_channel_upsell']
-                    elif int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
+                    if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
                         ho_prof = prov.get('total_commission') and prov['total_commission'] or 0
                     else:
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
@@ -485,7 +479,7 @@ class AccountingConnectorITM(models.Model):
             total_sales = request.get('agent_nta', 0)
             if int(request.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id:
                 total_sales += request.get('total_commission') and request['total_commission'] or 0
-                total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
+                # total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
 
             uniquecode = '%s_%s%s' % (request.get('order_number', ''), datetime.now().strftime('%m%d%H%M%S'), chr(randrange(65,90)))
             travel_file_data = {
