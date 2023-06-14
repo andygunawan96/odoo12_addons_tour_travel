@@ -113,7 +113,7 @@ class PaymentAcquirer(models.Model):
         #     if self.start_time > self.end_time:
         #         raise UserError(_('End Date cannot be lower than Start Time.'))
 
-    def acquirer_format(self, amount, unique, agent_obj=None):
+    def acquirer_format(self, amount, unique, agent_obj=None, currency=''):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
@@ -145,7 +145,7 @@ class PaymentAcquirer(models.Model):
                 'code': self.bank_id.code or '',
             },
             'type': self.type,
-            'currency': 'IDR',
+            'currency': currency,
             'price_component': {
                 'amount': amount,
                 'fee': fee,
@@ -184,7 +184,7 @@ class PaymentAcquirer(models.Model):
             })
         return res_payment_acq
 
-    def acquirer_format_VA(self, acq, amount,unique):
+    def acquirer_format_VA(self, acq, amount,unique, currency='IDR'):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
@@ -201,7 +201,7 @@ class PaymentAcquirer(models.Model):
                 'code': payment_acq.bank_id.code or '',
             },
             'type': payment_acq.type,
-            'currency': 'IDR',
+            'currency': currency,
             'price_component': {
                 'amount': amount,
                 'fee': fee,
@@ -217,9 +217,10 @@ class PaymentAcquirer(models.Model):
         values = {
             'va': []
         }
+        currency = self.env['phone.detail'].get_currency_company()
         for acq in agent_obj.payment_acq_ids:
             if acq.state == 'open':
-                values['va'].append(self.acquirer_format_VA(acq, 0, 0))
+                values['va'].append(self.acquirer_format_VA(acq, 0, 0, currency))
         return ERR.get_no_error(values)
 
     def get_va_bank(self, req, context):
@@ -300,9 +301,11 @@ class PaymentAcquirer(models.Model):
                 book_obj = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1)
                 amount = book_obj.total - book_obj.total_discount
                 co_agent_id = book_obj.agent_id.id ## untuk kalau HO issuedkan channel, supaya payment acquirerny tetap punya agentnya
+                currency = book_obj.currency_id.name
             else:
                 amount = req.get('amount', 0)
                 co_agent_id = context['co_agent_id']
+                currency = req.get('currency', '')
 
             if not context.get('co_customer_parent_id'):  ## kalau bukan user corporate login sendiri
                 dom = [
@@ -339,7 +342,7 @@ class PaymentAcquirer(models.Model):
                         if self.validate_time(acq, now_time):
                             if not values.get(acq.type):
                                 values[acq.type] = []
-                            values[acq.type].append(acq.acquirer_format(amount, unique, self.env['tt.agent'].browse(co_agent_id)))
+                            values[acq.type].append(acq.acquirer_format(amount, unique, self.env['tt.agent'].browse(co_agent_id), currency))
 
                 # # payment gateway
                 # dengan ORDER NUMBER
@@ -392,11 +395,11 @@ class PaymentAcquirer(models.Model):
                                 if is_agent and is_provider_type:
                                     if not values.get(acq.type):
                                         values[acq.type] = []
-                                    values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id)))
+                                    values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id), currency))
                             else:
                                 if not values.get(acq.type):
                                     values[acq.type] = []
-                                values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id)))
+                                values[acq.type].append(acq.acquirer_format(amount, 0, self.env['tt.agent'].browse(co_agent_id), currency))
 
                 res['customer']['non_member'] = values
                 can_use_cor_account = True

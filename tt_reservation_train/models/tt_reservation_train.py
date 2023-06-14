@@ -402,6 +402,9 @@ class TtReservationTrain(models.Model):
                         if ticket_obj.get('covid'):
                             provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['covid'])
                 elif provider['state'] == 'issued' and not provider.get('error_code'):
+                    for idx, ticket_obj in enumerate(provider['tickets']):
+                        if ticket_obj.get('web_check_in'):
+                            provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['web_check_in'])
                     if provider_obj.state == 'issued':
                         continue
                     if req.get('force_issued'):
