@@ -79,6 +79,7 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _from(provider_type):
         # query = """tt_ledger """
+        model_name = 'tt.reservation.' + provider_type
         query = """tt_reservation_""" + provider_type + """ rsv """
         query += """LEFT JOIN tt_agent agent ON rsv.agent_id = agent.id
         LEFT JOIN tt_provider_""" + provider_type + """ provider_booking ON provider_booking.booking_id = rsv.id
@@ -87,7 +88,7 @@ class AgentReportRecapTransacion(models.Model):
         LEFT JOIN tt_customer_parent_type customer_parent_type ON customer_parent_type.id = rsv.customer_parent_type_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = rsv.agent_type_id
         LEFT JOIN res_currency currency ON currency.id = rsv.currency_id
-        LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.res_id = rsv.id
+        LEFT JOIN tt_ledger ledger ON ledger.res_model = '""" + model_name + """' AND ledger.res_id = rsv.id AND ledger.is_reversed = 'FALSE' 
         LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
         LEFT JOIN res_users creates ON creates.id = rsv.user_id
         LEFT JOIN res_partner creates_partner ON creates.partner_id = creates_partner.id
@@ -151,7 +152,6 @@ class AgentReportRecapTransacion(models.Model):
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
-        where += """ AND ledger.is_reversed = 'FALSE' """
         if state:
             where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
         return where

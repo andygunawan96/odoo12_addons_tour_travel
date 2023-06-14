@@ -63,9 +63,9 @@ class AgentReportRecapAfterSales(models.Model):
 
         if after_sales_type == 'refund':
             query += """LEFT JOIN tt_refund_type refund_type ON refund_type.id = rsv.refund_type_id """
-            query += """LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.refund_id = rsv.id """
+            query += """LEFT JOIN tt_ledger ledger ON ledger.refund_id = rsv.id AND ledger.is_reversed = 'FALSE' """
         else:
-            query += """LEFT JOIN tt_ledger ledger ON ledger.res_model = rsv.res_model AND ledger.reschedule_id = rsv.id """
+            query += """LEFT JOIN tt_ledger ledger ON ledger.reschedule_id = rsv.id AND ledger.is_reversed = 'FALSE' """
 
         query += """LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
         LEFT JOIN res_users creates ON creates.id = rsv.create_uid
@@ -94,7 +94,6 @@ class AgentReportRecapAfterSales(models.Model):
         # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
-        where += """ AND ledger.is_reversed = 'FALSE' """
         if after_sales_type == 'refund':
             where += """ AND (rsv.state = 'approve' OR rsv.state = 'payment' OR rsv.state = 'approve_cust' OR rsv.state = 'done') """
         else:
