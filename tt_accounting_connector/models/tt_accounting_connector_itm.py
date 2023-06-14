@@ -265,9 +265,7 @@ class AccountingConnectorITM(models.Model):
                             "Nationality": "ID"
                         }]
 
-                        if pax.get('total_channel_upsell') and is_ho_transaction:
-                            ho_prof = pax.get('total_commission') and pax['total_commission'] + pax['total_channel_upsell'] or pax['total_channel_upsell']
-                        elif is_ho_transaction:
+                        if is_ho_transaction:
                             ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
@@ -490,7 +488,7 @@ class AccountingConnectorITM(models.Model):
             total_sales = request.get('agent_nta', 0)
             if is_ho_transaction:
                 total_sales += request.get('total_commission') and request['total_commission'] or 0
-                total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
+                # total_sales += request.get('total_channel_upsell') and request['total_channel_upsell'] or 0
 
             uniquecode = '%s_%s%s' % (request.get('order_number', ''), datetime.now().strftime('%m%d%H%M%S'), chr(randrange(65,90)))
             travel_file_data = {
