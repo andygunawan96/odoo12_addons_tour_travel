@@ -12,7 +12,7 @@
             <field name="name">Rodextrip User</field>
             <field name="agent_id" ref="tt_base.agent_b2c"/>
             <field name="login">agent_b2c</field>
-            <field name="password">2ebaebb25402547966930e235e93c004</field>
+            <field name="password">3R=ebz@Xvsrw5D2+j@FT</field>
             <field name="groups_id"
                    eval="[(4, ref('tt_base.group_tt_agent_user')),
                          (4, ref('tt_base.group_master_data_hotel_level_1')),
