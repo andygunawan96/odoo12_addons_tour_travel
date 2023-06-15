@@ -252,13 +252,25 @@ class TtProviderHOData(models.Model):
 
     def create_provider_ledger_api(self,data,context):
         try:
+            dom = []
+            if context.get('co_ho_id'):
+                dom.append(('ho_id','=', context['co_ho_id']))
             if 'rodextrip' in data['provider_code']: #asumsi hard code kalau provider rodextrip_x maka di masukkan rodextrip airline semua biar 1 saldo
-                provider_obj = self.search([('code', '=', 'rodextrip_airline')], limit=1)
+                dom.append(('provider_id.code', '=', 'rodextrip_airline'))
+                provider_obj = self.search(dom, limit=1)
             else:
-                provider_obj = self.search([('code','=',data['provider_code'])], limit=1)
+                dom.append(('provider_id.code','=',data['provider_code']))
+                provider_obj = self.search(dom, limit=1)
             if provider_obj:
                 provider_obj.create_provider_ledger(data['balance'])
             else:
+                provider = data['provider_code']
+                if 'rodextrip' in provider:
+                    provider = 'rodextrip_airline'
+                ho_name = ''
+                if context.get('co_ho_id'):
+                    ho_name = self.env['tt.agent'].browse(context['co_ho_id']).name
+                _logger.error("Please add Provider HO Data %s for HO %s" % (provider, ho_name))
                 raise RequestException(1002)
         except:
             _logger.error(traceback.format_exc())

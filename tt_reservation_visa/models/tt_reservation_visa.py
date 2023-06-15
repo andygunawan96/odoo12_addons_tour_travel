@@ -251,7 +251,8 @@ class TtVisa(models.Model):
 
                 data = {
                     'order_number': self.name,
-                    'state': status
+                    'state': status,
+                    'provider': 'rodextrip_visa'
                 }
                 vals = {
                     'provider_type': 'visa',
