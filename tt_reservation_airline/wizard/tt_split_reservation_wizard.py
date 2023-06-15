@@ -384,10 +384,16 @@ class TtSplitReservationWizard(models.TransientModel):
                 if book_obj.ledger_ids:
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
+                    ho_pay_method = book_obj.payment_method_to_ho
+                    if ho_pay_method == 'credit_limit':
+                        ho_invoice_lines = self.env['tt.ho.invoice.line'].search([('res_model_resv', '=', book_obj._name), ('res_id_resv', '=', book_obj.id)], order='create_date DESC', limit=1)
+                        for hoinv in ho_invoice_lines:
+                            if hoinv.invoice_id and hoinv.invoice_id.state in ['bill', 'bill2', 'paid']:
+                                ho_pay_method = 'balance'
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
 
             elif self.is_split_provider and self.is_split_passenger:
                 aff_pnr_list = []
@@ -633,10 +639,16 @@ class TtSplitReservationWizard(models.TransientModel):
                 if book_obj.ledger_ids:
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
+                    ho_pay_method = book_obj.payment_method_to_ho
+                    if ho_pay_method == 'credit_limit':
+                        ho_invoice_lines = self.env['tt.ho.invoice.line'].search([('res_model_resv', '=', book_obj._name), ('res_id_resv', '=', book_obj.id)], order='create_date DESC', limit=1)
+                        for hoinv in ho_invoice_lines:
+                            if hoinv.invoice_id and hoinv.invoice_id.state in ['bill', 'bill2', 'paid']:
+                                ho_pay_method = 'balance'
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
 
             elif self.is_split_provider:
                 aff_pnr_list = []
@@ -708,10 +720,16 @@ class TtSplitReservationWizard(models.TransientModel):
                 if book_obj.ledger_ids:
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
+                    ho_pay_method = book_obj.payment_method_to_ho
+                    if ho_pay_method == 'credit_limit':
+                        ho_invoice_lines = self.env['tt.ho.invoice.line'].search([('res_model_resv', '=', book_obj._name), ('res_id_resv', '=', book_obj.id)], order='create_date DESC', limit=1)
+                        for hoinv in ho_invoice_lines:
+                            if hoinv.invoice_id and hoinv.invoice_id.state in ['bill', 'bill2', 'paid']:
+                                ho_pay_method = 'balance'
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
 
             elif self.is_split_passenger:
                 aff_pnr_list = []
@@ -910,10 +928,16 @@ class TtSplitReservationWizard(models.TransientModel):
                 if book_obj.ledger_ids:
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
+                    ho_pay_method = book_obj.payment_method_to_ho
+                    if ho_pay_method == 'credit_limit':
+                        ho_invoice_lines = self.env['tt.ho.invoice.line'].search([('res_model_resv', '=', book_obj._name), ('res_id_resv', '=', book_obj.id)], order='create_date DESC', limit=1)
+                        for hoinv in ho_invoice_lines:
+                            if hoinv.invoice_id and hoinv.invoice_id.state in ['bill', 'bill2', 'paid']:
+                                ho_pay_method = 'balance'
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=ho_pay_method)
 
             book_obj.calculate_pnr_provider_carrier()
             new_book_obj.calculate_pnr_provider_carrier()
