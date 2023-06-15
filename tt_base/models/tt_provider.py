@@ -253,9 +253,9 @@ class TtProviderHOData(models.Model):
     def create_provider_ledger_api(self,data,context):
         try:
             if 'rodextrip' in data['provider_code']: #asumsi hard code kalau provider rodextrip_x maka di masukkan rodextrip airline semua biar 1 saldo
-                provider_obj = self.search([('code', '=', 'rodextrip_airline')], limit=1)
+                provider_obj = self.search([('provider_id.code', '=', 'rodextrip_airline')], limit=1)
             else:
-                provider_obj = self.search([('code','=',data['provider_code'])], limit=1)
+                provider_obj = self.search([('provider_id.code','=',data['provider_code'])], limit=1)
             if provider_obj:
                 provider_obj.create_provider_ledger(data['balance'])
             else:
