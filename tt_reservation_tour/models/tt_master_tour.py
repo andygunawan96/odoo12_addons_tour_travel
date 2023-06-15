@@ -949,7 +949,7 @@ class MasterTour(models.Model):
                     tour_line_list = []
                     for rec2 in rec.tour_line_ids:
                         if rec2.active:
-                            if (rec2.departure_date and rec2.departure_date >= fields.Date.today()) or rec2.tour_type == 'open':
+                            if (rec2.departure_date and rec2.departure_date >= fields.Date.today()) or rec.tour_type == 'open':
                                 tour_line_list.append(rec2.to_dict())
                                 str_dept_date = rec2.departure_date.strftime("%Y-%m-%d")
                                 if search_request['departure_month'] != '00':

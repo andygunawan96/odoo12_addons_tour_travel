@@ -402,4 +402,8 @@ class TtProviderTrain(models.Model):
     #     return sc_value
 
     def update_temporary_field_per_pax_api(self, idx, temporary_field):
-        self.ticket_ids[idx].passenger_id.temporary_field = json.dumps(temporary_field)
+        data_temporary_field = {}
+        if self.ticket_ids[idx].passenger_id.temporary_field:
+            data_temporary_field = json.loads(self.ticket_ids[idx].passenger_id.temporary_field)
+        data_temporary_field.update(temporary_field)
+        self.ticket_ids[idx].passenger_id.temporary_field = json.dumps(data_temporary_field)
