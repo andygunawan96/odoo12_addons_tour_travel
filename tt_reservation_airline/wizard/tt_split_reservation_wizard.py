@@ -382,7 +382,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         rec2.is_ledger_created = False
 
                 if book_obj.ledger_ids:
-                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed and 'credit limit fee' not in x.name):
                         led.reverse_ledger()
                     ho_pay_method = book_obj.payment_method_to_ho
                     if ho_pay_method == 'credit_limit':
@@ -637,7 +637,7 @@ class TtSplitReservationWizard(models.TransientModel):
                 })
 
                 if book_obj.ledger_ids:
-                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed and 'credit limit fee' not in x.name):
                         led.reverse_ledger()
                     ho_pay_method = book_obj.payment_method_to_ho
                     if ho_pay_method == 'credit_limit':
@@ -718,7 +718,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         rec2.is_ledger_created = False
 
                 if book_obj.ledger_ids:
-                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed and 'credit limit fee' not in x.name):
                         led.reverse_ledger()
                     ho_pay_method = book_obj.payment_method_to_ho
                     if ho_pay_method == 'credit_limit':
@@ -926,7 +926,7 @@ class TtSplitReservationWizard(models.TransientModel):
                 })
 
                 if book_obj.ledger_ids:
-                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
+                    for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed and 'credit limit fee' not in x.name):
                         led.reverse_ledger()
                     ho_pay_method = book_obj.payment_method_to_ho
                     if ho_pay_method == 'credit_limit':
