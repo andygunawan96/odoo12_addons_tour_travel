@@ -186,6 +186,7 @@ class TtSplitReservationWizard(models.TransientModel):
                 'split_uid': self.env.user.id,
                 'split_date': fields.Datetime.now(),
                 'pnr': book_obj.pnr,
+                'ho_id': book_obj.ho_id and book_obj.ho_id.id or False,
                 'agent_id': book_obj.agent_id and book_obj.agent_id.id or False,
                 'customer_parent_id': book_obj.customer_parent_id and book_obj.customer_parent_id.id or False,
                 'provider_type_id': book_obj.provider_type_id.id,
@@ -211,6 +212,10 @@ class TtSplitReservationWizard(models.TransientModel):
                 'contact_name': book_obj.contact_name,
                 'contact_email': book_obj.contact_email,
                 'contact_phone': book_obj.contact_phone,
+                'is_member': book_obj.is_member,
+                'payment_method': book_obj.payment_method,
+                'is_using_point_reward': book_obj.is_using_point_reward,
+                'payment_method_to_ho': book_obj.payment_method_to_ho,
                 'is_invoice_created': book_obj.is_invoice_created,
                 'state': book_obj.state
             }
@@ -381,9 +386,9 @@ class TtSplitReservationWizard(models.TransientModel):
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
 
             elif self.is_split_provider and self.is_split_passenger:
                 aff_pnr_list = []
@@ -630,9 +635,9 @@ class TtSplitReservationWizard(models.TransientModel):
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
 
             elif self.is_split_provider:
                 aff_pnr_list = []
@@ -705,9 +710,9 @@ class TtSplitReservationWizard(models.TransientModel):
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
 
             elif self.is_split_passenger:
                 aff_pnr_list = []
@@ -907,9 +912,9 @@ class TtSplitReservationWizard(models.TransientModel):
                     for led in book_obj.ledger_ids.filtered(lambda x: x.pnr in aff_pnr_list and not x.is_reversed):
                         led.reverse_ledger()
                     for aff_prov in aff_prov_list:
-                        aff_prov.action_create_ledger(book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(book_obj.issued_uid.id, use_point=book_obj.is_using_point_reward, payment_method_use_to_ho=book_obj.payment_method_to_ho)
                     for aff_prov in new_aff_prov_list:
-                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id)
+                        aff_prov.action_create_ledger(new_book_obj.issued_uid.id, use_point=new_book_obj.is_using_point_reward, payment_method_use_to_ho=new_book_obj.payment_method_to_ho)
 
             book_obj.calculate_pnr_provider_carrier()
             new_book_obj.calculate_pnr_provider_carrier()
