@@ -72,6 +72,13 @@
                     </div>
                     <group>
                         <group>
+                            <field name="owner_ho_id" groups="base.group_erp_manager"/>
+                            <field name="ho_ids" groups="base.group_erp_manager">
+                                <tree>
+                                    <field name="seq_id"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
                             <field name="location_ids" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}">
                                 <tree>
                                     <field name="city_id"/>
@@ -87,8 +94,8 @@
                         </group>
                         <group>
                             <field name="tour_code" readonly="1"/>
-                            <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="carrier_id" groups="tt_base.group_tt_tour_travel" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="carrier_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="currency_id" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="description" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
                             <field name="tour_category" attrs="{'readonly': ['|', ('state', '!=', 'draft'), ('provider_id', '!=', %(tt_reservation_tour.tt_provider_tour_internal)d)]}"/>
@@ -191,7 +198,7 @@
                             <separator string="Other Charges"/>
                             <field name="other_charges_ids"/>
                         </page>
-                        <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel">
+                        <page string="Related Vendor(s)" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <field name="related_provider_ids"/>
                         </page>
 <!--                        <page string="Tour Quotation" groups="tt_base.group_tt_tour_travel">-->
@@ -407,7 +414,7 @@
                 <field name="country_str"/>
                 <field name="tour_line_amount"/>
                 <field name="create_uid"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="state"/>
             </tree>
         </field>

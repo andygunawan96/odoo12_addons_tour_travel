@@ -4,7 +4,7 @@ from odoo.exceptions import UserError
 
 class TtReconcileManualMatchWizard(models.TransientModel):
     _name = "tt.reconcile.manual.match.wizard"
-    _description = 'Rodex Wizard Reconcile Manual Match Wizard'
+    _description = 'Orbis Wizard Reconcile Manual Match Wizard'
 
     reconcile_transaction_line_id = fields.Many2one('tt.reconcile.transaction.lines','Transaction Line',readonly=True)
     current_total_price = fields.Monetary('Current Total Price',readonly=True)
@@ -27,7 +27,7 @@ class TtReconcileManualMatchWizard(models.TransientModel):
                 provider_type = self.env['tt.provider.%s' % (self._context['default_provider_type_code'])].search(search_domain)
             selection = []
             for rec in provider_type:
-                selection.append((rec.id,'{}  |  {:,}  |  {}'.format(rec.pnr or '######',rec.total_price and int(rec.total_price) or 0,rec.issued_date and str(rec.issued_date)[:19] or 'No Date')))
+                selection.append((rec.id,'{}  |  {:,}  |  {}'.format(rec.pnr or '######',rec.vendor_amount and int(rec.vendor_amount) or 0,rec.issued_date and str(rec.issued_date)[:19] or 'No Date')))
             return selection
         except:
             return []

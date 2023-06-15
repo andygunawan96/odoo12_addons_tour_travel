@@ -9,7 +9,7 @@
                 <form edit="false" create="false">
                     <header>
                         <field name="state_groupbooking" invisible="1"/>
-                        <button string="Set to PNR" name="%(tt_reservation_groupbooking.action_set_pnr_wizard_action_view)d" groups="tt_base.group_tt_tour_travel" type="action"
+                        <button string="Set to PNR" name="%(tt_reservation_groupbooking.action_set_pnr_wizard_action_view)d" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" type="action"
                             context="{
                                 'default_res_id': id,
                             }"
@@ -71,7 +71,7 @@
             <field name="model">tt.provider.groupbooking</field>
             <field name="arch" type="xml">
                 <tree string="">
-                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <field name="pnr"/>
                     <field name="state" string="Status"/>
                 </tree>

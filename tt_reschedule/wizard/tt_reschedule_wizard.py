@@ -10,6 +10,7 @@ class TtRescheduleWizard(models.TransientModel):
     _name = "tt.reschedule.wizard"
     _description = 'After Sales Wizard'
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
 
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
@@ -141,6 +142,7 @@ class TtRescheduleWizard(models.TransientModel):
                 'new_segment_ids': [(3, rec.id)]
             })
         reschedule_obj = self.env['tt.reschedule'].sudo().create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'booker_id': self.booker_id.id,

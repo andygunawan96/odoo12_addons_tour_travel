@@ -24,8 +24,9 @@ class PhoneDetail(models.Model):
     calling_code = fields.Char('Calling Code', required=True)
     calling_number = fields.Char('Calling Number', required=True)
     phone_number = fields.Char('Phone Number', store=True, compute='_compute_phone_number')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', string='Agent')
-    provider_id = fields.Many2one('tt.provider', string='Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', string='Provider HO Data')
     customer_id = fields.Many2one('tt.customer', string='Customer',ondelete="cascade")
     customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent')
     va_create = fields.Boolean('VA Create', default=False)
@@ -50,56 +51,65 @@ class PhoneDetail(models.Model):
         for rec in self:
             rec.phone_number = (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or '')
 
+    def get_currency_company(self):
+        currency = ''
+        companies = self.env['res.company'].search([])
+        for company in companies:
+            if company.currency_id:
+                currency = company.currency_id.name
+        return currency
+
     def generate_va_number(self):
         agent_open_payment_acqurier = self.env['payment.acquirer.number'].search([
             ('agent_id','=',self.agent_id.id),
             ('state','=','open')
         ])
-        agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
+        agent_obj = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
         check_number = self.env['payment.acquirer.number'].search(
-            ['|', ('number', 'ilike', self.calling_number[-8:]), ('email', '=', agent.email)])
-        if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent.email and agent.name:
-            ho_obj = self.env.ref('tt_base.rodex_ho')
+            ['|', ('number', 'ilike', self.calling_number[-8:]), ('email', '=', agent_obj.email)])
+        if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent_obj.email and agent_obj.name:
+            ho_obj = agent_obj.get_ho_parent_agent()
             bank_code_list = []
             existing_payment_acquirer_open = self.env['payment.acquirer'].search([('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
             for rec in existing_payment_acquirer_open:
                 bank_code_list.append(rec.bank_id.code)
+            currency = self.get_currency_company()
             data = {
                 'number': self.calling_number[-8:],
-                'email': agent.email,
-                'name': agent.name,
-                'bank_code_list': bank_code_list
+                'email': agent_obj.email,
+                'name': agent_obj.name,
+                'bank_code_list': bank_code_list,
+                'currency': currency
             }
-            res = self.env['tt.payment.api.con'].set_VA(data)
+            res = self.env['tt.payment.api.con'].set_VA(data, ho_obj.id)
             # res = self.env['tt.payment.api.con'].test(data)
             # res = self.env['tt.payment.api.con'].delete_VA(data)
             # res = self.env['tt.payment.api.con'].set_invoice(data)
             # res = self.env['tt.payment.api.con'].merchant_info(data)
             if res['error_code'] == 0:
                 if len(res['response']) > 0:
-                    ho_agent_obj = self.env['tt.agent'].browse(self.env.ref('tt_base.rodex_ho').id)
                     for rec in res['response']:
                         bank_obj = self.env['tt.bank'].search([('code', '=', rec['code'])],limit=1)
-                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_agent_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
+                        existing_payment_acquirer = self.env['payment.acquirer'].search([('agent_id','=',ho_obj.id), ('type','=','va'), ('bank_id','=',bank_obj.id)])
                         if not existing_payment_acquirer:
                             existing_payment_acquirer = self.env['payment.acquirer'].create({
                                 'type': 'va',
                                 'bank_id': bank_obj.id,
-                                'agent_id': ho_agent_obj.id,
+                                'agent_id': ho_obj.id,
                                 'provider': 'manual',
                                 'website_published': False,
                                 'name': 'Your Virtual Account at %s' % (bank_obj.name),
                             })
                         self.env['payment.acquirer.number'].create({
-                            'agent_id': agent.id,
+                            'agent_id': agent_obj.id,
                             'payment_acquirer_id': existing_payment_acquirer.id,
                             'state': 'open',
                             'number': rec['number'],
-                            'email': agent.email,
+                            'email': agent_obj.email,
                         })
                 else:
                     raise UserError(_("Phone number has been use, please change first phone number"))
-                for rec in agent.phone_ids:
+                for rec in agent_obj.phone_ids:
                     rec.va_create = False
                 self.va_create = True
                 return {
@@ -108,9 +118,9 @@ class PhoneDetail(models.Model):
                 }
             else:
                 raise UserError(_(res['error_msg']))
-        elif not agent.email:
+        elif not agent_obj.email:
             raise UserError(_("Please fill email"))
-        elif not agent.name:
+        elif not agent_obj.name:
             raise UserError(_("Please fill agent name"))
         elif len(check_number) > 0:
             raise UserError(_("Phone number or email has been registered in our system please use other number"))
@@ -119,23 +129,25 @@ class PhoneDetail(models.Model):
 
     def delete_va_number(self):
 
-        agent = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
-        ho_obj = self.env.ref('tt_base.rodex_ho')
+        agent_obj = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
+        ho_obj = agent_obj.get_ho_parent_agent()
         bank_code_list = []
         existing_payment_acquirer_open = self.env['payment.acquirer'].search(
             [('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
         for rec in existing_payment_acquirer_open:
             bank_code_list.append(rec.bank_id.code)
+        currency = self.get_currency_company()
         data = {
             "number": self.calling_number[-8:],
-            'email': agent.email,
-            'name': agent.name,
-            'bank_code_list': bank_code_list
+            'email': agent_obj.email,
+            'name': agent_obj.name,
+            'bank_code_list': bank_code_list,
+            'currency': currency
         }
         self.va_create = False
         self.env.cr.commit()
         if len(data) != 0:
-            res = self.env['tt.payment.api.con'].delete_VA(data)
+            res = self.env['tt.payment.api.con'].delete_VA(data, agent_obj.get_ho_parent_agent().id)
             if res['error_code'] == 0:
                 for rec in self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids.filtered(lambda x: x.state == 'open'):
                     rec.unlink()

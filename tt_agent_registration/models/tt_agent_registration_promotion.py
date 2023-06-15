@@ -46,7 +46,6 @@ class AgentRegistrationPromotion(models.Model):
         vals_list = []
         remaining_diff = 0
 
-        ho_agent = self.env.ref('tt_base.rodex_ho')
         line_obj = self.env['tt.agent.registration.promotion.agent.type'].search(
             [('promotion_id', '=', promotion_id.id), ('agent_type_id', '=', agent_type_id.id)])
         agent_hierarchy = self.get_agent_hierarchy(reference, hierarchy=[])

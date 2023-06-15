@@ -34,6 +34,7 @@ class TtMasterVoucherPPOB(models.Model):
     sequence = fields.Integer('Sequence', default=50)
     display_name = fields.Char('Display Name', compute='_compute_display_name')
     active = fields.Boolean('Active', default=True)
+    # ho_ids = fields.Many2many('tt.agent', 'tt_master_ppob_ho_agent_rel', 'ppob_voucher_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
 
     @api.depends('name', 'value')
     @api.onchange('name', 'value')

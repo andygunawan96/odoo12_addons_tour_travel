@@ -64,3 +64,11 @@ class TtCronLogInhResv(models.Model):
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('Retrieve Booking Hotel : TBO')
+
+    def cron_hotel_prepare(self):
+        try:
+            if int(self.env['ir.config_parameter'].sudo().get_param('last.gw.render.idx')):
+                self.env['tt.hotel'].v2_prepare_gateway_cache()
+
+        except Exception as e:
+            pass

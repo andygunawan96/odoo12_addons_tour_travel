@@ -5,6 +5,7 @@
             <field name="code">nathos_pcr_rs_nathos_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR
@@ -18,6 +19,7 @@
             <field name="code">nathos_pcr_poc_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR
@@ -31,6 +33,7 @@
             <field name="code">nathos_pcr_bali_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR
@@ -44,6 +47,7 @@
             <field name="code">nathos_pcr_mutasi_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR Mutasi
@@ -57,6 +61,7 @@
             <field name="code">nathos_pcr_saliva_rs_nathos_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR Saliva
@@ -70,6 +75,7 @@
             <field name="code">nathos_pcr_saliva_poc_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR Saliva
@@ -83,6 +89,7 @@
             <field name="code">nathos_pcr_saliva_bali_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information PCR Saliva
@@ -96,6 +103,7 @@
             <field name="code">nathos_antigen_rs_nathos_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Antigen
@@ -109,6 +117,7 @@
             <field name="code">nathos_antigen_poc_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Antigen
@@ -122,6 +131,7 @@
             <field name="code">nathos_tes_antibodi_rbd_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Tes Antibodi RBD
@@ -135,6 +145,7 @@
             <field name="code">nathos_antigen_nassal_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Nassal Antigen
@@ -148,6 +159,7 @@
             <field name="code">nathos_checkup1_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Checkup 1
@@ -161,6 +173,7 @@
             <field name="code">nathos_checkup2_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Checkup 2
@@ -174,6 +187,7 @@
             <field name="code">nathos_checkup3_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Checkup 3
@@ -187,6 +201,7 @@
             <field name="code">nathos_checkup4_male_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Checkup 4 Male
@@ -201,6 +216,7 @@
             <field name="code">nathos_checkup4_female_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Checkup 4 Female
@@ -214,6 +230,7 @@
             <field name="code">nathos_checkup5_male_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Checkup 5 Male
@@ -227,6 +244,7 @@
             <field name="code">nathos_checkup5_female_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Checkup 5 Female
@@ -240,6 +258,7 @@
             <field name="code">nathos_paket_screening_cvd19_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Paket Screening Covid19
@@ -253,6 +272,7 @@
             <field name="code">nathos_paket_screening_cvd19_with_pcr_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Paket Screening Covid19 With PCR
@@ -266,6 +286,7 @@
             <field name="code">nathos_paket_screening_cvd19_urban_lifestyle_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information Paket Screening Covid19 Urban Lifestyle

@@ -163,7 +163,8 @@ class TtProviderAirline(models.Model):
             'user_id': self.cancel_uid.id,
             'pnr': self.pnr,
             'pnr2': self.pnr2,
-            'provider': self.provider_id.code
+            'provider': self.provider_id.code,
+            'ho_id': self.booking_id.agent_id.get_ho_parent_agent().id
         }
         res = self.env['tt.airline.api.con'].send_sync_refund_status(req)
         if res['error_code'] != 0:
@@ -764,6 +765,7 @@ class TtProviderAirline(models.Model):
                 'foreign_currency_id': foreign_currency_id,
                 'provider_airline_booking_id': self.id,
                 'description': self.pnr and self.pnr or str(self.sequence),
+                'ho_id': self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             })
             scs.pop('currency')
             scs.pop('foreign_currency')
@@ -940,6 +942,7 @@ class TtProviderAirline(models.Model):
             "co_agent_type_name": user_id.agent_id.agent_type_id.name,
             "co_agent_type_code": user_id.agent_id.agent_type_id.code,
             "co_user_info": co_user_info,
+            "co_ho_id": user_id.agent_id.get_ho_parent_agent().id
         }
 
         req = {
@@ -1011,6 +1014,7 @@ class TtProviderAirline(models.Model):
             "co_agent_type_name": user_id.agent_id.agent_type_id.name,
             "co_agent_type_code": user_id.agent_id.agent_type_id.code,
             "co_user_info": co_user_info,
+            "co_ho_id": user_id.agent_id.get_ho_parent_agent().id
         }
 
         req = {
@@ -1108,6 +1112,7 @@ class TtProviderAirline(models.Model):
             "co_agent_type_name": user_id.agent_id.agent_type_id.name,
             "co_agent_type_code": user_id.agent_id.agent_type_id.code,
             "co_user_info": co_user_info,
+            "co_ho_id": user_id.agent_id.get_ho_parent_agent().id
         }
 
         req = {
@@ -1161,7 +1166,8 @@ class TtProviderAirline(models.Model):
             "provider": self.provider_id.code,
             "pnr": self.pnr,
             "pnr2": self.pnr2,
-            "reference": self.reference
+            "reference": self.reference,
+            "ho_id": self.booking_id.agent_id.get_ho_parent_agent().id
         }
         res = self.env['tt.airline.api.con'].send_vendor_ticket_email(req)
         _logger.info('Action Send Vendor Ticket Email, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
@@ -1195,6 +1201,8 @@ class TtProviderAirlinePricing(models.Model):
 
     provider_id = fields.Many2one('tt.provider.airline', 'Provider', readonly=1)
     raw_data = fields.Text('Raw Data')
+
+    rule_ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=1)
     rule_agent_id = fields.Many2one('tt.agent', 'Agent', readonly=1)
     rule_agent_type_code = fields.Char('Agent Type Code', readonly=1)
     rule_provider_type_code = fields.Char('Provider Type Code', readonly=1)

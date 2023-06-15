@@ -22,7 +22,8 @@
                             <!--</h1>-->
                         </div>
                         <group>
-                            <field name="provider_id"/>
+                            <field name="provider_ho_data_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="date"/>
                             <field name="currency_id"/>
                             <field name="rate_currency_id"/>
@@ -39,7 +40,7 @@
             <field name="model">tt.provider.rate</field>
             <field name="arch" type="xml">
                 <tree string="Res Rate Tree">
-                    <field name="provider_id"/>
+                    <field name="provider_ho_data_id"/>
                     <field name="date"/>
                     <field name="currency_id"/>
                     <field name="rate_currency_id" invisible="1"/>
@@ -89,7 +90,7 @@
                             <!--</h1>-->
                         </div>
                         <group>
-                            <field name="agent_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="base_currency_id"/>
                             <field name="to_currency_id"/>
                             <field name="rate"/>
@@ -104,7 +105,7 @@
             <field name="model">tt.agent.rate</field>
             <field name="arch" type="xml">
                 <tree string="Res Rate Tree">
-                    <field name="agent_id"/>
+                    <field name="ho_id"/>
                     <field name="base_currency_id"/>
                     <field name="to_currency_id"/>
                     <field name="rate"/>

@@ -39,6 +39,8 @@ class CustomerPricing(models.Model):
     name = fields.Char('Name', compute='_compute_name', store=True)
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id)
 
     customer_parent_type_name = fields.Char('Customer Parent Type Name', compute='_compute_customer_parent_type_name', store=True)
@@ -191,16 +193,18 @@ class CustomerPricing(models.Model):
             for obj in objs:
                 if not obj.active:
                     continue
-
-                vals = obj.get_data()
-                agent_id = str(vals['agent_id'])
-                if agent_id not in customer_pricing_data:
-                    customer_pricing_data[agent_id] = {
-                        'customer_pricing_list': [],
-                        'create_date': date_now,
-                        'expired_date': expired_date,
-                    }
-                customer_pricing_data[agent_id]['customer_pricing_list'].append(vals)
+                if obj.ho_id:
+                    if str(obj.ho_id.id) not in customer_pricing_data:
+                        customer_pricing_data[str(obj.ho_id.id)] = {}
+                        vals = obj.get_data()
+                        agent_id = str(vals['agent_id'])
+                        if agent_id not in customer_pricing_data[str(obj.ho_id.id)]:
+                            customer_pricing_data[str(obj.ho_id.id)][agent_id] = {
+                                'customer_pricing_list': [],
+                                'create_date': date_now,
+                                'expired_date': expired_date,
+                            }
+                        customer_pricing_data[str(obj.ho_id.id)][agent_id]['customer_pricing_list'].append(vals)
 
             payload = {
                 'customer_pricing_data': customer_pricing_data

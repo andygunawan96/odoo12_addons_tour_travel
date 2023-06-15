@@ -140,7 +140,9 @@ class TtReservation(models.Model):
     parent_agent_commission = fields.Monetary(string='Parent Agent Commission', default=0, compute='_compute_parent_agent_commission',store=True)
     ho_commission = fields.Monetary(string='HO Commission', default=0, compute='_compute_ho_commission',store=True)
 
-    # yang jual
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False,
+                               default=lambda self: self.env.user.ho_id,
+                               readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
                                default=lambda self: self.env.user.agent_id,
                                readonly=True, states={'draft': [('readonly', False)]})
@@ -185,13 +187,17 @@ class TtReservation(models.Model):
         try:
             vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
             vals_list['res_model'] = self._name
+            if vals_list.get('agent_id'):
+                agent_id = self.env['tt.agent'].browse(vals_list['agent_id'])
+                if agent_id:
+                    vals_list['ho_id'] = agent_id.get_ho_parent_agent().id
         except:
             pass
         return super(TtReservation, self).create(vals_list)
 
     def write(self, vals):
         if vals.get('hold_date'):
-            if self.agent_type_id.id == self.env.ref('tt_base.agent_type_btc').id:
+            if self.agent_id.is_btc_agent:
                 vals.pop('hold_date')
                 if not self.hold_date:
                     if vals.get('booked_date'):
@@ -245,6 +251,7 @@ class TtReservation(models.Model):
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
 
         vals.update({
+            'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
@@ -436,6 +443,7 @@ class TtReservation(models.Model):
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
 
         vals.update({
+            'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
@@ -466,7 +474,7 @@ class TtReservation(models.Model):
 
         res_ids = []
         # identity_req = ['identity_number','identity_country_of_issued_id','identity_expdate','identity_type']
-
+        ho_agent_obj = self.env['tt.agent'].browse(context['co_ho_id'])
         for psg in passengers:
             country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
             psg['nationality_id'] = country and country[0].id or False
@@ -493,6 +501,10 @@ class TtReservation(models.Model):
                         vals_for_update.update({
                             'birth_date': psg['birth_date']
                         })
+                    if ho_agent_obj:
+                        vals_for_update.update({
+                            'ho_id': ho_agent_obj.id
+                        })
 
                     #manual aja
                     # [vals_for_update.update({
@@ -514,12 +526,14 @@ class TtReservation(models.Model):
                     res_ids.append(current_passenger)
                     continue
 
+            psg['ho_id'] = context['co_ho_id']
             psg['agent_id'] = context['co_agent_id']
 
             psg.update({
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
                 'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
-                'register_uid': context['co_uid']
+                'register_uid': context['co_uid'],
+                'ho_id': ho_agent_obj.id
             })
             # sepertinya tidak terpakai
             # #if ada phone, kalau dari frontend cache passenger
@@ -709,21 +723,19 @@ class TtReservation(models.Model):
 
     @api.depends("sale_service_charge_ids")
     def _compute_parent_agent_commission(self):
-        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != id_ho:
+                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and not sale.commission_agent_id.is_ho_agent:
                     commission_total += abs(sale.total)
             rec.parent_agent_commission = commission_total
 
     @api.depends("sale_service_charge_ids")
     def _compute_ho_commission(self):
-        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == id_ho:
+                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.is_ho_agent:
                     commission_total += abs(sale.total)
             rec.ho_commission = commission_total
 
@@ -740,7 +752,7 @@ class TtReservation(models.Model):
         except:
             raise RequestException(1008)
 
-        if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+        if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_id.is_btc_agent or book_obj.user_id.agent_id.is_btc_agent:
             payment_acq_number = ''
             bank_code = ''
             url = ''
@@ -786,7 +798,7 @@ class TtReservation(models.Model):
         #         })
         include_total_nta = False
         if context and context.get('co_agent_id'):
-            include_total_nta = context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id
+            include_total_nta = context['co_agent_id'] == context['co_ho_id']
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
             if self.payment_acquirer_number_id.state == 'close':
@@ -827,6 +839,7 @@ class TtReservation(models.Model):
         res = {
             'order_number': self.name,
             'book_id': self.id,
+            'ho_id': self.ho_id.id if self.ho_id else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'agent_name': self.agent_id.name if self.agent_id else '',
             'customer_parent_name': self.customer_parent_id.name if self.customer_parent_id else '',
@@ -1293,6 +1306,7 @@ class TtReservation(models.Model):
                 'res_model': book_obj._name,
                 'res_id': book_obj.id,
                 'booker_id': booker_obj.id,
+                'ho_id': context.get('co_ho_id', book_obj.ho_id.id),
                 'agent_id': context.get('co_agent_id', book_obj.agent_id.id),
                 'customer_parent_id': context.get('co_customer_parent_id', book_obj.customer_parent_id.id),
                 'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy)
@@ -1474,8 +1488,8 @@ class TtReservation(models.Model):
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
                 is_use_point = False
-                website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
-                if website_use_point_reward == 'True':
+                website_use_point_reward = book_obj.agent_id.get_ho_parent_agent().is_use_point_reward
+                if website_use_point_reward:
                     is_use_point = req.get('use_point')
 
                 total_use_point = 0
@@ -1556,7 +1570,7 @@ class TtReservation(models.Model):
                     # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                     if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
                         try:
-                            ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id','=',self.env.ref('tt_base.rodex_ho').id)])
+                            ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id.is_ho_agent','=',True)])
                             amount = 0
                             for ledger in ledger_obj:
                                 amount += ledger.debit
@@ -1596,7 +1610,7 @@ class TtReservation(models.Model):
                         #     print("5k woi")
 
                 ## add point reward for agent
-                if website_use_point_reward == 'True' and payment_method_use_to_ho != 'credit_limit':
+                if website_use_point_reward and payment_method_use_to_ho != 'credit_limit':
                     ## ASUMSI point reward didapat dari total harga yg di bayar
                     ## karena kalau per pnr per pnr 55 rb & rules point reward kelipatan 10 rb agent rugi 1 point
                     self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
@@ -1665,7 +1679,10 @@ class TtReservation(models.Model):
 
     def get_email_reply_to(self):
         try:
-            final_email = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_default_email_address', default='')
+            final_email = ''
+            if self.agent_id:
+                ho_agent_obj = self.agent_id.get_ho_parent_agent()
+                final_email = ho_agent_obj.email_server_id.smtp_user
         except Exception as e:
             _logger.info(str(e))
             final_email = ''
@@ -1718,7 +1735,8 @@ class TtReservation(models.Model):
                 for prices in rec.sale_service_charge_ids:
                     if prices.charge_type == 'RAC':
                         if prices.charge_code in ['dif','fac','hoc']:
-                            prices.commission_agent_id = self.env.ref('tt_base.rodex_ho').id
+                            ho_obj = self.agent_id.get_ho_parent_agent()
+                            prices.commission_agent_id = ho_obj and ho_obj.id or False
                         elif prices.charge_code == 'rac':
                             prices.commission_agent_id = False
                         elif prices.charge_code != 'rac':

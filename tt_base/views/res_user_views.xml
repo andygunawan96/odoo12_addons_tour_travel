@@ -1,10 +1,12 @@
 <odoo>
+    <!--    Change Default Official Odoo-->
     <record id="res_users_search_view_inh" model="ir.ui.view">
         <field name="name">res.users.search.inh</field>
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_search"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
+                <field name="ho_id" string="Head Office" groups="base.group_erp_manager"/>
                 <field name="agent_id" string="Agent"/>
                 <field name="agent_type_related_id" string="Agent Type Related"/>
                 <filter name="is_banned" string="Banned" domain="[('is_banned','=',True)]"/>
@@ -18,10 +20,11 @@
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                <button string="Duplicate Permissions" name="%(tt_base.res_users_duplicate_permissions_wizard_action_view)d" type="action" groups="base.group_system"
+                <button string="Duplicate Permissions" name="%(tt_base.res_users_duplicate_permissions_wizard_action_view)d" type="action" groups="base.group_erp_manager"
                         context="{
                         'default_base_user_id': id,
                    }"/>
+                <button name="set_all_default_ho" string="Set All Default HO" type="object" groups="base.group_system"/>
             </xpath>
             <xpath expr="//button[@name='toggle_active']" position="before">
                 <field name="is_banned" invisible="1"/>
@@ -29,6 +32,7 @@
             </xpath>
             <xpath expr="//div[hasclass('oe_title')]/group/field[@name='partner_id']" position="after">
                 <field name="is_user_template"/>
+                <field name='ho_id' groups="base.group_erp_manager" readonly="False"/>
                 <field name="agent_type_id" attrs="{'invisible': [('is_user_template','=',False)]}"/>
                 <field name='agent_id' groups="base.group_user" readonly="False" attrs="{'invisible': [('is_user_template','=',True)]}"/>
                 <field name='agent_type_related_id' groups="base.group_user" attrs="{'invisible': [('is_user_template','=',True)]}"/>
@@ -81,6 +85,7 @@
         <field name="arch" type="xml">
             <field name="login" position="after">
                 <field name='agent_id' groups="base.group_user"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
             </field>
         </field>
     </record>
@@ -94,6 +99,7 @@
                 <field name="name"/>
                 <field name="login"/>
                 <field name="agent_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="lang"/>
                 <field name="login_date"/>
             </tree>
@@ -121,6 +127,7 @@
                     </div>
                     <group>
                         <field name="type_id"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="agent_id"/>
                         <field name="customer_id"/>
                     </group>

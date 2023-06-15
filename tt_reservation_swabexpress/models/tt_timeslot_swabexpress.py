@@ -20,7 +20,7 @@ ADDRESS_SURCHARGE = 100000## Fee per bookingan
 
 class TtTimeslotSwabExpress(models.Model):
     _name = 'tt.timeslot.swabexpress'
-    _description = 'Rodex Model Timeslot Swab Express'
+    _description = 'Orbis Model Timeslot Swab Express'
     _order = 'datetimeslot'
     _rec_name = 'timeslot_display_name'
 
@@ -64,6 +64,7 @@ class TtTimeslotSwabExpress(models.Model):
 
     active = fields.Boolean('Active', default='True')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.depends('datetimeslot')
@@ -189,7 +190,7 @@ class TtTimeslotSwabExpress(models.Model):
 
 class TtTimeslotswabexpressdefault(models.Model):
     _name = 'tt.timeslot.swabexpress.default'
-    _description = 'Rodex Model Timeslot Swab Express Default'
+    _description = 'Orbis Model Timeslot Swab Express Default'
     _order = 'sequence'
 
     name = fields.Char("Name", required=True)

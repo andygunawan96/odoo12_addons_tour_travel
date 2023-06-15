@@ -39,6 +39,7 @@
                         <div name="point_div">
                             <field name="points"/> pts
                         </div>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
 
                     </group>
                 </sheet>

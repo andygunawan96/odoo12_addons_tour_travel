@@ -10,3 +10,4 @@ tt_traveldoc_type_for_agent_user_supervisor,tt.traveldoc.type.for.agent.user.sup
 tt_traveldoc_type_for_agent_user_manager,tt.traveldoc.type.for.agent.user.manager,model_tt_traveldoc_type,tt_base.group_tt_agent_user_manager,1,0,0,0
 
 tt_traveldoc_type_for_agent,tt.traveldoc.type.for.agent,model_tt_traveldoc_type,tt_base.group_tt_agent_user,1,0,0,0
+tt_traveldoc_type_for_admin,tt.traveldoc.type.for.admin,model_tt_traveldoc_type,base.group_erp_manager,1,1,1,1

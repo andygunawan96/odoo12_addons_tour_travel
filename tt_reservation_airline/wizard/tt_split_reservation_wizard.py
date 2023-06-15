@@ -186,6 +186,7 @@ class TtSplitReservationWizard(models.TransientModel):
                 'split_uid': self.env.user.id,
                 'split_date': fields.Datetime.now(),
                 'pnr': book_obj.pnr,
+                'ho_id': book_obj.ho_id and book_obj.ho_id.id or False,
                 'agent_id': book_obj.agent_id and book_obj.agent_id.id or False,
                 'customer_parent_id': book_obj.customer_parent_id and book_obj.customer_parent_id.id or False,
                 'provider_type_id': book_obj.provider_type_id.id,

@@ -11,13 +11,14 @@ Tour & Travel - Report Vendor Event
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'tt_base', 'tt_agent_report', 'tt_reservation_event'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'wizard/tt_report_vendor_event_view.xml',
         'report/tt_report_vendor_event_menu.xml',
         'views/temporary_views.xml',

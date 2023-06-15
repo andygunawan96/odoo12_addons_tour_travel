@@ -8,7 +8,7 @@ class TtProviderApiCon(models.Model):
     _name = 'tt.provider.api.con'
     _inherit = 'tt.api.con'
 
-    table_name = 'tt.provider'
+    table_name = 'tt.provider.ho.data'
 
     def action_call(self, table_obj, action, data, context):
         if action == 'create_provider_ledger':

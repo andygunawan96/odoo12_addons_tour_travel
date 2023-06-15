@@ -63,7 +63,7 @@
             <field name="model">tt.provider.offline</field>
             <field name="arch" type="xml">
                 <tree string="">
-                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                    <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                     <field name="pnr"/>
                     <field name="state" string="Status"/>
                 </tree>

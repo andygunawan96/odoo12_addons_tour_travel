@@ -6,7 +6,7 @@ import logging, traceback
 class TtReservationCustomer(models.Model):
     _name = 'tt.reservation.passenger.event'
     _inherit = 'tt.reservation.passenger'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     cost_service_charge_ids = fields.Many2many('tt.service.charge', 'tt_reservation_event_cost_charge_rel',
                                                'passenger_id', 'service_charge_id', 'Cost Service Charges')

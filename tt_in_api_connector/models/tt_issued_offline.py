@@ -18,7 +18,7 @@ class TtOfflineApiCon(models.Model):
 
         return res
 
-    def send_approve_notification(self,document_number,approve_uid,amount):
+    def send_approve_notification(self,document_number,approve_uid,amount, ho_id):
         request = {
             'code': 9906,
             'message': 'Issued Offline by {} Rp {:,}'.format(approve_uid,amount),
@@ -26,4 +26,4 @@ class TtOfflineApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_code')
+                                            ,'notification_code', ho_id=ho_id)

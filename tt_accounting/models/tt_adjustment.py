@@ -31,6 +31,9 @@ class TtAdjustment(models.Model):
                                   " * The 'Validated' status is used for Ticketing Manager to validate the request.\n"
                                   " * The 'Approved' status is used for Accounting & Finance Adviser to approve the request, then ledger is created.\n"
                                   " * The 'Canceled' status is used for Accounting & Finance Adviser to cancel the request.\n")
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True,
+                               default=lambda self: self.env.user.ho_id, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True,
                                default=lambda self: self.env.user.agent_id, states={'draft': [('readonly', False)]})
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',

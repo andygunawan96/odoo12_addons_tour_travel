@@ -31,6 +31,7 @@
                             <field name="account_number"/>
                             <field name="account_holder_name"/>
                             <field name="bank_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                         </group>
                     </sheet>

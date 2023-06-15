@@ -28,9 +28,11 @@ class AgentReportLedger(models.AbstractModel):
         """
 
     @staticmethod
-    def _where(date_from, date_to, agent_id):
+    def _where(date_from, date_to, agent_id, ho_id):
         where = """lg.create_date >= '%s' and lg.create_date <= '%s'
                          """ % (date_from, date_to)
+        if ho_id:
+            where += """ AND lg.ho_id = """ + str(ho_id)
         if agent_id:
             where += """ AND lg.agent_id = """ + str(agent_id)
         return where
@@ -47,10 +49,10 @@ class AgentReportLedger(models.AbstractModel):
         lg.id
         """
 
-    def _lines(self, date_from, date_to, agent_id):
+    def _lines(self, date_from, date_to, agent_id, ho_id):
         query = 'SELECT ' + self._select() + \
                 'FROM ' + self._from() + \
-                'WHERE ' + self._where(date_from, date_to, agent_id) + \
+                'WHERE ' + self._where(date_from, date_to, agent_id, ho_id) + \
                 'ORDER BY ' + self._order_by()
         self.env.cr.execute(query)
         _logger.info(query)
@@ -65,7 +67,7 @@ class AgentReportLedger(models.AbstractModel):
         return lines
 
     def _get_user_agent_type(self, data_form):
-        if self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+        if self.env.user.agent_id.is_ho_agent:
             data_form['agent_type'] = 'ho'
         else:
             data_form['agent_type'] = 'non ho'
@@ -78,9 +80,10 @@ class AgentReportLedger(models.AbstractModel):
         date_from = data_form['date_from']
         date_to = data_form['date_to']
         agent_id = data_form['agent_id']
+        ho_id = data_form['ho_id']
         line_list = []
 
-        lines = self._lines(date_from, date_to, agent_id)  # main data
+        lines = self._lines(date_from, date_to, agent_id, ho_id)  # main data
         lines = self._convert_data(lines)
         for line in lines:
             line_list.append(line)

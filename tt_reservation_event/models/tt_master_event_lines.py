@@ -9,7 +9,7 @@ SESSION_NT = session.Session()
 
 class MasterEventLines(models.Model):
     _name = "tt.master.event.lines"
-    _description = 'Rodex Event Master Lines'
+    _description = 'Orbis Event Master Lines'
 
     event_id = fields.Many2one("tt.master.event", 'Event Name', ondelete="cascade")
     uuid = fields.Char('Uuid')
@@ -50,7 +50,7 @@ class MasterEventLines(models.Model):
 class MasterEventSKU(models.Model):
     _name = 'tt.master.event.sku'
     _rec_name = 'title'
-    _description = 'Rodex Event SKU Model'
+    _description = 'Orbis Event SKU Model'
 
     sku_id = fields.Char('SKU ID')
     title = fields.Char('SKU Title')

@@ -374,6 +374,7 @@ class TtProviderPPOB(models.Model):
                     scs_pax_count += 1
                     scs['total'] += scs['amount']
             scs['passenger_ppob_ids'] = [(6,0,scs['passenger_ppob_ids'])]
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             service_chg_obj.create(scs)
 
         # "sequence": 1,

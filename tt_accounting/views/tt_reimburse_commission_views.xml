@@ -10,6 +10,7 @@
                 <field name="provider_issued_date"/>
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
@@ -31,7 +32,8 @@
                     <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}"/>
                     <filter name="group_by_provider_type_id" string="Provider Type" domain="[]" context="{'group_by':'provider_type_id'}"/>
                     <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_ho_id" string="Head Office" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -62,6 +64,7 @@
                             <field name="provider_issued_date"/>
                             <field name="provider_type_id"/>
                             <field name="provider_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="currency_id"/>
                             <field name="rac_mode"/>
@@ -151,6 +154,7 @@
                 <field name="provider_issued_date"/>
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id"/>
                 <field name="currency_id"/>
                 <field name="rac_mode"/>

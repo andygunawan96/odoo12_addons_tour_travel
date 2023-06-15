@@ -11,8 +11,8 @@ Tour & Travel - Report Common
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['tt_base'],
 
     # always loaded
@@ -41,6 +41,7 @@ Key Features
         'report/printout_voucher_template.xml',
         'report/printout_letter_guarantee_template.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'views/tt_report_setting_views.xml',
         'views/menu_item_base.xml',
     ],

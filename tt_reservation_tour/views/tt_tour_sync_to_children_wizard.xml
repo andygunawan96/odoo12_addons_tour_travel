@@ -33,7 +33,7 @@
 				parent="tt_reservation_tour.menu_tour_travel_tour_config"
 				action="action_tour_sync_product_children_wizard"
 				sequence="2"
-				groups="tt_base.group_master_data_tour_level_3"
+				groups="base.group_erp_manager"
 		/>
 
 	</data>

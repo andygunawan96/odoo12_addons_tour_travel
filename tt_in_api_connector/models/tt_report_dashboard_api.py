@@ -16,7 +16,7 @@ class TtReportDashboardApiCon(models.Model):
         elif action == 'get_report_xls':
             res = table_obj.get_report_xls_api(data,context)
         elif action == 'get_vendor_balance':
-            res = self.env['tt.provider'].get_vendor_balance_api(context)
+            res = self.env['tt.provider.ho.data'].get_vendor_balance_api(context)
         else:
             raise RequestException(999)
 

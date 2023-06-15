@@ -7,6 +7,7 @@
             <form string="Reschedule Wizard">
                 <group>
                     <group>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="agent_id"/>
                         <field name="booker_id"/>
                         <field name="import_data"/>

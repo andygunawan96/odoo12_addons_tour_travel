@@ -11,8 +11,8 @@ Tour & Travel - Agent Sales Offline
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['base', 'tt_agent_sales', 'tt_reservation_offline'],
 
     # always loaded

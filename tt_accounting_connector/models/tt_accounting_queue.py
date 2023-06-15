@@ -26,6 +26,7 @@ class TtAccountingQueue(models.Model):
     send_uid = fields.Many2one('res.users', 'Last Sent By', readonly=True)
     send_date = fields.Datetime('Last Sent Date', readonly=True)
     action = fields.Char('Action', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
 
     def to_dict(self):
         return {
@@ -72,7 +73,7 @@ class TtAccountingQueue(models.Model):
                 request = trans_obj.to_dict()
                 ledger_list = []
                 is_send_commission = False
-                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider','=', self.accounting_provider)],limit=1)
+                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider','=', self.accounting_provider), ('ho_id', '=', self.ho_id.id)],limit=1)
                 if accounting_obj:
                     is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
@@ -121,7 +122,7 @@ class TtAccountingQueue(models.Model):
                             temp_prov_price_dict['agent_nta'] += sale.total
                         if sale.charge_type == 'RAC':
                             temp_prov_price_dict['total_commission'] -= sale.total
-                            if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                            if sale.commission_agent_id.is_ho_agent:
                                 temp_prov_price_dict['ho_commission'] -= sale.total
                         if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
                             temp_prov_price_dict['agent_nta'] += sale.total
@@ -153,7 +154,7 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type == 'RAC':
                                     temp_tick_price_dict['total_commission'] -= sale.amount
-                                    if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                                    if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
                                     temp_tick_price_dict['agent_nta'] += sale.amount
@@ -190,7 +191,7 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type == 'RAC':
                                     temp_tick_price_dict['total_commission'] -= sale.amount
-                                    if sale.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                                    if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
                                     temp_tick_price_dict['agent_nta'] += sale.amount
@@ -237,7 +238,8 @@ class TtAccountingQueue(models.Model):
                         request.update({
                             'order_number': request['order_number'] + '.' + self.action
                         })
-                    self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider)
+                    ho_id = trans_obj.agent_id.get_ho_parent_agent().id
+                    self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider, ho_id)
             elif self.res_model in ['tt.refund', 'tt.reschedule', 'tt.reschedule.periksain', 'tt.reschedule.phc']:
                 request = trans_obj.to_dict()
                 if self.res_model == 'tt.refund':
@@ -345,7 +347,8 @@ class TtAccountingQueue(models.Model):
                 request = {}
             if request:
                 request.update({
-                    'accounting_queue_id': self.id
+                    'accounting_queue_id': self.id,
+                    'ho_id': self.ho_id.id
                 })
                 if self.res_model == 'tt.customer.parent':
                     res = self.env['tt.accounting.connector.%s' % self.accounting_provider].add_customer(request)
@@ -373,7 +376,7 @@ class TtAccountingQueue(models.Model):
                 request = trans_obj.to_dict()
                 ledger_list = []
                 is_send_commission = False
-                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider', '=', self.accounting_provider)], limit=1)
+                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider', '=', self.accounting_provider), ('ho_id', '=', self.ho_id.id)], limit=1)
                 if accounting_obj:
                     is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:

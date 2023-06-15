@@ -129,7 +129,7 @@
 			<field name="copyvalue"/>
 			<field name="body_html">
 <![CDATA[
-<p>Dear Rodex Tour Division,</p>
+<p>Dear Orbis Tour Division,</p>
 <br/>
 <br/>
 <p>Please kindly check our new Tour Package Request with the following name: ${object.name}</p>

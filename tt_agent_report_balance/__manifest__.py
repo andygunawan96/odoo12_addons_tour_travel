@@ -11,13 +11,14 @@ Tour & Travel - Agent Report Balance
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['base', 'tt_base', 'tt_report_common', 'tt_agent_report'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'views/tt_agent_report_balance_log.xml',
         'wizard/tt_agent_report_balance_view.xml',
         'report/tt_agent_report_balance_menu.xml',

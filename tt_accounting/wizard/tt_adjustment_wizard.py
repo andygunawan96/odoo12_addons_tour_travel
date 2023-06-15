@@ -9,7 +9,7 @@ class TtAdjustmentWizard(models.TransientModel):
     _name = "tt.adjustment.wizard"
     _description = 'Adjustment Wizard'
 
-
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
@@ -50,6 +50,7 @@ class TtAdjustmentWizard(models.TransientModel):
             self.reason_uid = False
 
         adjustment_obj = self.env['tt.adjustment'].create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'currency_id': self.currency_id.id,

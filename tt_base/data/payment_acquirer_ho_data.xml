@@ -6,6 +6,7 @@
             <field name="provider">manual</field>
             <field name="type">transfer</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="bank_id" ref="tt_base.tt_bank_id_1"/>
             <field name="account_number">99.9999.9999</field>
             <field name="account_name">Placeholder</field>

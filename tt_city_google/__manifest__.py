@@ -11,8 +11,8 @@ Tour & Travel - Google State and City Code
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': [
         'base_address_city',
     ],

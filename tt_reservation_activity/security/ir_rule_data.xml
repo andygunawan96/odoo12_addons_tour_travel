@@ -1,4 +1,32 @@
 <odoo>
+    <record id="tt_master_activity_for_ho" model="ir.rule">
+        <field name="name">Master Activity For HO</field>
+        <field name="model_id" ref="model_tt_master_activity"/>
+        <field name="domain_force">['|','|',('owner_ho_id','=',user.ho_id.id),('ho_ids','=',user.ho_id.id),('ho_ids','=',False)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_master_activity_for_ho_user" model="ir.rule">
+        <field name="name">Master Activity For HO User</field>
+        <field name="model_id" ref="model_tt_master_activity"/>
+        <field name="domain_force">['|','|',('owner_ho_id','=',user.ho_id.id),('ho_ids','=',user.ho_id.id),('ho_ids','=',False)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_reservation_activity_for_ho" model="ir.rule">
+        <field name="name">Reservation Activity For HO</field>
+        <field name="model_id" ref="model_tt_reservation_activity"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_reservation_activity_for_ho_user" model="ir.rule">
+        <field name="name">Reservation Activity For HO User</field>
+        <field name="model_id" ref="model_tt_reservation_activity"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
     <record id="tt_reservation_activity_for_agent" model="ir.rule">
         <field name="name">Reservation Activity For Agent</field>
         <field name="model_id" ref="model_tt_reservation_activity"/>

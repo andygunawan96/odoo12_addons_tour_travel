@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 class MasterTourOtherCharges(models.Model):
     _name = "tt.master.tour.other.charges"
-    _description = 'Rodex Model'
+    _description = 'Orbis Model'
 
     name = fields.Char('Name', required=True, default='')
     pax_type = fields.Selection(variables.PAX_TYPE, string='Pax Type', default='ADT', required=True)

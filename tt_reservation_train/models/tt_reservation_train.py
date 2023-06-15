@@ -303,10 +303,10 @@ class TtReservationTrain(models.Model):
             return ERR.get_error(1004)
 
     def psg_validator(self,book_obj):
+        ho_agent_obj = book_obj.agent_id.get_ho_parent_agent()
         for provider in book_obj.provider_booking_ids:
             for journey in provider['journey_ids']:
-
-                rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', journey.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code)])
+                rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', journey.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code), ('ho_id','=',ho_agent_obj.id)])
 
                 if rule:
                     limit = rule.rebooking_limit
@@ -822,6 +822,7 @@ class TtReservationTrain(models.Model):
                     curr_dict['pax_type'] = p_type
                     curr_dict['booking_train_id'] = self.id
                     curr_dict['description'] = provider.pnr
+                    curr_dict['ho_id'] = self.ho_id.id if self.ho_id else ''
                     curr_dict.update(c_val)
                     values.append((0,0,curr_dict))
 
@@ -1108,7 +1109,7 @@ class TtReservationTrain(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount
