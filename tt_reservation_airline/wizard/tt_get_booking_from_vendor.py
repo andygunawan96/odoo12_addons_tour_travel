@@ -20,7 +20,7 @@ provider_selection = [
         ('sia', 'Singapore Airline NDC'),
         ('scoot', 'Scoot'),
         ('jetstar', 'Jetstar'),
-        ('rodextrip_airline', 'Rodextrip Airline'),
+        ('rodextrip_airline', 'RT Airline'),
         ('airasia', 'Airasia'),
         ('airasia_web', 'Airasia Web'),
         ('qatar', 'Qatar'),

@@ -201,7 +201,10 @@ class AgentReportRecapAfterSales(models.Model):
     def _prepare_values(self, data_form):
         data_form['state'] = 'issued'
         data_form['is_ho'] = self.env.user.agent_id.is_ho_agent
-        data_form['ho_name'] = self.env.ref('tt_base.rodex_ho').sudo().name
+        ho_obj = self.env['tt.agent'].sudo().browse(int(data_form['ho_id']))
+        if not ho_obj:
+            ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+        data_form['ho_name'] = ho_obj and ho_obj.name or self.env.ref('tt_base.rodex_ho').sudo().name
         date_from = data_form['date_from']
         date_to = data_form['date_to']
         # if not data_form['state']:
