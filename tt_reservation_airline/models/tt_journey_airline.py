@@ -53,6 +53,8 @@ class TtJourneyAirline(models.Model):
         journey_key_list = []
         origin_code = self.origin_id.code if self.origin_id else ''
         destination_code = self.destination_id.code if self.destination_id else ''
+        origin_display_name = self.origin_id.name if self.origin_id else ''
+        destination_display_name = self.destination_id.name if self.destination_id else ''
         if origin_code:
             journey_key_list.append(origin_code)
         if destination_code:
@@ -63,7 +65,9 @@ class TtJourneyAirline(models.Model):
         res = {
             'sequence': self.sequence,
             'origin': origin_code,
+            'origin_display_name': origin_display_name,
             'destination': destination_code,
+            'destination_display_name': destination_display_name,
             'journey_key': journey_key,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,

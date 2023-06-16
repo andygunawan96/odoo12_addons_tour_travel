@@ -691,7 +691,9 @@ class TtReservationTrain(models.Model):
             res.update({
                 'direction': book_obj.direction,
                 'origin': book_obj.origin_id.code,
+                'origin_display_name': book_obj.origin_id.name,
                 'destination': book_obj.destination_id.code,
+                'destination_display_name': book_obj.destination_id.name,
                 'sector_type': book_obj.sector_type,
                 'passengers': psg_list,
                 'provider_bookings': prov_list,
