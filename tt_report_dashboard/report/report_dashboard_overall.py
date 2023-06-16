@@ -100,7 +100,7 @@ class ReportDashboardOverall(models.Model):
         """ % (start_date, end_date)
 
     @staticmethod
-    def _where_join_service_charge(date_from, date_to, agent_id, provider_type):
+    def _where_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type):
         where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
         # if agent_id:
         #     where += """ AND rsv.agent_seq_id = '%s'""" % agent_id
@@ -158,7 +158,7 @@ class ReportDashboardOverall(models.Model):
     ################
 
     # this function responsible to build and execute query to get service charge
-    def _lines_join_service_charge(self, date_from, date_to, agent_id, provider_type):
+    def _lines_join_service_charge(self, date_from, date_to, agent_id, ho_id, provider_type):
         # SELECT
         query = 'SELECT ' + self._select_join_service_charge()
 
@@ -166,7 +166,7 @@ class ReportDashboardOverall(models.Model):
         query += 'FROM ' + self._from_join_service_charge(provider_type)
 
         # WHERE
-        query += 'WHERE ' + self._where_join_service_charge(date_from, date_to, agent_id, provider_type)
+        query += 'WHERE ' + self._where_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type)
 
         # ORDER BY
         query += 'ORDER BY ' + self._order_by_join_service_charge()
@@ -191,10 +191,23 @@ class ReportDashboardOverall(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    # this function responsible to build and execute query to get agent
-    def get_agent_lines(self):
-        query = "SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id FROM tt_agent agent ORDER BY name"
+    def get_ho_lines(self):
+        query = "SELECT COALESCE(ho.seq_id, '') as seq_id, ho.name FROM tt_agent ho WHERE ho.is_ho_agent = 'True' ORDER BY name"
 
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
+
+    # this function responsible to build and execute query to get agent
+    def get_agent_lines(self, ho_id=''):
+        query = """
+                SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, ho.seq_id as ho_seq_id 
+                FROM tt_agent agent 
+                LEFT JOIN tt_agent ho ON ho.id = agent.ho_id 
+                """
+        if ho_id:
+            query += """WHERE ho.id = {} """.format(int(ho_id))
+        query += """ORDER BY agent.name"""
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
@@ -232,6 +245,7 @@ class ReportDashboardOverall(models.Model):
         query = """
         SELECT ledger.date as date_og, ledger.debit, agent.name as agent_name, agent_type.name as agent_type, provider_type.name as provider_type
         FROM tt_ledger ledger
+        LEFT JOIN tt_agent ho ON ho.id = ledger.ho_id
         LEFT JOIN tt_agent agent ON agent.id = ledger.agent_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = ledger.agent_type_id
         LEFT JOIN tt_provider_type provider_type ON provider_type.id = ledger.provider_type_id
@@ -240,6 +254,9 @@ class ReportDashboardOverall(models.Model):
 
         if data['agent_type_seq_id']:
             query += """AND agent_type.code = '%s' """ % (data['agent_type_seq_id'])
+
+        if data.get('ho_seq_id'):
+            query += """AND ho.seq_id = '%s' """ % (data['ho_seq_id'])
 
         if data['agent_seq_id']:
             query += """AND agent.seq_id = '%s' """ % (data['agent_seq_id'])
@@ -253,16 +270,16 @@ class ReportDashboardOverall(models.Model):
 
     # this function handle preparation to call query builder for service charge
     # it handles if we ask either all provider type or specified provider type
-    def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, provider_type):
+    def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, ho_id, provider_type):
         lines = []
         if provider_type != 'all':
             # if we only ask for specific provider type
-            lines = self._lines_join_service_charge(date_from, date_to, agent_id, provider_type)
+            lines = self._lines_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type)
         else:
             # if we ask for all provider type
             provider_types = variables.PROVIDER_TYPE
             for provider_type in provider_types:
-                report_lines = self._lines_join_service_charge(date_from, date_to, agent_id, provider_type)
+                report_lines = self._lines_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type)
                 for j in report_lines:
                     lines.append(j)
         return lines
@@ -313,11 +330,24 @@ class ReportDashboardOverall(models.Model):
     #   it's like a get-set function in OOP
     ##########################################
 
+    # get all ho
+    # input - none
+    # return [{'seq_id': xxx, 'name': 'John'}]
+    def get_ho_all(self):
+        lines = self.get_ho_lines()
+        # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
+        return lines
+
     # get all agent
     # input - none
     # return [{'seq_id': xxx, 'name': 'John', 'agent_type_id': 'xx'}]
     def get_agent_all(self):
         lines = self.get_agent_lines()
+        # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
+        return lines
+
+    def get_agent_by_ho(self, ho_id):
+        lines = self.get_agent_lines(ho_id)
         # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
         return lines
 
@@ -365,6 +395,8 @@ class ReportDashboardOverall(models.Model):
     def get_service_charge(self, data):
         date_from = data['start_date']
         date_to = data['end_date']
+        # get ho data
+        ho_id = data.get('ho_seq_id') and data['ho_seq_id'] or ''
         # get agent data
         agent_id = data['agent_seq_id']
         agent_type = data['agent_type']
@@ -377,7 +409,7 @@ class ReportDashboardOverall(models.Model):
             provider_type = 'all'
 
         # execute code
-        lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, provider_type)
+        lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type)
 
         #return data
         return lines

@@ -3,7 +3,7 @@ from ...tools import variables
 
 class TtTicketEvent(models.Model):
     _name = 'tt.ticket.event'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     provider_id = fields.Many2one('tt.provider.event', 'Provider')
     passenger_id = fields.Many2one('tt.reservation.passenger.event', 'Passenger')

@@ -12,14 +12,14 @@ Tour & Travel - Agent Monthly Fee
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['tt_base', 'tt_accounting'],
     'data': [
         # 'data/ir_sequence_data.xml',
-        'views/tt_monthly_fee_views.xml',
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
+        'views/tt_monthly_fee_views.xml',
     ],
     'demo': [],
     'qweb': [],

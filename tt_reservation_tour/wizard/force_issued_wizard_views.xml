@@ -9,6 +9,7 @@
                 <group>
                     <field name="provider_id" invisible="1"/>
                     <field name="booker_id"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="agent_id"/>
                     <field name="agent_type_id"/>
                     <field name="customer_parent_id"/>

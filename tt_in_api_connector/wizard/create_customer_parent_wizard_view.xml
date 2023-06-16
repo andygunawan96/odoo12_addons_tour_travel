@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="get_merchant_info_payment_acquirer_wizard_form_view" model="ir.ui.view">
-        <field name="name">Get Merchant Info Payment Acuirer Wizard</field>
+        <field name="name">Get Merchant Info Payment Acquirer Wizard</field>
         <field name="model">get.merchant.info.payment.acquirer</field>
         <field name="arch" type="xml">
             <form string="Create Customer Parent Wizard">
                 <group>
                     <field name="provider"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                 </group>
                 <footer>
                     <button name="sync_info" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
@@ -27,7 +28,7 @@
 
     <menuitem id="menu_get_merchant_info_payment_acquirer_wizard"
               parent="tt_base.menu_transaction_accounting_payment_acquirer"
-              groups="base.group_system"
+              groups="base.group_erp_manager,tt_base.group_tt_tour_travel"
               name="Sync Merchant Info"
               sequence="100"
               action="get_merchant_info_payment_acquirer_wizard_action_view"/>

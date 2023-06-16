@@ -64,7 +64,7 @@ class HotelDestination(models.Model):
         max_obj = False
         # Cari provider ids terpanjang
         for rec in self:
-            if max_len < len(rec.provider_ids.ids):
+            if max_len < len(rec.provider_ids.ids) + len(rec.hotel_ids.ids):
                 max_len = len(rec.provider_ids.ids)
                 max_obj = rec
 

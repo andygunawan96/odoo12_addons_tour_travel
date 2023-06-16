@@ -33,25 +33,25 @@ class HotelDestination(models.Model):
 
     # Func Find City
     def find_city_obj(self):
-        self.city_id = self.env['res.city'].find_city_by_name(self.city_str, 1)
-        if self.city_id.country_id == self.country_id:
-            if self.city_id.state_id == self.state_id:
-                return True
-            else:
-                # TODO langkah jika hasil tidak sama diapakan
-                return True
-        else:
-            # TODO langkah jika hasil tidak sama diapakan
-            return True
+        city_ids = self.env['res.city'].find_city_by_name(self.city_str, 100)
+
+        city_by_country_ids = [city_id for city_id in city_ids if city_id.country_id == self.country_id]
+        for city_id in city_by_country_ids:
+            if city_id.state_id == self.state_id or not self.state_id:
+                self.city_id = city_id
+
+        if not self.city_id and city_by_country_ids:
+            self.city_id = city_by_country_ids[0]
 
     # Func Find State
     def find_state_obj(self):
-        self.state_id = self.env['res.country.state'].find_state_by_name(self.state_str, 1)
-        if self.state_id.country_id == self.country_id:
-            return True
-        else:
-            # TODO langkah jika hasil tidak sama diapakan
-            return True
+        state_ids = self.env['res.country.state'].find_state_by_name(self.state_str, 5)
+        for state_id in state_ids or []:
+            if state_id.country_id == self.country_id:
+                self.state_id = state_id
+
+        if not self.state_id and state_ids:
+            self.state_id = state_ids[0]
 
     # Func Find Country
     def find_country_obj(self):

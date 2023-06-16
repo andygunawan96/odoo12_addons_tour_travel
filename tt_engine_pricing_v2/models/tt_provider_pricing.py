@@ -63,6 +63,7 @@ class ProviderPricing(models.Model):
 
     line_ids = fields.One2many('tt.provider.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
@@ -180,16 +181,18 @@ class ProviderPricing(models.Model):
             for obj in objs:
                 if not obj.active:
                     continue
-
-                vals = obj.get_data()
-                provider_type_code = vals['provider_type_code']
-                if provider_type_code not in provider_pricing_data:
-                    provider_pricing_data[provider_type_code] = {
-                        'provider_pricing_list': [],
-                        'create_date': date_now,
-                        'expired_date': expired_date,
-                    }
-                provider_pricing_data[provider_type_code]['provider_pricing_list'].append(vals)
+                if obj.ho_id:
+                    vals = obj.get_data()
+                    provider_type_code = vals['provider_type_code']
+                    if provider_type_code not in provider_pricing_data:
+                        provider_pricing_data[provider_type_code] = {}
+                    if str(obj.ho_id.id) not in provider_pricing_data[provider_type_code]:
+                        provider_pricing_data[provider_type_code][str(obj.ho_id.id)] = {
+                            'provider_pricing_list': [],
+                            'create_date': date_now,
+                            'expired_date': expired_date,
+                        }
+                    provider_pricing_data[provider_type_code][str(obj.ho_id.id)]['provider_pricing_list'].append(vals)
 
             payload = {
                 'provider_pricing_data': provider_pricing_data

@@ -12,6 +12,7 @@ class TtAgentThirdPartyKey(models.Model):
     name = fields.Char('Name', required=True, default='New Key')
     key = fields.Char('Key')
     active = fields.Boolean('acitve',default=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent','Agent')
     is_connected = fields.Boolean('Connected',default=False)
     connected_account_id = fields.Char('Connected Account ID')

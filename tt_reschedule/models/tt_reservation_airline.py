@@ -252,6 +252,7 @@ class ReservationAirline(models.Model):
 
                 res_vals = {
                     'agent_id': airline_obj.agent_id.id,
+                    'ho_id': airline_obj.ho_id.id,
                     'customer_parent_id': airline_obj.customer_parent_id.id,
                     'booker_id': airline_obj.booker_id.id,
                     'currency_id': airline_obj.currency_id.id,
@@ -1592,6 +1593,7 @@ class ReservationAirline(models.Model):
                     notes = '\n'.join(psg_note_list)
                     res_vals = {
                         'agent_id': airline_obj.agent_id.id,
+                        'ho_id': airline_obj.ho_id.id,
                         'customer_parent_id': airline_obj.customer_parent_id.id,
                         'booker_id': airline_obj.booker_id.id,
                         'currency_id': airline_obj.currency_id.id,
@@ -1665,6 +1667,7 @@ class ReservationAirline(models.Model):
 
                 res_vals = {
                     'agent_id': airline_obj.agent_id.id,
+                    'ho_id': airline_obj.ho_id.id,
                     'customer_parent_id': airline_obj.customer_parent_id.id,
                     'booker_id': airline_obj.booker_id.id,
                     'currency_id': airline_obj.currency_id.id,
@@ -1824,6 +1827,7 @@ class ReservationAirline(models.Model):
                     'split_date': fields.Datetime.now(),
                     # 'pnr': ','.join(pnr_list),
                     'agent_id': airline_obj.agent_id and airline_obj.agent_id.id or False,
+                    'ho_id': airline_obj.ho_id and airline_obj.ho_id.id or False,
                     'customer_parent_id': airline_obj.customer_parent_id and airline_obj.customer_parent_id.id or False,
                     'provider_type_id': airline_obj.provider_type_id.id,
                     # 'provider_name': airline_obj.provider_name,
@@ -1939,6 +1943,7 @@ class ReservationAirline(models.Model):
 
                         res_vals = {
                             'agent_id': new_resv_obj.agent_id.id,
+                            'ho_id': new_resv_obj.ho_id.id,
                             'customer_parent_id': new_resv_obj.customer_parent_id.id,
                             'booker_id': new_resv_obj.booker_id.id,
                             'currency_id': new_resv_obj.currency_id.id,
@@ -2041,6 +2046,7 @@ class ReservationAirline(models.Model):
             'title': title,
             'message': message,
         }
+        ## tambah context
         GatewayConnector().telegram_notif_api(data, {})
         return True
 
@@ -2134,6 +2140,7 @@ class ReservationAirline(models.Model):
 
                 res_vals = {
                     'agent_id': airline_obj.agent_id.id,
+                    'ho_id': airline_obj.ho_id.id,
                     'customer_parent_id': airline_obj.customer_parent_id.id,
                     'booker_id': airline_obj.booker_id.id,
                     'currency_id': airline_obj.currency_id.id,

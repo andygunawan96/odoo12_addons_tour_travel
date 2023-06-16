@@ -10,8 +10,8 @@ Tour & Travel Gateway - Engine Pricing
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['tt_base'],
     'data': [
         'security/ir.model.access.csv',

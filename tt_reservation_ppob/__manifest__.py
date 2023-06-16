@@ -12,8 +12,8 @@ Tour & Travel - Reservation PPOB
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends' : ['base_setup','tt_base','tt_reservation','base_address_city','tt_in_api_connector'],
     'data': [
         'security/ir.model.access.csv',
@@ -27,8 +27,8 @@ Key Features
         'data/ir_send_email.xml',
         'data/tt_pricing_agent_ppob_data.xml',
 
-        'wizard/force_issued_wizard_views.xml',
         'views/menu_item_base.xml',
+        'wizard/force_issued_wizard_views.xml',
         'views/tt_master_voucher_ppob_views.xml',
         'views/tt_bill_ppob_views.xml',
         'views/tt_provider_views.xml',

@@ -204,7 +204,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order FAILED (Booked)')
 
     def action_draft_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 326')
         self.write({
             'state_visa': 'draft',
@@ -251,7 +251,8 @@ class TtVisa(models.Model):
 
                 data = {
                     'order_number': self.name,
-                    'state': status
+                    'state': status,
+                    'provider': 'rodextrip_visa'
                 }
                 vals = {
                     'provider_type': 'visa',
@@ -264,7 +265,7 @@ class TtVisa(models.Model):
                 break
 
     def action_validate_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 328')
         is_validated = True
         for rec in self.passenger_ids:
@@ -459,7 +460,7 @@ class TtVisa(models.Model):
             return Response().get_error(error_message='contact b2b', error_code=500)
 
     def action_in_process_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 329')
         data = {
             'order_number': self.name,
@@ -519,7 +520,7 @@ class TtVisa(models.Model):
 
     # kirim data dan dokumen ke vendor
     def action_to_vendor_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 330')
         for provider in self.provider_booking_ids:
             provider.use_vendor = True
@@ -531,7 +532,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order SENT TO VENDOR')
 
     def action_vendor_process_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 331')
         self.write({
             'state_visa': 'vendor_process',
@@ -548,7 +549,7 @@ class TtVisa(models.Model):
         self.message_post(body='Order PAYMENT')
 
     def action_in_process_consulate_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 332')
         is_payment = True
         for rec in self.passenger_ids:
@@ -630,7 +631,7 @@ class TtVisa(models.Model):
     def action_cancel_visa(self):
         # cek state visa.
         # jika state : in_process, partial_proceed, proceed, delivered, ready, done, create reverse ledger
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 333')
         if self.state_visa in ['in_process', 'payment']:
             self.can_refund = True
@@ -670,7 +671,7 @@ class TtVisa(models.Model):
         return self.payment_reservation_api('visa', req, context)
 
     def action_calc_expenses_visa(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 334')
         # Calc visa vendor
         self.calc_visa_upsell_vendor()
@@ -718,6 +719,7 @@ class TtVisa(models.Model):
         if diff_nta_upsell > 0:
             ledger = self.env['tt.ledger']
             for rec in self:
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -727,7 +729,7 @@ class TtVisa(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     diff_nta_upsell,
                     0,
@@ -740,6 +742,7 @@ class TtVisa(models.Model):
             """ Jika diff nta upsell < 0 """
             ledger = self.env['tt.ledger']
             for rec in self:
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -749,7 +752,7 @@ class TtVisa(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     diff_nta_upsell,
@@ -794,7 +797,7 @@ class TtVisa(models.Model):
                         doc_type.append(sc.pricelist_id.visa_type)
 
                 doc_type = ','.join(str(e) for e in doc_type)
-
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -804,7 +807,7 @@ class TtVisa(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     ho_profit,
                     0,
@@ -823,7 +826,7 @@ class TtVisa(models.Model):
                         doc_type.append(sc.pricelist_id.visa_type)
 
                 doc_type = ','.join(str(e) for e in doc_type)
-
+                ho_obj = rec.agent_id.get_ho_parent_agent()
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -833,7 +836,7 @@ class TtVisa(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     abs(ho_profit),
@@ -1553,6 +1556,7 @@ class TtVisa(models.Model):
                         'pax_type': p_type,
                         'booking_visa_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_airline_id'] = self.id
@@ -1640,7 +1644,7 @@ class TtVisa(models.Model):
             #     'cost_service_charge_ids': [(6, 0, ssc)]
             # })
             vals_fixed = {
-                'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
+                'commission_agent_id': pricelist_obj.ho_id and pricelist_obj.ho_id.id or False,
                 'amount': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'charge_code': 'fixed',
                 'charge_type': 'RAC',
@@ -2249,7 +2253,7 @@ class TtVisa(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount
@@ -2262,8 +2266,7 @@ class TtVisa(models.Model):
                         pax_pnr_data['upsell'] += rec3.amount
                     if rec3.charge_type == 'DISC':
                         pax_pnr_data['discount'] -= rec3.amount
-                pax_pnr_data['parent_agent_commission'] = pax_pnr_data['total_commission'] - pax_pnr_data[
-                    'agent_commission'] - pax_pnr_data['ho_commission']
+                pax_pnr_data['parent_agent_commission'] = pax_pnr_data['total_commission'] - pax_pnr_data['agent_commission'] - pax_pnr_data['ho_commission']
                 if pax_ticketed:
                     pax_data['pnr_list'].append(pax_pnr_data)
             pax_list.append(pax_data)
@@ -2301,10 +2304,11 @@ class VisaSyncProductsChildren(models.TransientModel):
             data_vendor = self.env['tt.reservation.visa.pricelist'].search([('provider_id.code', '=', 'rodextrip_visa')])
             for rec in data_vendor:
                 rec.active = False
+            ho_obj = self.env['tt.agent'].search([('seq_id','=', data['ho_seq_id'])])
             for rec in data['data']:
                 master_data = self.env['tt.reservation.visa.pricelist'].search([('reference_code', '=', rec['reference_code'] + '_rdx')], limit=1)
                 if master_data:
-                    master_data.update({
+                    data_update = {
                         'commercial_duration': rec['commercial_duration'],
                         'commission_price': rec['commission_price'],
                         'cost_price': rec['cost_price'],
@@ -2321,12 +2325,17 @@ class VisaSyncProductsChildren(models.TransientModel):
                         'pax_type': rec['pax_type'],
                         'process_type': rec['process_type'],
                         'reference_code': rec['reference_code'] + '_rdx',
-                        'provider_id': self.env['tt.provider'].search([('code', '=', rec['provider_id'])]).id,
+                        'provider_id': self.env['tt.provider'].search([('code', '=', data['provider'])]).id,
                         'sale_price': rec['sale_price'],
                         'visa_nta_price': rec['visa_nta_price'],
                         'visa_type': rec['visa_type'],
-                        'active': True
-                    })
+                        'active': True,
+                    }
+                    if ho_obj.id not in master_data.ho_ids.ids:
+                        data_update.update({
+                            'ho_ids': [(4, ho_obj.id)]
+                        })
+                    master_data.update(data_update)
                     master_data.requirement_ids.unlink()
                     master_data.attachments_ids.unlink()
                     master_data.visa_location_ids.unlink()
@@ -2348,18 +2357,19 @@ class VisaSyncProductsChildren(models.TransientModel):
                         'pax_type': rec['pax_type'],
                         'process_type': rec['process_type'],
                         'reference_code': rec['reference_code'] + '_rdx',
-                        'provider_id': self.env['tt.provider'].search([('code', '=', rec['provider_id'])]).id,
+                        'provider_id': self.env['tt.provider'].search([('code', '=', data['provider'])], limit=1).id,
                         'sale_price': rec['sale_price'],
                         'visa_nta_price': rec['visa_nta_price'],
                         'visa_type': rec['visa_type'],
-                        'active': True
+                        'active': True,
+                        'ho_ids': [(4, ho_obj.id)]
                     })
-                for data in rec['requirement_ids']:
+                for data_requirement in rec['requirement_ids']:
                     self.env['tt.reservation.visa.requirements'].create({
                         'pricelist_id': master_data.id,
-                        'name': data['name'],
-                        'reference_code': data['reference_code'] + '_rdx',
-                        'type_id': self.env['tt.traveldoc.type'].create(data['type_id']).id
+                        'name': data_requirement['name'],
+                        'reference_code': data_requirement['reference_code'] + '_rdx',
+                        'type_id': self.env['tt.traveldoc.type'].create(data_requirement['type_id']).id
                     })
                 upload = self.env['tt.upload.center.wizard']
                 co_agent_id = self.env.user.agent_id.id
@@ -2369,29 +2379,31 @@ class VisaSyncProductsChildren(models.TransientModel):
                     'co_uid': co_uid
                 }
                 attachments = []
-                for data in rec['attachments_ids']:
-                    data['file'] = self.env['visa.sync.product.wizard'].url_to_base64(data['url'])
-                    # data['filename'], data['file_reference'], data['file']
-                    # KASIH TRY EXCEPT
-                    upload = upload.upload_file_api(data, context)
-                    attachments.append(
-                        self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1).id)
+                for data_attachment in rec['attachments_ids']:
+                    try:
+                        data_attachment['file'] = self.env['visa.sync.product.wizard'].url_to_base64(data['url'])
+                        # data['filename'], data['file_reference'], data['file']
+                        # KASIH TRY EXCEPT
+                        upload = upload.upload_file_api(data_attachment, context)
+                        attachments.append(self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1).id)
                 #     pass
                 #     #tt upload center
                 #     self.env['tt.upload.center'].create({
                 #         'pricelist_id': master_data.id,
                 #     })
+                    except Exception as e:
+                        _logger.error("%s, %s" % (str(e), traceback.format_exc()))
                 if attachments:
                     master_data.update({
                         'attachments_ids': [(6, 0, attachments)]
                     })
-                for data in rec['visa_location_ids']:
+                for data_visa_location in rec['visa_location_ids']:
                     self.env['tt.master.visa.locations'].create({
                         'pricelist_id': master_data.id,
-                        'name': data['name'],
-                        'location_type': data['location_type'],
-                        'address': data['address'],
-                        'city': data['city']
+                        'name': data_visa_location['name'],
+                        'location_type': data_visa_location['location_type'],
+                        'address': data_visa_location['address'],
+                        'city': data_visa_location['city']
                     })
             response = {
                 'success': True

@@ -297,6 +297,7 @@ class TtProviderTrain(models.Model):
             scs.pop('foreign_currency')
             scs['passenger_train_ids'] = [(6,0,scs['passenger_train_ids'])]
             scs['description'] = self.pnr
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             service_chg_obj.create(scs)
 
         # "sequence": 1,

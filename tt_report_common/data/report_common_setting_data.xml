@@ -4,6 +4,7 @@
         <record id="train_printout_footer" model="tt.report.common.setting">
             <field name="name">Train Ticket</field>
             <field name="code">train_ticket</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">31</field>
             <field name="html" type="html">
@@ -95,6 +96,7 @@
         <record id="airline_ticket_footer" model="tt.report.common.setting">
             <field name="name">Airline Ticket</field>
             <field name="code">airline_ticket</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">30</field>
             <field name="html" type="html">
@@ -140,6 +142,7 @@
         <record id="printout_itinerary_footer" model="tt.report.common.setting">
             <field name="name">Itinerary</field>
             <field name="code">printout_itinerary</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">10</field>
             <field name="html" type="html">
@@ -154,6 +157,7 @@
         <record id="visa_ticket_customer_footer" model="tt.report.common.setting">
             <field name="name">Visa Ticket</field>
             <field name="code">visa_ticket_customer</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">50</field>
             <field name="html" type="html">
@@ -176,6 +180,7 @@
         <record id="visa_ticket_ho_footer" model="tt.report.common.setting">
             <field name="name">Visa Ticket</field>
             <field name="code">visa_ticket_ho</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">51</field>
             <field name="html" type="html">
@@ -198,6 +203,7 @@
         <record id="activity_ticket_footer" model="tt.report.common.setting">
             <field name="name">Activity Ticket</field>
             <field name="code">activity_ticket</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">36</field>
             <field name="html" type="html">
@@ -236,6 +242,7 @@
         <record id="tour_ticket_footer" model="tt.report.common.setting">
             <field name="name">Tour Ticket</field>
             <field name="code">tour_ticket</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">35</field>
             <field name="html" type="html">
@@ -274,6 +281,7 @@
         <record id="hotel_ticket_footer" model="tt.report.common.setting">
             <field name="name">Hotel Ticket</field>
             <field name="code">hotel_ticket</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">32</field>
             <field name="html" type="html">
@@ -313,6 +321,7 @@
             <field name="name">PPOB BPJS</field>
             <field name="code">ppob_bpjs</field>
             <field name="sequence">38</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Mulai 1 September 2020 pembayaran iuran JKN wajib Autodebit.</h3>
@@ -325,6 +334,7 @@
             <field name="name">PPOB PLN</field>
             <field name="code">ppob_pln</field>
             <field name="sequence">39</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <h3 style="padding-left: 20px; text-align:center; font-weight: 600; font-size: 18px">Informasi Hubungi Call Center 123 Atau hubungi PLN Terdekat</h3>
@@ -336,6 +346,7 @@
             <field name="name">PPOB Prepaid Mobile</field>
             <field name="code">ppob_prepaid_mobile</field>
             <field name="sequence">40</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html"></field>
             <field name="active" eval="True"/>
@@ -345,6 +356,7 @@
             <field name="name">Agent Invoice</field>
             <field name="code">agent_invoice</field>
             <field name="sequence">10</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
@@ -356,6 +368,7 @@
             <field name="name">Top Up</field>
             <field name="code">top_up</field>
             <field name="sequence">11</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
@@ -367,6 +380,7 @@
             <field name="name">Billing Statement</field>
             <field name="code">billing_statement</field>
             <field name="sequence">12</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <li>Payment by transfer/cheque/giro is valid after being credited &amp; confirmed by the bank in full amount.</li>
@@ -377,6 +391,7 @@
         <record id="refund_agent_footer" model="tt.report.common.setting">
             <field name="name">Refund To Agent</field>
             <field name="code">refund_to_agent</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">13</field>
             <field name="html"></field>
@@ -386,6 +401,7 @@
         <record id="refund_customer_footer" model="tt.report.common.setting">
             <field name="name">Refund To Customer</field>
             <field name="code">refund_to_Customer</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">14</field>
             <field name="html"></field>
@@ -395,6 +411,7 @@
         <record id="reschedule_footer" model="tt.report.common.setting">
             <field name="name">Reschedule</field>
             <field name="code">reschedule_ticket</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">15</field>
             <field name="html"></field>
@@ -405,6 +422,7 @@
             <field name="name">Letter Guarantee PO</field>
             <field name="code">letter_guarantee_po</field>
             <field name="sequence">16</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
@@ -418,6 +436,7 @@
             <field name="name">Letter Guarantee</field>
             <field name="code">letter_guarantee</field>
             <field name="sequence">17</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">

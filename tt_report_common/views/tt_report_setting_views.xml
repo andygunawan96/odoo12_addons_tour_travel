@@ -22,6 +22,7 @@
                         <group>
                             <field name="sequence"/>
                             <field name="code"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="html"/>
                         </group>
@@ -39,6 +40,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="code"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id"/>
                 <field name="active"/>
             </tree>

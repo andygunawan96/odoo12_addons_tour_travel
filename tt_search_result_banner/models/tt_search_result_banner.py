@@ -33,6 +33,7 @@ class SearchResultBanner(models.Model):
     destination_ids = fields.Many2many('tt.destinations', "tt_search_banner_destination_rel", "search_banner_id", "destination_id", "Destination")
     sequence = fields.Integer('Sequence', default=50)
     active = fields.Boolean('Active', default=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     @api.onchange('provider_type_id')
     def _onchange_domain_provider(self):
@@ -47,13 +48,19 @@ class SearchResultBanner(models.Model):
         try:
             _objs = self.search([('active','=', True)])
             # response = [rec.get_ssr_data() for rec in _objs]
-            ssrs = [rec.get_search_banner_data() for rec in _objs]
+            # ssrs = [rec.get_search_banner_data() for rec in _objs]
+            ssrs = {}
+            for rec in _objs:
+                if rec.ho_id:
+                    if rec.ho_id.seq_id not in ssrs:
+                        ssrs[rec.ho_id.seq_id] = []
+                    ssrs[rec.ho_id.seq_id].append(rec.get_search_banner_data())
             response = {
                 'search_banner_data': ssrs,
             }
             res = Response().get_no_error(response)
         except Exception as e:
-            _logger.error('Error Get SSR API, %s, %s' % (str(e), traceback.format_exc()))
+            _logger.error('Error Get Search Banner API, %s, %s' % (str(e), traceback.format_exc()))
             res = Response().get_error(str(e), 500)
         return res
 

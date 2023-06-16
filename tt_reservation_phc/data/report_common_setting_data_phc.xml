@@ -5,6 +5,7 @@
             <field name="code">phc_antigen_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -18,6 +19,7 @@
             <field name="code">phc_pcr_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -31,6 +33,7 @@
             <field name="code">phc_pcr_express_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -44,6 +47,7 @@
             <field name="code">phc_pcr_priority_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -57,6 +61,7 @@
             <field name="code">phc_srbd_drive_thru_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information S-RBD
@@ -70,6 +75,7 @@
             <field name="code">phc_antigen_homecare_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information
@@ -83,6 +89,7 @@
             <field name="code">phc_pcr_homecare_information</field>
             <field name="sequence">99</field>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="html" type="html">
                 <div class="col-12" style="margin-top:20px;">
                     Information

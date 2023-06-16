@@ -19,6 +19,7 @@ class SplitInvoice(models.TransientModel):
     delete_time = fields.Datetime('Deleted Time')
     file = fields.Binary('File',required=True)
     target_field_name = fields.Char("Target Field")
+    ho_id = fields.Many2one('tt.agent', 'Head Office ID', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent','Agent ID')
     owner_id = fields.Many2one('res.users','Owner ID')
 
@@ -80,6 +81,11 @@ class SplitInvoice(models.TransientModel):
             except:
                 _logger.error(traceback.format_exc())
 
+            ho_agent_obj = False
+            agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
+            if agent_obj:
+                ho_agent_obj = agent_obj.get_ho_parent_agent()
+
             new_uploaded_data = self.env['tt.upload.center'].sudo().create({
                 'filename': filename,
                 'file_reference': file_reference,
@@ -87,7 +93,8 @@ class SplitInvoice(models.TransientModel):
                 'url': url,
                 'agent_id': context['co_agent_id'],
                 'upload_uid': context['co_uid'],
-                'will_be_deleted_time': delete_time
+                'will_be_deleted_time': delete_time,
+                'ho_id': ho_agent_obj and ho_agent_obj.id or False
             })
 
             _logger.info('Finish Upload')

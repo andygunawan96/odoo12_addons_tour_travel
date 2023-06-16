@@ -6,7 +6,7 @@ _logger = logging.getLogger(__name__)
 
 class MasterTourPricing(models.Model):
     _name = "tt.master.tour.pricing"
-    _description = 'Rodex Model'
+    _description = 'Orbis Model'
     _rec_name = 'min_pax'
     _order = 'min_pax asc'
 

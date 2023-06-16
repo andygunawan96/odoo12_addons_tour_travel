@@ -9,8 +9,11 @@ class AgentReportCommon(models.TransientModel):
     _name = "tt.agent.report.common.wizard"
     _description = "Agent Report Common"
 
+    def _check_adm_user(self):
+        return self.env.user.has_group('base.group_erp_manager')
+
     def _check_ho_user(self):
-        return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id
+        return self.env.user.agent_id.is_ho_agent
 
     company_id = fields.Many2one('res.company', string='Company', readonly=True,
                                  default=lambda self: self.env.user.company_id)
@@ -22,11 +25,28 @@ class AgentReportCommon(models.TransientModel):
     date_from = fields.Date(string='Start Date')
     date_to = fields.Date(string='End Date')
 
-    agent_id = fields.Many2one('tt.agent', string='Agent', default=lambda self: self.env.user.agent_id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
+    all_ho = fields.Boolean('All Head Office', default=False)
+
+    def get_agent_domain(self):
+        if self.all_ho or not self.ho_id:
+            dom = []
+        else:
+            dom = [('ho_id','=',self.ho_id.id)]
+        return dom
+
+    agent_id = fields.Many2one('tt.agent', string='Agent', domain=get_agent_domain, default=lambda self: self.env.user.agent_id)
     all_agent = fields.Boolean('All Agent', default=False)
+    is_admin = fields.Boolean('Admin User', default=_check_adm_user)
     is_ho = fields.Boolean('Ho User', default=_check_ho_user)
 
     subtitle_report = fields.Char('Subtitle', help='This field use for report subtitle')
+
+    @api.onchange('all_ho', 'ho_id')
+    def _onchange_domain_agent(self):
+        return {'domain': {
+            'agent_id': self.get_agent_domain()
+        }}
 
     @api.onchange('period')
     def _onchage_period(self):
@@ -83,13 +103,25 @@ class AgentReportCommon(models.TransientModel):
             self.subtitle_report = self.date_from.strftime("%d-%b-%Y") + ' to ' + self.date_to.strftime("%d-%b-%Y")
         data['form']['subtitle'] = self.subtitle_report
 
+        # ============= ho id and name ==========
+        if self.all_ho == True:
+            data['form']['ho_id'] = ''
+            data['form']['ho_name'] = 'All Head Office'
+        else:
+            ho_id = data['form']['ho_id'][0] if data['form']['ho_id'] else False
+            if ho_id != self.env.user.ho_id.id and not self.env.user.has_group('base.group_erp_manager'):
+                ho_id = self.env.user.ho_id.id
+            ho_name = self.env['tt.agent'].sudo().browse(ho_id).name if ho_id else 'All Head Office'
+            data['form']['ho_id'] = ho_id
+            data['form']['ho_name'] = ho_name
+
         # ============= agent id and name ==========
         if self.all_agent == True:
             data['form']['agent_id'] = ''
             data['form']['agent_name'] = 'All Agent'
         else:
             agent_id = data['form']['agent_id'][0] if data['form']['agent_id'] else False
-            if agent_id != self.env.user.agent_id.id and self.env.user.agent_id.agent_type_id.id != self.env.ref('tt_base.agent_type_ho').id:
+            if agent_id != self.env.user.agent_id.id and not self.env.user.agent_id.is_ho_agent:
                 agent_id = self.env.user.agent_id.id
             agent_name = self.env['tt.agent'].sudo().browse(agent_id).name if agent_id else 'All Agent'
             data['form']['agent_id'] = agent_id
@@ -113,7 +145,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'all_agent', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'all_ho', 'ho_id', 'all_agent', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
         })
 
         self._prepare_form(data)
@@ -126,7 +158,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type', 'logging_daily', 'period_mode', 'state_vendor', 'after_sales_type'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'ho_id', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type', 'logging_daily', 'period_mode', 'state_vendor', 'after_sales_type'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)

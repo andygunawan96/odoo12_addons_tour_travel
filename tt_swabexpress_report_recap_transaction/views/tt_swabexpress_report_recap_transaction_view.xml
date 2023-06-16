@@ -36,7 +36,7 @@
                 parent="tt_swabexpress_report_recap_transaction.menu_reservation_report_swabexpress"
                 action="action_medical_vendor_report_recap_transaction_wz_swabexpress"
                 sequence="30"
-                groups="tt_base.group_tt_tour_travel"
+                groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
         />
     </data>
 </odoo>

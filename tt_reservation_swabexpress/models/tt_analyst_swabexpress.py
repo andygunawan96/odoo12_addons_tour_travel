@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 
 class TtAnalystSwabExpress(models.Model):
     _name = 'tt.analyst.swabexpress'
-    _description = 'Rodex Model Analyst Swab Express'
+    _description = 'Orbis Model Analyst Swab Express'
 
     name = fields.Char('Analyst Name')
     analyst_id = fields.Char('Analyst ID')

@@ -9,6 +9,7 @@ class ApiConfig(models.Model):
     provider_type_id = fields.Many2one(comodel_name='tt.provider.type', string='Provider Type', required=True)
     active = fields.Boolean(string='Active', default=True)
     credential_id = fields.Many2one(comodel_name='tt.api.credential', string='Credential')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def to_dict(self):
         res = self.provider_type_id.to_dict()

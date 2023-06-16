@@ -11,7 +11,7 @@ SESSION_NT = session.Session()
 
 class MasterEventReservation(models.Model):
     _name = "tt.event.reservation"
-    _description = "Rodex Event Model"
+    _description = "Orbis Event Model"
     _order = 'id desc'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
@@ -84,7 +84,7 @@ class MasterEventReservation(models.Model):
 
 class EventReservationQuestionAnswer(models.Model):
     _name = "tt.event.reservation.answer"
-    _description = "Rodex Event Model"
+    _description = "Orbis Event Model"
 
     event_reservation_id = fields.Many2one('tt.event.reservation', 'Event Option ID')
     extra_question_id = fields.Many2one("tt.event.extra.question", 'Event extra Question')
@@ -93,7 +93,7 @@ class EventReservationQuestionAnswer(models.Model):
 
 class MasterLocations(models.Model):
     _name = 'tt.event.location'
-    _description = 'Rodex Event Location Master'
+    _description = 'Orbis Event Location Master'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID', ondelete="cascade")
     name = fields.Char('Name')
@@ -107,7 +107,7 @@ class MasterLocations(models.Model):
 
 class MasterEventExtraQuestion(models.Model):
     _name = 'tt.event.extra.question'
-    _description = 'Rodex event Model'
+    _description = 'Orbis event Model'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID', ondelete="cascade")
     question = fields.Char('Question')
@@ -122,14 +122,14 @@ class MasterEventExtraQuestion(models.Model):
 
 class MasterEventExtraQuestionAnswer(models.Model):
     _name = 'tt.event.extra.question.answer'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     extra_question_id = fields.Many2one('tt.event.extra.question', 'Extra Question ID')
     answer = fields.Char('Answer')
 
 class MasterEventCategory(models.Model):
     _name = 'tt.event.category'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     uid = fields.Char('UID', readonly=True)
     name = fields.Char('Category Name')
@@ -165,7 +165,7 @@ class MasterEventCategory(models.Model):
 
 class EventOptions(models.Model):
     _name = 'tt.event.option'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
     _rec_name = 'grade'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
@@ -245,7 +245,7 @@ class EventOptions(models.Model):
 
 class MasterTimeslot(models.Model):
     _name = 'tt.event.timeslot'
-    _description = 'Rodex Event model'
+    _description = 'Orbis Event model'
 
     event_option_id = fields.Many2one('tt.event.option', 'Product Type', ondelete="cascade")
     uuid = fields.Char('Uuid')
@@ -262,7 +262,7 @@ class MasterTimeslot(models.Model):
 
 class EventOptionAdditionalIformation(models.Model):
     _name = 'tt.event.option.additional'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID')
     additional_information = fields.Html('Additional Information')

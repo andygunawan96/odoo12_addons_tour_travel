@@ -29,6 +29,7 @@ class TtPnrQuotaUsage(models.Model):
     ref_provider_type = fields.Char('Ref Provider Type')
     ref_provider = fields.Char('Ref Provider')
     usage_quota = fields.Integer('Usage Quota')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     active = fields.Boolean('Active', default=True)
 
     def open_reservation(self):

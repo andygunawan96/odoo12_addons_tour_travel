@@ -27,5 +27,10 @@
                   name="Master"
                   parent="top_tour_travel_ppob"
                   sequence="1"/>
+
+        <menuitem id="menu_tour_travel_ppob_config"
+                  name="Configuration"
+                  parent="tt_reservation_ppob.top_tour_travel_ppob"
+                  sequence="2"/>
     </data>
 </odoo>

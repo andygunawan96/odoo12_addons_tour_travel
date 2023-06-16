@@ -12,8 +12,8 @@ Tour & Travel - Letter of Guarantee Printout
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends' : ['tt_base','tt_report_common'],
     'data': [
         'views/tt_letter_guarantee_views.xml'

@@ -11,8 +11,8 @@ Tour & Travel - Periksain Report Recap Transaction
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['tt_base', 'tt_medical_vendor_report_recap_transaction', 'tt_reservation_periksain'],
 
     # always loaded

@@ -19,6 +19,7 @@ class TtCronLogInhBill(models.Model):
                     "title": 'CRON BILLING STATEMENT'
                 }
                 api_con_obj = self.env['tt.api.con']
+                ## tambah context
                 return api_con_obj.send_request_to_gateway('%s/notification' % (api_con_obj.url),
                                                     request
                                                     , 'notification_code')

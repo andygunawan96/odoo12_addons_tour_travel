@@ -10,7 +10,7 @@ SESSION_NT = session.Session()
 
 class MasterImages(models.Model):
     _name = 'tt.master.event.image'
-    _description = 'Rodex Event Images Master'
+    _description = 'Orbis Event Images Master'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID', ondelete="cascade")
     image_url = fields.Char('Image URL')
@@ -20,7 +20,7 @@ class MasterImages(models.Model):
 
 class MasterVideos(models.Model):
     _name = 'tt.master.event.video'
-    _description = 'Rodex Event Video Master'
+    _description = 'Orbis Event Video Master'
 
     event_id = fields.Many2one('tt.master.event', 'Event ID', ondelete="cascade")
     video_url = fields.Char('Video URL')

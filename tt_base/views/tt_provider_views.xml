@@ -13,8 +13,6 @@
                                 <field name="active" widget="boolean_button"
                                        options='{"terminology": "archive"}'/>
                             </button>
-                            <button name="sync_balance" type="object" string="Sync Balance"
-                                    class="oe_stat_button" icon="fa-money" attrs="{'invisible':('track_balance','!=',True)}"/>
                         </div>
                         <div class="oe_title">
                             <label for="name" class="oe_edit_only" string="Name"/>
@@ -24,14 +22,11 @@
                         </div>
                         <group>
                             <group>
-                                <field name="code"/>
+                                <field name="code" groups="base.group_system"/>
                                 <field name="alias"/>
                                 <field name="provider_type_id"/>
                                 <field name="currency_id"/>
                                 <field name="is_reconcile"/>
-                                <field name="is_using_balance"/>
-                                <field name="is_using_lg"/>
-                                <field name="is_using_po"/>
                             </group>
                             <group>
                                 <label for="create_uid" string="Created By"/>
@@ -44,54 +39,18 @@
                                     <field name="write_uid" class="oe_inline" readonly="True"/> -
                                     <field name="write_date" class="oe_inline" readonly="True"/>
                                 </div>
-                                <field name="balance"/>
                                 <field name="track_balance"/>
                             </group>
                         </group>
                         <notebook colspan="4">
-                            <page string="Addresses">
-                                <field name="address_ids"/>
-                            </page>
-                            <page string="Phones">
-                                <field name="phone_ids" readonly="1"/>
-                            </page>
                             <page string="Social Media">
                                 <field name="social_media_ids" readonly="1"/>
                             </page>
+
                             <page string="Provider Codes">
                                 <field name="provider_code_ids"/>
                             </page>
-                            <page string="Allowed Destination">
-                                <!--                                <button name="clear_destination_ids" type="object" string="Clear Destination" groups="tt_base.group_tt_tour_travel_operator"/>-->
-                                <button name="compute_destination_ids" type="object" string="Compute Destination" groups="tt_base.group_tt_tour_travel"/>
-                                <field name="provider_destination_ids">
-                                    <tree>
-                                        <field name="country_id"/>
-                                        <field name="is_apply"/>
-                                        <field name="is_all_city"/>
-                                    </tree>
-                                    <form>
-                                        <sheet>
-                                            <group>
-                                                <field name="country_id"/>
-                                                <field name="is_apply"/>
-                                                <field name="is_all_city"/>
-                                            </group>
-                                            <group attrs="{'invisible':[('is_all_city','=',True)]}">
-                                                <field name="city_ids">
-                                                    <tree editable="bottom">
-                                                        <field name="city_id"/>
-                                                        <field name="is_apply"/>
-                                                    </tree>
-                                                </field>
-                                            </group>
-                                        </sheet>
-                                    </form>
-                                </field>
-                            </page>
-                            <page string="Rates">
-                                <field name="rate_ids"/>
-                            </page>
+
 
                             <page string="Payment Acquirers">
                                 <field name="payment_acquirer_ids">
@@ -102,14 +61,7 @@
                                 </field>
                             </page>
 
-                            <page string="Provider Ledgers" name="provider_ledger_page">
-                                <field name="provider_ledger_ids">
-                                    <tree create="false">
-                                        <field name="create_date"/>
-                                        <field name="balance"/>
-                                    </tree>
-                                </field>
-                            </page>
+
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
@@ -126,8 +78,7 @@
             <field name="arch" type="xml">
                 <tree string="Provider">
                     <field name="name"/>
-                    <field name="code"/>
-                    <field name="currency_id"/>
+                    <field name="code" groups="base.group_system"/>
                     <field name="provider_type_id"/>
                     <field name="active"/>
                 </tree>
@@ -141,8 +92,6 @@
                     <field name="name" string="Name"/>
                     <field name="code" string="Code"/>
                     <field name="provider_type_id"/>
-                    <field name="currency_id"/>
-                    <field name="balance"/>
                     <separator/>
                     <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                     <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
@@ -150,7 +99,6 @@
                     <filter string="Balance Tracking" name="filter_balance" domain="[('track_balance', '=', True)]"/>
                     <group expand="0" string="Group By...">
                         <filter name="group_by_type" string="Type" domain="[]" context="{'group_by':'provider_type_id'}"/>
-                        <filter name="group_by_currency" string="Currency" domain="[]" context="{'group_by':'currency_id'}"/>
                     </group>
                 </search>
             </field>
@@ -163,9 +111,7 @@
                 <tree string="Provider">
                     <field name="name"/>
                     <field name="code"/>
-                    <field name="currency_id"/>
                     <field name="provider_type_id"/>
-                    <field name="balance"/>
                     <field name="track_balance"/>
                     <field name="active"/>
                 </tree>
@@ -198,6 +144,174 @@
                   name="Provider"
                   sequence="2"
                   action="tt_provider_action_view"/>
+
+
+
+        <record id="tt_provider_ho_data_form_view" model="ir.ui.view">
+            <field name="name">tt.provider.ho.data.form.view</field>
+            <field name="model">tt.provider.ho.data</field>
+            <field name="arch" type="xml">
+                <form string="Provider">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object"
+                                    class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button"
+                                       options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="sync_balance" type="object" string="Sync Balance"
+                                    class="oe_stat_button" icon="fa-money" attrs="{'invisible':('provider_id.track_balance','!=',True)}"/>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <field name="name" required="True"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="provider_id"/>
+                                <field name="currency_id"/>
+                                <field name="is_using_balance"/>
+                                <field name="is_using_lg"/>
+                                <field name="is_using_po"/>
+                            </group>
+                            <group>
+                                <label for="create_uid" string="Created By"/>
+                                <div>
+                                    <field name="create_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="create_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <label for="write_uid" string="Last Edited By"/>
+                                <div>
+                                    <field name="write_uid" class="oe_inline" readonly="True"/> -
+                                    <field name="write_date" class="oe_inline" readonly="True"/>
+                                </div>
+                                <field name="balance"/>
+                                <field name="ho_id" groups="base.group_erp_manager"/>
+                            </group>
+                        </group>
+                        <notebook colspan="4">
+                            <page string="Addresses">
+                                <field name="address_ids"/>
+                            </page>
+                            <page string="Phones">
+                                <field name="phone_ids" readonly="1"/>
+                            </page>
+                            <page string="Allowed Destination">
+                                <!--                                <button name="clear_destination_ids" type="object" string="Clear Destination" groups="tt_base.group_tt_tour_travel_operator"/>-->
+                                <button name="compute_destination_ids" type="object" string="Compute Destination" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                                <field name="provider_destination_ids">
+                                    <tree>
+                                        <field name="country_id"/>
+                                        <field name="is_apply"/>
+                                        <field name="is_all_city"/>
+                                    </tree>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <field name="country_id"/>
+                                                <field name="is_apply"/>
+                                                <field name="is_all_city"/>
+                                            </group>
+                                            <group attrs="{'invisible':[('is_all_city','=',True)]}">
+                                                <field name="city_ids">
+                                                    <tree editable="bottom">
+                                                        <field name="city_id"/>
+                                                        <field name="is_apply"/>
+                                                    </tree>
+                                                </field>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Rates">
+                                <field name="rate_ids"/>
+                            </page>
+
+                            <page string="Provider Ledgers" name="provider_ledger_page">
+                                <field name="provider_ledger_ids">
+                                    <tree create="false">
+                                        <field name="create_date"/>
+                                        <field name="balance"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="tt_provider_ho_data_tree_view" model="ir.ui.view">
+            <field name="name">tt.provider.ho.data.tree.view</field>
+            <field name="model">tt.provider.ho.data</field>
+            <field name="arch" type="xml">
+                <tree string="Provider">
+                    <field name="provider_id"/>
+                    <field name="currency_id"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record id="tt_provider_ho_data_search_view" model="ir.ui.view">
+            <field name="name">tt.provider.ho.data.search.view</field>
+            <field name="model">tt.provider.ho.data</field>
+            <field name="arch" type="xml">
+                <search string="Provider">
+                    <field name="provider_id"/>
+                    <field name="currency_id"/>
+                    <separator/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                    <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    <separator/>
+                </search>
+            </field>
+        </record>
+
+        <record id="tt_provider_ho_data_tree_with_balance_view" model="ir.ui.view">
+            <field name="name">tt.provider.ho.data.tree.view</field>
+            <field name="model">tt.provider.ho.data</field>
+            <field name="arch" type="xml">
+                <tree string="Provider">
+                    <field name="provider_id"/>
+                    <field name="currency_id"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="tt_provider_ho_data_action_view" model="ir.actions.act_window">
+            <field name="name">Provider HO Data</field>
+            <field name="view_type">form</field>
+            <field name="res_model">tt.provider.ho.data</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="tt_provider_ho_data_search_view"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    <!-- Add Text Here -->
+                </p><p>
+                <!-- More details about what a user can do with this object will be OK -->
+            </p>
+            </field>
+            <field name="context">
+                {
+                'tree_view_ref': 'tt_base.tt_provider_ho_data_tree_with_balance_view'
+                }
+            </field>
+        </record>
+        <!--'form_view_ref': 'tt_base.tt_provider_form_view',-->
+        <menuitem id="sub_menu_tour_travel_provider_ho_data"
+                  parent="tt_base.menu_tour_travel_provider"
+                  groups="base.group_user"
+                  name="Provider HO Data"
+                  sequence="2"
+                  action="tt_provider_ho_data_action_view"/>
 
     </data>
 </odoo>

@@ -69,8 +69,8 @@
 				name="Auto Sync Activity Setup"
 				parent="tt_reservation_activity.menu_tour_travel_activity_config"
 				action="tt_auto_sync_activity_setup_action_view"
-				sequence="3"
-				groups="tt_base.group_master_data_activity_level_1"
+				sequence="4"
+				groups="base.group_erp_manager"
 		/>
     </data>
 </odoo>

@@ -51,6 +51,7 @@ class TtReconcileTransaction(models.Model):
                                   readonly=True)
     start_balance = fields.Monetary('Start Balance')
     end_balance = fields.Monetary('End Balance')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     @api.depends('provider_id','transaction_date')
     def _compute_display_reconcile_name(self):
@@ -292,6 +293,7 @@ class TtReconcileTransactionLines(models.Model):
     res_id = fields.Integer('Ref ID', readonly=True)
 
     sequence = fields.Integer('Sequence')
+
 
     def open_reference(self):
         # try:

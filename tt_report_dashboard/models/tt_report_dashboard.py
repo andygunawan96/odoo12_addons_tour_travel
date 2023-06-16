@@ -277,10 +277,19 @@ class TtReportDashboard(models.Model):
     #####################################################
     # this is the function that's being called by the gateway
     # in short this is the main function
-    def get_report_json_api(self, data, context = []):
+    def get_report_json_api(self, data, context = {}):
+        logged_user = self.env['res.users'].browse(int(context['co_uid']))
+        is_admin = logged_user.has_group('base.group_erp_manager') or logged_user.has_group('base.group_system')
+        if is_admin and data['ho_seq_id'] == "":
+            data['ho_seq_id'] = False
+        elif is_admin and data['ho_seq_id'] != "":
+            pass
+        else:
+            data['ho_seq_id'] = self.env['tt.agent'].browse(context['co_ho_id']).seq_id
+
         # is_ho = 1
         # check if agent is ho
-        is_ho = self.env.ref('tt_base.rodex_ho').id == context['co_agent_id']
+        is_ho = context['co_agent_id'] == context['co_ho_id'] or is_admin
         if is_ho and data['agent_seq_id'] == "":
             data['agent_seq_id'] = False
         elif is_ho and data['agent_seq_id'] != "":
@@ -379,22 +388,41 @@ class TtReportDashboard(models.Model):
             res = self.get_book_issued_ratio(data)
         else:
             return ERR.get_error(1001, "Cannot find action")
-        if is_ho:
+        if is_admin:
             res['dependencies'] = {
+                'is_admin': 1,
                 'is_ho': 1,
+                'current_ho': self.env['tt.agent'].search([('seq_id', '=', data['ho_seq_id'])], limit=1).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
+                'ho_list': self.env['report.tt_report_dashboard.overall'].get_ho_all(),
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
-                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
-                'from_data': data
+                'form_data': data
+            }
+        elif is_ho:
+            res['dependencies'] = {
+                'is_admin': 0,
+                'is_ho': 1,
+                'current_ho': self.env['tt.agent'].browse(context['co_ho_id']).name,
+                'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
+                'ho_list': [],
+                'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
+                'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_by_ho(self.env['tt.agent'].browse(context['co_ho_id']).id),
+                'provider_type': variables.PROVIDER_TYPE,
+                'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
+                'form_data': data
             }
         else:
             res['profit_ho'] = 0
             res['profit_agent'] = 0
             res['dependencies'] = {
+                'is_admin': 0,
                 'is_ho': 0,
+                'current_ho': self.env['tt.agent'].browse(context['co_ho_id']).name,
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
+                'ho_list': [],
                 'agent_type': [],
                 'agent_list': [],
                 'provider_type': variables.PROVIDER_TYPE,
@@ -455,6 +483,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'book_issued'
@@ -669,6 +698,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': 8,
@@ -885,6 +915,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': 8,
@@ -946,11 +977,11 @@ class TtReportDashboard(models.Model):
                         summary_chanel[person_index]['profit'] += 0
                     summary_chanel[person_index]['reservation'] += 1
 
-            summary_ho = False
-            for i in summary_chanel:
-                if i['agent_type_name'] == self.env.ref('tt_base.agent_type_ho').name:
-                    summary_ho = True
-                    break
+            # summary_ho = False
+            # for i in summary_chanel:
+            #     if i['agent_type_name'] == self.env.ref('tt_base.agent_type_ho').name:
+            #         summary_ho = True
+            #         break
             list_id = []
             # proceed profit
             for i in profit:
@@ -1048,6 +1079,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
@@ -1094,6 +1126,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': 'invoice',
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
@@ -1731,6 +1764,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -1806,6 +1840,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -3170,6 +3205,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -3239,6 +3275,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -3982,6 +4019,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -4019,6 +4057,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -4659,6 +4698,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -4695,6 +4735,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -5140,6 +5181,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -5176,6 +5218,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -5616,6 +5659,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -5652,6 +5696,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -6089,6 +6134,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -6125,6 +6171,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -6549,6 +6596,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -6585,6 +6633,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -7009,6 +7058,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -7044,6 +7094,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -7470,6 +7521,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -7512,6 +7564,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -7908,6 +7961,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -7943,6 +7997,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -8365,6 +8420,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -8400,6 +8456,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -8822,6 +8879,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -8857,6 +8915,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -9280,6 +9339,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -9349,6 +9409,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -10086,6 +10147,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -10121,6 +10183,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -10543,6 +10606,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -10578,6 +10642,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -11000,6 +11065,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -11035,6 +11101,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -11457,6 +11524,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -11492,6 +11560,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -11914,6 +11983,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'type': data['report_type'],
                 'provider': data['provider'],
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
@@ -11949,6 +12019,7 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'reservation': reservation_ids,
+                'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
                 'agent_seq_id': data['agent_seq_id'],
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'

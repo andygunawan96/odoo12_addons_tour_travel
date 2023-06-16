@@ -8,7 +8,7 @@ class VendorReportEvent(models.TransientModel):
     _name = "tt.report.vendor.event.wizard"
 
     def _check_ho_user(self):
-        return self.env.user.agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id
+        return self.env.user.agent_id.is_ho_agent
 
     is_ho = fields.Boolean('Ho User', compute=_check_ho_user)
     date_from = fields.Date(string='Start Date')

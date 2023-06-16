@@ -11,6 +11,7 @@ class TtReschedulePHCWizard(models.TransientModel):
     _name = "tt.reschedule.phc.wizard"
     _description = 'After Sales Wizard'
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
 
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',

@@ -11,14 +11,15 @@ Tour & Travel - Frontend Banner
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'tt_base'],
 
     # always loaded
     'data': [
-        'data/tt_frontend_banner_data.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
+        'data/tt_frontend_banner_data.xml',
         'views/tt_frontend_banner_views.xml',
     ],
     'demo': [],

@@ -11,8 +11,8 @@ Tour & Travel - Report Selling
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'tt_base', 'tt_report_common', 'tt_agent_report'],
 
     # always loaded
