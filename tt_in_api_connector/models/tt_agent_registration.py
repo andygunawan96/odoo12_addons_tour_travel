@@ -9,9 +9,9 @@ class TtAgentRegisApiCon(models.Model):
 
     def action_call(self, table_obj, action, data, context):
         if action == 'get_config_api':
-            res = table_obj.get_config_api()
+            res = table_obj.get_config_api(context)
         elif action == 'get_all_registration_documents_api':
-            res = table_obj.get_all_registration_documents_api()
+            res = table_obj.get_all_registration_documents_api(context)
         elif action == 'create_agent_registration_api':
             res = table_obj.create_agent_registration_api(data, context)
         elif action == 'get_promotions_api':

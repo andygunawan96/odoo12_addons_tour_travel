@@ -33,11 +33,13 @@ class AgentReportPassportModel(models.AbstractModel):
         """
 
     @staticmethod
-    def _where(date_from, date_to, state, agent_id):
+    def _where(date_from, date_to, state, agent_id, ho_id):
         where = """ps.create_date >= '%s' and ps.create_date <= '%s'
                      """ % (date_from, date_to)
         if state and state != 'all':
             where += """ AND ps.state_passport IN ('""" + state + """')"""
+        if ho_id:
+            where += """ AND ps.ho_id = %s """ % ho_id
         if agent_id:
             # todo: buat kondisi jika agent id null
             where += """ AND ps.agent_id = """ + str(agent_id)
@@ -56,10 +58,10 @@ class AgentReportPassportModel(models.AbstractModel):
             ps.id
             """
 
-    def _lines(self, date_from, date_to, agent_id, state):
+    def _lines(self, date_from, date_to, agent_id, ho_id, state):
         query = 'SELECT ' + self._select() + \
                 'FROM ' + self._from() + \
-                'WHERE ' + self._where(date_from, date_to, state, agent_id) + \
+                'WHERE ' + self._where(date_from, date_to, state, agent_id, ho_id) + \
                 ' GROUP BY ' + self._group_by() + \
                 ' ORDER BY ' + self._order_by()
         self.env.cr.execute(query)
@@ -76,8 +78,9 @@ class AgentReportPassportModel(models.AbstractModel):
         if not data_form['state']:
             data_form['state'] = 'all'
         agent_id = data_form['agent_id']
+        ho_id = data_form['ho_id']
         state = data_form['state']
-        lines = self._lines(date_from, date_to, agent_id, state)
+        lines = self._lines(date_from, date_to, agent_id, ho_id, state)
         self._report_title(data_form)
 
         return {

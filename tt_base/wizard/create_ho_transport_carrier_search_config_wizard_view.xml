@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="create_ho_transport_carrier_search_config_wizard_form_view" model="ir.ui.view">
+        <field name="name">Create HO Transport Carrier Search Config Wizard</field>
+        <field name="model">create.ho.transport.carrier.search.config.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create HO Transport Carrier Search Config Wizard">
+                <group>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
+                    <field name="transport_carrier_search_ids"/>
+
+                </group>
+                <footer>
+                    <button name="submit_create_carrier_search_config" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="create_ho_transport_carrier_search_config_action_view" model="ir.actions.act_window">
+        <field name="name">Create Head Office Transport Carrier Search Config Wizard</field>
+        <field name="res_model">create.ho.transport.carrier.search.config.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_create_ho_transport_carrier_search_config_wizard_customer"
+              parent="tt_base.top_tour_travel_administration"
+              groups="base.group_erp_manager"
+              name="Create Head Office Transport Carrier Search"
+              sequence="7"
+              action="create_ho_transport_carrier_search_config_action_view"/>
+
+</odoo>

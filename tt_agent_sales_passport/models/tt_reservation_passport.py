@@ -54,9 +54,12 @@ class ReservationPassport(models.Model):
     def action_create_invoice(self, data, context):  #
         invoice_id = False
         book_obj = self.env['tt.reservation.passport'].search([('name', '=', data['order_number'])])
+
+        temp_ho_obj = self.agent_id.get_ho_parent_agent()
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': book_obj.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'contact_id': self.contact_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': book_obj.customer_parent_id.id,
@@ -121,9 +124,13 @@ class ReservationPassport(models.Model):
                 payref_id_list.append(upc_id.id)
 
         payment_vals = {
-            'agent_id': book_obj.agent_id.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
+            'agent_id': self.agent_id.id,
+            'acquirer_id': data['acquirer_id'],
             'real_total_amount': invoice_id.grand_total,
-            'customer_parent_id': book_obj.customer_parent_id.id
+            'customer_parent_id': book_obj.customer_parent_id.id,
+            'confirm_uid': data['co_uid'],
+            'confirm_date': datetime.now()
         }
 
         if payref_id_list:

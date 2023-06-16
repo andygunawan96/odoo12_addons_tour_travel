@@ -19,7 +19,7 @@ CITO_SURCHARGE = 0## Urgent cito surcharge range 2-5jam stlh jam book
 
 class TtTimeslotLabPintar(models.Model):
     _name = 'tt.timeslot.labpintar'
-    _description = 'Rodex Model Timeslot Lab Pintar'
+    _description = 'Orbis Model Timeslot Lab Pintar'
     _order = 'datetimeslot'
     _rec_name = 'timeslot_display_name'
 
@@ -66,6 +66,7 @@ class TtTimeslotLabPintar(models.Model):
 
     active = fields.Boolean('Active', default='True')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.depends('datetimeslot')
@@ -174,7 +175,7 @@ class TtTimeslotLabPintar(models.Model):
 
 class TtTimeslotlabpintardefault(models.Model):
     _name = 'tt.timeslot.labpintar.default'
-    _description = 'Rodex Model Timeslot Lab Pintar Default'
+    _description = 'Orbis Model Timeslot Lab Pintar Default'
     _order = 'sequence'
 
     name = fields.Char("Name", required=True)

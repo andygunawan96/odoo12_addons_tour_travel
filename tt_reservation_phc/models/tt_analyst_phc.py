@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 
 class TtAnalystphc(models.Model):
     _name = 'tt.analyst.phc'
-    _description = 'Rodex Model Analyst phc'
+    _description = 'Orbis Model Analyst phc'
 
     name = fields.Char('Analyst Name')
     analyst_id = fields.Char('Analyst ID')

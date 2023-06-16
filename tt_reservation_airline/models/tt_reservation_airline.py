@@ -573,8 +573,9 @@ class ReservationAirline(models.Model):
             return ERR.get_error(1004)
 
     def psg_validator(self,book_obj):
+        ho_agent_obj = book_obj.agent_id.get_ho_parent_agent()
         for segment in book_obj.segment_ids:
-            rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', segment.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code)])
+            rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', segment.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code), ('ho_id','=',ho_agent_obj.id)])
 
             if rule:
                 limit = rule.rebooking_limit
@@ -617,16 +618,24 @@ class ReservationAirline(models.Model):
                                 break
 
                     if not safe:
+                        ## get HO agent
+                        ho_agent_obj = None
+                        if book_obj.agent_id:
+                            ho_agent_obj = book_obj.agent_id.get_ho_parent_agent()
                         # whitelist di sini
-                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
-                            [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
+                        dom = [('name', 'ilike', name.name), ('chances_left', '>', 0)]
+                        if ho_agent_obj:
+                            dom.append(('ho_id','=', ho_agent_obj))
+                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(dom, limit=1)
 
                         if whitelist_name:
                             whitelist_name.chances_left -= 1
                             return True
 
-                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
-                            [('passport','=',name.identity_number),('chances_left','>',0)],limit=1)
+                        dom = [('passport','=',name.identity_number),('chances_left','>',0)]
+                        if ho_agent_obj:
+                            dom.append(('ho_id', '=', ho_agent_obj))
+                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(dom, limit=1)
 
                         if whitelist_passport:
                             whitelist_passport.chances_left -= 1
@@ -1549,7 +1558,8 @@ class ReservationAirline(models.Model):
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
                 if payment_res['error_code'] != 0:
                     try:
-                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
+                        ho_id = self.agent_id.get_ho_parent_agent().id
+                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context, ho_id)
                     except Exception as e:
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
                     raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
@@ -2062,6 +2072,7 @@ class ReservationAirline(models.Model):
                         'pax_type': p_type,
                         'booking_airline_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_airline_id'] = self.id
@@ -2118,7 +2129,8 @@ class ReservationAirline(models.Model):
             # Contoh ketika auto update sia, booked uid menjadi punya sistem
             # Pengaruh saat deteksi agent untuk pricing
             # 'user_id': self.booked_uid.id
-            'user_id': self.user_id.id
+            'user_id': self.user_id.id,
+            'ho_id': self.agent_id.get_ho_parent_agent().id
             # END
         }
         self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
@@ -2309,7 +2321,7 @@ class ReservationAirline(models.Model):
 
         if not has_ticket_ori:
             # gateway get ticket
-            req = {"data": []}
+            req = {"data": [], 'ho_id': book_obj.agent_id.get_ho_parent_agent().id}
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req['data'].append({
                     'pnr': provider_booking_obj.pnr,
@@ -3292,7 +3304,7 @@ class ReservationAirline(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

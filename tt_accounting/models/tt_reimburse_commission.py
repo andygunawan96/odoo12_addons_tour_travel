@@ -30,6 +30,7 @@ class TtReimburseCommission(models.Model):
     name = fields.Char('Name', compute='_compute_name_reimburse')
     res_model = fields.Char('Reservation Provider Name', index=True)
     res_id = fields.Integer('Reservation Provider ID', index=True, help='ID of the followed resource')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)]) # todo: compute store true
     agent_id = fields.Many2one('tt.agent', 'Agent', compute='compute_agent_id', store=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', readonly=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', readonly=True)
@@ -156,6 +157,7 @@ class TtReimburseCommissionServiceCharge(models.Model):
     sequence = fields.Integer('Sequence')
     description = fields.Text('Description')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
 
     def to_dict(self):

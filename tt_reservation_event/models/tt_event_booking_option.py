@@ -9,7 +9,7 @@ SESSION_NT = session.Session()
 
 class MasterBookingOption(models.Model):
     _name = 'tt.event.booking.option'
-    _description = 'Rodex Even Booking Model'
+    _description = 'Orbis Even Booking Model'
 
     uuid = fields.Char('Uuid')
     name = fields.Char('Name')
@@ -24,7 +24,7 @@ class MasterBookingOption(models.Model):
 
 class BookingOptionLine(models.Model):
     _name = 'tt.event.booking.option.line'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     booking_option_id = fields.Many2one('tt.event.booking.option', 'Booking Option', ondelete="cascade")
     label = fields.Char('label')

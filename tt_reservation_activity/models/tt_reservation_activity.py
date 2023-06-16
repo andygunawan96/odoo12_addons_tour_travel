@@ -50,7 +50,8 @@ class ActivityResendVoucher(models.TransientModel):
         req = {
             'provider': self.provider_name,
             'book_id': self.pnr,
-            'user_email_address': self.user_email_add
+            'user_email_address': self.user_email_add,
+            'ho_id': self.agent_id.get_ho_parent_agent().id
         }
         res = self.env['tt.activity.api.con'].resend_voucher(req)
         if res['response'].get('success'):
@@ -228,6 +229,7 @@ class ReservationActivity(models.Model):
             'message': 'PNR %s is now %s, current balance: %s' % (pnr, state, balance),
             'provider': self.provider_name,
         }
+        ## tambah context
         GatewayConnector().telegram_notif_api(data, {})
 
     def action_issued_vendor(self):
@@ -236,6 +238,7 @@ class ReservationActivity(models.Model):
             'provider': self.activity_id.provider_id.code,
             'book_id': self.id,
             'pnr': self.pnr,
+            'ho_id': self.agent_id.get_ho_parent_agent().id
         }
         res = self.env['tt.activity.api.con'].issued_booking_vendor(req)
 
@@ -492,6 +495,7 @@ class ReservationActivity(models.Model):
                     curr_dict['pax_type'] = p_type
                     curr_dict['booking_activity_id'] = self.id
                     curr_dict['description'] = provider.pnr
+                    curr_dict['ho_id'] = self.ho_id.id if self.ho_id else ''
                     curr_dict.update(c_val)
                     values.append((0, 0, curr_dict))
 
@@ -780,7 +784,8 @@ class ReservationActivity(models.Model):
                 'order_number': obj.name,
                 'uuid': obj.booking_uuid,
                 'pnr': obj.pnr,
-                'provider': provider
+                'provider': provider,
+                'ho_id': obj.agent_id.get_ho_parent_agent().id
             }
             attachment_objs = []
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)
@@ -1265,6 +1270,7 @@ class ReservationActivity(models.Model):
             'message': 'Activity Booking Status Updated: ' + desc,
             'provider': self.provider_name,
         }
+        ## tambah context
         GatewayConnector().telegram_notif_api(data, {})
 
     def action_activity_print_invoice(self):
@@ -1347,7 +1353,7 @@ class ReservationActivity(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

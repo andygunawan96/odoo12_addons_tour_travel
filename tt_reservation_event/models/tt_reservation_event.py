@@ -25,7 +25,7 @@ _logger = logging.getLogger(__name__)
 
 class EventResendVoucher(models.TransientModel):
     _name = "event.voucher.wizard"
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     def get_default_email(self):
         context = self.env.context
@@ -64,7 +64,7 @@ class ReservationEvent(models.Model):
     _inherit = ['tt.reservation']
     _name = 'tt.reservation.event'
     _order = 'id DESC'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     booking_uuid = fields.Char('Booking UUID')
     user_id = fields.Many2one('res.users', 'User')
@@ -953,6 +953,7 @@ class ReservationEvent(models.Model):
                         'pax_type': p_type,
                         'booking_airline_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_airline_id'] = self.id
@@ -1011,7 +1012,7 @@ class ReservationEvent(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount
@@ -1034,7 +1035,7 @@ class ReservationEvent(models.Model):
 
 class TtReservationEventOption(models.Model):
     _name = 'tt.reservation.event.option'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     booking_id = fields.Many2one('tt.reservation.event', "Reservation ID")
     event_option_id = fields.Many2one('tt.event.option', 'Event Option')
@@ -1056,7 +1057,7 @@ class TtReservationEventOption(models.Model):
 
 class TtReservationEventVoucher(models.Model):
     _name = 'tt.reservation.event.voucher'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     name = fields.Char('URL')
     booking_id = fields.Many2one('tt.reservation.event', 'Reservation')
@@ -1064,7 +1065,7 @@ class TtReservationEventVoucher(models.Model):
 
 class TtReservationExtraQuestion(models.Model):
     _name = 'tt.reservation.event.extra.question'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     reservation_event_option_id = fields.Many2one('tt.reservation.event.option', 'Option')
     extra_question_id = fields.Many2one('tt.event.extra.question', 'Extra Question')

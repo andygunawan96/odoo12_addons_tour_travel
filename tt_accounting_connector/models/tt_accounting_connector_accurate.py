@@ -20,26 +20,26 @@ class AccountingConnectorAccurate(models.Model):
     _name = 'tt.accounting.connector.accurate'
     _description = 'Accounting Connector Accurate'
 
-    def acc_login(self):
-        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
+    def acc_login(self, vals):
+        url_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Accurate Accounting Setup!')
-        client_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'client_id')], limit=1)
+        client_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'client_id')], limit=1)
         if not client_id_obj:
             raise Exception('Please provide a variable with the name "client_id" in Accurate Accounting Setup!')
-        client_secret_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'client_secret')], limit=1)
+        client_secret_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'client_secret')], limit=1)
         if not client_secret_obj:
             raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
-        url_redirect_web_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url_redirect_web')], limit=1)
+        url_redirect_web_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'url_redirect_web')], limit=1)
         if not url_redirect_web_obj:
             raise Exception('Please provide a variable with the name "url_redirect_web" in Accurate Accounting Setup!')
-        username_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'username')], limit=1)
+        username_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'username')], limit=1)
         if not username_obj:
             raise Exception('Please provide a variable with the name "username" in Accurate Accounting Setup!')
-        password_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'password')], limit=1)
+        password_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'password')], limit=1)
         if not password_obj:
             raise Exception('Please provide a variable with the name "password" in Accurate Accounting Setup!')
-        database_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'database_id')], limit=1)
+        database_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'database_id')], limit=1)
         if not database_id_obj:
             raise Exception('Please provide a variable with the name "database_id" in Accurate Accounting Setup!')
         else:
@@ -125,16 +125,16 @@ class AccountingConnectorAccurate(models.Model):
 
 
     ##BELUM GANTI
-    def get_sales_order(self):
+    def get_sales_order(self, vals={}):
         url_obj = self.env['tt.accounting.setup.variables'].search(
-            [('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url')], limit=1)
+            [('accounting_setup_id.accounting_provider', '=', 'accurate'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals.get('ho_id', 0))), ('variable_name', '=', 'url')], limit=1)
         if not url_obj:
             raise Exception('Please provide a variable with the name "url" in Accurate Accounting Setup!')
 
         url = url_obj.variable_value
         # ses = requests.Session()
         cookies = False
-        login_res = self.acc_login()
+        login_res = self.acc_login({})
         if login_res:
             cookies = login_res.cookies
 
@@ -150,7 +150,7 @@ class AccountingConnectorAccurate(models.Model):
     def add_sales_order(self, vals):
         # ses = requests.Session()
         cookies = False
-        url_db, token, session_id = self.acc_login()
+        url_db, token, session_id = self.acc_login(vals)
         get_all_pax = self.get_customer(url_db, token, session_id)
         get_all_account = self.get_account(url_db, token, session_id)
         for rec in json.loads(vals):
@@ -292,7 +292,7 @@ class AccountingConnectorAccurate(models.Model):
         return data_response
 
     def create_account(self): ##HANYA PERTAMA KALI SAJA
-        url_db, token, session_id = self.acc_login()
+        url_db, token, session_id = self.acc_login({})
         request = {
             "data": [
                 {

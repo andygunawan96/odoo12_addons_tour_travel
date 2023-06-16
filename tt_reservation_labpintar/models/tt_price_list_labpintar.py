@@ -16,7 +16,7 @@ MAX_PER_SLOT = 5
 
 class TtPriceListLabPintar(models.Model):
     _name = 'tt.price.list.labpintar'
-    _description = 'Rodex Model Price List Lab Pintar'
+    _description = 'Orbis Model Price List Lab Pintar'
     _rec_name = 'name'
     _order = 'min_pax'
 

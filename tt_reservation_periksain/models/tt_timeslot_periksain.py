@@ -16,7 +16,7 @@ MAX_PER_SLOT = 5
 
 class TtTimeslotPeriksain(models.Model):
     _name = 'tt.timeslot.periksain'
-    _description = 'Rodex Model Timeslot Periksain'
+    _description = 'Orbis Model Timeslot Periksain'
     _order = 'datetimeslot'
     _rec_name = 'timeslot_display_name'
 
@@ -56,6 +56,7 @@ class TtTimeslotPeriksain(models.Model):
 
     active = fields.Boolean('Active', default='True')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     id_kota_vendor = fields.Char('Kota ID Vendor')
@@ -160,6 +161,7 @@ class TtTimeslotPeriksain(models.Model):
             return 'Date/Time is not specified.'
 
     def get_config_cron(self):
+        ## tambah context
         result = self.env['tt.periksain.api.con'].get_config_cron()
         return result
 

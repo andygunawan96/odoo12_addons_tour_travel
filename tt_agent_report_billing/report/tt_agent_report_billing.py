@@ -46,7 +46,7 @@ class AgentReportBilling(models.Model):
         """
 
     @staticmethod
-    def _where(date_from, date_to, agent_id, state):
+    def _where(date_from, date_to, agent_id, ho_id, state):
         where = """billing.create_date >= '%s' and billing.create_date <= '%s'""" % (date_from, date_to)
         if state == 'draft':
             where += """ AND billing.state IN ('draft')"""
@@ -58,6 +58,8 @@ class AgentReportBilling(models.Model):
             where += """ AND billing.state IN ('partial')"""
         if state == 'cancel':
             where += """ AND billing.state IN ('cancel')"""
+        if ho_id:
+            where += """ AND billing.ho_id = %s""" % ho_id
         if agent_id:
             where += """ AND billing.agent_id = %s""" % agent_id
         return where
@@ -70,18 +72,18 @@ class AgentReportBilling(models.Model):
     def _report_title(data_form):
         data_form['title'] = 'Billing Report: ' + data_form['subtitle']
 
-    def _lines(self, date_from, date_to, agent_id, state):
+    def _lines(self, date_from, date_to, agent_id, ho_id, state):
         query = 'SELECT ' + self._select()
         query += 'FROM ' + self._from()
-        query += 'WHERE ' + self._where(date_from, date_to, agent_id, state)
+        query += 'WHERE ' + self._where(date_from, date_to, agent_id, ho_id, state)
         query += ' ORDER BY ' + self._order_by()
 
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def _lines_more(self, date_from, date_to, agent_id, state):
-        query = "SELECT {} FROM {} WHERE {} ORDER BY {}".format(self._select_more(), self._from_more(), self._where(date_from, date_to, agent_id, state), self._order_by())
+    def _lines_more(self, date_from, date_to, agent_id, ho_id, state):
+        query = "SELECT {} FROM {} WHERE {} ORDER BY {}".format(self._select_more(), self._from_more(), self._where(date_from, date_to, agent_id, ho_id, state), self._order_by())
 
         self.env.cr.execute(query)
         _logger.info(query)
@@ -98,8 +100,8 @@ class AgentReportBilling(models.Model):
         value = fields.Datetime.from_string(utc_datetime_string)
         return fields.Datetime.context_timestamp(self,value).strftime('%Y-%b-%d')
 
-    def _get_lines_data(self, date_from, date_to, agent_id, state):
-        lines = self._lines(date_from, date_to, agent_id, state)
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, state):
+        lines = self._lines(date_from, date_to, agent_id, ho_id, state)
         lines = self._convert_data(lines)
         # lines = []
         # if state != 'all':
@@ -114,14 +116,14 @@ class AgentReportBilling(models.Model):
         #             lines.append(j)
         return lines
 
-    def _get_lines_data_more(self, date_from, date_to, agent_id, state):
+    def _get_lines_data_more(self, date_from, date_to, agent_id, ho_id, state):
         lines = []
         if state != 'all':
-            lines = self._lines(date_from, date_to, agent_id, state)
+            lines = self._lines(date_from, date_to, agent_id, ho_id, state)
         else:
             states = ['all', 'draft', 'confirm', 'partial', 'paid', 'cancel']
             for i in states:
-                line = self._lines(date_from, date_to, agent_id, i)
+                line = self._lines(date_from, date_to, agent_id, ho_id, i)
                 line = self._convert_data(line)
                 for j in line:
                     lines.append(j)
@@ -133,9 +135,10 @@ class AgentReportBilling(models.Model):
         if not data_form['state']:
             data_form['state'] = 'all'
         agent_id = data_form['agent_id']
+        ho_id = data_form['ho_id']
         state = data_form['state']
-        line = self._get_lines_data(date_from, date_to, agent_id, state)
-        second_line = self._lines_more(date_from, date_to, agent_id, state)
+        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, state)
+        second_line = self._lines_more(date_from, date_to, agent_id, ho_id, state)
         self._report_title(data_form)
         return {
             'lines': line,

@@ -36,6 +36,7 @@
                             </div>
                             <group>
                                 <!--                                <field name="user_agent_id" readonly="True" invisible="0"/>-->
+                                <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                                 <field name="agent_id" readonly="1"/>
                                 <field name="name" readonly="1"/>
                                 <field name="email"/>
@@ -117,6 +118,7 @@
                 <field name="gender"/>
                 <field name="marital_status"/>
                 <field name="agent_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
             </tree>
         </field>
     </record>

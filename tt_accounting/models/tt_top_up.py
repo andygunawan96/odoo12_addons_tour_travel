@@ -38,6 +38,9 @@ class TtTopUp(models.Model):
     name = fields.Char('Document Number', required='True', readonly=True,
                        index=True, default=lambda self: 'New')
     due_date = fields.Datetime('Due Date', readonly=True)
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True,
+                               default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=True,
                                default=lambda self: self.env.user.agent_id)
     state = fields.Selection(TOP_UP_STATE,
@@ -106,7 +109,7 @@ class TtTopUp(models.Model):
         })
 
     def action_reject_from_button(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 23')
         self.action_cancel_top_up({
             'co_uid':self.env.user.id
@@ -166,6 +169,9 @@ class TtTopUp(models.Model):
                                        self.validated_amount + abs(self.subsidy), ## Buat Ledger Amount sejumlah payment yg di validated + subsidy unique amount jika ada, ABS supaya selalu +
                                        description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
+        ho_obj = self.agent_id.get_ho_parent_agent()
+        if ho_obj:
+            vals['ho_id'] = ho_obj.id
         new_aml = ledger_obj.create(vals)
         self.write({
             'state': 'approved',
@@ -176,7 +182,7 @@ class TtTopUp(models.Model):
 
         try:
             self.env['tt.top.up.api.con'].send_approve_notification(self.name,self.env.user.name,
-                                                                    self.validated_amount,self.agent_id.name)
+                                                                    self.validated_amount,self.agent_id.name, self.agent_id.get_ho_parent_agent().id)
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 
@@ -248,6 +254,11 @@ class TtTopUp(models.Model):
                 'request_uid': context['co_uid'],
                 'request_date': datetime.now()
             })
+            ho_obj = agent_obj.get_ho_parent_agent()
+            if ho_obj:
+                data.update({
+                    'ho_id': ho_obj.id
+                })
             new_top_up = self.create(data)
 
             acquirer_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_seq_id'])],limit=1)
@@ -263,6 +274,7 @@ class TtTopUp(models.Model):
                 'real_total_amount': new_top_up.total,
                 'currency_id': new_top_up.currency_id.id,
                 'agent_id': new_top_up.agent_id.id,
+                'ho_id': new_top_up.ho_id.id,
                 'acquirer_id': acquirer_obj.id,
                 'top_up_id': new_top_up.id,
                 'confirm_uid': context['co_uid'],
@@ -443,4 +455,3 @@ class TtTopUp(models.Model):
             'url': book_obj.printout_top_up_id.url,
         }
         return url
-

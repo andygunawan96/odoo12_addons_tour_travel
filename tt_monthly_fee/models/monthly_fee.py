@@ -9,6 +9,7 @@ class MonthlyManagementFeeRule(models.Model):
     _name = 'tt.monthly.fee.rule'
     _description = 'Monthly Fee Rule'
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type')
     confirm_uid = fields.Many2one('res.users', 'Confirmed by')
@@ -69,6 +70,8 @@ class MonthlyManagementFee(models.Model):
     _description = 'Monthly Fee Model'
 
     name = fields.Char('Name', required=True)
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, states={'draft':[('readonly',False)]})
     confirm_uid = fields.Many2one('res.users', 'Confirmed by', copy=False)
     confirm_date = fields.Datetime('Confirm Date', copy=False)
@@ -212,7 +215,7 @@ class MonthlyManagementFee(models.Model):
 
     @api.one
     def action_send_email(self, with_notif=True):
-        template = self.env.ref('tt_rodex_aftersales.email_aftersales_1', False)
+        template = self.env.ref('tt_orbis_aftersales.email_aftersales_1', False)
         mail_id = self.env['ir.mail_server'].search([('name', 'ilike', 'info')], limit=1)
         if mail_id:
             template.mail_server_id = mail_id[0].id

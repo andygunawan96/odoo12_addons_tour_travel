@@ -30,7 +30,7 @@ class Destinations(models.Model):
     name = fields.Char('Name', required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
     code = fields.Char('Code', help="Can be filled with IATA code", required=True)
-    display_name = fields.Char('Display Name',compute="_compute_display_name_rodex",store=True)
+    display_name = fields.Char('Display Name',compute="_compute_display_name_orbis",store=True)
     country_id = fields.Many2one('res.country', 'Country')
     city = fields.Char('City', required=True, default='')
     city_id = fields.Many2one('res.city', 'City ID')
@@ -53,7 +53,7 @@ class Destinations(models.Model):
 
     @api.multi
     @api.depends('city','name','code')
-    def _compute_display_name_rodex(self):
+    def _compute_display_name_orbis(self):
         for rec in self:
             rec.display_name = '%s - %s (%s)' % (rec.city or '', rec.name or '', rec.code or '')
 

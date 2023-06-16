@@ -47,6 +47,8 @@ class AgentRegistration(models.Model):
                                       readonly=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True, readonly=True,
                                     states={'draft': [('readonly', False)]})
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
     agent_id = fields.Many2one('tt.agent', 'Agent ID', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
@@ -56,16 +58,17 @@ class AgentRegistration(models.Model):
 
     def get_promotion_ids(self):
         promotions_list = []
-        promotion_objs = self.env['tt.agent.registration.promotion'].search([])
+        promotion_objs = self.env['tt.agent.registration.promotion'].search([('agent_type_id', '=', self.reference_id.agent_type_id.id)])
         for rec in promotion_objs:
-            if rec.agent_type_id.id == self.reference_id.agent_type_id.id:
-                if rec.start_date <= date.today() <= rec.end_date:
-                    promotions_list.append(rec.id)
+            if rec.start_date <= date.today() <= rec.end_date:
+                promotions_list.append(rec.id)
         if not promotions_list:
-            promotion_obj = self.env['tt.agent.registration.promotion'].search([
-                ('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id),
-                ('default', '=', True)
-            ], limit=1)
+            search_params = [('default', '=', True)]
+            ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+            agent_type_obj = ho_obj and ho_obj.agent_type_id or False
+            if agent_type_obj:
+                search_params.append(('agent_type_id', '=', agent_type_obj.id))
+            promotion_obj = self.env['tt.agent.registration.promotion'].search(search_params, limit=1)
             if promotion_obj:
                 promotions_list.append(promotion_obj.id)
         return [('id', 'in', promotions_list)]
@@ -172,14 +175,16 @@ class AgentRegistration(models.Model):
             if rec.agent_type_id:
                 # Set parent agent berdasarkan registration upline di agent type
                 if not rec.agent_type_id.registration_upline_ids:
-                    """ Jika registration upline ids kosong, langsung set ke HO """
-                    rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
+                    """ Jika registration upline ids kosong, langsung set ke HO yang lagi login """
+                    rec.parent_agent_id = rec.env.user.ho_id.id
                 else:
                     if rec.reg_upline_contains(rec.agent_type_id, rec.env.user.agent_id.agent_type_id):
-                        rec.parent_agent_id = rec.env.user.agent_id
+                        rec.parent_agent_id = rec.env.user.agent_id.id
                     else:
-                        if rec.reg_upline_contains(rec.agent_type_id, rec.env.ref('tt_base.agent_type_ho')):
-                            rec.parent_agent_id = rec.env.ref('tt_base.rodex_ho').id
+                        ho_obj = rec.env.user.agent_id.get_ho_parent_agent()
+                        agent_type_obj = ho_obj and ho_obj.agent_type_id or False
+                        if rec.reg_upline_contains(rec.agent_type_id, agent_type_obj):
+                            rec.parent_agent_id = rec.env.user.ho_id.id
                         else:
                             pass
             else:
@@ -316,10 +321,12 @@ class AgentRegistration(models.Model):
             if not res:
                 _logger.info('Response kosong. Input Normal Price.')
                 # Jika agent type tidak memiliki promotion, maka hanya return Normal Price (tanpa komisi)
-                normal_price_promotion = promotion_env.search([
-                    ('agent_type_id', '=', self.env.ref('tt_base.agent_type_ho').id),
-                    ('default', '=', True)
-                ], limit=1)
+                search_params = [('default', '=', True)]
+                if context.get('co_ho_id'):
+                    ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+                    if ho_obj.agent_type_id:
+                        search_params.append(('agent_type_id', '=', ho_obj.agent_type_id.id))
+                normal_price_promotion = promotion_env.search(search_params, limit=1)
 
                 val = {
                     'id': normal_price_promotion.id,
@@ -339,44 +346,33 @@ class AgentRegistration(models.Model):
             _logger.error(msg=str(e) + '\n' + traceback.format_exc())
             return res
 
-    def get_all_registration_documents_api(self):
-        regis_doc_env = self.env['tt.document.type']
-        regis_doc_ids = regis_doc_env.search([])
+    def get_all_registration_documents_api(self, context):
+        search_params = []
+        if context.get('co_ho_id'):
+            search_params.append(('ho_id', '=', int(context['co_ho_id'])))
+        agent_type_ids = self.env['tt.agent.type'].search(search_params)
 
         agent_type_list = []
-        agent_type_env = self.env['tt.agent.type']
-        agent_type_ids = agent_type_env.search([])
-
         for agent_type in agent_type_ids:
-            val = {
+            agent_type_list.append({
                 'id': agent_type.id,
                 'name': agent_type.name,
                 'code': agent_type.code,
                 'docs': []
-            }
-            agent_type_list.append(val)
+            })
 
+        regis_doc_ids = self.env['tt.document.type'].search([])
         for rec in regis_doc_ids:
             if rec.document_type == 'registration':
-                agent_types = []
-                for agent_type in rec['agent_type_ids']:
-                    agent_type_vals = {
-                        'id': agent_type['id'],
-                        'name': agent_type['name'],
-                        'code': agent_type['code']
-                    }
-                    agent_types.append(agent_type_vals)
-
                 val = {
                     'id': rec.id,
                     'document_type': rec.document_type,
                     'display_name': rec.display_name,
                     'description': rec.description
                 }
-
                 for agent_type in agent_type_list:
-                    for doc_agent_type in agent_types:
-                        if doc_agent_type['id'] == agent_type['id']:
+                    for doc_agent_type in rec.agent_type_ids:
+                        if doc_agent_type.id == agent_type['id']:
                             agent_type['docs'].append(val)
         return Response().get_no_error(agent_type_list)
 
@@ -446,7 +442,7 @@ class AgentRegistration(models.Model):
                 )
             comm_left -= rec['amount']
         if comm_left > 0:
-            agent_obj = self.env['tt.agent'].search([('id', '=', self.env.ref('tt_base.rodex_ho').id)])
+            agent_obj = self.reference_id.get_ho_parent_agent()
             ledger.create_ledger_vanilla(
                 self._name,
                 self.id,
@@ -456,7 +452,7 @@ class AgentRegistration(models.Model):
                 3,
                 self.currency_id.id,
                 self.env.user.id,
-                agent_obj.id,
+                agent_obj and agent_obj.id or False,
                 False,
                 comm_left,
                 0,
@@ -857,7 +853,8 @@ class AgentRegistration(models.Model):
 
         if check == 0:
             try:
-                agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
+                # agent_type = self.env['tt.agent.type'].sudo().search([('name', '=', other.get('agent_type'))], limit=1)
+                agent_type = self.env['tt.agent.type'].sudo().browse(int(other.get('agent_type', 0)))
                 parent_agent_id = self.set_parent_agent_id_api(agent_type, context['co_agent_id'])
                 social_media_ids = self.create_social_media_agent_regis(other)
                 # promotion_id = self.env['tt.agent.registration.promotion'].sudo().search([('id', '=', 10)], limit=1)
@@ -866,10 +863,11 @@ class AgentRegistration(models.Model):
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
                 address_ids = self.prepare_address(address)
-                if context['co_agent_id'] != self.env.ref('tt_base.agent_b2c').id:
+                agent_obj = self.env['tt.agent'].browse(int(context['co_agent_id']))
+                if not agent_obj.is_btc_agent:
                     reference_id = context['co_agent_id'],
                 else:
-                    reference_id = self.env.ref('tt_base.rodex_ho').id
+                    reference_id = context['co_ho_id']
                 header.update({
                     'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],
@@ -880,7 +878,8 @@ class AgentRegistration(models.Model):
                     'reference_id': reference_id,
                     'parent_agent_id': parent_agent_id,
                     'tac': agent_type.terms_and_condition,
-                    'create_uid': context['co_uid']
+                    'create_uid': context['co_uid'],
+                    'ho_id': context['co_ho_id']
                 })
                 create_obj = self.create(header)
                 regis_doc_ids = create_obj.input_regis_document_data(regis_doc)
@@ -927,39 +926,39 @@ class AgentRegistration(models.Model):
 
     def set_parent_agent_id_api(self, agent_type_id, agent_id):
         if agent_id:
+            agent_obj = self.env['tt.agent'].browse(agent_id)
+            ho_obj = agent_obj.get_ho_parent_agent()
             """ Kalo daftar agent dengan login dulu """
-            if agent_id == self.env.ref('tt_base.agent_b2c').id:
+            if agent_obj.is_btc_agent:
                 """ Kalo B2C, parent set to HO """
-                parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                parent_agent_id = ho_obj and ho_obj.id or False
             else:
                 # Set parent agent berdasarkan registration upline di agent type
                 if not agent_type_id.registration_upline_ids:
                     """ Jika registration upline ids kosong, langsung set ke HO """
-                    parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                    parent_agent_id = ho_obj and ho_obj.id or False
                 else:
                     if self.reg_upline_contains(agent_type_id, self.env['tt.agent'].browse(agent_id).agent_type_id):
                         parent_agent_id = agent_id
                     else:
-                        if self.reg_upline_contains(self.env.ref('tt_base.agent_type_ho'), self.env['tt.agent'].browse(agent_id).agent_type_id):
-                            parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+                        agent_type_obj = ho_obj and ho_obj.agent_type_id or False
+                        if self.reg_upline_contains(agent_type_obj, self.env['tt.agent'].browse(agent_id).agent_type_id):
+                            parent_agent_id = ho_obj and ho_obj.id or False
                         else:
-                            parent_agent_id = self.env.ref('tt_base.rodex_ho').id  # Sementara
+                            parent_agent_id = ho_obj and ho_obj.id or False  # Sementara
         else:
-            """ Kalo tidak login """
-            if agent_id:
-                if agent_id == self.env.ref('tt_base.agent_b2c').id:
-                    parent_agent_id = self.env.ref('tt_base.rodex_ho').id
-                else:
-                    parent_agent_id = agent_id
-            else:
-                parent_agent_id = self.env.ref('tt_base.rodex_ho').id
+            parent_agent_id = self.env.ref('tt_base.rodex_ho').id
         return parent_agent_id
 
-    def get_config_api(self):
+    def get_config_api(self, context):
         try:
             agent_type = []
-            for rec in self.env['tt.agent.type'].search([('can_be_registered','=',True)]):
+            search_params = [('can_be_registered','=',True)]
+            if context.get('co_ho_id'):
+                search_params.append(('ho_id', '=', int(context['co_ho_id'])))
+            for rec in self.env['tt.agent.type'].search(search_params):
                 agent_type.append({
+                    'id': rec.id,
                     'name': rec.name,
                     'registration_fee': rec.registration_fee,
                     'is_allow_regis': rec.can_register_agent,

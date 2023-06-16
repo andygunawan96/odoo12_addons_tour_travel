@@ -12,11 +12,13 @@ Tour & Travel - After Sales
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base_setup', 'tt_base', 'tt_accounting', 'tt_reservation', 'tt_reservation_airline', 'tt_agent_sales'],
     'data': [
         'data/ir_sequence_data.xml',
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'wizard/tt_reschedule_wizard_views.xml',
         'wizard/set_real_amount_wizard_views.xml',
         'wizard/set_new_segment_pnr_wizard_views.xml',
@@ -26,8 +28,6 @@ Key Features
         'views/tt_reschedule_views.xml',
         'views/tt_leg_views.xml',
         'views/tt_reservation_airline.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule_data.xml',
     ],
     'demo': [],
     'qweb': [],

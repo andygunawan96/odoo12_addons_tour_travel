@@ -36,13 +36,15 @@ class AgentReportOffline(models.AbstractModel):
         LEFT JOIN res_partner piss ON piss.id = uiss.partner_id 
         """
 
-    def _where(self, date_from, date_to, agent_id, state, provider_type):
+    def _where(self, date_from, date_to, agent_id, ho_id, state, provider_type):
         where = """ro.create_date >= '%s' and ro.create_date <= '%s'
          """ % (date_from, date_to)
         if state and state != 'all':
             where += """ AND ro.state_offline = '%s'""" % state
         if provider_type and provider_type != 'all':
             where += """ AND tpt.code = '%s'""" % provider_type
+        if ho_id:
+            where += """ AND ro.ho_id = %s """ % ho_id
         if agent_id:
             # if self.env['tt.agent'].search([('id', '=', agent_id)], limit=1).agent_type_id != self.env['ir.model.data'].xmlid_to_res_id('tt_base.agent_type_ho'):
             where += """ AND ro.agent_id = %s""" % agent_id
@@ -59,10 +61,10 @@ class AgentReportOffline(models.AbstractModel):
         ro.id
         """
 
-    def _lines(self, date_from, date_to, agent_id, state, provider_type):
+    def _lines(self, date_from, date_to, agent_id, ho_id, state, provider_type):
         query = 'SELECT ' + self._select_lines() + \
                 'FROM ' + self._from_lines() + \
-                'WHERE ' + self._where(date_from, date_to, agent_id, state, provider_type) + \
+                'WHERE ' + self._where(date_from, date_to, agent_id, ho_id, state, provider_type) + \
                 'ORDER BY ' + self._order_by()
                 # 'GROUP BY ' + self._group_by() + \
         self.env.cr.execute(query)
@@ -84,13 +86,15 @@ class AgentReportOffline(models.AbstractModel):
         """
 
     @staticmethod
-    def _where_lines_commission(date_from, date_to, state, provider_type):
+    def _where_lines_commission(date_from, date_to, ho_id, state, provider_type):
         where = """ro.create_date >= '%s' AND ro.create_date <= '%s ' 
                    AND tl.transaction_type = 3""" % (date_from, date_to)
         if state and state != 'all':
             where += """ AND ro.state = '%s'""" % state
         if provider_type and provider_type != 'all':
             where += """ AND tpt.code = '%s'""" % provider_type
+        if ho_id:
+            where += """ AND ro.ho_id = %s """ % ho_id
         return where
 
     @staticmethod
@@ -101,10 +105,10 @@ class AgentReportOffline(models.AbstractModel):
     def _order_by_lines_commission():
         return """ro.id"""
 
-    def _lines_commission(self, date_from, date_to, state, provider_type):
+    def _lines_commission(self, date_from, date_to, ho_id, state, provider_type):
         query = 'SELECT ' + self._select_lines_commission() + \
                 'FROM ' + self._from_lines_commission() + \
-                'WHERE ' + self._where_lines_commission(date_from, date_to, state, provider_type) + \
+                'WHERE ' + self._where_lines_commission(date_from, date_to, ho_id, state, provider_type) + \
                 'GROUP BY ' + self._group_by_lines_commission() + \
                 'ORDER BY ' + self._order_by_lines_commission()
         self.env.cr.execute(query)
@@ -185,11 +189,12 @@ class AgentReportOffline(models.AbstractModel):
         if not data_form['state']:
             data_form['state'] = 'all'
         agent_id = data_form['agent_id']
+        ho_id = data_form['ho_id']
         state = data_form['state']
         provider_type = data_form['provider_type']
         lines_list = []
-        lines = self._lines(date_from, date_to, agent_id, state, provider_type)
-        lines_commission = self._lines_commission(date_from, date_to, state, provider_type)
+        lines = self._lines(date_from, date_to, agent_id, ho_id, state, provider_type)
+        lines_commission = self._lines_commission(date_from, date_to, ho_id, state, provider_type)
         lines = self._convert_data(lines, lines_commission)
         lines = self._convert_data2(lines, lines_commission)
         for line in lines:

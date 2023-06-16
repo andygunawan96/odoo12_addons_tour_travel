@@ -10,7 +10,7 @@
         </record>
 
         <record id="seq_reservation_rodextrip_tour" model="ir.sequence">
-            <field name="name">Reservation Rodextrip Tour</field>
+            <field name="name">Reservation RT Tour</field>
             <field name="code">rodextrip.tour.reservation.code</field>
             <field name="prefix">MTR.%(range_y)s%(range_month)s%(range_day)s%(range_sec)s</field>
             <field name="padding">5</field>

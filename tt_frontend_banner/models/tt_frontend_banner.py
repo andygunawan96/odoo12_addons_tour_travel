@@ -36,13 +36,16 @@ class FrontendBanner(models.Model):
                 "image_id":self.env['tt.upload.center'].search([('seq_id', '=', upload['response']['seq_id'])], limit=1)[0].id,
             })
             image_objs.write({'image_line_ids': [(4, image_line_obj.id)]})
+            if context.get('co_ho_seq_id'):
+                ho_agent_obj = self.env['tt.agent'].search([('seq_id','=', context['co_ho_seq_id'])], limit=1)
+                image_objs.image_line_ids[-1].ho_id = ho_agent_obj.id
         except Exception as e:
             _logger.error('Exception Upload Center')
             _logger.error(traceback.format_exc())
             return ERR.get_error()
         return ERR.get_no_error('success')
 
-    def set_inactive_delete_banner_api(self, data):
+    def set_inactive_delete_banner_api(self, data, context):
         #
         try:
             _logger.info("delete or inactive Banner\n" + json.dumps(data))
@@ -56,8 +59,12 @@ class FrontendBanner(models.Model):
             elif data['type'] == 'promotion_banner':
                 banner_objs = self.env.ref('tt_frontend_banner.promotion')
 
+            ho_agent_obj = None
+            if context.get('co_ho_seq_id'):
+                ho_agent_obj = self.env['tt.agent'].search([('seq_id','=', context['co_ho_seq_id'])], limit=1)
+
             for img in banner_objs.image_line_ids:
-                if img.image_id.seq_id == data['seq_id']:
+                if img.image_id.seq_id == data['seq_id'] and ho_agent_obj == img.ho_id:
                     img.url = data['url']
                     img.sequence = data['sequence']
                     img.provider_type_id = self.env['tt.provider.type'].search([('code', '=', data['provider_type'])], limit=1).id
@@ -75,7 +82,7 @@ class FrontendBanner(models.Model):
 
         #
 
-    def get_banner_api(self, data):
+    def get_banner_api(self, data, context):
         imgs = []
 
         if data['type'] == 'big_banner':
@@ -85,15 +92,20 @@ class FrontendBanner(models.Model):
         elif data['type'] == 'promotion':
             image_objs = self.env.ref('tt_frontend_banner.promotion')
 
+        ho_agent_obj = None
+        if context.get('co_ho_seq_id'):
+            ho_agent_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+
         for img in image_objs.image_line_ids:
-            imgs.append({
-                'url': img.image_id['url'],
-                'active': img.active,
-                'seq_id': img.image_id['seq_id'],
-                'url_page': img.url,
-                'provider_type': img.provider_type_id.code,
-                'sequence': img.sequence
-            })
+            if ho_agent_obj.id == img.ho_id.id:
+                imgs.append({
+                    'url': img.image_id['url'],
+                    'active': img.active,
+                    'seq_id': img.image_id['seq_id'],
+                    'url_page': img.url,
+                    'provider_type': img.provider_type_id.code,
+                    'sequence': img.sequence
+                })
 
         return ERR.get_no_error(imgs)
 
@@ -103,10 +115,11 @@ class FrontendBannerLine(models.Model):
     _rec_name = 'url'
     _order = 'sequence asc'
 
-    url = fields.Char('URL')
+    url = fields.Char('URL Redirect')
     frontend_banner_line_id = fields.Many2one('tt.frontend.banner', 'Image List')
     image_id = fields.Many2one('tt.upload.center', 'Image', invisible=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     sequence = fields.Char('Sequence')
     active = fields.Boolean('Active', default=True)
 

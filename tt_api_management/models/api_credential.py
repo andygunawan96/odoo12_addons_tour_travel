@@ -22,6 +22,7 @@ class ApiManagement(models.Model):
     api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator')
     device_type = fields.Selection(selection=variables.DEVICE_TYPE, default='general')
     user_id = fields.Many2one(comodel_name='res.users', string='User')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def to_dict(self):
         res = {
@@ -96,8 +97,9 @@ class ApiManagement(models.Model):
             values = _user.get_credential(prefix='co_')
             values.update({
                 'sid': context['sid'],
-                'signature': self._generate_signature(),
+                'signature': self._generate_signature()
             })
+            _co_user = None
             response = _obj.get_credential()
             # April 11, 2019 - SAM
             # Sementara host IP dikosongkan hingga menemukan cara untuk mendapatkan host IP user
@@ -114,13 +116,13 @@ class ApiManagement(models.Model):
                 if _co_user.is_banned:
                     additional_msg = ""
                     try:
-                        addtional_msg = 'Until %s.' % datetime.strftime(
+                        additional_msg = 'Until %s.' % datetime.strftime(
                             self.env['tt.ban.user'].search([('user_id', '=', _co_user.id)],
                                                            limit=1).end_datetime+timedelta(hours=7),
                             '%Y-%m-%d %I %p')
                     except:
                         pass
-                    raise RequestException(1029, additional_message=addtional_msg)
+                    raise RequestException(1029, additional_message=additional_msg)
 
                 values.update(_co_user.get_credential(prefix='co_'))
             if data.get('co_uid'):
@@ -128,6 +130,31 @@ class ApiManagement(models.Model):
                     raise Exception('User Role is not allowed.')
                 _co_user = self.env['res.users'].sudo().browse(int(data['co_uid']))
                 values.update(_co_user.get_credential(prefix='co_'))
+            api_cred_obj = self.search([('api_key','=', data['api_key']), ('user_id','=', uid)])
+            if api_cred_obj:
+                ########### check admin user in sharing frontend by api_key #############
+                if _co_user:
+                    is_admin = _co_user.has_group('base.group_erp_manager') or _co_user.has_group('base.group_system')
+                    is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.get_ho_parent_agent().id
+                    if api_cred_obj.api_role == 'admin' and not is_admin:
+                        if not is_ho:
+                            agent_frontend_security = values.get('co_agent_frontend_security', [])
+                            code_to_delete = 'admin'
+                            agent_frontend_security = [i for i in agent_frontend_security if i != code_to_delete]
+                            values['co_agent_frontend_security'] = agent_frontend_security
+                ## check cred
+                if api_cred_obj.ho_id and data.get('co_user') and api_cred_obj.api_role != 'operator' and _co_user:
+                    if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system') and api_cred_obj.api_role == 'manager':
+                        raise Exception('Co User and Api Key is not match')
+                ## update cred ho
+                if api_cred_obj.api_role == 'manager':
+                    ## update sesuai ho agent
+                    values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
+                elif api_cred_obj.api_role == 'admin' and _co_user:
+                    ## update sesuai
+                    values.update(_co_user.agent_id.get_ho_parent_agent().get_ho_credential(prefix='co_'))
+            elif data.get('co_user'):
+                raise Exception('Api Key not found')
             response.update(values)
 
             # April 9, 2019 - SAM
@@ -181,6 +208,7 @@ class ResUsersApiInherit(models.Model):
             '%suid' % prefix: self.id,
             '%suser_name' % prefix: self.name,
             '%suser_login' % prefix: self.login,
+            '%sho_id' % prefix: '',
             '%sagent_id' % prefix: '',
             '%sagent_name' % prefix: '',
             '%sagent_type_id' % prefix: '',
@@ -190,6 +218,7 @@ class ResUsersApiInherit(models.Model):
         }
         if self.agent_id:
             res.update(self.agent_id.get_credential(prefix))
+            res.update(self.agent_id.get_ho_credential(prefix))
         if self.customer_parent_id:
             res.update(self.customer_parent_id.get_credential(prefix))
         if self.customer_id:
@@ -227,12 +256,21 @@ class TtAgentApiInherit(models.Model):
             res.update(self.agent_type_id.get_credential(prefix))
         return res
 
+    def get_ho_credential(self, prefix=''):
+        ho_agent_obj = self.get_ho_parent_agent()
+        res = {
+            '%sho_seq_id' % prefix: ho_agent_obj.seq_id,
+            '%sho_id' % prefix: ho_agent_obj.id,
+            '%sho_name' % prefix: ho_agent_obj.name,
+        }
+        return res
+
     def ban_user_api(self, duration=1576800):  # default = 3 tahun
         for rec in self.user_ids:
             if rec.is_api_user:
                 self.env['tt.ban.user'].ban_user(rec.id, duration)
                 try:
-                    self.env['tt.api.con'].send_ban_user_error_notification(rec.name, 'error payment quota')
+                    self.env['tt.api.con'].send_ban_user_error_notification(rec.name, 'error payment quota', rec.get_ho_parent_agent().id)
                 except Exception as e:
                     _logger.error('Ban User Error %s %s' % (str(e), traceback.format_exc()))
 

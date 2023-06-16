@@ -31,6 +31,7 @@
                             <field name="process_type"/>
                             <field name="reference_code"/>
                             <field name="provider_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                         </group>
                         <group string="Document Information">
                             <field name="country_id"/>
@@ -41,8 +42,8 @@
                     </group>
                     <group>
                         <group string="NTA Calculation">
-                            <field name="passport_nta_price" groups="tt_base.group_tt_tour_travel"/>
-                            <field name="delivery_nta_price" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="passport_nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="delivery_nta_price" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         </group>
                     </group>
                     <group>

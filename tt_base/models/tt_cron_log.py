@@ -23,6 +23,7 @@ class TtCronLog(models.Model):
         file.write(traceback.format_exc()+"\n"+additional_message)
         file.close()
         try:
+            ## tambah context
             self.env['tt.api.con'].send_cron_error_notification(action_name)
         except Exception as e:
             _logger.error("Send Cron Error Notification Telegram Error")
@@ -37,7 +38,9 @@ class TtCronLog(models.Model):
 
     def cron_delete_expired_file(self):
         try:
-            self.env['tt.upload.center'].with_context({'active_test':False}).search([('will_be_deleted_time', '<=', datetime.now())]).unlink()
+            files = self.env['tt.upload.center'].with_context({'active_test':False}).search([('will_be_deleted_time', '<=', datetime.now())])
+            for rec in files:
+                rec.unlink()
         except:
             self.create_cron_log_folder()
             self.write_cron_log('auto-delete expired file')

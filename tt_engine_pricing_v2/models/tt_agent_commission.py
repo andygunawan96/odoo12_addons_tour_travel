@@ -65,6 +65,7 @@ class AgentCommission(models.Model):
 
     line_ids = fields.One2many('tt.agent.commission.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
@@ -181,29 +182,31 @@ class AgentCommission(models.Model):
     def get_agent_commission_api(self):
         try:
             objs = self.env['tt.agent.commission'].sudo().search([])
-            agent_commission_data = {
-                'agent_commission_list': []
-            }
+            agent_commission_data = {}
             date_now = datetime.now().strftime(FORMAT_DATETIME)
             expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
             expired_date = expired_date.strftime(FORMAT_DATETIME)
             for obj in objs:
                 if not obj.active:
                     continue
+                if obj.ho_id:
+                    if str(obj.ho_id.id) not in agent_commission_data:
+                        agent_commission_data[str(obj.ho_id.id)] = {
+                            "agent_commission_list": []
+                        }
+                    vals = obj.get_data()
+                    # December 23, 2021 - SAM
+                    # Update struktur pricing agent
 
-                vals = obj.get_data()
-                # December 23, 2021 - SAM
-                # Update struktur pricing agent
-
-                # agent_type_code = vals['agent_type_code']
-                # if agent_type_code not in agent_commission_data:
-                #     agent_commission_data[agent_type_code] = {
-                #         'agent_commission_list': [],
-                #         'create_date': date_now,
-                #         'expired_date': expired_date,
-                #     }
-                # agent_commission_data[agent_type_code]['agent_commission_list'].append(vals)
-                agent_commission_data['agent_commission_list'].append(vals)
+                    # agent_type_code = vals['agent_type_code']
+                    # if agent_type_code not in agent_commission_data:
+                    #     agent_commission_data[agent_type_code] = {
+                    #         'agent_commission_list': [],
+                    #         'create_date': date_now,
+                    #         'expired_date': expired_date,
+                    #     }
+                    # agent_commission_data[agent_type_code]['agent_commission_list'].append(vals)
+                    agent_commission_data[str(obj.ho_id.id)]['agent_commission_list'].append(vals)
 
             payload = {
                 'agent_commission_data': agent_commission_data

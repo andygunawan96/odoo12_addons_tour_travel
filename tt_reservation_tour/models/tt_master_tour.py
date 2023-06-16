@@ -109,6 +109,8 @@ class MasterTour(models.Model):
     tour_line_ids = fields.One2many('tt.master.tour.lines', 'master_tour_id', 'Tour Lines')
     tour_line_amount = fields.Integer('Available Schedule(s)', readonly=True, compute='_compute_tour_line_amount')
 
+    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
+    ho_ids = fields.Many2many('tt.agent', 'tt_master_tour_ho_agent_rel', 'tour_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     is_can_hold = fields.Boolean('Can Be Hold', default=True, required=True)
@@ -233,6 +235,27 @@ class MasterTour(models.Model):
                     'tour_code': prefix + rec.tour_code
                 })
 
+    @api.model
+    def create(self, vals):
+        if not vals.get('owner_ho_id'):
+            vals.update({
+                'owner_ho_id': self.env.user.ho_id.id
+            })
+        if not vals.get('ho_ids'):
+            vals.update({
+                'ho_ids': [(4, self.env.user.ho_id.id)]
+            })
+        res = super(MasterTour, self).create(vals)
+        return res
+
+    @api.multi
+    def write(self, vals):
+        admin_obj_id = self.env.ref('base.user_admin').id
+        root_obj_id = self.env.ref('base.user_root').id
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id] and self.env.user.ho_id.id != self.owner_ho_id.id:
+            raise UserError('You do not have permission to edit this record.')
+        return super(MasterTour, self).write(vals)
+
     def action_get_internal_tour_json(self):
         raise UserError(_("This Provider does not support Sync Products."))
 
@@ -254,7 +277,7 @@ class MasterTour(models.Model):
             'tour_query': '',
             'provider': 'rodextrip_tour',
         }
-
+        ## tambah context
         res = self.env['tt.master.tour.api.con'].search_provider(req_post)
         temp = {}
         if res['error_code'] == 0:
@@ -280,7 +303,7 @@ class MasterTour(models.Model):
             if file:
                 self.sync_products(provider, file)
 
-    def copy_tour(self):
+    def copy_tour(self, return_obj=False):
         if not self.env.user.has_group('tt_base.group_master_data_tour_level_3'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 295')
         new_tour_obj = self.copy()
@@ -407,16 +430,19 @@ class MasterTour(models.Model):
             'other_info_ids': [(6, 0, other_info_ids)]
         })
 
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        action_num = self.env.ref('tt_reservation_tour.tt_master_tour_view_action').id
-        menu_num = self.env.ref('tt_reservation_tour.submenu_tour_pricelist').id
-        return {
-            'type': 'ir.actions.act_url',
-            'name': new_tour_obj.name,
-            'target': 'self',
-            'url': base_url + "/web#id=" + str(new_tour_obj.id) + "&action=" + str(
-                action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
-        }
+        if return_obj:
+            return new_tour_obj
+        else:
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+            action_num = self.env.ref('tt_reservation_tour.tt_master_tour_view_action').id
+            menu_num = self.env.ref('tt_reservation_tour.submenu_tour_pricelist').id
+            return {
+                'type': 'ir.actions.act_url',
+                'name': new_tour_obj.name,
+                'target': 'self',
+                'url': base_url + "/web#id=" + str(new_tour_obj.id) + "&action=" + str(
+                    action_num) + "&model=tt.master.tour&view_type=form&menu_id=" + str(menu_num),
+            }
 
     def sync_products(self, provider=None, data=None, page=None):
         file = data
@@ -462,9 +488,11 @@ class MasterTour(models.Model):
                     'provider_id': provider_obj and provider_obj.id or False,
                     'carrier_id': carrier_obj and carrier_obj.id or False,
                     'currency_id': currency_obj and currency_obj.id or False,
-                    'active': True
+                    'active': True,
+                    'owner_ho_id': self.env.user.ho_id.id,
+                    'ho_ids': [(4, self.env.user.ho_id.id)]
                 }
-                new_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+                new_tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', rec['tour_code']), ('provider_id', '=', provider_obj.id), '|', '|', ('owner_ho_id', '=', self.env.user.ho_id.id), ('ho_ids', '=', self.env.user.ho_id.id), ('ho_ids', '=', False), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if new_tour_obj:
                     new_tour_obj = new_tour_obj[0]
                     new_tour_obj.sudo().write(vals)
@@ -475,6 +503,7 @@ class MasterTour(models.Model):
                     'tour_code': rec['tour_code'],
                     'provider': rec['provider'],
                 }
+                ## tambah context
                 det_res = self.env['tt.master.tour.api.con'].get_details_provider(req_post)
                 if det_res['error_code'] == 0:
                     for temp_line in new_tour_obj.tour_line_ids:
@@ -911,7 +940,13 @@ class MasterTour(models.Model):
             search_params = [('state', '=', 'confirm')]
             if search_request.get('tour_query'):
                 search_params.append(('name', 'ilike', search_request['tour_query']))
-
+            if context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            elif context.get('ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
             master_tour_list = self.env['tt.master.tour'].search(search_params)
             for rec in master_tour_list:
                 location_list = []
@@ -1035,7 +1070,12 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_params = [('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)]
+            if context and context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1065,7 +1105,12 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_params = [('tour_code', '=', provider_obj.alias + '~' + data['tour_code']), ('provider_id', '=', provider_obj.id)]
+            if context and context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1125,12 +1170,11 @@ class MasterTour(models.Model):
                 'delay': 'None',
             }
             if old_vals and old_vals['journey_type'] == segment.journey_type:
-                if segment.departure_date and old_vals.get('arrival_date'):
-                    time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['arrival_date']
-                    day = int(time_delta.days)
-                    hours = int(time_delta.seconds / 3600)
-                    minute = int((time_delta.seconds / 60) % 60)
-                    list_obj[-1]['delay'] = self.get_delay(day, hours, minute)
+                time_delta = utc_tz.localize(segment.departure_date).astimezone(user_tz) - old_vals['arrival_date']
+                day = int(time_delta.days)
+                hours = int(time_delta.seconds / 3600)
+                minute = int((time_delta.seconds / 60) % 60)
+                list_obj[-1]['delay'] = self.get_delay(day, hours, minute)
             list_obj.append(vals)
             old_vals = vals
         return list_obj
@@ -1167,7 +1211,12 @@ class MasterTour(models.Model):
             if not provider_obj:
                 raise RequestException(1002)
             provider_obj = provider_obj[0]
-            tour_obj = self.env['tt.master.tour'].sudo().search([('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)], limit=1)
+            search_params = [('tour_code', '=', provider_obj.alias + '~' + search_request['tour_code']), ('provider_id', '=', provider_obj.id)]
+            if context and context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            tour_obj = self.env['tt.master.tour'].sudo().search(search_params, limit=1)
             if not tour_obj:
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_obj = tour_obj[0]
@@ -1404,10 +1453,23 @@ class MasterTour(models.Model):
             _logger.error(traceback.format_exc())
             return ERR.get_error(1025)
 
-    def get_config_by_api(self):
+    def get_config_by_api(self, context):
         try:
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            self.env.cr.execute("""SELECT cnt.id FROM tt_tour_location_rel tour_loc_rel LEFT JOIN tt_master_tour mst_tour ON tour_loc_rel.product_id = mst_tour.id LEFT JOIN tt_tour_master_locations tour_loc ON tour_loc_rel.location_id = tour_loc.id LEFT JOIN res_country cnt ON tour_loc.country_id = cnt.id WHERE mst_tour.state IN ('confirm') AND mst_tour.active = True GROUP BY cnt.id;""")
+            sql_query = """SELECT cnt.id FROM tt_tour_location_rel tour_loc_rel 
+                           LEFT JOIN tt_master_tour mst_tour ON tour_loc_rel.product_id = mst_tour.id 
+                           LEFT JOIN tt_master_tour_ho_agent_rel tour_ho_rel on tour_ho_rel.tour_id = mst_tour.id 
+                           LEFT JOIN tt_tour_master_locations tour_loc ON tour_loc_rel.location_id = tour_loc.id 
+                           LEFT JOIN res_country cnt ON tour_loc.country_id = cnt.id 
+                           WHERE mst_tour.state IN ('confirm') AND mst_tour.active = True """
+
+            sql_query += 'AND (tour_ho_rel.ho_id IS NULL'
+            if context.get('co_ho_id'):
+                sql_query += ' OR mst_tour.owner_ho_id = ' + str(context['co_ho_id']) + ''
+                sql_query += ' OR tour_ho_rel.ho_id = ' + str(context['co_ho_id']) + ''
+            sql_query += ') GROUP BY cnt.id;'
+
+            self.env.cr.execute(sql_query)
             tour_loc_countries = self.env.cr.dictfetchall()
             selected_countries = []
             for cnt in tour_loc_countries:
@@ -1753,21 +1815,19 @@ class MasterTour(models.Model):
 
     def get_autocomplete_api(self, req, context):
         try:
-            query = req.get('name') and '%' + req['name'] + '%' or False
-            sql_query = "select * from tt_master_tour where state IN ('confirm') AND active = True"
-            if query:
-                sql_query += " and name ilike %"+query+"%"
-            self.env.cr.execute(sql_query)
-
-            result_id_list = self.env.cr.dictfetchall()
+            search_params = []
+            if req.get('name'):
+                search_params.append(('name', 'ilike', req['name']))
+            if context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])),('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            result_id_list = self.env['tt.master.tour'].search(search_params)
             result_list = []
-
             for result in result_id_list:
-                result = {
-                    'name': result.get('name') and result['name'] or '',
-                }
-                result_list.append(result)
-
+                result_list.append({
+                    'name': result.name and result.name or '',
+                })
             return ERR.get_no_error(result_list)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -2141,7 +2201,7 @@ class TourSyncProductsChildren(models.TransientModel):
                             'name': rec3.name,
                             'payment_percentage': rec3.payment_percentage,
                             'description': rec3.description,
-                            'due_date': rec3.due_date,
+                            'due_date': rec3.due_date and rec3.due_date.strftime("%Y-%m-%d") or False,
                         })
                     tour_line_dict.update({
                         'payment_rules_ids': payment_rules_list

@@ -1,3 +1,5 @@
+import copy
+
 from odoo import api, fields, models, _
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
@@ -78,7 +80,7 @@ class TestSearch(models.Model):
                 # provider = provider.split('_')[0]
                 provider_obj = self.env['tt.provider'].search(['|', ('alias', '=', provider), ('code', '=', provider)], limit=1)
                 provider_id = provider_obj.id
-                city_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)]) if rec.res_id]
+                city_ids += [rec.res_id for rec in self.env['tt.provider.code'].sudo().search([('res_model', '=', 'res.city'), ('provider_id', '=', provider_id)]) if rec.res_id and rec.res_id not in city_ids]
 
         f2 = open('/var/log/tour_travel/cache_hotel/catalog.txt', 'r')
         f2 = f2.read()
@@ -136,7 +138,7 @@ class TestSearch(models.Model):
         codes = {}
         for code in provider_codes:
             # codes.append({'provider': code.provider_id.name, 'name': code.name, 'external_id': code.code})
-            codes[self.masking_provider(code.provider_id.code)] = code.code
+            codes[code.provider_id.code] = code.code
         return codes
 
     def prepare_landmark_distance(self, landmarks):
@@ -722,6 +724,8 @@ class TestSearch(models.Model):
                             'total': scs['amount'] * scs['pax_count'],
                             'currency_id': self.env['res.currency'].get_id(scs.get('currency'), default_param_idr=True),
                             'foreign_currency_id': self.env['res.currency'].get_id(scs.get('foreign_currency'), default_param_idr=True),
+                            'description': '',
+                            'ho_id': '',
                         })
                         self.env['tt.service.charge'].create(scs)
 
@@ -1238,7 +1242,7 @@ class TestSearch(models.Model):
             })
         return providers
 
-    def get_provider_for_destination_dest_name(self, dest_name):
+    def get_provider_for_destination_dest_name(self, dest_name, context):
         def provider_to_dic(provider_id, city_id):
             def vendor_rate_to_dic(recs):
                 # vals = {
@@ -1252,17 +1256,18 @@ class TestSearch(models.Model):
                     vals[rec.currency_id.name] = rec.sell_rate
                 return vals
 
-            resp = city_id and city_id.get_city_country_provider_code(city_id.id, provider_id.code) or {'city_id': False, 'country_id': False}
+            resp = city_id and city_id.get_city_country_provider_code(city_id.id, provider_id.provider_id.code) or {'city_id': False, 'country_id': False}
             if provider_id.active:
-                if provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id:
+                if provider_id.provider_id.id == self.env.ref('tt_reservation_hotel.tt_hotel_provider_rodextrip_hotel').id:
                     resp['city_id'] = dest_name.upper()
                 vals = {
-                    'provider_id': provider_id.id,
-                    'name': provider_id.name,
-                    'provider': provider_id.code or provider_id.name.lower(),
+                    'provider_id': provider_id.provider_id.id,
+                    'name': provider_id.provider_id.name,
+                    'provider': provider_id.provider_id.code or provider_id.provider_id.name.lower(),
                     'provider_city_id': resp['city_id'],
                     'provider_country_id': resp['country_id'],
-                    'currency_rule': vendor_rate_to_dic(provider_id.rate_ids),
+                    # 'currency_rule': vendor_rate_to_dic(provider_id.rate_ids),
+                    'currency_rule': [],
                 }
                 return vals
             return False
@@ -1278,10 +1283,13 @@ class TestSearch(models.Model):
 
         # Part untuk tentukan vendor "A" cman di negara yg di mau
         if self.env['ir.config_parameter'].sudo().get_param('hotel.search.use.country.allowed') in ['1',1,'true','True']:
-            vendor_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', city_id.country_id.id), ('is_apply', '=', True)])
-            vendor_ids = [rec.provider_id for rec in vendor_ids]
+            provider_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+            vendor_ids = self.env['tt.provider.ho.data'].search([('provider_id', 'in', provider_ids.ids), ('ho_id', '=', context['co_ho_id']), ('provider_destination_ids', '=', False)])
+            # prov_dest_ids = self.env['tt.provider.destination'].sudo().search([('country_id', '=', city_id.country_id.id), ('is_apply', '=', True)])
+            vendor_ids = [rec for rec in vendor_ids]
+            # vendor_ids += [rec.provider_id for rec in prov_dest_ids if rec if rec.provider_id.name]
         else:
-            vendor_ids = self.env['tt.provider'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False)])
+            vendor_ids = self.env['tt.provider.ho.data'].search([('provider_type_id', '=', hotel_type_obj.id), ('alias', '!=', False), ('ho_id', '=', context['co_ho_id'])])
 
         for rec in vendor_ids:
             a = provider_to_dic(rec, city_id)

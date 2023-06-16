@@ -16,7 +16,7 @@ MAX_PER_SLOT = 5
 
 class TtPriceListSentraMedika(models.Model):
     _name = 'tt.price.list.sentramedika'
-    _description = 'Rodex Model Price List Sentra Medika'
+    _description = 'Orbis Model Price List Sentra Medika'
     _rec_name = 'name'
     _order = 'min_pax'
 

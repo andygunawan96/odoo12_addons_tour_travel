@@ -101,6 +101,10 @@ class ReservationPpob(models.Model):
                 'others': {}
             }
             for vouch_key in voucher_data.keys():
+                # search_params = [('type', '=', vouch_key)]
+                # if context.get('co_ho_id'):
+                #     search_params.append(('ho_ids', '=', int(context['co_ho_id'])))
+                # vouch_data = self.env['tt.master.voucher.ppob'].search(search_params)
                 vouch_data = self.env['tt.master.voucher.ppob'].search([('type', '=', vouch_key)])
                 similar_disp_names = {}
                 for rec in vouch_data:
@@ -203,6 +207,7 @@ class ReservationPpob(models.Model):
                     curr_dict['pax_type'] = p_type
                     curr_dict['booking_ppob_id'] = self.id
                     curr_dict['description'] = provider.pnr
+                    curr_dict['ho_id'] = self.ho_id.id if self.ho_id else ''
                     curr_dict.update(c_val)
                     values.append((0,0,curr_dict))
 
@@ -634,7 +639,7 @@ class ReservationPpob(models.Model):
 
     def create_inquiry_api(self, data, context):
         try:
-            ho_obj = self.env.ref('tt_base.rodex_ho')
+            ho_obj = self.env['tt.agent'].browse(context['co_ho_id'])
             placeholder_email = ho_obj.email and ho_obj.email or 'placeholder@email.com'
             cust_first_name = data['data'].get('customer_name') and data['data']['customer_name'] or 'Customer'
             cust_email = data['data'].get('customer_email') and data['data']['customer_email'] or placeholder_email
@@ -1289,7 +1294,7 @@ class ReservationPpob(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

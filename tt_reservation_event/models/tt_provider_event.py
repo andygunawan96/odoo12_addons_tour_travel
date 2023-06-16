@@ -8,7 +8,7 @@ class TtProviderEvent(models.Model):
     _name = 'tt.provider.event'
     _rec_name = 'pnr'
     _order = 'event_date'
-    _description = 'Rodex Event Model'
+    _description = 'Orbis Event Model'
 
     pnr = fields.Char('PNR')
     pnr2 = fields.Char('PNR2')
@@ -73,6 +73,7 @@ class TtProviderEvent(models.Model):
                 'total': scs['total'],
                 'provider_hotel_booking_id': self.id,
                 'description': self.pnr and self.pnr or '',
+                'ho_id': self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else '',
                 'commission_agent_id': not isinstance(scs, dict) and scs.commission_agent_id.id or False,
             })
             # scs_list.append(new_scs)
