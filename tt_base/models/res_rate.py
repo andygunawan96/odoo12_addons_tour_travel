@@ -86,8 +86,8 @@ class AgentResRate(models.Model):
                 if not response['agent'].get(obj.ho_id.seq_id):
                     response['agent'][obj.ho_id.seq_id] = {}
                 if obj.base_currency_id.code not in response['currency_list']:
-                    response['currency_list'].append(obj.base_currency_id.name)
-                response['agent'][obj.ho_id.seq_id][obj.base_currency_id.name] = obj.get_currency_rate_data()
+                    response['currency_list'].append(obj.to_currency_id.name)
+                response['agent'][obj.ho_id.seq_id][obj.to_currency_id.name] = obj.get_currency_rate_data()
             res = Response().get_no_error(response)
         except Exception as e:
             _logger.error('Error Get Agent Rate API, %s, %s' % (str(e), traceback.format_exc()))
