@@ -10,8 +10,8 @@ Tour & Travel - Base
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'base_setup', 'base_address_city', 'mail', 'payment'],
     'data': [
         'data/ir_mail_server.xml',
@@ -20,7 +20,7 @@ Key Features
         'data/frontend_security.xml',
         'data/ir_config_parameter.xml',
         'data/res_groups_data.xml',
-        'data/customer_parent_type_rodex_data.xml',
+        'data/customer_parent_type_orbis_data.xml',
         'data/skipped_history_data.xml',
         'data/tt.bank.csv',
         'data/tt.error.api.csv',
@@ -31,9 +31,9 @@ Key Features
         'data/tt_pnr_quota_price_list.xml',
         'views/menu_item_base.xml',
         'views/tt_agent_views.xml',
-        'data/agent_type_rodex_data.xml',
-        'data/agent_b2c_data.xml',
+        'data/agent_type_orbis_data.xml',
         'data/tt_agent_ho_data.xml',
+        'data/agent_b2c_data.xml',
         'data/payment_acquirer_ho_data.xml',
         'data/user_template.xml',
 
@@ -96,10 +96,13 @@ Key Features
         'wizard/tt_upload_center_wizard_view.xml',
         'wizard/create_user_wizard_view.xml',
         'wizard/notification_pop_up_wizard.xml',
+        'wizard/create_ho_agent_wizard_view.xml',
         'wizard/create_customer_parent_wizard_view.xml',
+        'wizard/create_ho_transport_carrier_search_config_wizard_view.xml',
         'views/tt_upload_center_views.xml',
         'views/tt_vendor_views.xml',
         'views/ir_model_data_views.xml',
+        'views/ir_mail_server_views.xml',
 
         'views/change_default_odoo.xml',
         'views/tt_loyalty_program_views.xml',

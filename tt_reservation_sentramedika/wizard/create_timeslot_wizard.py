@@ -48,6 +48,7 @@ class CreateTimeslotSentraMedikaWizard(models.TransientModel):
     cito_surcharge = fields.Monetary('Cito Surcharge', default=CITO_SURCHARGE, required=True)
     address_surcharge = fields.Monetary('Cito Surcharge', default=ADDRESS_SURCHARGE, required=True)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
     default_data_id = fields.Many2one('tt.timeslot.sentramedika.default', 'Default Data')
 

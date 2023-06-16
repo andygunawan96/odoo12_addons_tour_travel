@@ -10,11 +10,12 @@ Tour & Travel - Voucher
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['tt_base'],
     'data': [
         'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/ir_cron_data.xml',
         'data/ir_send_email.xml',
         'views/voucher_views.xml',

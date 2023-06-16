@@ -16,35 +16,35 @@ _logger = logging.getLogger(__name__)
 
 # 'url_api', 'url_web', 'client_id', 'client_secret', 'email', 'password'
 
-class AccountingConnectorAccurate(models.Model):
+class AccountingConnectorJurnalID(models.Model):
     _name = 'tt.accounting.connector.jurnalid'
     _description = 'Accounting Connector Jurnal Id'
 
     def testing_login(self):
-        self.acc_login()
+        self.acc_login({})
 
-    def acc_login(self):
-        url_api_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url_api')], limit=1)
+    def acc_login(self, vals):
+        url_api_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'url_api')], limit=1)
         if not url_api_obj:
             raise Exception('Please provide a variable with the name "url_api" in Accurate Accounting Setup!')
 
-        url_web_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'url_web')], limit=1)
+        url_web_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'url_web')], limit=1)
         if not url_web_obj:
             raise Exception('Please provide a variable with the name "url_web" in Accurate Accounting Setup!')
 
-        client_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'client_id')],limit=1)
+        client_id_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'client_id')],limit=1)
         if not client_id_obj:
             raise Exception('Please provide a variable with the name "client_id" in Accurate Accounting Setup!')
 
-        client_secret_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'client_secret')],limit=1)
+        client_secret_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'client_secret')],limit=1)
         if not client_secret_obj:
             raise Exception('Please provide a variable with the name "client_secret" in Accurate Accounting Setup!')
 
-        access_token_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'access_token')],limit=1)
+        access_token_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'access_token')],limit=1)
         if not access_token_obj:
             raise Exception('Please provide a variable with the name "access_token" in Accurate Accounting Setup!')
 
-        api_key_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('variable_name', '=', 'api_key')],limit=1)
+        api_key_obj = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'jurnalid'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'api_key')],limit=1)
         if not api_key_obj:
             raise Exception('Please provide a variable with the name "api_key" in Accurate Accounting Setup!')
 
@@ -604,7 +604,11 @@ class AccountingConnectorAccurate(models.Model):
             passenger_data = ''
             desc = ''
             list_desc = []
-            is_user_ho = int(vals.get('agent_id', 0)) == self.env.ref('tt_base.rodex_ho').id
+            is_user_ho = False
+            if vals.get('agent_id'):
+                agent_obj = self.env['tt.agent'].browse(int(vals['agent_id']))
+                if agent_obj and agent_obj.is_ho_agent:
+                    is_user_ho = True
             ## AIRLINE & TRAIN
             for provider_booking in vals['provider_bookings']:
                 ## HOTEL
@@ -1325,7 +1329,7 @@ class AccountingConnectorAccurate(models.Model):
     def add_sales_order(self, vals):
         try:
             cookies = False
-            data_login = self.acc_login()
+            data_login = self.acc_login(vals)
 
             if vals['category'] == 'reservation':
                 ##### AMBIL CONTACT ###############

@@ -380,6 +380,15 @@ access_tt_provider_for_provider_level_3,tt.provider.for.provider.level.3,model_t
 access_tt_provider_for_provider_level_4,tt.provider.for.provider.level.4,model_tt_provider,tt_base.group_provider_level_4,1,1,1,1
 access_tt_provider_for_provider_level_5,tt.provider.for.provider.level.5,model_tt_provider,tt_base.group_provider_level_5,1,1,1,1
 ,,,,,,,
+
+access_tt_provider_ho_data_for_public,tt.provider.ho.data.for.public,model_tt_provider_ho_data,,1,0,0,0
+,,,,,,,
+access_tt_provider_ho_data_for_provider_level_1,tt.provider.ho.data.for.provider.level.1,model_tt_provider_ho_data,tt_base.group_provider_level_1,1,0,1,1
+access_tt_provider_ho_data_for_provider_level_2,tt.provider.ho.data.for.provider.level.2,model_tt_provider_ho_data,tt_base.group_provider_level_2,1,0,1,1
+access_tt_provider_ho_data_for_provider_level_3,tt.provider.ho.data.for.provider.level.3,model_tt_provider_ho_data,tt_base.group_provider_level_3,1,1,1,1
+access_tt_provider_ho_data_for_provider_level_4,tt.provider.ho.data.for.provider.level.4,model_tt_provider_ho_data,tt_base.group_provider_level_4,1,1,1,1
+access_tt_provider_ho_data_for_provider_level_5,tt.provider.ho.data.for.provider.level.5,model_tt_provider_ho_data,tt_base.group_provider_level_5,1,1,1,1
+,,,,,,,
 access_tt_provider_code_for_provider_level_1,tt.provider.code.for.provider.level.1,model_tt_provider_code,tt_base.group_provider_level_1,1,0,0,0
 access_tt_provider_code_for_provider_level_2,tt.provider.code.for.provider.level.2,model_tt_provider_code,tt_base.group_provider_level_2,1,0,1,0
 access_tt_provider_code_for_provider_level_3,tt.provider.code.for.provider.level.3,model_tt_provider_code,tt_base.group_provider_level_3,1,1,1,0
@@ -598,6 +607,9 @@ access_for_tt_email_queue_for_email_queue_level_4,tt_base.access_for_tt_email_qu
 access_for_tt_email_queue_for_email_queue_level_5,tt_base.access_for_tt_email_queue_for_email_queue_level_5,model_tt_email_queue,tt_base.group_email_queue_level_5,1,1,1,1
 ,,,,,,,
 access_for_ir_mail_server_for_access_right,tt_base.access_for_ir_mail_server_for_access_right,model_ir_mail_server,base.group_erp_manager,1,1,1,1
+access_for_ir_mail_server_for_user_data_level_3,tt_base.access_for_ir_mail_server_for_user_data_level_3,model_ir_mail_server,tt_base.group_user_data_level_3,1,1,1,0
+access_for_ir_mail_server_for_user_data_level_4,tt_base.access_for_ir_mail_server_for_user_data_level_4,model_ir_mail_server,tt_base.group_user_data_level_4,1,1,1,1
+access_for_ir_mail_server_for_user_data_level_5,tt_base.access_for_ir_mail_server_for_user_data_level_5,model_ir_mail_server,tt_base.group_user_data_level_5,1,1,1,1
 ,,,,,,,
 access_tt_vendor_for_public,tt.agent.type.for.public,model_tt_vendor,,1,0,0,0
 ,,,,,,,

@@ -11,6 +11,7 @@
                     <field name="provider_id"/>
                     <field name="date_from"/>
                     <field name="date_to"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                 </group>
                 <footer>
                     <button name="send_recon_request_data" string="Submit" type="object" default_focus="1" class="oe_highlight"/>

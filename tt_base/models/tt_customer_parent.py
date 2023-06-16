@@ -18,6 +18,7 @@ class TtCustomerParent(models.Model):
     logo = fields.Binary('Customer Logo')
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id.id)
     parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)  # , default=lambda self: self.env.user.agent_id
 
     balance = fields.Monetary(string="Balance")
@@ -123,6 +124,11 @@ class TtCustomerParent(models.Model):
                 'default_customer_parent_id': self.id
             },
         }
+        temp_ho_obj = self.parent_agent_id.get_ho_parent_agent()
+        if temp_ho_obj:
+            vals['context'].update({
+                'default_ho_id': temp_ho_obj.id
+            })
         return vals
 
     @api.model
@@ -206,6 +212,7 @@ class TtCustomerParent(models.Model):
             res = {
                 'customer_parent_name': cor_data[0].name,
                 'customer_parent_id': cor_data[0].id,
+                'customer_parent_seq_id': cor_data[0].seq_id,
                 'customer_seq_id': cust_data[0].seq_id,
                 'customer_parent_type_name': cor_data[0].customer_parent_type_id.name,
                 'customer_parent_type_code': cor_data[0].customer_parent_type_id.code,
@@ -332,6 +339,20 @@ class TtCustomerParent(models.Model):
         self.write({
             'state': 'draft',
         })
+
+    # temporary function to set default ho for all agents
+    def set_all_default_ho(self):
+        all_recs = self.search([])
+        for rec in all_recs:
+            if not rec.ho_id:
+                if rec.parent_agent_id:
+                    ho_obj = rec.parent_agent_id.get_ho_parent_agent()
+                    ho_id = ho_obj and ho_obj.id or self.env.ref('tt_base.rodex_ho').id
+                else:
+                    ho_id = self.env.ref('tt_base.rodex_ho').id
+                rec.write({
+                    'ho_id': ho_id
+                })
 
     #ledger history
     #booking History

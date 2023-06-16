@@ -23,6 +23,7 @@ class TtMasterAdminFee(models.Model):
     agent_ids = fields.Many2many('tt.agent', 'master_admin_fee_agent_rel', 'admin_fee_id', 'agent_id', string='Agents')
     agent_access_type = fields.Selection([("all", "ALL"),("allow", "Allowed"),("restrict", "Restricted")], 'Agent Access Type', default='all')
     admin_fee_line_ids = fields.One2many('tt.master.admin.fee.line', 'master_admin_fee_id', 'Admin Fee Line(s)')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     sequence = fields.Integer('Sequence', default=50)
     active = fields.Boolean('Active', default=True)
 

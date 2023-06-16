@@ -11,8 +11,8 @@ Tour & Travel - Accounting Connector Train
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['tt_base', 'tt_accounting_connector', 'tt_reservation_train'],
 
     # always loaded

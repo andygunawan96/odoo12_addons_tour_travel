@@ -5,6 +5,7 @@
         <field name="model">tt.reconcile.transaction</field>
         <field name="arch" type="xml">
             <search string="Search Reconcile">
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="provider_type_id"/>
                 <field name="provider_id"/>
                 <field name="transaction_date"/>
@@ -46,6 +47,7 @@
                         <field name="start_balance" readonly="1"/>
                         <field name="end_balance" readonly="1"/>
                         <field name="transaction_date"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                     </group>
                     <separator string="Line(s)"/>
                     <field name="reconcile_lines_ids"/>
@@ -85,6 +87,7 @@
                 <field name="start_balance"/>
                 <field name="end_balance"/>
                 <field name="total_lines"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <!--                <field name="state"/>-->
             </tree>
         </field>

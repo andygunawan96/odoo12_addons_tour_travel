@@ -2730,7 +2730,6 @@
                    eval="[(6,0,[
                                ref('base.group_system'),
                                ref('base.group_user'),
-                               ref('tt_base.group_tt_tour_travel'),
                                ref('tt_base.group_master_data_hotel_level_5'),
                                ref('tt_base.group_master_data_passport_level_5'),
                                ref('tt_base.group_master_data_visa_level_5'),
@@ -2813,7 +2812,6 @@
                    eval="[(6,0,[
                                ref('base.group_system'),
                                ref('base.group_user'),
-                               ref('tt_base.group_tt_tour_travel'),
                                ref('tt_base.group_master_data_hotel_level_5'),
                                ref('tt_base.group_master_data_passport_level_5'),
                                ref('tt_base.group_master_data_visa_level_5'),

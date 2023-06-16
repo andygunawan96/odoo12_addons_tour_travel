@@ -6,13 +6,16 @@ import json
 import re
 from ...tools.ERR import RequestException
 from ...tools import ERR
+import logging
 
+_logger = logging.getLogger(__name__)
 
 class TtBankAccount(models.Model):
     _name = 'tt.bank.accounts'
     _description = 'collections of bank accounts'
     _rec_name = 'bank_account_owner'
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_account_owner = fields.Char('Owner Name')
     bank_account_number = fields.Char('Bank Number')
@@ -74,8 +77,15 @@ class TtBankTransaction(models.Model):
     transaction_connection = fields.Selection(variables.BANK_STATEMENT)
     transaction_process = fields.Selection([('unprocess', 'Un-Process'), ('process', 'Processed')])
     top_up_id = fields.Many2one('tt.top.up', 'Top up')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def create_bank_statement(self, req):
+        bank_account_obj = self.env['tt.bank.accounts'].browse(req['bank_account_id'])
+        ho_id = ''
+        if bank_account_obj.ho_id:
+            ho_id = bank_account_obj.ho_id.id
+        elif bank_account_obj.agent_id:
+            ho_id = bank_account_obj.agent_id.get_ho_parent_agent().id
         result = self.env['tt.bank.transaction'].create({
             'bank_account_id': req['bank_account_id'],
             'bank_transaction_date_id': req['date_id'],
@@ -92,12 +102,13 @@ class TtBankTransaction(models.Model):
             'transaction_message': req['transaction_message'],
             'transaction_connection': "not_connect",
             'transaction_process': "unprocess",
+            'ho_id': ho_id
         })
 
         return result
 
-    def get_data(self, data):
-        result = self.env['tt.bank.api.con'].get_transaction(data)
+    def get_data(self, data, ho_id):
+        result = self.env['tt.bank.api.con'].get_transaction(data, ho_id)
         if result['error_code'] != 0:
             raise Exception("Unable to get bank Transaction, %s" % (result['error_msg']))
 
@@ -150,7 +161,8 @@ class TtBankTransaction(models.Model):
                     'transaction_credit': credit_value,
                     'bank_balance': balance_modified,
                     'transaction_name': i['TransactionName'],
-                    'transaction_message': i['Trailer']
+                    'transaction_message': i['Trailer'],
+                    'ho_id': self.ho_id.id
                 }
                 added = self.create_bank_statement(data)
                 # create transaction code

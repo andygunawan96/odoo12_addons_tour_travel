@@ -8,6 +8,7 @@ class AgentInvoiceLineDetailInh(models.Model):
 
     invoice_line_id = fields.Many2one('tt.ho.invoice.line', 'HO Invoice Line')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
     is_commission = fields.Boolean(default=False)
     is_point_reward = fields.Boolean(default=False)

@@ -1,4 +1,18 @@
 <odoo>
+    <record id="tt_reservation_sentramedika_for_ho" model="ir.rule">
+        <field name="name">Reservation Sentra Medika For HO</field>
+        <field name="model_id" ref="model_tt_reservation_sentramedika"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_reservation_sentramedika_for_ho_user" model="ir.rule">
+        <field name="name">Reservation Sentra Medika For HO User</field>
+        <field name="model_id" ref="model_tt_reservation_sentramedika"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
     <record id="tt_reservation_sentramedika_for_agent" model="ir.rule">
         <field name="name">Reservation Sentra Medika For Agent</field>
         <field name="model_id" ref="model_tt_reservation_sentramedika"/>

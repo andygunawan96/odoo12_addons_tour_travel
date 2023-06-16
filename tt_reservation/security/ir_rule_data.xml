@@ -1,4 +1,18 @@
 <odoo>
+    <record id="tt_reservation_for_ho" model="ir.rule">
+        <field name="name">Reservation For HO</field>
+        <field name="model_id" ref="model_tt_reservation"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_reservation_for_ho_user" model="ir.rule">
+        <field name="name">Reservation For HO User</field>
+        <field name="model_id" ref="model_tt_reservation"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
     <record id="tt_reservation_for_agent" model="ir.rule">
         <field name="name">Reservation For Agent</field>
         <field name="model_id" ref="model_tt_reservation"/>
@@ -20,6 +34,20 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
     </record>
 
+    <record id="tt_service_charges_for_ho" model="ir.rule">
+        <field name="name">Service Charges For HO</field>
+        <field name="model_id" ref="model_tt_service_charge"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_service_charges_for_ho_user" model="ir.rule">
+        <field name="name">Service Charges For HO User</field>
+        <field name="model_id" ref="model_tt_service_charge"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
     <record id="tt_service_charges_for_agent" model="ir.rule">
         <field name="name">Service Charges For Agent</field>
         <field name="model_id" ref="model_tt_service_charge"/>
@@ -32,5 +60,47 @@
         <field name="model_id" ref="model_tt_service_charge"/>
         <field name="domain_force">[('commission_agent_id','=',False)]</field>  <!--['|',('agent_id','=',user.agent_id.id),('sub_agent_id','=',user.agent_id.id)]-->  <!--[('agent_id','=',user.agent_id.id)]-->
         <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>  <!--,(4,ref('tt_base.group_tt_sub_agent_user_operator'))-->
+    </record>
+
+    <record id="tt_whitelisted_name_for_ho" model="ir.rule">
+        <field name="name">Whitelisted Name For HO</field>
+        <field name="model_id" ref="model_tt_whitelisted_name"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_whitelisted_name_for_ho_user" model="ir.rule">
+        <field name="name">Whitelisted Name For HO User</field>
+        <field name="model_id" ref="model_tt_whitelisted_name"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_whitelisted_passport_for_ho" model="ir.rule">
+        <field name="name">Whitelisted Passport For HO</field>
+        <field name="model_id" ref="model_tt_whitelisted_passport"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_whitelisted_passport_for_ho_user" model="ir.rule">
+        <field name="name">Whitelisted Passport For HO User</field>
+        <field name="model_id" ref="model_tt_whitelisted_passport"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="tt_reconcile_transaction_for_ho" model="ir.rule">
+        <field name="name">Reconcile Transaction For HO</field>
+        <field name="model_id" ref="model_tt_reconcile_transaction"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_reconcile_transaction_for_ho_user" model="ir.rule">
+        <field name="name">Reconcile Transaction For HO User</field>
+        <field name="model_id" ref="model_tt_reconcile_transaction"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 </odoo>

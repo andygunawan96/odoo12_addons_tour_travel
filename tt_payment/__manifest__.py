@@ -12,15 +12,15 @@ Tour & Travel - Payment
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base_setup', 'tt_base', 'tt_accounting'],
     'data': [
+        'security/ir.model.access.csv',
+        'security/ir_rule_data.xml',
         'data/ir_sequence_data.xml',
         'views/tt_payment_views.xml',
         'views/tt_top_up_views.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule_data.xml',
     ],
     'demo': [],
     'qweb': [],

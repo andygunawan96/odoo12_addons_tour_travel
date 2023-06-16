@@ -12,8 +12,8 @@ Tour & Travel - Reservation Airline
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base_setup','tt_base','tt_reservation','base_address_city','tt_in_api_connector'],
     'data': [
         'views/menu_item_base.xml',

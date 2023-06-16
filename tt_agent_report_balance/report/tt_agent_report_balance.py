@@ -15,7 +15,7 @@ class AgentReportBalance(models.Model):
         return """
         agent.name as agent_name, agent.balance as agent_balance, agent.active as agent_status,
         agent_type.name as agent_type_name,
-        currency.name as currency_name        
+        currency.name as currency_name
         """
         # return """*"""
 
@@ -75,10 +75,12 @@ class AgentReportBalance(models.Model):
         }
 
     def _search_valued(self, data_form):
+        search_list = []
+        if data_form['ho_id']:
+            search_list.append(('ho_id', '=', data_form['ho_id']))
         if data_form['agent_id']:
-            data = self.env['tt.agent'].sudo().search([('id', '=', data_form['agent_id'])],order='agent_type_id').read()
-        else:
-            data = self.env['tt.agent'].sudo().search([],order='agent_type_id').read()
+            search_list.append(('id', '=', data_form['agent_id']))
+        data = self.env['tt.agent'].sudo().search(search_list, order='agent_type_id').read()
         line = []
         for i in data:
             temp_dict = {

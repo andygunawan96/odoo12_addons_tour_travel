@@ -12,6 +12,8 @@ class ForceIssuedWizard(models.TransientModel):
 
     provider_id = fields.Many2one('tt.provider.activity', 'Provider', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', required=True, readonly=True, compute='_compute_booker_agent_id')
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, compute='_compute_booker_agent_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, compute='_compute_booker_agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', required=True, domain=[('id', '=', -1)])
@@ -39,6 +41,7 @@ class ForceIssuedWizard(models.TransientModel):
         for rec in self:
             provider_obj = self.env['tt.provider.activity'].sudo().search([('id', '=', rec.provider_id.id)])
             rec.agent_id = provider_obj.booking_id.agent_id.id
+            rec.ho_id = provider_obj.booking_id.ho_id.id
             rec.booker_id = provider_obj.booking_id.booker_id.id
 
     def submit_force_issued(self):

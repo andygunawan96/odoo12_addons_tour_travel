@@ -22,6 +22,7 @@ class TtReservationRequest(models.Model):
     res_model = fields.Char('Reservation Name', index=True, readonly=True)
     res_id = fields.Integer('Reservation ID', index=True, help='Id of the followed resource', readonly=True)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id, readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id, readonly=True, states={'draft': [('readonly', False)]})
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True, store=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR / POR')

@@ -25,6 +25,9 @@ class TtBillingStatement(models.Model):
     transaction_end_date = fields.Date('End Date', readonly=True,
                              states={'draft': [('readonly', False)]})
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True,
+                               states={'draft': [('readonly', False)]},
+                               default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True,
                                states={'draft': [('readonly', False)]},
                                default=lambda self: self.env.user.agent_id.id)
@@ -229,7 +232,10 @@ class TtBillingStatement(models.Model):
 
     def get_email_reply_to(self):
         try:
-            final_email = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_default_email_address', default='')
+            final_email = ''
+            if self.agent_id:
+                ho_agent_obj = self.agent_id.get_ho_parent_agent()
+                final_email = ho_agent_obj.email_server_id.smtp_user
         except Exception as e:
             _logger.error(str(e))
             final_email = ''

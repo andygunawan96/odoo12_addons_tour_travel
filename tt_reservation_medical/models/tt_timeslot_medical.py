@@ -60,7 +60,7 @@ ADMIN_FEE_ANTIGEN_DRIVETHRU = 10000
 
 class TtTimeslotmedical(models.Model):
     _name = 'tt.timeslot.medical'
-    _description = 'Rodex Model Timeslot medical'
+    _description = 'Orbis Model Timeslot medical'
     _order = 'datetimeslot,id'
     _rec_name = 'timeslot_display_name'
 
@@ -147,6 +147,7 @@ class TtTimeslotmedical(models.Model):
 
     active = fields.Boolean('Active', default='True')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     @api.depends('datetimeslot')
@@ -317,7 +318,7 @@ class TtTimeslotmedical(models.Model):
 
 class TtTimeslotmedicaldefault(models.Model):
     _name = 'tt.timeslot.medical.default'
-    _description = 'Rodex Model Timeslot medical Default'
+    _description = 'Orbis Model Timeslot medical Default'
     _order = 'sequence'
 
     name = fields.Char("Name", required=True)

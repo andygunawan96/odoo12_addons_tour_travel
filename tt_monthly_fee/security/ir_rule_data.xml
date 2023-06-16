@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="tt_mmf_for_ho" model="ir.rule">
+        <field name="name">Monthly Fee For HO</field>
+        <field name="model_id" ref="model_tt_monthly_fee"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_mmf_for_ho_user" model="ir.rule">
+        <field name="name">Monthly Fee For HO User</field>
+        <field name="model_id" ref="model_tt_monthly_fee"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
     <record id="tt_mmf_for_agent" model="ir.rule">
         <field name="name">Monthly Fee For Agent</field>
         <field name="model_id" ref="model_tt_monthly_fee"/>
@@ -19,6 +33,20 @@
         <field name="model_id" ref="model_tt_monthly_fee"/>
         <field name="domain_force">[('agent_id','=',user.agent_id.id)]</field>
         <field name="groups" eval="[(4,ref('tt_base.group_tt_corpor_user'))]"/>
+    </record>
+
+    <record id="tt_mmf_line_for_ho" model="ir.rule">
+        <field name="name">Monthly Fee Line For HO</field>
+        <field name="model_id" ref="model_tt_monthly_fee_line"/>
+        <field name="domain_force">[('mmf_id.ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="tt_mmf_line_for_ho_user" model="ir.rule">
+        <field name="name">Monthly Fee Line For HO User</field>
+        <field name="model_id" ref="model_tt_monthly_fee_line"/>
+        <field name="domain_force">[('mmf_id.ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 
     <record id="tt_mmf_line_for_agent" model="ir.rule">

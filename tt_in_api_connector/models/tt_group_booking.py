@@ -1,7 +1,7 @@
 from odoo import api,models,fields
 from ...tools.ERR import RequestException
 
-class TtOfflineApiCon(models.Model):
+class TtGroupBookingApiCon(models.Model):
     _name = 'tt.groupbooking.api.con'
     _inherit = 'tt.api.con'
 
@@ -40,7 +40,7 @@ class TtOfflineApiCon(models.Model):
 
         return res
 
-    def send_approve_notification(self,document_number,approve_uid,amount):
+    def send_approve_notification(self,document_number,approve_uid,amount, ho_id):
         request = {
             'code': 9906,
             'message': 'Issued Offline by {} Rp {:,}'.format(approve_uid,amount),
@@ -48,7 +48,7 @@ class TtOfflineApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_code')
+                                            ,'notification_code', ho_id=ho_id)
 
     def send_groupbooking_payment_expired_notification(self,data,context):
         request = {
@@ -56,4 +56,4 @@ class TtOfflineApiCon(models.Model):
             'message': 'Group Booking Payment Expired: {}\n\nOrder Number : {}\nDue Date : {}'.format(data['url'], data['order_number'],data['due_date']),
             "title": 'GROUPBOOKING PAYMENT EXPIRED'
         }
-        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code')
+        return self.send_request_to_gateway('%s/notification' % (self.url), request, 'notification_code', ho_id=context['co_ho_id'])

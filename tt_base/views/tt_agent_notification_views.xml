@@ -20,6 +20,7 @@
                             <field name="snooze_days"/>
                             <field name="type"/>
                             <field name="provider_type_id" attrs="{'invisible': [('type','!=','reservation')]}"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="is_read"/>
                             <field name="active"/>

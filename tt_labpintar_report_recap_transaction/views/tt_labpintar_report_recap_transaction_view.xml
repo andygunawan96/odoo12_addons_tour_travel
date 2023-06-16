@@ -36,7 +36,7 @@
                 parent="tt_labpintar_report_recap_transaction.menu_reservation_report_labpintar"
                 action="action_medical_vendor_report_recap_transaction_wz_labpintar"
                 sequence="30"
-                groups="tt_base.group_tt_tour_travel"
+                groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
         />
     </data>
 </odoo>

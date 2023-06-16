@@ -61,12 +61,13 @@
                 <field name="pnr"/>
                 <field name="reference"/>
                 <field name="desc"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id"/>
                 <field name="customer_parent_id"/>
                 <field name="invoice_line_detail_ids"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_by_invoice_id" string="Invoice" domain="[]" context="{'group_by':'invoice_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_reference" string="Reference" domain="[]" context="{'group_by':'reference'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_invoice_id" string="Invoice" domain="[]" context="{'group_by':'invoice_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_reference" string="Reference" domain="[]" context="{'group_by':'reference'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>

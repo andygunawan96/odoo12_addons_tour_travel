@@ -46,6 +46,7 @@ class TtProviderPassport(models.Model):
     pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     booking_id = fields.Many2one('tt.reservation.passport', 'Order Number', ondelete='cascade')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], related='booking_id.ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='booking_id.agent_id')
     passport_id = fields.Many2one('tt.reservation.passport.pricelist', 'Passport Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
@@ -165,6 +166,7 @@ class TtProviderPassport(models.Model):
             if 'commission_agent_id' in scs:
                 scs['commission_agent_id'] = scs['commission_agent_id']
             scs['description'] = self.pnr and self.pnr or ''
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if scs['total'] != 0:
                 service_chg_obj.create(scs)
 

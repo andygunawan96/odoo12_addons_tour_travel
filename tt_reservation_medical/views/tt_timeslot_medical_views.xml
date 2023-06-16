@@ -40,7 +40,7 @@
                 <sheet>
 
                     <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" groups="tt_base.group_tt_tour_travel"
+                        <button name="toggle_active" type="object" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
                                 class="oe_stat_button" icon="fa-archive">
                             <field name="active" widget="boolean_button"
                                    options='{"terminology": "archive"}'/>
@@ -57,6 +57,7 @@
                             <field name="datetimeslot_end"/>
                             <field name="max_book_datetime"/>
                             <field name="destination_id"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="currency_id" invisible="1"/>
                         </group>

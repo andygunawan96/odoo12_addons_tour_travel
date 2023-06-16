@@ -140,7 +140,14 @@ class HotelInformation(models.Model):
     def get_provider_code_fmt(self):
         provider_fmt = {}
         for rec in self.provider_hotel_ids:
-            provider_fmt.update({rec.provider_id.alias: rec.code})
+            # if is_alias:
+            #     provider_fmt.update({rec.provider_id.alias: rec.code})
+            # else:
+            #     provider_fmt.update({rec.provider_id.code: rec.code})
+            # Webbeds: SH12345
+            provider_fmt.update({rec.provider_id.code: rec.code})
+            # A6: SH12345
+            # provider_fmt.update({rec.provider_id.alias: rec.code})
         return provider_fmt
 
     # result:

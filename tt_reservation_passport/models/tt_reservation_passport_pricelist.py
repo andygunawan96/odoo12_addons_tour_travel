@@ -73,6 +73,7 @@ class PassportSyncProducts(models.TransientModel):
         req = {
             'provider': 'rodextrip_passport'
         }
+        ## tambah context
         res = self.env['tt.passport.api.con'].get_product_vendor(req)
         if res['error_code'] == 0:
             folder_path = '/var/log/tour_travel/rodextrip_passport_master_data'
@@ -115,6 +116,7 @@ class PassportSyncProducts(models.TransientModel):
                         'provider': provider,
                         'code': rec
                     }
+                    ## tambah context
                     res = self.env['tt.passport.api.con'].get_product_detail_vendor(req)
                     #create object
                     if res['error_code'] == 0:
@@ -249,6 +251,8 @@ class PassportPricelist(models.Model):
 
     duration = fields.Integer('Duration (day(s))', help="in day(s)", required=True, default=1)
     commercial_duration = fields.Char('Duration', compute='_compute_duration', readonly=1)
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     @api.multi
     @api.depends('cost_price', 'sale_price')

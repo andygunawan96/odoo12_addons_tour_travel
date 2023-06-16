@@ -26,6 +26,7 @@
                             <field name="sequence"/>
                         </group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>
@@ -106,6 +107,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="description"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -117,6 +119,7 @@
         <field name="arch" type="xml">
         <search>
             <field name="name"/>
+            <field name="ho_id" groups="base.group_erp_manager"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
         </search>
         </field>

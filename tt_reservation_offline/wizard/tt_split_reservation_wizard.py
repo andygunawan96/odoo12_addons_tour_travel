@@ -168,7 +168,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             scs.total += agent_diff
                             book_obj.agent_commission = comm['amount']
                         break
-            elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
+            elif comm['id'] == book_obj.ho_id.id:
                 # Bandingkan amount komisi HO dg HO commission yang ada di book obj
                 ho_diff = book_obj.ho_commission - comm['amount']
                 for scs in book_obj.provider_booking_ids[0].cost_service_charge_ids:
@@ -255,7 +255,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             scs.total -= agent_diff
                             new_book_obj.agent_commission = comm['amount']
                         break
-            elif comm['id'] == self.env.ref('tt_base.rodex_ho').id:
+            elif comm['id'] == new_book_obj.ho_id.id:
                 ho_diff = new_book_obj.ho_commission - comm['amount']
                 for scs in new_book_obj.provider_booking_ids[0].cost_service_charge_ids:
                     if scs.commission_agent_id.id == comm['id']:

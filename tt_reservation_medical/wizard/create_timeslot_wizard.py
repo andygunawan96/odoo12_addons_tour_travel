@@ -71,6 +71,7 @@ class CreateTimeslotmedicalWizard(models.TransientModel):
     single_supplement = fields.Monetary('Single Supplement')
     overtime_surcharge = fields.Monetary('Overtime Surcharge')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
     default_data_id = fields.Many2one('tt.timeslot.medical.default', 'Default Data')
 

@@ -110,6 +110,7 @@ class TtSSRList(models.Model):
                 'title': 'New SSR Created',
                 'message': 'Please complete ssr detail for %s in %s (%s)' % (_obj.code, _obj.provider_id.code, _obj.provider_type_id.code)
             }
+            ## tambah context
             self.env['tt.api.con'].sudo().send_new_ssr_notification(**values)
             # _gw_con.telegram_notif_api(values, {})
             response = _obj.get_ssr_data()

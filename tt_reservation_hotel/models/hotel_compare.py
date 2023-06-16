@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from ...tools.timer import Timer
 
 
 def getfield(model, field_name):
@@ -30,10 +31,12 @@ class HotelFindSimilar(models.Model):
         for rec in self.similar_ids:
             rec.comp_hotel_id.state = 'draft'
             rec.sudo().unlink()
-        self.hotel_name = ''
-        self.compare_uid = False
-        self.compare_date = False
-        self.end_date = False
+        self.write({
+            'hotel_name': '',
+            'compare_uid': False,
+            'compare_date': False,
+            'end_date': False,
+        })
 
     @api.multi
     def selected_string_removal(self, hotel_name=""):
@@ -270,21 +273,27 @@ class HotelInformationCompare(models.Model):
                     max_score_cou, score_cou = self.count_similarity_string(rec)
                     score += score_cou
                     max_score += max_score_cou
-                    rec.similarity_value = score_cou
-                    rec.max_value = max_score_cou + 1
+                    rec.write({
+                        'similarity_value': score_cou,
+                        'max_value': max_score_cou + 1
+                    })
                 else:
                     score_cou = self.count_simple_string(rec.value_1, rec.value_2)
                     score += score_cou
-                    rec.similarity_value = score_cou
-                    rec.max_value = 1
+                    rec.write({
+                        'similarity_value': score_cou,
+                        'max_value': 1
+                    })
                 max_score += 1
             # Part ini untuk field yg mesti ada (bisa jadi name mirip tpi yg 1 alamate kosong sehingga angkane tinggi)
             # Name 1: Grand Kamala Lagoon By Veeroom, Name 2: Superior @ Grand Kamala Lagoon By Eha Room
             # Almat 1 kosong total score: 73
             elif rec.params in ['name', 'address']:
                 max_score += 5
-                rec.similarity_value = 0
-                rec.max_value = 5
+                rec.write({
+                    'similarity_value': 0,
+                    'max_value': 5
+                })
 
 
         self.score = score and score * 100 / max_score or 0
@@ -301,8 +310,10 @@ class HotelInformationCompare(models.Model):
         self.collect_hotel(params)
         self.compute_score()
 
-        self.compare_uid = self.env.uid
-        self.compare_date = fields.Datetime.now()
+        self.write({
+            'compare_uid': self.env.uid,
+            'compare_date': fields.Datetime.now()
+        })
         self.comp_hotel_id.state = 'tobe_merge'
 
     # ======= Part Rubah State blum merge trigger Start=======
@@ -388,7 +399,7 @@ class HotelInformationCompare(models.Model):
             # Update Value ke value sebelum merge
             for rec in self.line_ids:
                 if rec.is_value_1:
-                    self.comp_hotel_id.update({
+                    self.comp_hotel_id.write({
                         rec.params: rec.params == 'rating' and int(rec.value_2) or rec.value_2
                     })
             self.similar_id.info_ids = [(3, self.hotel_id.id)]
@@ -431,6 +442,7 @@ class HotelInformationCompare(models.Model):
                     hotel_dict[key] = hotel_dict[key][0]
             for key in pop_list:
                 hotel_dict.pop(key)
+            hotel_dict['info_ids'] = [(4, self.hotel_id.id)]
             self.similar_id = self.env['tt.hotel.master'].create(hotel_dict)
             self.similar_id.state = 'draft'
         else:
@@ -438,28 +450,51 @@ class HotelInformationCompare(models.Model):
                 # Logger g bis proses soaale hotel yg mau di mapping g ada provider e
                 return False
             self.similar_id = self.comp_hotel_id
+            # _TIMER2 = Timer('Render Line')
             for rec in self.line_ids:
                 if rec.params == 'rating':
                     vals[rec.params] = rec.is_value_1 and int(rec.value_1) or int(rec.value_2)
                 else:
                     vals[rec.params] = rec.is_value_1 and rec.value_1 or rec.value_2
-            self.similar_id.update(vals)
+            vals['info_ids'] = [(4, self.hotel_id.id)]
+            self.similar_id.write(vals)
+            # _TIMER2.stop()
+            # _TIMER3 = Timer('Merge Provider Code')
             self.merge_provider_code()
+            # _TIMER3.stop()
 
-        self.merge_facility()
+        # _TIMER4 = Timer('Facility')
+        if not self.comp_hotel_id.facility_ids:
+            self.merge_facility()
+        # _TIMER4.stop()
+
+        # _TIMER5 = Timer('Merge Image')
         self.merge_image()
-        self.similar_id.info_ids = [(4, self.hotel_id.id)]
+        # _TIMER5.stop()
+        # _TIMER6 = Timer('Adding similar')
         self.similar_id.get_provider_name()
+        # _TIMER6.stop()
 
-        self.merge_uid = self.env.uid
-        self.merge_date = fields.Datetime.now()
+        # _TIMER7 = Timer('Merge Time')
+        self.update({
+            'merge_uid': self.env.uid,
+            'merge_date': fields.Datetime.now(),
+            'state': 'merge'
+        })
         self.hotel_id.state = 'merged'
-        self.state = 'merge'
+        # _TIMER7.stop()
 
     # ======= Part Extra tool(s) =======
     def multi_merge_hotel(self):
-        for rec in self:
-            rec.merge_hotel()
+        for idx, rec in enumerate(self):
+            try:
+                rec.merge_hotel()
+            except:
+                # Logger yg error yg mna
+                continue
+
+            if idx % 10 == 0:
+                self.env.cr.commit()
 
     def multi_decline_hotel(self):
         for rec in self:

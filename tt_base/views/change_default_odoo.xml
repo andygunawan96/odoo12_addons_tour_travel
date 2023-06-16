@@ -4,7 +4,7 @@
     <!--    <record id="hr.menu_hr_root" model="ir.ui.menu">-->
     <!--        <field name="active" eval="False"></field>-->
     <!--    </record>-->
-
+    <!--    Change Default Official Odoo-->
     <!-- TODO buat mekanisme yg lbih bagus untuk hide and show manage by ... -->
     <template id="ms_disable_manage_db" name="Login Layout" inherit_id="web.login_layout">
         <xpath expr="//div//div//div//div" position="before">
@@ -37,7 +37,7 @@
     <!--Outgoing Mail Server-->
     <menuitem id="menu_email_outgoing"
               parent="tt_base.top_tour_travel_administration"
-              groups="base.user_admin,tt_base.group_email_queue_level_1"
+              groups="base.group_erp_manager"
               name="Outgoing Mail Server"
               sequence="6"
               action="base.action_ir_mail_server_list"/>
@@ -46,14 +46,14 @@
     <template id="auth_signup_reset_password_inherit" name="Auth Signup Reset Password Inherit"
               inherit_id="auth_signup.reset_password">
         <xpath expr="//input[@name='redirect']" position="attributes">
-            <attribute name="t-att-value">redirectrodex</attribute>
+            <attribute name="t-att-value">redirectorbis</attribute>
         </xpath>
     </template>
 
     <template id="auth_signup_signup_inherit" name="Auth Signup Signup Inherit"
               inherit_id="auth_signup.signup">
         <xpath expr="//input[@name='redirect']" position="attributes">
-            <attribute name="t-att-value">redirectrodex</attribute>
+            <attribute name="t-att-value">redirectorbis</attribute>
         </xpath>
     </template>
 
