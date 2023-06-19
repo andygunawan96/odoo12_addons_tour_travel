@@ -530,6 +530,7 @@ class MasterTour(models.Model):
                         detail_dat = det_res['response']['selected_tour']
                         for rec_det in detail_dat['tour_lines']:
                             new_tour_line_vals = {
+                                'tour_line_code': rec_det['tour_line_code'],
                                 'departure_date': rec_det['departure_date'],
                                 'arrival_date': rec_det['arrival_date'],
                                 'seat': rec_det['seat'],
