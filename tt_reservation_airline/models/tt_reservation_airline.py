@@ -1230,7 +1230,8 @@ class ReservationAirline(models.Model):
                 'provider_bookings': prov_list,
                 'refund_list': refund_list,
                 'reschedule_list': reschedule_list,
-                'signature_booked': book_obj.sid_booked
+                'signature_booked': book_obj.sid_booked,
+                'expired_date': book_obj.expired_date and book_obj.expired_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                 # 'provider_type': book_obj.provider_type_id.code
             })
             # _logger.info("Get resp\n" + json.dumps(res))
