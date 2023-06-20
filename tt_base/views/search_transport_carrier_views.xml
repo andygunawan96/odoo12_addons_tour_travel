@@ -72,7 +72,11 @@
             <search>
                 <field name="carrier_id"/>
                 <field name="provider_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                </group>
             </search>
         </field>
     </record>
