@@ -35,7 +35,9 @@ class TtLegAirline(models.Model):
         res = {
             'leg_code': self.leg_code,
             'origin': self.origin_id and self.origin_id.code or '',
+            'origin_display_name': self.origin_id and self.origin_id.name or '',
             'destination': self.destination_id and self.destination_id.code or '',
+            'destination_display_name': self.destination_id and self.destination_id.name or '',
             'origin_terminal': self.origin_terminal and self.origin_terminal or '',
             'destination_terminal': self.destination_terminal and self.destination_terminal or '',
             'departure_date': self.departure_date,

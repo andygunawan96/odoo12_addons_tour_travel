@@ -300,6 +300,14 @@ class PaymentAcquirer(models.Model):
             if util.get_without_empty(req, 'order_number'):
                 book_obj = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1)
                 amount = book_obj.total - book_obj.total_discount
+                ## 19 JUN 2023 IVAN check partial_booking
+                if book_obj.state == 'partial_booked':
+                    for provider in book_obj.provider_booking_ids:
+                        ## check jika ada yang fail_booked, total amount di kurangkan
+                        if provider.state in ['fail_booked']: ## halt tetap di hitung
+                            for svc in provider.cost_service_charge_ids:
+                                if svc.charge_type != 'RAC':
+                                    amount -= svc.total
                 co_agent_id = book_obj.agent_id.id ## untuk kalau HO issuedkan channel, supaya payment acquirerny tetap punya agentnya
                 currency = book_obj.currency_id.name
             else:
