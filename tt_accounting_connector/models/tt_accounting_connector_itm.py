@@ -290,7 +290,6 @@ class AccountingConnectorITM(models.Model):
                         if is_ho_transaction:
                             temp_sales += pax_setup['total_comm']
                         # total cost = Total NTA
-
                         # total sales = Agent NTA (kalo HO + total commission)
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
                         provider_dict = {
