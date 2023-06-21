@@ -405,8 +405,11 @@ class TtProviderTrain(models.Model):
     #     return sc_value
 
     def update_temporary_field_per_pax_api(self, idx, temporary_field):
-        data_temporary_field = {}
+        data_temporary_field = []
         if self.ticket_ids[idx].passenger_id.temporary_field:
             data_temporary_field = json.loads(self.ticket_ids[idx].passenger_id.temporary_field)
-        data_temporary_field.update(temporary_field)
+        if type(data_temporary_field) == list: ## ASUMSI KAI SELALU isi vaccine array 0
+            data_temporary_field[0].update(temporary_field)
+        else:
+            data_temporary_field.append(temporary_field)
         self.ticket_ids[idx].passenger_id.temporary_field = json.dumps(data_temporary_field)
