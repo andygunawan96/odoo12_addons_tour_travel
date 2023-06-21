@@ -290,6 +290,7 @@ class AccountingConnectorITM(models.Model):
                         if is_ho_transaction:
                             temp_sales += pax_setup['total_comm']
                         # total cost = Total NTA
+
                         # total sales = Agent NTA (kalo HO + total commission)
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
                         provider_dict = {
@@ -514,6 +515,68 @@ class AccountingConnectorITM(models.Model):
                 travel_file_data.update({
                     "CustomerCode": customer_code,
                 })
+            req = {
+                "LiveID": live_id,
+                "AccessMode": "",
+                "UniqueCode": uniquecode,
+                "TravelFile": travel_file_data,
+                "MethodSettlement": "NONE"
+            }
+            if not self.validate_request(req):
+                raise Exception('Request cannot be sent because some field requirements are not met.')
+        elif request['category'] == 'reschedule':
+            include_service_taxes = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'is_include_service_taxes')], limit=1)
+            pnr_list = [request['referenced_pnr']]
+            if request['new_pnr'] != request['referenced_pnr']:
+                pnr_list.append(request['new_pnr'])
+            provider_list = []
+            supplier_list = []
+            for prov in request['provider_bookings']:
+                sup_search_param = [('accounting_setup_id.accounting_provider', '=', 'itm'),
+                                    ('accounting_setup_id.active', '=', True),
+                                    ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                                    ('provider_id.code', '=', prov['provider'])]
+                if request['reservation_data'].get('sector_type'):
+                    if request['reservation_data']['sector_type'] == 'Domestic':
+                        temp_product_search = ('variable_name', '=', 'domestic_product')
+                    else:
+                        temp_product_search = ('variable_name', '=', 'international_product')
+                    sector_based_product = self.env['tt.accounting.setup.variables'].search(
+                        [('accounting_setup_id.accounting_provider', '=', 'itm'),
+                         ('accounting_setup_id.active', '=', True),
+                         ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), temp_product_search], limit=1)
+                    if sector_based_product:
+                        sup_search_param.append(('product_code', '=', sector_based_product[0].variable_value))
+
+                supplier_obj = self.env['tt.accounting.setup.suppliers'].search(sup_search_param, limit=1)
+                if supplier_obj:
+                    supplier_list.append({
+                        'supplier_code': supplier_obj.supplier_code or '',
+                        'supplier_name': supplier_obj.supplier_name or ''
+                    })
+            total_sales = request.get('reschedule_amount', 0)
+            if is_ho_transaction:
+                total_sales += request.get('admin_fee') and request['admin_fee'] or 0
+            uniquecode = '%s_%s%s' % (request.get('order_number', ''), datetime.now().strftime('%m%d%H%M%S'), chr(randrange(65, 90)))
+            travel_file_data = {
+                "TypeTransaction": 111,
+                "TransactionCode": "%s_%s" % ('_'.join(pnr_list), request.get('reservation_name', '')),
+                "Date": "",
+                "ReffCode": request.get('order_number', ''),
+                "CustomerCode": "",
+                "CustomerName": customer_name,
+                "TransID": trans_id,
+                "Description": '_'.join(pnr_list),
+                "ActivityDate": "",
+                "SupplierCode": supplier_list and supplier_list[0]['supplier_code'] or '',
+                "SupplierName": supplier_list and supplier_list[0]['supplier_name'] or '',
+                "TotalCost": request.get('reschedule_amount', 0),
+                "TotalSales": total_sales,
+                "Source": "",
+                "UserName": "",
+                "SalesID": 0,
+                item_key: provider_list
+            }
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",
