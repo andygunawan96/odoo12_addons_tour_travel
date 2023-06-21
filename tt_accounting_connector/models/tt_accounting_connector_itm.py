@@ -565,7 +565,7 @@ class AccountingConnectorITM(models.Model):
                 "CustomerCode": "",
                 "CustomerName": customer_name,
                 "TransID": trans_id,
-                "Description": '_'.join(pnr_list),
+                "Description": "%s for %s" % (request['reschedule_type'], '_'.join(pnr_list)),
                 "ActivityDate": "",
                 "SupplierCode": supplier_list and supplier_list[0]['supplier_code'] or '',
                 "SupplierName": supplier_list and supplier_list[0]['supplier_name'] or '',
