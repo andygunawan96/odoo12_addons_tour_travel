@@ -302,6 +302,7 @@ class TtAccountingQueue(models.Model):
                         billing_due_date = rec.customer_parent_id.billing_due_date
 
                 book_obj = self.env[trans_obj.res_model].browse(trans_obj.res_id)
+                book_data = book_obj.to_dict()
                 book_invoice_data = []
                 prov_book_list = []
                 for prov in book_obj.provider_booking_ids:
@@ -317,6 +318,7 @@ class TtAccountingQueue(models.Model):
                     'invoice_data': invoice_data,
                     'billing_due_date': billing_due_date,
                     'reservation_name': book_obj.name if book_obj else '',
+                    'reservation_data': book_data,
                     'reservation_invoice_data': book_invoice_data,
                     'provider_bookings': prov_book_list,
                     'customer_parent_name': book_obj.customer_parent_id.name,

@@ -262,6 +262,7 @@ class TtRefund(models.Model):
         return {
             'order_number': self.name,
             'refund_type': self.refund_type_id.name if self.refund_type_id else '',
+            'ho_id': self.ho_id.id if self.ho_id else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'referenced_pnr': self.referenced_pnr,
             'referenced_document': self.referenced_document,

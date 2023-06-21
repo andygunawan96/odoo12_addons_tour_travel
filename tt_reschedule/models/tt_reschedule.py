@@ -312,6 +312,7 @@ class TtReschedule(models.Model):
     def to_dict(self):
         return {
             'order_number': self.name,
+            'ho_id': self.ho_id.id if self.ho_id else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'referenced_pnr': self.referenced_pnr,
             'new_pnr': self.pnr,
