@@ -1545,7 +1545,7 @@ class MasterTour(models.Model):
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_data = tour_data_list[0]
             price_itinerary = {
-                'currency_code': tour_data.currency_id.code,
+                'currency_code': tour_data.currency_id.name,
                 'carrier_code': tour_data.carrier_id.code,
                 'adult_flight_fare': tour_data.adult_flight_fare,
                 'child_flight_fare': tour_data.child_flight_fare,
@@ -1628,7 +1628,7 @@ class MasterTour(models.Model):
                 child_com = used_price.child_commission
                 infant_fare = used_price.infant_fare
                 infant_com = used_price.infant_commission
-                room_currency = used_price.currency_id.code
+                room_currency = used_price.currency_id.name
 
                 extra_bed_limit = tour_room.extra_bed_limit
                 if total_pax_no_infant < tour_room.pax_minimum:
@@ -1711,7 +1711,7 @@ class MasterTour(models.Model):
                     'pax_type': rec_charges.pax_type,
                     'pax_count': pax_type_conv[rec_charges.pax_type],
                     'charge_type': rec_charges.charge_type,
-                    'currency_code': rec_charges.currency_id.code,
+                    'currency_code': rec_charges.currency_id.name,
                     'amount': rec_charges.amount
                 })
 
