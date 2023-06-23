@@ -178,7 +178,7 @@ class AgentInvoiceInh(models.Model):
                             'is_commission': True
                         })
                 else:
-                    for psg in self.passenger_ids:
+                    for psg in book_obj.passenger_ids:
                         desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
                         price_unit = 0
 
