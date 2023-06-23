@@ -51,17 +51,6 @@ class PhoneDetail(models.Model):
         for rec in self:
             rec.phone_number = (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or '')
 
-    def get_currency_company(self, response_back='name'):
-        currency = ''
-        companies = self.env['res.company'].search([])
-        for company in companies:
-            if company.currency_id:
-                if response_back == 'name':
-                    currency = company.currency_id.name
-                elif response_back == 'id':
-                    currency = company.currency_id.id
-        return currency
-
     def generate_va_number(self):
         agent_open_payment_acqurier = self.env['payment.acquirer.number'].search([
             ('agent_id','=',self.agent_id.id),
@@ -76,7 +65,7 @@ class PhoneDetail(models.Model):
             existing_payment_acquirer_open = self.env['payment.acquirer'].search([('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
             for rec in existing_payment_acquirer_open:
                 bank_code_list.append(rec.bank_id.code)
-            currency = self.get_currency_company()
+            currency = self.agent_id.get_ho_parent_agent().currency_id.name
             data = {
                 'number': self.calling_number[-8:],
                 'email': agent_obj.email,
@@ -139,7 +128,7 @@ class PhoneDetail(models.Model):
             [('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
         for rec in existing_payment_acquirer_open:
             bank_code_list.append(rec.bank_id.code)
-        currency = self.get_currency_company()
+        currency = self.agent_id.get_ho_parent_agent().currency_id.name
         data = {
             "number": self.calling_number[-8:],
             'email': agent_obj.email,

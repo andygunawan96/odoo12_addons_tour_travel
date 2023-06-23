@@ -217,7 +217,7 @@ class PaymentAcquirer(models.Model):
         values = {
             'va': []
         }
-        currency = self.env['phone.detail'].get_currency_company()
+        currency = agent_obj.get_ho_parent_agent().currency_id.name
         for acq in agent_obj.payment_acq_ids:
             if acq.state == 'open':
                 values['va'].append(self.acquirer_format_VA(acq, 0, 0, currency))
