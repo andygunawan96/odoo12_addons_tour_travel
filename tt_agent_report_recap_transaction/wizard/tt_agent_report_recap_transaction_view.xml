@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <field name="all_ho" position="before">
                     <field name="provider_type"/>
-<!--                    <field name="state" required="1"/>-->
+                    <field name="state" required="1"/>
                 </field>
             </field>
         </record>
