@@ -145,17 +145,18 @@ class AgentReportRecapTransacion(models.Model):
     @staticmethod
     def _where(date_from, date_to, agent_id, ho_id, provider_type, state):
         where = """rsv.issued_date >= '%s' and rsv.issued_date <= '%s'""" % (date_from, date_to)
-        # if state == 'failed':
-        #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
-        # where += """ AND rsv.state IN ('partial_issued', 'issued')"""
         if ho_id:
             where += """ AND rsv.ho_id = %s """ % ho_id
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
-        if state:
+        if state == 'issued':
             where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
+        elif state == 'refund':
+            where += """ AND (rsv.state = '%s') """ % state
+        elif state == 'issued_refund':
+            where += """ AND (rsv.state = 'issued' OR rsv.state = 'refund' OR rsv.state = 'reissue') """ % state
         return where
 
     @staticmethod
@@ -347,7 +348,9 @@ class AgentReportRecapTransacion(models.Model):
     def _prepare_values(self, data_form):
         data_form['state'] = 'issued'
         data_form['is_ho'] = self.env.user.agent_id.is_ho_agent
-        ho_obj = self.env['tt.agent'].sudo().browse(int(data_form['ho_id']))
+        ho_obj = False
+        if data_form.get('ho_id'):
+            ho_obj = self.env['tt.agent'].sudo().browse(int(data_form['ho_id']))
         if not ho_obj:
             ho_obj = self.env.user.agent_id.get_ho_parent_agent()
         data_form['ho_name'] = ho_obj and ho_obj.name or self.env.ref('tt_base.rodex_ho').sudo().name
