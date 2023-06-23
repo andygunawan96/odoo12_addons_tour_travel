@@ -654,7 +654,7 @@ class PaymentAcquirerNumber(models.Model):
                 hold_date = datetime.now() + timedelta(minutes=120)
         else:
             ## TOP UP
-            currency = self.env['phone.detail'].get_currency_company('id')
+            currency = booking_obj.agent_id.get_ho_parent_agent().currency_id.id
             hold_date = booking_obj.due_date - timedelta(minutes=10)
 
 
