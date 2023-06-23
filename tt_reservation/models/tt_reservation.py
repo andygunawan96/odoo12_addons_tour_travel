@@ -182,6 +182,8 @@ class TtReservation(models.Model):
 
     total_pax = fields.Integer('Total Pax', readonly=True, compute='_compute_total_pax')
 
+    estimated_currency = fields.Char('Estimated Currency')
+
     @api.model
     def create(self, vals_list):
         try:
@@ -813,7 +815,8 @@ class TtReservation(models.Model):
                             'va_number': self.payment_acquirer_number_id.va_number,
                             'url': self.payment_acquirer_number_id.url,
                             'amount': self.payment_acquirer_number_id.get_total_amount(),
-                            'order_number': self.payment_acquirer_number_id.number
+                            'order_number': self.payment_acquirer_number_id.number,
+                            'currency': self.payment_acquirer_number_id.currency_id.name
                         }
                     else:
                         self.cancel_payment_method()
@@ -878,6 +881,8 @@ class TtReservation(models.Model):
             'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'use_point': self.is_using_point_reward,
             'signature_booked': self.sid_booked,
+            'currency': self.currency_id.name,
+            'estimated_currency': json.loads(self.estimated_currency) if self.estimated_currency else {}
             # END
         }
         if self.booker_insentif:

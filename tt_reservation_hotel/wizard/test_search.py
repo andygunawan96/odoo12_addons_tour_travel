@@ -683,6 +683,15 @@ class TestSearch(models.Model):
         resv_id.hold_date = context.get('hold_date', False)
         # resv_id.write({'passenger_ids': [(6, 0, [rec[0].id for rec in passenger_objs])]})
 
+        ## CURRENCY 22 JUN - IVAN
+        currency = ''
+        for price_code in req['price_codes']:
+            currency = price_code['currency']
+        if currency:
+            currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+            if currency_obj:
+                resv_id.currency_id = currency_obj.id
+
         for price_obj in req['price_codes']:
             for room_rate in price_obj['rooms']:
                 vendor_currency_id = self.env['res.currency'].sudo().search([('name', '=', room_rate['currency'])], limit=1).id

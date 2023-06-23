@@ -51,12 +51,15 @@ class PhoneDetail(models.Model):
         for rec in self:
             rec.phone_number = (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or '')
 
-    def get_currency_company(self):
+    def get_currency_company(self, response_back='name'):
         currency = ''
         companies = self.env['res.company'].search([])
         for company in companies:
             if company.currency_id:
-                currency = company.currency_id.name
+                if response_back == 'name':
+                    currency = company.currency_id.name
+                elif response_back == 'id':
+                    currency = company.currency_id.id
         return currency
 
     def generate_va_number(self):
