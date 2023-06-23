@@ -144,9 +144,12 @@ class ReservationBus(models.Model):
                             agent_id = self.agent_id.id
                         else:
                             agent_id = cost_charge.commission_agent_id.id
-                        if agent_id not in commission_list:
-                            commission_list[agent_id] = 0
-                        commission_list[agent_id] += cost_charge.amount * -1
+                        if self.agent_id.id != agent_id:
+                            if agent_id not in commission_list:
+                                commission_list[agent_id] = 0
+                            commission_list[agent_id] += cost_charge.amount * -1
+                        else:
+                            price_unit += cost_charge.amount
                     elif cost_charge.commission_agent_id != (temp_ho_obj and temp_ho_obj or False):
                         price_unit += cost_charge.amount
             ### FARE

@@ -189,9 +189,12 @@ class ReservationOffline(models.Model):
                             agent_id = self.agent_id.id
                         else:
                             agent_id = price_obj.commission_agent_id.id
-                        if agent_id not in commission_list:
-                            commission_list[agent_id] = 0
-                        commission_list[agent_id] += price_obj.amount * -1
+                        if self.agent_id.id != agent_id:
+                            if agent_id not in commission_list:
+                                commission_list[agent_id] = 0
+                            commission_list[agent_id] += price_obj.amount * -1
+                        else:
+                            price_unit += price_obj.amount
                     elif price_obj.commission_agent_id != (temp_ho_obj and temp_ho_obj or False):
                         price_unit += price_obj.amount
 
@@ -209,9 +212,12 @@ class ReservationOffline(models.Model):
                                 agent_id = self.agent_id.id
                             else:
                                 agent_id = srvc.commission_agent_id.id
-                            if agent_id not in commission_list:
-                                commission_list[agent_id] = 0
-                            commission_list[agent_id] += srvc.amount * -1
+                            if self.agent_id.id != agent_id:
+                                if agent_id not in commission_list:
+                                    commission_list[agent_id] = 0
+                                commission_list[agent_id] += srvc.amount * -1
+                            else:
+                                price_unit += srvc.amount
                         elif not srvc.commission_agent_id.is_ho_agent:
                             price_unit += srvc.amount
                 ### FARE
