@@ -942,6 +942,20 @@ class TtAgent(models.Model):
         res = ERR.get_no_error(res)
         return res
 
+    def get_ho_currency_api(self):
+        res = {}
+        agent_objs = self.search([('is_ho_agent', '=', True)])  ## HANYA HO
+        for agent_obj in agent_objs:
+            currency_list = []
+            if agent_obj.currency_id:
+                currency_list.append(agent_obj.currency_id.name)
+            for currency_obj in agent_obj.currency_ids:
+                if currency_obj.name not in currency_list:
+                    currency_list.append(currency_obj.name)
+            res[agent_obj.seq_id] = currency_list
+        res = ERR.get_no_error(res)
+        return res
+
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
     _name = 'tt.agent.target'

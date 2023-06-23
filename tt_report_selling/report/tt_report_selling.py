@@ -17,6 +17,13 @@ class ReportSelling(models.Model):
     # basically if there's a new module and we haven't declare a spesific function for it
     # call this function yes
     # it will give a general report just so there's a report
+
+    @staticmethod
+    def _select_currency():
+        return """
+        ,currency.name as currency
+        """
+
     #to rule them all
     @staticmethod
     def _select():
@@ -765,6 +772,12 @@ class ReportSelling(models.Model):
     def _from_invoice():
         return """tt_agent_invoice_line"""
 
+    @staticmethod
+    def _from_currency():
+        return """
+        LEFT JOIN res_currency currency ON currency.id = reservation.currency_id
+        """
+
     #only works for airline and train
     @staticmethod
     def _from_airline():
@@ -1118,76 +1131,76 @@ class ReportSelling(models.Model):
     # so far works with all
     @staticmethod
     def _group_by_airline():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, segment.id, carrier.name, provider.code, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, departure.display_name, destination.display_name, journey.id, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, segment.id, carrier.name, provider.code, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_train():
-        return """reservation.id, provider_type.name, departure.display_name, destination.display_name, journey.id, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, departure.display_name, destination.display_name, journey.id, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     #specified hotel
     @staticmethod
     def _group_by_hotel():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, city.id, country.id, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, city.id, country.id, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_activity():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, activity.name, product.name, activity_detail.visit_date, activity_detail.timeslot, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, activity.name, product.name, activity_detail.visit_date, activity_detail.timeslot, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_visa():
-        return """reservation.id, country.name,  provider_type.name, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, country.name,  provider_type.name, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_tour():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, tour.name, tour.tour_category, tour.tour_type, tour.tour_route, tour.duration, country.name, tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, tour.name, tour.tour_category, tour.tour_type, tour.tour_route, tour.duration, country.name, tour_location.country_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_event():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_ppob():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_ppob.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_ppob.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_phc():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_phc.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_phc.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_periksain():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_periksain.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_periksain.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_medical():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_medical.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_medical.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_bus():
-        return """reservation.id, provider_type.name, departure.name, destination.name, journey.id, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, departure.name, destination.name, journey.id, ho.name, agent.name, agent_type.name, provider.name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_insurance():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, carrier.name, pro_insurance.origin, pro_insurance.destination, pro_insurance.start_date, pro_insurance.end_date, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, carrier.name, pro_insurance.origin, pro_insurance.destination, pro_insurance.start_date, pro_insurance.end_date, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_swabexpress():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_swabexpress.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_swabexpress.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_labpintar():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_labpintar.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_labpintar.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_mitrakeluarga():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_mitrakeluarga.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_mitrakeluarga.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_sentramedika():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_sentramedika.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_sentramedika.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_groupbooking():
-        return """reservation.id, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_groupbooking.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
+        return """reservation.id, currency.name, provider_type.name, ho.name, agent.name, agent_type.name, provider.name, pro_groupbooking.carrier_name, ledger.id, ledger_agent.name, ledger_agent_type.name, customer.id, customer_parent.id"""
 
     @staticmethod
     def _group_by_invoice():
@@ -1545,9 +1558,14 @@ class ReportSelling(models.Model):
             query = 'SELECT {} '.format(self._select_invoice())
         else:
             query = 'SELECT {}'.format(self._select())
+        ## 22 JUNI ADD CURRENCY
+        if provider_checker != 'invoice':
+            query += '{}'.format(self._select_currency())
 
         if provider_checker == 'airline':
             query += 'FROM {} '.format(self._from_airline())
+            query += '{}'.format(self._from_currency())
+            query += 'LEFT JOIN res_currency currency ON currency.id = reservation.currency_id'
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1557,10 +1575,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'train':
             query += 'FROM {} '.format(self._from_train())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1574,6 +1594,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'hotel':
             query += 'FROM {} '.format(self._from_hotel())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1587,6 +1608,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'activity':
             query += 'FROM {} '.format(self._from_activity())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1600,6 +1622,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'tour':
             query += 'FROM {} '.format(self._from_tour())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1613,6 +1636,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'visa':
             query += 'FROM {} '.format(self._from_visa())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1626,6 +1650,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'offline':
             query += 'FROM {} '.format(self._from_offline())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1638,6 +1663,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'event':
             query += 'FROM {} '.format(self._from_event())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1651,6 +1677,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'ppob':
             query += 'FROM {} '.format(self._from_ppob())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1664,6 +1691,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'phc':
             query += 'FROM {} '.format(self._from_phc())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1677,6 +1705,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'periksain':
             query += 'FROM {} '.format(self._from_periksain())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1690,6 +1719,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'medical':
             query += 'FROM {} '.format(self._from_medical())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1703,6 +1733,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'bus':
             query += 'FROM {} '.format(self._from_bus())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1716,6 +1747,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'insurance':
             query += 'FROM {} '.format(self._from_insurance())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1729,6 +1761,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'swabexpress':
             query += 'FROM {} '.format(self._from_swabexpress())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1742,6 +1775,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'labpintar':
             query += 'FROM {} '.format(self._from_labpintar())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1755,6 +1789,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'mitrakeluarga':
             query += 'FROM {} '.format(self._from_mitrakeluarga())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1768,6 +1803,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'sentramedika':
             query += 'FROM {} '.format(self._from_sentramedika())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1781,6 +1817,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'groupbooking':
             query += 'FROM {} '.format(self._from_groupbooking())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1793,6 +1830,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1807,6 +1845,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_overall_airline())
         elif provider_checker == 'overall_activity':
             query += 'FROM {} '.format(self._from_activity())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1821,6 +1860,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_event':
             query += 'FROM {} '.format(self._from_event())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1835,6 +1875,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_tour':
             query += 'FROM {} '.format(self._from_tour())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1849,6 +1890,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_train':
             query += 'FROM {} '.format(self._from_train())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1863,6 +1905,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_hotel':
             query += 'FROM {} '.format(self._from_hotel())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1877,6 +1920,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_visa':
             query += 'FROM {} '.format(self._from_visa())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1891,6 +1935,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_offline':
             query += 'FROM {} '.format(self._from_offline())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1904,6 +1949,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_ppob':
             query += 'FROM {} '.format(self._from_ppob())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1918,6 +1964,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_phc':
             query += 'FROM {} '.format(self._from_phc())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1932,6 +1979,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_periksain':
             query += 'FROM {} '.format(self._from_periksain())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1946,6 +1994,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_medical':
             query += 'FROM {} '.format(self._from_medical())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1960,6 +2009,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_bus':
             query += 'FROM {} '.format(self._from_bus())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1974,6 +2024,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_insurance':
             query += 'FROM {} '.format(self._from_insurance())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1988,6 +2039,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_swabexpress':
             query += 'FROM {} '.format(self._from_swabexpress())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2002,6 +2054,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_labpintar':
             query += 'FROM {} '.format(self._from_labpintar())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2016,6 +2069,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_mitrakeluarga':
             query += 'FROM {} '.format(self._from_mitrakeluarga())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2030,6 +2084,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_sentramedika':
             query += 'FROM {} '.format(self._from_sentramedika())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2044,6 +2099,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_groupbooking':
             query += 'FROM {} '.format(self._from_groupbooking())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2057,6 +2113,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_passport':
             query += 'FROM {} '.format(self._from('passport'))
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2070,95 +2127,114 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_airline':
             query += 'FROM {} '.format(self._from_airline())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_activity':
             query += 'FROM {} '.format(self._from_activity())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_event':
             query += 'FROM {} '.format(self._from_event())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_hotel':
             query += 'FROM {} '.format(self._from_hotel())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_tour':
             query += 'FROM {} '.format(self._from_tour())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_train':
             query += 'FROM {} '.format(self._from_train())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_visa':
             query += 'FROM {} '.format(self._from_visa())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_offline':
             query += 'FROM {} '.format(self._from_offline())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_ppob':
             query += 'FROM {} '.format(self._from_ppob())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_phc':
             query += 'FROM {} '.format(self._from_phc())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_phc())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_periksain':
             query += 'FROM {} '.format(self._from_periksain())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_periksain())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_medical':
             query += 'FROM {} '.format(self._from_medical())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_medical())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_bus':
             query += 'FROM {} '.format(self._from_bus())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_bus())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_insurance':
             query += 'FROM {} '.format(self._from_insurance())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_insurance())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_swabexpress':
             query += 'FROM {} '.format(self._from_swabexpress())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_swabexpress())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_labpintar':
             query += 'FROM {} '.format(self._from_labpintar())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_mitrakeluarga':
             query += 'FROM {} '.format(self._from_mitrakeluarga())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_sentramedika':
             query += 'FROM {} '.format(self._from_sentramedika())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'GROUP BY {} '.format(self._group_by_sentramedika())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_groupbooking':
             query += 'FROM {} '.format(self._from_groupbooking())
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'invoice':
@@ -2174,6 +2250,7 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_invoice())
         else:
             query += 'FROM {} '.format(self._from(provider_type))
+            query += '{}'.format(self._from_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['agent_type_code']:
                 query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
@@ -2182,9 +2259,9 @@ class ReportSelling(models.Model):
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
-
-        self.env.cr.execute(query)
         _logger.info(query)
+        self.env.cr.execute(query)
+        # _logger.info(query)
         return self.env.cr.dictfetchall()
 
     def _get_lines_data(self, date_from, date_to, agent_id, ho_id, provider_type, context = {}):

@@ -53,6 +53,7 @@
                     <button name="set_to_bill" string="Set as Bill" type="object" groups="base.group_system"/>
                     <button name="set_as_confirm" string="Set as Confirm" type="object" groups="base.group_system,tt_base.group_agent_invoice_level_4"/>
                     <button name="set_as_paid" string="Set as Paid" type="object" groups="base.group_system"/>
+                    <button name="recompute_agent_nta" string="Recompute Agent NTA" type="object" groups="base.group_system"/>
 
                     <button name="%(tt_agent_invoice_wizard_action_view)d" string="Move Line" type="action" states="confirm" context="{'default_invoice_id1': id}"/>
                     <button name="action_cancel_invoice" string="Cancel Invoice" type="object"

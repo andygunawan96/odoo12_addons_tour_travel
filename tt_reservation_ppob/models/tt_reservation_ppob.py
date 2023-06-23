@@ -742,6 +742,17 @@ class ReservationPpob(models.Model):
             })
 
             resv_obj = self.env['tt.reservation.ppob'].create(values)
+
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            for svc in data['data']['service_charges']:
+                if not currency:
+                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                if currency_obj:
+                    resv_obj.currency_id = currency_obj.id
             total_price = 0
             for prov_obj in resv_obj.provider_booking_ids:
                 prov_obj.create_ticket_api(passengers)

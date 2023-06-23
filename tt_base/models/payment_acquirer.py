@@ -217,7 +217,7 @@ class PaymentAcquirer(models.Model):
         values = {
             'va': []
         }
-        currency = self.env['phone.detail'].get_currency_company()
+        currency = agent_obj.get_ho_parent_agent().currency_id.name
         for acq in agent_obj.payment_acq_ids:
             if acq.state == 'open':
                 values['va'].append(self.acquirer_format_VA(acq, 0, 0, currency))
@@ -596,6 +596,7 @@ class PaymentAcquirerNumber(models.Model):
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
     is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
     point_reward_amount = fields.Float('Point Reward Amount')
+    currency_id = fields.Many2one('res.currency', 'Currency')
 
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
@@ -641,8 +642,10 @@ class PaymentAcquirerNumber(models.Model):
     def create_payment_acq(self,data,booking_obj,provider_type, is_use_point, context):
         ## RULE TIME LIMIT PAYMENT ACQ < 1 jam, 10 menit = HOLD DATE - 10 menit
         ## UNTUK YG LEBIH DARI 1 JAM, 10 menit HOLE DATE HOLD DATE 60 menit
+        currency = None
         if booking_obj._name != 'tt.top.up':
             ## RESERVASI
+            currency = booking_obj.currency_id.id
             if booking_obj.hold_date < datetime.now() + timedelta(minutes=130):
                 hold_date = booking_obj.hold_date - timedelta(minutes=10)
             elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
@@ -651,6 +654,7 @@ class PaymentAcquirerNumber(models.Model):
                 hold_date = datetime.now() + timedelta(minutes=120)
         else:
             ## TOP UP
+            currency = self.env['phone.detail'].get_currency_company('id')
             hold_date = booking_obj.due_date - timedelta(minutes=10)
 
 
@@ -698,7 +702,8 @@ class PaymentAcquirerNumber(models.Model):
             'point_reward_amount': point_amount,
             'agent_id': booking_obj.agent_id.id,
             'fee_amount': data['fee_amount'],
-            'ho_id': context['co_ho_id']
+            'ho_id': context['co_ho_id'],
+            'currency_id': currency
         })
         return payment
 
@@ -723,7 +728,8 @@ class PaymentAcquirerNumber(models.Model):
                     'va_number': payment_acq_number.va_number,
                     'url': payment_acq_number.url,
                     'bank_name': payment_acq_number.bank_name,
-                    'acquirer_seq_id': payment_acq_number.payment_acquirer_id.seq_id
+                    'acquirer_seq_id': payment_acq_number.payment_acquirer_id.seq_id,
+                    'currency': payment_acq_number.currency_id.name
                 }
                 return ERR.get_no_error(res)
             else:

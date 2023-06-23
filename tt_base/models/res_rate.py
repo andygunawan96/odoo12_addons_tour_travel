@@ -65,6 +65,7 @@ class AgentResRate(models.Model):
     base_currency_id = fields.Many2one('res.currency', 'Base Currency')
     to_currency_id = fields.Many2one('res.currency', 'To Currency', default=lambda self: self.env.ref('base.IDR'))
     rate = fields.Monetary('Rate', currency_field='to_currency_id')
+    is_show = fields.Boolean('Show', default=True)
     active = fields.Boolean('Active', default=True)
 
     @api.onchange('ho_id')
@@ -76,7 +77,7 @@ class AgentResRate(models.Model):
     def get_agent_currency_rate_api(self, context):
         try:
             # _objs = self.search([('active','=',True)]) ## untuk all agent o3
-            _objs = self.search([('active', '=', True), ('ho_id.seq_id', '=', context['co_ho_seq_id'])])  ## untuk ambil agent HO
+            _objs = self.search([('active', '=', True), ('ho_id.seq_id', '=', context['co_ho_seq_id']), ('is_show','=', True), ('active', '=', True)])  ## untuk ambil agent HO
             # response = [rec.get_ssr_data() for rec in _objs]
             response = {
                 "agent": {},

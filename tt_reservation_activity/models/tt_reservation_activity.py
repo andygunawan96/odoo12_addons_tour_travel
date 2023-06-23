@@ -604,6 +604,18 @@ class ReservationActivity(models.Model):
                             'pax_type': temp_sku.pax_type,
                         })
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for svc in pricing:
+                if not currency:
+                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             header_val.update({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
@@ -624,6 +636,7 @@ class ReservationActivity(models.Model):
                 'transport_type': 'activity',
                 'provider_name': activity_type_id.activity_id.provider_id.code,
                 'file_upload': file_upload,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
             })
 
             # create header & Update customer_parent_id

@@ -1309,6 +1309,18 @@ class TtVisa(models.Model):
             # for psg in list_passenger_value:
             #     util.pop_empty_key(psg[2])
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for provider in sell_visa['provider_bookings']:
+                for svc in provider['service_charges']:
+                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -1323,7 +1335,8 @@ class TtVisa(models.Model):
                 'payment_method': payment,
                 'payment_active': True,
                 'voucher_code': voucher,
-                'is_using_point_reward': is_using_point_reward
+                'is_using_point_reward': is_using_point_reward,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
             })
 
             book_obj = self.create(values)
