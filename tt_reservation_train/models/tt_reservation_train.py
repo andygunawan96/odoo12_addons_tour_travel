@@ -401,6 +401,14 @@ class TtReservationTrain(models.Model):
                     for idx, ticket_obj in enumerate(provider['tickets']):
                         if ticket_obj.get('covid'):
                             provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['covid'])
+
+                    ## 22 JUN 2023 - IVAN
+                    ## GET CURRENCY CODE
+                    currency = provider['currency']
+                    if currency:
+                        currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                        if currency_obj:
+                            book_obj.currency_id = currency_obj.id
                 elif provider['state'] == 'issued' and not provider.get('error_code'):
                     for idx, ticket_obj in enumerate(provider['tickets']):
                         if ticket_obj.get('web_check_in'):

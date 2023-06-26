@@ -387,6 +387,17 @@ class ReservationEvent(models.Model):
             prov_event_id['balance_due'] = balance_due  # di PNR
             book_obj.action_booked(context)
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            for provider_booking in book_obj.provider_booking_ids:
+                for svc in provider_booking.cost_service_charge_ids:
+                    currency = svc.currency_id.name
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                if currency_obj:
+                    book_obj.currency_id = currency_obj.id
+
             # channel repricing upsell
             if req.get('repricing_data'):
                 req['repricing_data']['order_number'] = book_obj.name

@@ -272,6 +272,7 @@ class AccountingConnectorITM(models.Model):
 
                         pax_setup = {
                             'ho_profit': pax.get('parent_agent_commission') and ho_prof + pax['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
+                            'agent_profit': pax.get('agent_commission') and pax['agent_commission'] or 0,
                             'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
@@ -355,6 +356,7 @@ class AccountingConnectorITM(models.Model):
 
                         pax_setup = {
                             'ho_profit': pax.get('parent_agent_commission') and ho_prof + pax['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
+                            'agent_profit': pax.get('agent_commission') and pax['agent_commission'] or 0,
                             'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
                             'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
@@ -412,6 +414,7 @@ class AccountingConnectorITM(models.Model):
 
                     prov_setup = {
                         'ho_profit': prov.get('parent_agent_commission') and ho_prof + prov['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
+                        'agent_profit': prov.get('agent_commission') and prov['agent_commission'] or 0,
                         'total_comm': prov.get('total_commission') and prov['total_commission'] or 0,
                         'total_nta': prov.get('total_nta') and prov['total_nta'] or 0,
                         'agent_nta': prov.get('agent_nta') and prov['agent_nta'] or 0
@@ -514,6 +517,165 @@ class AccountingConnectorITM(models.Model):
                 travel_file_data.update({
                     "CustomerCode": customer_code,
                 })
+            req = {
+                "LiveID": live_id,
+                "AccessMode": "",
+                "UniqueCode": uniquecode,
+                "TravelFile": travel_file_data,
+                "MethodSettlement": "NONE"
+            }
+            if not self.validate_request(req):
+                raise Exception('Request cannot be sent because some field requirements are not met.')
+        elif request['category'] == 'reschedule':
+            include_service_taxes = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'is_include_service_taxes')], limit=1)
+            pnr_list = [request['referenced_pnr']]
+            if request['new_pnr'] != request['referenced_pnr']:
+                pnr_list.append(request['new_pnr'])
+            adm_fee_total = request.get('admin_fee') and request['admin_fee'] or 0
+            adm_fee_agent = 0
+            adm_fee_ho = 0
+            for resch_line in request['reschedule_lines']:
+                adm_fee_agent += resch_line.get('admin_fee_agent') and resch_line['admin_fee_agent'] or 0
+                adm_fee_ho += resch_line.get('admin_fee_ho') and resch_line['admin_fee_ho'] or 0
+            total_sales = agent_nta = request.get('reschedule_amount', 0)
+            if is_ho_transaction:
+                total_sales += adm_fee_total
+                tot_ho_profit = tot_agent_profit = adm_fee_total
+            else:
+                total_sales += adm_fee_ho
+                agent_nta += adm_fee_ho
+                tot_ho_profit = adm_fee_ho
+                tot_agent_profit = adm_fee_agent
+            provider_list = []
+            supplier_list = []
+            for idx, prov in enumerate(request['provider_bookings']):
+                sup_search_param = [('accounting_setup_id.accounting_provider', '=', 'itm'),
+                                    ('accounting_setup_id.active', '=', True),
+                                    ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                                    ('provider_id.code', '=', prov['provider'])]
+                if request['reservation_data'].get('sector_type'):
+                    if request['reservation_data']['sector_type'] == 'Domestic':
+                        temp_product_search = ('variable_name', '=', 'domestic_product')
+                    else:
+                        temp_product_search = ('variable_name', '=', 'international_product')
+                    sector_based_product = self.env['tt.accounting.setup.variables'].search(
+                        [('accounting_setup_id.accounting_provider', '=', 'itm'),
+                         ('accounting_setup_id.active', '=', True),
+                         ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), temp_product_search], limit=1)
+                    if sector_based_product:
+                        sup_search_param.append(('product_code', '=', sector_based_product[0].variable_value))
+
+                supplier_obj = self.env['tt.accounting.setup.suppliers'].search(sup_search_param, limit=1)
+                if supplier_obj:
+                    supplier_list.append({
+                        'supplier_code': supplier_obj.supplier_code or '',
+                        'supplier_name': supplier_obj.supplier_name or ''
+                    })
+
+                journey_list = []
+                journ_idx = 0
+                first_carrier_name = ''
+                for journ in prov['journeys']:
+                    for segm in journ['segments']:
+                        journey_list.append({
+                            "itin": journ_idx + 1,
+                            "CarrierCode": segm['carrier_code'],
+                            "FlightNumber": segm['carrier_number'],
+                            "DateTimeDeparture": segm['departure_date'],
+                            "DateTimeArrival": segm['arrival_date'],
+                            "Departure": segm['origin'],
+                            "ClassNumber": segm['cabin_class'],
+                            "Arrival": segm['destination']
+                        })
+                        if not first_carrier_name:
+                            first_carrier_name = segm['carrier_name']
+                        journ_idx += 1
+
+                pax_list = []
+                for pax_idx, pax in enumerate(prov['tickets']):
+                    if pax.get('ticket_number'):
+                        if len(pax['ticket_number']) > 3:
+                            pax_tick = '%s-%s' % (pax['ticket_number'][:3], pax['ticket_number'][3:])
+                        else:
+                            pax_tick = pax['ticket_number']
+                    else:
+                        if journey_list and journey_list[0]['CarrierCode'] in ['QG', 'QZ']:
+                            pax_tick = '%s-%s%s' % (journey_list[0]['CarrierCode'], prov['pnr'], f'{pax_idx + 1:06d}')
+                        else:
+                            pax_tick = ''
+                    pax_list.append({
+                        "PassangerName": pax['passenger'],
+                        "TicketNumber": pax_tick,
+                        "Gender": 1,
+                        "Nationality": "ID"
+                    })
+
+                vat_var_obj = self.env['tt.accounting.setup.variables'].search(
+                    [('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True),
+                     ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                     ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                vat_perc_obj = self.env['tt.accounting.setup.variables'].search(
+                    [('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True),
+                     ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                     ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                if not vat_var_obj or not vat_perc_obj:
+                    _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
+                    vat = 0
+                else:
+                    if vat_var_obj.variable_value == 'ho_profit':
+                        vat = round((tot_ho_profit / len(request['provider_bookings'])) * float(vat_perc_obj.variable_value) / 100)
+                    elif vat_var_obj.variable_value == 'agent_profit':
+                        vat = round((tot_agent_profit / len(request['provider_bookings'])) * float(vat_perc_obj.variable_value) / 100)
+                    elif vat_var_obj.variable_value == 'total_comm':
+                        vat = round((adm_fee_total / len(request['provider_bookings'])) * float(vat_perc_obj.variable_value) / 100)
+                    else:
+                        vat = 0
+
+                provider_dict = {
+                    "ItemNo": idx + 1,
+                    "ProductCode": supplier_obj.product_code or '',
+                    "ProductName": supplier_obj.product_name or '',
+                    "CarrierCode": journey_list and journey_list[0]['CarrierCode'] or '',
+                    "CArrierName": first_carrier_name or '',
+                    "Description": prov['pnr'],
+                    "Quantity": 1,
+                    "Cost": request.get('reschedule_amount') and request['reschedule_amount'] / len(request['provider_bookings']) or 0,
+                    "Profit": (tot_ho_profit / len(request['provider_bookings'])) - vat,
+                    "ServiceFee": 0,
+                    "VAT": vat,
+                    "Sales": total_sales / len(request['provider_bookings']),
+                    "Itin": journey_list,
+                    "Pax": pax_list
+                }
+                if include_service_taxes and include_service_taxes.variable_value:
+                    service_tax_list = [{
+                        "ServiceTax_string": 'tax',
+                        "ServiceTax_amount": agent_nta + tot_agent_profit - tot_ho_profit
+                    }]
+                    provider_dict.update({
+                        "ServiceTaxes": service_tax_list
+                    })
+                provider_list.append(provider_dict)
+            uniquecode = '%s_%s%s' % (request.get('order_number', ''), datetime.now().strftime('%m%d%H%M%S'), chr(randrange(65, 90)))
+            travel_file_data = {
+                "TypeTransaction": 111,
+                "TransactionCode": "%s_%s" % ('_'.join(pnr_list), request.get('reservation_name', '')),
+                "Date": "",
+                "ReffCode": request.get('order_number', ''),
+                "CustomerCode": "",
+                "CustomerName": customer_name,
+                "TransID": trans_id,
+                "Description": "%s for %s" % (request['reschedule_type'], '_'.join(pnr_list)),
+                "ActivityDate": "",
+                "SupplierCode": supplier_list and supplier_list[0]['supplier_code'] or '',
+                "SupplierName": supplier_list and supplier_list[0]['supplier_name'] or '',
+                "TotalCost": request.get('reschedule_amount', 0),
+                "TotalSales": total_sales,
+                "Source": "",
+                "UserName": "",
+                "SalesID": 0,
+                item_key: provider_list
+            }
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",

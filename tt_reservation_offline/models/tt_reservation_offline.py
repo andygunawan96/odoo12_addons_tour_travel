@@ -2131,7 +2131,8 @@ class IssuedOffline(models.Model):
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
-                'is_using_point_reward': is_using_point_reward
+                'is_using_point_reward': is_using_point_reward,
+                'currency_id': self.env['tt_agent'].browse(context['co_agent_id']).get_ho_parent_agent().currency_id.id
             }
 
             if data_reservation_offline['type'] == 'airline':

@@ -291,6 +291,17 @@ class ReservationInsurance(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for svc in book_data['service_charges']:
+                currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                    # book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -302,6 +313,7 @@ class ReservationInsurance(models.Model):
                 'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
                 'passenger_ids': list_passenger_value,
                 'is_force_issued': is_force_issued,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
                 # END
             })
 

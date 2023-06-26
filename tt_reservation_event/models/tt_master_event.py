@@ -283,10 +283,12 @@ class MasterEvent(models.Model):
         }
 
     def format_currency(self, price, orig_currency, new_currency, provider):
-        provider_obj = self.env['tt.provider'].browse(provider)
-        for rate in provider_obj.rate_ids:
-            if rate.currency_id.name == orig_currency:
-                return rate.sell_rate * price
+        provider_obj = self.env['tt.provider.ho.data'].search([('provider_id.id','=', provider)])
+        ## SEHARUSNYA KALAU RATE TIDAK KETEMU & BEDA DENGAN CURRENCY HO ERROR need fix here
+        if provider_obj:
+            for rate in provider_obj.rate_ids:
+                if rate.currency_id.name == orig_currency:
+                    return rate.sell_rate * price
         return price
 
     def format_api_option(self, option_id, currency='IDR'):

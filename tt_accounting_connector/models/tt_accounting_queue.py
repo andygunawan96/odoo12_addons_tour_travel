@@ -73,7 +73,7 @@ class TtAccountingQueue(models.Model):
                 request = trans_obj.to_dict()
                 ledger_list = []
                 is_send_commission = False
-                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider','=', self.accounting_provider), ('ho_id', '=', self.ho_id.id)],limit=1)
+                accounting_obj = self.env['tt.accounting.setup'].search([('accounting_provider','=', self.accounting_provider), ('ho_id', '=', self.ho_id.id)], limit=1)
                 if accounting_obj:
                     is_send_commission = accounting_obj.is_send_commission
                 for led in trans_obj.ledger_ids:
@@ -121,7 +121,8 @@ class TtAccountingQueue(models.Model):
                             temp_prov_price_dict['agent_commission'] -= sale.total
                             temp_prov_price_dict['agent_nta'] += sale.total
                         if sale.charge_type == 'RAC':
-                            temp_prov_price_dict['total_commission'] -= sale.total
+                            if trans_obj.agent_id.is_ho_agent or sale.charge_code != 'csc':
+                                temp_prov_price_dict['total_commission'] -= sale.total
                             if sale.commission_agent_id.is_ho_agent:
                                 temp_prov_price_dict['ho_commission'] -= sale.total
                             if sale.charge_code == 'csc':
@@ -159,7 +160,8 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_commission'] -= sale.amount
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type == 'RAC':
-                                    temp_tick_price_dict['total_commission'] -= sale.amount
+                                    if trans_obj.agent_id.is_ho_agent or sale.charge_code != 'csc':
+                                        temp_tick_price_dict['total_commission'] -= sale.amount
                                     if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
@@ -201,7 +203,8 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['agent_commission'] -= sale.amount
                                     temp_tick_price_dict['agent_nta'] += sale.amount
                                 if sale.charge_type == 'RAC':
-                                    temp_tick_price_dict['total_commission'] -= sale.amount
+                                    if trans_obj.agent_id.is_ho_agent or sale.charge_code != 'csc':
+                                        temp_tick_price_dict['total_commission'] -= sale.amount
                                     if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
@@ -299,6 +302,7 @@ class TtAccountingQueue(models.Model):
                         billing_due_date = rec.customer_parent_id.billing_due_date
 
                 book_obj = self.env[trans_obj.res_model].browse(trans_obj.res_id)
+                book_data = book_obj.to_dict()
                 book_invoice_data = []
                 prov_book_list = []
                 for prov in book_obj.provider_booking_ids:
@@ -314,6 +318,7 @@ class TtAccountingQueue(models.Model):
                     'invoice_data': invoice_data,
                     'billing_due_date': billing_due_date,
                     'reservation_name': book_obj.name if book_obj else '',
+                    'reservation_data': book_data,
                     'reservation_invoice_data': book_invoice_data,
                     'provider_bookings': prov_book_list,
                     'customer_parent_name': book_obj.customer_parent_id.name,

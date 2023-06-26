@@ -338,6 +338,14 @@ class TtReservationBus(models.Model):
                         continue
                     self.update_pnr_booked(provider_obj,provider,context)
                     any_provider_changed = True
+
+                    ## 22 JUN 2023 - IVAN
+                    ## GET CURRENCY CODE
+                    currency = provider['currency']
+                    if currency:
+                        currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                        if currency_obj:
+                            book_obj.currency_id = currency_obj.id
                 elif provider['state'] == 'issued' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue

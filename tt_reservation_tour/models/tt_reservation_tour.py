@@ -482,6 +482,17 @@ class ReservationTour(models.Model):
                 temp_dept_date = tour_line_data.departure_date
                 temp_arr_date = tour_line_data.arrival_date
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for svc in pricing:
+                currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             booking_obj = self.env['tt.reservation.tour'].sudo().create({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
@@ -503,6 +514,7 @@ class ReservationTour(models.Model):
                 'arrival_date': temp_arr_date,
                 'provider_name': provider_id.name,
                 'transport_type': 'tour',
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
             })
 
             if booking_obj:

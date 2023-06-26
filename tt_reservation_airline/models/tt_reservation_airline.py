@@ -437,6 +437,22 @@ class ReservationAirline(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2], ['is_valid_identity'])
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for provider in booking_states:
+                for journey in provider['journeys']:
+                    for segment in journey['segments']:
+                        for fare in segment['fares']:
+                            for svc in fare['service_charges']:
+                                if not currency:
+                                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -450,6 +466,7 @@ class ReservationAirline(models.Model):
                 # April 21, 2020 - SAM
                 'is_force_issued': is_force_issued,
                 'is_halt_process': is_halt_process,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
                 # END
             })
 
