@@ -952,7 +952,10 @@ class TtAgent(models.Model):
             for currency_obj in agent_obj.currency_ids:
                 if currency_obj.name not in currency_list:
                     currency_list.append(currency_obj.name)
-            res[agent_obj.seq_id] = currency_list
+            res[agent_obj.seq_id] = {
+                "currency_list": currency_list,
+                "default_currency": agent_obj.currency_id.name
+            }
         res = ERR.get_no_error(res)
         return res
 
