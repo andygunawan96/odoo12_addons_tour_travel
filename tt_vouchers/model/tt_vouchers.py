@@ -469,6 +469,8 @@ class TtVoucher(models.Model):
     def action_set_to_confirm(self):
         if not self.env.user.has_group('tt_base.group_voucher_level_4'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 353')
+        if self.voucher_type == 'percent' and self.voucher_multi_usage:
+            raise UserError('Voucher Type cannot be Percentage for Multi Usage vouchers.')
         self.write({
             'state': 'confirm'
         })
