@@ -617,6 +617,10 @@ class ReservationAirline(models.Model):
                                     continue
 
                                 sc_values = sc_obj.to_dict()
+                                if sc_obj.commission_agent_id:
+                                    sc_values.update({
+                                        'commission_agent_id': sc_obj.commission_agent_id.id
+                                    })
                                 sc_total = sc_values['amount'] * total_pax
                                 sc_values.update({
                                     'pax_count': total_pax,
