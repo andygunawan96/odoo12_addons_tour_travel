@@ -1373,9 +1373,9 @@ class ReservationAirline(models.Model):
                                     for svc in fare['service_charges']:
                                         currency_id = svc['currency_id']
                                         break
-                    ### update currency
+                    ### update currency 22 JUN 2023
                     if currency_id and provider_obj.booking_id.currency_id.id != currency_id:
-                        provider_obj.booking_id.currency_id.id = currency_id
+                        provider_obj.booking_id.currency_id = currency_id
                 # END
 
                 # May 13, 2020 - SAM
