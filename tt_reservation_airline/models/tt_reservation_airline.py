@@ -1362,12 +1362,20 @@ class ReservationAirline(models.Model):
                     # May 14, 2020 - SAM
                     # Rencana awal mau melakukan compare passenger sequence
                     # Dilapangan sequence passenger pada tiap provider bisa berbeda beda, tidak bisa digunakan sebagai acuan
+                    currency_id = None
                     provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
                     for journey in provider['journeys']:
                         for segment in journey['segments']:
                             for fare in segment['fares']:
                                 provider_obj.create_service_charge(fare['service_charges'])
                                 provider_obj.update_pricing_details(fare)
+                                if not currency_id:
+                                    for svc in fare['service_charges']:
+                                        currency_id = svc['currency_id']
+                                        break
+                    ### update currency 22 JUN 2023
+                    if currency_id and provider_obj.booking_id.currency_id.id != currency_id:
+                        provider_obj.booking_id.currency_id = currency_id
                 # END
 
                 # May 13, 2020 - SAM
