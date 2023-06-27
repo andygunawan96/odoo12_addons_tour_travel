@@ -1396,6 +1396,8 @@ class ReservationAirline(models.Model):
             book_obj = self.get_book_obj(req.get('book_id'),req.get('order_number'))
             book_obj.calculate_service_charge()
             book_obj.create_svc_upsell()
+            if book_obj.currency_id.id != book_obj.sale_service_charge_ids[0].currency_id.id:
+                book_obj.currency_id = book_obj.sale_service_charge_ids[0].id
             return ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())
