@@ -32,7 +32,7 @@ class AccountingConnectorITM(models.Model):
             queue_obj = self.env['tt.accounting.queue'].browse(int(vals['accounting_queue_id']))
             if queue_obj:
                 queue_obj.write({
-                    'request': json.dumps(req_data)
+                    'request': req_data
                 })
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
         response = requests.post(url, data=req_data, headers=headers)
@@ -40,6 +40,13 @@ class AccountingConnectorITM(models.Model):
 
         if res['status'] == 'success':
             _logger.info('Insert Customer Success')
+            if res['content'].get('Data') and res['content']['Data'].get('dsAPIMethod1') and vals.get('seq_id'):
+                for cust_resp in res['content']['Data']['dsAPIMethod1']:
+                    cust_parent_obj = self.env['tt.customer.parent'].search([('seq_id', '=', vals['seq_id'])], limit=1)
+                    if cust_parent_obj:
+                        cust_parent_obj[0].write({
+                            'accounting_uid': cust_resp.get('ContactCD') and str(cust_resp['ContactCD']) or ''
+                        })
         else:
             _logger.info('Insert Customer Failed')
         _logger.info(res)
@@ -151,7 +158,7 @@ class AccountingConnectorITM(models.Model):
             queue_obj = self.env['tt.accounting.queue'].browse(int(vals['accounting_queue_id']))
             if queue_obj:
                 queue_obj.write({
-                    'request': json.dumps(req_data)
+                    'request': req_data
                 })
         # res = util.send_request_json(self._get_web_hook('Sales%20Order'), post=vals, headers=headers)
         response = requests.post(url, data=req_data, headers=headers)
