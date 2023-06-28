@@ -347,8 +347,8 @@ class TtProviderTour(models.Model):
                 scs['pax_count'] = 0
                 scs['total'] = 0
                 for psg in self.ticket_ids:
-                    scs['currency_id'] = currency_obj.get_id('IDR')
-                    scs['foreign_currency_id'] = currency_obj.get_id('IDR')
+                    scs['currency_id'] = currency_obj.get_id(service_charge_vals[0].get('currency'), default_param_idr=True)
+                    scs['foreign_currency_id'] = currency_obj.get_id(service_charge_vals[0].get('foreign_currency'),default_param_idr=True)
                     scs['provider_tour_booking_id'] = self.id
                     scs['passenger_tour_ids'].append(psg.passenger_id.id)
                     scs['pax_count'] += 1
@@ -372,8 +372,8 @@ class TtProviderTour(models.Model):
 
         for scs in service_charge_vals_dup:
             scs['passenger_tour_ids'] = []
-            scs['currency_id'] = currency_obj.get_id('IDR')
-            scs['foreign_currency_id'] = currency_obj.get_id('IDR')
+            scs['currency_id'] = currency_obj.get_id(scs.get('currency'), default_param_idr=True)
+            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'), default_param_idr=True)
             scs['provider_tour_booking_id'] = self.id
             for psg in self.ticket_ids:
                 if scs.get('tour_room_code'):

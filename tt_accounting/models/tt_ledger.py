@@ -284,6 +284,23 @@ class Ledger(models.Model):
         pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
         ledger_values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
         self.create(ledger_values)
+
+        ### 23 JUN 2023 ####
+        #### update estimated currency
+        agent_rate_objs = self.env['tt.agent.rate'].search([('ho_id', '=', booking_obj.ho_id.id), ('base_currency_id', '=', booking_obj.currency_id.id)])
+        if agent_rate_objs:
+            estimated_currency = {"total_price": 0, "currency": booking_obj.currency_id.name, "other_currency": []}
+            if booking_obj.estimated_currency:
+                estimated_currency = json.loads(booking_obj.estimated_currency)
+            estimated_currency['total_price'] += amount
+            estimated_currency['other_currency'] = []
+            for agent_rate_obj in agent_rate_objs:
+                estimated_currency['other_currency'].append({
+                    "amount": round(estimated_currency['total_price'] / agent_rate_obj.rate, 2),
+                    "currency": agent_rate_obj.to_currency_id.name,
+                    "rate": agent_rate_obj.rate
+                })
+            booking_obj.estimated_currency = json.dumps(estimated_currency)
         for sc in used_sc_list:
             sc.change_ledger_created(True)
         return True ## return berhasil create ledger

@@ -405,8 +405,15 @@ class TtProviderTrain(models.Model):
     #     return sc_value
 
     def update_temporary_field_per_pax_api(self, idx, temporary_field):
-        data_temporary_field = {}
+        data_temporary_field = []
         if self.ticket_ids[idx].passenger_id.temporary_field:
             data_temporary_field = json.loads(self.ticket_ids[idx].passenger_id.temporary_field)
-        data_temporary_field.update(temporary_field)
+        if len(data_temporary_field) == 0:
+            data_temporary_field.append({})
+        if type(temporary_field) == list: ## DARI KAI VACCINE
+            for data in temporary_field:
+                for key in data:
+                    data_temporary_field[0][key] = data[key]
+        else: ## update yang ke 0 karena response dari KAI pakai list of dict
+            data_temporary_field[0].update(temporary_field)
         self.ticket_ids[idx].passenger_id.temporary_field = json.dumps(data_temporary_field)

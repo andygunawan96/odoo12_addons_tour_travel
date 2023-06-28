@@ -217,7 +217,7 @@ class PaymentAcquirer(models.Model):
         values = {
             'va': []
         }
-        currency = self.env['phone.detail'].get_currency_company()
+        currency = agent_obj.get_ho_parent_agent().currency_id.name
         for acq in agent_obj.payment_acq_ids:
             if acq.state == 'open':
                 values['va'].append(self.acquirer_format_VA(acq, 0, 0, currency))
@@ -300,6 +300,14 @@ class PaymentAcquirer(models.Model):
             if util.get_without_empty(req, 'order_number'):
                 book_obj = self.env['tt.reservation.%s' % req['provider_type']].search([('name', '=', req['order_number'])], limit=1)
                 amount = book_obj.total - book_obj.total_discount
+                ## 19 JUN 2023 IVAN check partial_booking
+                if book_obj.state == 'partial_booked':
+                    for provider in book_obj.provider_booking_ids:
+                        ## check jika ada yang fail_booked, total amount di kurangkan
+                        if provider.state in ['fail_booked']: ## halt tetap di hitung
+                            for svc in provider.cost_service_charge_ids:
+                                if svc.charge_type != 'RAC':
+                                    amount -= svc.total
                 co_agent_id = book_obj.agent_id.id ## untuk kalau HO issuedkan channel, supaya payment acquirerny tetap punya agentnya
                 currency = book_obj.currency_id.name
             else:
@@ -588,6 +596,7 @@ class PaymentAcquirerNumber(models.Model):
     display_name_payment = fields.Char('Display Name',compute="_compute_display_name_payment")
     is_using_point_reward = fields.Boolean('Is Using Point Reward', default=False)
     point_reward_amount = fields.Float('Point Reward Amount')
+    currency_id = fields.Many2one('res.currency', 'Currency')
 
     @api.depends('number','payment_acquirer_id')
     def _compute_display_name_payment(self):
@@ -633,8 +642,10 @@ class PaymentAcquirerNumber(models.Model):
     def create_payment_acq(self,data,booking_obj,provider_type, is_use_point, context):
         ## RULE TIME LIMIT PAYMENT ACQ < 1 jam, 10 menit = HOLD DATE - 10 menit
         ## UNTUK YG LEBIH DARI 1 JAM, 10 menit HOLE DATE HOLD DATE 60 menit
+        currency = None
         if booking_obj._name != 'tt.top.up':
             ## RESERVASI
+            currency = booking_obj.currency_id.id
             if booking_obj.hold_date < datetime.now() + timedelta(minutes=130):
                 hold_date = booking_obj.hold_date - timedelta(minutes=10)
             elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
@@ -643,6 +654,7 @@ class PaymentAcquirerNumber(models.Model):
                 hold_date = datetime.now() + timedelta(minutes=120)
         else:
             ## TOP UP
+            currency = booking_obj.agent_id.get_ho_parent_agent().currency_id.id
             hold_date = booking_obj.due_date - timedelta(minutes=10)
 
 
@@ -690,7 +702,8 @@ class PaymentAcquirerNumber(models.Model):
             'point_reward_amount': point_amount,
             'agent_id': booking_obj.agent_id.id,
             'fee_amount': data['fee_amount'],
-            'ho_id': context['co_ho_id']
+            'ho_id': context['co_ho_id'],
+            'currency_id': currency
         })
         return payment
 
@@ -715,7 +728,8 @@ class PaymentAcquirerNumber(models.Model):
                     'va_number': payment_acq_number.va_number,
                     'url': payment_acq_number.url,
                     'bank_name': payment_acq_number.bank_name,
-                    'acquirer_seq_id': payment_acq_number.payment_acquirer_id.seq_id
+                    'acquirer_seq_id': payment_acq_number.payment_acquirer_id.seq_id,
+                    'currency': payment_acq_number.currency_id.name
                 }
                 return ERR.get_no_error(res)
             else:

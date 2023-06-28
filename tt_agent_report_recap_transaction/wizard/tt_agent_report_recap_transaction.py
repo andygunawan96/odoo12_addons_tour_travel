@@ -1,7 +1,9 @@
 from odoo import fields, models, api
 
 STATES = [
-    ('issued', 'Issued')
+    ('issued', 'Issued'),
+    ('refund', 'Refund'),
+    ('issued_refund', 'Issued and Refund')
 ]
 
 class AgentReportRecapTransaction(models.TransientModel):
@@ -9,7 +11,6 @@ class AgentReportRecapTransaction(models.TransientModel):
     _name = 'tt.agent.report.recap.transaction.wizard'
 
     state = fields.Selection(selection=STATES, string="State", default='issued')
-    # statenya pasti issued
 
     provider_type = fields.Selection(selection=lambda self: self._compute_provider_type_selection(),
                                      string='Provider Type', default='all')

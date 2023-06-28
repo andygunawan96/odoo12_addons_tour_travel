@@ -356,6 +356,19 @@ class ReservationMitraKeluarga(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
 
+
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for svc in req['provider_bookings']['service_charges']:
+                if not currency:
+                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -366,6 +379,7 @@ class ReservationMitraKeluarga(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
                 'passenger_ids': list_passenger_value,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
             })
 
             book_obj = self.create(values)

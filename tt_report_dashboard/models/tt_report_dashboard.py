@@ -1148,6 +1148,12 @@ class TtReportDashboard(models.Model):
             current_segment = ''
             current_pnr = {}
             pnr_within = []
+            currency = ''
+
+            for line in issued_values['lines']:
+                if currency:
+                    break
+                currency = line.get('currency', '')
 
             # third we process the data to produce a trim proceed data, that is only need to be show
 
@@ -1705,6 +1711,7 @@ class TtReportDashboard(models.Model):
                 'profit_agent_parent': profit_agent_parent,
                 'profit_agent': profit_agent,
                 'first_overview': summary_provider,
+                'currency': currency
             }
 
             # update dependencies

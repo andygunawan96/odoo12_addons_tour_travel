@@ -46,7 +46,8 @@ class TtAgent(models.Model):
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
     email_cc = fields.Char(string="Email CC(s) (Split by comma for multiple CCs)", required=False, )
-    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
+    currency_id = fields.Many2one('res.currency', string='Default Currency', default=lambda self: self.env.user.company_id.currency_id)
+    currency_ids = fields.Many2many("res.currency","res_currency_tt_agent_rel","tt_agent_id", "res_currency_id", "Other Currency")
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
@@ -927,12 +928,34 @@ class TtAgent(models.Model):
         # agent_objs = self.search([]) ## ALL AGENT
         agent_objs = self.search([('is_ho_agent','=', True)]) ## HANYA HO
         for agent_obj in agent_objs:
+            other_currency = []
+            for currency_obj in agent_obj.currency_ids:
+                other_currency.append(currency_obj.name)
             res.append({
                 "name": agent_obj.name,
                 "seq_id": agent_obj.seq_id,
                 "is_ho_agent": agent_obj.is_ho_agent,
-                "id": agent_obj.id
+                "id": agent_obj.id,
+                "currency_id": agent_obj.currency_id.name,
+                "other_currency": other_currency
             })
+        res = ERR.get_no_error(res)
+        return res
+
+    def get_ho_currency_api(self):
+        res = {}
+        agent_objs = self.search([('is_ho_agent', '=', True)])  ## HANYA HO
+        for agent_obj in agent_objs:
+            currency_list = []
+            if agent_obj.currency_id:
+                currency_list.append(agent_obj.currency_id.name)
+            for currency_obj in agent_obj.currency_ids:
+                if currency_obj.name not in currency_list:
+                    currency_list.append(currency_obj.name)
+            res[agent_obj.seq_id] = {
+                "currency_list": currency_list,
+                "default_currency": agent_obj.currency_id.name
+            }
         res = ERR.get_no_error(res)
         return res
 

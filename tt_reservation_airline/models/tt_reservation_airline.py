@@ -437,6 +437,22 @@ class ReservationAirline(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2], ['is_valid_identity'])
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for provider in booking_states:
+                for journey in provider['journeys']:
+                    for segment in journey['segments']:
+                        for fare in segment['fares']:
+                            for svc in fare['service_charges']:
+                                if not currency:
+                                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -450,6 +466,7 @@ class ReservationAirline(models.Model):
                 # April 21, 2020 - SAM
                 'is_force_issued': is_force_issued,
                 'is_halt_process': is_halt_process,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
                 # END
             })
 
@@ -1230,7 +1247,8 @@ class ReservationAirline(models.Model):
                 'provider_bookings': prov_list,
                 'refund_list': refund_list,
                 'reschedule_list': reschedule_list,
-                'signature_booked': book_obj.sid_booked
+                'signature_booked': book_obj.sid_booked,
+                'expired_date': book_obj.expired_date and book_obj.expired_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                 # 'provider_type': book_obj.provider_type_id.code
             })
             # _logger.info("Get resp\n" + json.dumps(res))
@@ -1344,12 +1362,20 @@ class ReservationAirline(models.Model):
                     # May 14, 2020 - SAM
                     # Rencana awal mau melakukan compare passenger sequence
                     # Dilapangan sequence passenger pada tiap provider bisa berbeda beda, tidak bisa digunakan sebagai acuan
+                    currency_id = None
                     provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
                     for journey in provider['journeys']:
                         for segment in journey['segments']:
                             for fare in segment['fares']:
                                 provider_obj.create_service_charge(fare['service_charges'])
                                 provider_obj.update_pricing_details(fare)
+                                if not currency_id:
+                                    for svc in fare['service_charges']:
+                                        currency_id = svc['currency_id']
+                                        break
+                    ### update currency 22 JUN 2023
+                    if currency_id and provider_obj.booking_id.currency_id.id != currency_id:
+                        provider_obj.booking_id.currency_id = currency_id
                 # END
 
                 # May 13, 2020 - SAM

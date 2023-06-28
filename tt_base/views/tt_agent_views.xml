@@ -141,6 +141,9 @@
                         <page string="Third Party Key">
                             <field name="third_party_key_ids" readonly="1"/>
                         </page>
+                        <page string="Other Currency">
+                            <field name="currency_ids" readonly="1"/>
+                        </page>
                         <page string="Quota Partners" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <field name="quota_partner_ids"/>
                         </page>
@@ -182,6 +185,9 @@
             </field>
             <field name="currency_id" position="replace">
                 <field name="currency_id" readonly="0"/>
+            </field>
+            <field name="currency_ids" position="replace">
+                <field name="currency_ids" readonly="0"/>
             </field>
             <field name="est_date" position="replace">
                 <field name="est_date" readonly="0"/>

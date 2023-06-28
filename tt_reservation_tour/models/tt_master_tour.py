@@ -530,6 +530,7 @@ class MasterTour(models.Model):
                         detail_dat = det_res['response']['selected_tour']
                         for rec_det in detail_dat['tour_lines']:
                             new_tour_line_vals = {
+                                'tour_line_code': rec_det['tour_line_code'],
                                 'departure_date': rec_det['departure_date'],
                                 'arrival_date': rec_det['arrival_date'],
                                 'seat': rec_det['seat'],
@@ -1544,6 +1545,7 @@ class MasterTour(models.Model):
                 raise RequestException(1022, additional_message='Tour not found.')
             tour_data = tour_data_list[0]
             price_itinerary = {
+                'currency_code': tour_data.currency_id.name,
                 'carrier_code': tour_data.carrier_id.code,
                 'adult_flight_fare': tour_data.adult_flight_fare,
                 'child_flight_fare': tour_data.child_flight_fare,
@@ -1626,6 +1628,7 @@ class MasterTour(models.Model):
                 child_com = used_price.child_commission
                 infant_fare = used_price.infant_fare
                 infant_com = used_price.infant_commission
+                room_currency = used_price.currency_id.name
 
                 extra_bed_limit = tour_room.extra_bed_limit
                 if total_pax_no_infant < tour_room.pax_minimum:
@@ -1670,6 +1673,7 @@ class MasterTour(models.Model):
                 temp_accom = {
                     'room_id': tour_room.id,
                     'room_code': tour_room.room_code,
+                    'currency_code': room_currency,
                     'adult_fare': adult_fare,
                     'adult_commission': adult_com,
                     'child_fare': child_fare,
@@ -1707,6 +1711,7 @@ class MasterTour(models.Model):
                     'pax_type': rec_charges.pax_type,
                     'pax_count': pax_type_conv[rec_charges.pax_type],
                     'charge_type': rec_charges.charge_type,
+                    'currency_code': rec_charges.currency_id.name,
                     'amount': rec_charges.amount
                 })
 
