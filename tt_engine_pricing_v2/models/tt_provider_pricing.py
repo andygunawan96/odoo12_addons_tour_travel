@@ -213,6 +213,7 @@ class ProviderPricingLine(models.Model):
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
     pricing_id = fields.Many2one('tt.provider.pricing', 'Provider Pricing', readonly=1, ondelete='cascade')
+    currency_id = fields.Many2one('res.currency', 'Currency', ondelete='cascade')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', related='pricing_id.provider_type_id')
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
@@ -403,6 +404,7 @@ class ProviderPricingLine(models.Model):
             'sequence': self.sequence,
             'name': self.name if self.name else '',
             'pricing_type': self.pricing_type,
+            'currency_code': self.currency_id.name if self.currency_id else '',
             'set_expiration_date': self.set_expiration_date,
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
             'date_to': self.date_to.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_to else '',

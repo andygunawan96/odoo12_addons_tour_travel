@@ -1227,6 +1227,7 @@ class TtProviderAirlinePricing(models.Model):
     rule_charge_code_list = fields.Char('Charge Code List', readonly=1)
     rule_pricing_datetime = fields.Datetime('Pricing Datetime', readonly=1)
     rule_departure_date_list = fields.Char('Departure Date List', readonly=1, default='')
+    rule_currency_code_list = fields.Char('Currency Code List', readonly=1, default='')
 
     provider_pricing_id = fields.Many2one('tt.provider.pricing', 'Pricing ID', readonly=1, ondelete='set null')
     provider_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1247,6 +1248,7 @@ class TtProviderAirlinePricing(models.Model):
     provider_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     provider_date_from = fields.Datetime('Date From', readonly=1)
     provider_date_to = fields.Datetime('Date To', readonly=1)
+    provider_currency_code = fields.Char('Currency Code', readonly=1)
     provider_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     provider_origin_code_list = fields.Char('Origin Code List', readonly=1)
     provider_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1404,6 +1406,7 @@ class TtProviderAirlinePricing(models.Model):
     agent_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     agent_date_from = fields.Datetime('Date From', readonly=1)
     agent_date_to = fields.Datetime('Date To', readonly=1)
+    agent_currency_code = fields.Char('Currency Code', readonly=1)
     agent_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     agent_origin_code_list = fields.Char('Origin Code List', readonly=1)
     agent_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1549,6 +1552,7 @@ class TtProviderAirlinePricing(models.Model):
     customer_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     customer_date_from = fields.Datetime('Date From', readonly=1)
     customer_date_to = fields.Datetime('Date To', readonly=1)
+    customer_currency_code = fields.Char('Currency Code', readonly=1)
     customer_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     customer_origin_code_list = fields.Char('Origin Code List', readonly=1)
     customer_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1610,6 +1614,7 @@ class TtProviderAirlinePricing(models.Model):
     agent_commission_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     agent_commission_date_from = fields.Datetime('Date From', readonly=1)
     agent_commission_date_to = fields.Datetime('Date To', readonly=1)
+    agent_commission_currency_code = fields.Char('Currency Code', readonly=1)
     agent_commission_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     agent_commission_origin_code_list = fields.Char('Origin Code List', readonly=1)
     agent_commission_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1751,6 +1756,7 @@ class TtProviderAirlinePricing(models.Model):
                 'rule_charge_code_list': rule_data['charge_code_list'],
                 'rule_pricing_datetime': rule_data['pricing_datetime'],
                 'rule_departure_date_list': rule_data.get('departure_date_list', ''),
+                'rule_currency_code_list': rule_data.get('currency_code_list', ''),
             })
 
         if provider_data:
@@ -1774,6 +1780,7 @@ class TtProviderAirlinePricing(models.Model):
                     'provider_pricing_line_sequence': provider_data['sequence'],
                     'provider_pricing_line_index': provider_data['rule_index'],
                     'provider_pricing_type': provider_data.get('pricing_type', 'standard'),
+                    'provider_currency_code': provider_data.get('currency_code', ''),
                     'provider_set_expiration_date': provider_data['set_expiration_date'],
                     'provider_date_from': provider_data['date_from'] if provider_data['date_from'] else None,
                     'provider_date_to': provider_data['date_to'] if provider_data['date_to'] else None,
@@ -1937,6 +1944,7 @@ class TtProviderAirlinePricing(models.Model):
                     'agent_pricing_line_id': agent_data['rule_id'],
                     'agent_pricing_line_sequence': agent_data['sequence'],
                     'agent_pricing_line_index': agent_data['rule_index'],
+                    'agent_currency_code': agent_data.get('currency_code', ''),
                     'agent_set_expiration_date': agent_data['set_expiration_date'],
                     'agent_date_from': agent_data['date_from'] if agent_data['date_from'] else None,
                     'agent_date_to': agent_data['date_to'] if agent_data['date_to'] else None,
@@ -2089,6 +2097,7 @@ class TtProviderAirlinePricing(models.Model):
                     'customer_pricing_line_id': customer_data['rule_id'],
                     'customer_pricing_line_sequence': customer_data['sequence'],
                     'customer_pricing_line_index': customer_data['rule_index'],
+                    'customer_currency_code': customer_data.get('currency_code', ''),
                     'customer_set_expiration_date': customer_data['set_expiration_date'],
                     'customer_date_from': customer_data['date_from'] if customer_data['date_from'] else None,
                     'customer_date_to': customer_data['date_to'] if customer_data['date_to'] else None,
@@ -2156,6 +2165,7 @@ class TtProviderAirlinePricing(models.Model):
                     'agent_commission_line_id': agent_com_data['rule_id'],
                     'agent_commission_line_sequence': agent_com_data['sequence'],
                     'agent_commission_line_index': agent_com_data['rule_index'],
+                    'agent_commission_currency_code': agent_com_data.get('currency_code', ''),
                     'agent_commission_set_expiration_date': agent_com_data['set_expiration_date'],
                     'agent_commission_date_from': agent_com_data['date_from'] if agent_com_data['date_from'] else None,
                     'agent_commission_date_to': agent_com_data['date_to'] if agent_com_data['date_to'] else None,

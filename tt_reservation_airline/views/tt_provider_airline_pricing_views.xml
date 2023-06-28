@@ -21,6 +21,8 @@
                             <field name="rule_provider_code"/>
                             <field name="rule_carrier_code"/>
                             <field name="rule_pricing_datetime"/>
+                            <field name="rule_departure_date_list"/>
+                            <field name="rule_currency_code_list"/>
                         </group>
                         <group>
                             <field name="rule_agent_id"/>
@@ -49,6 +51,7 @@
                         <group>
                             <field name="rule_charge_code_list"/>
                             <field name="rule_departure_date_list"/>
+                            <field name="rule_currency_code_list"/>
                         </group>
                     </group>
                     <notebook>
@@ -76,6 +79,7 @@
                                     <field name="provider_set_expiration_date"/>
                                     <field name="provider_date_from"/>
                                     <field name="provider_date_to"/>
+                                    <field name="provider_currency_code"/>
                                 </group>
                             </group>
                             <group string="Route">
@@ -304,6 +308,7 @@
                                     <field name="agent_set_expiration_date"/>
                                     <field name="agent_date_from"/>
                                     <field name="agent_date_to"/>
+                                    <field name="agent_currency_code"/>
                                 </group>
                             </group>
                             <group string="Route">
@@ -482,6 +487,7 @@
                                     <field name="customer_set_expiration_date"/>
                                     <field name="customer_date_from"/>
                                     <field name="customer_date_to"/>
+                                    <field name="customer_currency_code"/>
                                 </group>
                             </group>
                             <group string="Route">
@@ -590,6 +596,7 @@
                                     <field name="agent_commission_set_expiration_date"/>
                                     <field name="agent_commission_date_from"/>
                                     <field name="agent_commission_date_to"/>
+                                    <field name="agent_commission_currency_code"/>
                                 </group>
                             </group>
                             <group string="Route">
