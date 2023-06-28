@@ -156,7 +156,7 @@ class AgentReportRecapTransacion(models.Model):
         elif state == 'refund':
             where += """ AND (rsv.state = '%s') """ % state
         elif state == 'issued_refund':
-            where += """ AND (rsv.state = 'issued' OR rsv.state = 'refund' OR rsv.state = 'reissue') """ % state
+            where += """ AND (rsv.state = 'issued' OR rsv.state = 'refund' OR rsv.state = 'reissue') """
         return where
 
     @staticmethod
@@ -172,8 +172,12 @@ class AgentReportRecapTransacion(models.Model):
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s'""" % provider_type
         # where += """ AND ledger.is_reversed = 'FALSE'"""
-        if state:
-            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue')""" % state
+        if state == 'issued':
+            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
+        elif state == 'refund':
+            where += """ AND (rsv.state = '%s') """ % state
+        elif state == 'issued_refund':
+            where += """ AND (rsv.state = 'issued' OR rsv.state = 'refund' OR rsv.state = 'reissue') """
         return where
 
     @staticmethod
@@ -189,8 +193,12 @@ class AgentReportRecapTransacion(models.Model):
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s'""" % provider_type
         # where += """ AND ledger.is_reversed = 'FALSE'"""
-        if state:
-            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue')""" % state
+        if state == 'issued':
+            where += """ AND (rsv.state = '%s' OR rsv.state = 'reissue') """ % state
+        elif state == 'refund':
+            where += """ AND (rsv.state = '%s') """ % state
+        elif state == 'issued_refund':
+            where += """ AND (rsv.state = 'issued' OR rsv.state = 'refund' OR rsv.state = 'reissue') """
         return where
 
     ################
@@ -346,7 +354,6 @@ class AgentReportRecapTransacion(models.Model):
         data_form['title'] = 'Recap Transaction Report: ' + data_form['subtitle']
 
     def _prepare_values(self, data_form):
-        data_form['state'] = 'issued'
         data_form['is_ho'] = self.env.user.agent_id.is_ho_agent
         ho_obj = False
         if data_form.get('ho_id'):
