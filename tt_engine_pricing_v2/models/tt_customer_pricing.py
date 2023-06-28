@@ -225,6 +225,7 @@ class CustomerPricingLine(models.Model):
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
     pricing_id = fields.Many2one('tt.customer.pricing', 'Customer Pricing', readonly=1, ondelete='cascade')
+    currency_id = fields.Many2one('res.currency', 'Currency', ondelete='cascade')
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
@@ -301,6 +302,7 @@ class CustomerPricingLine(models.Model):
             'sequence': self.sequence,
             'name': self.name if self.name else '',
             'set_expiration_date': self.set_expiration_date,
+            'currency_code': self.currency_id.name if self.currency_id else '',
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
             'date_to': self.date_to.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_to else '',
             'route': {
