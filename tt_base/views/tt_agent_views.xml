@@ -47,7 +47,6 @@
         <field name="arch" type="xml">
             <form create="false">
                 <header>
-                    <button name="set_all_default_ho" string="Set All Default HO" type="object" groups="base.group_system"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -360,14 +359,8 @@
     <menuitem id="menu_tour_travel_agent"
               parent="tt_base.top_tour_travel_customers"
               groups="tt_base.group_agent_level_1"
-              name="Agent"
-              sequence="20"/>
-
-    <menuitem id="submenu_tour_travel_all_agent"
-              parent="tt_base.menu_tour_travel_agent"
-              groups="tt_base.group_agent_level_1"
-              name="All"
-              sequence="1"
+              name="Agent List"
+              sequence="20"
               action="tt_agent_all_action_view"/>
 
     <record id="view_agent_target_form" model="ir.ui.view">
