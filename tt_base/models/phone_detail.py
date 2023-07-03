@@ -65,13 +65,13 @@ class PhoneDetail(models.Model):
             existing_payment_acquirer_open = self.env['payment.acquirer'].search([('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
             for rec in existing_payment_acquirer_open:
                 bank_code_list.append(rec.bank_id.code)
-            currency = self.agent_id.get_ho_parent_agent().currency_id.name
+            currency_obj = self.agent_id.get_ho_parent_agent().currency_id
             data = {
                 'number': self.calling_number[-8:],
                 'email': agent_obj.email,
                 'name': agent_obj.name,
                 'bank_code_list': bank_code_list,
-                'currency': currency
+                'currency': currency_obj.name
             }
             res = self.env['tt.payment.api.con'].set_VA(data, ho_obj.id)
             # res = self.env['tt.payment.api.con'].test(data)
@@ -98,6 +98,7 @@ class PhoneDetail(models.Model):
                             'state': 'open',
                             'number': rec['number'],
                             'email': agent_obj.email,
+                            'currency_id': currency_obj.id
                         })
                 else:
                     raise UserError(_("Phone number has been use, please change first phone number"))
