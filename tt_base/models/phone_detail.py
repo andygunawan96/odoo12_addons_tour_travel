@@ -98,7 +98,8 @@ class PhoneDetail(models.Model):
                             'state': 'open',
                             'number': rec['number'],
                             'email': agent_obj.email,
-                            'currency_id': currency_obj.id
+                            'currency_id': currency_obj.id,
+                            'ho_id': agent_obj.get_ho_parent_agent().id
                         })
                 else:
                     raise UserError(_("Phone number has been use, please change first phone number"))
