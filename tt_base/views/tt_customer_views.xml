@@ -33,7 +33,6 @@
 
 <!--                        <button string="Update Identity" name="test_vals_cleaner" type="object"-->
 <!--                                groups="base.group_user"/>-->
-                    <button name="set_all_default_ho" string="Set All Default HO" type="object" groups="base.group_system"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

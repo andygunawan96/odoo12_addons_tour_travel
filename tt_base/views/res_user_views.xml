@@ -24,7 +24,6 @@
                         context="{
                         'default_base_user_id': id,
                    }"/>
-                <button name="set_all_default_ho" string="Set All Default HO" type="object" groups="base.group_system"/>
             </xpath>
             <xpath expr="//button[@name='toggle_active']" position="before">
                 <field name="is_banned" invisible="1"/>

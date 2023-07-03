@@ -864,15 +864,6 @@ class TtAgent(models.Model):
             ## HO NOT FOUND
             raise Exception('HO NOT FOUND')
 
-    #temporary function to set default ho for all agents
-    def set_all_default_ho(self):
-        all_recs = self.search([])
-        for rec in all_recs:
-            if not rec.ho_id:
-                rec.write({
-                    'ho_id': self.env.ref('tt_base.rodex_ho').id
-                })
-
     def get_printout_agent_color(self):
         base_color = '#FFFFFF'
         agent_ho_obj = self.get_ho_parent_agent()
