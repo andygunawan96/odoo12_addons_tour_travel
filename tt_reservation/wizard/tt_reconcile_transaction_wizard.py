@@ -9,7 +9,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
 
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id),('is_reconcile','=',True)]")
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     date_from = fields.Date('Start Date')
     date_to = fields.Date('End Date')
 

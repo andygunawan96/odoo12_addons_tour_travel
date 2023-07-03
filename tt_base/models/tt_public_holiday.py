@@ -8,7 +8,7 @@ class TtPublicHoliday(models.Model):
 
     name = fields.Char('Name')
     date = fields.Date('Date')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id)
     country_id = fields.Many2one('res.country', 'Country', default=lambda self: self.env.user.company_id.country_id.id)
     active = fields.Boolean('Active', default=True)
 

@@ -36,7 +36,7 @@ class TtLetterGuarantee(models.Model):
     paid_uid = fields.Many2one('res.users', 'Paid by', readonly=True)
     cancel_date = fields.Datetime('Cancelled Date', readonly=True)
     cancel_uid = fields.Many2one('res.users', 'Cancelled by', readonly=True)
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     @api.model
     def create(self, vals):
@@ -129,7 +129,7 @@ class TtLetterGuaranteeLines(models.Model):
     lg_id = fields.Many2one('tt.letter.guarantee', 'Letter of Guarantee', required=True, readonly=True, ondelete='cascade')
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('paid', 'Paid'),
                               ('cancel', 'Cancelled')], 'State', related='lg_id.state', store=True)
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     @api.model
     def create(self, vals):
