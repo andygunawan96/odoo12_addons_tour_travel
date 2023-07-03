@@ -185,10 +185,11 @@ class TtRescheduleLine(models.Model):
     @api.onchange('provider_id')
     def compute_is_po_required(self):
         for rec in self:
-            if rec.provider_id.is_using_po:
-                rec.is_po_required = True
-            else:
-                rec.is_po_required = False
+            temp_req = False
+            for prov_ho_obj in rec.provider_id.provider_ho_data_ids:
+                if prov_ho_obj.is_using_po:
+                    rec.temp_req = True
+            rec.is_po_required = temp_req
 
     def generate_po(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
@@ -668,8 +669,8 @@ class TtReschedule(models.Model):
     def check_po_required(self):
         required = False
         for rec in self.reschedule_line_ids:
-            for agent_obj in rec.provider_id.provider_ho_data_ids:
-                if agent_obj.is_using_po:
+            for prov_ho_obj in rec.provider_id.provider_ho_data_ids:
+                if prov_ho_obj.is_using_po:
                     if not rec.letter_of_guarantee_ids:
                         required = True
         return required
