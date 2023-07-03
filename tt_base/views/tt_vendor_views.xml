@@ -108,13 +108,7 @@
     <menuitem id="menu_tour_travel_vendor"
               parent="tt_base.top_tour_travel_customers"
               groups="tt_base.group_vendor_level_1"
-              name="Vendor"
-              sequence="30"/>
-
-    <menuitem id="submenu_tour_travel_vendor"
-              parent="tt_base.menu_tour_travel_vendor"
-              groups="tt_base.group_vendor_level_1"
-              name="All"
-              sequence="1"
+              name="Vendor List"
+              sequence="30"
               action="tt_vendor_all_action_view"/>
 </odoo>
