@@ -627,24 +627,32 @@ class IssuedOffline(models.Model):
 
     def check_lg_required(self):
         required = False
-        for rec in self.provider_booking_ids:
-            if rec.provider_id.is_using_lg:
-                if not rec.letter_of_guarantee_ids:
-                    required = True
-                else:
-                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'lg'):
+        temp_ho_id = self.agent_id.get_ho_parent_agent()
+        if temp_ho_id:
+            for rec in self.provider_booking_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_lg:
+                    if not rec.letter_of_guarantee_ids:
                         required = True
+                    else:
+                        if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'lg'):
+                            required = True
         return required
 
     def check_po_required(self):
         required = False
-        for rec in self.provider_booking_ids:
-            if rec.provider_id.is_using_po:
-                if not rec.letter_of_guarantee_ids:
-                    required = True
-                else:
-                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'po'):
+        temp_ho_id = self.agent_id.get_ho_parent_agent()
+        if temp_ho_id:
+            for rec in self.provider_booking_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    if not rec.letter_of_guarantee_ids:
                         required = True
+                    else:
+                        if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'po'):
+                            required = True
         return required
 
     def fixing_adult_count(self):
