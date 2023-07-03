@@ -73,6 +73,7 @@ class ReservationVisa(models.Model):
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': book_obj._name,
             'res_id_resv': book_obj.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': invoice_id.id,
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),
@@ -106,6 +107,7 @@ class ReservationVisa(models.Model):
         ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
             'res_model_resv': book_obj._name,
             'res_id_resv': book_obj.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': ho_invoice_id.id,
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),

@@ -64,6 +64,7 @@ class ReservationTour(models.Model):
             inv_line_obj = self.env['tt.agent.invoice.line'].create({
                 'res_model_resv': self._name,
                 'res_id_resv': self.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'invoice_id': invoice_id.id,
                 'reference': self.name,
                 'desc': 'Full Payment\n' + self.get_tour_description(),
@@ -96,6 +97,7 @@ class ReservationTour(models.Model):
             ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
                 'res_model_resv': self._name,
                 'res_id_resv': self.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'invoice_id': ho_invoice_id.id,
                 'reference': self.name,
                 'desc': 'Full Payment\n' + self.get_tour_description(),
@@ -295,8 +297,10 @@ class ReservationTour(models.Model):
             })
 
         else:
+            temp_ho_obj = self.agent_id.get_ho_parent_agent()
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -307,6 +311,7 @@ class ReservationTour(models.Model):
             inv_line_obj = self.env['tt.agent.invoice.line'].create({
                 'res_model_resv': self._name,
                 'res_id_resv': self.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'invoice_id': invoice_id.id,
                 'desc': 'Down Payment\n' + self.get_tour_description(),
                 'admin_fee': self.payment_acquirer_number_id.fee_amount
@@ -321,6 +326,7 @@ class ReservationTour(models.Model):
                 is_use_credit_limit = False
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -333,6 +339,7 @@ class ReservationTour(models.Model):
             ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
                 'res_model_resv': self._name,
                 'res_id_resv': self.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'invoice_id': ho_invoice_id.id,
                 'reference': self.name,
                 'desc': 'Down Payment\n' + self.get_tour_description(),
@@ -387,6 +394,7 @@ class ReservationTour(models.Model):
                     'price_unit': (self.tour_lines_id.down_payment / 100) * price_unit,
                     'quantity': 1,
                     'invoice_line_id': ho_invoice_line_id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'commission_agent_id': self.agent_id.id
                 })
                 ## RAC
@@ -396,6 +404,7 @@ class ReservationTour(models.Model):
                         'price_unit': (self.tour_lines_id.down_payment / 100) * commission_list[rec_commission],
                         'quantity': 1,
                         'invoice_line_id': ho_invoice_line_id,
+                        'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                         'commission_agent_id': rec_commission,
                         'is_commission': True
                     })
@@ -477,6 +486,7 @@ class ReservationTour(models.Model):
             for rec in self.tour_lines_id.payment_rules_ids:
                 invoice_id = self.env['tt.agent.invoice'].create({
                     'booker_id': self.booker_id.id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
                     'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -487,6 +497,7 @@ class ReservationTour(models.Model):
                 inv_line_obj = self.env['tt.agent.invoice.line'].create({
                     'res_model_resv': self._name,
                     'res_id_resv': self.id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'invoice_id': invoice_id.id,
                     'desc': (rec.name and rec.name + '\n' or '') + self.get_tour_description()
                 })
@@ -494,6 +505,7 @@ class ReservationTour(models.Model):
 
                 ho_invoice_id = self.env['tt.ho.invoice'].create({
                     'booker_id': self.booker_id.id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
                     'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -506,6 +518,7 @@ class ReservationTour(models.Model):
                 ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
                     'res_model_resv': self._name,
                     'res_id_resv': self.id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'invoice_id': ho_invoice_id.id,
                     'reference': self.name,
                     'desc': (rec.name and rec.name + '\n' or '') + self.get_tour_description(),
@@ -560,6 +573,7 @@ class ReservationTour(models.Model):
                         'price_unit': (rec.payment_percentage / 100) * price_unit,
                         'quantity': 1,
                         'invoice_line_id': ho_invoice_line_id,
+                        'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                         'commission_agent_id': self.agent_id.id
                     })
                     ## RAC
@@ -569,6 +583,7 @@ class ReservationTour(models.Model):
                             'price_unit': (rec.payment_percentage / 100) * commission_list[rec_commission],
                             'quantity': 1,
                             'invoice_line_id': ho_invoice_line_id,
+                            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                             'commission_agent_id': rec_commission,
                             'is_commission': True
                         })
