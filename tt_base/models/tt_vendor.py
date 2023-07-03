@@ -38,6 +38,6 @@ class TtVendor(models.Model):
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
     provider_id = fields.Many2one('tt.provider', string='Provider')
     active = fields.Boolean('Active', default='True')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     description = fields.Char('Description', default='')

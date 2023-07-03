@@ -34,7 +34,7 @@ class AgentInvoiceLine(models.Model):
     reference = fields.Char('Reference')
 
     pnr = fields.Char("PNR",compute="_compute_invoice_line_pnr",store=True)
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], compute="_compute_invoice_line_pnr", store=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], compute="_compute_invoice_line_ho_id", store=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', compute="_compute_invoice_line_pnr", store=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', compute="_compute_invoice_line_pnr", store=True)
 
@@ -87,10 +87,21 @@ class AgentInvoiceLine(models.Model):
         for rec in self:
             if rec.res_model_resv and rec.res_id_resv:
                 try:
-                    rec.pnr = self.env[rec.res_model_resv].browse(rec.res_id_resv).pnr
-                    rec.ho_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).ho_id.id
-                    rec.agent_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).agent_id.id
-                    rec.customer_parent_id = self.env[rec.res_model_resv].browse(rec.res_id_resv).customer_parent_id.id
+                    resv_obj = self.env[rec.res_model_resv].browse(rec.res_id_resv)
+                    rec.pnr = resv_obj.pnr
+                    rec.agent_id = resv_obj.agent_id.id
+                    rec.customer_parent_id = resv_obj.customer_parent_id.id
+                except:
+                    pass
+
+    @api.multi
+    @api.depends("res_model_resv","res_id_resv")
+    def _compute_invoice_line_ho_id(self):
+        for rec in self:
+            if rec.res_model_resv and rec.res_id_resv:
+                try:
+                    resv_obj = self.env[rec.res_model_resv].browse(rec.res_id_resv)
+                    rec.ho_id = resv_obj.ho_id.id
                 except:
                     pass
 

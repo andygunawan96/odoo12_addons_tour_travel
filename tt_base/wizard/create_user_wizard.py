@@ -41,7 +41,7 @@ class CreateCorporateUserWizard(models.TransientModel):
     _name = "create.corporate.user.wizard"
     _description = 'Create Corporate User Wizard'
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent','Agent',readonly=True)
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent',readonly=True)
 

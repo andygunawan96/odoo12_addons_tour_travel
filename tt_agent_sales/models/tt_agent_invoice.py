@@ -123,6 +123,15 @@ class AgentInvoice(models.Model):
     #     self.check_paid_status()
     #     return res
 
+    def recompute_lines_pnr_and_ho_id(self):
+        inv_objs = self.search([])
+        for rec in inv_objs:
+            for rec2 in rec.invoice_line_ids:
+                rec2._compute_invoice_line_ho_id()
+                rec2._compute_invoice_line_pnr()
+            rec._compute_invoice_pnr()
+            _logger.info('%s done recompute lines PNR and HO ID' % rec.name)
+
     @api.depends("invoice_line_ids.pnr")
     def _compute_invoice_pnr(self):
         for rec in self:

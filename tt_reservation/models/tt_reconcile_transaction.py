@@ -226,8 +226,9 @@ class TtReconcileTransaction(models.Model):
         reconcile_obj = self.env['tt.reconcile.transaction'].search([('provider_id', '=', self.provider_id.id),
                                                                      ('transaction_date', '<', self.transaction_date)],
                                                                     order='transaction_date desc', limit=1)
+        provider_ho_data_obj = self.env['tt.provider.ho.data'].search([('provider_id','=',self.provider_id.id), ('ho_id','=', self.ho_id.id)], limit=1)
 
-        if reconcile_obj and (self.transaction_date - reconcile_obj.transaction_date).days == 1 and self.provider_id.is_using_balance:
+        if reconcile_obj and provider_ho_data_obj and (self.transaction_date - reconcile_obj.transaction_date).days == 1 and provider_ho_data_obj.is_using_balance:
             self.start_balance = reconcile_obj.end_balance
             end_balance = self.start_balance
 

@@ -74,18 +74,26 @@ class ProviderOffline(models.Model):
     @api.onchange('provider_id')
     def compute_is_lg_required(self):
         for rec in self:
-            if rec.provider_id.is_using_lg:
-                rec.is_lg_required = True
-            else:
-                rec.is_lg_required = False
+            temp_req = False
+            temp_ho_id = rec.booking_id.agent_id.get_ho_parent_agent()
+            if temp_ho_id:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_lg:
+                    temp_req = True
+            rec.is_lg_required = temp_req
 
     @api.onchange('provider_id')
     def compute_is_po_required(self):
         for rec in self:
-            if rec.provider_id.is_using_po:
-                rec.is_po_required = True
-            else:
-                rec.is_po_required = False
+            temp_req = False
+            temp_ho_id = rec.booking_id.agent_id.get_ho_parent_agent()
+            if temp_ho_id:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    temp_req = True
+            rec.is_po_required = temp_req
 
     def generate_lg_or_po(self, lg_type):
         if self.booking_id.state_offline == 'validate':

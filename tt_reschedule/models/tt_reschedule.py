@@ -185,10 +185,13 @@ class TtRescheduleLine(models.Model):
     @api.onchange('provider_id')
     def compute_is_po_required(self):
         for rec in self:
-            if rec.provider_id.is_using_po:
-                rec.is_po_required = True
-            else:
-                rec.is_po_required = False
+            temp_req = False
+            temp_ho_id = rec.reschedule_id.agent_id.get_ho_parent_agent()
+            if temp_ho_id:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search([('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    temp_req = True
+            rec.is_po_required = temp_req
 
     def generate_po(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
@@ -667,11 +670,13 @@ class TtReschedule(models.Model):
 
     def check_po_required(self):
         required = False
-        for rec in self.reschedule_line_ids:
-            for agent_obj in rec.provider_id.provider_ho_data_ids:
-                if agent_obj.is_using_po:
-                    if not rec.letter_of_guarantee_ids:
-                        required = True
+        temp_ho_id = self.agent_id.get_ho_parent_agent()
+        if temp_ho_id:
+            for rec in self.reschedule_line_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    required = True
         return required
 
     def action_done(self, bypass_po=False):

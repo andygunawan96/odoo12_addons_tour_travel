@@ -15,7 +15,7 @@ class TtBankAccount(models.Model):
     _description = 'collections of bank accounts'
     _rec_name = 'bank_account_owner'
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     bank_account_owner = fields.Char('Owner Name')
     bank_account_number = fields.Char('Bank Number')
@@ -77,7 +77,7 @@ class TtBankTransaction(models.Model):
     transaction_connection = fields.Selection(variables.BANK_STATEMENT)
     transaction_process = fields.Selection([('unprocess', 'Un-Process'), ('process', 'Processed')])
     top_up_id = fields.Many2one('tt.top.up', 'Top up')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
 
     def create_bank_statement(self, req):
         bank_account_obj = self.env['tt.bank.accounts'].browse(req['bank_account_id'])

@@ -19,6 +19,8 @@ class TtPointReward(models.Model):
     _order = "sequence asc"
 
     def _compute_get_ho(self):
+        if self.env.user.ho_id:
+            return self.env.user.ho_id.id
         if self.env.user.agent_id:
             return self.env.user.agent_id.get_ho_parent_agent().id
         return False
