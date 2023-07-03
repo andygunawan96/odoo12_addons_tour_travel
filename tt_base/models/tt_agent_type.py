@@ -16,7 +16,7 @@ class TtAgentType(models.Model):
     registration_fee = fields.Monetary('Registration Fee')
     benefit = fields.Many2many('tt.agent.type.benefit', 'tt_agent_type_benefit_rel', 'agent_benefit', 'benefit')
     registration_form = fields.Html(string="Registration Form")
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')
     can_register_agent = fields.Boolean('Can Register Agent', default=False)
     can_be_registered = fields.Boolean('Can be Registered', default=False)

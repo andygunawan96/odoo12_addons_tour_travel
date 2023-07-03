@@ -6,7 +6,7 @@ class CreateHOTransportCarrierSearchConfigWizard(models.TransientModel):
     _name = "create.ho.transport.carrier.search.config.wizard"
     _description = 'Create HO Agent Wizard'
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True,default=lambda self: self.env.user.ho_id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id)
     def _get_domain_default(self):
         return [('ho_id', '=', self.env.ref('tt_base.rodex_ho').id)]
     transport_carrier_search_ids = fields.Many2many('tt.transport.carrier.search', 'tt_transport_carrier_search_rel', 'ho_agent_id','transport_carrier_search_id',string='Transport Carrier Search', domain=_get_domain_default)

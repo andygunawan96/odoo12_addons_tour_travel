@@ -56,7 +56,7 @@ class TtTimeslotPeriksain(models.Model):
 
     active = fields.Boolean('Active', default='True')
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent')
 
     id_kota_vendor = fields.Char('Kota ID Vendor')
