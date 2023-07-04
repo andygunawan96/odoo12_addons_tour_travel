@@ -15,6 +15,7 @@
                     <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="agent_id"/>
                     <field name="time_string"/>
+                    <field name="end_time_string"/>
                 </group>
                 <group>
                     <field name="default_data_id"/>
@@ -29,6 +30,10 @@
 
                 <group string="SRBD">
                     <field name="srbd_price_ids"/>
+                </group>
+
+                <group string="Blood Test">
+                    <field name="blood_test_price_ids"/>
                 </group>
 
                 <group string="Additional Price">

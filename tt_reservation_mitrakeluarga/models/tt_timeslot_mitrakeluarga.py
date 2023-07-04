@@ -29,6 +29,9 @@ class TtTimeslotMitraKeluarga(models.Model):
     dateslot = fields.Date('Dateslot',readonly=True)
 
     datetimeslot = fields.Datetime('DateTime Slot')
+
+    datetimeslot_end = fields.Datetime('DateTime Slot End')
+
     timeslot_display_name = fields.Char('Display Name', compute="_compute_timeslot_display_name")
     timeslot_type = fields.Selection(
         [('home_care', 'Home Care'), ('group_booking', 'Group Booking'), ('drive_thru', 'Drive Thru')], 'Timeslot Type')
@@ -46,6 +49,8 @@ class TtTimeslotMitraKeluarga(models.Model):
     pcr_price_ids = fields.Many2many('tt.price.list.mitrakeluarga','tt_price_list_mitrakeluarga_price_pcr_rel','timeslot_pcr_id', 'price_list_id', 'PCR')
 
     srbd_price_ids = fields.Many2many('tt.price.list.mitrakeluarga','tt_price_list_mitrakeluarga_price_srbd_rel','timeslot_srbd_id', 'price_list_id', 'SRBD')
+
+    blood_test_price_ids = fields.Many2many('tt.price.list.mitrakeluarga','tt_price_list_mitrakeluarga_price_test_darah_rel','timeslot_test_darah_id', 'price_list_id', 'Blood Test')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -114,13 +119,15 @@ class TtTimeslotMitraKeluarga(models.Model):
         current_datetime = current_wib_datetime.astimezone(pytz.utc)
         carrier_obj = self.env['tt.transport.carrier'].search([('code', '=', req['carrier_code'])], limit=1)
         dom = ['|', ('agent_id', '=', False), ('agent_id', '=', context['co_agent_id'])]
+        if context.get('co_ho_id'):
+            dom.append(('ho_id','=',context['co_ho_id']))
         #HOMECARE
         if carrier_obj.id in [self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_antigen').id,
                               self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_pcr').id,
-                              self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_srbd').id]:
+                              self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_homecare_srbd').id,
+                              self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_drivethru_test_darah').id]: ## TEST DARAH
             dom.append(('timeslot_type', '=', 'home_care'))
-            if '08:00' < str(current_wib_datetime.time())[:5] < '20:00' and current_wib_datetime.strftime(
-                    '%A') != 'Sunday':
+            if '08:00' < str(current_wib_datetime.time())[:5] < '20:00' and current_wib_datetime.strftime('%A') != 'Sunday':
                 dom.append(('datetimeslot', '>', datetime.now(pytz.utc).replace(hour=1) + timedelta(days=1))) # Elin request H+1
             else:
                 min_datetime = current_datetime.replace(hour=8, minute=0, second=0, microsecond=0)
@@ -158,6 +165,10 @@ class TtTimeslotMitraKeluarga(models.Model):
                 'availability': rec.get_availability(),
                 'group_booking': True if rec.agent_id else False
             })
+            if rec.datetimeslot_end:
+                timeslot_dict[rec.destination_id.name]['timeslots'][str_dateslot][-1].update({
+                    "time_end": str(rec.datetimeslot_end)[11:16]
+                })
         return ERR.get_no_error(timeslot_dict)
 
     def get_availability(self):
@@ -179,7 +190,6 @@ class TtTimeslotMitraKeluarga(models.Model):
             "datetimeslot": self.datetimeslot.strftime('%Y-%m-%d %H:%M'),
             "area": self.destination_id.city,
         }
-
         return res
 
 class TtTimeslotMitraKeluargadefault(models.Model):
@@ -201,6 +211,10 @@ class TtTimeslotMitraKeluargadefault(models.Model):
     srbd_price_ids = fields.Many2many('tt.price.list.mitrakeluarga',
                                               'tt_price_list_mitrakeluarga_price_srbd_default_rel',
                                               'timeslot_srbd_id', 'price_list_id', 'SRBD')
+
+    blood_test_price_ids = fields.Many2many('tt.price.list.mitrakeluarga',
+                                              'tt_price_list_mitrakeluarga_price_test_darah_default_rel',
+                                              'timeslot_test_darah_id', 'price_list_id', 'Blood Test')
 
     single_supplement = fields.Monetary('Single Supplement', default=SINGLE_SUPPLEMENT, required=True)
     overtime_surcharge = fields.Monetary('Overtime Surcharge', default=OVERTIME_SURCHARGE, required=True)

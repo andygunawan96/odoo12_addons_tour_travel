@@ -2121,6 +2121,7 @@ class ReservationAirline(models.Model):
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):
         hold_date = None
+        expired_date = None
         pnr_list = []
         values = {}
         for rec in self.provider_booking_ids:
@@ -2128,6 +2129,10 @@ class ReservationAirline(models.Model):
                 rec_hold_date = datetime.strptime(rec.hold_date[:19], '%Y-%m-%d %H:%M:%S')
                 if not hold_date or rec_hold_date < hold_date:
                     hold_date = rec_hold_date
+            if rec.expired_date:
+                rec_expired_date = datetime.strptime(rec.expired_date[:19], '%Y-%m-%d %H:%M:%S')
+                if not expired_date or rec_expired_date < expired_date:
+                    expired_date = rec_expired_date
             if rec.pnr:
                 pnr_list.append(rec.pnr)
 
@@ -2135,6 +2140,10 @@ class ReservationAirline(models.Model):
             hold_date_str = hold_date.strftime('%Y-%m-%d %H:%M:%S')
             if self.hold_date != hold_date_str:
                 values['hold_date'] = hold_date_str
+        if expired_date:
+            expired_date_str = expired_date.strftime('%Y-%m-%d %H:%M:%S')
+            if self.expired_date != expired_date_str:
+                values['expired_date'] = expired_date_str
         if pnr_list:
             pnr = ', '.join(pnr_list)
             if self.pnr != pnr:

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .official_odoo_inh import auth_signup
+from .official_odoo_inh import res_users
 from . import tt_frontend_security
 from .official_odoo_inh import res_users_ip
 from . import tt_history
@@ -7,7 +8,6 @@ from .official_odoo_inh import res_country
 from . import address_detail
 from . import phone_detail
 from . import social_media_detail
-from .official_odoo_inh import res_users
 from . import payment_acquirer
 from . import agent_bank_detail
 from . import customer_bank_detail
