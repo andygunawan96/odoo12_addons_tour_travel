@@ -309,6 +309,17 @@ class ReservationMitraKeluarga(models.Model):
                         cito_suplement_price = timeslot_objs.cito_surcharge
                     else:
                         break
+        elif carrier_id in [self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_drivethru_test_darah').id]: # SRBD
+            for rec in timeslot_objs:
+                for blood_test_price_pax in rec.blood_test_price_ids:
+                    if req['pax_count'] >= blood_test_price_pax['min_pax']:
+                        base_price = blood_test_price_pax.base_price
+                        commission_price = blood_test_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
         else: # SRBD
             for rec in timeslot_objs:
                 for srbd_price_pax in rec.srbd_price_ids:
@@ -1093,6 +1104,8 @@ class ReservationMitraKeluarga(models.Model):
             template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_pcr_information')
         elif self.carrier_name == 'MKHCKSRBD':
             template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_homecare_srbd_information')
+        elif self.carrier_name == 'MKHCKBT':
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_test_darah_information')
         else:
             template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_srbd_information')
         return template_obj.html
