@@ -124,7 +124,7 @@ class AgentInvoice(models.Model):
     #     return res
 
     def recompute_lines_pnr_and_ho_id(self):
-        inv_objs = self.search([('pnr','=',False)])
+        inv_objs = self.search([('pnr','=','')])
         inv_c = 0
         for rec in inv_objs:
             for rec2 in rec.invoice_line_ids:

@@ -130,14 +130,15 @@ class Ledger(models.Model):
                                  debit, credit,description, source_of_funds_type and source_of_funds_type or 'balance')
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
+            customer_parent_obj = self.env['tt.customer.parent'].browse(int(customer_parent_id))
+            agent_obj = customer_parent_obj.parent_agent_id
         else:
             vals['agent_id'] = agent_id
-
-        if agent_id:
             agent_obj = self.env['tt.agent'].browse(int(agent_id))
-            ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
-            if ho_obj:
-                vals['ho_id'] = ho_obj.id
+
+        ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+        if ho_obj:
+            vals['ho_id'] = ho_obj.id
 
         if kwargs:
             vals.update(kwargs)
