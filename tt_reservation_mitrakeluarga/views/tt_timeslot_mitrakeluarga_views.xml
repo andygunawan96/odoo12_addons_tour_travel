@@ -49,6 +49,7 @@
                     <group>
                         <field name="dateslot"/>
                         <field name="datetimeslot"/>
+                        <field name="datetimeslot_end"/>
                         <field name="max_book_datetime"/>
                         <field name="destination_id"/>
                         <field name="selected_count"/>
@@ -67,6 +68,9 @@
                     </group>
                     <group string="SRBD">
                         <field name="srbd_price_ids"/>
+                    </group>
+                    <group string="Blood Test">
+                        <field name="blood_test_price_ids"/>
                     </group>
 
                     <group string="Additional Price">
@@ -118,6 +122,9 @@
                     </group>
                     <group string="SRBD">
                         <field name="srbd_price_ids"/>
+                    </group>
+                    <group string="Blood Test">
+                        <field name="blood_test_price_ids"/>
                     </group>
                     <group string="Additional Price">
                         <field name="single_supplement"/>
