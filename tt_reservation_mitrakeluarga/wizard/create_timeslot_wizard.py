@@ -22,7 +22,8 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
 
     start_date = fields.Date('Start Date',required=True, default=fields.Date.context_today)
     end_date = fields.Date('End Date',required=True, default=fields.Date.context_today)
-    time_string = fields.Text('Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,19:00')
+    time_string = fields.Text('Start Time',default='08:00,09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,19:00')
+    end_time_string = fields.Text('End Time',default='09:00,10:00,11:00,12:00,13:00,14:00,15:00,16:00,17:00,18:00,20:00')
 
     id_time_vendor = fields.Text('ID Time Vendor', default='')
     id_jenis_tindakan_vendor = fields.Text('ID Jenis Tindakan Vendor', default='')
@@ -36,6 +37,8 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
     pcr_price_ids = fields.Many2many('tt.price.list.mitrakeluarga', 'tt_price_list_mitrakeluarga_price_wizard_pcr_rel','timeslot_pcr_wizard_id', 'price_list_id', 'PCR')
 
     srbd_price_ids = fields.Many2many('tt.price.list.mitrakeluarga', 'tt_price_list_mitrakeluarga_price_wizard_srbd_rel','timeslot_srbd_wizard_id', 'price_list_id', 'SRBD')
+
+    blood_test_price_ids = fields.Many2many('tt.price.list.mitrakeluarga', 'tt_price_list_mitrakeluarga_price_wizard_blood_test_rel','timeslot_blood_test_wizard_id', 'price_list_id', 'Blood Test')
 
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)
@@ -75,6 +78,7 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
         self.antigen_price_ids = self.default_data_id.antigen_price_ids
         self.pcr_price_ids = self.default_data_id.pcr_price_ids
         self.srbd_price_ids = self.default_data_id.srbd_price_ids
+        self.blood_test_price_ids = self.default_data_id.blood_test_price_ids
         self.single_supplement = self.default_data_id.single_supplement
         self.overtime_surcharge = self.default_data_id.overtime_surcharge
         self.cito_surcharge = self.default_data_id.cito_surcharge
@@ -100,6 +104,7 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
         date_delta = date_delta.days+1
         create_values = []
         timelist = self.time_string.split(',')
+        end_timelist = self.end_time_string.split(',')
 
         #price list
         antigen_list = False
@@ -111,24 +116,29 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
             antigen_list = [(6, 0, [x.id for x in default_data.antigen_price_ids])]
             pcr_list = [(6, 0, [x.id for x in default_data.pcr_price_ids])]
             srbd_list = [(6, 0, [x.id for x in default_data.srbd_price_ids])]
+            blood_test_list = [(6, 0, [x.id for x in default_data.blood_test_price_ids])]
             single_supplement = default_data.single_supplement
             overtime_surcharge = default_data.overtime_surcharge
             cito_surcharge = default_data.cito_surcharge
         else:
-
             if self.antigen_price_ids:
                 antigen_list = [(6, 0, [x.id for x in self.antigen_price_ids])]
             if self.pcr_price_ids:
                 pcr_list = [(6, 0, [x.id for x in self.pcr_price_ids])]
             if self.srbd_price_ids:
                 srbd_list = [(6, 0, [x.id for x in self.srbd_price_ids])]
+            if self.blood_test_price_ids:
+                blood_test_list = [(6, 0, [x.id for x in self.blood_test_price_ids])]
             single_supplement = self.single_supplement
             overtime_surcharge = self.overtime_surcharge
             cito_surcharge = self.cito_surcharge
         ##convert to timezone 0
         time_objs = []
+        end_time_objs = []
         for idx, time_str in enumerate(timelist):
-            time_objs.append((datetime.strptime(time_str,'%H:%M') - timedelta(hours=7)).time())
+            time_objs.append((datetime.strptime(time_str, '%H:%M') - timedelta(hours=7)).time())
+        for idx, time_str in enumerate(end_timelist):
+            end_time_objs.append((datetime.strptime(time_str, '%H:%M') - timedelta(hours=7)).time())
 
         db = self.env['tt.timeslot.mitrakeluarga'].search([('destination_id','=',self.area_id.id), ('dateslot','>=',self.start_date), ('dateslot','<=',self.end_date), ('timeslot_type','=',self.timeslot_type), ('agent_id','=',self.agent_id.id if self.agent_id else False)])
         db_list = [str(data.datetimeslot) for data in db]
@@ -138,6 +148,9 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
                 if this_date.weekday == 6 and this_time.strftime("%H:%M:%S") == "12:00:00": ##skipping sunday 19.00GMT+7 time
                     continue
                 datetimeslot = datetime.strptime('%s %s' % (str(this_date),this_time),'%Y-%m-%d %H:%M:%S')
+                datetimeslot_end = None
+                if len(end_timelist) > idx:
+                    datetimeslot_end = datetime.strptime('%s %s' % (str(this_date),end_time_objs[idx]),'%Y-%m-%d %H:%M:%S')
                 max_book_datetime = datetimeslot.replace(hour=8, minute=0, second=0, microsecond=0)
                 if str(datetimeslot) not in db_list:
                     create_values.append({
@@ -150,12 +163,18 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
                         'antigen_price_ids': antigen_list,
                         'pcr_price_ids': pcr_list,
                         'srbd_price_ids': srbd_list,
+                        'blood_test_price_ids': blood_test_list,
                         'max_book_datetime': max_book_datetime,
                         'single_supplement': single_supplement,
                         'overtime_surcharge': overtime_surcharge,
                         'cito_surcharge': cito_surcharge,
                         'agent_id': self.agent_id.id if self.agent_id else False,
+                        'ho_id': self.ho_id.id if self.ho_id else False,
                     })
+                    if datetimeslot_end:
+                        create_values[-1].update({
+                            'datetimeslot_end': datetimeslot_end
+                        })
 
         self.env['tt.timeslot.mitrakeluarga'].create(create_values)
 
@@ -175,6 +194,7 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
                 antigen_list = [(6, 0, [x.id for x in default_data_obj.antigen_price_ids])]
                 pcr_list = [(6, 0, [x.id for x in default_data_obj.pcr_price_ids])]
                 srbd_list = [(6, 0, [x.id for x in default_data_obj.srbd_price_ids])]
+                blood_test_list = [(6, 0, [x.id for x in default_data_obj.blood_test_price_ids])]
                 single_supplement = default_data_obj.single_supplement
                 overtime_surcharge = default_data_obj.overtime_surcharge
                 cito_surcharge = default_data_obj.cito_surcharge
@@ -190,6 +210,7 @@ class CreateTimeslotMitraKeluargaWizard(models.TransientModel):
                     'antigen_price_ids': antigen_list,
                     'pcr_price_ids': pcr_list,
                     'srbd_price_ids': srbd_list,
+                    'blood_test_price_ids': blood_test_list,
                     'single_supplement': single_supplement,
                     'overtime_surcharge': overtime_surcharge,
                     'cito_surcharge': cito_surcharge,
