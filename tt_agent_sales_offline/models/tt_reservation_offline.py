@@ -228,6 +228,7 @@ class ReservationOffline(models.Model):
                     'price_unit': self.total / len(self.passenger_ids),
                     'quantity': 1,
                     'invoice_line_id': ho_invoice_line_id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'commission_agent_id': self.agent_id.id
                 })
                 total_price += total_price
