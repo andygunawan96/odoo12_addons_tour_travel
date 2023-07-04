@@ -4,7 +4,7 @@ from datetime import datetime
 
 class CreateHOTransportCarrierSearchConfigWizard(models.TransientModel):
     _name = "create.ho.transport.carrier.search.config.wizard"
-    _description = 'Create HO Agent Wizard'
+    _description = 'Create HO Transport Carrier Search Config Wizard'
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id)
     def _get_domain_default(self):
