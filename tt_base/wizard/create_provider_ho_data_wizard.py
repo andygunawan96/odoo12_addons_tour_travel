@@ -29,13 +29,13 @@ class CreateProviderHODataWizard(models.TransientModel):
                 vals.update({
                     'currency_id': rec.currency_id.id
                 })
-            existing_prov_ho = self.env['tt.provider.ho.data'].search([('provider_id', '=', rec.id), ('ho_id', '=', ho_id.id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
+            existing_prov_ho = self.env['tt.provider.ho.data'].search([('provider_id', '=', rec.id), ('ho_id', '=', ho_id), '|', ('active', '=', False), ('active', '=', True)], limit=1)
             if existing_prov_ho:
                 existing_prov_ho[0].write(vals)
             else:
                 vals.update({
                     'provider_id': rec.id,
-                    'ho_id': ho_id.id,
+                    'ho_id': ho_id,
                     'name': rec.name,
                 })
                 self.env['tt.provider.ho.data'].create(vals)
