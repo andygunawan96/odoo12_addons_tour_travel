@@ -91,6 +91,8 @@ class AgentInvoiceLine(models.Model):
                     rec.pnr = resv_obj.pnr
                     rec.agent_id = resv_obj.agent_id.id
                     rec.customer_parent_id = resv_obj.customer_parent_id.id
+                    if rec.res_model_resv == 'tt.reschedule' and not resv_obj.pnr:
+                        rec.pnr = resv_obj.referenced_pnr
                 except:
                     pass
 
