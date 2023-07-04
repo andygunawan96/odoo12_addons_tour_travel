@@ -441,7 +441,18 @@ class VisaPricelist(models.Model):
     def search_api(self, data, context):
         try:
             list_of_visa = []
-            for idx, rec in enumerate(self.sudo().search([('active','=',True), ('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate']),('reference_code','!=',''), ('ho_ids.seq_id', '=', context['co_ho_seq_id'])])): #agar kalau duplicate reference kosong tidak tampil (harus diisi manual / compute reference code)
+            search_params = [('active','=',True), ('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate']), ('reference_code','!=','')]
+            if context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            elif context.get('ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            elif context.get('co_ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            for idx, rec in enumerate(self.sudo().search(search_params)): #agar kalau duplicate reference kosong tidak tampil (harus diisi manual / compute reference code)
                 requirement = []
                 attachments = []
                 for rec1 in rec.requirement_ids:
@@ -507,13 +518,23 @@ class VisaPricelist(models.Model):
         try:
             list_of_availability = []
             for idx, rec in enumerate(data['reference_code']):
-                if self.sudo().search([('reference_code', '=', rec),('ho_ids.seq_id','=', context['co_ho_seq_id'])]):
+                search_params = [('reference_code', '=', rec)]
+                if context.get('co_ho_id'):
+                    search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+                elif context.get('ho_seq_id'):
+                    ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                    search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+                elif context.get('co_ho_seq_id'):
+                    ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+                    search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+                else:
+                    search_params.append(('ho_ids', '=', False))
+                if self.sudo().search(search_params):
                     list_of_availability.append(True)
                 else:
                     list_of_availability.append(False)
             response = {
                 'availability': list_of_availability,
-
             }
             res = Response().get_no_error(response)
         except Exception as e:
