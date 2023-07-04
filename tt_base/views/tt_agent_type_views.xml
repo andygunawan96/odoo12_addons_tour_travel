@@ -138,7 +138,7 @@
 
 
         <menuitem id="sub_menu_item_tour_travel_agent_type"
-                  parent="tt_base.menu_tour_travel_configuration_tt_agent"top_tour_travel_customers1
+                  parent="tt_base.top_tour_travel_customers"
                   groups="tt_base.group_agent_type_level_1"
                   name="Agent Type"
                   sequence="14"
