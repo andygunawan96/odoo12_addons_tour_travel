@@ -133,7 +133,6 @@ class ReservationTour(models.Model):
             total_price = 0
             commission_list = {}
             for provider in self.provider_booking_ids:
-                admin_fee_medical = 0
                 for ticket in provider.ticket_ids:
                     psg = ticket.passenger_id
                     desc_text = '%s, %s' % (' '.join((psg.first_name or '', psg.last_name or '')), psg.title or '')
@@ -170,14 +169,6 @@ class ReservationTour(models.Model):
                         'commission_agent_id': self.agent_id.id
                     })
                     total_price += price_unit
-                ##add admin fee medical @10k
-                if admin_fee_medical > 0:
-                    self.env['tt.ho.invoice.line.detail'].create({
-                        'desc': "Admin Fee Drive Thru",
-                        'price_unit': admin_fee_medical / len(provider.ticket_ids.ids),
-                        'quantity': len(provider.ticket_ids.ids),
-                        'invoice_line_id': ho_invoice_line_id,
-                    })
             ## RAC
             for rec in commission_list:
                 self.env['tt.ho.invoice.line.detail'].create({
