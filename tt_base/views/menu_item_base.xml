@@ -127,7 +127,7 @@
         <!-- Administration -->
         <menuitem id="top_tour_travel_administration"
                   name="Administration"
-                  groups="base.group_erp_manager,tt_base.group_new_city_records_level_1"
+                  groups="base.group_erp_manager,tt_base.group_tt_tour_travel"
                   parent="tt_base.main_tour_travel"
                   sequence = "500"/>
 
