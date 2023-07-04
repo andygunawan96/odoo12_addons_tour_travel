@@ -50,7 +50,7 @@ class TtProviderAirline(models.Model):
     issued_uid = fields.Many2one('res.users', 'Issued By', readonly=True, states={'draft': [('readonly', False)]})
     issued_date = fields.Datetime('Issued Date', readonly=True, states={'draft': [('readonly', False)]})
     hold_date = fields.Char('Hold Date', readonly=True, states={'draft': [('readonly', False)]})
-    expired_date = fields.Datetime('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
+    expired_date = fields.Char('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
     cancel_uid = fields.Many2one('res.users', 'Cancel By', readonly=True, states={'draft': [('readonly', False)]})
     cancel_date = fields.Datetime('Cancel Date', readonly=True, states={'draft': [('readonly', False)]})
     #
