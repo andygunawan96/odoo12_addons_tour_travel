@@ -326,6 +326,7 @@ class TtSplitReservationWizard(models.TransientModel):
                                 else:
                                     new_pax_id_list.append(int(old_pax_dict[str(rec3.id)]))
                             self.env['tt.service.charge'].create({
+                                'ho_id': rec2.ho_id and rec2.ho_id.id or '',
                                 'charge_code': rec2.charge_code and rec2.charge_code or '',
                                 'charge_type': rec2.charge_type and rec2.charge_type or '',
                                 'pax_type': rec2.pax_type and rec2.pax_type or '',
@@ -456,6 +457,7 @@ class TtSplitReservationWizard(models.TransientModel):
 
                                     if rec2.id not in old_cost_list:
                                         cost_val = {
+                                            'ho_id': rec2.ho_id and rec2.ho_id.id or '',
                                             'charge_code': rec2.charge_code,
                                             'charge_type': rec2.charge_type,
                                             'pax_type': rec2.pax_type,
@@ -761,6 +763,7 @@ class TtSplitReservationWizard(models.TransientModel):
                                 prov_pax.booking_id = new_book_obj.id
                                 if rec2.id not in old_cost_list:
                                     cost_val = {
+                                        'ho_id': rec2.ho_id and rec2.ho_id.id or '',
                                         'charge_code': rec2.charge_code,
                                         'charge_type': rec2.charge_type,
                                         'pax_type': rec2.pax_type,
