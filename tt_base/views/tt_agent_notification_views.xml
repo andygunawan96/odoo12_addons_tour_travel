@@ -62,9 +62,9 @@
         </record>
 
         <menuitem id="submenu_agent_notification"
-                  parent="tt_base.top_tour_travel_customers"
+                  parent="tt_base.menu_tour_travel_configuration_tt_agent"
                   action="tt_agent_notification_action_view"
-                  sequence="13"
+                  sequence="1"
                   name="Agent Notification"/>
 
     </data>
