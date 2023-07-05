@@ -578,7 +578,7 @@ class ReservationGroupBooking(models.Model):
                 scs.is_ledger_created = True
         try:
             self.env['tt.groupbooking.api.con'].send_approve_notification(self.name, self.env.user.name,
-                                                                     self.get_total_amount(), self.agent_id.get_ho_parent_agent().id)
+                                                                     self.get_total_amount(), self.agent_id.ho_id.id)
         except Exception as e:
             _logger.error("Send ISSUED GROUP BOOKING Approve Notification Telegram Error")
 
@@ -601,11 +601,11 @@ class ReservationGroupBooking(models.Model):
 
     def check_lg_required(self):
         required = False
-        temp_ho_id = self.agent_id.get_ho_parent_agent()
-        if temp_ho_id:
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
             for rec in self.provider_booking_ids:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
-                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
                 if prov_ho_obj and prov_ho_obj[0].is_using_lg:
                     if not rec.letter_of_guarantee_ids:
                         required = True
@@ -616,11 +616,11 @@ class ReservationGroupBooking(models.Model):
 
     def check_po_required(self):
         required = False
-        temp_ho_id = self.agent_id.get_ho_parent_agent()
-        if temp_ho_id:
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
             for rec in self.provider_booking_ids:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
-                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
                 if prov_ho_obj and prov_ho_obj[0].is_using_po:
                     if not rec.letter_of_guarantee_ids:
                         required = True
@@ -924,7 +924,7 @@ class ReservationGroupBooking(models.Model):
     def create_final_ho_ledger(self):
         for rec in self:
             ledger = self.env['tt.ledger']
-            ho_obj = rec.agent_id.get_ho_parent_agent()
+            ho_obj = rec.agent_id.ho_id
             if rec.nta_price > rec.vendor_amount:
                 ledger.create_ledger_vanilla(
                     self._name,
@@ -1293,7 +1293,7 @@ class ReservationGroupBooking(models.Model):
             return ''
 
     def get_fee_amount(self, agent_id, provider_type_id, input_commission, passenger_id=None):
-        ho_agent = agent_id.get_ho_parent_agent().sudo()
+        ho_agent = agent_id.ho_id.sudo()
 
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 
@@ -1504,7 +1504,7 @@ class ReservationGroupBooking(models.Model):
                 route_count = len(pnr_list)
 
         agent_obj = self.booking_id.agent_id
-        ho_agent_obj = agent_obj.get_ho_parent_agent()
+        ho_agent_obj = agent_obj.ho_id
 
         context = {
             "co_ho_id": ho_agent_obj.id,

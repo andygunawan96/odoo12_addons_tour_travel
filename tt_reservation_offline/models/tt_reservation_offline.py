@@ -604,7 +604,7 @@ class IssuedOffline(models.Model):
                 scs.is_ledger_created = True
         try:
             self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
-                                                                     self.get_total_amount(), self.agent_id.get_ho_parent_agent().id)
+                                                                     self.get_total_amount(), self.agent_id.ho_id.id)
         except Exception as e:
             _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
 
@@ -627,11 +627,11 @@ class IssuedOffline(models.Model):
 
     def check_lg_required(self):
         required = False
-        temp_ho_id = self.agent_id.get_ho_parent_agent()
-        if temp_ho_id:
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
             for rec in self.provider_booking_ids:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
-                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
                 if prov_ho_obj and prov_ho_obj[0].is_using_lg:
                     if not rec.letter_of_guarantee_ids:
                         required = True
@@ -642,11 +642,11 @@ class IssuedOffline(models.Model):
 
     def check_po_required(self):
         required = False
-        temp_ho_id = self.agent_id.get_ho_parent_agent()
-        if temp_ho_id:
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
             for rec in self.provider_booking_ids:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
-                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
                 if prov_ho_obj and prov_ho_obj[0].is_using_po:
                     if not rec.letter_of_guarantee_ids:
                         required = True
@@ -960,7 +960,7 @@ class IssuedOffline(models.Model):
     def create_final_ho_ledger(self):
         for rec in self:
             ledger = self.env['tt.ledger']
-            ho_obj = rec.agent_id.get_ho_parent_agent()
+            ho_obj = rec.agent_id.ho_id
             if rec.nta_price > rec.vendor_amount:
                 ledger.create_ledger_vanilla(
                     self._name,
@@ -1176,7 +1176,7 @@ class IssuedOffline(models.Model):
             return ''
 
     def get_fee_amount(self, agent_id, provider_type_id, input_commission, passenger_id=None):
-        ho_agent = agent_id.get_ho_parent_agent().sudo()
+        ho_agent_obj = agent_id.ho_id.sudo()
 
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 
@@ -1185,10 +1185,10 @@ class IssuedOffline(models.Model):
 
         """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
         vals = {
-            'commission_agent_id': ho_agent.id,
-            'agent_id': ho_agent.id,
-            'agent_name': ho_agent.name,
-            'agent_type_id': ho_agent.agent_type_id.id,
+            'commission_agent_id': ho_agent_obj.id,
+            'agent_id': ho_agent_obj.id,
+            'agent_name': ho_agent_obj.name,
+            'agent_type_id': ho_agent_obj.agent_type_id.id,
             'amount': price_obj.fee_amount if price_obj.fee_amount < input_commission else input_commission,
             'total': price_obj.fee_amount if price_obj.fee_amount < input_commission else input_commission,
             'charge_type': 'RAC',
@@ -1509,7 +1509,7 @@ class IssuedOffline(models.Model):
                 route_count = len(pnr_list)
 
         agent_obj = self.agent_id
-        ho_agent_obj = agent_obj.get_ho_parent_agent()
+        ho_agent_obj = agent_obj.ho_id
 
         context = {
             "co_ho_id": ho_agent_obj.id,
@@ -2140,7 +2140,7 @@ class IssuedOffline(models.Model):
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
                 'is_using_point_reward': is_using_point_reward,
-                'currency_id': self.env['tt.agent'].browse(context['co_agent_id']).get_ho_parent_agent().currency_id.id
+                'currency_id': self.env['tt.agent'].browse(context['co_agent_id']).ho_id.currency_id.id
             }
 
             if data_reservation_offline['type'] == 'airline':

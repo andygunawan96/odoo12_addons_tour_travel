@@ -303,7 +303,7 @@ class TtReservationTrain(models.Model):
             return ERR.get_error(1004)
 
     def psg_validator(self,book_obj):
-        ho_agent_obj = book_obj.agent_id.get_ho_parent_agent()
+        ho_agent_obj = book_obj.agent_id.ho_id
         for provider in book_obj.provider_booking_ids:
             for journey in provider['journey_ids']:
                 rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', journey.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code), ('ho_id','=',ho_agent_obj.id)])

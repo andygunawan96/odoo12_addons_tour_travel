@@ -258,7 +258,7 @@ class TtPaxPriceGroupBooking(models.Model):
         carrier_code = ''
 
         agent_obj = self.fare_id.ticket_id.booking_id.agent_id
-        ho_agent_obj = agent_obj.get_ho_parent_agent()
+        ho_agent_obj = agent_obj.ho_id
 
         context = {
             "co_ho_id": ho_agent_obj.id,

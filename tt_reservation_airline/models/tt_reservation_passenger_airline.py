@@ -54,7 +54,7 @@ class TtReservationCustomer(models.Model):
                 currency_id = currency_obj.search([('name', '=', currency)], limit=1).id
                 ho_obj = False
                 if self.booking_id and self.booking_id.agent_id:
-                    ho_obj = self.booking_id.agent_id.get_ho_parent_agent()
+                    ho_obj = self.booking_id.agent_id.ho_id
                 if ho_obj:
                     sc['ho_id'] = ho_obj.id
                 sc['currency_id'] = currency_id

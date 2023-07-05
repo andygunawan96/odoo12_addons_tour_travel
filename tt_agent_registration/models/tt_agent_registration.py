@@ -64,7 +64,7 @@ class AgentRegistration(models.Model):
                 promotions_list.append(rec.id)
         if not promotions_list:
             search_params = [('default', '=', True)]
-            ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+            ho_obj = self.env.user.agent_id.ho_id
             agent_type_obj = ho_obj and ho_obj.agent_type_id or False
             if agent_type_obj:
                 search_params.append(('agent_type_id', '=', agent_type_obj.id))
@@ -181,7 +181,7 @@ class AgentRegistration(models.Model):
                     if rec.reg_upline_contains(rec.agent_type_id, rec.env.user.agent_id.agent_type_id):
                         rec.parent_agent_id = rec.env.user.agent_id.id
                     else:
-                        ho_obj = rec.env.user.agent_id.get_ho_parent_agent()
+                        ho_obj = rec.env.user.agent_id.ho_id
                         agent_type_obj = ho_obj and ho_obj.agent_type_id or False
                         if rec.reg_upline_contains(rec.agent_type_id, agent_type_obj):
                             rec.parent_agent_id = rec.env.user.ho_id.id
@@ -442,7 +442,7 @@ class AgentRegistration(models.Model):
                 )
             comm_left -= rec['amount']
         if comm_left > 0:
-            agent_obj = self.reference_id.get_ho_parent_agent()
+            ho_obj = self.reference_id.ho_id
             ledger.create_ledger_vanilla(
                 self._name,
                 self.id,
@@ -452,7 +452,7 @@ class AgentRegistration(models.Model):
                 3,
                 self.currency_id.id,
                 self.env.user.id,
-                agent_obj and agent_obj.id or False,
+                ho_obj and ho_obj.id or False,
                 False,
                 comm_left,
                 0,
@@ -927,7 +927,7 @@ class AgentRegistration(models.Model):
     def set_parent_agent_id_api(self, agent_type_id, agent_id):
         if agent_id:
             agent_obj = self.env['tt.agent'].browse(agent_id)
-            ho_obj = agent_obj.get_ho_parent_agent()
+            ho_obj = agent_obj.ho_id
             """ Kalo daftar agent dengan login dulu """
             if agent_obj.is_btc_agent:
                 """ Kalo B2C, parent set to HO """

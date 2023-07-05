@@ -177,7 +177,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                 user_info = self.env['tt.agent'].sudo().get_agent_level(rec.booking_id.agent_id.id)
 
                 agent_obj = rec.booking_id.agent_id
-                ho_agent_obj = agent_obj.get_ho_parent_agent()
+                ho_agent_obj = agent_obj.ho_id
 
                 context = {
                     "co_ho_id": ho_agent_obj.id,
@@ -556,7 +556,7 @@ class ReimburseCommissionWizard(models.TransientModel):
                 rac_amount_total = 0
 
                 agent_obj = rec.booking_id.agent_id
-                ho_agent_obj = agent_obj.get_ho_parent_agent()
+                ho_agent_obj = agent_obj.ho_id
 
                 context = {
                     "co_ho_id": ho_agent_obj.id,

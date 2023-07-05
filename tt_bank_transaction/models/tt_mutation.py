@@ -85,7 +85,7 @@ class TtBankTransaction(models.Model):
         if bank_account_obj.ho_id:
             ho_id = bank_account_obj.ho_id.id
         elif bank_account_obj.agent_id:
-            ho_id = bank_account_obj.agent_id.get_ho_parent_agent().id
+            ho_id = bank_account_obj.agent_id.ho_id.id
         result = self.env['tt.bank.transaction'].create({
             'bank_account_id': req['bank_account_id'],
             'bank_transaction_date_id': req['date_id'],

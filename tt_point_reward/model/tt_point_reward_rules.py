@@ -10,9 +10,9 @@ class TtPointRewardRules(models.Model):
     _rec_name = 'name'
 
 
-    def _compute_get_ho(self):
+    def _compute_get_ho_id(self):
         if self.env.user.agent_id:
-            return self.env.user.agent_id.get_ho_parent_agent().id
+            return self.env.user.agent_id.ho_id.id
         return False
 
     name = fields.Char("Point Reward Rules Name", required=True, default='Point Reward Rules')
@@ -20,5 +20,5 @@ class TtPointRewardRules(models.Model):
     is_gradual_points = fields.Boolean('Is Gradual Points', default=True, help="""Gradual Points ex: price:50,000 for point:10,000 total payment:150,000 agent will get 30,000 points""")
     min_price = fields.Monetary(string='Minimum Price', default=0)
     points = fields.Float(string='Point', default=0)
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=_compute_get_ho)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=_compute_get_ho_id)
 
