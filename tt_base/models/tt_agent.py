@@ -867,8 +867,8 @@ class TtAgent(models.Model):
     def get_printout_agent_color(self):
         base_color = '#FFFFFF'
         agent_ho_obj = self.get_ho_parent_agent()
-        if agent_ho_obj.website_default_color:
-            base_color = self.ho_id.website_default_color if self.ho_id.website_default_color[0] == '#' else '#%s' % self.ho_id.website_default_color
+        if agent_ho_obj.sudo().website_default_color:
+            base_color = agent_ho_obj.sudo().website_default_color if agent_ho_obj.sudo().website_default_color[0] == '#' else '#%s' % agent_ho_obj.sudo().website_default_color
         return base_color
 
     def get_simple_agent_list_data(self):
