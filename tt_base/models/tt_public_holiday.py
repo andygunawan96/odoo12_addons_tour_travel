@@ -32,7 +32,7 @@ class TtPublicHoliday(models.Model):
             if self.env.user.ho_id:
                 ho_obj = self.env.user.ho_id
             elif self.env.user.agent_id:
-                ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+                ho_obj = self.env.user.agent_id.ho_id
             if ho_obj:
                 res = [{'date': rec.date, 'name': rec.name} for rec in
                    self.sudo().search([('date', '>=', start_date), ('date', '<=', end_date),

@@ -51,7 +51,7 @@ class ActivityResendVoucher(models.TransientModel):
             'provider': self.provider_name,
             'book_id': self.pnr,
             'user_email_address': self.user_email_add,
-            'ho_id': self.agent_id.get_ho_parent_agent().id
+            'ho_id': self.agent_id.ho_id.id
         }
         res = self.env['tt.activity.api.con'].resend_voucher(req)
         if res['response'].get('success'):
@@ -229,8 +229,11 @@ class ReservationActivity(models.Model):
             'message': 'PNR %s is now %s, current balance: %s' % (pnr, state, balance),
             'provider': self.provider_name,
         }
+        context = {
+            "co_ho_id": self.agent_id.ho_id.id
+        }
         ## tambah context
-        GatewayConnector().telegram_notif_api(data, {})
+        GatewayConnector().telegram_notif_api(data, context)
 
     def action_issued_vendor(self):
         req = {
@@ -238,7 +241,7 @@ class ReservationActivity(models.Model):
             'provider': self.activity_id.provider_id.code,
             'book_id': self.id,
             'pnr': self.pnr,
-            'ho_id': self.agent_id.get_ho_parent_agent().id
+            'ho_id': self.agent_id.ho_id.id
         }
         res = self.env['tt.activity.api.con'].issued_booking_vendor(req)
 
@@ -798,7 +801,7 @@ class ReservationActivity(models.Model):
                 'uuid': obj.booking_uuid,
                 'pnr': obj.pnr,
                 'provider': provider,
-                'ho_id': obj.agent_id.get_ho_parent_agent().id
+                'ho_id': obj.agent_id.ho_id.id
             }
             attachment_objs = []
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)
@@ -1283,8 +1286,11 @@ class ReservationActivity(models.Model):
             'message': 'Activity Booking Status Updated: ' + desc,
             'provider': self.provider_name,
         }
+        context = {
+            "co_ho_id": activity_booking.agent_id.ho_id.id
+        }
         ## tambah context
-        GatewayConnector().telegram_notif_api(data, {})
+        GatewayConnector().telegram_notif_api(data, context)
 
     def action_activity_print_invoice(self):
         self.ensure_one()

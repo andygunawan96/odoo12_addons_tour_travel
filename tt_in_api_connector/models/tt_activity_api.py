@@ -27,7 +27,7 @@ class TtActivityApiCon(models.Model):
             res = table_obj.action_failed(data)
         elif action == 'get_booking':
             order_number = data['order_number']
-            ho_id = table_obj.search([('name','=', order_number)], limit=1).agent_id.get_ho_parent_agent().id
+            ho_id = table_obj.search([('name','=', order_number)], limit=1).agent_id.ho_id.id
             res = table_obj.get_booking(order_number, ho_id)
         elif action == 'get_booking_for_vendor_by_api':
             res = table_obj.get_booking_for_vendor_by_api(data, context)

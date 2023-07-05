@@ -16,7 +16,7 @@ class CreateProviderHODataWizard(models.TransientModel):
         if self.ho_id:
             ho_id = self.ho_id.id
         else:
-            ho_id = self.env.user.agent_id.get_ho_parent_agent().id
+            ho_id = self.env.user.agent_id.ho_id.id
 
         for rec in self.provider_ids:
             vals = {

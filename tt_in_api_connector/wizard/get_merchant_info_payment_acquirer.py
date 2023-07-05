@@ -14,7 +14,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
             if self.ho_id:
                 ho_obj = self.ho_id
             else:
-                ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+                ho_obj = self.env.user.agent_id.ho_id
             res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider, 'type': 'close'}, ho_obj.id)
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:

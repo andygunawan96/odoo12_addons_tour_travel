@@ -55,7 +55,7 @@ class ReservationPassport(models.Model):
         invoice_id = False
         book_obj = self.env['tt.reservation.passport'].search([('name', '=', data['order_number'])])
 
-        temp_ho_obj = self.agent_id.get_ho_parent_agent()
+        temp_ho_obj = self.agent_id.ho_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': book_obj.booker_id.id,

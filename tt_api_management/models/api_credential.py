@@ -135,7 +135,7 @@ class ApiManagement(models.Model):
                 ########### check admin user in sharing frontend by api_key #############
                 if _co_user:
                     is_admin = _co_user.has_group('base.group_erp_manager') or _co_user.has_group('base.group_system')
-                    is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.get_ho_parent_agent().id
+                    is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.ho_id.id
                     if api_cred_obj.api_role == 'admin' and not is_admin:
                         if not is_ho:
                             agent_frontend_security = values.get('co_agent_frontend_security', [])
@@ -144,7 +144,7 @@ class ApiManagement(models.Model):
                             values['co_agent_frontend_security'] = agent_frontend_security
                 ## check cred
                 if api_cred_obj.ho_id and data.get('co_user') and api_cred_obj.api_role != 'operator' and _co_user:
-                    if api_cred_obj.ho_id.seq_id != _co_user.agent_id.get_ho_parent_agent().seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system') and api_cred_obj.api_role == 'manager':
+                    if api_cred_obj.ho_id.seq_id != _co_user.agent_id.ho_id.seq_id and not _co_user.has_group('base.group_erp_manager') and not _co_user.has_group('base.group_system') and api_cred_obj.api_role == 'manager':
                         raise Exception('Co User and Api Key is not match')
                 ## update cred ho
                 if api_cred_obj.api_role == 'manager':
@@ -152,7 +152,7 @@ class ApiManagement(models.Model):
                     values.update(api_cred_obj.ho_id.get_ho_credential(prefix='co_'))
                 elif api_cred_obj.api_role == 'admin' and _co_user:
                     ## update sesuai
-                    values.update(_co_user.agent_id.get_ho_parent_agent().get_ho_credential(prefix='co_'))
+                    values.update(_co_user.agent_id.ho_id.get_ho_credential(prefix='co_'))
             elif data.get('co_user'):
                 raise Exception('Api Key not found')
             response.update(values)
@@ -257,7 +257,7 @@ class TtAgentApiInherit(models.Model):
         return res
 
     def get_ho_credential(self, prefix=''):
-        ho_agent_obj = self.get_ho_parent_agent()
+        ho_agent_obj = self.ho_id
         res = {
             '%sho_seq_id' % prefix: ho_agent_obj.seq_id,
             '%sho_id' % prefix: ho_agent_obj.id,
@@ -270,7 +270,7 @@ class TtAgentApiInherit(models.Model):
             if rec.is_api_user:
                 self.env['tt.ban.user'].ban_user(rec.id, duration)
                 try:
-                    self.env['tt.api.con'].send_ban_user_error_notification(rec.name, 'error payment quota', rec.get_ho_parent_agent().id)
+                    self.env['tt.api.con'].send_ban_user_error_notification(rec.name, 'error payment quota', rec.ho_id.id)
                 except Exception as e:
                     _logger.error('Ban User Error %s %s' % (str(e), traceback.format_exc()))
 

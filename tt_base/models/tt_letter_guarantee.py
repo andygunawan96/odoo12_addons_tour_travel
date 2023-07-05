@@ -50,7 +50,7 @@ class TtLetterGuarantee(models.Model):
             })
         resv_obj = self.env[vals['res_model']].browse(vals['res_id'])
         if resv_obj.agent_id:
-            ho_agent_obj = resv_obj.agent_id.get_ho_parent_agent()
+            ho_agent_obj = resv_obj.agent_id.ho_id
             vals.update({
                 'ho_id': ho_agent_obj.id
             })

@@ -122,7 +122,7 @@ class ttCronTopUpValidator(models.Model):
                                                 'acquirer_seq_id': seq_id,
                                                 'force_issued': True,
                                                 'use_point': book_obj.payment_acquirer_number_id.is_using_point_reward,
-                                                'ho_id': book_obj.agent_id.get_ho_parent_agent().id
+                                                'ho_id': book_obj.agent_id.ho_id.id
                                             }
                                             res = self.env['tt.payment.api.con'].send_payment(req)
                                             _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1], json.dumps(res)))
@@ -172,8 +172,11 @@ class ttCronTopUpValidator(models.Model):
                                                             'title': 'ERROR ISSUED using BCA',
                                                             'message': 'Error issued BCA order number %s\n%s' % (book_obj.name, res['error_msg']),
                                                         }
+                                                        context = {
+                                                            "co_ho_id": book_obj.agent_id.ho_id.id
+                                                        }
                                                         ## tambah context
-                                                        GatewayConnector().telegram_notif_api(data, {})
+                                                        GatewayConnector().telegram_notif_api(data, context)
 
                                                 else:
                                                     ## NOTIF TELE
@@ -183,8 +186,11 @@ class ttCronTopUpValidator(models.Model):
                                                         'message': 'Error issued bca mutation, order number %s\n%s' % (
                                                         book_obj.name, res['error_msg']),
                                                     }
+                                                    context = {
+                                                        "co_ho_id": book_obj.agent_id.ho_id.id
+                                                    }
                                                     ## tambah context
-                                                    GatewayConnector().telegram_notif_api(data, {})
+                                                    GatewayConnector().telegram_notif_api(data, context)
                                         elif book_obj.state == 'issued':
                                             payment_acq_obj.state = 'done'
                                             _logger.info('Cron Top Up Validator Already issued for order number %s.%s change payment acquirer number status' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1]))
@@ -213,7 +219,7 @@ class ttCronTopUpValidator(models.Model):
                                 'acquirer_seq_id': seq_id,
                                 'force_issued': True,
                                 'use_point': book_obj.payment_acquirer_number_id.is_using_point_reward,
-                                'ho_id': book_obj.agent_id.get_ho_parent_agent().id
+                                'ho_id': book_obj.agent_id.ho_id.id
                             }
                             res = self.env['tt.payment.api.con'].send_payment(req)
                             _logger.info('Cron Top Up Validator Send Payment REQ %s.%s \n%s' % (payment_acq_obj.number.split('.')[0], payment_acq_obj.number.split('.')[1],json.dumps(res)))
@@ -265,8 +271,11 @@ class ttCronTopUpValidator(models.Model):
                                             'title': 'ERROR ISSUED using %s' % payment_vendor_name,
                                             'message': 'Error issued %s order number %s\n%s' % (payment_vendor_name, book_obj.name, res['error_msg']),
                                         }
+                                        context = {
+                                            "co_ho_id": book_obj.agent_id.ho_id.id
+                                        }
                                         ## tambah context
-                                        GatewayConnector().telegram_notif_api(data, {})
+                                        GatewayConnector().telegram_notif_api(data, context)
 
                                 else:
                                     ## NOTIF TELE
@@ -279,8 +288,11 @@ class ttCronTopUpValidator(models.Model):
                                         'title': 'ERROR ISSUED',
                                         'message': 'Error issued %s, order number %s\n%s' % (payment_vendor_name, book_obj.name, res['error_msg']),
                                     }
+                                    context = {
+                                        "co_ho_id": book_obj.agent_id.ho_id.id
+                                    }
                                     ## tambah context
-                                    GatewayConnector().telegram_notif_api(data, {})
+                                    GatewayConnector().telegram_notif_api(data, context)
                         elif book_obj.state == 'issued':
                             payment_acq_obj.state = 'done'
                             _logger.info('Cron Top Up Validator Already issued for order number %s change payment acquirer number status' % (payment_acq_obj.number))

@@ -43,7 +43,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 #ini agent
                 template = self.env.ref('tt_reservation_{}.template_mail_reservation_{}_{}'.format(data['provider_type'], data.get('type', 'issued'), data['provider_type'])).id
@@ -93,7 +93,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 if resv.customer_parent_id:
                     customer_name = resv.customer_parent_id.name
@@ -127,7 +127,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 template = self.env.ref('tt_base.template_mail_pnr_quota').id
                 self.env['tt.email.queue'].sudo().create({
@@ -158,7 +158,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 template = self.env.ref('tt_accounting.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'confirmed'))).id
                 self.env['tt.email.queue'].sudo().create({
@@ -201,7 +201,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 if type_str:
                     template = self.env.ref('tt_vouchers.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'used'))).id
@@ -244,7 +244,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 if type_str:
                     template = self.env.ref('tt_reservation_tour.template_mail_{}_{}'.format(data['provider_type'], data.get('type', 'reminder'))).id
@@ -282,7 +282,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 template = self.env.ref('tt_reservation_hotel.template_mail_' + data['provider_type']).id
                 self.env['tt.email.queue'].sudo().create({
@@ -310,7 +310,7 @@ class TtEmailQueue(models.Model):
                 ho_agent_obj = None
                 agent_obj = self.env['tt.agent'].browse(resv.agent_id.id)
                 if agent_obj:
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
 
                 template = self.env.ref('tt_reservation_hotel.template_mail_' + data['provider_type']).id
                 self.env['tt.email.queue'].sudo().create({

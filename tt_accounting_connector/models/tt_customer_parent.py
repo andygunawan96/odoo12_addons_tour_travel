@@ -17,7 +17,7 @@ class TtCustomerParentInhAcc(models.Model):
                 if self.ho_id:
                     ho_obj = self.ho_id
                 else:
-                    ho_obj = self.parent_agent_id.get_ho_parent_agent()
+                    ho_obj = self.parent_agent_id.ho_id
                 for ven in vendor_list:
                     search_params = [('res_model', '=', self._name), ('res_id', '=', self.id),
                                      ('action', '=', func_action), ('accounting_provider', '=', ven)]
@@ -52,7 +52,7 @@ class TtCustomerParentInhAcc(models.Model):
         elif vals_list.get('agent_id'):
             agent_obj = self.env['tt.agent'].browse(int(vals_list['agent_id']))
             if agent_obj:
-                ho_obj = agent_obj.get_ho_parent_agent()
+                ho_obj = agent_obj.ho_id
         if ho_obj:
             search_params.append(('ho_id', '=', ho_obj.id))
         setup_list = self.env['tt.accounting.setup'].search(search_params)

@@ -186,9 +186,9 @@ class TtRescheduleLine(models.Model):
     def compute_is_po_required(self):
         for rec in self:
             temp_req = False
-            temp_ho_id = rec.reschedule_id.agent_id.get_ho_parent_agent()
-            if temp_ho_id:
-                prov_ho_obj = self.env['tt.provider.ho.data'].search([('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+            temp_ho_obj = rec.reschedule_id.agent_id.ho_id
+            if temp_ho_obj:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search([('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
                 if prov_ho_obj and prov_ho_obj[0].is_using_po:
                     temp_req = True
             rec.is_po_required = temp_req
@@ -344,7 +344,7 @@ class TtReschedule(models.Model):
         if ho_id:
             ho_obj = self.env['tt.agent'].browse(int(ho_id))
         else:
-            ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+            ho_obj = agent_obj and agent_obj.ho_id or False
         if ho_obj:
             search_param.append(('ho_id', '=', ho_obj.id))
         reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
@@ -588,7 +588,7 @@ class TtReschedule(models.Model):
                 )
 
                 if rec.admin_fee_ho:
-                    ho_agent = self.agent_id.get_ho_parent_agent()
+                    ho_agent = self.agent_id.ho_id
                     credit = 0
                     debit = rec.admin_fee_ho
                     ledger_type = 6
@@ -670,7 +670,7 @@ class TtReschedule(models.Model):
 
     def check_po_required(self):
         required = False
-        temp_ho_id = self.agent_id.get_ho_parent_agent()
+        temp_ho_id = self.agent_id.ho_id
         if temp_ho_id:
             for rec in self.reschedule_line_ids:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(

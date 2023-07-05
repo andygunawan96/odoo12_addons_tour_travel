@@ -80,7 +80,7 @@ class TtReportCommonSetting(models.Model):
         agent_obj = self.env['tt.agent'].search([('id','=',context['co_agent_id'])], limit=1)
         res = []
         if agent_obj:
-            agent_ho_obj = agent_obj.get_ho_parent_agent()
+            agent_ho_obj = agent_obj.ho_id
             data_ho_admin_report_common_obj = self.search([('agent_id','=', self.env.ref('tt_base.rodex_ho').id)])
             data_ho_report_common_ho_obj = self.search([('agent_id','=', agent_ho_obj.id)])
             for rec in data_ho_admin_report_common_obj:
@@ -122,7 +122,7 @@ class TtReportCommonSetting(models.Model):
             if html:
                 return html
             else:
-                ho_agent_obj = agent_id.get_ho_parent_agent()
+                ho_agent_obj = agent_id.ho_id
                 html = self.sudo().search([('code', '=', code), ('agent_id', '=', ho_agent_obj.id)], limit=1)
                 if html:
                     return html

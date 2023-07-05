@@ -16,9 +16,9 @@ class tt_ledger(models.Model):
         if not vals.get('ho_id'):
             if vals.get('agent_id'):
                 agent_obj = self.env['tt.agent'].browse(int(vals['agent_id']))
-                ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+                ho_obj = agent_obj and agent_obj.ho_id or False
             else:
-                ho_obj = resv_obj.agent_id.get_ho_parent_agent()
+                ho_obj = resv_obj.agent_id.ho_id
             if ho_obj:
                 vals.update({
                     'ho_id': ho_obj.id

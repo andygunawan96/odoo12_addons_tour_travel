@@ -719,7 +719,7 @@ class TtVisa(models.Model):
         if diff_nta_upsell > 0:
             ledger = self.env['tt.ledger']
             for rec in self:
-                ho_obj = rec.agent_id.get_ho_parent_agent()
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -742,7 +742,7 @@ class TtVisa(models.Model):
             """ Jika diff nta upsell < 0 """
             ledger = self.env['tt.ledger']
             for rec in self:
-                ho_obj = rec.agent_id.get_ho_parent_agent()
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -797,7 +797,7 @@ class TtVisa(models.Model):
                         doc_type.append(sc.pricelist_id.visa_type)
 
                 doc_type = ','.join(str(e) for e in doc_type)
-                ho_obj = rec.agent_id.get_ho_parent_agent()
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -826,7 +826,7 @@ class TtVisa(models.Model):
                         doc_type.append(sc.pricelist_id.visa_type)
 
                 doc_type = ','.join(str(e) for e in doc_type)
-                ho_obj = rec.agent_id.get_ho_parent_agent()
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,

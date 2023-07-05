@@ -62,7 +62,7 @@ class InstallmentInvoice(models.Model):
             context = {
                 'co_uid': self.env.user.id,
                 'co_user_name': self.env.user.name,
-                'co_ho_id': self.booking_id.agent_id.get_ho_parent_agent().id
+                'co_ho_id': self.booking_id.agent_id.ho_id.id
             }
             self.env['tt.groupbooking.api.con'].send_groupbooking_payment_expired_notification(data, context)
         except Exception as e:

@@ -18,11 +18,11 @@ class TtPointReward(models.Model):
     _rec_name = 'name'
     _order = "sequence asc"
 
-    def _compute_get_ho(self):
+    def _compute_get_ho_id(self):
         if self.env.user.ho_id:
             return self.env.user.ho_id.id
         if self.env.user.agent_id:
-            return self.env.user.agent_id.get_ho_parent_agent().id
+            return self.env.user.agent_id.ho_id.id
         return False
 
     name = fields.Char("Point Reward Name", required=True, default='Point Reward')
@@ -33,7 +33,7 @@ class TtPointReward(models.Model):
     point_reward_provider_type_eligibility_ids = fields.Many2many("tt.provider.type", "tt_provider_type_tt_point_reward_rel","tt_point_reward_id", "tt_provider_type_id", "Provider Type")  # what product this voucher can be applied
     provider_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Provider Access Type', default='all')
     point_reward_provider_eligibility_ids = fields.Many2many('tt.provider', "tt_provider_tt_point_reward_rel", "tt_point_reward_id","tt_provier_id", "Provider ID")  # what provider this voucher can be applied
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=_compute_get_ho)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=_compute_get_ho_id)
     point_reward_rules_id = fields.Many2one('tt.point.reward.rules', 'Point Reward Rules', domain='[("ho_id", "=", ho_id)]')
     sequence = fields.Integer('Sequence')
 
@@ -48,7 +48,7 @@ class TtPointReward(models.Model):
 
     def add_point_reward(self, reservation_obj, total_price, co_uid):
         if not reservation_obj.is_get_point_reward:
-            ho_agent_obj = reservation_obj.agent_id.get_ho_parent_agent()
+            ho_agent_obj = reservation_obj.agent_id.ho_id
             try:
                 total_point = 0
                 ## check agent type yg sesuai
