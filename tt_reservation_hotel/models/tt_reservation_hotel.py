@@ -974,7 +974,7 @@ class HotelReservation(models.Model):
         #                                                 'booked_name': self.room_detail_ids[0].name,
         #                                                 'issued_name': self.room_detail_ids[0].issued_name,
         #                                                 }, api_context)
-        ho_id = self.agent_id.get_ho_parent_agent().id
+        ho_id = self.agent_id.ho_id
         res = self.env['tt.hotel.api.con'].check_booking_status({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
                                                                  'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
                                                                  'booking_id': self.id,
@@ -1060,7 +1060,7 @@ class HotelReservation(models.Model):
             'order_number': book_obj.name,
             'user_id': book_obj.booked_uid.id,
             'provider_type': 'hotel',
-            'ho_id': book_obj.agent_id.get_ho_parent_agent().id
+            'ho_id': book_obj.agent_id.ho_id.id
         }
         res = self.env['tt.payment.api.con'].send_payment(req)
         #tutup payment acq number

@@ -538,7 +538,7 @@ class TtAgent(models.Model):
                 'default_currency_id': self.currency_id.id,
             },
         }
-        temp_ho_obj = self.get_ho_parent_agent()
+        temp_ho_obj = self.ho_id
         if temp_ho_obj:
             vals['context'].update({
                 'default_ho_id': temp_ho_obj.id
@@ -854,21 +854,19 @@ class TtAgent(models.Model):
         return email_cc
 
     def get_ho_parent_agent(self):
-        if self.ho_id: ## kalau HO is set langsung ambil
-            return self.ho_id
-        elif self.is_ho_agent:
+        if self.is_ho_agent: ## AGENT HO
             return self
-        elif self.parent_agent_id:
-            return self.parent_agent_id.get_ho_parent_agent()
+        elif self.ho_id: ## kalau HO is set langsung ambil
+            return self.ho_id
         else:
             ## HO NOT FOUND
             raise Exception('HO NOT FOUND')
 
     def get_printout_agent_color(self):
         base_color = '#FFFFFF'
-        agent_ho_obj = self.get_ho_parent_agent()
-        if agent_ho_obj.sudo().website_default_color:
-            base_color = agent_ho_obj.sudo().website_default_color if agent_ho_obj.sudo().website_default_color[0] == '#' else '#%s' % agent_ho_obj.sudo().website_default_color
+        agent_ho_obj = self.ho_id.sudo()
+        if agent_ho_obj.website_default_color:
+            base_color = agent_ho_obj.website_default_color if agent_ho_obj.website_default_color[0] == '#' else '#%s' % agent_ho_obj.website_default_color
         return base_color
 
     def get_simple_agent_list_data(self):

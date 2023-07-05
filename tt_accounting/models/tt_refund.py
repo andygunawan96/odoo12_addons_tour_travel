@@ -310,7 +310,7 @@ class TtRefund(models.Model):
         if ho_id:
             ho_obj = self.env['tt.agent'].browse(int(ho_id))
         else:
-            ho_obj = agent_obj and agent_obj.get_ho_parent_agent() or False
+            ho_obj = agent_obj and agent_obj.ho_id or False
         if ho_obj:
             search_param.append(('ho_id', '=', ho_obj.id))
         refund_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
@@ -471,7 +471,7 @@ class TtRefund(models.Model):
                     'state': self.state,
                     'type': 'set_to_confirm'
                 }
-                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_ho_parent_agent().id)
+                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.ho_id.id)
 
         self.write({
             'state': 'confirm',
@@ -1004,7 +1004,7 @@ class TtRefund(models.Model):
                     **{'refund_id': self.id}
                 )
 
-                ho_agent = self.agent_id.get_ho_parent_agent()
+                ho_agent = self.agent_id.ho_id
                 credit = 0
                 debit = self.final_admin_fee_ho
                 self.env['tt.ledger'].create_ledger_vanilla(
@@ -1083,7 +1083,7 @@ class TtRefund(models.Model):
             credit = value < 0 and value * -1 or 0
 
             ledger_type = 4
-            ho_agent = self.agent_id.get_ho_parent_agent()
+            ho_agent = self.agent_id.ho_id
 
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,

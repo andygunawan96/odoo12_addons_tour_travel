@@ -2050,8 +2050,11 @@ class ReservationAirline(models.Model):
             'title': title,
             'message': message,
         }
+        context = {
+            "co_ho_id": self.agent_id.ho_id.id
+        }
         ## tambah context
-        GatewayConnector().telegram_notif_api(data, {})
+        GatewayConnector().telegram_notif_api(data, context)
         return True
 
     # January 4, 2021 - SAM

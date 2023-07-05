@@ -75,10 +75,10 @@ class ProviderOffline(models.Model):
     def compute_is_lg_required(self):
         for rec in self:
             temp_req = False
-            temp_ho_id = rec.booking_id.agent_id.get_ho_parent_agent()
-            if temp_ho_id:
+            temp_ho_obj = rec.booking_id.agent_id.ho_id
+            if temp_ho_obj:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
-                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
                 if prov_ho_obj and prov_ho_obj[0].is_using_lg:
                     temp_req = True
             rec.is_lg_required = temp_req
@@ -87,10 +87,10 @@ class ProviderOffline(models.Model):
     def compute_is_po_required(self):
         for rec in self:
             temp_req = False
-            temp_ho_id = rec.booking_id.agent_id.get_ho_parent_agent()
-            if temp_ho_id:
+            temp_ho_obj = rec.booking_id.agent_id.ho_id
+            if temp_ho_obj:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
-                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
                 if prov_ho_obj and prov_ho_obj[0].is_using_po:
                     temp_req = True
             rec.is_po_required = temp_req
@@ -553,7 +553,7 @@ class ProviderOffline(models.Model):
                 carrier_code = line.carrier_id.code
 
         agent_obj = self.booking_id.agent_id
-        ho_agent_obj = agent_obj.get_ho_parent_agent()
+        ho_agent_obj = agent_obj.ho_id
 
         context = {
             "co_ho_id": ho_agent_obj.id,
@@ -983,7 +983,7 @@ class ProviderOffline(models.Model):
         repr_tool.add_ticket_fare(scs_dict)
 
         agent_obj = self.booking_id.agent_id
-        ho_agent_obj = agent_obj.get_ho_parent_agent()
+        ho_agent_obj = agent_obj.ho_id
 
         context = {
             "co_ho_id": ho_agent_obj.id,

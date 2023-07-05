@@ -45,7 +45,7 @@ class ReservationGroupBooking(models.Model):
     def action_create_invoice(self, acquirer_id,co_uid, customer_parent_id, payment_method, payment_method_to_ho):
         payment_rules = self.env['tt.payment.rules.groupbooking'].search([('seq_id','=',payment_method)])
 
-        temp_ho_obj = self.agent_id.get_ho_parent_agent()
+        temp_ho_obj = self.agent_id.ho_id
         for rec in payment_rules.installment_ids:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,

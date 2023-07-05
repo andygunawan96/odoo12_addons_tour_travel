@@ -257,7 +257,7 @@ class TtAccountingQueue(models.Model):
                         request.update({
                             'order_number': request['order_number'] + '.' + self.action
                         })
-                    ho_id = trans_obj.agent_id.get_ho_parent_agent().id
+                    ho_id = trans_obj.agent_id.ho_id.id
                     self.env['tt.accounting.connector.api.con'].send_notif_reverse_ledger(ACC_TRANSPORT_TYPE.get(self._name, ''), trans_obj.name, self.accounting_provider, ho_id)
             elif self.res_model in ['tt.refund', 'tt.reschedule', 'tt.reschedule.periksain', 'tt.reschedule.phc']:
                 request = trans_obj.to_dict()

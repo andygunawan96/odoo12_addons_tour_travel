@@ -25,7 +25,7 @@ class AuthSignupHomeInherit(AuthSignupHome):
         redirect_param = '/'
         user_obj = request.env['res.users'].sudo().search([('login', '=', qcontext.get('login'))], limit=1)
         if user_obj and user_obj.agent_id:
-            ho_obj = user_obj.agent_id.get_ho_parent_agent()
+            ho_obj = user_obj.agent_id.ho_id
             if ho_obj:
                 redirect_param = ho_obj.redirect_url_signup and ho_obj.redirect_url_signup or '/'
             elif user_obj.ho_id:

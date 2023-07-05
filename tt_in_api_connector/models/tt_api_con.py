@@ -84,7 +84,7 @@ class TtApiCon(models.Model):
             self.username = credential.get('username','')
             self.password = credential.get('password','')
             if not ho_id:
-                ho_id = self.env.user.agent_id.get_ho_parent_agent().id
+                ho_id = self.env.user.agent_id.ho_id.id
             self.api_key = self.env['tt.api.credential'].search([('ho_id','=',ho_id),('api_role','in',['admin', 'manager'])],limit=1).api_key
         except Exception as e:
             _logger.error('Backend Connector Config Error, ###%s###' % traceback.format_exc())

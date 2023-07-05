@@ -700,7 +700,7 @@ class ReservationInsurance(models.Model):
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
                 if payment_res['error_code'] != 0:
                     try:
-                        ho_id = self.agent_id.get_ho_parent_agent().id
+                        ho_id = self.agent_id.ho_id.id
                         self.env['tt.insurance.api.con'].send_force_issued_not_enough_balance_notification(self.name, context, ho_id)
                     except Exception as e:
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
@@ -1075,7 +1075,7 @@ class ReservationInsurance(models.Model):
 
         if not book_obj.printout_ticket_original_ids:
             # gateway get ticket
-            req = {"data": [], "provider": '','ho_id': book_obj.agent_id.get_ho_parent_agent().id}
+            req = {"data": [], "provider": '','ho_id': book_obj.agent_id.ho_id.id}
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req.update({
                     'provider': provider_booking_obj.provider_id.code

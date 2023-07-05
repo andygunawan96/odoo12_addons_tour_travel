@@ -590,7 +590,7 @@ class ReservationAirline(models.Model):
             return ERR.get_error(1004)
 
     def psg_validator(self,book_obj):
-        ho_agent_obj = book_obj.agent_id.get_ho_parent_agent()
+        ho_agent_obj = book_obj.agent_id.ho_id
         for segment in book_obj.segment_ids:
             rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', segment.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code), ('ho_id','=',ho_agent_obj.id)])
 
@@ -638,7 +638,7 @@ class ReservationAirline(models.Model):
                         ## get HO agent
                         ho_agent_obj = None
                         if book_obj.agent_id:
-                            ho_agent_obj = book_obj.agent_id.get_ho_parent_agent()
+                            ho_agent_obj = book_obj.agent_id.ho_id
                         # whitelist di sini
                         dom = [('name', 'ilike', name.name), ('chances_left', '>', 0)]
                         if ho_agent_obj:
@@ -1584,7 +1584,7 @@ class ReservationAirline(models.Model):
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
                 if payment_res['error_code'] != 0:
                     try:
-                        ho_id = self.agent_id.get_ho_parent_agent().id
+                        ho_id = self.agent_id.ho_id.id
                         self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context, ho_id)
                     except Exception as e:
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
@@ -2165,7 +2165,7 @@ class ReservationAirline(models.Model):
             # Pengaruh saat deteksi agent untuk pricing
             # 'user_id': self.booked_uid.id
             'user_id': self.user_id.id,
-            'ho_id': self.agent_id.get_ho_parent_agent().id
+            'ho_id': self.agent_id.ho_id.id
             # END
         }
         self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
@@ -2356,7 +2356,7 @@ class ReservationAirline(models.Model):
 
         if not has_ticket_ori:
             # gateway get ticket
-            req = {"data": [], 'ho_id': book_obj.agent_id.get_ho_parent_agent().id}
+            req = {"data": [], 'ho_id': book_obj.agent_id.ho_id.id}
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req['data'].append({
                     'pnr': provider_booking_obj.pnr,

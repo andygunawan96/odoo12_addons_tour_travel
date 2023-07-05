@@ -359,7 +359,7 @@ class AgentReportRecapTransacion(models.Model):
         if data_form.get('ho_id'):
             ho_obj = self.env['tt.agent'].sudo().browse(int(data_form['ho_id']))
         if not ho_obj:
-            ho_obj = self.env.user.agent_id.get_ho_parent_agent()
+            ho_obj = self.env.user.agent_id.ho_id
         data_form['ho_name'] = ho_obj and ho_obj.name or self.env.ref('tt_base.rodex_ho').sudo().name
         date_from = data_form['date_from']
         date_to = data_form['date_to']

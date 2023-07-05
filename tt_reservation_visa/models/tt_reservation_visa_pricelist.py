@@ -307,8 +307,8 @@ class VisaPricelist(models.Model):
             if self.search([('reference_code','=',values['reference_code'])]):
                 raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
         values.update({
-            "owner_ho_id": self.env.user.agent_id.get_ho_parent_agent().id,
-            "ho_ids": [(4, self.env.user.agent_id.get_ho_parent_agent().id)]
+            "owner_ho_id": self.env.user.agent_id.ho_id.id,
+            "ho_ids": [(4, self.env.user.agent_id.ho_id.id)]
         })
         if not values.get('reference_code') and values.get('provider_id'):
             provider_obj = self.env['tt.provider'].browse(values['provider_id'])

@@ -55,7 +55,7 @@ class MailMail(models.Model):
                     if rec.state == 'outgoing':
                         resv_obj = self.env[rec.model].browse(rec.res_id)
                         if hasattr(resv_obj, 'agent_id'):
-                            ho_agent_obj = resv_obj.agent_id.get_ho_parent_agent()
+                            ho_agent_obj = resv_obj.agent_id.ho_id
                             if ho_agent_obj.email_server_id:
                                 if ho_agent_obj.email_server_id.is_gmail:
                                     self.send_gmail(batch_id, ho_agent_obj.email_server_id, auto_commit, raise_exception)

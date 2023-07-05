@@ -1328,7 +1328,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-            ho_obj = data_object.agent_id.get_ho_parent_agent()
+            ho_obj = data_object.agent_id.ho_id
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2560,7 +2560,7 @@ class PrintoutKwintasi(models.AbstractModel):
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-            ho_obj = data_object.agent_id.get_ho_parent_agent()
+            ho_obj = data_object.agent_id.ho_id
         val = {
             'ho_obj': ho_obj,
             'doc_ids': data['context']['active_ids'],
@@ -3922,7 +3922,7 @@ class PrintoutBilling(models.AbstractModel):
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-            ho_obj = data_object.agent_id.get_ho_parent_agent()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3977,7 +3977,7 @@ class PrintoutTopUp(models.AbstractModel):
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-            ho_obj = data_object.agent_id.get_ho_parent_agent()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -4024,7 +4024,7 @@ class PrintoutRefund(models.AbstractModel):
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-            ho_obj = data_object.agent_id.get_ho_parent_agent()
+            ho_obj = data_object.agent_id.ho_id
         return_dat = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -4099,7 +4099,7 @@ class PrintoutVoucher(models.AbstractModel):
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-            ho_obj = data_object.agent_id.get_ho_parent_agent()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -4139,7 +4139,7 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-            ho_obj = data_object.agent_id.get_ho_parent_agent()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],

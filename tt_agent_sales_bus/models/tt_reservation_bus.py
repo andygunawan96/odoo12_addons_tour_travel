@@ -48,7 +48,7 @@ class ReservationBus(models.Model):
         invoice_id = False
         ho_invoice_id = False
 
-        temp_ho_obj = self.agent_id.get_ho_parent_agent()
+        temp_ho_obj = self.agent_id.ho_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,

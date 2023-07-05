@@ -169,7 +169,8 @@ class TtTopUp(models.Model):
                                        self.validated_amount + abs(self.subsidy), ## Buat Ledger Amount sejumlah payment yg di validated + subsidy unique amount jika ada, ABS supaya selalu +
                                        description='Top Up Ledger for %s' % self.name)
         vals['agent_id'] = self.agent_id.id
-        ho_obj = self.agent_id.get_ho_parent_agent()
+
+        ho_obj = self.agent_id.ho_id
         if ho_obj:
             vals['ho_id'] = ho_obj.id
         new_aml = ledger_obj.create(vals)
@@ -182,7 +183,7 @@ class TtTopUp(models.Model):
 
         try:
             self.env['tt.top.up.api.con'].send_approve_notification(self.name,self.env.user.name,
-                                                                    self.validated_amount,self.agent_id.name, self.agent_id.get_ho_parent_agent().id)
+                                                                    self.validated_amount,self.agent_id.name, self.agent_id.ho_id.id)
         except Exception as e:
             _logger.error("Send TOP UP Approve Notification Telegram Error")
 
@@ -254,7 +255,7 @@ class TtTopUp(models.Model):
                 'request_uid': context['co_uid'],
                 'request_date': datetime.now()
             })
-            ho_obj = agent_obj.get_ho_parent_agent()
+            ho_obj = agent_obj.ho_id
             if ho_obj:
                 data.update({
                     'ho_id': ho_obj.id

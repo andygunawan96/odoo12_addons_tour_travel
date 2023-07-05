@@ -25,7 +25,7 @@ class TtBanUser(models.Model):
         if context:
             agent_obj = self.env['tt.agent'].search([('id', '=', context['co_agent_id'])], limit=1)
             if agent_obj:
-                ho_agent_obj = agent_obj.get_ho_parent_agent()
+                ho_agent_obj = agent_obj.ho_id
         dom = [('user_id','=',user_obj.id)]
         if ho_agent_obj:
             dom.append(('ho_id','=',ho_agent_obj))

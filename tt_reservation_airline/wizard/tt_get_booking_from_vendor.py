@@ -142,7 +142,7 @@ class TtGetBookingFromVendor(models.TransientModel):
             })
         if self.agent_id:
             req.update({
-                'ho_id': self.agent_id.get_ho_parent_agent().id
+                'ho_id': self.agent_id.ho_id.id
             })
         res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(req)
         if res['error_code'] != 0:
@@ -512,7 +512,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             'co_user_name': self.user_id.name,
             'co_agent_id': self.agent_id.id,
             'co_agent_name': self.agent_id.name,
-            'co_ho_id': self.agent_id.get_ho_parent_agent().id,
+            'co_ho_id': self.agent_id.ho_id.id,
             'signature': signature
         })
 

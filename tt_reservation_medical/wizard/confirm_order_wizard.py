@@ -27,7 +27,7 @@ class ConfirmOrdermedicalWizard(models.TransientModel):
             'state_vendor': 'confirmed_order'
         })
 
-        ho_id = self.booking_id.agent_id.get_ho_parent_agent().id
+        ho_id = self.booking_id.agent_id.ho_id.id
         try:
             self.env['tt.medical.api.con'].send_confirm_order_notification(self.booking_id.name,
                                                                              self.env.user.name,

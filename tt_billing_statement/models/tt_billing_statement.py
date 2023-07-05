@@ -234,7 +234,7 @@ class TtBillingStatement(models.Model):
         try:
             final_email = ''
             if self.agent_id:
-                ho_agent_obj = self.agent_id.get_ho_parent_agent()
+                ho_agent_obj = self.agent_id.ho_id
                 final_email = ho_agent_obj.email_server_id.smtp_user
         except Exception as e:
             _logger.error(str(e))
