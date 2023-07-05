@@ -30,7 +30,7 @@ Key Features
         'data/tt_api_webhook_data.xml',
         'data/tt_pricing_agent_visa_data.xml',
         'data/tt_transport_carrier_visa.xml',
-
+        'wizard/visa_assign_products_wizard_views.xml',
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',
         'views/tt_reservation_visa_order_passengers_views.xml',

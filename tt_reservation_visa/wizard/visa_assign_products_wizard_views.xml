@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<data>
-		<record id="activity_assign_products_wizard" model="ir.ui.view">
-			<field name="name">Activity Assign Products Wizard</field>
-			<field name="model">activity.assign.products.wizard</field>
+		<record id="visa_assign_products_wizard" model="ir.ui.view">
+			<field name="name">Visa Assign Products Wizard</field>
+			<field name="model">visa.assign.products.wizard</field>
 			<field name="arch" type="xml">
 				<form>
 					<group>
@@ -25,21 +25,21 @@
 			</field>
 		</record>
 
-		<record id="action_activity_assign_products_wizard" model="ir.actions.act_window">
-			<field name="name">Activity Assign Products Wizard</field>
+		<record id="action_visa_assign_products_wizard" model="ir.actions.act_window">
+			<field name="name">Visa Assign Products Wizard</field>
 			<field name="type">ir.actions.act_window</field>
-			<field name="res_model">activity.assign.products.wizard</field>
+			<field name="res_model">visa.assign.products.wizard</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
-			<field name="view_id" ref="activity_assign_products_wizard"/>
+			<field name="view_id" ref="visa_assign_products_wizard"/>
 			<field name="target">new</field>
 		</record>
 
 		<menuitem
-				id="sub_menu_activity_assign_products_wizard"
-				name="Activity Product Management"
-				parent="tt_reservation_activity.menu_tour_travel_activity_config"
-				action="action_activity_assign_products_wizard"
+				id="sub_menu_visa_assign_products_wizard"
+				name="Visa Product Management"
+				parent="tt_reservation_visa.menu_tour_travel_visa_configuration"
+				action="action_visa_assign_products_wizard"
 				sequence="5"
 				groups="base.group_erp_manager"
 		/>

@@ -5,7 +5,7 @@
 			<field name="name">Tour Assign Products Wizard</field>
 			<field name="model">tour.assign.products.wizard</field>
 			<field name="arch" type="xml">
-				<form string="Message">
+				<form>
 					<group>
                         <group>
                             <field name="provider_id"/>
