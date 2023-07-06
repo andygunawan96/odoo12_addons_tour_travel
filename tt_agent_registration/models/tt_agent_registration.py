@@ -48,7 +48,7 @@ class AgentRegistration(models.Model):
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True, readonly=True,
                                     states={'draft': [('readonly', False)]})
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent ID', readonly=True)
     currency_id = fields.Many2one('res.currency', string='Currency')
     company_type = fields.Selection(COMPANY_TYPE, 'Company Type', default='individual', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
@@ -642,7 +642,8 @@ class AgentRegistration(models.Model):
                     'login': con.email,
                     'email': con.email,
                     'password': ')[Lu*tsCcWt(MNM~9kJf',
-                    'partner_id': partner_id.id
+                    'partner_id': partner_id.id,
+                    'ho_id': rec.ho_id and rec.ho_id.id or False
                 }
                 if user_dict:
                     vals.update({
@@ -830,7 +831,17 @@ class AgentRegistration(models.Model):
         context = context  # self.param_context
         regis_doc = data['regis_doc']  # self.param_regis_doc
         promotion = data['promotion_id']  # self.param_promotion_id
-
+        ho_obj = False
+        if context.get('co_ho_id'):
+            ho_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
+        elif context.get('ho_seq_id'):
+            ho_obj = self.env['tt.agent'].browse(int(context['ho_seq_id']))
+        elif context.get('co_ho_seq_id'):
+            ho_obj = self.env['tt.agent'].browse(int(context['co_ho_seq_id']))
+        if ho_obj:
+            address.update({
+                'ho_id': ho_obj.id
+            })
         check = 0
         if company.get('name'):
             registration_list = self.search([('name', '=', company['name'])], order='registration_date desc', limit=1)  # data['company']
@@ -996,6 +1007,7 @@ class AgentRegistration(models.Model):
     def prepare_address(self, address):
         address_list = []
         address_id = self.address_ids.create({
+            'ho_id': address.get('ho_id') and address['ho_id'] or False,
             'zip': address.get('zip'),
             'address': address.get('address'),
             # 'city_id': int(address.get('city')),
