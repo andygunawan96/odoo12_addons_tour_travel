@@ -63,7 +63,7 @@ class TtAgent(models.Model):
     is_btc_agent = fields.Boolean('Is BTC Agent')
     btc_agent_type_id = fields.Many2one('tt.agent.type', 'Default BTC Agent Type')
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
     redirect_url_signup = fields.Char('Redirect URL Signup', default='/')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
@@ -681,17 +681,19 @@ class TtAgent(models.Model):
             quota_obj_list = self.quota_ids.filtered(lambda x: x.state == 'active')
 
             if len(quota_obj_list) == 0:## kalau tidak ada quota_obj yg aktif di buatkan 1
-                self.env['tt.pnr.quota'].create_pnr_quota_api(
+                new_quota_id = self.env['tt.pnr.quota'].create_pnr_quota_api(
                     {
-                        'quota_seq_id': self.quota_package_id.seq_id
+                        'quota_seq_id': self.quota_package_id.seq_id,
+                        'is_called_from_backend': True
                     },
                     {
                         'co_agent_id': self.id
                     }
                 )
-
-            #ambl yg index 0, terbaru
-            quota_obj = quota_obj_list[0]
+                quota_obj = self.env['tt.pnr.quota'].browse(int(new_quota_id))
+            else:
+                #ambl yg index 0, terbaru
+                quota_obj = quota_obj_list[0]
             total_quota_pnr_used = quota_obj.usage_quota
             type_price = 'pax'
             if req['inventory'] == 'external':
@@ -708,6 +710,7 @@ class TtAgent(models.Model):
                 if type_price != 'pnr':
                     amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
             self.env['tt.pnr.quota.usage'].create({
+                'ho_id': quota_obj.ho_id and quota_obj.ho_id.id or quota_obj.agent_id.ho_id.id,
                 'res_model_resv': req.get('res_model_resv'),
                 'res_id_resv': req.get('res_id_resv'),
                 'res_model_prov': req.get('res_model_prov'),
@@ -963,7 +966,7 @@ class AgentMOU(models.Model):
     # Catet Perjanian kerja sama antara citra dengan agent contoh: Fipro target e brpa klo kurang dia mesti bayar
 
     name = fields.Char('Target Name')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', domain=[('parent_id', '=', False)], required=True)
 
     start_date = fields.Date('Start Date')

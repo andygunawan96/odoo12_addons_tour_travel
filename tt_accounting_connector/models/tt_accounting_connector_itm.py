@@ -683,6 +683,14 @@ class AccountingConnectorITM(models.Model):
                 "SalesID": 0,
                 item_key: provider_list
             }
+            if use_contact_cd:
+                travel_file_data.update({
+                    "ContactCD": customer_code,
+                })
+            else:
+                travel_file_data.update({
+                    "CustomerCode": customer_code,
+                })
             req = {
                 "LiveID": live_id,
                 "AccessMode": "",

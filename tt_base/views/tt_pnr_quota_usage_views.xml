@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <form string="PNR Quota Usage">
                     <header>
-                        <button name="open_reservation" string="Go to reference" type="object"/>
+                        <button name="open_reservation" string="Go to reference" type="object" attrs="{'invisible': [('inventory','!=','internal')]}"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
@@ -53,7 +53,7 @@
                     <field name="amount"/>
                     <field name="inventory"/>
                     <field name="active"/>
-                    <button name="open_reservation" string="Go to reference" type="object"/>
+                    <button name="open_reservation" string="Go to reference" type="object" attrs="{'invisible': [('inventory','!=','internal')]}"/>
                 </tree>
             </field>
         </record>

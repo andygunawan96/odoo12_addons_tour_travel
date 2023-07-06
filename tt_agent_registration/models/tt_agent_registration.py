@@ -596,6 +596,7 @@ class AgentRegistration(models.Model):
                 contact_objs = self.env['tt.customer'].create(vals)
                 for phone in phone_dict:
                     vals = {
+                        'ho_id': agent_id.ho_id and agent_id.ho_id.id or False,
                         'phone_number': phone['phone_number'] or '0',
                         'type': phone['type']
                     }
