@@ -42,7 +42,7 @@ class IrMailServer(models.Model):
                 "smtp_port": "443",
                 "smtp_encryption": "none"
             }
-            if data['ho_id']:
+            if data.get('ho_id'):
                 data_create.update({
                     'ho_id': data['ho_id']
                 })

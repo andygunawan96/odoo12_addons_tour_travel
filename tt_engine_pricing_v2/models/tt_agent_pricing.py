@@ -66,7 +66,7 @@ class AgentPricing(models.Model):
 
     line_ids = fields.One2many('tt.agent.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 

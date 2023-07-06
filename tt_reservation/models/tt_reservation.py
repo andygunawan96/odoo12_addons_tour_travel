@@ -140,7 +140,7 @@ class TtReservation(models.Model):
     parent_agent_commission = fields.Monetary(string='Parent Agent Commission', default=0, compute='_compute_parent_agent_commission',store=True)
     ho_commission = fields.Monetary(string='HO Commission', default=0, compute='_compute_ho_commission',store=True)
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False,
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True,
                                default=lambda self: self.env.user.ho_id,
                                readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,

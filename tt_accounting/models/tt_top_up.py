@@ -39,7 +39,7 @@ class TtTopUp(models.Model):
                        index=True, default=lambda self: 'New')
     due_date = fields.Datetime('Due Date', readonly=True)
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True,
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, readonly=True,
                                default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', string="Agent", required=True, readonly=True,
                                default=lambda self: self.env.user.agent_id)

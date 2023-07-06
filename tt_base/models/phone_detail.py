@@ -24,7 +24,7 @@ class PhoneDetail(models.Model):
     calling_code = fields.Char('Calling Code', required=True)
     calling_number = fields.Char('Calling Number', required=True)
     phone_number = fields.Char('Phone Number', store=True, compute='_compute_phone_number')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', string='Agent')
     provider_ho_data_id = fields.Many2one('tt.provider.ho.data', string='Provider HO Data')
     customer_id = fields.Many2one('tt.customer', string='Customer',ondelete="cascade")

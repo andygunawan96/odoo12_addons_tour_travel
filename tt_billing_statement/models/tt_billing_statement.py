@@ -25,7 +25,7 @@ class TtBillingStatement(models.Model):
     transaction_end_date = fields.Date('End Date', readonly=True,
                              states={'draft': [('readonly', False)]})
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True,
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, readonly=True,
                                states={'draft': [('readonly', False)]},
                                default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True,
