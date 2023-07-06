@@ -1084,6 +1084,12 @@ class TtReservation(models.Model):
         #         _logger.info('update upsell for %s' % self.name)
         #     else:
         #         _logger.info('upsell not found for %s' % self.name)
+        ho_obj = False
+        if self.ho_id:
+            ho_obj = self.ho_id
+        elif self.agent_id:
+            ho_obj = self.agent_id.ho_id
+
         svc_list = []
         total_pax = {
             "ADT": {
@@ -1156,6 +1162,7 @@ class TtReservation(models.Model):
                         'total': svc['amount'] * svc.get('pax_count', 0),
                         'currency_id': rec.currency_id.id,
                         'foreign_currency_id': rec.currency_id.id,
+                        'ho_id': ho_obj and ho_obj.id or False
                     })
                     if svc['total'] == 0:
                         svc.update({
