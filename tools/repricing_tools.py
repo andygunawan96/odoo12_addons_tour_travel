@@ -2164,9 +2164,10 @@ class CustomerPricing(object):
         if not data:
             return False
 
-        for agent_id, rec in data.get('customer_pricing_data', {}).items():
-            if self.agent_id == int(agent_id):
-                self.data = rec
+        for ho_id, pricing_data in data.get('customer_pricing_data', {}).items():
+            for agent_id, rec in pricing_data.items():
+                if self.agent_id == int(agent_id):
+                    self.data = rec
         return True
 
     def get_backend_data(self):
