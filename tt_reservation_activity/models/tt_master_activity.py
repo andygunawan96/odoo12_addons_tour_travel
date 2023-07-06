@@ -220,6 +220,9 @@ class MasterActivity(models.Model):
 
             storage_page = 1
             item_count = 0
+            batch_data = {
+                'product_detail': []
+            }
             for rec_list in all_gt_country_codes:
                 req_post = {
                     'country_codes': rec_list,
@@ -227,9 +230,6 @@ class MasterActivity(models.Model):
                 }
                 res = self.env['tt.master.activity.api.con'].search_provider(req_post)
                 if res['error_code'] == 0:
-                    batch_data = {
-                        'product_detail': []
-                    }
                     for temp in res['response']:
                         if temp.get('product_detail'):
                             batch_data['product_detail'] += temp['product_detail']
@@ -246,6 +246,15 @@ class MasterActivity(models.Model):
                                 }
                                 item_count = 0
                                 storage_page += 1
+            if item_count > 0:
+                folder_path = '/var/log/tour_travel/globaltix_master_data'
+                if not os.path.exists(folder_path):
+                    os.mkdir(folder_path)
+                file = open(
+                    '/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json',
+                    'w')
+                file.write(json.dumps(batch_data))
+                file.close()
         elif provider_code == 'rodextrip_activity':
             req_post = {
                 'provider': provider_code
