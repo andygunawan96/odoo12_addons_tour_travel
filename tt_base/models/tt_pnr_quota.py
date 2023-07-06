@@ -321,6 +321,10 @@ class TtPnrQuota(models.Model):
                     usage_obj.amount = calculate_price_dict['price']
                 usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
         self.usage_quota = quota_pnr_usage
+        self.calc_amount_internal()
+        self.calc_amount_external()
+        self.calc_amount_total()
+
 
     def force_domain_agent_pnr_quota(self):
         return {

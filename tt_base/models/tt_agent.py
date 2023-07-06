@@ -853,15 +853,6 @@ class TtAgent(models.Model):
             email_cc = ",".join(email_cc_list)
         return email_cc
 
-    def get_ho_parent_agent(self):
-        if self.is_ho_agent: ## AGENT HO
-            return self
-        elif self.ho_id: ## kalau HO is set langsung ambil
-            return self.ho_id
-        else:
-            ## HO NOT FOUND
-            raise Exception('HO NOT FOUND')
-
     def get_printout_agent_color(self):
         base_color = '#FFFFFF'
         agent_ho_obj = self.ho_id.sudo()
