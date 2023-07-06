@@ -269,10 +269,10 @@
             <field name="arch" type="xml">
                 <search string="Provider">
                     <field name="provider_id"/>
-                    <field name="currency_id"/>
+                    <field name="ho_id"/>
                     <separator/>
-                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
                     <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                    <filter string="Using Balance" name="using_balance" domain="[('is_using_balance', '=', True)]"/>
                     <separator/>
                 </search>
             </field>
