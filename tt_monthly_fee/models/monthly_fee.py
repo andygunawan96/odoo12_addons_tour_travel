@@ -71,7 +71,7 @@ class MonthlyManagementFee(models.Model):
 
     name = fields.Char('Name', required=True)
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.user.ho_id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, states={'draft':[('readonly',False)]})
     confirm_uid = fields.Many2one('res.users', 'Confirmed by', copy=False)
     confirm_date = fields.Datetime('Confirm Date', copy=False)

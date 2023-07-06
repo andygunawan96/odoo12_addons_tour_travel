@@ -26,7 +26,7 @@ class TtRequestTour(models.Model):
     _description = 'Request Tour'
 
     name = fields.Char('Request Order Number', default='New', readonly=True)
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, readonly=True, default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, readonly=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, readonly=True, default=lambda self: self.env.user.agent_id.id)
     booker_id = fields.Many2one('tt.customer', 'Booker', ondelete='restrict', required=True, readonly=True, states={'draft':[('readonly',False)]}, domain="[('agent_id', '=', agent_id)]")
     contact_id = fields.Many2one('tt.customer', 'Contact Person', ondelete='restrict', required=True, readonly=True, states={'draft':[('readonly',False)]}, domain="[('agent_id', '=', agent_id)]")

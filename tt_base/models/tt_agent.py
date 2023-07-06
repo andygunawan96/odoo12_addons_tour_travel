@@ -63,7 +63,7 @@ class TtAgent(models.Model):
     is_btc_agent = fields.Boolean('Is BTC Agent')
     btc_agent_type_id = fields.Many2one('tt.agent.type', 'Default BTC Agent Type')
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
     redirect_url_signup = fields.Char('Redirect URL Signup', default='/')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
@@ -966,7 +966,7 @@ class AgentMOU(models.Model):
     # Catet Perjanian kerja sama antara citra dengan agent contoh: Fipro target e brpa klo kurang dia mesti bayar
 
     name = fields.Char('Target Name')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', domain=[('parent_id', '=', False)], required=True)
 
     start_date = fields.Date('Start Date')
