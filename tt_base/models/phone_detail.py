@@ -60,12 +60,12 @@ class PhoneDetail(models.Model):
         check_number = self.env['payment.acquirer.number'].search(
             ['|', ('number', 'ilike', self.calling_number[-8:]), ('email', '=', agent_obj.email)])
         if len(check_number) == 0 and len(agent_open_payment_acqurier) == 0 and agent_obj.email and agent_obj.name:
-            ho_obj = agent_obj.get_ho_parent_agent()
+            ho_obj = agent_obj.ho_id
             bank_code_list = []
             existing_payment_acquirer_open = self.env['payment.acquirer'].search([('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
             for rec in existing_payment_acquirer_open:
                 bank_code_list.append(rec.bank_id.code)
-            currency_obj = self.agent_id.get_ho_parent_agent().currency_id
+            currency_obj = self.agent_id.ho_id.currency_id
             data = {
                 'number': self.calling_number[-8:],
                 'email': agent_obj.email,
@@ -99,7 +99,7 @@ class PhoneDetail(models.Model):
                             'number': rec['number'],
                             'email': agent_obj.email,
                             'currency_id': currency_obj.id,
-                            'ho_id': agent_obj.get_ho_parent_agent().id
+                            'ho_id': agent_obj.ho_id.id
                         })
                 else:
                     raise UserError(_("Phone number has been use, please change first phone number"))
@@ -124,24 +124,24 @@ class PhoneDetail(models.Model):
     def delete_va_number(self):
 
         agent_obj = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
-        ho_obj = agent_obj.get_ho_parent_agent()
+        ho_obj = agent_obj.ho_id
         bank_code_list = []
         existing_payment_acquirer_open = self.env['payment.acquirer'].search(
             [('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
         for rec in existing_payment_acquirer_open:
             bank_code_list.append(rec.bank_id.code)
-        currency = self.agent_id.get_ho_parent_agent().currency_id.name
+        currency_name = self.agent_id.ho_id.currency_id.name
         data = {
             "number": self.calling_number[-8:],
             'email': agent_obj.email,
             'name': agent_obj.name,
             'bank_code_list': bank_code_list,
-            'currency': currency
+            'currency': currency_name
         }
         self.va_create = False
         self.env.cr.commit()
         if len(data) != 0:
-            res = self.env['tt.payment.api.con'].delete_VA(data, agent_obj.get_ho_parent_agent().id)
+            res = self.env['tt.payment.api.con'].delete_VA(data, agent_obj.ho_id.id)
             if res['error_code'] == 0:
                 for rec in self.env['tt.agent'].search([('id', '=', self.agent_id.id)]).payment_acq_ids.filtered(lambda x: x.state == 'open'):
                     rec.unlink()

@@ -187,10 +187,10 @@ class CreateHOAgentWizard(models.TransientModel):
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         if self.env.user.agent_id.is_ho_agent:
             action_num = self.env.ref('tt_base.tt_agent_all_action_view').id
-            menu_num = self.env.ref('tt_base.submenu_tour_travel_all_agent').id
+            menu_num = self.env.ref('tt_base.menu_tour_travel_agent').id
         else:
             action_num = self.env.ref('tt_base.tt_agent_customer_action_view').id
-            menu_num = self.env.ref('tt_base.submenu_customers_all_agent').id
+            menu_num = self.env.ref('tt_base.menu_tour_travel_agent').id
 
         return {
             'type': 'ir.actions.act_url',

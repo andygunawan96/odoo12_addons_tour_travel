@@ -113,7 +113,7 @@ class PaymentAcquirer(models.Model):
         #     if self.start_time > self.end_time:
         #         raise UserError(_('End Date cannot be lower than Start Time.'))
 
-    def acquirer_format(self, amount, unique, agent_obj=None, currency='', context={}):
+    def acquirer_format(self, amount, unique, agent_obj=None, currency_name='', context={}):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
@@ -135,11 +135,11 @@ class PaymentAcquirer(models.Model):
         fee_point = 0
         uniq_point = 0
         website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
-        if not currency:
+        if not currency_name:
             if context:
                 agent_obj = self.env['tt.agent'].browse(context['co_ho_id'])
                 if agent_obj:
-                    currency = agent_obj.get_ho_parent_agent().currency_id.name
+                    currency_name = agent_obj.ho_id.currency_id.name
         res_payment_acq = {
             'acquirer_seq_id': self.seq_id,
             'name': self.name,
@@ -150,7 +150,7 @@ class PaymentAcquirer(models.Model):
                 'code': self.bank_id.code or '',
             },
             'type': self.type,
-            'currency': currency,
+            'currency': currency_name,
             'price_component': {
                 'amount': amount,
                 'fee': fee,
@@ -189,18 +189,18 @@ class PaymentAcquirer(models.Model):
             })
         return res_payment_acq
 
-    def acquirer_format_VA(self, acq, amount,unique, currency='', context={}):
+    def acquirer_format_VA(self, acq, amount,unique, currency_name='', context={}):
         # NB:  CASH /payment/cash/feedback?acq_id=41
         # NB:  BNI /payment/tt_transfer/feedback?acq_id=68
         # NB:  BCA /payment/tt_transfer/feedback?acq_id=27
         # NB:  MANDIRI /payment/tt_transfer/feedback?acq_id=28
         payment_acq = self.env['payment.acquirer'].browse(acq.payment_acquirer_id.id)
         loss_or_profit, fee, uniq = acq.payment_acquirer_id.compute_fee(unique)
-        if not currency:
+        if not currency_name:
             if context:
                 agent_obj = self.env['tt.agent'].browse(context['co_ho_id'])
                 if agent_obj:
-                    currency = agent_obj.get_ho_parent_agent().currency_id.name
+                    currency_name = agent_obj.ho_id.currency_id.name
         return {
             'acquirer_seq_id': payment_acq.seq_id,
             'name': payment_acq.name,
@@ -211,7 +211,7 @@ class PaymentAcquirer(models.Model):
                 'code': payment_acq.bank_id.code or '',
             },
             'type': payment_acq.type,
-            'currency': currency,
+            'currency': currency_name,
             'price_component': {
                 'amount': amount,
                 'fee': fee,
@@ -227,10 +227,10 @@ class PaymentAcquirer(models.Model):
         values = {
             'va': []
         }
-        currency = agent_obj.get_ho_parent_agent().currency_id.name
+        currency_name = agent_obj.ho_id.currency_id.name
         for acq in agent_obj.payment_acq_ids:
             if acq.state == 'open':
-                values['va'].append(self.acquirer_format_VA(acq, 0, 0, currency, context))
+                values['va'].append(self.acquirer_format_VA(acq, 0, 0, currency_name, context))
         return ERR.get_no_error(values)
 
     def get_va_bank(self, req, context):
@@ -365,7 +365,7 @@ class PaymentAcquirer(models.Model):
                 # # payment gateway
                 # dengan ORDER NUMBER
                 if util.get_without_empty(req, 'order_number'):
-                    ho_agent_obj = agent_obj.get_ho_parent_agent()
+                    ho_agent_obj = agent_obj.ho_id
                     dom = [
                         ('website_published', '=', True),
                         ('company_id', '=', self.env.user.company_id.id),
@@ -652,10 +652,10 @@ class PaymentAcquirerNumber(models.Model):
     def create_payment_acq(self,data,booking_obj,provider_type, is_use_point, context):
         ## RULE TIME LIMIT PAYMENT ACQ < 1 jam, 10 menit = HOLD DATE - 10 menit
         ## UNTUK YG LEBIH DARI 1 JAM, 10 menit HOLE DATE HOLD DATE 60 menit
-        currency = None
+        currency_id = None
         if booking_obj._name != 'tt.top.up':
             ## RESERVASI
-            currency = booking_obj.currency_id.id
+            currency_id = booking_obj.currency_id.id
             if booking_obj.hold_date < datetime.now() + timedelta(minutes=130):
                 hold_date = booking_obj.hold_date - timedelta(minutes=10)
             elif data['order_number'].split('.')[0] == 'PH' or data['order_number'].split('.')[0] == 'PK':  # PHC 30 menit
@@ -664,7 +664,7 @@ class PaymentAcquirerNumber(models.Model):
                 hold_date = datetime.now() + timedelta(minutes=120)
         else:
             ## TOP UP
-            currency = booking_obj.agent_id.get_ho_parent_agent().currency_id.id
+            currency_id = booking_obj.agent_id.ho_id.currency_id.id
             hold_date = booking_obj.due_date - timedelta(minutes=10)
 
 
@@ -713,7 +713,7 @@ class PaymentAcquirerNumber(models.Model):
             'agent_id': booking_obj.agent_id.id,
             'fee_amount': data['fee_amount'],
             'ho_id': context['co_ho_id'],
-            'currency_id': currency
+            'currency_id': currency_id
         })
         return payment
 

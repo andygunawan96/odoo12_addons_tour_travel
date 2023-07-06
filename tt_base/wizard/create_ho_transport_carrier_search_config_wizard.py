@@ -4,7 +4,7 @@ from datetime import datetime
 
 class CreateHOTransportCarrierSearchConfigWizard(models.TransientModel):
     _name = "create.ho.transport.carrier.search.config.wizard"
-    _description = 'Create HO Agent Wizard'
+    _description = 'Create HO Transport Carrier Search Config Wizard'
 
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id)
     def _get_domain_default(self):
@@ -15,7 +15,7 @@ class CreateHOTransportCarrierSearchConfigWizard(models.TransientModel):
         if self.ho_id:
             ho_id = self.ho_id.id
         else:
-            ho_id = self.env.user.agent_id.get_ho_parent_agent().id
+            ho_id = self.env.user.agent_id.ho_id.id
         for rec in self.transport_carrier_search_ids:
             provider_ids = []
             for provider_obj in rec.provider_ids:

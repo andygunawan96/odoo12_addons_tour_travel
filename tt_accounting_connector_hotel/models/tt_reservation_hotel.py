@@ -17,7 +17,7 @@ class TtReservationHotel(models.Model):
         try:
             res = []
             if self.agent_id.is_sync_to_acc:
-                ho_obj = self.agent_id.get_ho_parent_agent()
+                ho_obj = self.agent_id.ho_id
                 for ven in vendor_list:
                     search_params = [('res_model', '=', self._name), ('res_id', '=', self.id),
                                      ('action', '=', func_action), ('accounting_provider', '=', ven)]
@@ -45,7 +45,7 @@ class TtReservationHotel(models.Model):
     def action_issued(self, data, kwargs=False):
         res = super(TtReservationHotel, self).action_issued(data, kwargs)
         temp_post = self.posted_acc_actions or ''
-        ho_obj = self.agent_id and self.agent_id.get_ho_parent_agent() or False
+        ho_obj = self.agent_id and self.agent_id.ho_id or False
         search_params = [('cycle', '=', 'real_time'), ('is_send_hotel', '=', True)]
         if ho_obj:
             search_params.append(('ho_id', '=', ho_obj.id))
@@ -71,7 +71,7 @@ class TtReservationHotel(models.Model):
         res = super(TtReservationHotel, self).action_reverse_ledger_from_button()
         if old_state == 'issued':
             temp_post = self.posted_acc_actions or ''
-            ho_obj = self.agent_id and self.agent_id.get_ho_parent_agent() or False
+            ho_obj = self.agent_id and self.agent_id.ho_id or False
             search_params = [('cycle', '=', 'real_time'), ('is_send_hotel', '=', True), ('is_send_reverse_transaction', '=', True)]
             if ho_obj:
                 search_params.append(('ho_id', '=', ho_obj.id))
@@ -97,7 +97,7 @@ class TtReservationHotel(models.Model):
         for rec in transaction_list:
             temp_post = rec.posted_acc_actions or ''
             if 'reconcile' not in temp_post.split(',') and 'transaction_batch' not in temp_post.split(','):
-                ho_obj = rec.agent_id and rec.agent_id.get_ho_parent_agent() or False
+                ho_obj = rec.agent_id and rec.agent_id.ho_id or False
                 search_params = [('cycle', '=', 'per_batch'), ('is_recon_only', '=', False), ('is_send_hotel', '=', True)]
                 if ho_obj:
                     search_params.append(('ho_id', '=', ho_obj.id))

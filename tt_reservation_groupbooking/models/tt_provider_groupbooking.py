@@ -89,7 +89,7 @@ class ProviderGroupBooking(models.Model):
     def compute_is_lg_required(self):
         for rec in self:
             temp_req = False
-            temp_ho_id = rec.booking_id.agent_id.get_ho_parent_agent()
+            temp_ho_id = rec.booking_id.agent_id.ho_id
             if temp_ho_id:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
                     [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
@@ -101,7 +101,7 @@ class ProviderGroupBooking(models.Model):
     def compute_is_po_required(self):
         for rec in self:
             temp_req = False
-            temp_ho_id = rec.booking_id.agent_id.get_ho_parent_agent()
+            temp_ho_id = rec.booking_id.agent_id.ho_id
             if temp_ho_id:
                 prov_ho_obj = self.env['tt.provider.ho.data'].search(
                     [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)

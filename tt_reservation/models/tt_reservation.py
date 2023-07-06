@@ -192,7 +192,7 @@ class TtReservation(models.Model):
             if vals_list.get('agent_id'):
                 agent_id = self.env['tt.agent'].browse(vals_list['agent_id'])
                 if agent_id:
-                    vals_list['ho_id'] = agent_id.get_ho_parent_agent().id
+                    vals_list['ho_id'] = agent_id.ho_id.id
         except:
             pass
         return super(TtReservation, self).create(vals_list)
@@ -1084,6 +1084,12 @@ class TtReservation(models.Model):
         #         _logger.info('update upsell for %s' % self.name)
         #     else:
         #         _logger.info('upsell not found for %s' % self.name)
+        ho_obj = False
+        if self.ho_id:
+            ho_obj = self.ho_id
+        elif self.agent_id:
+            ho_obj = self.agent_id.ho_id
+
         svc_list = []
         total_pax = {
             "ADT": {
@@ -1156,6 +1162,7 @@ class TtReservation(models.Model):
                         'total': svc['amount'] * svc.get('pax_count', 0),
                         'currency_id': rec.currency_id.id,
                         'foreign_currency_id': rec.currency_id.id,
+                        'ho_id': ho_obj and ho_obj.id or False
                     })
                     if svc['total'] == 0:
                         svc.update({
@@ -1496,7 +1503,7 @@ class TtReservation(models.Model):
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
                 is_use_point = False
-                website_use_point_reward = book_obj.agent_id.get_ho_parent_agent().is_use_point_reward
+                website_use_point_reward = book_obj.agent_id.ho_id.is_use_point_reward
                 if website_use_point_reward:
                     is_use_point = req.get('use_point')
 
@@ -1690,7 +1697,7 @@ class TtReservation(models.Model):
         try:
             final_email = ''
             if self.agent_id:
-                ho_agent_obj = self.agent_id.get_ho_parent_agent()
+                ho_agent_obj = self.agent_id.ho_id
                 final_email = ho_agent_obj.email_server_id.smtp_user
         except Exception as e:
             _logger.info(str(e))
@@ -1744,7 +1751,7 @@ class TtReservation(models.Model):
                 for prices in rec.sale_service_charge_ids:
                     if prices.charge_type == 'RAC':
                         if prices.charge_code in ['dif','fac','hoc']:
-                            ho_obj = self.agent_id.get_ho_parent_agent()
+                            ho_obj = self.agent_id.ho_id
                             prices.commission_agent_id = ho_obj and ho_obj.id or False
                         elif prices.charge_code == 'rac':
                             prices.commission_agent_id = False

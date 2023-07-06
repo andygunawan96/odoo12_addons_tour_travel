@@ -135,7 +135,7 @@ class AgentInvoiceInh(models.Model):
                 total_price = 0
                 commission_list = {}
                 is_use_credit_limit = True  ## asumsi yang di recompute yang bayar pakai credit limit
-                temp_ho_obj = book_obj.agent_id.get_ho_parent_agent()
+                temp_ho_obj = book_obj.agent_id.ho_id
                 if ho_invoice_line_obj.res_model_resv == 'tt.reservation.hotel':
                     for idx, room_obj in enumerate(book_obj.room_detail_ids):
                         meal = room_obj.meal_type or 'Room Only'

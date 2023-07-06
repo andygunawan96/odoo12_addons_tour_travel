@@ -21,7 +21,7 @@ class TtCronLogInhResv(models.Model):
                         if datetime.now() >= (booking.hold_date or datetime.min):
                             if rec in ['airline'] and auto_cancel_on_vendor and booking.agent_type_id.is_auto_cancel_booking:
                                 #send gateway cancel airline
-                                res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name}, ho_id=booking.agent_id.get_ho_parent_agent().id)
+                                res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name}, ho_id=booking.agent_id.ho_id.id)
                                 if res['error_code']:
                                     error_list.append('%s\nRESPONSE\n%s\n' % (booking.name, json.dumps(res)))
                             booking.action_expired()
@@ -58,7 +58,7 @@ class TtCronLogInhResv(models.Model):
                                 'provider_type': rec,
                                 'order_number': book_obj.name,
                                 'r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
-                                'ho_id': book_obj.agent_id.get_ho_parent_agent().id
+                                'ho_id': book_obj.agent_id.ho_id.id
                             }
                             # tembak gateway
                             res = self.env['tt.payment.api.con'].sync_reservation_btbo_quota_pnr(data)
@@ -147,7 +147,7 @@ class TtCronLogInhResv(models.Model):
                                     'member': book_obj.is_member,  # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
                                     'acquirer_seq_id': seq_id,
                                     'force_issued': True,
-                                    'ho_id': book_obj.agent_id.get_ho_parent_agent().id
+                                    'ho_id': book_obj.agent_id.ho_id.id
                                 }
                                 res = self.env['tt.payment.api.con'].send_payment(req)
                                 if res['error_code'] == 0:

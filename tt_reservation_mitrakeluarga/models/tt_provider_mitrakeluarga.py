@@ -280,7 +280,7 @@ class TtProviderMitraKeluarga(models.Model):
             self.cancel_uid = self.env.user.id
         self.state = 'cancel'
 
-        ho_id = self.booking_id.agent_id.get_ho_parent_agent().id
+        ho_id = self.booking_id.agent_id.ho_id.id
         self.env['tt.mitrakeluarga.api.con'].send_cancel_order_notification(self.booking_id.name,
                                                                         self.env.user.name,
                                                                         self.booking_id.test_datetime.astimezone(

@@ -35,7 +35,7 @@ class ReservationOffline(models.Model):
         invoice_id = False
         ho_invoice_id = False
 
-        temp_ho_obj = self.agent_id.get_ho_parent_agent()
+        temp_ho_obj = self.agent_id.ho_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
@@ -208,7 +208,7 @@ class ReservationOffline(models.Model):
                     if srvc.charge_type not in ['RAC', 'DISC'] and srvc.charge_code != 'csc':
                         price_unit += srvc.amount
                     elif srvc.charge_type == 'RAC' and srvc.charge_code != 'csc':
-                        ho_obj = self.agent_id.get_ho_parent_agent()
+                        ho_obj = self.agent_id.ho_id
                         if is_use_credit_limit:
                             if not srvc.commission_agent_id:
                                 agent_id = self.agent_id.id

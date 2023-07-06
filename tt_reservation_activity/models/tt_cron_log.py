@@ -20,7 +20,7 @@ class TtCronLogInhResv(models.Model):
                 }
                 if req['uuid'] or req['pnr']:
                     if req['provider']:
-                        res = self.env['tt.activity.api.con'].get_booking(req, rec.agent_id.get_ho_parent_agent().id)
+                        res = self.env['tt.activity.api.con'].get_booking(req, rec.agent_id.ho_id.id)
                         if res['response']:
                             values = res['response']
                             method_name = 'action_%s' % values['status']

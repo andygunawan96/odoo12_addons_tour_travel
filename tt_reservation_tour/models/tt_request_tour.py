@@ -129,7 +129,7 @@ class TtRequestTour(models.Model):
                 'co_agent_id': self.env.user.agent_id.id,
                 'co_agent_name': self.env.user.agent_id.name,
             }
-            ho_id = self.env.user.agent_id.get_ho_parent_agent().id
+            ho_id = self.env.user.agent_id.ho_id.id
             self.env['tt.master.tour.api.con'].send_tour_request_notification(data, context, ho_id)
         except Exception as e:
             _logger.error("Send Tour Request Notification Telegram Error\n" + traceback.format_exc())

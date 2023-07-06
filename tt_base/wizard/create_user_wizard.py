@@ -26,7 +26,7 @@ class CreateUserWizard(models.TransientModel):
                 'default_agent_id': agent_id.id,
             },
         }
-        temp_ho_obj = agent_id.get_ho_parent_agent()
+        temp_ho_obj = agent_id.ho_id
         if temp_ho_obj:
             vals['context'].update({
                 'default_ho_id': temp_ho_obj.id
@@ -81,7 +81,7 @@ class CreateCorporateUserWizard(models.TransientModel):
                 'default_customer_id': self.customer_id.id,
             },
         }
-        temp_ho_obj = self.agent_id.get_ho_parent_agent()
+        temp_ho_obj = self.agent_id.ho_id
         if temp_ho_obj:
             vals['context'].update({
                 'default_ho_id': temp_ho_obj.id

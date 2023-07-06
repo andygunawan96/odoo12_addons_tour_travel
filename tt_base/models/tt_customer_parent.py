@@ -124,7 +124,7 @@ class TtCustomerParent(models.Model):
                 'default_customer_parent_id': self.id
             },
         }
-        temp_ho_obj = self.parent_agent_id.get_ho_parent_agent()
+        temp_ho_obj = self.parent_agent_id.ho_id
         if temp_ho_obj:
             vals['context'].update({
                 'default_ho_id': temp_ho_obj.id

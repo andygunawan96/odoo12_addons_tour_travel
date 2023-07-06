@@ -26,7 +26,7 @@ class ConfirmOrderphcWizard(models.TransientModel):
             'analyst_ids': [(6,0,self.analyst_ids.ids)]
         })
 
-        ho_id = self.booking_id.agent_id.get_ho_parent_agent().id
+        ho_id = self.booking_id.agent_id.ho_id.id
         try:
             self.env['tt.phc.api.con'].send_confirm_order_notification(self.booking_id.name,
                                                                              self.env.user.name,

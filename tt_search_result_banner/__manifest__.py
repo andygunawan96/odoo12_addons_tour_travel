@@ -7,7 +7,7 @@
     'summary': 'Search Result Banner Module',
     'description': """
 Tour & Travel - Search Result Banner
-===============================
+====================================
 Key Features
 ------------
     """,

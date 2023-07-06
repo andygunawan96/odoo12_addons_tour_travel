@@ -377,7 +377,7 @@ class PricingAgent(models.Model):
 
             """ Jika masih ada diff """
             if remaining_diff > 0:
-                ho_obj = agent_id.get_ho_parent_agent()
+                ho_obj = agent_id.ho_id
                 vals = {
                     'commission_agent_id': ho_obj and ho_obj.id or False,
                     'agent_id': ho_obj and ho_obj.id or False,

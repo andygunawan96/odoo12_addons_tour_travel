@@ -111,7 +111,7 @@ class AccountingConnectorJasaweb(models.Model):
             if rec.get('agent_id'):
                 agent_obj = self.env['tt.agent'].browse(int(rec['agent_id']))
                 if agent_obj:
-                    ho_obj = agent_obj.get_ho_parent_agent()
+                    ho_obj = agent_obj.ho_id
                     if ho_obj:
                         ho_name = ho_obj.name
                     is_ho_agent = agent_obj.is_ho_agent
