@@ -194,17 +194,18 @@ class CustomerPricing(models.Model):
                 if not obj.active:
                     continue
                 if obj.ho_id:
-                    if str(obj.ho_id.id) not in customer_pricing_data:
-                        customer_pricing_data[str(obj.ho_id.id)] = {}
-                        vals = obj.get_data()
-                        agent_id = str(vals['agent_id'])
-                        if agent_id not in customer_pricing_data[str(obj.ho_id.id)]:
-                            customer_pricing_data[str(obj.ho_id.id)][agent_id] = {
-                                'customer_pricing_list': [],
-                                'create_date': date_now,
-                                'expired_date': expired_date,
-                            }
-                        customer_pricing_data[str(obj.ho_id.id)][agent_id]['customer_pricing_list'].append(vals)
+                    ho_id = str(obj.ho_id.id)
+                    if ho_id not in customer_pricing_data:
+                        customer_pricing_data[ho_id] = {}
+                    vals = obj.get_data()
+                    agent_id = str(vals['agent_id'])
+                    if agent_id not in customer_pricing_data[ho_id]:
+                        customer_pricing_data[ho_id][agent_id] = {
+                            'customer_pricing_list': [],
+                            'create_date': date_now,
+                            'expired_date': expired_date,
+                        }
+                    customer_pricing_data[ho_id][agent_id]['customer_pricing_list'].append(vals)
 
             payload = {
                 'customer_pricing_data': customer_pricing_data
