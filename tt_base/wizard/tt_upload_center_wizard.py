@@ -84,7 +84,7 @@ class SplitInvoice(models.TransientModel):
             ho_agent_obj = False
             agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
             if agent_obj:
-                ho_agent_obj = agent_obj.get_ho_parent_agent()
+                ho_agent_obj = agent_obj.ho_id
 
             new_uploaded_data = self.env['tt.upload.center'].sudo().create({
                 'filename': filename,
