@@ -254,8 +254,12 @@
             <field name="arch" type="xml">
                 <tree string="Provider">
                     <field name="provider_id"/>
-                    <field name="currency_id"/>
-                    <field name="active"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="balance"/>
+                    <field name="is_using_balance"/>
+                    <field name="is_using_lg"/>
+                    <field name="is_using_po"/>
+                    <field name="ho_id"/>
                 </tree>
             </field>
         </record>
