@@ -620,11 +620,11 @@ class AccountingConnectorITM(models.Model):
                 vat_var_obj = self.env['tt.accounting.setup.variables'].search(
                     [('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True),
                      ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
-                     ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                     ('variable_name', '=', '%s_vat_var' % request['reservation_data']['provider_type'])], limit=1)
                 vat_perc_obj = self.env['tt.accounting.setup.variables'].search(
                     [('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True),
                      ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
-                     ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                     ('variable_name', '=', '%s_vat_percentage' % request['reservation_data']['provider_type'])], limit=1)
                 if not vat_var_obj or not vat_perc_obj:
                     _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
                     vat = 0
