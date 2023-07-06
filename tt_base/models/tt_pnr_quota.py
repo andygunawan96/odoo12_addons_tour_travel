@@ -226,11 +226,13 @@ class TtPnrQuota(models.Model):
 
             new_pnr_quota = self.create({
                 'agent_id': agent_obj.id,
+                'ho_id': agent_obj.ho_id.id,
                 'price_package_id': price_package_obj.id
             })
 
             agent_obj.unban_user_api()
-
+            if req.get('is_called_from_backend'):
+                return new_pnr_quota.id
             return ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())

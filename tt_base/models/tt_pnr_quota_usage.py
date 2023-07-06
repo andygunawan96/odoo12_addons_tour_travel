@@ -1,4 +1,5 @@
-from odoo import api,fields,models
+from odoo import api,fields,models, _
+from odoo.exceptions import UserError
 
 INVENTORY_TYPE = [
     ('internal', 'Internal'),
@@ -33,6 +34,8 @@ class TtPnrQuotaUsage(models.Model):
     active = fields.Boolean('Active', default=True)
 
     def open_reservation(self):
+        if self.inventory != 'internal':
+            raise UserError(_("This function only works for internal inventories."))
         try:
             form_id = self.env[self.res_model_resv].get_form_id()
         except:

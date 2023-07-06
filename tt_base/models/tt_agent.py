@@ -681,17 +681,19 @@ class TtAgent(models.Model):
             quota_obj_list = self.quota_ids.filtered(lambda x: x.state == 'active')
 
             if len(quota_obj_list) == 0:## kalau tidak ada quota_obj yg aktif di buatkan 1
-                self.env['tt.pnr.quota'].create_pnr_quota_api(
+                new_quota_id = self.env['tt.pnr.quota'].create_pnr_quota_api(
                     {
-                        'quota_seq_id': self.quota_package_id.seq_id
+                        'quota_seq_id': self.quota_package_id.seq_id,
+                        'is_called_from_backend': True
                     },
                     {
                         'co_agent_id': self.id
                     }
                 )
-
-            #ambl yg index 0, terbaru
-            quota_obj = quota_obj_list[0]
+                quota_obj = self.env['tt.pnr.quota'].browse(int(new_quota_id))
+            else:
+                #ambl yg index 0, terbaru
+                quota_obj = quota_obj_list[0]
             total_quota_pnr_used = quota_obj.usage_quota
             type_price = 'pax'
             if req['inventory'] == 'external':
@@ -708,6 +710,7 @@ class TtAgent(models.Model):
                 if type_price != 'pnr':
                     amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
             self.env['tt.pnr.quota.usage'].create({
+                'ho_id': quota_obj.ho_id and quota_obj.ho_id.id or quota_obj.agent_id.ho_id.id,
                 'res_model_resv': req.get('res_model_resv'),
                 'res_id_resv': req.get('res_id_resv'),
                 'res_model_prov': req.get('res_model_prov'),
@@ -852,15 +855,6 @@ class TtAgent(models.Model):
             email_cc_list = list(set(email_cc_list)) ## remove duplicate
             email_cc = ",".join(email_cc_list)
         return email_cc
-
-    def get_ho_parent_agent(self):
-        if self.is_ho_agent: ## AGENT HO
-            return self
-        elif self.ho_id: ## kalau HO is set langsung ambil
-            return self.ho_id
-        else:
-            ## HO NOT FOUND
-            raise Exception('HO NOT FOUND')
 
     def get_printout_agent_color(self):
         base_color = '#FFFFFF'
