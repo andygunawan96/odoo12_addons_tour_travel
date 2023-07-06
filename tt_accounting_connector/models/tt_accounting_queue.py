@@ -312,6 +312,7 @@ class TtAccountingQueue(models.Model):
                     book_invoice_data.append(rec.invoice_id.name)
                 request.update({
                     'agent_name': trans_obj.agent_id and trans_obj.agent_id.name or '',
+                    'customer_parent_id': trans_obj.customer_parent_id and trans_obj.customer_parent_id.id or 0,
                     'ledgers': ledger_list,
                     'category': cat,
                     'new_segment': new_segment_list,

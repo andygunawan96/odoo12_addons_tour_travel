@@ -338,7 +338,18 @@ class VisaPricelist(models.Model):
     def get_config_api(self, context):
         try:
             visa = {}
-            for rec in self.sudo().search([('ho_ids.seq_id','=',context['co_ho_seq_id']), ('active','=',True)]):
+            search_params = [('active','=',True)]
+            if context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            elif context.get('ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            elif context.get('co_ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            for rec in self.sudo().search(search_params):
                 if not visa.get(rec.country_id.name): #kalau ngga ada bikin dict
                     visa[rec.country_id.name] = [] #append country
                 count = 0
