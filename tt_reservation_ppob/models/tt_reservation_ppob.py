@@ -458,7 +458,11 @@ class ReservationPpob(models.Model):
                 inq_prov_obj = inq_prov_obj[0]
 
                 is_update_sc = False
-                if data['data'].get('total') and inq_prov_obj.total_price != data['data']['total']:
+                if data['data'].get('customer_name'):
+                    temp_cust_name = data['data']['customer_name']
+                else:
+                    temp_cust_name = 'Customer PPOB'
+                if (data['data'].get('total') and inq_prov_obj.total_price != data['data']['total']) or inq_prov_obj.customer_name != temp_cust_name:
                     is_update_sc = True
 
                 vals = {
@@ -643,6 +647,7 @@ class ReservationPpob(models.Model):
             placeholder_email = ho_obj.email and ho_obj.email or 'placeholder@email.com'
             cust_first_name = data['data'].get('customer_name') and data['data']['customer_name'] or 'Customer'
             cust_email = data['data'].get('customer_email') and data['data']['customer_email'] or placeholder_email
+            nationality_id = self.env['res.country'].search([('code', '=ilike', 'ID')], limit=1).id
             booker = {
                 'first_name': cust_first_name,
                 'last_name': "PPOB",
@@ -669,7 +674,6 @@ class ReservationPpob(models.Model):
                 'contact_id': "CTC_1",
                 'sequence': 1
             }]
-            nationality_id = self.env['res.country'].search([('code', '=ilike', 'ID')], limit=1).id
             psg_dict = {
                 'pax_type': "ADT",
                 'first_name': cust_first_name,
@@ -797,8 +801,39 @@ class ReservationPpob(models.Model):
                     rec.update({
                         'cost_service_charge_ids': [(6, 0, [])]
                     })
+                    rec.sudo().unlink()
 
+                ho_obj = self.env['tt.agent'].browse(context['co_ho_id'])
+                placeholder_email = ho_obj.email and ho_obj.email or 'placeholder@email.com'
                 cust_first_name = data['data'].get('customer_name') and data['data']['customer_name'] or 'Customer'
+                cust_email = data['data'].get('customer_email') and data['data']['customer_email'] or placeholder_email
+                nationality_id = self.env['res.country'].search([('code', '=ilike', 'ID')], limit=1).id
+                booker = {
+                    'first_name': cust_first_name,
+                    'last_name': "PPOB",
+                    'title': "MR",
+                    'nationality_name': "Indonesia",
+                    'nationality_code': "ID",
+                    'gender': "male",
+                    'email': cust_email,
+                    'calling_code': "62",
+                    'mobile': "315662000",
+                    'is_search_allowed': False
+                }
+                contacts = [{
+                    'first_name': cust_first_name,
+                    'last_name': "PPOB",
+                    'title': "MR",
+                    'nationality_name': "Indonesia",
+                    'nationality_code': "ID",
+                    'is_also_booker': True,
+                    'gender': "male",
+                    'email': cust_email,
+                    'calling_code': "62",
+                    'mobile': "315662000",
+                    'contact_id': "CTC_1",
+                    'sequence': 1
+                }]
                 psg_dict = {
                     'pax_type': "ADT",
                     'first_name': cust_first_name,
@@ -816,7 +851,69 @@ class ReservationPpob(models.Model):
                 passengers = [psg_dict]
 
                 values = self._prepare_booking_api(data['data'], context)
+                ppob_cust = self.env['tt.customer'].search([('first_name', '=', psg_dict['first_name']), ('last_name', '=', psg_dict['last_name']), ('agent_id', '=', context['co_agent_id'])], limit=1)
+                if ppob_cust:
+                    cust_dict = {
+                        'name': "%s %s" % (psg_dict['first_name'], psg_dict['last_name']),
+                        'first_name': psg_dict['first_name'],
+                        'last_name': psg_dict['last_name'],
+                        'gender': psg_dict['gender'],
+                        'title': psg_dict['title'],
+                        'birth_date': psg_dict['birth_date'],
+                        'nationality_id': nationality_id,
+                        'identity_type': '',
+                        'identity_number': '',
+                        'identity_expdate': False,
+                        'identity_country_of_issued_id': False,
+                        'sequence': psg_dict['sequence']
+                    }
+
+                    if cust_email != placeholder_email and ppob_cust[0].email != cust_email:
+                        ppob_cust[0].sudo().write({
+                            'email': cust_email
+                        })
+
+                    booker_obj = ppob_cust[0]
+                    contact_obj = ppob_cust[0]
+                    list_passenger_value = [(0, 0, cust_dict)]
+                    list_customer_id = [ppob_cust[0]]
+                else:
+                    booker_obj = self.create_booker_api(booker, context)
+                    contact_obj = self.create_contact_api(contacts[0], booker_obj, context)
+
+                    list_passenger_value = self.create_passenger_value_api(passengers)
+                    list_customer_id = self.create_customer_api(passengers, context, booker_obj.seq_id, contact_obj.seq_id)
+
+                # fixme diasumsikan idxny sama karena sama sama looping by rec['psg']
+                for idx, rec in enumerate(list_passenger_value):
+                    rec[2].update({
+                        'customer_id': list_customer_id[idx].id
+                    })
+
+                for psg in list_passenger_value:
+                    util.pop_empty_key(psg[2])
+
+                values.update({
+                    'booker_id': booker_obj.id,
+                    'contact_title': contacts[0]['title'],
+                    'contact_id': contact_obj.id,
+                    'contact_name': contact_obj.name,
+                    'contact_email': contact_obj.email,
+                    'contact_phone': "%s - %s" % (contact_obj.phone_ids[0].calling_code, contact_obj.phone_ids[0].calling_number),
+                    'passenger_ids': list_passenger_value,
+                })
                 resv_obj.write(values)
+
+                ## 22 JUN 2023 - IVAN
+                ## GET CURRENCY CODE
+                currency = ''
+                for svc in data['data']['service_charges']:
+                    if not currency:
+                        currency = svc['currency']
+                if currency:
+                    currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                    if currency_obj:
+                        resv_obj.currency_id = currency_obj.id
                 provider_list = []
                 total_price = 0
                 for rec in resv_obj.provider_booking_ids:

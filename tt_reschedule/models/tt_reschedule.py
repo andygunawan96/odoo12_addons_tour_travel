@@ -216,6 +216,10 @@ class TtRescheduleLine(models.Model):
                     pax_amount += 1
                     pax_desc_str += '%s. %s<br/>' % (rec.title, rec.name)
                 price_per_mul = self.real_reschedule_amount / pax_amount
+                if self.reschedule_id.ho_id:
+                    ho_obj = self.reschedule_id.ho_id
+                else:
+                    ho_obj = self.reschedule_id.agent_id.ho_id
                 po_vals = {
                     'res_model': self._name,
                     'res_id': self.id,
@@ -230,6 +234,7 @@ class TtRescheduleLine(models.Model):
                     'currency_id': self.currency_id.id,
                     'price_per_mult': price_per_mul,
                     'price': self.real_reschedule_amount,
+                    'ho_id': ho_obj and ho_obj.id or False
                 }
                 new_po_obj = self.env['tt.letter.guarantee'].create(po_vals)
                 ref_num = ''

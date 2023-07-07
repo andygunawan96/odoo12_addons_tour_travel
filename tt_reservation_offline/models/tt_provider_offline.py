@@ -190,7 +190,10 @@ class ProviderOffline(models.Model):
                         mult_amount += 1
 
                 price_per_mul = self.total_price / mult_amount / qty_amount
-
+                if self.booking_id.ho_id:
+                    ho_obj = self.booking_id.ho_id
+                else:
+                    ho_obj = self.booking_id.agent_id.ho_id
                 lg_vals = {
                     'res_model': self._name,
                     'res_id': self.id,
@@ -205,6 +208,7 @@ class ProviderOffline(models.Model):
                     'currency_id': self.currency_id.id,
                     'price_per_mult': price_per_mul,
                     'price': self.total_price,
+                    'ho_id': ho_obj and ho_obj.id or False
                 }
                 new_lg_obj = self.env['tt.letter.guarantee'].create(lg_vals)
                 for key, val in desc_dict.items():
