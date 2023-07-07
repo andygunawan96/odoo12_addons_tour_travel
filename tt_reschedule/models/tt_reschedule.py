@@ -749,6 +749,7 @@ class TtReschedule(models.Model):
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': self.ho_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -768,6 +769,7 @@ class TtReschedule(models.Model):
                 is_use_credit_limit = False
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': self.ho_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -837,6 +839,7 @@ class TtReschedule(models.Model):
 
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
             'real_total_amount': invoice_id.grand_total,
@@ -855,6 +858,7 @@ class TtReschedule(models.Model):
 
         ##membuat payment dalam draft
         ho_payment_obj = self.env['tt.payment'].create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
             'real_total_amount': ho_invoice_id.grand_total,
