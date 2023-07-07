@@ -17,7 +17,7 @@ class ResRate(models.Model):
     rate_currency_id = fields.Many2one('res.currency', 'Rate Currency', default=lambda self: self.env.ref('base.IDR'))
     buy_rate = fields.Monetary('Buy Rate', currency_field='rate_currency_id')
     sell_rate = fields.Monetary('Sell Rate', currency_field='rate_currency_id')
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     active = fields.Boolean('Active', default=True)
 
 

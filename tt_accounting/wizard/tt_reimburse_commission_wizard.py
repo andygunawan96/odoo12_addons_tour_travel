@@ -430,7 +430,12 @@ class ReimburseCommissionWizard(models.TransientModel):
                 commission_list = adt_scs_list + chd_scs_list + inf_scs_list + ycd_scs_list
                 if commission_list:
                     com_tier_ids = [comtier.id for comtier in self.commission_tier_ids]
+                    if rec.booking_id.ho_id:
+                        ho_obj = rec.booking_id.ho_id
+                    else:
+                        ho_obj = rec.booking_id.agent_id.ho_id
                     reimburse_obj = self.env['tt.reimburse.commission'].create({
+                        'ho_id': ho_obj and ho_obj.id or False,
                         'res_model': rec._name,
                         'res_id': rec.id,
                         'provider_type_id': self.provider_type_id.id,
@@ -757,7 +762,12 @@ class ReimburseCommissionWizard(models.TransientModel):
                 commission_list = sc_dict['service_charges']
                 if commission_list:
                     com_tier_ids = [comtier.id for comtier in self.commission_tier_ids]
+                    if rec.booking_id.ho_id:
+                        ho_obj = rec.booking_id.ho_id
+                    else:
+                        ho_obj = rec.booking_id.agent_id.ho_id
                     reimburse_obj = self.env['tt.reimburse.commission'].create({
+                        'ho_id': ho_obj and ho_obj.id or False,
                         'res_model': rec._name,
                         'res_id': rec.id,
                         'provider_type_id': self.provider_type_id.id,
