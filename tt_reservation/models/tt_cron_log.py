@@ -85,7 +85,7 @@ class TtCronLogInhResv(models.Model):
                             'provider_id': provider_obj.id,
                             'date_from': yesterday_datetime,  # klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
                             'date_to': yesterday_datetime,
-                            'ho_id': provider_ho_agent_obj
+                            'ho_id': provider_ho_agent_obj.ho_id and provider_ho_agent_obj.ho_id.id or False
                         })
                         recon_obj_list = wiz_obj.send_recon_request_data()
                         for recon_obj in recon_obj_list:

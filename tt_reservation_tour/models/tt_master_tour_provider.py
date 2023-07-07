@@ -62,6 +62,7 @@ class MasterTourProvider(models.Model):
                 'currency_id': self.currency_id.id,
                 'price_per_mult': price_per_mul,
                 'price': self.total_price,
+                'ho_id': self.env.user.ho_id.id
             }
             new_lg_obj = self.env['tt.letter.guarantee'].create(lg_vals)
             line_vals = {

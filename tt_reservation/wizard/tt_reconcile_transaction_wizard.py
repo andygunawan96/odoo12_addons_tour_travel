@@ -48,7 +48,7 @@ class TtReconcileTransactionWizard(models.TransientModel):
         recon_resp = self.env['tt.api.con'].send_reconcile_request(request)
         if recon_resp['error_code'] != 0:
             raise UserError("Failed")
-        self.save_reconcile_data(recon_resp['response'])
+        self.save_reconcile_data(recon_resp['response'], self.ho_id.id)
 
     def save_reconcile_data(self,data, ho_id):
         provider_obj = self.env['tt.provider'].search([('code','=',data['provider_code'])])

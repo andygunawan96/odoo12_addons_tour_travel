@@ -48,12 +48,6 @@ class TtLetterGuarantee(models.Model):
             vals.update({
                 'name': self.env['ir.sequence'].next_by_code('tt.letter.guarantee.seq')
             })
-        resv_obj = self.env[vals['res_model']].browse(vals['res_id'])
-        if resv_obj.agent_id:
-            ho_agent_obj = resv_obj.agent_id.ho_id
-            vals.update({
-                'ho_id': ho_agent_obj.id
-            })
         return super(TtLetterGuarantee, self).create(vals)
 
     def action_confirm(self):
