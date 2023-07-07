@@ -255,7 +255,7 @@ class TtAgent(models.Model):
             balance = 0
             point_reward = 0
             customer_parent_balance = customer_parent_obj.actual_balance
-            currency_code = ''
+            currency_code = customer_parent_obj.currency_id.name
             customer_parent_currency_code = customer_parent_obj.currency_id.name
             credit_limit = customer_parent_obj.credit_limit
             is_show_balance = False

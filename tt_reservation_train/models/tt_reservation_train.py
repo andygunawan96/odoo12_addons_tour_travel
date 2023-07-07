@@ -107,14 +107,18 @@ class TtReservationTrain(models.Model):
     def action_booked_api_train(self,context,pnr_list,hold_date):
         if type(hold_date) != datetime:
             hold_date = False
-        self.write({
+        write_values = {
             'state': 'booked',
-            'pnr': ', '.join(pnr_list),
-            'hold_date': hold_date,
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now()
-        })
+        }
 
+        if hold_date:
+            write_values['hold_date'] = hold_date
+        if pnr_list:
+            write_values['pnr'] = ', '.join(pnr_list)
+
+        self.write(write_values)
         try:
             if self.agent_type_id.is_send_email_booked:
                 mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_train')], limit=1)
