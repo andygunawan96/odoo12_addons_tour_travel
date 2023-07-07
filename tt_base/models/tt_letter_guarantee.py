@@ -127,9 +127,4 @@ class TtLetterGuaranteeLines(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals['lg_id']:
-            letter_guarantee_obj = self.env['tt.letter.guarantee.lines'].browse(vals['lg_id'])
-            vals.update({
-                'ho_id': letter_guarantee_obj.ho_id.id
-            })
         return super(TtLetterGuaranteeLines, self).create(vals)
