@@ -215,7 +215,8 @@ class ProviderOffline(models.Model):
                     line_vals = {
                         'lg_id': new_lg_obj.id,
                         'ref_number': key,
-                        'description': val
+                        'description': val,
+                        'ho_id': ho_obj and ho_obj.id or False
                     }
                     self.env['tt.letter.guarantee.lines'].create(line_vals)
         else:

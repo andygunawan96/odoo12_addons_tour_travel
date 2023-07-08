@@ -68,6 +68,7 @@ class MasterTourProvider(models.Model):
             line_vals = {
                 'lg_id': new_lg_obj.id,
                 'ref_number': self.master_tour_id.tour_code,
-                'description': desc_str + self.details
+                'description': desc_str + self.details,
+                'ho_id': self.env.user.ho_id.id
             }
             self.env['tt.letter.guarantee.lines'].create(line_vals)

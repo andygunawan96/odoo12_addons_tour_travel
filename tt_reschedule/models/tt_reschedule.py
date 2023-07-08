@@ -246,7 +246,8 @@ class TtRescheduleLine(models.Model):
                 line_vals = {
                     'lg_id': new_po_obj.id,
                     'ref_number': ref_num,
-                    'description': desc_str
+                    'description': desc_str,
+                    'ho_id': ho_obj and ho_obj.id or False
                 }
                 self.env['tt.letter.guarantee.lines'].create(line_vals)
         else:
