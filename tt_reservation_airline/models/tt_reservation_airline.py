@@ -2316,20 +2316,30 @@ class ReservationAirline(models.Model):
         else:
             co_uid = self.env.user.id
         attachments = []
-        for idx, base64 in enumerate(data['response'], start=1):
-            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
-                {
-                    'filename': 'Airline Ticket Original %s-%s.pdf' % (book_obj.name, idx),
-                    'file_reference': 'Airline Ticket Original',
-                    'file': base64['base64'],
-                    'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
-                },
-                {
-                    'co_agent_id': co_agent_id,
-                    'co_uid': co_uid
-                }
-            )
-            attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
+        for idx, data_eticket in enumerate(data['response'], start=1):
+            is_pdf_found = False
+            for printout_ori_obj in book_obj.printout_ticket_original_ids:
+                path = printout_ori_obj.path
+                with open(path, "rb") as pdf_file:
+                    encoded_string = base64.b64encode(pdf_file.read()).decode('utf-8')
+                    if encoded_string == data_eticket['base64']:
+                        is_pdf_found = True
+                if is_pdf_found:
+                    break
+            if not is_pdf_found:
+                res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                    {
+                        'filename': 'Airline Ticket Original %s-%s.pdf' % (book_obj.name, idx),
+                        'file_reference': 'Airline Ticket Original',
+                        'file': data_eticket['base64'],
+                        'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
+                    },
+                    {
+                        'co_agent_id': co_agent_id,
+                        'co_uid': co_uid
+                    }
+                )
+                attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
         for rec_attachment in attachments:
             book_obj.printout_ticket_original_ids = [(4, rec_attachment)]
 
@@ -2348,6 +2358,7 @@ class ReservationAirline(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
+        is_force_update = data.get('force_update', False)
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
         has_ticket_ori = False
@@ -2355,7 +2366,7 @@ class ReservationAirline(models.Model):
             if rec_ticket_ori.active == True:
                 has_ticket_ori = True
 
-        if not has_ticket_ori:
+        if not has_ticket_ori or is_force_update:
             # gateway get ticket
             req = {"data": [], 'ho_id': book_obj.agent_id.ho_id.id}
             for provider_booking_obj in book_obj.provider_booking_ids:
