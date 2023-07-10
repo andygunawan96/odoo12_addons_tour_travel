@@ -155,7 +155,7 @@
         </record>
 
         <record id="visa_ticket_customer_footer" model="tt.report.common.setting">
-            <field name="name">Visa Ticket</field>
+            <field name="name">Visa Ticket Customer</field>
             <field name="code">visa_ticket_customer</field>
             <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>
@@ -178,7 +178,7 @@
         </record>
 
         <record id="visa_ticket_ho_footer" model="tt.report.common.setting">
-            <field name="name">Visa Ticket</field>
+            <field name="name">Visa Ticket HO</field>
             <field name="code">visa_ticket_ho</field>
             <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="agent_id" ref="tt_base.rodex_ho"/>

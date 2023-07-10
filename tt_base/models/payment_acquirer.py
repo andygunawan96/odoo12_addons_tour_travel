@@ -436,67 +436,64 @@ class PaymentAcquirer(models.Model):
             try:
                 ### GET BOOKING ###
                 can_use_credit_limit = False
-                if book_obj.agent_id.credit_limit > 0:
-                    can_use_credit_limit = False
-                    is_provider_type = True
-                    is_provider = True
-                    if book_obj.provider_type_id.code in ['groupbooking', 'tour']:  ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
-                        is_provider_type = False
-                    ## asumsi kalau all pasti True
-                    if book_obj.agent_id.agent_credit_limit_provider_type_access_type == 'allow' and book_obj.provider_type_id not in book_obj.agent_id.agent_credit_limit_provider_type_eligibility_ids or \
-                            book_obj.agent_id.agent_credit_limit_provider_type_access_type == 'restrict' and book_obj.provider_type_id in book_obj.agent_id.agent_credit_limit_provider_type_eligibility_ids:
-                        is_provider_type = False
-                    for provider_booking in book_obj.provider_booking_ids:
-                        if book_obj.agent_id.agent_credit_limit_provider_access_type == 'allow' and provider_booking.provider_id not in book_obj.agent_id.agent_credit_limit_provider_eligibility_ids or \
-                                book_obj.agent_id.agent_credit_limit_provider_access_type == 'restrict' and provider_booking.provider_id in book_obj.agent_id.agent_credit_limit_provider_eligibility_ids:
-                            is_provider = False
-                            break
-                    if is_provider_type and is_provider:
-                        can_use_credit_limit = True
-                    if can_use_credit_limit:
-                        credit_limit = self.generate_agent_payment(amount, book_obj.agent_id.id, 'credit_limit')
-                        if credit_limit != {}:
-                            res['agent'].append(credit_limit)
-                ## BALANCE
-                res['agent'].append(self.generate_agent_payment(amount, book_obj.agent_id.id, 'balance'))
-            except Exception as e:
-                _logger.error('%s, %s' % (str(e), traceback.format_exc()))
-                ### FORCE ISSUED
-                try:
-                    can_use_credit_limit = False
-                    if agent_obj.credit_limit > 0:
+                if hasattr(book_obj,'agent_id'):
+                    if book_obj.agent_id.credit_limit > 0:
                         can_use_credit_limit = False
                         is_provider_type = True
                         is_provider = True
+                        if book_obj.provider_type_id.code in ['groupbooking', 'tour']:  ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                            is_provider_type = False
                         ## asumsi kalau all pasti True
-
-                        provider_type_obj = self.env['tt.provider.type'].search([('code','=',req['provider_type'])], limit=1)
-                        if req['provider_type'] in ['groupbooking', 'tour']: ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                        if book_obj.agent_id.agent_credit_limit_provider_type_access_type == 'allow' and book_obj.provider_type_id not in book_obj.agent_id.agent_credit_limit_provider_type_eligibility_ids or \
+                                book_obj.agent_id.agent_credit_limit_provider_type_access_type == 'restrict' and book_obj.provider_type_id in book_obj.agent_id.agent_credit_limit_provider_type_eligibility_ids:
                             is_provider_type = False
-                        if agent_obj.agent_credit_limit_provider_type_access_type == 'allow' and provider_type_obj not in agent_obj.agent_credit_limit_provider_type_eligibility_ids or \
-                                agent_obj.agent_credit_limit_provider_type_access_type == 'restrict' and provider_type_obj in agent_obj.agent_credit_limit_provider_type_eligibility_ids:
-                            is_provider_type = False
-                        if req.get('provider_list'):
-                            if len(req['provider_list']) > 0:
-                                for provider_code in req['provider_list']:
-                                    provider_obj = self.env['tt.provider'].search([('code', '=', provider_code)], limit=1)
-                                    if agent_obj.agent_credit_limit_provider_access_type == 'allow' and provider_obj not in agent_obj.agent_credit_limit_provider_eligibility_ids or \
-                                            agent_obj.agent_credit_limit_provider_access_type == 'restrict' and provider_obj in agent_obj.agent_credit_limit_provider_eligibility_ids:
-                                        is_provider = False
-                                        break
-                            elif agent_obj.agent_credit_limit_provider_access_type != 'all':
+                        for provider_booking in book_obj.provider_booking_ids:
+                            if book_obj.agent_id.agent_credit_limit_provider_access_type == 'allow' and provider_booking.provider_id not in book_obj.agent_id.agent_credit_limit_provider_eligibility_ids or \
+                                    book_obj.agent_id.agent_credit_limit_provider_access_type == 'restrict' and provider_booking.provider_id in book_obj.agent_id.agent_credit_limit_provider_eligibility_ids:
                                 is_provider = False
+                                break
                         if is_provider_type and is_provider:
                             can_use_credit_limit = True
                         if can_use_credit_limit:
-                            credit_limit = self.generate_agent_payment(amount, agent_obj.id, 'credit_limit')
+                            credit_limit = self.generate_agent_payment(amount, book_obj.agent_id.id, 'credit_limit')
                             if credit_limit != {}:
                                 res['agent'].append(credit_limit)
                     ## BALANCE
-                    res['agent'].append(self.generate_agent_payment(amount, agent_obj.id, 'balance'))
-                except Exception as e:
-                    _logger.error('%s, %s' % (str(e), traceback.format_exc()))
+                    res['agent'].append(self.generate_agent_payment(amount, book_obj.agent_id.id, 'balance'))
+                elif agent_obj.credit_limit > 0:
+                    can_use_credit_limit = False
+                    is_provider_type = True
+                    is_provider = True
+                    ## asumsi kalau all pasti True
 
+                    provider_type_obj = self.env['tt.provider.type'].search([('code', '=', req['provider_type'])],
+                                                                            limit=1)
+                    if req['provider_type'] in ['groupbooking',
+                                                'tour']:  ## if untuk product yg bisa installment, dibuat tidak bisa karena jika di pakai akan bug di payment harus rombak total
+                        is_provider_type = False
+                    if agent_obj.agent_credit_limit_provider_type_access_type == 'allow' and provider_type_obj not in agent_obj.agent_credit_limit_provider_type_eligibility_ids or \
+                            agent_obj.agent_credit_limit_provider_type_access_type == 'restrict' and provider_type_obj in agent_obj.agent_credit_limit_provider_type_eligibility_ids:
+                        is_provider_type = False
+                    if req.get('provider_list'):
+                        if len(req['provider_list']) > 0:
+                            for provider_code in req['provider_list']:
+                                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code)], limit=1)
+                                if agent_obj.agent_credit_limit_provider_access_type == 'allow' and provider_obj not in agent_obj.agent_credit_limit_provider_eligibility_ids or \
+                                        agent_obj.agent_credit_limit_provider_access_type == 'restrict' and provider_obj in agent_obj.agent_credit_limit_provider_eligibility_ids:
+                                    is_provider = False
+                                    break
+                        elif agent_obj.agent_credit_limit_provider_access_type != 'all':
+                            is_provider = False
+                    if is_provider_type and is_provider:
+                        can_use_credit_limit = True
+                    if can_use_credit_limit:
+                        credit_limit = self.generate_agent_payment(amount, agent_obj.id, 'credit_limit')
+                        if credit_limit != {}:
+                            res['agent'].append(credit_limit)
+                    ## BALANCE
+                    res['agent'].append(self.generate_agent_payment(amount, agent_obj.id, 'balance'))
+            except Exception as e:
+                _logger.error('%s, %s' % (str(e), traceback.format_exc()))
             return ERR.get_no_error(res)
         except Exception as e:
             _logger.error(str(e) + traceback.format_exc())

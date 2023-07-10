@@ -922,7 +922,7 @@ class TtAgent(models.Model):
                 "currency_id": agent_obj.currency_id.name,
                 "other_currency": other_currency
             })
-        res = ERR.get_no_error(res)
+        res = ERR.get_no_error({"agent_dict": res})
         return res
 
     def get_ho_currency_api(self):
@@ -939,7 +939,7 @@ class TtAgent(models.Model):
                 "currency_list": currency_list,
                 "default_currency": agent_obj.currency_id.name
             }
-        res = ERR.get_no_error(res)
+        res = ERR.get_no_error({"currency_dict": res})
         return res
 
 class AgentTarget(models.Model):
