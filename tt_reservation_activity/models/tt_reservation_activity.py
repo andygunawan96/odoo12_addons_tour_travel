@@ -629,6 +629,7 @@ class ReservationActivity(models.Model):
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + " - "+ str(
                     contact_data['mobile']),
                 'date': datetime.now(),
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
@@ -643,7 +644,7 @@ class ReservationActivity(models.Model):
             })
 
             # create header & Update customer_parent_id
-            book_obj = self.sudo().create(header_val)
+            book_obj = self.create(header_val)
 
             if option['perBooking']:
                 for rec in option['perBooking']:

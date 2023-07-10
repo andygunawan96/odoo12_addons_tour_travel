@@ -283,6 +283,7 @@ class ReservationEvent(models.Model):
                 'contact_title': contact_obj.name,
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and contact_obj.phone_ids[0].phone_number or False,
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],

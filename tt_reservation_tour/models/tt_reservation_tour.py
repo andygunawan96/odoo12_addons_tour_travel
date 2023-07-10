@@ -493,7 +493,7 @@ class ReservationTour(models.Model):
                 # if currency_obj:
                 #     book_obj.currency_id = currency_obj.id
 
-            booking_obj = self.env['tt.reservation.tour'].sudo().create({
+            booking_obj = self.create({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
                 'passenger_ids': list_passenger_value,
@@ -502,6 +502,7 @@ class ReservationTour(models.Model):
                 'contact_email': contact_data.get('email') and contact_data['email'] or '',
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) +" - "+ str(
                     contact_data['mobile']),
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id',False),
                 'user_id': context['co_uid'],
