@@ -52,8 +52,8 @@
         <record id="tt_price_list_mitrakeluarga_drivethru_test_darah" model="tt.price.list.mitrakeluarga">
             <field name="name">Default Blood Test Drive Thru</field>
             <field name="min_pax">1</field>
-            <field name="commission">19000</field>
-            <field name="base_price">190000</field>
+            <field name="commission">295000</field>
+            <field name="base_price">5000</field>
             <field name="active">True</field>
         </record>
 
