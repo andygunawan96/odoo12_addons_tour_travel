@@ -1174,6 +1174,7 @@ class TtPassport(models.Model):
                 'passenger_ids': [(6, 0, psg_ids)],
                 'adult': sell_passport['pax']['adult'],
                 'state': 'booked',
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
             })

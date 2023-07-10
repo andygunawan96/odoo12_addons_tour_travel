@@ -124,7 +124,3 @@ class TtLetterGuaranteeLines(models.Model):
     state = fields.Selection([('draft', 'Draft'), ('confirm', 'Confirmed'), ('sent', 'Sent'), ('paid', 'Paid'),
                               ('cancel', 'Cancelled')], 'State', related='lg_id.state', store=True)
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
-
-    @api.model
-    def create(self, vals):
-        return super(TtLetterGuaranteeLines, self).create(vals)

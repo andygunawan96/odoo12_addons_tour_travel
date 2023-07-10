@@ -2342,13 +2342,14 @@ class ReservationGroupBooking(models.Model):
                 'state_groupbooking': 'draft',
                 "hold_date": (datetime.strptime(data['provider_data']['departure_date'], '%Y-%m-%d') + timedelta(days=-1)).strftime('%Y-%m-%d'),
                 'booked_date': datetime.now(),
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
             }
 
 
-            book_obj = self.sudo().create(header_val)
+            book_obj = self.create(header_val)
 
             res = {
                 'order_number': book_obj.name

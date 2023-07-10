@@ -1437,6 +1437,7 @@ class ReservationAirline(models.Model):
             'student': searchRQ.get('student', 0),
             'labour': searchRQ.get('labour', 0),
             'seaman': searchRQ.get('seaman', 0),
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],
