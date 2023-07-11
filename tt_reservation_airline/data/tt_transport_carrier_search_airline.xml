@@ -1004,5 +1004,18 @@
             ]"/>
             <field name="active" eval="False"/>
         </record>
+
+        <record id="tt_transport_carrier_airline_8g_all" model="tt.transport.carrier.search">
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
+            <field name="name">Aero Dili</field>
+            <field name="carrier_id" ref="tt_reservation_airline.tt_transport_carrier_airline_8g"/>
+            <field name="is_default" eval="True"/>
+            <field name="is_favorite" eval="False"/>
+            <field name="sequence">173</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_aerodili'))
+            ]"/>
+            <field name="active" eval="False"/>
+        </record>
     </data>
 </odoo>
