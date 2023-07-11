@@ -11,8 +11,8 @@ Tour & Travel - Report Dashboard
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'tt_base', 'tt_reservation', 'tt_report_selling'],
 
     # always loaded

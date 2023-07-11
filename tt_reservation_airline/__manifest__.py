@@ -12,14 +12,15 @@ Tour & Travel - Reservation Airline
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base_setup','tt_base','tt_reservation','base_address_city','tt_in_api_connector'],
     'data': [
         'views/menu_item_base.xml',
 
         'wizard/tt_split_reservation_wizard.xml',
         'wizard/tt_get_booking_from_vendor.xml',
+        'wizard/tt_reservation_passenger_edit_wizard_views.xml',
 
         'data/ir_cron_data.xml',
         'data/ir_sequence_data.xml',
@@ -43,6 +44,8 @@ Key Features
         'security/ir_rule_data.xml',
 
         'wizard/force_issued_wizard_views.xml',
+        'wizard/tt_check_segment_wizard_views.xml',
+        'wizard/tt_xls_pnr_matching_wizard_views.xml',
 
         'views/tt_reservation_airline.xml',
         'views/tt_provider_views.xml',

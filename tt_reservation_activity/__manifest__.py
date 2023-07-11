@@ -12,8 +12,8 @@ Tour & Travel - Reservation Activity
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base_setup','tt_base','tt_reservation','base_address_city'],
     'data': [
         'data/ir_sequence_data.xml',
@@ -27,8 +27,9 @@ Key Features
 
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',
-        'wizard/force_issued_wizard_views.xml',
         'views/menu_item_base.xml',
+        'wizard/force_issued_wizard_views.xml',
+        'wizard/activity_assign_products_wizard_views.xml',
         'views/tt_activity_voucher_wizard.xml',
         'views/tt_activity_sync_product_wizard.xml',
         'views/tt_activity_sync_to_children_wizard.xml',
@@ -36,6 +37,7 @@ Key Features
         'views/tt_reservation_activity_option_views.xml',
         'views/tt_master_activity_views.xml',
         'views/tt_master_activity_lines_views.xml',
+        'views/tt_auto_sync_activity_setup_views.xml',
         'views/tt_reservation_activity_views.xml',
         'views/tt_provider_views.xml',
         'views/tt_service_charge_views.xml',

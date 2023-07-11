@@ -21,21 +21,21 @@
         <!--Tours and Travel-->
         <menuitem id="main_tour_travel"
                   name="Tours and Travel"
-                  groups="tt_base.group_tt_tour_travel"
+                  groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
                   web_icon="hr,static/description/icon.png"
                   sequence="1"/>
 
         <!--Reservation Master Data-->
         <menuitem id="main_reservation_master_data"
                   name="Reservation Master Data"
-                  groups="tt_base.group_tt_tour_travel"
+                  groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
                   web_icon="hr,static/description/icon.png"
                   sequence="3"/>
 
         <!--Customers-->
         <menuitem id="main_customers"
                   name="Customers"
-                  groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,tt_base.group_tt_corpor_user"
+                  groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,tt_base.group_tt_corpor_user,base.group_erp_manager"
                   web_icon="hr,static/description/icon.png"
                   sequence="5"/>
 
@@ -44,7 +44,7 @@
                   name="Transactions"
                   web_icon="hr,static/description/icon.png"
                   sequence="4"
-                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
 
         <!--External Vendor Login-->
         <menuitem id="main_external_vendor"
@@ -72,7 +72,7 @@
 
                   name="Agent"
                   sequence="20"
-                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
 
         <menuitem id="top_customers_vendor"
                   parent="tt_base.main_customers"
@@ -99,7 +99,7 @@
         <!-- Accounting -->
         <menuitem id="top_menu_accounting"
                   parent="tt_base.main_transaction"
-                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
+                  groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"
                   name="Accounting"
                   sequence="10"/>
         <!-- Users -->
@@ -127,7 +127,7 @@
         <!-- Administration -->
         <menuitem id="top_tour_travel_administration"
                   name="Administration"
-                  groups="base.group_system,tt_base.group_new_city_records_level_1,tt_base.group_history_skip_level_1,tt_base.group_banned_users_level_1,tt_base.group_frontend_security_level_1,tt_base.group_email_queue_level_1,tt_base.group_error_api_list_level_1"
+                  groups="base.group_erp_manager,tt_base.group_tt_tour_travel"
                   parent="tt_base.main_tour_travel"
                   sequence = "500"/>
 

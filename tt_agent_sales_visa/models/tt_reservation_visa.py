@@ -55,10 +55,13 @@ class ReservationVisa(models.Model):
     def action_create_invoice(self, data, context, payment_method_to_ho):
         invoice_id = False
         ho_invoice_id = False
+
+        temp_ho_obj = self.agent_id.ho_id
         book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])])
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': book_obj.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': book_obj.agent_id.id,
                 'customer_parent_id': book_obj.customer_parent_id.id,
                 'customer_parent_type_id': book_obj.customer_parent_type_id.id,
@@ -70,10 +73,12 @@ class ReservationVisa(models.Model):
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': book_obj._name,
             'res_id_resv': book_obj.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': invoice_id.id,
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),
-            'admin_fee': self.payment_acquirer_number_id.fee_amount
+            'admin_fee': self.payment_acquirer_number_id.fee_amount,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False
         })
 
         invoice_line_id = inv_line_obj.id
@@ -89,6 +94,7 @@ class ReservationVisa(models.Model):
                 is_use_credit_limit = False
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': book_obj.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': book_obj.agent_id.id,
                 'customer_parent_id': book_obj.customer_parent_id.id,
                 'customer_parent_type_id': book_obj.customer_parent_type_id.id,
@@ -101,10 +107,12 @@ class ReservationVisa(models.Model):
         ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
             'res_model_resv': book_obj._name,
             'res_id_resv': book_obj.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': ho_invoice_id.id,
             'reference': book_obj.name,
             'desc': book_obj.get_visa_summary(),
-            'admin_fee': 0
+            'admin_fee': 0,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False
         })
 
         ho_invoice_line_id = ho_inv_line_obj.id
@@ -160,7 +168,7 @@ class ReservationVisa(models.Model):
                         if agent_id not in commission_list:
                             commission_list[agent_id] = 0
                         commission_list[agent_id] += cost_charge.amount * -1
-                    elif cost_charge.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                    elif cost_charge.commission_agent_id != (temp_ho_obj and temp_ho_obj or False):
                         price_unit += cost_charge.amount
             ### FARE
             self.env['tt.ho.invoice.line.detail'].create({
@@ -168,6 +176,7 @@ class ReservationVisa(models.Model):
                 'price_unit': price_unit,
                 'quantity': 1,
                 'invoice_line_id': ho_invoice_line_id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'commission_agent_id': self.agent_id.id
             })
             total_price += price_unit
@@ -178,6 +187,7 @@ class ReservationVisa(models.Model):
                 'price_unit': commission_list[rec],
                 'quantity': 1,
                 'invoice_line_id': ho_invoice_line_id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'commission_agent_id': rec,
                 'is_commission': True
             })
@@ -206,6 +216,7 @@ class ReservationVisa(models.Model):
                     'price_unit': total_use_point,
                     'quantity': 1,
                     'invoice_line_id': ho_invoice_line_id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'commission_agent_id': self.agent_id.id,
                     'is_point_reward': True
                 })
@@ -234,6 +245,7 @@ class ReservationVisa(models.Model):
                 payref_id_list.append(upc_id.id)
 
         payment_vals = {
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'agent_id': book_obj.agent_id.id,
             'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': book_obj.customer_parent_id.id
@@ -263,6 +275,7 @@ class ReservationVisa(models.Model):
         acq_obj = False
         if payment_method_to_ho == 'credit_limit':
             ho_payment_vals = {
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
                 'acquirer_id': acq_obj,
                 'real_total_amount': ho_invoice_id.grand_total,

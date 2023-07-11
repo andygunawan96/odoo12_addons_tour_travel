@@ -34,9 +34,9 @@
                     <group attrs="{'invisible': [('transaction_name', 'not in', ['airline','train'])]}">
                         <group>
                             <field name="carrier_id" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                            <field name="provider_id" attrs="{'required' :[('state_offline','in',['confirm'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_id" attrs="{'required' :[('state_offline','in',['confirm'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="provider_type" readonly="1" invisible="1"/>
-                            <field name="provider_name" attrs="{'invisible': [('provider_type', '!=', 'offline')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_name" attrs="{'invisible': [('provider_type', '!=', 'offline')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         </group>
                         <group>
                             <field name="pnr" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
@@ -55,9 +55,9 @@
                         <!--Hotel / Themes Park-->
                         <group>
                             <field name="pnr" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
-                            <field name="provider_id" attrs="{'required' :[('state_offline','in',['confirm'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_id" attrs="{'required' :[('state_offline','in',['confirm'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="provider_type" readonly="1" invisible="1"/>
-                            <field name="provider_name" attrs="{'invisible': [('provider_type', '!=', 'offline')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_name" attrs="{'invisible': [('provider_type', '!=', 'offline')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="carrier_id" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="hotel_name" attrs="{'invisible': [('transaction_name', 'not in', ['hotel'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="cruise_package" attrs="{'invisible': [('transaction_name', 'not in', ['cruise'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
@@ -77,15 +77,15 @@
                             <field name="description" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                         </group>
                     </group>
-                    <group attrs="{'invisible': [('transaction_name', 'not in', ['tour','visa','periksain','phc','other'])]}">
+                    <group attrs="{'invisible': [('transaction_name', 'not in', ['tour','visa','periksain','phc','other', 'groupbooking', 'insurance', 'event', 'ppob', 'bus', 'labpintar', 'medical', 'mitrakeluarga', 'sentramediak', 'swabexpress'])]}">
                         <group>
                             <field name="pnr" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             <field name="description" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                         </group>
                         <group>
-                            <field name="provider_id" attrs="{'required' :[('state_offline','in',['confirm'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_id" attrs="{'required' :[('state_offline','in',['confirm'])], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             <field name="provider_type" readonly="1" invisible="1"/>
-                            <field name="provider_name" attrs="{'invisible': [('provider_type', '!=', 'offline')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel"/>
+                            <field name="provider_name" attrs="{'invisible': [('provider_type', '!=', 'offline')], 'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         </group>
                     </group>
                 </form>

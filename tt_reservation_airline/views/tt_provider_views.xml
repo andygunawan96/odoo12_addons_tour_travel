@@ -16,6 +16,8 @@
                     <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued"
                             type="object" groups="tt_base.group_reservation_provider_level_4"/>
                     <button string="Sync Refund Status" name="action_sync_refund_status" states="refund_pending" type="object"/>
+                    <button string="Check HX" name='action_check_segment_provider' states="booked,cancel,cancel2,issued" type="object"
+                            groups="tt_base.group_reservation_provider_level_4"/>
                     <button string="Reprice" name='action_reprice_provider' states="booked" type="object"
                             groups="tt_base.group_reservation_provider_level_4" style="margin-left: 100px !important;"/>
                     <button string="Void" name="action_void_provider" states="booked,issued"
@@ -35,6 +37,7 @@
                             <field name="provider_id"/>
                             <field name="balance_due"/>
                             <field name="total_price"/>
+                            <field name="total_price_cost"/>
                             <field name="penalty_amount"/>
                             <field name="penalty_currency"/>
                             <field name="reconcile_line_id"/>
@@ -146,7 +149,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="pnr"/>
-                <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <field name="origin_id"/>
                 <field name="destination_id"/>
                 <field name="departure_date"/>

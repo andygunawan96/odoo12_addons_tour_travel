@@ -28,6 +28,7 @@
                             <field name="provider_type_id"/>
                         </group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>
@@ -57,16 +58,6 @@
                         <page string="Agents" name="agents">
                             <group>
                                 <group>
-                                    <field name="agent_access_type" widget="radio"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
-                            <group string="Agent List">
-                                <field name="agent_ids" nolabel="1"/>
-                            </group>
-                            <group>
-                                <group>
                                     <field name="agent_type_access_type" widget="radio"/>
                                 </group>
                                 <group>
@@ -74,6 +65,16 @@
                             </group>
                             <group string="Agent Type List">
                                 <field name="agent_type_ids" nolabel="1"/>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_access_type" widget="radio"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Agent List">
+                                <field name="agent_ids" nolabel="1"/>
                             </group>
                         </page>
                     </notebook>
@@ -99,6 +100,7 @@
                 <field name="name"/>
                 <field name="description"/>
                 <field name="provider_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="state"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
@@ -113,6 +115,7 @@
             <field name="name"/>
             <field name="provider_name"/>
             <field name="carrier_name"/>
+            <field name="ho_id" groups="base.group_erp_manager"/>
             <filter name="enabled" string="Enabled" domain="[('state','=','enable')]"/>
             <filter name="disabled" string="Disabled" domain="[('state','=','disable')]"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
@@ -159,6 +162,7 @@
                     <group>
                         <group>
                             <field name="sequence"/>
+                            <field name="currency_id"/>
                             <field name="pricing_id" invisible="1"/>
                             <field name="provider_type_id" invisible="1"/>
                             <field name="set_expiration_date"/>
@@ -175,7 +179,10 @@
 [ Pricing Type ]
 Standard : Using sales price and provided commission from vendor price details.
 From NTA : Start pricing from NTA price, sales price minus commission (if provided).
-From Sales : Start pricing from Sales price, exclude commission details.</pre>
+From Sales : Start pricing from Sales price, exclude commission details.
+
+[Currency]
+If not set (empty), it will be applied for all currencies.</pre>
                     </div>
                     <notebook>
                         <page string="Route" name="route">
@@ -601,6 +608,7 @@ Amadeus cryptic sample request will be : FM5
             <tree decoration-muted="active == False">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="currency_id"/>
                 <field name="description"/>
                 <field name="pricing_type"/>
                 <field name="set_expiration_date"/>

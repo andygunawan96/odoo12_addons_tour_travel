@@ -66,6 +66,7 @@ class AgentPricing(models.Model):
 
     line_ids = fields.One2many('tt.agent.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
@@ -203,17 +204,19 @@ class AgentPricing(models.Model):
     def get_agent_pricing_api(self):
         try:
             objs = self.env['tt.agent.pricing'].sudo().search([])
-            agent_pricing_data = {
-                'agent_pricing_list': []
-            }
+            agent_pricing_data = {}
             date_now = datetime.now().strftime(FORMAT_DATETIME)
             expired_date = datetime.now() + timedelta(seconds=EXPIRED_SECONDS)
             expired_date = expired_date.strftime(FORMAT_DATETIME)
             for obj in objs:
                 if not obj.active:
                     continue
-
-                vals = obj.get_data()
+                if obj.ho_id:
+                    if str(obj.ho_id.id) not in agent_pricing_data:
+                        agent_pricing_data[str(obj.ho_id.id)] = {
+                            'agent_pricing_list': []
+                        }
+                    vals = obj.get_data()
                 # December 23, 2021 - SAM
                 # Update struktur pricing agent
 
@@ -225,7 +228,7 @@ class AgentPricing(models.Model):
                 #         'expired_date': expired_date,
                 #     }
                 # agent_pricing_data[agent_type_code]['agent_pricing_list'].append(vals)
-                agent_pricing_data['agent_pricing_list'].append(vals)
+                    agent_pricing_data[str(obj.ho_id.id)]['agent_pricing_list'].append(vals)
 
             payload = {
                 'agent_pricing_data': agent_pricing_data
@@ -246,6 +249,7 @@ class AgentPricingLine(models.Model):
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
     pricing_id = fields.Many2one('tt.agent.pricing', 'Agent Pricing', readonly=1, ondelete='cascade')
+    currency_id = fields.Many2one('res.currency', 'Currency', ondelete='cascade')
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
@@ -433,6 +437,7 @@ class AgentPricingLine(models.Model):
             'id': self.id,
             'sequence': self.sequence,
             'name': self.name if self.name else '',
+            'currency_code': self.currency_id.name if self.currency_id else '',
             'set_expiration_date': self.set_expiration_date,
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
             'date_to': self.date_to.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_to else '',

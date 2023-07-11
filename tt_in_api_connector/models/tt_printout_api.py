@@ -22,7 +22,7 @@ class TtPrintoutApiCon(models.Model):
                     raise RequestException(1001)
             elif data['mode'] == 'invoice':
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])
-                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids):
+                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids) or (self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids):
                     if data.get('reschedule_number'):
                         res = self.env['tt.agent.invoice'].print_reschedule_invoice_api(data, context)
                     else:
@@ -33,13 +33,13 @@ class TtPrintoutApiCon(models.Model):
                 res = self.env['tt.reschedule'].print_reschedule_changes(data, context)
             elif data['mode'] == 'kwitansi':
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])
-                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids):
+                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids) or (self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids):
                     res = self.env['tt.agent.invoice'].print_kwitansi_api(data, context)
                 else:
                     raise RequestException(1001)
             elif data['provider_type'] == 'hotel':
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])
-                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids):
+                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids) or (self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids):
                     if data['mode'] == 'ticket':
                         res = self.env['tt.reservation.%s' % data['provider_type']].do_print_voucher(data, context)
                     # elif data['mode'] == 'itinerary':
@@ -58,7 +58,7 @@ class TtPrintoutApiCon(models.Model):
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data)
             else:
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])
-                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids):
+                if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids) or (self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids):
                     if data['mode'] == 'ticket':
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket(data, context)
                     elif data['mode'] == 'ticket_price':

@@ -8,6 +8,7 @@
                 <field name="name"/>
                 <field name="legal_name"/>
                 <field name="agent_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="parent_agent_id"/>
                 <field name="email"/>
                 <field name="email_cc"/>
@@ -31,9 +32,10 @@
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel"/>
+                    <filter string="Name" name="name" domain="[]" context="{'group_by':'name'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter string="Parent Agent" name="parent_agent_id" domain="[]" context="{'group_by':'parent_agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter string="Email" name="email" domain="[]" context="{'group_by':'email'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -83,9 +85,9 @@
                             <!--                            <field name="actual_balance"/>-->
                             <!--                            <field name="annual_revenue_target"/>-->
                             <!--                            <field name="annual_profit_target"/>-->
-                            <field name="credit_limit" attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')]}"/>
                         </group>
                         <group>
+                            <field name="credit_limit" attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')]}"/>
                             <field name="est_date" readonly="1"/>
                             <!--                            <field name="mou_start"/>-->
                             <!--                            <field name="mou_end"/>-->
@@ -93,8 +95,16 @@
                     </group>
 
                     <group string="Agent">
+                        <field name="is_ho_agent" readonly="0" groups="base.group_erp_manager"/>
+                        <field name="is_btc_agent" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                        <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
+                        <field name="btc_agent_type_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
+                        <field name="redirect_url_signup" readonly="1" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
+                        <field name="website_default_color" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
+                        <field name="is_use_point_reward" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
+                        <field name="email_server_id" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
                         <field name="parent_agent_id" readonly="1"/>
                         <field name="user_ids" readonly="1"/>
                         <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
@@ -130,7 +140,10 @@
                         <page string="Third Party Key">
                             <field name="third_party_key_ids" readonly="1"/>
                         </page>
-                        <page string="Quota Partners" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}" groups="tt_base.group_tt_tour_travel">
+                        <page string="Other Currency">
+                            <field name="currency_ids" readonly="1"/>
+                        </page>
+                        <page string="Quota Partners" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
                             <field name="quota_partner_ids"/>
                         </page>
                         <page string="Quota" attrs="{'invisible': [('is_using_pnr_quota','=',False)]}">
@@ -172,8 +185,20 @@
             <field name="currency_id" position="replace">
                 <field name="currency_id" readonly="0"/>
             </field>
+            <field name="currency_ids" position="replace">
+                <field name="currency_ids" readonly="0"/>
+            </field>
             <field name="est_date" position="replace">
                 <field name="est_date" readonly="0"/>
+            </field>
+            <field name="is_btc_agent" position="replace">
+                <field name="is_btc_agent" readonly="0" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+            </field>
+            <field name="btc_agent_type_id" position="replace">
+                <field name="btc_agent_type_id" readonly="0" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
+            </field>
+            <field name="redirect_url_signup" position="replace">
+                <field name="redirect_url_signup" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
             </field>
             <field name="agent_type_id" position="replace">
                 <field name="agent_type_id" readonly="0"/>
@@ -254,6 +279,7 @@
                 <field name="agent_type_id"/>
                 <field name="parent_agent_id"/>
                 <field name="reference"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
             </tree>
         </field>
     </record>
@@ -269,6 +295,7 @@
                 <field name="email"/>
                 <field name="est_date"/>
                 <field name="agent_type_id"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <!--                <field name="currency_id"/>-->
                 <templates>
                     <t t-name="kanban-box">
@@ -332,14 +359,8 @@
     <menuitem id="menu_tour_travel_agent"
               parent="tt_base.top_tour_travel_customers"
               groups="tt_base.group_agent_level_1"
-              name="Agent"
-              sequence="20"/>
-
-    <menuitem id="submenu_tour_travel_all_agent"
-              parent="tt_base.menu_tour_travel_agent"
-              groups="tt_base.group_agent_level_1"
-              name="All"
-              sequence="1"
+              name="Agent List"
+              sequence="13"
               action="tt_agent_all_action_view"/>
 
     <record id="view_agent_target_form" model="ir.ui.view">
@@ -361,6 +382,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="start_date"/>
                             <field name="end_date"/>

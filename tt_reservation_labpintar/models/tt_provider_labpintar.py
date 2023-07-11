@@ -277,12 +277,14 @@ class TtProviderLabPintar(models.Model):
         else:
             self.cancel_uid = self.env.user.id
         self.state = 'cancel'
+
+        ho_id = self.booking_id.agent_id.ho_id.id
         self.env['tt.labpintar.api.con'].send_cancel_order_notification(self.booking_id.name,
                                                                          self.env.user.name,
                                                                          self.booking_id.test_datetime.astimezone(
                                                                              pytz.timezone('Asia/Jakarta')).strftime(
                                                                              "%d-%m-%Y %H:%M"),
-                                                                         self.booking_id.test_address)
+                                                                         self.booking_id.test_address, ho_id)
 
     def action_refund(self, check_provider_state=False):
         self.state = 'refund'

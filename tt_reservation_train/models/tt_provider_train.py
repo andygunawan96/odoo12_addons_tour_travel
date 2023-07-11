@@ -297,6 +297,7 @@ class TtProviderTrain(models.Model):
             scs.pop('foreign_currency')
             scs['passenger_train_ids'] = [(6,0,scs['passenger_train_ids'])]
             scs['description'] = self.pnr
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             service_chg_obj.create(scs)
 
         # "sequence": 1,
@@ -356,7 +357,9 @@ class TtProviderTrain(models.Model):
             'balance_due': self.balance_due,
             'total_price': self.total_price,
             'origin': self.origin_id.code,
+            'origin_display_name': self.origin_id.name,
             'destination': self.destination_id.code,
+            'destination_display_name': self.destination_id.name,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'journeys': journey_list,
@@ -402,4 +405,15 @@ class TtProviderTrain(models.Model):
     #     return sc_value
 
     def update_temporary_field_per_pax_api(self, idx, temporary_field):
-        self.ticket_ids[idx].passenger_id.temporary_field = json.dumps(temporary_field)
+        data_temporary_field = []
+        if self.ticket_ids[idx].passenger_id.temporary_field:
+            data_temporary_field = json.loads(self.ticket_ids[idx].passenger_id.temporary_field)
+        if len(data_temporary_field) == 0:
+            data_temporary_field.append({})
+        if type(temporary_field) == list: ## DARI KAI VACCINE
+            for data in temporary_field:
+                for key in data:
+                    data_temporary_field[0][key] = data[key]
+        else: ## update yang ke 0 karena response dari KAI pakai list of dict
+            data_temporary_field[0].update(temporary_field)
+        self.ticket_ids[idx].passenger_id.temporary_field = json.dumps(data_temporary_field)

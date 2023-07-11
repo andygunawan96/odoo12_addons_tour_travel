@@ -14,11 +14,12 @@ class TtUploadFile(models.Model):
     file_reference = fields.Text('File Reference',readonly=True)
     path = fields.Char('Path', readonly=True)
     url = fields.Char('URL', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office Owner', domain=[('is_ho_agent', '=', True)], readonly=True, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent','Owner', readonly=True)
     upload_uid = fields.Many2one('res.users','Uploaded By', readonly=True)
     active = fields.Boolean('Active',default=True)
     will_be_deleted_date = fields.Date('Will be deleted on')
-    will_be_deleted_time = fields.Datetime('Will be deleted on', readonly=True)
+    will_be_deleted_time = fields.Datetime('Will be deleted time on', readonly=True)
     sequence = fields.Integer('Sequence',default=100)
 
     @api.model

@@ -27,10 +27,11 @@ class ConfirmOrdermedicalWizard(models.TransientModel):
             'state_vendor': 'confirmed_order'
         })
 
+        ho_id = self.booking_id.agent_id.ho_id.id
         try:
             self.env['tt.medical.api.con'].send_confirm_order_notification(self.booking_id.name,
                                                                              self.env.user.name,
                                                                              self.booking_id.test_datetime.astimezone(pytz.timezone('Asia/Jakarta')).strftime("%d-%m-%Y %H:%M"),
-                                                                             self.booking_id.test_address)
+                                                                             self.booking_id.test_address, ho_id)
         except Exception as e:
             _logger.error("Confirm Order From Button Notification Telegram Error.\n%s" % (traceback.format_exc()))

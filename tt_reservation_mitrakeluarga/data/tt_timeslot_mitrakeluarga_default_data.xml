@@ -49,6 +49,14 @@
             <field name="active">True</field>
         </record>
 
+        <record id="tt_price_list_mitrakeluarga_drivethru_test_darah" model="tt.price.list.mitrakeluarga">
+            <field name="name">Default Blood Test Drive Thru</field>
+            <field name="min_pax">1</field>
+            <field name="commission">295000</field>
+            <field name="base_price">5000</field>
+            <field name="active">True</field>
+        </record>
+
 
         <record id="tt_timeslot_mitrakeluarga_default_data_homecare_sub" model="tt.timeslot.mitrakeluarga.default">
             <field name="name">Default Timeslot Data Home Care</field>
@@ -86,5 +94,16 @@
                              ])]"/>
         </record>
 
+        <record id="tt_timeslot_mitrakeluarga_default_data_drivethru_sub2" model="tt.timeslot.mitrakeluarga.default">
+            <field name="name">Default Timeslot Data Drive Thru Blood Test</field>
+            <!--DEFAULT DATA SBY-->
+            <field name="single_supplement">0</field>
+            <field name="overtime_surcharge">0</field>
+            <field name="cito_surcharge">0</field>
+            <field name="max_book_datetime" eval="(datetime.now().replace(hour=17,minute=0,second=0).isoformat())"/>
+            <field name="blood_test_price_ids"
+                   eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_drivethru_test_darah')
+                             ])]"/>
+        </record>
     </data>
 </odoo>

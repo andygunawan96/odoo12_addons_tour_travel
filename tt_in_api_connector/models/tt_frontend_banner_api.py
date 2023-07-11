@@ -12,9 +12,9 @@ class TtFrontendBannerApiCon(models.Model):
         if action == 'add_banner':
             res = table_obj.add_banner_api(data, context)
         elif action == 'update_banner':
-            res = table_obj.set_inactive_delete_banner_api(data)
+            res = table_obj.set_inactive_delete_banner_api(data, context)
         elif action == 'get_banner':
-            res = table_obj.get_banner_api(data)
+            res = table_obj.get_banner_api(data, context)
         else:
             raise RequestException(999)
         return res

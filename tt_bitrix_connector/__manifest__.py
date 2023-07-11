@@ -12,8 +12,8 @@ Tour & Travel - Bitrix Connector
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends' : ['base_setup','tt_base'],
     'data': [
         'data/config_parameter_data.xml',

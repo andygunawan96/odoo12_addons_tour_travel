@@ -21,6 +21,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                             <field name="agent_id" readonly="1"/>
                             <field name="agent_type_id"/>
                         </group>
@@ -117,8 +118,8 @@
         <!--<field name="search_view_id" ref="api_connector_view_search"/>-->
     </record>
 
-    <menuitem id="pricing_customer_menu" parent="tt_base.menu_transaction_pricing" groups="tt_base.group_pricing_customer_level_1"
-              name="Pricing Customer" action="pricing_customer_action" sequence="10"/>
+<!--    <menuitem id="pricing_customer_menu" parent="tt_base.menu_transaction_pricing" groups="tt_base.group_pricing_customer_level_1"-->
+<!--              name="Pricing Customer" action="pricing_customer_action" sequence="10"/>-->
 
     <record id="pricing_customer_line_view_form" model="ir.ui.view">
         <field name="name">pricing.customer.line.view.form</field>

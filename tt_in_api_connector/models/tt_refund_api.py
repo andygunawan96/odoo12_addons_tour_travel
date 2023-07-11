@@ -30,5 +30,5 @@ class TtRefundApiCon(models.Model):
 
         return res
 
-    def send_refund_request(self, request):
-        return self.send_request_to_gateway('%s/booking/%s' % (self.url, request['res_model'].split('.')[2]), request, 'refund_request_api', timeout=300)
+    def send_refund_request(self, request, ho_id):
+        return self.send_request_to_gateway('%s/booking/%s' % (self.url, request['res_model'].split('.')[2]), request, 'refund_request_api', timeout=300, ho_id=ho_id)

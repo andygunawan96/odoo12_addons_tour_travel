@@ -11,7 +11,8 @@
                 <field name="referenced_pnr"/>
                 <field name="referenced_document"/>
                 <field name="notes"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <separator/>
                 <filter string="All" name='all'/>
                 <filter string="Draft" name='draft' domain="[('state', '=', 'draft')]"/>
@@ -39,11 +40,12 @@
                 <filter string="This Year" name="thisyear" domain="[('create_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
 
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_reschedule_type" string="After Sales Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_ho_id" string="Head Office" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_service_type" string="Service Type" domain="[]" context="{'group_by':'service_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_reschedule_type" string="After Sales Type" domain="[]" context="{'group_by':'reschedule_type_str'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_state" string="State" domain="[]" context="{'group_by':'state'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -64,6 +66,7 @@
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','not in', ['sent', 'validate'])]}"/>
                     <button name="set_to_final" string="Set to Finalized" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=', 'done')]}"/>
                     <button name="cancel_reschedule_from_button" string="Cancel (Reverse Ledger)" type="object" attrs="{'invisible':[('state','in', ['expired', 'cancel'])]}" confirm="Are you sure you want to cancel?"/>
+                    <button name="compute_all_real_reschedule_amount" string="Compute All Real Reschedule Amount" type="object" groups="base.group_system,base.user_admin"/>
                     <button string="Adjustment" name="%(tt_accounting.tt_adjustment_wizard_action_view)d" type="action"
                             groups="tt_base.group_adjustment_level_3"
                             context="{
@@ -71,6 +74,7 @@
                         'default_reschedule_id': id,
                         'default_res_model': res_model,
                         'default_res_id': res_id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': agent_id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
@@ -101,6 +105,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" attrs="{'invisible':[('ho_id','=', False)]}" groups="base.group_erp_manager"/>
                             <field name="agent_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
                             <field name="agent_type_id" attrs="{'invisible':[('agent_id','=', False)]}"/>
                             <field name="customer_parent_id" attrs="{'invisible':[('customer_parent_id','=', False)]}"/>
@@ -185,7 +190,7 @@
                                     <field name="id" string="Sequence" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
-                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                     <field name="origin_id"/>
                                     <field name="destination_id"/>
                                     <field name="departure_date"/>
@@ -258,7 +263,7 @@
                                     <field name="old_id" style="width:5%"/>
                                     <field name="name"/>
                                     <field name="pnr"/>
-                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel"/>
+                                    <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                     <field name="origin_id"/>
                                     <field name="destination_id"/>
                                     <field name="departure_date"/>

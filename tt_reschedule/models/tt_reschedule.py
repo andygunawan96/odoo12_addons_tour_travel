@@ -95,7 +95,11 @@ class TtRescheduleLine(models.Model):
                              default='confirm', related='reschedule_id.state', store=True)
     admin_fee_dummy = fields.Boolean('Generate Admin Fee Options')
     is_po_required = fields.Boolean('Is PO Required', readonly=True, compute='compute_is_po_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Purchase Order(s)', readonly=True)
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Purchase Order(s)', readonly=True, domain=_get_res_model_domain)
 
     @api.model
     def create(self, vals):
@@ -116,6 +120,8 @@ class TtRescheduleLine(models.Model):
             'real_reschedule_amount': self.real_reschedule_amount or 0,
             'admin_fee_type': self.admin_fee_id.name if self.admin_fee_id else '',
             'admin_fee': self.admin_fee or 0,
+            'admin_fee_ho': self.admin_fee_ho or 0,
+            'admin_fee_agent': self.admin_fee_agent or 0,
             'total_amount': self.total_amount or 0,
             'currency': self.currency_id.name if self.currency_id else '',
             'state': self.state
@@ -179,10 +185,13 @@ class TtRescheduleLine(models.Model):
     @api.onchange('provider_id')
     def compute_is_po_required(self):
         for rec in self:
-            if rec.provider_id.is_using_po:
-                rec.is_po_required = True
-            else:
-                rec.is_po_required = False
+            temp_req = False
+            temp_ho_obj = rec.reschedule_id.agent_id.ho_id
+            if temp_ho_obj:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search([('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    temp_req = True
+            rec.is_po_required = temp_req
 
     def generate_po(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_lg_po_level_4').id}.intersection(set(self.env.user.groups_id.ids))):
@@ -207,6 +216,10 @@ class TtRescheduleLine(models.Model):
                     pax_amount += 1
                     pax_desc_str += '%s. %s<br/>' % (rec.title, rec.name)
                 price_per_mul = self.real_reschedule_amount / pax_amount
+                if self.reschedule_id.ho_id:
+                    ho_obj = self.reschedule_id.ho_id
+                else:
+                    ho_obj = self.reschedule_id.agent_id.ho_id
                 po_vals = {
                     'res_model': self._name,
                     'res_id': self.id,
@@ -221,6 +234,7 @@ class TtRescheduleLine(models.Model):
                     'currency_id': self.currency_id.id,
                     'price_per_mult': price_per_mul,
                     'price': self.real_reschedule_amount,
+                    'ho_id': ho_obj and ho_obj.id or False
                 }
                 new_po_obj = self.env['tt.letter.guarantee'].create(po_vals)
                 ref_num = ''
@@ -232,7 +246,8 @@ class TtRescheduleLine(models.Model):
                 line_vals = {
                     'lg_id': new_po_obj.id,
                     'ref_number': ref_num,
-                    'description': desc_str
+                    'description': desc_str,
+                    'ho_id': ho_obj and ho_obj.id or False
                 }
                 self.env['tt.letter.guarantee.lines'].create(line_vals)
         else:
@@ -288,7 +303,7 @@ class TtReschedule(models.Model):
     payment_acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id', '=', agent_id)]", readonly=False, states={'done': [('readonly', True)]})
     reschedule_amount = fields.Monetary('Expected After Sales Amount', default=0, required=True, readonly=True, compute='_compute_reschedule_amount', store=True)
     real_reschedule_amount = fields.Monetary('Real After Sales Amount from Vendor', default=0, readonly=True,
-                                         compute='_compute_real_reschedule_amount')
+                                         compute='_compute_real_reschedule_amount', store=True)
     reschedule_line_ids = fields.One2many('tt.reschedule.line', 'reschedule_id', 'After Sales Line(s)', readonly=True, states={'confirm': [('readonly', False)]})
     reschedule_type_str = fields.Char('After Sales Type', readonly=True, compute='_compute_reschedule_type_str', store=True)
     change_ids = fields.One2many('tt.reschedule.changes', 'reschedule_id', 'Changes', readonly=True)
@@ -308,6 +323,7 @@ class TtReschedule(models.Model):
     def to_dict(self):
         return {
             'order_number': self.name,
+            'ho_id': self.ho_id.id if self.ho_id else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'referenced_pnr': self.referenced_pnr,
             'new_pnr': self.pnr,
@@ -319,6 +335,7 @@ class TtReschedule(models.Model):
             'real_reschedule_amount': self.real_reschedule_amount or 0,
             'admin_fee': self.admin_fee or 0,
             'total_amount': self.total_amount or 0,
+            'reschedule_type': self.reschedule_type_str if self.reschedule_type_str else '',
             'reschedule_lines': [line.to_dict() for line in self.reschedule_line_ids],
             'changes': [change.to_dict() for change in self.change_ids],
             'passengers': [pax.to_dict() for pax in self.passenger_ids],
@@ -327,12 +344,19 @@ class TtReschedule(models.Model):
             'create_date': self.create_date.strftime("%Y-%m-%d %H:%M:%S")
         }
 
-    def get_reschedule_admin_fee_rule(self, agent_id):
-        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'after_sales')], order='sequence, id desc')
+    def get_reschedule_admin_fee_rule(self, agent_id, ho_id=False):
+        search_param = [('after_sales_type', '=', 'after_sales')]
+        agent_obj = self.env['tt.agent'].browse(int(agent_id))
+        if ho_id:
+            ho_obj = self.env['tt.agent'].browse(int(ho_id))
+        else:
+            ho_obj = agent_obj and agent_obj.ho_id or False
+        if ho_obj:
+            search_param.append(('ho_id', '=', ho_obj.id))
+        reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
         if not reschedule_admin_fee_list:
             current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
         else:
-            agent_obj = self.env['tt.agent'].browse(int(agent_id))
             qualified_admin_fee = []
             for admin_fee in reschedule_admin_fee_list:
                 is_agent = False
@@ -460,6 +484,15 @@ class TtReschedule(models.Model):
                 resch_amount += rec2.real_reschedule_amount
             rec.real_reschedule_amount = resch_amount
 
+    def compute_real_reschedule_amount_btn(self):
+        self._compute_real_reschedule_amount()
+
+    # temporary function
+    def compute_all_real_reschedule_amount(self):
+        reschedule_objs = self.env['tt.reschedule'].search([])
+        for rec in reschedule_objs:
+            rec.compute_real_reschedule_amount_btn()
+
     @api.depends('admin_fee', 'reschedule_amount')
     @api.onchange('admin_fee', 'reschedule_amount')
     def _compute_total_amount(self):
@@ -561,7 +594,7 @@ class TtReschedule(models.Model):
                 )
 
                 if rec.admin_fee_ho:
-                    ho_agent = self.env.ref('tt_base.rodex_ho')
+                    ho_agent = self.agent_id.ho_id
                     credit = 0
                     debit = rec.admin_fee_ho
                     ledger_type = 6
@@ -643,9 +676,12 @@ class TtReschedule(models.Model):
 
     def check_po_required(self):
         required = False
-        for rec in self.reschedule_line_ids:
-            if rec.provider_id.is_using_po:
-                if not rec.letter_of_guarantee_ids:
+        temp_ho_id = self.agent_id.ho_id
+        if temp_ho_id:
+            for rec in self.reschedule_line_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_id.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
                     required = True
         return required
 
@@ -714,12 +750,14 @@ class TtReschedule(models.Model):
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': self.ho_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
                 'state': 'confirm',
                 'confirmed_uid': self.env.user.id,
-                'confirmed_date': datetime.now()
+                'confirmed_date': datetime.now(),
+                'pnr': self.pnr
             })
 
         is_use_credit_limit = False
@@ -732,13 +770,15 @@ class TtReschedule(models.Model):
                 is_use_credit_limit = False
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': self.ho_id.id,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
                 'state': state,
                 'confirmed_uid': self.env.user.id,
                 'confirmed_date': datetime.now(),
-                'is_use_credit_limit': is_use_credit_limit
+                'is_use_credit_limit': is_use_credit_limit,
+                'pnr': self.pnr
             })
 
         desc_str = self.name + ' ('
@@ -800,6 +840,7 @@ class TtReschedule(models.Model):
 
         ##membuat payment dalam draft
         payment_obj = self.env['tt.payment'].create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
             'real_total_amount': invoice_id.grand_total,
@@ -813,11 +854,12 @@ class TtReschedule(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'invoice_id': invoice_id.id,
             'payment_id': payment_obj.id,
-            'pay_amount': inv_line_obj.total,
+            'pay_amount': invoice_id.grand_total,
         })
 
         ##membuat payment dalam draft
         ho_payment_obj = self.env['tt.payment'].create({
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'acquirer_id': self.payment_acquirer_id and self.payment_acquirer_id.id or False,
             'real_total_amount': ho_invoice_id.grand_total,
@@ -831,7 +873,7 @@ class TtReschedule(models.Model):
         self.env['tt.payment.invoice.rel'].create({
             'ho_invoice_id': ho_invoice_id.id,
             'payment_id': ho_payment_obj.id,
-            'pay_amount': ho_inv_line_obj.total,
+            'pay_amount': ho_invoice_id.grand_total,
         })
 
     def generate_changes(self):

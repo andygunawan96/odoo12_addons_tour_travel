@@ -52,6 +52,8 @@ class Ledger(models.Model):
                                  default=lambda self: self.env.user.company_id)
 
     ref = fields.Char('Reference', readonly=True, copy=False)
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent', index=True)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
                                     store=True)
@@ -121,7 +123,6 @@ class Ledger(models.Model):
         }
 
     def create_ledger_vanilla(self, res_model,res_id,name, ref, ledger_date, ledger_type, currency_id, issued_uid,agent_id,customer_parent_id, debit=0, credit=0,description='',source_of_funds_type='balance',**kwargs):
-        # self.waiting_list_process([agent_id],customer_parent_id,debit)
         vals = self.prepare_vals(res_model,
                                  res_id,name, ref,
                                  ledger_date, ledger_type,
@@ -129,8 +130,15 @@ class Ledger(models.Model):
                                  debit, credit,description, source_of_funds_type and source_of_funds_type or 'balance')
         if customer_parent_id:
             vals['customer_parent_id'] = customer_parent_id
+            customer_parent_obj = self.env['tt.customer.parent'].browse(int(customer_parent_id))
+            agent_obj = customer_parent_obj.parent_agent_id
         else:
             vals['agent_id'] = agent_id
+            agent_obj = self.env['tt.agent'].browse(int(agent_id))
+
+        ho_obj = agent_obj and agent_obj.ho_id or False
+        if ho_obj:
+            vals['ho_id'] = ho_obj.id
 
         if kwargs:
             vals.update(kwargs)
@@ -140,8 +148,6 @@ class Ledger(models.Model):
     def reverse_ledger(self):
         if not self.env.user.has_group('tt_base.group_ledger_level_4'):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 1')
-        # 3
-        # self.waiting_list_process([self.agent_id and self.agent_id.id or False],self.customer_parent_id and self.customer_parent_id.id or False,"Reverse")
         reverse_id = self.env['tt.ledger'].create({
             'name': 'Reverse:' + self.name,
             'debit': self.credit,
@@ -150,6 +156,7 @@ class Ledger(models.Model):
             'currency_id': self.currency_id.id,
             'transaction_type': self.transaction_type,
             'reverse_id': self.id,
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'pnr': self.pnr,
@@ -278,6 +285,23 @@ class Ledger(models.Model):
         pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
         ledger_values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
         self.create(ledger_values)
+
+        ### 23 JUN 2023 ####
+        #### update estimated currency
+        agent_rate_objs = self.env['tt.agent.rate'].search([('ho_id', '=', booking_obj.ho_id.id), ('base_currency_id', '=', booking_obj.currency_id.id)])
+        if agent_rate_objs:
+            estimated_currency = {"total_price": 0, "currency": booking_obj.currency_id.name, "other_currency": []}
+            if booking_obj.estimated_currency:
+                estimated_currency = json.loads(booking_obj.estimated_currency)
+            estimated_currency['total_price'] += amount
+            estimated_currency['other_currency'] = []
+            for agent_rate_obj in agent_rate_objs:
+                estimated_currency['other_currency'].append({
+                    "amount": round(estimated_currency['total_price'] / agent_rate_obj.rate, 2),
+                    "currency": agent_rate_obj.to_currency_id.name,
+                    "rate": agent_rate_obj.rate
+                })
+            booking_obj.estimated_currency = json.dumps(estimated_currency)
         for sc in used_sc_list:
             sc.change_ledger_created(True)
         return True ## return berhasil create ledger
@@ -311,7 +335,12 @@ class Ledger(models.Model):
         for sc in provider_obj.cost_service_charge_ids:
             # Pada lionair ada r.ac positif
             if 'RAC' in sc.charge_type and not sc.is_ledger_created:
-                amount = abs(sc.get_total_for_payment())
+                ## FIXME TAMBAL DOWNSELL
+                if sc.charge_code == 'csc':
+                    amount = sc.get_total_for_payment() * -1
+                ## FIXME DEFAULT AWAL
+                else:
+                    amount = abs(sc.get_total_for_payment())
                 if amount == 0:
                     continue
                 agent_id = sc.commission_agent_id.id if sc.commission_agent_id else booking_obj.agent_id.id
@@ -323,11 +352,24 @@ class Ledger(models.Model):
                 used_sc_list.append(sc)
 
         for agent_id, amount in agent_commission.items():
-            ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
-                                              3, booking_obj.currency_id.id,issued_uid, amount, 0)
+            ## FIXME DEFAULT AWAL
+            if amount > 0:
+                ledger_values = self.prepare_vals(booking_obj._name,booking_obj.id,'Commission : ' + booking_obj.name, booking_obj.name, datetime.now()+relativedelta(hours=7),
+                                                  3, booking_obj.currency_id.id,issued_uid, amount, 0)
+            ## FIXME TAMBAL DOWNSELL
+            else:
+                ledger_values = self.prepare_vals(booking_obj._name, booking_obj.id, 'Commission : ' + booking_obj.name,
+                                                  booking_obj.name, datetime.now() + relativedelta(hours=7),
+                                                  3, booking_obj.currency_id.id, issued_uid, 0, amount*-1)
             ledger_values.update({
                 'agent_id': abs(agent_id),
             })
+            agent_obj = self.env['tt.agent'].browse(int(agent_id))
+            ho_obj = agent_obj and agent_obj.ho_id or False
+            if ho_obj:
+                ledger_values.update({
+                    'ho_id': ho_obj.id
+                })
             pnr_text = provider_obj.pnr if provider_obj.pnr else str(provider_obj.sequence)
             values = self.prepare_vals_for_resv(booking_obj,pnr_text,ledger_values,provider_obj.provider_id.code)
             self.sudo().create(values)
@@ -338,10 +380,6 @@ class Ledger(models.Model):
         return True #return berhasil create ledger
 
     def action_create_ledger(self, provider_obj,issued_uid, use_point=False, payment_method_use_to_ho=False):
-        #1
-        # affected_agent = [rec.commission_agent_id.id if rec.commission_agent_id else provider_obj.booking_id.agent_id.id for rec in provider_obj.cost_service_charge_ids]
-        # affected_agent = set(affected_agent)
-        # self.waiting_list_process(affected_agent, False,"Create Ledger Provider")
         if payment_method_use_to_ho != 'credit_limit':
             commission_created = self.create_commission_ledger(provider_obj,issued_uid)
             ledger_created = self.create_ledger(provider_obj,issued_uid, use_point, payment_method_use_to_ho)
@@ -405,77 +443,6 @@ class Ledger(models.Model):
     #         if idx > 0:
     #             rec.balance = cur_balance+rec.debit-rec.credit
     #         cur_balance = rec.balance
-
-    def waiting_list_process(self,list_agent_id,customer_parent_id,amount_comment):
-        start_time = time.time()
-        res = {'error_code': 0}
-        second = False
-        new_list_of_waiting_list = []
-
-        if customer_parent_id:
-            new_waiting_list = self.env['tt.ledger.waiting.list'].create({'customer_parent_id': customer_parent_id,'comment': amount_comment})
-            new_list_of_waiting_list.append((False,customer_parent_id,new_waiting_list))
-        else:
-            waiting_number = False
-            for rec in list_agent_id:
-                if len(new_list_of_waiting_list) == 1:
-                    waiting_number = new_list_of_waiting_list[0][2]['waiting_number']
-                new_waiting_list = self.env['tt.ledger.waiting.list'].create({'agent_id': rec,'waiting_number': waiting_number, 'comment': amount_comment})
-                new_list_of_waiting_list.append((rec,False, new_waiting_list))
-        self.env.cr.commit()
-        # print("Done Commit %s" % (new_waiting_list.id))
-        # self.env['tt.ledger.waiting.list'].invalidate_cache()
-        # sleep_time = ((new_waiting_list.id%10))
-        # print(sleep_time)
-        # time.sleep(sleep_time)
-        last_digit = (new_list_of_waiting_list and new_list_of_waiting_list[0][2].id % 20 or 1)
-
-        if last_digit == 0:
-            last_digit = 19
-        else:
-            last_digit -= 1
-
-        sleep_time = last_digit * 0.3
-        _logger.info(" ### SLEEP TIME %s ###" % (sleep_time))
-        time.sleep(sleep_time)
-
-        list_of_waiting_list = self.get_waiting_list(new_list_of_waiting_list)
-        if list_of_waiting_list:
-            res = {'error_code': 1028}
-        while list_of_waiting_list and time.time() - start_time < 30:
-            list_of_waiting_list = self.get_waiting_list(new_list_of_waiting_list)
-            if not list_of_waiting_list:
-                res = {'error_code': 0}
-                break
-            if second:
-                _logger.error("### CONCURRENT UPDATE LEDGER ERROR, WAITING LIST: %s. CURRENT IDS: %s ###" % ([str(rec.ids) for rec in list_of_waiting_list],str(list_agent_id)))
-                time.sleep(0.5)
-            second = True
-
-        for rec in new_list_of_waiting_list:
-            rec[2].is_in_transaction = False
-        self.env.cr.commit()
-        if res['error_code'] != 0:
-            raise RequestException(res['error_code'])
-        # print("OUT")
-
-    def get_waiting_list(self,list_of_waiting_id):
-        self.clear_caches()
-        self.env.cr.commit()
-        list_of_waiting_list = []
-        for rec in list_of_waiting_id:
-            current_search = self.env['tt.ledger.waiting.list'].search(['|',('agent_id','=', rec[0]),('customer_parent_id','=', rec[1]),
-                                                                        ('is_in_transaction', '=', True),
-                                                                        ('waiting_number','<',rec[2].waiting_number)])
-            if current_search:
-                list_of_waiting_list.append(current_search)
-
-        if list_of_waiting_list:
-            _logger.info("Waiting List : " + str([rec.ids for rec in list_of_waiting_list]))
-        else:
-            _logger.info("Empty Waiting List, current ID: %s." % (str([(rec[0],rec[1],rec[2].id,rec[2].waiting_number) for rec in list_of_waiting_id])))
-        return list_of_waiting_list
-
     def fixing_description_ledger_adjustment(self):
         for rec in self.search([('adjustment_id','!=',False)]):
             rec.description = '%s%s' % (rec.description,rec.adjustment_id.description and '\nReason : %s' % (rec.adjustment_id.description) or '')
@@ -545,25 +512,3 @@ class Ledger(models.Model):
             ],
             'target': 'current'
         }
-
-class TtLedgerWaitingList(models.Model):
-    _name = 'tt.ledger.waiting.list'
-    _description = 'Ledger Waiting List'
-    _order = 'create_date desc'
-
-    agent_id = fields.Many2one('tt.agent','Agent')
-    customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent')
-    is_in_transaction = fields.Boolean("In Transaction",default=True)
-    comment = fields.Text("Comment")
-    waiting_number = fields.Integer('Waiting Number')
-
-    @api.model
-    def create(self, vals_list):
-        new_waiting_list = super(TtLedgerWaitingList, self).create(vals_list)
-        if not vals_list.get('waiting_number'):
-            new_waiting_list.waiting_number = new_waiting_list.id
-        return new_waiting_list
-
-    def turn_off_all_transaction(self):
-        for rec in self.search([('is_in_transaction','=',True)]):
-            rec.is_in_transaction = False

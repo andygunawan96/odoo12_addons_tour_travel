@@ -40,6 +40,7 @@ class TtPnrQuotaPriceList(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     price = fields.Monetary('Price')
     active = fields.Boolean('Active', default=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     used_package_list_ids = fields.Many2many('tt.pnr.quota.price.package',
                                            'tt_pnr_quota_price_package_list_rel',
                                            'price_list_id','price_package_id',

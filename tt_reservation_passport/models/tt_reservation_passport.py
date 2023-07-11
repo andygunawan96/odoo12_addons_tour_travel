@@ -161,7 +161,7 @@ class TtPassport(models.Model):
         self.message_post(body='Order FAILED (Booked)')
 
     def action_draft_passport(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 209')
         self.write({
             'state_passport': 'draft',
@@ -201,7 +201,7 @@ class TtPassport(models.Model):
         self.message_post(body='Order PROCEED')
 
     def action_validate_passport(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 211')
         is_validated = True
         for rec in self.passenger_ids:
@@ -220,7 +220,7 @@ class TtPassport(models.Model):
         self.message_post(body='Order VALIDATED')
 
     def action_in_process_passport(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 212')
         data = {
             'order_number': self.name,
@@ -280,7 +280,7 @@ class TtPassport(models.Model):
         self.message_post(body='Order PAYMENT')
 
     def action_in_process_immigration_passport(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 213')
         is_payment = True
         for rec in self.passenger_ids:
@@ -352,7 +352,7 @@ class TtPassport(models.Model):
         self.message_post(body='Order DELIVERED')
 
     def action_cancel_passport(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 214')
         # set semua state passenger ke cancel
         if self.state_passport in ['in_process', 'payment']:
@@ -385,7 +385,7 @@ class TtPassport(models.Model):
         self.state_passport = 'expired'
 
     def action_calc_expenses_passport(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 215')
         # Calc passport vendor
         self.calc_passport_upsell_vendor()
@@ -433,6 +433,7 @@ class TtPassport(models.Model):
         if diff_nta_upsell > 0:
             ledger = self.env['tt.ledger']
             for rec in self:
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -442,7 +443,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     diff_nta_upsell,
                     0,
@@ -455,6 +456,7 @@ class TtPassport(models.Model):
             """ Jika diff nta upsell < 0 """
             ledger = self.env['tt.ledger']
             for rec in self:
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -464,7 +466,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     diff_nta_upsell,
@@ -510,6 +512,7 @@ class TtPassport(models.Model):
 
                 doc_type = ','.join(str(e) for e in doc_type)
 
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -519,7 +522,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     ho_profit,
                     0,
@@ -539,7 +542,7 @@ class TtPassport(models.Model):
                         doc_type.append(sc.passport_pricelist_id.passport_type)
 
                 doc_type = ','.join(str(e) for e in doc_type)
-
+                ho_obj = rec.agent_id.ho_id
                 ledger.create_ledger_vanilla(
                     rec._name,
                     rec.id,
@@ -549,7 +552,7 @@ class TtPassport(models.Model):
                     3,
                     rec.currency_id.id,
                     rec.env.user.id,
-                    rec.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     abs(ho_profit),
@@ -1171,6 +1174,7 @@ class TtPassport(models.Model):
                 'passenger_ids': [(6, 0, psg_ids)],
                 'adult': sell_passport['pax']['adult'],
                 'state': 'booked',
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'user_id': context['co_uid'],
             })
@@ -1258,6 +1262,7 @@ class TtPassport(models.Model):
                 p_pax_type = p_sc.pax_type  # get pax type
                 p_pricelist_id = p_sc.passport_pricelist_id.id
                 c_code = ''
+                c_type = ''
                 if not sc_value.get(p_pricelist_id):  # if sc_value[pax type] not exists
                     sc_value[p_pricelist_id] = {}
                 if not sc_value[p_pricelist_id].get(p_pax_type):
@@ -1282,6 +1287,8 @@ class TtPassport(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':  # elif charge type == RAC
                     if not sc_value[p_pricelist_id][p_pax_type].get(p_charge_code):
                         sc_value[p_pricelist_id][p_pax_type][p_charge_code] = {}
@@ -1311,7 +1318,8 @@ class TtPassport(models.Model):
                         curr_dict = {
                             'passport_pricelist_id': p_pricelist,
                             'booking_passport_id': self.id,
-                            'description': provider.pnr
+                            'description': provider.pnr,
+                            'ho_id': self.ho_id.id if self.ho_id else ''
                         }
                         curr_dict.update(c_val)
                         values.append((0, 0, curr_dict))
@@ -1388,7 +1396,7 @@ class TtPassport(models.Model):
                 'cost_service_charge_ids': [(6, 0, ssc)]
             })
             vals_fixed = {
-                'commission_agent_id': self.env.ref('tt_base.rodex_ho').id,
+                'commission_agent_id': pricelist_obj.ho_id.id,
                 'amount': -(pricelist_obj.cost_price - pricelist_obj.nta_price),
                 'charge_code': 'fixed',
                 'charge_type': 'RAC',
@@ -1766,7 +1774,7 @@ class TtPassport(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

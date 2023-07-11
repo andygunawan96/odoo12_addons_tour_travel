@@ -6,9 +6,9 @@
             <field name="model">tt.agent.report.recap.transaction.wizard</field>
             <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
             <field name="arch" type="xml">
-                <field name="all_agent" position="before">
+                <field name="all_ho" position="before">
                     <field name="provider_type"/>
-<!--                    <field name="state" required="1"/>-->
+                    <field name="state" required="1"/>
                 </field>
             </field>
         </record>
@@ -29,7 +29,7 @@
             parent="tt_agent_report_recap_reservation.top_reservations_reports"
             action="action_agent_report_recap_transaction_wz"
             sequence="20"
-            groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"
+            groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"
         />
     </data>
 </odoo>

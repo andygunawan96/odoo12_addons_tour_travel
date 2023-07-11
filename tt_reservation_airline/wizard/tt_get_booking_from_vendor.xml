@@ -13,6 +13,7 @@
                         <field name="provider"/>
                     </group>
                     <group attrs="{'invisible': ['|',('provider','=',False),('pnr', '=', False)]}">
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="parent_agent_id"/>
                         <field name="agent_id"/>
                         <field name="customer_parent_id"/>
@@ -68,6 +69,7 @@
                     </group>
                     <group>
                         <field name="user_id" readonly="1"/>
+                        <field name="ho_id" readonly="1" groups="base.group_erp_manager"/>
                         <field name="agent_id" readonly="1"/>
                         <field name="customer_parent_id" readonly="1"/>
                         <field name="booker_id" readonly="1"/>

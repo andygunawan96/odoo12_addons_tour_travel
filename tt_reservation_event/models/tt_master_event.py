@@ -18,7 +18,7 @@ SESSION_NT = session.Session()
 class MasterEvent(models.Model):
     _name = "tt.master.event"
     _inherit = ['tt.history']
-    _description = "Rodex Event Model"
+    _description = "Orbis Event Model"
 
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_event.tt_provider_type_event').id
@@ -75,6 +75,7 @@ class MasterEvent(models.Model):
     soldout_uid = fields.Many2one('res.users', 'User sold-out')
     expired_date = fields.Datetime('Expired at')
     expired_uid = fields.Many2one('res.users', 'User Expired')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
 
     @api.model
@@ -282,10 +283,12 @@ class MasterEvent(models.Model):
         }
 
     def format_currency(self, price, orig_currency, new_currency, provider):
-        provider_obj = self.env['tt.provider'].browse(provider)
-        for rate in provider_obj.rate_ids:
-            if rate.currency_id.name == orig_currency:
-                return rate.sell_rate * price
+        provider_obj = self.env['tt.provider.ho.data'].search([('provider_id.id','=', provider)])
+        ## SEHARUSNYA KALAU RATE TIDAK KETEMU & BEDA DENGAN CURRENCY HO ERROR need fix here
+        if provider_obj:
+            for rate in provider_obj.rate_ids:
+                if rate.currency_id.name == orig_currency:
+                    return rate.sell_rate * price
         return price
 
     def format_api_option(self, option_id, currency='IDR'):

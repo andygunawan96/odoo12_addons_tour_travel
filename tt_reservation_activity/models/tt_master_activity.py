@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from odoo.http import request
 from ...tools import util,variables,ERR
 from ...tools.ERR import RequestException
+from ...tools.db_connector import GatewayConnector
 import logging, traceback
 import json
 import base64
@@ -10,6 +11,7 @@ from datetime import datetime
 import csv
 import os
 import re
+import copy
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -33,7 +35,7 @@ class ActivitySyncProducts(models.TransientModel):
 
     def check_json_length(self):
         file_ext = 'json'
-        self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext)
+        self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext, True)
 
     def generate_json(self):
         self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
@@ -42,7 +44,7 @@ class ActivitySyncProducts(models.TransientModel):
         self.env['tt.master.activity'].action_sync_products(self.provider_id.code, self.start_num, self.end_num)
 
     def config_product(self):
-        self.env['tt.master.activity'].action_sync_config(self.provider_id.code, self.start_num, self.end_num)
+        self.env['tt.master.activity'].action_sync_config(self.provider_id.code)
 
     def deactivate_product(self):
         products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
@@ -99,6 +101,8 @@ class MasterActivity(models.Model):
     provider_code = fields.Char('Provider Code', readonly=True)
     can_hold_booking = fields.Boolean('Can Hold Booking', default=False, readonly=True)
     active = fields.Boolean('Active', default=True)
+    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_ids = fields.Many2many('tt.agent', 'tt_master_activity_ho_agent_rel', 'activity_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
 
     @api.depends('provider_id')
     @api.onchange('provider_id')
@@ -117,17 +121,38 @@ class MasterActivity(models.Model):
         try:
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
             provider_id = provider_id[0]
-            multiplier = self.env['tt.provider.rate'].sudo().search([('provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
+            multiplier = self.env['tt.provider.rate'].sudo().search([('provider_ho_data_id.provider_id', '=', provider_id.id), ('date', '<=', datetime.now()), ('currency_id', '=', from_currency_id.id)], limit=1)
             computed_amount = base_amount * multiplier[0].sell_rate
         except Exception as e:
             computed_amount = self.env['res.currency']._compute(from_currency_id, self.env.user.company_id.currency_id, base_amount)
             _logger.info('Cannot convert to vendor price: ' + str(e))
         return computed_amount
 
-    def action_sync_config(self, provider_code, start, end):
+    @api.model
+    def create(self, vals):
+        if not vals.get('owner_ho_id'):
+            vals.update({
+                'owner_ho_id': self.env.user.ho_id.id
+            })
+        if not vals.get('ho_ids'):
+            vals.update({
+                'ho_ids': [(4, self.env.user.ho_id.id)]
+            })
+        res = super(MasterActivity, self).create(vals)
+        return res
+
+    @api.multi
+    def write(self, vals):
+        admin_obj_id = self.env.ref('base.user_admin').id
+        root_obj_id = self.env.ref('base.user_root').id
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id] and self.env.user.ho_id.id != self.owner_ho_id.id:
+            raise UserError('You do not have permission to edit this record.')
+        return super(MasterActivity, self).write(vals)
+
+    def action_sync_config(self, provider_code):
         self.sync_config(provider_code)
 
-    def action_check_json_length(self, provider_code, file_ext='json'):
+    def action_check_json_length(self, provider_code, file_ext='json', is_human=False):
         search_dir = "/var/log/tour_travel/%s_master_data/" % provider_code
         file_prefix = "%s_master_data" % provider_code
         try:
@@ -143,9 +168,16 @@ class MasterActivity(models.Model):
             return int(s[0]) if s else -1, f
 
         max_file = max(list_of_files, key=extract_number)
-        raise UserError('Latest file is: %s' % max_file)
+        if is_human:
+            raise UserError('Latest file is: %s' % max_file)
+        else:
+            num_str = ''
+            for m in max_file:
+                if m.isdigit():
+                    num_str += str(m)
+            return int(num_str)
 
-    def action_generate_json(self, provider_code):
+    def action_generate_json(self, provider_code, per_page_amt=100):
         if provider_code == 'bemyguest':
             req_post = {
                 'query': '',
@@ -155,7 +187,7 @@ class MasterActivity(models.Model):
                 'city': '',
                 'sort': 'price',
                 'page': 1,
-                'per_page': 100,
+                'per_page': per_page_amt,
                 'provider': provider_code
             }
 
@@ -166,66 +198,63 @@ class MasterActivity(models.Model):
             if file:
                 total_pages = file['total_pages']
                 for page in range(total_pages):
-                    self.write_bmg_json(provider_code, False, page + 1)
+                    self.write_bmg_json(provider_code, per_page_amt, False, page + 1)
         elif provider_code == 'globaltix':
-            provider_obj = self.env['tt.provider'].search(
-                [('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
+            provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
             provider_id = provider_obj and provider_obj[0].id or False
             if provider_id:
-                provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id)])
+                provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '!=', False)])
             else:
                 provider_code_objs = []
-            gt_country_ids = []
-            item_count = 0
+            all_gt_country_codes = []
+            gt_country_codes = []
+            check_gt_country_codes = []
+            for rec in provider_code_objs:
+                if str(rec.code) not in check_gt_country_codes:
+                    check_gt_country_codes.append(str(rec.code))
+                    gt_country_codes.append(str(rec.code))
+                    if len(gt_country_codes) >= 30:
+                        temp_gt_country_codes = copy.deepcopy(gt_country_codes)
+                        all_gt_country_codes.append(temp_gt_country_codes)
+                        gt_country_codes = []
+
             storage_page = 1
+            item_count = 0
             batch_data = {
                 'product_detail': []
             }
-            for rec in provider_code_objs:
-                if rec.country_id.id not in gt_country_ids:
-                    gt_country_ids.append(rec.country_id.id)
-                    gt_page = 1
-                    temp = {}
-                    while not temp.get('page_not_found'):
-                        req_post = {
-                            'query': '',
-                            'category': '',
-                            'country': rec.code,
-                            'city': '',
-                            'page': gt_page,
-                            'provider': provider_code
-                        }
-
-                        res = self.env['tt.master.activity.api.con'].search_provider(req_post)
-                        gt_page += 1
-                        if res['error_code'] == 0:
-                            temp = res['response']
-                            if temp.get('page_not_found'):
-                                continue
-                        else:
-                            temp.update({
-                                'page_not_found': True
-                            })
-                            continue
-
+            for rec_list in all_gt_country_codes:
+                req_post = {
+                    'country_codes': rec_list,
+                    'provider': provider_code
+                }
+                res = self.env['tt.master.activity.api.con'].search_provider(req_post)
+                if res['error_code'] == 0:
+                    for temp in res['response']:
                         if temp.get('product_detail'):
                             batch_data['product_detail'] += temp['product_detail']
                             item_count += 16
-                            if item_count >= 100:
+                            if item_count >= per_page_amt:
                                 folder_path = '/var/log/tour_travel/globaltix_master_data'
                                 if not os.path.exists(folder_path):
                                     os.mkdir(folder_path)
-                                file = open(
-                                    '/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(
-                                        storage_page) + '.json', 'w')
+                                file = open('/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json', 'w')
                                 file.write(json.dumps(batch_data))
                                 file.close()
-
                                 batch_data = {
                                     'product_detail': []
                                 }
                                 item_count = 0
                                 storage_page += 1
+            if item_count > 0:
+                folder_path = '/var/log/tour_travel/globaltix_master_data'
+                if not os.path.exists(folder_path):
+                    os.mkdir(folder_path)
+                file = open(
+                    '/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json',
+                    'w')
+                file.write(json.dumps(batch_data))
+                file.close()
         elif provider_code == 'rodextrip_activity':
             req_post = {
                 'provider': provider_code
@@ -247,14 +276,14 @@ class MasterActivity(models.Model):
                     file.write(json.dumps(temp))
                     file.close()
                     temp_idx += 1
-                    if temp_idx == 100:
+                    if temp_idx == per_page_amt:
                         page += 1
             else:
                 _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
         else:
             pass
 
-    def write_bmg_json(self, provider=None, data=None, page=None):
+    def write_bmg_json(self, provider=None, per_page_amt=100, data=None, page=None):
         file = False
         req_post = {
             'query': '',
@@ -264,7 +293,7 @@ class MasterActivity(models.Model):
             'city': '',
             'sort': 'price',
             'page': page,
-            'per_page': 100,
+            'per_page': per_page_amt,
             'provider': provider
         }
 
@@ -282,15 +311,23 @@ class MasterActivity(models.Model):
             file.close()
 
     def action_sync_products(self, provider_code, start, end):
-        file = []
         for i in range(int(start), int(end) + 1):
-            file_dat = open(
-                '/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(i)),
-                'r')
-            file = json.loads(file_dat.read())
-            file_dat.close()
-            if file:
-                self.sync_products(provider_code, file)
+            try:
+                file_dat = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(i)), 'r')
+                file = json.loads(file_dat.read())
+                file_dat.close()
+                if file:
+                    self.sync_products(provider_code, file)
+            except Exception as e:
+                _logger.error('Error: Failed to sync products activity (File Number: %s). \n %s : %s' % (str(i), traceback.format_exc(), str(e)))
+                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code)], limit=1)
+                data = {
+                    'code': 9902,
+                    'message': 'Activity Sync Products Failed (File Number: %s). %s : %s' % (str(i), traceback.format_exc(), str(e)),
+                    'provider': provider_obj and provider_obj[0] or '',
+                }
+                ## tambah context
+                GatewayConnector().telegram_notif_api(data, {})
 
     # temporary function
     def update_activity_uuid_temp(self):
@@ -346,7 +383,7 @@ class MasterActivity(models.Model):
                 }
                 for index in ['categories', 'types']:
                     if file.get(index):
-                        for rec in file[index]['data']:
+                        for rec in file[index]:
                             obj_id = self.env['tt.activity.category'].search([('name', '=', rec['name'])], limit=1)
                             if obj_id:
                                 obj_id = obj_id[0]
@@ -439,8 +476,8 @@ class MasterActivity(models.Model):
                         })
                         self.env.cr.commit()
                     temp.append(category_obj.id)
-                temp2 = []
 
+                temp2 = []
                 if rec['product'].get('country_id'):
                     rec_provider_codes = self.env['tt.provider.code'].sudo().search([('code', '=', rec['product']['country_id']), ('provider_id', '=', int(provider_id.id))])
                     for prov_data in rec_provider_codes:
@@ -485,75 +522,65 @@ class MasterActivity(models.Model):
                             temp2.append(new_loc.id)
 
                 types_temp = temp
+                cur_obj = False
                 if rec['product'].get('currency'):
                     cur_obj = self.env['res.currency'].search([('name', '=', rec['product']['currency'])], limit=1)
                     if not cur_obj:
                         cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
-                else:
-                    cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
+
+                vals = {
+                    'name': rec['product'].get('title') and rec['product']['title'] or '',
+                    'type_ids': [(6, 0, types_temp)],
+                    'category_ids': [(6, 0, temp)],
+                    'location_ids': [(6, 0, temp2)],
+                    'currency_id': cur_obj and cur_obj[0].id or False,
+                    'basePrice': rec['product'].get('basePrice') and rec['product']['basePrice'] or 0,
+                    'priceIncludes': rec['product'].get('priceIncludes') and rec['product']['priceIncludes'] or '',
+                    'priceExcludes': rec['product'].get('priceExcludes') and rec['product']['priceExcludes'] or '',
+                    'description': rec['product'].get('description') and rec['product']['description'] or '',
+                    'highlights': rec['product'].get('highlights') and rec['product']['highlights'] or '',
+                    'additionalInfo': rec['product'].get('additionalInfo') and rec['product']['additionalInfo'] or '',
+                    'itinerary': rec['product'].get('itinerary') and rec['product']['itinerary'] or '',
+                    'warnings': rec['product'].get('warnings') and rec['product']['warnings'] or '',
+                    'safety': rec['product'].get('safety') and rec['product']['safety'] or '',
+                    'latitude': rec['product'].get('latitude') and rec['product']['latitude'] or 0,
+                    'longitude': rec['product'].get('longitude') and rec['product']['longitude'] or 0,
+                    'minPax': rec['product'].get('minPax') and rec['product']['minPax'] or 0,
+                    'maxPax': rec['product'].get('maxPax') and rec['product']['maxPax'] or 0,
+                    'reviewCount': rec['product'].get('reviewCount') and rec['product']['reviewCount'] or 0,
+                    'reviewAverageScore': rec['product'].get('reviewAverageScore') and rec['product']['reviewAverageScore'] or 0,
+                    'businessHoursFrom': rec['product'].get('businessHoursFrom') and rec['product']['businessHoursFrom'] or '',
+                    'businessHoursTo': rec['product'].get('businessHoursTo') and rec['product']['businessHoursTo'] or '',
+                    'hotelPickup': rec['product'].get('hotelPickup') and rec['product']['hotelPickup'] or False,
+                    'airportPickup': rec['product'].get('airportPickup') and rec['product']['airportPickup'] or False,
+                    'can_hold_booking': rec['product'].get('can_hold_booking') and rec['product']['can_hold_booking'] or False,
+                    'active': True,
+                    'provider_id': provider_id.id,
+                }
                 if product_obj:
-                    product_obj.update({
-                        'name': rec['product']['title'],
-                        'type_ids': [(6, 0, types_temp)],
-                        'category_ids': [(6, 0, temp)],
-                        'location_ids': [(6, 0, temp2)],
-                        'currency_id': cur_obj and cur_obj[0].id or False,
-                        'basePrice': rec['product']['basePrice'],
-                        'priceIncludes': rec['product']['priceIncludes'],
-                        'priceExcludes': rec['product']['priceExcludes'],
-                        'description': rec['product']['description'],
-                        'highlights': rec['product']['highlights'],
-                        'additionalInfo': rec['product']['additionalInfo'],
-                        'itinerary': rec['product']['itinerary'],
-                        'warnings': rec['product']['warnings'],
-                        'safety': rec['product']['safety'],
-                        'latitude': rec['product']['latitude'],
-                        'longitude': rec['product']['longitude'],
-                        'minPax': rec['product']['minPax'],
-                        'maxPax': rec['product']['maxPax'],
-                        'reviewCount': rec['product']['reviewCount'],
-                        'reviewAverageScore': rec['product']['reviewAverageScore'],
-                        'businessHoursFrom': rec['product']['businessHoursFrom'],
-                        'businessHoursTo': rec['product']['businessHoursTo'],
-                        'hotelPickup': rec['product']['hotelPickup'],
-                        'airportPickup': rec['product']['airportPickup'],
-                        'can_hold_booking': rec['product']['can_hold_booking'],
-                        'active': True,
-                        'provider_id': provider_id.id,
-                    })
+                    if not product_obj.owner_ho_id:
+                        vals.update({
+                            'owner_ho_id': self.env.user.ho_id.id
+                        })
+                    if self.env.user.ho_id.id not in product_obj.ho_ids.ids:
+                        vals.update({
+                            'ho_ids': [(4, self.env.user.ho_id.id)]
+                        })
+                    util.pop_empty_key(vals)
+                    product_obj.write(vals)
                 else:
-                    vals = {
+                    vals.update({
                         'uuid': rec['product']['uuid'],
-                        'name': rec['product']['title'],
-                        'type_ids': [(6, 0, types_temp)],
-                        'category_ids': [(6, 0, temp)],
-                        'location_ids': [(6, 0, temp2)],
-                        'currency_id': cur_obj and cur_obj[0].id or False,
-                        'basePrice': rec['product']['basePrice'],
-                        'priceIncludes': rec['product']['priceIncludes'],
-                        'priceExcludes': rec['product']['priceExcludes'],
-                        'description': rec['product']['description'],
-                        'highlights': rec['product']['highlights'],
-                        'additionalInfo': rec['product']['additionalInfo'],
-                        'itinerary': rec['product']['itinerary'],
-                        'warnings': rec['product']['warnings'],
-                        'safety': rec['product']['safety'],
-                        'latitude': rec['product']['latitude'],
-                        'longitude': rec['product']['longitude'],
-                        'minPax': rec['product']['minPax'],
-                        'maxPax': rec['product']['maxPax'],
-                        'reviewCount': rec['product']['reviewCount'],
-                        'reviewAverageScore': rec['product']['reviewAverageScore'],
-                        'businessHoursFrom': rec['product']['businessHoursFrom'],
-                        'businessHoursTo': rec['product']['businessHoursTo'],
-                        'hotelPickup': rec['product']['hotelPickup'],
-                        'airportPickup': rec['product']['airportPickup'],
-                        'can_hold_booking': rec['product']['can_hold_booking'],
-                        'active': True,
-                        'provider_id': provider_id.id,
-                    }
+                        'owner_ho_id': self.env.user.ho_id.id,
+                        'ho_ids': [(6,0,[self.env.user.ho_id.id])]
+                    })
+                    if not cur_obj:
+                        cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
+                        vals.update({
+                            'currency_id': cur_obj and cur_obj[0].id or False
+                        })
                     product_obj = self.env['tt.master.activity'].sudo().create(vals)
-                    self.env.cr.commit()
+                self.env.cr.commit()
 
                 images = self.env['tt.activity.master.images'].search([('activity_id', '=', product_obj.id)])
                 images.sudo().unlink()
@@ -784,7 +811,6 @@ class MasterActivity(models.Model):
             if req.get('type'):
                 temp_type_id = req['type'] != '0' and self.env['tt.activity.category'].sudo().search([('id', '=', req['type']), ('type', '=', 'type')]) or ''
                 type_id = temp_type_id and temp_type_id[0].id or 0
-            # sub_category = sub_category != '0' and sub_category or ''
 
             get_cat_instead = 0
             category = ''
@@ -807,6 +833,7 @@ class MasterActivity(models.Model):
             provider_id = provider_id and provider_id[0] or False
 
             sql_query = 'select themes.* from tt_master_activity themes left join tt_activity_location_rel locrel on locrel.product_id = themes.id left join tt_activity_master_locations loc on loc.id = locrel.location_id '
+            sql_query += 'left join tt_master_activity_ho_agent_rel act_ho_rel on act_ho_rel.activity_id = themes.id '
 
             if category:
                 sql_query += 'left join tt_activity_category_rel catrel on catrel.activity_id = themes.id '
@@ -821,6 +848,17 @@ class MasterActivity(models.Model):
             else:
                 sql_query += 'themes.active = True and themes."basePrice" > 0 '
 
+            sql_query += 'and (act_ho_rel.ho_id IS NULL'
+            if context.get('co_ho_id'):
+                sql_query += ' or themes.owner_ho_id = ' + str(context['co_ho_id']) + ''
+                sql_query += ' or act_ho_rel.ho_id = ' + str(context['co_ho_id']) + ''
+            elif context.get('ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                if ho_obj:
+                    sql_query += ' or themes.owner_ho_id = ' + str(ho_obj[0].id) + ''
+                    sql_query += ' or act_ho_rel.ho_id = ' + str(ho_obj[0].id) + ''
+            sql_query += ') '
+
             if type_id:
                 sql_query += 'and typerel.type_id = ' + str(type_id) + ' '
 
@@ -833,194 +871,194 @@ class MasterActivity(models.Model):
             if req.get('city'):
                 sql_query += "and (loc.country_id = " + str(country) + " and loc.city_id = " + str(city) + ") "
 
-            if provider in ['globaltix', 'bemyguest', 'rodextrip_activity']:
-                if provider_id:
-                    sql_query += "and themes.provider_id = '" + str(provider_id.id) + "' "
+            if provider in ['globaltix', 'bemyguest', 'rodextrip_activity'] and provider_id:
+                sql_query += "and themes.provider_id = " + str(provider_id.id) + " "
 
             if query:
                 sql_query += 'and themes.active = True and themes."basePrice" > 0 '
             sql_query += 'group by themes.id '
 
             self.env.cr.execute(sql_query)
-
             result_id_list = self.env.cr.dictfetchall()
             result_list = []
-
+            dupe_id_check = []
             for result in result_id_list:
-                res_provider = result.get('provider_id') and self.env['tt.provider'].browse(result['provider_id']) or None
-                result = {
-                    'additionalInfo': result.get('additionalInfo') and result['additionalInfo'] or '',
-                    'airportPickup': result.get('airportPickup') and result['airportPickup'] or False,
-                    'basePrice': result['basePrice'],
-                    'businessHoursFrom': result.get('businessHoursFrom') and result['businessHoursFrom'] or '',
-                    'businessHoursTo': result.get('businessHoursTo') and result['businessHoursTo'] or '',
-                    'currency_id': result.get('currency_id') and result['currency_id'] or False,
-                    'description': result.get('description') and result['description'] or '',
-                    'highlights': result.get('highlights') and result['highlights'] or '',
-                    'hotelPickup': result.get('hotelPickup') and result['hotelPickup'] or False,
-                    'itinerary': result.get('itinerary') and result['itinerary'] or '',
-                    'latitude': result.get('latitude') and result['latitude'] or 0.0,
-                    'longitude': result.get('longitude') and result['longitude'] or 0.0,
-                    'maxPax': result['maxPax'] or 0,
-                    'minPax': result['minPax'] or 0,
-                    'name': result['name'],
-                    'priceExcludes': result.get('priceExcludes') and result['priceExcludes'] or '',
-                    'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
-                    'provider_id': res_provider and res_provider.id or '',
-                    'provider': res_provider and res_provider.code or '',
-                    'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
-                    'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,
-                    'safety': result.get('safety') and result['safety'] or '',
-                    'uuid': result['uuid'],
-                    'warnings': result.get('warnings') and result['warnings'] or '',
-                    'can_hold_booking': result.get('can_hold_booking') and result['can_hold_booking'] or False,
-                }
-
-                additionalInfo = (result['additionalInfo'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                description = (result['description'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                highlights = (result['highlights'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                itinerary = (result['itinerary'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                safety = (result['safety'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                warnings = (result['warnings'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                priceExcludes = (result['priceExcludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
-                priceIncludes = (result['priceIncludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
-
-                result.update({
-                    'additionalInfo': additionalInfo,
-                    'description': description,
-                    'highlights': highlights,
-                    'itinerary': itinerary,
-                    'safety': safety,
-                    'warnings': warnings,
-                    'priceExcludes': priceExcludes,
-                    'priceIncludes': priceIncludes,
-                })
-
-                result_obj = self.env['tt.master.activity'].search([('uuid', '=', result['uuid'])], limit=1)
-                result_obj = result_obj and result_obj[0] or False
-                image_temp = []
-                if result_obj.image_ids:
-                    image_objs = result_obj.image_ids
-                    for image_obj in image_objs:
-                        if image_obj.photos_path and image_obj.photos_url:
-                            img_temp = {
-                                'path': image_obj.photos_path,
-                                'url': image_obj.photos_url,
-                            }
-                            image_temp.append(img_temp)
-                        else:
-                            img_temp = {
-                                'path': '',
-                                'url': '',
-                            }
-                            image_temp.append(img_temp)
-                else:
-                    img_temp = {
-                        'path': '',
-                        'url': '',
+                if int(result['id']) not in dupe_id_check:
+                    dupe_id_check.append(int(result['id']))
+                    res_provider = result.get('provider_id') and self.env['tt.provider'].browse(result['provider_id']) or None
+                    result = {
+                        'additionalInfo': result.get('additionalInfo') and result['additionalInfo'] or '',
+                        'airportPickup': result.get('airportPickup') and result['airportPickup'] or False,
+                        'basePrice': result['basePrice'],
+                        'businessHoursFrom': result.get('businessHoursFrom') and result['businessHoursFrom'] or '',
+                        'businessHoursTo': result.get('businessHoursTo') and result['businessHoursTo'] or '',
+                        'currency_id': result.get('currency_id') and result['currency_id'] or False,
+                        'description': result.get('description') and result['description'] or '',
+                        'highlights': result.get('highlights') and result['highlights'] or '',
+                        'hotelPickup': result.get('hotelPickup') and result['hotelPickup'] or False,
+                        'itinerary': result.get('itinerary') and result['itinerary'] or '',
+                        'latitude': result.get('latitude') and result['latitude'] or 0.0,
+                        'longitude': result.get('longitude') and result['longitude'] or 0.0,
+                        'maxPax': result['maxPax'] or 0,
+                        'minPax': result['minPax'] or 0,
+                        'name': result['name'],
+                        'priceExcludes': result.get('priceExcludes') and result['priceExcludes'] or '',
+                        'priceIncludes': result.get('priceIncludes') and result['priceIncludes'] or '',
+                        'provider_id': res_provider and res_provider.id or '',
+                        'provider': res_provider and res_provider.code or '',
+                        'reviewAverageScore': result.get('reviewAverageScore') and result['reviewAverageScore'] or 0.0,
+                        'reviewCount': result.get('reviewCount') and result['reviewCount'] or 0,
+                        'safety': result.get('safety') and result['safety'] or '',
+                        'uuid': result['uuid'],
+                        'warnings': result.get('warnings') and result['warnings'] or '',
+                        'can_hold_booking': result.get('can_hold_booking') and result['can_hold_booking'] or False,
                     }
-                    image_temp.append(img_temp)
-                result.update({
-                    'images': image_temp,
-                })
 
-                video_temp = []
-                if result_obj.video_ids:
-                    video_objs = result_obj.video_ids
-                    for video_obj in video_objs:
-                        if video_obj.video_url:
-                            vid_temp = {
-                                'url': video_obj.video_url,
-                            }
-                            video_temp.append(vid_temp)
-                        else:
-                            vid_temp = {
-                                'url': '',
-                            }
-                            video_temp.append(vid_temp)
-                else:
-                    vid_temp = {
-                        'url': '',
-                    }
-                    video_temp.append(vid_temp)
-                result.update({
-                    'videos': video_temp,
-                })
+                    additionalInfo = (result['additionalInfo'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                    description = (result['description'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                    highlights = (result['highlights'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                    itinerary = (result['itinerary'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                    safety = (result['safety'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                    warnings = (result['warnings'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                    priceExcludes = (result['priceExcludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
+                    priceIncludes = (result['priceIncludes'].replace('<p>', '\n').replace('</p>', ''))[1:]
 
-                category_objs = result_obj.category_ids
-                category_temp = []
-                for category_obj in category_objs:
-                    cat_temp = {
-                        'category_name': category_obj.name,
-                        'category_uuid': '',
-                        'category_id': category_obj.id,
-                    }
-                    for cat_line in category_obj.line_ids:
-                        if cat_line.provider_id.id == res_provider.id:
-                            cat_temp.update({
-                                'category_uuid': cat_line.uuid,
-                            })
-                    category_temp.append(cat_temp)
-                result.update({
-                    'categories': category_temp,
-                })
+                    result.update({
+                        'additionalInfo': additionalInfo,
+                        'description': description,
+                        'highlights': highlights,
+                        'itinerary': itinerary,
+                        'safety': safety,
+                        'warnings': warnings,
+                        'priceExcludes': priceExcludes,
+                        'priceIncludes': priceIncludes,
+                    })
 
-                location_objs = result_obj.location_ids
-                location_temp = []
-                for location_obj in location_objs:
-                    loc_temp = {
-                        'country_name': location_obj.country_id.name,
-                        'state_name': location_obj.state_id.name,
-                        'city_name': location_obj.city_id.name,
-                    }
-                    location_temp.append(loc_temp)
-                result.update({
-                    'locations': location_temp,
-                })
+                    result_obj = self.env['tt.master.activity'].search([('uuid', '=', result['uuid'])], limit=1)
+                    result_obj = result_obj and result_obj[0] or False
+                    image_temp = []
+                    if result_obj.image_ids:
+                        image_objs = result_obj.image_ids
+                        for image_obj in image_objs:
+                            if image_obj.photos_path and image_obj.photos_url:
+                                img_temp = {
+                                    'path': image_obj.photos_path,
+                                    'url': image_obj.photos_url,
+                                }
+                                image_temp.append(img_temp)
+                            else:
+                                img_temp = {
+                                    'path': '',
+                                    'url': '',
+                                }
+                                image_temp.append(img_temp)
+                    else:
+                        img_temp = {
+                            'path': '',
+                            'url': '',
+                        }
+                        image_temp.append(img_temp)
+                    result.update({
+                        'images': image_temp,
+                    })
 
-                from_currency = self.env['res.currency'].browse(result['currency_id'])
+                    video_temp = []
+                    if result_obj.video_ids:
+                        video_objs = result_obj.video_ids
+                        for video_obj in video_objs:
+                            if video_obj.video_url:
+                                vid_temp = {
+                                    'url': video_obj.video_url,
+                                }
+                                video_temp.append(vid_temp)
+                            else:
+                                vid_temp = {
+                                    'url': '',
+                                }
+                                video_temp.append(vid_temp)
+                    else:
+                        vid_temp = {
+                            'url': '',
+                        }
+                        video_temp.append(vid_temp)
+                    result.update({
+                        'videos': video_temp,
+                    })
 
-                if result.get('provider'):
-                    req = {
-                        'provider': result['provider'],
-                        'from_currency': from_currency.name,
-                        'base_amount': result['basePrice']
-                    }
-                    temp = self.reprice_currency(req, context)
-                else:
-                    temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
-                                                             result['basePrice'])
+                    category_objs = result_obj.category_ids
+                    category_temp = []
+                    for category_obj in category_objs:
+                        cat_temp = {
+                            'category_name': category_obj.name,
+                            'category_uuid': '',
+                            'category_id': category_obj.id,
+                        }
+                        for cat_line in category_obj.line_ids:
+                            if cat_line.provider_id.id == res_provider.id:
+                                cat_temp.update({
+                                    'category_uuid': cat_line.uuid,
+                                })
+                        category_temp.append(cat_temp)
+                    result.update({
+                        'categories': category_temp,
+                    })
 
-                converted_price = temp + 10000
+                    location_objs = result_obj.location_ids
+                    location_temp = []
+                    for location_obj in location_objs:
+                        loc_temp = {
+                            'country_name': location_obj.country_id.name,
+                            'state_name': location_obj.state_id.name,
+                            'city_name': location_obj.city_id.name,
+                        }
+                        location_temp.append(loc_temp)
+                    result.update({
+                        'locations': location_temp,
+                    })
 
-                sale_price = 0
-                # pembulatan sale price keatas
-                for idx in range(10):
-                    if (converted_price % 100) == 0:
-                        sale_price = converted_price
-                        break
-                    if idx == 9 and ((converted_price % 1000) < int(str(idx + 1) + '00')) and converted_price > 0:
-                        sale_price = str(int(converted_price / 1000) + 1) + '000'
-                        break
-                    elif (converted_price % 1000) < int(str(idx + 1) + '00') and converted_price > 0:
-                        if int(converted_price / 1000) == 0:
-                            sale_price = str(idx + 1) + '00'
-                        else:
-                            sale_price = str(int(converted_price / 1000)) + str(idx + 1) + '00'
-                        break
+                    from_currency = self.env['res.currency'].browse(result['currency_id'])
 
-                temp_alt_cur = result.get('currency_id') and self.env['res.currency'].sudo().browse(int(result['currency_id'])) or False
-                alt_currency_code = temp_alt_cur and temp_alt_cur.name or False
+                    if result.get('provider'):
+                        req = {
+                            'provider': result['provider'],
+                            'from_currency': from_currency.name,
+                            'base_amount': result['basePrice']
+                        }
+                        temp = self.reprice_currency(req, context)
+                    else:
+                        temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
+                                                                 result['basePrice'])
 
-                result.pop('basePrice')
-                result.update({
-                    'activity_price': int(sale_price),
-                    'provider_id': result['provider_id'],
-                    'provider': res_provider.code,
-                    'currency_code': 'IDR',
-                    'activity_currency_code': alt_currency_code,
-                })
-                result_list.append(result)
+                    converted_price = temp + 10000
+
+                    sale_price = 0
+                    # pembulatan sale price keatas
+                    for idx in range(10):
+                        if (converted_price % 100) == 0:
+                            sale_price = converted_price
+                            break
+                        if idx == 9 and ((converted_price % 1000) < int(str(idx + 1) + '00')) and converted_price > 0:
+                            sale_price = str(int(converted_price / 1000) + 1) + '000'
+                            break
+                        elif (converted_price % 1000) < int(str(idx + 1) + '00') and converted_price > 0:
+                            if int(converted_price / 1000) == 0:
+                                sale_price = str(idx + 1) + '00'
+                            else:
+                                sale_price = str(int(converted_price / 1000)) + str(idx + 1) + '00'
+                            break
+
+                    temp_alt_cur = result.get('currency_id') and self.env['res.currency'].sudo().browse(int(result['currency_id'])) or False
+                    alt_currency_code = temp_alt_cur and temp_alt_cur.name or False
+
+                    result.pop('basePrice')
+                    result.update({
+                        'activity_price': int(sale_price),
+                        'provider_id': result['provider_id'],
+                        'provider': res_provider.code,
+                        'currency_code': 'IDR',
+                        'activity_currency_code': alt_currency_code,
+                    })
+                    result_list.append(result)
 
             return ERR.get_no_error(result_list)
         except RequestException as e:
@@ -1040,6 +1078,8 @@ class MasterActivity(models.Model):
             if not activity_id:
                 raise RequestException(1022, additional_message='Activity not found.')
             activity_id = activity_id[0]
+            if context.get('co_ho_id') and int(context['co_ho_id']) not in activity_id.ho_ids.ids and activity_id.owner_ho_id.id != int(context['co_ho_id']) and activity_id.ho_ids:
+                raise RequestException(1022, additional_message='Activity not found.')
             provider = provider_obj.code
             result_id_list = self.env['tt.master.activity.lines'].search([('activity_id', '=', activity_id.id)])
             res = {
@@ -1310,21 +1350,19 @@ class MasterActivity(models.Model):
 
     def get_autocomplete_api(self, req, context):
         try:
-            query = req.get('name') and '%' + req['name'] + '%' or False
-            sql_query = 'select * from tt_master_activity where active = True and "basePrice" > 0'
-            if query:
-                sql_query += ' and name ilike %'+query+'%'
-            self.env.cr.execute(sql_query)
-
-            result_id_list = self.env.cr.dictfetchall()
+            search_params = []
+            if req.get('name'):
+                search_params.append(('name', 'ilike', req['name']))
+            if context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            result_id_list = self.env['tt.master.activity'].search(search_params)
             result_list = []
-
             for result in result_id_list:
-                result = {
-                    'name': result.get('name') and result['name'] or '',
-                }
-                result_list.append(result)
-
+                result_list.append({
+                    'name': result.name and result.name or '',
+                })
             return ERR.get_no_error(result_list)
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -1392,6 +1430,8 @@ class MasterActivity(models.Model):
         option_list = 'options' in vals.keys() and vals.pop('options') or {}
         timeslot_list = 'timeslots' in vals.keys() and vals.pop('timeslots') or []
 
+        if vals.get('voucher_validity_date') == '':
+            vals.pop('voucher_validity_date')
         if activity_type_exist:
             activity_obj = activity_type_exist[0]
             activity_obj.sudo().write(vals)

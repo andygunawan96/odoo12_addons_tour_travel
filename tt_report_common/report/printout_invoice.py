@@ -3,6 +3,9 @@ import datetime
 import json
 from num2words import num2words
 import pytz
+import odoo.tools as tools
+
+static_url = tools.config.get('static_url','')
 
 
 class PrintoutTicketForm(models.AbstractModel):
@@ -138,6 +141,12 @@ class PrintoutTicketForm(models.AbstractModel):
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('insurance_ticket', agent_id)
         elif data['context']['active_model'] == 'tt.reservation.mitrakeluarga':
             airline_ticket_footer = self.env['tt.report.common.setting'].get_footer('mitrakeluarga_ticket', agent_id)
+
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -150,7 +159,8 @@ class PrintoutTicketForm(models.AbstractModel):
             'ssr_list': ssr_list,
             'airline_ticket_footer': airline_ticket_footer and airline_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta'),
             'qr_code_data': False
@@ -246,6 +256,11 @@ class PrintoutTicketBusForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             agent_id = rec.agent_id
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('bus_ticket', agent_id)
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -253,7 +268,8 @@ class PrintoutTicketBusForm(models.AbstractModel):
             'price_lines': values,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url
         }
         if 'is_with_price' in data:
             vals.update({
@@ -316,6 +332,11 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             agent_id = rec.agent_id
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('train_ticket', agent_id)
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -323,7 +344,8 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             'price_lines': values,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url
         }
         if 'is_with_price' in data:
             vals.update({
@@ -398,6 +420,11 @@ class PrintoutTicketEventForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
 
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -406,8 +433,8 @@ class PrintoutTicketEventForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
-                                                                           default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         if 'is_with_price' in data:
@@ -511,6 +538,11 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
                     header_width = 105
             agent_id = rec.agent_id
         hotel_ticket_footer = self.env['tt.report.common.setting'].get_footer('hotel_ticket',agent_id)
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -522,7 +554,8 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
             'refund_fee': self.get_refund_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
             'reschedule_fee': self.get_reschedule_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
             'hotel_ticket_footer': hotel_ticket_footer and hotel_ticket_footer[0].html or '',
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         if 'is_with_price' in data:
@@ -796,6 +829,11 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             agent_id = rec.agent_id
 
         footer_ppob_bpjs = self.env['tt.report.common.setting'].get_footer('ppob_bpjs', agent_id)
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -805,8 +843,8 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'header_width': str(header_width),
             'footer_ppob_bpjs': footer_ppob_bpjs and footer_ppob_bpjs[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
-                                                                           default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
 
@@ -901,6 +939,12 @@ class PrintoutInvoiceVendor(models.AbstractModel):
             pax_data = self.get_invoice_data(rec, data.get('context'), data)
             values[rec.id].append(pax_data)
             pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
+
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -910,10 +954,9 @@ class PrintoutInvoiceVendor(models.AbstractModel):
             'inv_lines': values,
             'pnr_length': pnr_length,
             'header_width': str(header_width),
-            'terbilang': self.compute_terbilang_from_objs(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
-                                                                           default='#FFFFFF'),
+            'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         return vals
@@ -1280,7 +1323,12 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
-        ho_obj = self.env.ref('tt_base.rodex_ho')
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        ho_obj = False
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.ho_id
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -1294,7 +1342,8 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'ho_obj': ho_obj,
             'header_width': str(header_width),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
         }
         return vals
@@ -1698,6 +1747,11 @@ class PrintoutInvoice(models.AbstractModel):
             terbilang = self.compute_terbilang_from_objs_dynamic(self.env[data['context']['active_model']].browse(data['context']['active_ids']), reduce_amt)
         else:
             terbilang = self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids']))
+
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         val = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -1708,7 +1762,8 @@ class PrintoutInvoice(models.AbstractModel):
             'header_width': str(header_width),
             'terbilang': terbilang,
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'is_invoice': True
         }
@@ -2108,6 +2163,10 @@ class PrintoutInvoiceHOINV(models.AbstractModel):
                 })
             pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
         invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         val = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2121,12 +2180,12 @@ class PrintoutInvoiceHOINV(models.AbstractModel):
 
             'pnr_length': pnr_length,
             'header_width': str(header_width),
-            'terbilang': self.compute_terbilang_from_objs(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': self.env.ref('tt_base.rodex_ho'),
+            'ho_obj': resv_obj.ho_id or False,
             'is_invoice': True
         }
         if resv_obj._name in ['tt.reservation.phc', 'tt.reservation.periksain', 'tt.reservation.medical', 'tt.reservation.mitrakeluarga']:
@@ -2496,16 +2555,23 @@ class PrintoutKwintasi(models.AbstractModel):
                 # values[rec.id].append(self.calc_segments(resv_obj, resv_obj.passenger_ids))
             agent_id = rec.agent_id
         invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        ho_obj = False
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.ho_id
         val = {
+            'ho_obj': ho_obj,
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': doc_objs,
             'inv_lines': values,
             'header_width': str(header_width),
-            'terbilang': self.compute_terbilang_from_objs(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'invoice_footer': invoice_footer and invoice_footer[0].html or '',
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'is_invoice': False,
         }
@@ -2568,6 +2634,10 @@ class PrintoutExpenses(models.AbstractModel):
                 if vendor.amount:
                     nta_amount += vendor.nta_amount
                     ho_amount += vendor.amount
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2581,7 +2651,8 @@ class PrintoutExpenses(models.AbstractModel):
             # 'terbilang': self.compute_terbilang_from_objs(
             #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
         return vals
@@ -2666,6 +2737,10 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     header_width = 105
             agent_id = rec.agent_id
         printout_itinerary_footer = self.env['tt.report.common.setting'].get_footer('printout_itinerary', agent_id)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2677,7 +2752,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total,
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -2798,6 +2874,10 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     header_width = 105
             agent_id = rec.agent_id
         printout_itinerary_footer = self.env['tt.report.common.setting'].get_footer('printout_itinerary', agent_id)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2810,7 +2890,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total + discount_value, #Disc value (-1)
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -2883,6 +2964,10 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2893,7 +2978,8 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -2966,6 +3052,10 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -2976,8 +3066,8 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
-                                                                           default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3050,6 +3140,10 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3060,7 +3154,8 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3133,6 +3228,10 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3143,7 +3242,8 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3219,6 +3319,10 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 header_width += 3 * (abs(27 - pnr_length))
                 if header_width > 105:
                     header_width = 105
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3229,8 +3333,8 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color',
-                                                                           default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3299,6 +3403,10 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3309,7 +3417,8 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3380,6 +3489,10 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3390,7 +3503,8 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3466,6 +3580,10 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3476,7 +3594,8 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3554,6 +3673,10 @@ class PrintoutBusItineraryForm(models.AbstractModel):
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3564,7 +3687,8 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3644,6 +3768,10 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
 
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3654,7 +3782,8 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             'price_lines': values,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
@@ -3746,6 +3875,10 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             # }]
 
             values['agent_id'] = self.env['tt.agent'].search([('name', '=ilike', values['agent_name'])], limit=1)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': False,
             'doc_model': 'tt.reservation.hotel',  # Can be set to as any model
@@ -3754,7 +3887,7 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             'header_width': str(header_width),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'currency_id': self.env.user.company_id.currency_id,
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3784,6 +3917,12 @@ class PrintoutBilling(models.AbstractModel):
             agent_id = rec.agent_id
             cust_parent_id = rec.customer_parent_id
         billing_footer = self.env['tt.report.common.setting'].get_footer('billing_statement', agent_id)
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        ho_obj = False
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3795,8 +3934,9 @@ class PrintoutBilling(models.AbstractModel):
             #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'header_width': str(header_width),
             'billing_footer': billing_footer and billing_footer[0].html or '',
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
-            'ho_obj': self.env.ref('tt_base.rodex_ho'),
+            'base_color': base_color,
+            'static_url': static_url,
+            'ho_obj': ho_obj,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3831,8 +3971,13 @@ class PrintoutTopUp(models.AbstractModel):
             })
             agent_id = rec.agent_id
         top_up_footer = self.env['tt.report.common.setting'].get_footer('top_up', agent_id)
-        ho_obj = self.env.ref('tt_base.rodex_ho')
         header_width = 90
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        ho_obj = False
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3844,7 +3989,8 @@ class PrintoutTopUp(models.AbstractModel):
             'header_width': str(header_width),
             'ho_obj': ho_obj,
             'top_up_footer': top_up_footer and top_up_footer[0].html or '',
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3873,6 +4019,12 @@ class PrintoutRefund(models.AbstractModel):
 
         temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        ho_obj = False
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.ho_id
         return_dat = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3883,16 +4035,15 @@ class PrintoutRefund(models.AbstractModel):
             'header_width': str(header_width),
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids']), data['data'].get('is_ho')),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
-        if data['data'].get('is_ho'):
-            ho_obj = self.env.ref('tt_base.rodex_ho')
-            if ho_obj:
-                return_dat.update({
-                    'ho_obj': ho_obj
-                })
+        if data['data'].get('is_ho') and ho_obj:
+            return_dat.update({
+                'ho_obj': ho_obj
+            })
 
         return return_dat
 
@@ -3913,12 +4064,17 @@ class PrintoutReschedule(models.AbstractModel):
         temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
 
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': temp_docs,
             'header_width': str(header_width),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
 
@@ -3938,7 +4094,12 @@ class PrintoutVoucher(models.AbstractModel):
 
         temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-        ho_obj = self.env.ref('tt_base.rodex_ho')
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        ho_obj = False
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3947,9 +4108,10 @@ class PrintoutVoucher(models.AbstractModel):
             'doc_start_date': temp_docs.voucher_start_date and temp_docs.voucher_start_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
             'doc_expire_date': temp_docs.voucher_expire_date and temp_docs.voucher_expire_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
             'header_width': str(header_width),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': ho_obj and ho_obj or False
+            'ho_obj': ho_obj or False
         }
 
 
@@ -3972,7 +4134,12 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
         #     agent_id = rec.agent_id
         lg_po_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee_po', agent_id)
         lg_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee', agent_id)
-        ho_obj = self.env.ref('tt_base.rodex_ho')
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        ho_obj = False
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+            ho_obj = data_object.agent_id.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
@@ -3981,7 +4148,8 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
             'lg_po_footer': lg_po_footer and lg_po_footer[0].html or '',
             'lg_footer': lg_footer and lg_footer[0].html or '',
             'header_width': str(header_width),
-            'base_color': self.sudo().env['ir.config_parameter'].get_param('tt_base.website_default_color', default='#FFFFFF'),
+            'base_color': base_color,
+            'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
-            'ho_obj': ho_obj and ho_obj or False
+            'ho_obj': ho_obj or False
         }

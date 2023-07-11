@@ -5,9 +5,8 @@ from . import tt_master_activity
 from . import tt_activity_category
 from . import tt_master_activity_lines
 from . import tt_activity_booking_option
+from . import tt_auto_sync_activity_setup
 from . import tt_reservation_activity
 from . import tt_reservation_activity_details
 from . import tt_reservation_passenger_activity
 from . import tt_cron_log
-
-

@@ -34,11 +34,13 @@ class AgentReportVisaModel(models.AbstractModel):
         """
 
     @staticmethod
-    def _where(date_from, date_to, state, agent_id):
+    def _where(date_from, date_to, state, agent_id, ho_id):
         where = """vs.create_date >= '%s' and vs.create_date <= '%s'
                  """ % (date_from, date_to)
         if state and state != 'all':
             where += """ AND vs.state_visa IN ('""" + state + """')"""
+        if ho_id:
+            where += """ AND vs.ho_id = %s """ % ho_id
         if agent_id:
             # todo: buat kondisi jika agent id null
             where += """ AND vs.agent_id = """ + str(agent_id)
@@ -57,10 +59,10 @@ class AgentReportVisaModel(models.AbstractModel):
         vs.id
         """
 
-    def _lines(self, date_from, date_to, agent_id, state):
+    def _lines(self, date_from, date_to, agent_id, ho_id, state):
         query = 'SELECT ' + self._select() + \
                 'FROM ' + self._from() + \
-                'WHERE ' + self._where(date_from, date_to, state, agent_id) + \
+                'WHERE ' + self._where(date_from, date_to, state, agent_id, ho_id) + \
                 ' GROUP BY ' + self._group_by() + \
                 ' ORDER BY ' + self._order_by()
         self.env.cr.execute(query)
@@ -96,9 +98,10 @@ class AgentReportVisaModel(models.AbstractModel):
         if not data_form['state']:
             data_form['state'] = 'all'
         agent_id = data_form['agent_id']
+        ho_id = data_form['ho_id']
         state = data_form['state']
         line_list = []
-        lines = self._lines(date_from, date_to, agent_id, state)  # main data
+        lines = self._lines(date_from, date_to, agent_id, ho_id, state)  # main data
         for line in lines:
             line_list.append(line)
         self.edit_data(line_list)

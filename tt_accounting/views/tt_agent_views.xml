@@ -11,6 +11,7 @@
                         context="{
                         'default_res_model': 'tt.agent',
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
@@ -31,26 +32,26 @@
                 </page>
             </xpath>
             <field name="currency_id" position="after">
-                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
                 <label for="point_reward" string="Point Reward"/>
                 <div name="point_reward_div">
-                    <field name="point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/> pts
+                    <field name="point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/> pts
                 </div>
                 <label for="actual_point_reward" string="Actual Point Reward"/>
                 <div name="actual_point_reward_div">
-                    <field name="actual_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/> pts
+                    <field name="actual_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/> pts
                 </div>
                 <label for="unprocessed_point_reward" string="Unprocessed Point Reward"/>
                 <div name="unprocessed_point_div">
-                    <field name="unprocessed_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/> pts
+                    <field name="unprocessed_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/> pts
                 </div>
             </field>
             <field name="credit_limit" position="after">
-                <field name="tax_percentage" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
-                <field name="actual_credit_balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
-                <field name="balance_credit_limit" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
-                <field name="unprocessed_amount" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
-                <field name="limit_usage_notif" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="tax_percentage" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                <field name="actual_credit_balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                <field name="balance_credit_limit" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                <field name="unprocessed_amount" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                <field name="limit_usage_notif" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
             </field>
         </field>
     </record>
@@ -66,6 +67,7 @@
                         context="{
                         'default_res_model': 'tt.agent',
                         'default_res_id': id,
+                        'default_ho_id': ho_id,
                         'default_agent_id': id,
                         'default_referenced_document': name,
                         'default_currency_id': currency_id,
@@ -86,7 +88,7 @@
                 </page>
             </xpath>
             <field name="currency_id" position="after">
-                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
             </field>
         </field>
     </record>
@@ -97,7 +99,7 @@
         <field name="inherit_id" ref="tt_base.tt_agent_kanban_view"/>
         <field name="arch" type="xml">
             <field name="email" position="after">
-                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
             </field>
             <xpath expr="//span[@name='email_for_inh']" position="after">
                 <span class="o_kanban_record_subtitle">Balance: <field name="balance" widget="float"/></span>
@@ -111,7 +113,7 @@
         <field name="inherit_id" ref="tt_base.tt_agent_kanban_view_customer"/>
         <field name="arch" type="xml">
             <field name="email" position="after">
-                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
             </field>
             <xpath expr="//span[@name='email_for_inh']" position="after">
                 <span class="o_kanban_record_subtitle">Balance: <field name="balance" widget="float"/></span>

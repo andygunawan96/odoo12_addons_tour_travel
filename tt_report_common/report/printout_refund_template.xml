@@ -53,7 +53,7 @@
                 <td style="width:150px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <i t-field="doc.confirm_uid.name"/>
+                    <i t-field="doc.sudo().confirm_uid.name"/>
                 </td>
             </tr>
 
@@ -279,7 +279,7 @@
                 <td style="width:150px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <i t-field="doc.confirm_uid.name"/>
+                    <i t-field="doc.sudo().confirm_uid.name"/>
                 </td>
             </tr>
 
@@ -458,7 +458,7 @@
                 <td style="width:150px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <i t-field="doc.confirm_uid.name"/>
+                    <i t-field="doc.sudo().confirm_uid.name"/>
                 </td>
             </tr>
 
@@ -624,7 +624,7 @@
                 <td style="width:150px;">Operator</td>
                 <td style="width:10px;">:</td>
                 <td style="width:400px;text-align: right;">
-                    <i t-field="doc.confirm_uid.name"/>
+                    <i t-field="doc.sudo().confirm_uid.name"/>
                 </td>
             </tr>
 

@@ -437,6 +437,22 @@ class ReservationAirline(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2], ['is_valid_identity'])
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for provider in booking_states:
+                for journey in provider['journeys']:
+                    for segment in journey['segments']:
+                        for fare in segment['fares']:
+                            for svc in fare['service_charges']:
+                                if not currency:
+                                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -450,6 +466,7 @@ class ReservationAirline(models.Model):
                 # April 21, 2020 - SAM
                 'is_force_issued': is_force_issued,
                 'is_halt_process': is_halt_process,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
                 # END
             })
 
@@ -573,8 +590,9 @@ class ReservationAirline(models.Model):
             return ERR.get_error(1004)
 
     def psg_validator(self,book_obj):
+        ho_agent_obj = book_obj.agent_id.ho_id
         for segment in book_obj.segment_ids:
-            rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', segment.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code)])
+            rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', segment.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code), ('ho_id','=',ho_agent_obj.id)])
 
             if rule:
                 limit = rule.rebooking_limit
@@ -617,16 +635,24 @@ class ReservationAirline(models.Model):
                                 break
 
                     if not safe:
+                        ## get HO agent
+                        ho_agent_obj = None
+                        if book_obj.agent_id:
+                            ho_agent_obj = book_obj.agent_id.ho_id
                         # whitelist di sini
-                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(
-                            [('name', 'ilike', name.name), ('chances_left', '>', 0)],limit=1)
+                        dom = [('name', 'ilike', name.name), ('chances_left', '>', 0)]
+                        if ho_agent_obj:
+                            dom.append(('ho_id','=', ho_agent_obj))
+                        whitelist_name = self.env['tt.whitelisted.name'].sudo().search(dom, limit=1)
 
                         if whitelist_name:
                             whitelist_name.chances_left -= 1
                             return True
 
-                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(
-                            [('passport','=',name.identity_number),('chances_left','>',0)],limit=1)
+                        dom = [('passport','=',name.identity_number),('chances_left','>',0)]
+                        if ho_agent_obj:
+                            dom.append(('ho_id', '=', ho_agent_obj))
+                        whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(dom, limit=1)
 
                         if whitelist_passport:
                             whitelist_passport.chances_left -= 1
@@ -1213,13 +1239,16 @@ class ReservationAirline(models.Model):
                 'is_hold_date_sync': book_obj.is_hold_date_sync,
                 'direction': book_obj.direction,
                 'origin': book_obj.origin_id.code,
+                'origin_display_name': book_obj.origin_id.name,
                 'destination': book_obj.destination_id.code,
+                'destination_display_name': book_obj.destination_id.name,
                 'sector_type': book_obj.sector_type,
                 'passengers': psg_list,
                 'provider_bookings': prov_list,
                 'refund_list': refund_list,
                 'reschedule_list': reschedule_list,
-                'signature_booked': book_obj.sid_booked
+                'signature_booked': book_obj.sid_booked,
+                'expired_date': book_obj.expired_date and book_obj.expired_date.strftime('%Y-%m-%d %H:%M:%S') or '',
                 # 'provider_type': book_obj.provider_type_id.code
             })
             # _logger.info("Get resp\n" + json.dumps(res))
@@ -1333,12 +1362,20 @@ class ReservationAirline(models.Model):
                     # May 14, 2020 - SAM
                     # Rencana awal mau melakukan compare passenger sequence
                     # Dilapangan sequence passenger pada tiap provider bisa berbeda beda, tidak bisa digunakan sebagai acuan
+                    currency_id = None
                     provider_obj.create_ticket_api(provider['passengers'], provider['pnr'])
                     for journey in provider['journeys']:
                         for segment in journey['segments']:
                             for fare in segment['fares']:
                                 provider_obj.create_service_charge(fare['service_charges'])
                                 provider_obj.update_pricing_details(fare)
+                                if not currency_id:
+                                    for svc in fare['service_charges']:
+                                        currency_id = svc['currency_id']
+                                        break
+                    ### update currency 22 JUN 2023
+                    if currency_id and provider_obj.booking_id.currency_id.id != currency_id:
+                        provider_obj.booking_id.currency_id = currency_id
                 # END
 
                 # May 13, 2020 - SAM
@@ -1388,15 +1425,19 @@ class ReservationAirline(models.Model):
 
 
         booking_tmp = {
-            'direction': searchRQ.get('direction'),
+            'direction': searchRQ.get('direction', ''),
             'departure_date': searchRQ['journey_list'][0]['departure_date'],
             'arrival_date': searchRQ['journey_list'][-1]['departure_date'],
             'origin_id': dest_obj.get_id(searchRQ['journey_list'][0]['origin'], provider_type_id),
             'destination_id': dest_obj.get_id(searchRQ['journey_list'][dest_idx]['destination'], provider_type_id),
             'provider_type_id': provider_type_id.id,
-            'adult': searchRQ['adult'],
-            'child': searchRQ['child'],
-            'infant': searchRQ['infant'],
+            'adult': searchRQ.get('adult', 0),
+            'child': searchRQ.get('child', 0),
+            'infant': searchRQ.get('infant', 0),
+            'student': searchRQ.get('student', 0),
+            'labour': searchRQ.get('labour', 0),
+            'seaman': searchRQ.get('seaman', 0),
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],
@@ -1544,7 +1585,8 @@ class ReservationAirline(models.Model):
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
                 if payment_res['error_code'] != 0:
                     try:
-                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
+                        ho_id = self.agent_id.ho_id.id
+                        self.env['tt.airline.api.con'].send_force_issued_not_enough_balance_notification(self.name, context, ho_id)
                     except Exception as e:
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
                     raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
@@ -1993,6 +2035,7 @@ class ReservationAirline(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 c_code = ''
+                c_type = ''
                 if p_charge_type != 'RAC':
                     if p_charge_code == 'csc':
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
@@ -2023,6 +2066,8 @@ class ReservationAirline(models.Model):
                             }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -2054,6 +2099,7 @@ class ReservationAirline(models.Model):
                         'pax_type': p_type,
                         'booking_airline_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_airline_id'] = self.id
@@ -2076,6 +2122,7 @@ class ReservationAirline(models.Model):
     # May 11, 2020 - SAM
     def set_provider_detail_info(self):
         hold_date = None
+        expired_date = None
         pnr_list = []
         values = {}
         for rec in self.provider_booking_ids:
@@ -2083,6 +2130,10 @@ class ReservationAirline(models.Model):
                 rec_hold_date = datetime.strptime(rec.hold_date[:19], '%Y-%m-%d %H:%M:%S')
                 if not hold_date or rec_hold_date < hold_date:
                     hold_date = rec_hold_date
+            if rec.expired_date:
+                rec_expired_date = datetime.strptime(rec.expired_date[:19], '%Y-%m-%d %H:%M:%S')
+                if not expired_date or rec_expired_date < expired_date:
+                    expired_date = rec_expired_date
             if rec.pnr:
                 pnr_list.append(rec.pnr)
 
@@ -2090,6 +2141,10 @@ class ReservationAirline(models.Model):
             hold_date_str = hold_date.strftime('%Y-%m-%d %H:%M:%S')
             if self.hold_date != hold_date_str:
                 values['hold_date'] = hold_date_str
+        if expired_date:
+            expired_date_str = expired_date.strftime('%Y-%m-%d %H:%M:%S')
+            if self.expired_date != expired_date_str:
+                values['expired_date'] = expired_date_str
         if pnr_list:
             pnr = ', '.join(pnr_list)
             if self.pnr != pnr:
@@ -2110,7 +2165,8 @@ class ReservationAirline(models.Model):
             # Contoh ketika auto update sia, booked uid menjadi punya sistem
             # Pengaruh saat deteksi agent untuk pricing
             # 'user_id': self.booked_uid.id
-            'user_id': self.user_id.id
+            'user_id': self.user_id.id,
+            'ho_id': self.agent_id.ho_id.id
             # END
         }
         self.env['tt.airline.api.con'].send_get_booking_for_sync(req)
@@ -2260,20 +2316,30 @@ class ReservationAirline(models.Model):
         else:
             co_uid = self.env.user.id
         attachments = []
-        for base64 in data['response']:
-            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
-                {
-                    'filename': 'Airline Ticket Original %s.pdf' % book_obj.name,
-                    'file_reference': 'Airline Ticket Original',
-                    'file': base64['base64'],
-                    'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
-                },
-                {
-                    'co_agent_id': co_agent_id,
-                    'co_uid': co_uid
-                }
-            )
-            attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
+        for idx, data_eticket in enumerate(data['response'], start=1):
+            is_pdf_found = False
+            for printout_ori_obj in book_obj.printout_ticket_original_ids:
+                path = printout_ori_obj.path
+                with open(path, "rb") as pdf_file:
+                    encoded_string = base64.b64encode(pdf_file.read()).decode('utf-8')
+                    if encoded_string == data_eticket['base64']:
+                        is_pdf_found = True
+                if is_pdf_found:
+                    break
+            if not is_pdf_found:
+                res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                    {
+                        'filename': 'Airline Ticket Original %s-%s.pdf' % (book_obj.name, idx),
+                        'file_reference': 'Airline Ticket Original',
+                        'file': data_eticket['base64'],
+                        'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
+                    },
+                    {
+                        'co_agent_id': co_agent_id,
+                        'co_uid': co_uid
+                    }
+                )
+                attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
         for rec_attachment in attachments:
             book_obj.printout_ticket_original_ids = [(4, rec_attachment)]
 
@@ -2292,6 +2358,7 @@ class ReservationAirline(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
+        is_force_update = data.get('force_update', False)
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
         has_ticket_ori = False
@@ -2299,9 +2366,9 @@ class ReservationAirline(models.Model):
             if rec_ticket_ori.active == True:
                 has_ticket_ori = True
 
-        if not has_ticket_ori:
+        if not has_ticket_ori or is_force_update:
             # gateway get ticket
-            req = {"data": []}
+            req = {"data": [], 'ho_id': book_obj.agent_id.ho_id.id}
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req['data'].append({
                     'pnr': provider_booking_obj.pnr,
@@ -3284,7 +3351,7 @@ class ReservationAirline(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

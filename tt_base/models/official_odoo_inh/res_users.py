@@ -58,6 +58,7 @@ class ResPartner(models.Model):
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True, required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
     agent_type_related_id = fields.Many2one('tt.agent.type','Agent Related Type', related='agent_id.agent_type_id')
     transaction_limit = fields.Monetary('Transaction Limit')
@@ -103,6 +104,41 @@ class ResUsers(models.Model):
         if not vals.get('email'):
             vals['email'] = time.time()
         vals['notification_type'] = 'inbox'
+        admin_obj_id = self.env.ref('base.user_admin').id
+        root_obj_id = self.env.ref('base.user_root').id
+        if vals.get('sel_groups_2_3'):
+            if (vals['sel_groups_2_3'] == 3 and not self.env.user.id in [admin_obj_id, root_obj_id]) or (vals['sel_groups_2_3'] == 2 and not self.env.user.has_group('base.group_system')):
+                vals.pop('sel_groups_2_3')
+        if vals.get('groups_id'):
+            if vals['groups_id'][0][0] == 6:
+                list_to_check = vals['groups_id'][0][2]
+                if 3 in list_to_check and not self.env.user.id in [admin_obj_id, root_obj_id]:
+                    list_to_check.remove(3)
+                if 2 in list_to_check and not self.env.user.has_group('base.group_system'):
+                    list_to_check.remove(2)
+                vals.update({
+                    'groups_id': [(6,0,list_to_check)]
+                })
+            elif vals['groups_id'][0][0] == 4:
+                if (vals['groups_id'][0][1] == 3 and not self.env.user.id in [admin_obj_id, root_obj_id]) or (vals['groups_id'][0][1] == 2 and not self.env.user.has_group('base.group_system')):
+                    vals.pop('groups_id')
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id] and not vals.get('groups_id'): #jika tidak punya access rights tidak boleh create tanpa is HO and is Agent, harus ada salah satu
+            ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
+            agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
+            corpor_group_id = self.env.ref('tt_base.group_tt_corpor_user').id
+            is_set_ho = False
+            is_set_agent = False
+            is_set_corpor = False
+            for rec in vals.keys():
+                if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
+                    if str(ho_group_id) in rec.split('_') and vals[rec]:
+                        is_set_ho = True
+                    elif str(agent_group_id) in rec.split('_') and vals[rec]:
+                        is_set_agent = True
+                    elif str(corpor_group_id) in rec.split('_') and vals[rec]:
+                        is_set_corpor = True
+            if not is_set_ho and not is_set_agent and not is_set_corpor:
+                raise UserError('Please set either "Is Tour Travel HO" or "Is Agent User" or "Is Corporate User"!')
         new_user = super(ResUsers, self).create(vals)
         # new_user.partner_id.parent_id = new_user.agent_id.id
         new_user.partner_id.parent_agent_id = False
@@ -111,10 +147,70 @@ class ResUsers(models.Model):
     @api.multi
     def write(self, vals):
         admin_obj_id = self.env.ref('base.user_admin').id
-        if vals.get('sel_groups_2_3') == 3 and self.env.user.id != admin_obj_id:
-            vals.pop('sel_groups_2_3')
-        if 'password' in vals and self.id == admin_obj_id and self.env.user.id != admin_obj_id: #tidak boleh ganti pwd admin kalau bukan admin settings
+        root_obj_id = self.env.ref('base.user_root').id
+        if vals.get('sel_groups_2_3'):
+            if (vals['sel_groups_2_3'] == 3 and not self.env.user.id in [admin_obj_id, root_obj_id]) or (vals['sel_groups_2_3'] == 2 and not self.env.user.has_group('base.group_system')):
+                vals.pop('sel_groups_2_3')
+        if vals.get('groups_id'):
+            if vals['groups_id'][0][0] == 6:
+                list_to_check = vals['groups_id'][0][2]
+                if 3 in list_to_check and not self.env.user.id in [admin_obj_id, root_obj_id]:
+                    list_to_check.remove(3)
+                if 2 in list_to_check and not self.env.user.has_group('base.group_system'):
+                    list_to_check.remove(2)
+                vals.update({
+                    'groups_id': [(6,0,list_to_check)]
+                })
+            elif vals['groups_id'][0][0] == 4:
+                if (vals['groups_id'][0][1] == 3 and not self.env.user.id in [admin_obj_id, root_obj_id]) or (vals['groups_id'][0][1] == 2 and not self.env.user.has_group('base.group_system')):
+                    vals.pop('groups_id')
+        if 'password' in vals and self.id == admin_obj_id and not self.env.user.id in [admin_obj_id, root_obj_id]: #tidak boleh ganti pwd admin kalau bukan admin settings
             vals.pop('password')
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id] and not vals.get('groups_id'): #jika tidak punya access rights tidak boleh remove both is HO and is Agent, harus ada salah satu
+            ho_group_id = self.env.ref('tt_base.group_tt_tour_travel').id
+            agent_group_id = self.env.ref('tt_base.group_tt_agent_user').id
+            corpor_group_id = self.env.ref('tt_base.group_tt_corpor_user').id
+            keys_to_check = {
+                'ho': '',
+                'agent': '',
+                'corpor': ''
+            }
+            is_set_ho = False
+            is_set_agent = False
+            is_set_corpor = False
+            for rec in vals.keys():
+                if len(rec.split('sel_groups')) > 1 or len(rec.split('in_group')) > 1:
+                    if str(ho_group_id) in rec.split('_'):
+                        if not vals[rec]:
+                            keys_to_check.update({
+                                'ho': rec
+                            })
+                        else:
+                            is_set_ho = True
+                    elif str(agent_group_id) in rec.split('_'):
+                        if not vals[rec]:
+                            keys_to_check.update({
+                                'agent': rec
+                            })
+                        else:
+                            is_set_agent = True
+                    elif str(corpor_group_id) in rec.split('_'):
+                        if not vals[rec]:
+                            keys_to_check.update({
+                                'corpor': rec
+                            })
+                        else:
+                            is_set_corpor = True
+            if keys_to_check.get('ho') and keys_to_check.get('agent') and keys_to_check.get('corpor'):
+                vals.pop(keys_to_check['ho'])
+                vals.pop(keys_to_check['agent'])
+                vals.pop(keys_to_check['corpor'])
+            elif keys_to_check.get('ho') and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent and not self.has_group('tt_base.tt_base.group_tt_corpor_user') and not is_set_corpor:
+                vals.pop(keys_to_check['ho'])
+            elif keys_to_check.get('agent') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.tt_base.group_tt_corpor_user') and not is_set_corpor:
+                vals.pop(keys_to_check['agent'])
+            elif keys_to_check.get('corpor') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent:
+                vals.pop(keys_to_check['corpor'])
         if vals.get('password'):
             self._check_password(vals['password'])
         return super(ResUsers, self).write(vals)
@@ -223,6 +319,3 @@ class ResUsers(models.Model):
     #         # 'user_ip_add': request.httprequest.headers.environ.get('HTTP_X_REAL_IP'),
     #         'user_ip_add': request.httprequest.environ['REMOTE_ADDR'],
     #     })
-
-
-

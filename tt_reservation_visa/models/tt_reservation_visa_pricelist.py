@@ -79,12 +79,13 @@ class VisaSyncProducts(models.TransientModel):
         req = {
             'provider': 'rodextrip_visa'
         }
+        ## tambah context
         res = self.env['tt.visa.api.con'].get_product_vendor(req)
         if res['error_code'] == 0:
-            folder_path = '/var/log/tour_travel/rodextrip_visa_master_data'
+            folder_path = '/var/log/tour_travel/rt_visa_master_data'
             if not os.path.exists(folder_path):
                 os.mkdir(folder_path)
-            file = open('/var/log/tour_travel/rodextrip_visa_master_data/rodextrip_visa_master_data.json', 'w')
+            file = open('/var/log/tour_travel/rt_visa_master_data/rt_visa_master_data.json', 'w')
             file.write(json.dumps(res['response']))
             file.close()
         else:
@@ -97,7 +98,7 @@ class VisaSyncProducts(models.TransientModel):
         for rec in list_product:
             rec.active = False
         file = []
-        file_dat = open('/var/log/tour_travel/rodextrip_visa_master_data/rodextrip_visa_master_data.json','r')
+        file_dat = open('/var/log/tour_travel/rt_visa_master_data/rt_visa_master_data.json','r')
         file = json.loads(file_dat.read())
         file_dat.close()
         if file:
@@ -121,6 +122,7 @@ class VisaSyncProducts(models.TransientModel):
                         'provider': provider,
                         'code': rec
                     }
+                    ## tambah context
                     res = self.env['tt.visa.api.con'].get_product_detail_vendor(req)
                     #create object
                     if res['error_code'] == 0:
@@ -275,6 +277,10 @@ class VisaPricelist(models.Model):
     duration = fields.Integer('Duration (day(s))', help="in day(s)", required=True, default=1)
     commercial_duration = fields.Char('Duration', compute='_compute_duration', readonly=1)
 
+    ho_ids = fields.Many2many('tt.agent', 'tt_master_visa_ho_agent_rel', 'visa_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
+
+    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
+
     @api.multi
     @api.depends('cost_price', 'sale_price')
     @api.onchange('cost_price', 'sale_price')
@@ -299,13 +305,27 @@ class VisaPricelist(models.Model):
     def create(self, values):
         if values.get('reference_code'):
             if self.search([('reference_code','=',values['reference_code'])]):
-                values['reference_code'] = ''
+                raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
+        values.update({
+            "owner_ho_id": self.env.user.agent_id.ho_id.id,
+            "ho_ids": [(4, self.env.user.agent_id.ho_id.id)]
+        })
+        if not values.get('reference_code') and values.get('provider_id'):
+            provider_obj = self.env['tt.provider'].browse(values['provider_id'])
+            values.update({
+                "reference_code": "%s_%s_%s" % (provider_obj.code, values['name'], str(len(self.search([]))))
+            })
         res = super(VisaPricelist, self).create(values)
         return res
 
+    @api.multi
     def write(self, values):
+        admin_obj_id = self.env.ref('base.user_admin').id
+        root_obj_id = self.env.ref('base.user_root').id
+        if not self.env.user.has_group('base.group_erp_manager') and not self.env.user.id in [admin_obj_id, root_obj_id] and self.env.user.ho_id.id != self.owner_ho_id.id:
+            raise UserError('You do not have permission to edit this record.')
         if values.get('reference_code'):
-            if self.search([('reference_code','=',values['reference_code'])]):
+            if self.search([('reference_code','=',values['reference_code']),('id','not in',self.ids)]):
                 raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
         return super(VisaPricelist, self).write(values)
 
@@ -315,10 +335,21 @@ class VisaPricelist(models.Model):
     #         if self.search(['reference_code','=',self.reference_code]):
     #             raise UserError(_('Duplicate reference code, please change or leave blank and update use compute reference code!'))
 
-    def get_config_api(self):
+    def get_config_api(self, context):
         try:
             visa = {}
-            for rec in self.sudo().search([]):
+            search_params = [('active','=',True)]
+            if context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            elif context.get('ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            elif context.get('co_ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            for rec in self.sudo().search(search_params):
                 if not visa.get(rec.country_id.name): #kalau ngga ada bikin dict
                     visa[rec.country_id.name] = [] #append country
                 count = 0
@@ -341,11 +372,11 @@ class VisaPricelist(models.Model):
     def get_inventory_api(self):
         try:
             res = []
-            for idx, rec in enumerate(self.sudo().search([])):
+            for idx, rec in enumerate(self.sudo().search([('provider_id.code','=', 'visa_internal'), ('active','=', True)])):
                 res.append(rec.reference_code)
             res = Response().get_no_error(res)
         except Exception as e:
-            _logger.error(traceback.format_exc())
+            _logger.error("%s, %s" % (str(e),traceback.format_exc()))
             return ERR.get_error(500)
         return res
 
@@ -418,10 +449,21 @@ class VisaPricelist(models.Model):
             return ERR.get_error(500)
         return res
 
-    def search_api(self, data):
+    def search_api(self, data, context):
         try:
             list_of_visa = []
-            for idx, rec in enumerate(self.sudo().search([('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate']),('reference_code','!=','')])): #agar kalau duplicate reference kosong tidak tampil (harus diisi manual / compute reference code)
+            search_params = [('active','=',True), ('country_id.name', '=ilike', data['destination']), ('immigration_consulate', '=ilike', data['consulate']), ('reference_code','!=','')]
+            if context.get('co_ho_id'):
+                search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+            elif context.get('ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            elif context.get('co_ho_seq_id'):
+                ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+                search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+            else:
+                search_params.append(('ho_ids', '=', False))
+            for idx, rec in enumerate(self.sudo().search(search_params)): #agar kalau duplicate reference kosong tidak tampil (harus diisi manual / compute reference code)
                 requirement = []
                 attachments = []
                 for rec1 in rec.requirement_ids:
@@ -483,17 +525,27 @@ class VisaPricelist(models.Model):
             return ERR.get_error(500)
         return res
 
-    def availability_api(self, data):
+    def availability_api(self, data, context):
         try:
             list_of_availability = []
             for idx, rec in enumerate(data['reference_code']):
-                if self.sudo().search([('reference_code', '=', rec)]):
+                search_params = [('reference_code', '=', rec)]
+                if context.get('co_ho_id'):
+                    search_params += ['|', '|', ('owner_ho_id', '=', int(context['co_ho_id'])), ('ho_ids', '=', int(context['co_ho_id'])), ('ho_ids', '=', False)]
+                elif context.get('ho_seq_id'):
+                    ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['ho_seq_id'])], limit=1)
+                    search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+                elif context.get('co_ho_seq_id'):
+                    ho_obj = self.env['tt.agent'].search([('seq_id', '=', context['co_ho_seq_id'])], limit=1)
+                    search_params += ['|', '|', ('owner_ho_id', '=', int(ho_obj[0].id)), ('ho_ids', '=', int(ho_obj[0].id)), ('ho_ids', '=', False)]
+                else:
+                    search_params.append(('ho_ids', '=', False))
+                if self.sudo().search(search_params):
                     list_of_availability.append(True)
                 else:
                     list_of_availability.append(False)
             response = {
                 'availability': list_of_availability,
-
             }
             res = Response().get_no_error(response)
         except Exception as e:

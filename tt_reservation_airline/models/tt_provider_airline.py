@@ -50,7 +50,7 @@ class TtProviderAirline(models.Model):
     issued_uid = fields.Many2one('res.users', 'Issued By', readonly=True, states={'draft': [('readonly', False)]})
     issued_date = fields.Datetime('Issued Date', readonly=True, states={'draft': [('readonly', False)]})
     hold_date = fields.Char('Hold Date', readonly=True, states={'draft': [('readonly', False)]})
-    expired_date = fields.Datetime('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
+    expired_date = fields.Char('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
     cancel_uid = fields.Many2one('res.users', 'Cancel By', readonly=True, states={'draft': [('readonly', False)]})
     cancel_date = fields.Datetime('Cancel Date', readonly=True, states={'draft': [('readonly', False)]})
     #
@@ -68,7 +68,8 @@ class TtProviderAirline(models.Model):
     penalty_amount = fields.Float('Penalty Amount', default=0, readonly=True, states={'draft': [('readonly', False)]})
     reschedule_uid = fields.Many2one('res.users', 'Rescheduled By', readonly=True, states={'draft': [('readonly', False)]})
     reschedule_date = fields.Datetime('Rescheduled Date', readonly=True, states={'draft': [('readonly', False)]})
-    total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    total_price = fields.Float('Total Price', default=0, readonly=True, states={'draft': [('readonly', False)]}, help='Issued Total Price (For reconcile)')
+    total_price_cost = fields.Float('Total Price (Cost)', default=0, readonly=True, states={'draft': [('readonly', False)]})
     penalty_currency = fields.Char('Penalty Currency', default='', readonly=True, states={'draft': [('readonly', False)]})
     # END
 
@@ -162,7 +163,8 @@ class TtProviderAirline(models.Model):
             'user_id': self.cancel_uid.id,
             'pnr': self.pnr,
             'pnr2': self.pnr2,
-            'provider': self.provider_id.code
+            'provider': self.provider_id.code,
+            'ho_id': self.booking_id.agent_id.ho_id.id
         }
         res = self.env['tt.airline.api.con'].send_sync_refund_status(req)
         if res['error_code'] != 0:
@@ -244,6 +246,11 @@ class TtProviderAirline(models.Model):
             # todo ini buat ngecek klo key nya ada baru di update value nya
             if key not in provider_data_keys:
                 continue
+            if key == 'total_price':
+                values['total_price_cost'] = provider_data[key]
+                if self.state == 'issued':
+                    continue
+
             values[key] = provider_data[key]
             # todo ini buat update data info pnr di ledger sama service charges (sblm booking itu sequence isi nya)
             if key == 'pnr':
@@ -261,6 +268,9 @@ class TtProviderAirline(models.Model):
 
         if provider_data.get('hold_date'):
             values['hold_date'] = datetime.strptime(provider_data['hold_date'], "%Y-%m-%d %H:%M:%S")
+
+        if provider_data.get('expired_date'):
+            values['expired_date'] = datetime.strptime(provider_data['expired_date'], "%Y-%m-%d %H:%M:%S")
 
         # June 4, 2020 - SAM
         # Menambahkan info warning dari bookingan
@@ -755,6 +765,7 @@ class TtProviderAirline(models.Model):
                 'foreign_currency_id': foreign_currency_id,
                 'provider_airline_booking_id': self.id,
                 'description': self.pnr and self.pnr or str(self.sequence),
+                'ho_id': self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             })
             scs.pop('currency')
             scs.pop('foreign_currency')
@@ -788,21 +799,10 @@ class TtProviderAirline(models.Model):
 
     # May 14, 2020 - SAM
     def delete_passenger_fees(self):
-        pnr_text = self.pnr if self.pnr else str(self.sequence)
         for psg in self.booking_id.passenger_ids:
-            # June 30, 2021 - SAM
-            # unlink dengan metode update One2many
-            fee_id_list = []
-            for fee in psg.fee_ids:
-                # if fee.pnr != pnr_text:
-                if fee.provider_id and fee.provider_id.id != self.id:
-                    fee_id_list.append((4, fee.id))
-                    continue
-                # fee.unlink()
-                fee_id_list.append((2, fee.id))
-            psg.write({
-                'fee_ids': fee_id_list
-            })
+            # unlink fees punya-nya current provider
+            for fee in psg.fee_ids.filtered(lambda fees: fees.provider_id and fees.provider_id.id == self.id):
+                fee.unlink()
 
     def delete_passenger_tickets(self):
         # June 30, 2021 - SAM
@@ -863,7 +863,9 @@ class TtProviderAirline(models.Model):
             'sequence': self.sequence,
             'balance_due': self.balance_due,
             'origin': self.origin_id.code,
+            'origin_display_name': self.origin_id.name,
             'destination': self.destination_id.code,
+            'destination_display_name': self.destination_id.name,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'journeys': journey_list,
@@ -875,6 +877,7 @@ class TtProviderAirline(models.Model):
             # April 29, 2020 - SAM
             'reference': self.reference,
             'total_price': self.total_price,
+            'total_price_cost': self.total_price_cost if self.total_price_cost else self.total_price,
             'penalty_amount': self.penalty_amount,
             'penalty_currency': self.penalty_currency and self.penalty_currency or '',
             'is_advance_purchase': self.is_advance_purchase,
@@ -941,6 +944,7 @@ class TtProviderAirline(models.Model):
             "co_agent_type_name": user_id.agent_id.agent_type_id.name,
             "co_agent_type_code": user_id.agent_id.agent_type_id.code,
             "co_user_info": co_user_info,
+            "co_ho_id": user_id.agent_id.ho_id.id
         }
 
         req = {
@@ -968,7 +972,11 @@ class TtProviderAirline(models.Model):
                     'message': '\n'.join(msg),
                     'provider': self.provider_id.code,
                 }
-                GatewayConnector().telegram_notif_api(data, {})
+                context = {
+                    "co_ho_id": self.booking_id.agent_id.ho_id.id
+                }
+                ## tambah context
+                GatewayConnector().telegram_notif_api(data, context)
                 return False
 
             order_number = self.booking_id.name if self.booking_id else ''
@@ -985,7 +993,11 @@ class TtProviderAirline(models.Model):
                 'message': '\n'.join(msg),
                 'provider': self.provider_id.code,
             }
-            GatewayConnector().telegram_notif_api(data, {})
+            context = {
+                "co_ho_id": self.booking_id.agent_id.ho_id.id
+            }
+            ## tambah context
+            GatewayConnector().telegram_notif_api(data, context)
         except:
             _logger.error('Action reprice provider, error notif telegram, %s, %s' % (self.pnr, traceback.format_exc()))
 
@@ -1012,6 +1024,7 @@ class TtProviderAirline(models.Model):
             "co_agent_type_name": user_id.agent_id.agent_type_id.name,
             "co_agent_type_code": user_id.agent_id.agent_type_id.code,
             "co_user_info": co_user_info,
+            "co_ho_id": user_id.agent_id.ho_id.id
         }
 
         req = {
@@ -1039,7 +1052,11 @@ class TtProviderAirline(models.Model):
                     'message': '\n'.join(msg),
                     'provider': self.provider_id.code,
                 }
-                GatewayConnector().telegram_notif_api(data, {})
+                context = {
+                    "co_ho_id": self.booking_id.agent_id.ho_id.id
+                }
+                ## tambah context
+                GatewayConnector().telegram_notif_api(data, context)
                 raise UserError('Error void, %s' % res['error_msg'])
 
             order_number = self.booking_id.name if self.booking_id else ''
@@ -1054,7 +1071,11 @@ class TtProviderAirline(models.Model):
                 'message': '\n'.join(msg),
                 'provider': self.provider_id.code,
             }
-            GatewayConnector().telegram_notif_api(data, {})
+            context = {
+                "co_ho_id": self.booking_id.agent_id.ho_id.id
+            }
+            ## tambah context
+            GatewayConnector().telegram_notif_api(data, context)
         except UserError as e:
             raise UserError(str(e))
         except:
@@ -1082,6 +1103,45 @@ class TtProviderAirline(models.Model):
             self.booking_id.check_provider_state(ctx)
         except:
             _logger.error('Action void provider, error update provider state, %s, %s' % (self.pnr, traceback.format_exc()))
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+    # END
+
+    # March 08, 2023 - SAM
+    def action_check_segment_provider(self):
+        if not self.env.user.has_group('tt_base.group_reservation_provider_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 107')
+        if not self.provider_id:
+            raise Exception('Provider is not set')
+
+        user_id = self.booking_id.user_id
+
+        co_user_info = self.env['tt.agent'].sudo().get_agent_level(user_id.agent_id.id)
+        context = {
+            "co_uid": user_id.id,
+            "co_user_name": user_id.name,
+            "co_user_login": user_id.login,
+            "co_agent_id": user_id.agent_id.id,
+            "co_agent_name": user_id.agent_id.name,
+            "co_agent_type_id": user_id.agent_id.agent_type_id.id,
+            "co_agent_type_name": user_id.agent_id.agent_type_id.name,
+            "co_agent_type_code": user_id.agent_id.agent_type_id.code,
+            "co_user_info": co_user_info,
+            "co_ho_id": user_id.agent_id.ho_id.id
+        }
+
+        req = {
+            "provider": self.provider_id.code,
+            "pnr": self.pnr,
+            "pnr2": self.pnr2,
+            "reference": self.reference,
+            "context": context,
+        }
+        res = self.env['tt.airline.api.con'].send_check_segment_vendor(req)
+        _logger.info('Action Check Segment Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
 
         return {
             'type': 'ir.actions.client',
@@ -1124,7 +1184,8 @@ class TtProviderAirline(models.Model):
             "provider": self.provider_id.code,
             "pnr": self.pnr,
             "pnr2": self.pnr2,
-            "reference": self.reference
+            "reference": self.reference,
+            "ho_id": self.booking_id.agent_id.ho_id.id
         }
         res = self.env['tt.airline.api.con'].send_vendor_ticket_email(req)
         _logger.info('Action Send Vendor Ticket Email, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
@@ -1158,6 +1219,8 @@ class TtProviderAirlinePricing(models.Model):
 
     provider_id = fields.Many2one('tt.provider.airline', 'Provider', readonly=1)
     raw_data = fields.Text('Raw Data')
+
+    rule_ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=1)
     rule_agent_id = fields.Many2one('tt.agent', 'Agent', readonly=1)
     rule_agent_type_code = fields.Char('Agent Type Code', readonly=1)
     rule_provider_type_code = fields.Char('Provider Type Code', readonly=1)
@@ -1176,6 +1239,7 @@ class TtProviderAirlinePricing(models.Model):
     rule_charge_code_list = fields.Char('Charge Code List', readonly=1)
     rule_pricing_datetime = fields.Datetime('Pricing Datetime', readonly=1)
     rule_departure_date_list = fields.Char('Departure Date List', readonly=1, default='')
+    rule_currency_code_list = fields.Char('Currency Code List', readonly=1, default='')
 
     provider_pricing_id = fields.Many2one('tt.provider.pricing', 'Pricing ID', readonly=1, ondelete='set null')
     provider_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1196,6 +1260,7 @@ class TtProviderAirlinePricing(models.Model):
     provider_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     provider_date_from = fields.Datetime('Date From', readonly=1)
     provider_date_to = fields.Datetime('Date To', readonly=1)
+    provider_currency_code = fields.Char('Currency Code', readonly=1)
     provider_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     provider_origin_code_list = fields.Char('Origin Code List', readonly=1)
     provider_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1353,6 +1418,7 @@ class TtProviderAirlinePricing(models.Model):
     agent_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     agent_date_from = fields.Datetime('Date From', readonly=1)
     agent_date_to = fields.Datetime('Date To', readonly=1)
+    agent_currency_code = fields.Char('Currency Code', readonly=1)
     agent_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     agent_origin_code_list = fields.Char('Origin Code List', readonly=1)
     agent_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1498,6 +1564,7 @@ class TtProviderAirlinePricing(models.Model):
     customer_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     customer_date_from = fields.Datetime('Date From', readonly=1)
     customer_date_to = fields.Datetime('Date To', readonly=1)
+    customer_currency_code = fields.Char('Currency Code', readonly=1)
     customer_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     customer_origin_code_list = fields.Char('Origin Code List', readonly=1)
     customer_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1559,6 +1626,7 @@ class TtProviderAirlinePricing(models.Model):
     agent_commission_set_expiration_date = fields.Char('Set Expiration Date', readonly=1)
     agent_commission_date_from = fields.Datetime('Date From', readonly=1)
     agent_commission_date_to = fields.Datetime('Date To', readonly=1)
+    agent_commission_currency_code = fields.Char('Currency Code', readonly=1)
     agent_commission_origin_access_type = fields.Char('Origin Access Type', readonly=1)
     agent_commission_origin_code_list = fields.Char('Origin Code List', readonly=1)
     agent_commission_origin_city_code_list = fields.Char('Origin City Code List', readonly=1)
@@ -1700,6 +1768,7 @@ class TtProviderAirlinePricing(models.Model):
                 'rule_charge_code_list': rule_data['charge_code_list'],
                 'rule_pricing_datetime': rule_data['pricing_datetime'],
                 'rule_departure_date_list': rule_data.get('departure_date_list', ''),
+                'rule_currency_code_list': rule_data.get('currency_code_list', ''),
             })
 
         if provider_data:
@@ -1723,6 +1792,7 @@ class TtProviderAirlinePricing(models.Model):
                     'provider_pricing_line_sequence': provider_data['sequence'],
                     'provider_pricing_line_index': provider_data['rule_index'],
                     'provider_pricing_type': provider_data.get('pricing_type', 'standard'),
+                    'provider_currency_code': provider_data.get('currency_code', ''),
                     'provider_set_expiration_date': provider_data['set_expiration_date'],
                     'provider_date_from': provider_data['date_from'] if provider_data['date_from'] else None,
                     'provider_date_to': provider_data['date_to'] if provider_data['date_to'] else None,
@@ -1886,6 +1956,7 @@ class TtProviderAirlinePricing(models.Model):
                     'agent_pricing_line_id': agent_data['rule_id'],
                     'agent_pricing_line_sequence': agent_data['sequence'],
                     'agent_pricing_line_index': agent_data['rule_index'],
+                    'agent_currency_code': agent_data.get('currency_code', ''),
                     'agent_set_expiration_date': agent_data['set_expiration_date'],
                     'agent_date_from': agent_data['date_from'] if agent_data['date_from'] else None,
                     'agent_date_to': agent_data['date_to'] if agent_data['date_to'] else None,
@@ -2038,6 +2109,7 @@ class TtProviderAirlinePricing(models.Model):
                     'customer_pricing_line_id': customer_data['rule_id'],
                     'customer_pricing_line_sequence': customer_data['sequence'],
                     'customer_pricing_line_index': customer_data['rule_index'],
+                    'customer_currency_code': customer_data.get('currency_code', ''),
                     'customer_set_expiration_date': customer_data['set_expiration_date'],
                     'customer_date_from': customer_data['date_from'] if customer_data['date_from'] else None,
                     'customer_date_to': customer_data['date_to'] if customer_data['date_to'] else None,
@@ -2105,6 +2177,7 @@ class TtProviderAirlinePricing(models.Model):
                     'agent_commission_line_id': agent_com_data['rule_id'],
                     'agent_commission_line_sequence': agent_com_data['sequence'],
                     'agent_commission_line_index': agent_com_data['rule_index'],
+                    'agent_commission_currency_code': agent_com_data.get('currency_code', ''),
                     'agent_commission_set_expiration_date': agent_com_data['set_expiration_date'],
                     'agent_commission_date_from': agent_com_data['date_from'] if agent_com_data['date_from'] else None,
                     'agent_commission_date_to': agent_com_data['date_to'] if agent_com_data['date_to'] else None,

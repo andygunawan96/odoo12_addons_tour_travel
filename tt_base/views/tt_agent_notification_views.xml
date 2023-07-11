@@ -20,6 +20,7 @@
                             <field name="snooze_days"/>
                             <field name="type"/>
                             <field name="provider_type_id" attrs="{'invisible': [('type','!=','reservation')]}"/>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="is_read"/>
                             <field name="active"/>
@@ -61,9 +62,9 @@
         </record>
 
         <menuitem id="submenu_agent_notification"
-                  parent="tt_base.top_tour_travel_customers"
+                  parent="tt_base.menu_tour_travel_configuration_tt_agent"
                   action="tt_agent_notification_action_view"
-                  sequence="13"
+                  sequence="1"
                   name="Agent Notification"/>
 
     </data>

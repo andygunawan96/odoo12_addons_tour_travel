@@ -26,6 +26,11 @@ class CreateUserWizard(models.TransientModel):
                 'default_agent_id': agent_id.id,
             },
         }
+        temp_ho_obj = agent_id.ho_id
+        if temp_ho_obj:
+            vals['context'].update({
+                'default_ho_id': temp_ho_obj.id
+            })
         vals['context'].update({
             'default_groups_id': [(6, 0, default_groups_id.ids)],
             'default_frontend_security_ids': [(6, 0, default_frontend_security_ids.ids)]
@@ -36,6 +41,7 @@ class CreateCorporateUserWizard(models.TransientModel):
     _name = "create.corporate.user.wizard"
     _description = 'Create Corporate User Wizard'
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent','Agent',readonly=True)
     customer_parent_id = fields.Many2one('tt.customer.parent','Customer Parent',readonly=True)
 
@@ -57,7 +63,7 @@ class CreateCorporateUserWizard(models.TransientModel):
 
     def create_cor_user(self):
         form_view_ref = self.env.ref('base.view_users_form', False)
-        user_template = self.env['res.users'].browse(self.env.ref("tt_base.template_corpor_user_manager").id) # asumsi yg di buat corpor manager
+        user_template = self.env['res.users'].sudo().browse(self.env.ref("tt_base.template_corpor_user_manager").id) # asumsi yg di buat corpor manager
 
         default_groups_id = user_template.groups_id
         default_frontend_security_ids = user_template.frontend_security_ids
@@ -75,6 +81,11 @@ class CreateCorporateUserWizard(models.TransientModel):
                 'default_customer_id': self.customer_id.id,
             },
         }
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
+            vals['context'].update({
+                'default_ho_id': temp_ho_obj.id
+            })
         vals['context'].update({
             'default_groups_id': [(6, 0, default_groups_id.ids)],
             'default_frontend_security_ids': [(6, 0, default_frontend_security_ids.ids)]

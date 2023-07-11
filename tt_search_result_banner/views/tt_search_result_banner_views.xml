@@ -43,6 +43,7 @@
                         <field name="description"/>
                         <field name="banner_color"/>
                         <field name="text_color"/>
+                        <field name="ho_id" groups="base.group_erp_manager"/>
                     </group>
                     <group>
                         <field name="minimum_days"/>

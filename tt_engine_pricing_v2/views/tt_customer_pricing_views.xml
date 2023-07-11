@@ -27,6 +27,7 @@
                             <field name="agent_id" readonly="1"/>
                         </group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="state" widget="radio"/>
                         </group>
                     </group>
@@ -114,6 +115,7 @@
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="description"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>
         </field>
@@ -125,6 +127,7 @@
         <field name="arch" type="xml">
         <search>
             <field name="name"/>
+            <field name="ho_id" groups="base.group_erp_manager"/>
             <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
         </search>
         </field>
@@ -166,6 +169,7 @@
                     <group>
                         <group>
                             <field name="sequence"/>
+                            <field name="currency_id"/>
                             <field name="pricing_id" invisible="1"/>
                             <field name="set_expiration_date"/>
                             <field name="date_from" attrs="{'invisible': [('set_expiration_date', '=', False)], 'required': [('set_expiration_date', '=', True)]}"/>
@@ -175,6 +179,11 @@
                             <field name="state" widget="radio"/>
                         </group>
                     </group>
+                    <div>
+                        <pre>NOTES:
+[Currency]
+If not set (empty), it will be applied for all currencies.</pre>
+                    </div>
                     <notebook>
                         <page string="Route" name="route">
                             <notebook>
@@ -369,6 +378,7 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
             <tree decoration-muted="active == False">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="currency_id"/>
                 <field name="description"/>
                 <field name="active" widget="boolean_toggle"/>
             </tree>

@@ -15,7 +15,7 @@ _logger = logging.getLogger(__name__)
 
 class TtAnalystSentraMedika(models.Model):
     _name = 'tt.analyst.sentramedika'
-    _description = 'Rodex Model Analyst Sentra Medika'
+    _description = 'Orbis Model Analyst Sentra Medika'
 
     name = fields.Char('Analyst Name')
     analyst_id = fields.Char('Analyst ID')

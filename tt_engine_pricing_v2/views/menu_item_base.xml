@@ -8,7 +8,7 @@
                   sequence="91"/>
 
             <menuitem id="menu_transaction_pricing_booking"
-                      name="Pricing (New)"
+                      name="Pricing"
                       groups="tt_base.group_pricing_customer_level_1"
                       parent="tt_base.top_transaction_configuration"
                       sequence="20"/>

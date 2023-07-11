@@ -94,6 +94,20 @@ class AgentInvoiceInh(models.Model):
         total_amount = 0
         total_point_reward = 0
         book_obj = False
+        ## ambil provider_type & provider
+        provider_type_id = ''
+        provider = ''
+        for invoice_line_obj in self.invoice_line_ids:
+            if provider_type_id == '' or provider == '':
+                try:
+                    book_obj = self.env[invoice_line_obj['res_model_resv']].browse(invoice_line_obj['res_id_resv'])
+                    provider_type_id = book_obj.provider_type_id.id
+                    provider = book_obj.provider_name
+                    break
+                except Exception as e:
+                    _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+
+
         for invoice_line_obj in self.invoice_line_ids:
             if not book_obj:
                 book_obj = self.env[invoice_line_obj.res_model_resv].browse(invoice_line_obj.res_id_resv)
@@ -166,7 +180,11 @@ class AgentInvoiceInh(models.Model):
                     # self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
             ho_invoice_data = {
                 'ho_invoice_id': self.id,
-                'ho_invoice_model': self._name
+                'ho_invoice_model': self._name,
+                'pnr': self.pnr,
+                'provider_type_id': provider_type_id,
+                'display_provider_name': provider
+
             }
             if book_obj._name == 'tt.reschedule':
                 ho_invoice_data.update({

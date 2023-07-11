@@ -11,17 +11,25 @@ class TtBanUser(models.Model):
     user_id = fields.Many2one('res.users','User')
     end_datetime = fields.Datetime('End Time')
     active = fields.Boolean('Active',default=True)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)])
 
     def ban_user_api(self,req,context):
-        self.ban_user(req['user_id'],
-                      req['duration_minutes'])
+        self.ban_user(req['user_id'], req['duration_minutes'], context)
         return ERR.get_no_error()
 
-    def ban_user(self,user_id,duration_minutes):
+    def ban_user(self,user_id,duration_minutes, context={}):
         user_obj = self.env['res.users'].browse(user_id)
         if not user_obj.create_date:
             raise Exception("User not found.")
-        current_ban_time = self.search([('user_id','=',user_obj.id)],order='id desc',limit=1)
+        ho_agent_obj = None
+        if context:
+            agent_obj = self.env['tt.agent'].search([('id', '=', context['co_agent_id'])], limit=1)
+            if agent_obj:
+                ho_agent_obj = agent_obj.ho_id
+        dom = [('user_id','=',user_obj.id)]
+        if ho_agent_obj:
+            dom.append(('ho_id','=',ho_agent_obj))
+        current_ban_time = self.search(dom, order='id desc',limit=1)
         if current_ban_time:
             current_ban_time.write({
                 'end_datetime': datetime.now() + timedelta(minutes=duration_minutes)
@@ -30,7 +38,8 @@ class TtBanUser(models.Model):
             self.create({
                 'name': user_obj.name,
                 'user_id': user_obj.id,
-                'end_datetime': datetime.now() + timedelta(minutes=duration_minutes)
+                'end_datetime': datetime.now() + timedelta(minutes=duration_minutes),
+                'ho_id': ho_agent_obj.id if ho_agent_obj else ''
             })
         user_obj.is_banned = True
 

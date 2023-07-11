@@ -490,7 +490,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_confirm(self, kwargs={}):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 200')
         if not self.check_line_empty():
             if not self.check_passenger_empty():
@@ -536,7 +536,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_draft(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 202')
         self.state = 'draft'
         self.state_offline = 'draft'
@@ -604,7 +604,7 @@ class IssuedOffline(models.Model):
                 scs.is_ledger_created = True
         try:
             self.env['tt.offline.api.con'].send_approve_notification(self.name, self.env.user.name,
-                                                                     self.get_total_amount())
+                                                                     self.get_total_amount(), self.agent_id.ho_id.id)
         except Exception as e:
             _logger.error("Send ISSUED OFFLINE Approve Notification Telegram Error")
 
@@ -627,24 +627,32 @@ class IssuedOffline(models.Model):
 
     def check_lg_required(self):
         required = False
-        for rec in self.provider_booking_ids:
-            if rec.provider_id.is_using_lg:
-                if not rec.letter_of_guarantee_ids:
-                    required = True
-                else:
-                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'lg'):
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
+            for rec in self.provider_booking_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_lg:
+                    if not rec.letter_of_guarantee_ids:
                         required = True
+                    else:
+                        if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'lg'):
+                            required = True
         return required
 
     def check_po_required(self):
         required = False
-        for rec in self.provider_booking_ids:
-            if rec.provider_id.is_using_po:
-                if not rec.letter_of_guarantee_ids:
-                    required = True
-                else:
-                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'po'):
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
+            for rec in self.provider_booking_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    if not rec.letter_of_guarantee_ids:
                         required = True
+                    else:
+                        if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'po'):
+                            required = True
         return required
 
     def fixing_adult_count(self):
@@ -654,7 +662,7 @@ class IssuedOffline(models.Model):
 
     @api.one
     def action_sent(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 204')
         if self.provider_type_id_name == 'hotel':
             for line in self.line_ids:
@@ -850,6 +858,7 @@ class IssuedOffline(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 c_code = ''
+                c_type = ''
                 if p_charge_type != 'RAC':
                     if p_charge_code == 'csc':
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
@@ -870,6 +879,8 @@ class IssuedOffline(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -901,6 +912,7 @@ class IssuedOffline(models.Model):
                         'pax_type': p_type,
                         'booking_offline_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_airline_id'] = self.id
@@ -940,7 +952,7 @@ class IssuedOffline(models.Model):
             book.sync_service_charge()
 
     def set_back_to_confirm(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 208')
         self.state = 'draft'
         self.state_offline = 'confirm'
@@ -948,7 +960,7 @@ class IssuedOffline(models.Model):
     def create_final_ho_ledger(self):
         for rec in self:
             ledger = self.env['tt.ledger']
-
+            ho_obj = rec.agent_id.ho_id
             if rec.nta_price > rec.vendor_amount:
                 ledger.create_ledger_vanilla(
                     self._name,
@@ -959,7 +971,7 @@ class IssuedOffline(models.Model):
                     3,
                     rec.currency_id.id,
                     self.env.user.id,
-                    self.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     rec.ho_final_amount,
                     0,
@@ -978,7 +990,7 @@ class IssuedOffline(models.Model):
                     3,
                     rec.currency_id.id,
                     self.env.user.id,
-                    self.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     rec.ho_final_amount,
@@ -1024,7 +1036,7 @@ class IssuedOffline(models.Model):
                 elif scs.charge_type == 'RAC':
                     if scs.commission_agent_id.id == self.agent_id.id:
                         agent_comm += abs(scs.total)
-                    elif scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    elif scs.commission_agent_id.id == self.ho_id.id:
                         ho_comm += abs(scs.total)
                     else:
                         parent_comm += abs(scs.total)
@@ -1067,14 +1079,14 @@ class IssuedOffline(models.Model):
             """ Jika ho_diff != 0, lakukan pembulatan komisi ho di pricing """
             if ho_diff < self.ho_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    if scs.commission_agent_id.is_ho_agent:
                         if scs.charge_code != 'hoc':
                             scs.amount -= ho_diff
                             scs.total -= ho_diff
                             break
             elif ho_diff > self.ho_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    if scs.commission_agent_id.is_ho_agent:
                         if scs.charge_code != 'hoc':
                             scs.amount += ho_diff
                             scs.total += ho_diff
@@ -1083,16 +1095,14 @@ class IssuedOffline(models.Model):
             """ Jika parent_diff != 0, lakukan pembulatan komisi parent di pricing """
             if parent_diff < self.parent_agent_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id != self.env.ref(
-                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                    if not scs.commission_agent_id.is_ho_agent and scs.commission_agent_id.id != self.agent_id.id:
                         if scs.charge_type != 'FARE':
                             scs.amount -= ho_diff
                             scs.total -= ho_diff
                         break
             elif parent_diff > self.parent_agent_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id != self.env.ref(
-                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                    if not scs.commission_agent_id.is_ho_agent and scs.commission_agent_id.id != self.agent_id.id:
                         if scs.charge_type != 'FARE':
                             scs.amount += parent_diff
                             scs.total += parent_diff
@@ -1166,7 +1176,7 @@ class IssuedOffline(models.Model):
             return ''
 
     def get_fee_amount(self, agent_id, provider_type_id, input_commission, passenger_id=None):
-        ho_agent = self.env.ref('tt_base.rodex_ho').sudo()
+        ho_agent_obj = agent_id.ho_id.sudo()
 
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 
@@ -1175,10 +1185,10 @@ class IssuedOffline(models.Model):
 
         """ kurangi input amount dengan fee amount. masukkan fee amount ke dalam service charge HOC """
         vals = {
-            'commission_agent_id': ho_agent.id,
-            'agent_id': ho_agent.id,
-            'agent_name': ho_agent.name,
-            'agent_type_id': ho_agent.agent_type_id.id,
+            'commission_agent_id': ho_agent_obj.id,
+            'agent_id': ho_agent_obj.id,
+            'agent_name': ho_agent_obj.name,
+            'agent_type_id': ho_agent_obj.agent_type_id.id,
             'amount': price_obj.fee_amount if price_obj.fee_amount < input_commission else input_commission,
             'total': price_obj.fee_amount if price_obj.fee_amount < input_commission else input_commission,
             'charge_type': 'RAC',
@@ -1498,6 +1508,14 @@ class IssuedOffline(models.Model):
                 segment_count = len(self.line_ids)
                 route_count = len(pnr_list)
 
+        agent_obj = self.agent_id
+        ho_agent_obj = agent_obj.ho_id
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
+
         for rec in pnr_list:
             prov_code = ''
             carrier_code = ''
@@ -1550,6 +1568,7 @@ class IssuedOffline(models.Model):
                 'segment_count': segment_count,
                 'show_commission': True,
                 'pricing_datetime': '',
+                'context': context
             }
             repr_tool.calculate_pricing(**rule_param)
         return scs_dict['service_charges']
@@ -1571,7 +1590,7 @@ class IssuedOffline(models.Model):
                     if scs.get('charge_type') == 'RAC':
                         if not scs.get('commission_agent_id') or scs.get('commission_agent_id') == rec.agent_id.id:
                             rec.agent_commission -= scs['total']
-                        elif scs.get('commission_agent_id') == rec.agent_id.parent_agent_id.id and rec.agent_id.parent_agent_id.id != self.env.ref('tt_base.agent_type_ho').id:
+                        elif scs.get('commission_agent_id') == rec.agent_id.parent_agent_id.id and not rec.agent_id.parent_agent_id.is_ho_agent:
                             rec.parent_agent_commission -= scs['total']
                         else:
                             rec.ho_commission -= scs['total']
@@ -2117,17 +2136,19 @@ class IssuedOffline(models.Model):
                 "quick_validate": data_reservation_offline.get('quick_validate'),
                 'state': 'draft',
                 'state_offline': 'confirm',
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
-                'is_using_point_reward': is_using_point_reward
+                'is_using_point_reward': is_using_point_reward,
+                'currency_id': self.env['tt.agent'].browse(context['co_agent_id']).ho_id.currency_id.id
             }
 
             if data_reservation_offline['type'] == 'airline':
                 header_val.update({
                     'sector_type': data_reservation_offline.get('sector_type'),
                 })
-            book_obj = self.sudo().create(header_val)
+            book_obj = self.create(header_val)
             book_obj.update({
                 'input_total': data_reservation_offline['total_sale_price']
             })
@@ -2472,7 +2493,7 @@ class IssuedOffline(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

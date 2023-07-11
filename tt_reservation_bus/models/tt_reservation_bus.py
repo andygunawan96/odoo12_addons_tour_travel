@@ -338,6 +338,14 @@ class TtReservationBus(models.Model):
                         continue
                     self.update_pnr_booked(provider_obj,provider,context)
                     any_provider_changed = True
+
+                    ## 22 JUN 2023 - IVAN
+                    ## GET CURRENCY CODE
+                    currency = provider['currency']
+                    if currency:
+                        currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                        if currency_obj:
+                            book_obj.currency_id = currency_obj.id
                 elif provider['state'] == 'issued' and not provider.get('error_code'):
                     if provider_obj.state == 'issued':
                         continue
@@ -434,6 +442,7 @@ class TtReservationBus(models.Model):
             'adult': searchRQ['adult'],
             # 'infant': searchRQ['infant'],
             'infant': 0,
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id', False),
             'user_id': context_gateway['co_uid']
@@ -751,6 +760,7 @@ class TtReservationBus(models.Model):
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
                 c_code = ''
+                c_type = ''
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
@@ -773,6 +783,8 @@ class TtReservationBus(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -802,6 +814,7 @@ class TtReservationBus(models.Model):
                     curr_dict['pax_type'] = p_type
                     curr_dict['booking_bus_id'] = self.id
                     curr_dict['description'] = provider.pnr
+                    curr_dict['ho_id'] = self.ho_id.id if self.ho_id else ''
                     curr_dict.update(c_val)
                     values.append((0,0,curr_dict))
 

@@ -18,6 +18,7 @@ class TtCustomerParent(models.Model):
     logo = fields.Binary('Customer Logo')
 
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type', required=True)
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     parent_agent_id = fields.Many2one('tt.agent', 'Parent', required=True)  # , default=lambda self: self.env.user.agent_id
 
     balance = fields.Monetary(string="Balance")
@@ -103,6 +104,13 @@ class TtCustomerParent(models.Model):
     #                     'customer_id': rec2.id
     #                 })
 
+    def to_dict_acc(self):
+        return {
+            'seq_id': self.seq_id,
+            'customer_parent_name': self.name,
+            'customer_parent_type': self.customer_parent_type_id and self.customer_parent_type_id.name or ''
+        }
+
     def action_create_corporate_user(self):
         vals = {
             'name': 'Create Corporate User Wizard',
@@ -116,6 +124,11 @@ class TtCustomerParent(models.Model):
                 'default_customer_parent_id': self.id
             },
         }
+        temp_ho_obj = self.parent_agent_id.ho_id
+        if temp_ho_obj:
+            vals['context'].update({
+                'default_ho_id': temp_ho_obj.id
+            })
         return vals
 
     @api.model
@@ -199,9 +212,11 @@ class TtCustomerParent(models.Model):
             res = {
                 'customer_parent_name': cor_data[0].name,
                 'customer_parent_id': cor_data[0].id,
+                'customer_parent_seq_id': cor_data[0].seq_id,
                 'customer_seq_id': cust_data[0].seq_id,
                 'customer_parent_type_name': cor_data[0].customer_parent_type_id.name,
-                'customer_parent_type_code': cor_data[0].customer_parent_type_id.code
+                'customer_parent_type_code': cor_data[0].customer_parent_type_id.code,
+                'customer_parent_osi_codes': cor_data[0].get_osi_cor_data()
             }
             booker_obj = self.env['tt.customer.parent.booker.rel'].search([('customer_parent_id', '=', cor_data[0].id), ('customer_id', '=', cust_data[0].id)], limit=1)
             if booker_obj:
@@ -230,6 +245,15 @@ class TtCustomerParent(models.Model):
         except Exception as e:
             _logger.error(traceback.format_exc())
             return ERR.get_error(1022)
+
+    def get_osi_cor_data(self):
+        res = {}
+        for rec in self.osi_corporate_code_ids:
+            if not res.get(rec.carrier_id.code):
+                res.update({
+                    rec.carrier_id.code: rec.osi_code
+                })
+        return res
 
     def action_confirm(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_tt_agent_finance').id, self.env.ref('tt_base.group_tt_agent_user').id}.intersection(set(self.env.user.groups_id.ids))):

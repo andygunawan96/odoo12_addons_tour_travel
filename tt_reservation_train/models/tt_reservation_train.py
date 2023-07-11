@@ -107,14 +107,18 @@ class TtReservationTrain(models.Model):
     def action_booked_api_train(self,context,pnr_list,hold_date):
         if type(hold_date) != datetime:
             hold_date = False
-        self.write({
+        write_values = {
             'state': 'booked',
-            'pnr': ', '.join(pnr_list),
-            'hold_date': hold_date,
             'booked_uid': context['co_uid'],
             'booked_date': datetime.now()
-        })
+        }
 
+        if hold_date:
+            write_values['hold_date'] = hold_date
+        if pnr_list:
+            write_values['pnr'] = ', '.join(pnr_list)
+
+        self.write(write_values)
         try:
             if self.agent_type_id.is_send_email_booked:
                 mail_created = self.env['tt.email.queue'].sudo().with_context({'active_test':False}).search([('res_id', '=', self.id), ('res_model', '=', self._name), ('type', '=', 'booked_train')], limit=1)
@@ -303,10 +307,10 @@ class TtReservationTrain(models.Model):
             return ERR.get_error(1004)
 
     def psg_validator(self,book_obj):
+        ho_agent_obj = book_obj.agent_id.ho_id
         for provider in book_obj.provider_booking_ids:
             for journey in provider['journey_ids']:
-
-                rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', journey.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code)])
+                rule = self.env['tt.limiter.rule'].sudo().search([('carrier_code', '=', journey.carrier_code), ('provider_type_id.code', '=', book_obj.provider_type_id.code), ('ho_id','=',ho_agent_obj.id)])
 
                 if rule:
                     limit = rule.rebooking_limit
@@ -401,7 +405,18 @@ class TtReservationTrain(models.Model):
                     for idx, ticket_obj in enumerate(provider['tickets']):
                         if ticket_obj.get('covid'):
                             provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['covid'])
+
+                    ## 22 JUN 2023 - IVAN
+                    ## GET CURRENCY CODE
+                    currency = provider['currency']
+                    if currency:
+                        currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                        if currency_obj:
+                            book_obj.currency_id = currency_obj.id
                 elif provider['state'] == 'issued' and not provider.get('error_code'):
+                    for idx, ticket_obj in enumerate(provider['tickets']):
+                        if ticket_obj.get('web_check_in'):
+                            provider_obj.update_temporary_field_per_pax_api(idx, ticket_obj['web_check_in'])
                     if provider_obj.state == 'issued':
                         continue
                     if req.get('force_issued'):
@@ -489,6 +504,7 @@ class TtReservationTrain(models.Model):
             'provider_type_id': provider_type_id.id,
             'adult': searchRQ['adult'],
             'infant': searchRQ['infant'],
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id', False),
             'user_id': context_gateway['co_uid']
@@ -688,7 +704,9 @@ class TtReservationTrain(models.Model):
             res.update({
                 'direction': book_obj.direction,
                 'origin': book_obj.origin_id.code,
+                'origin_display_name': book_obj.origin_id.name,
                 'destination': book_obj.destination_id.code,
+                'destination_display_name': book_obj.destination_id.name,
                 'sector_type': book_obj.sector_type,
                 'passengers': psg_list,
                 'provider_bookings': prov_list,
@@ -765,6 +783,7 @@ class TtReservationTrain(models.Model):
                 p_charge_type = p_sc.charge_type
                 p_pax_type = p_sc.pax_type
                 c_code = ''
+                c_type = ''
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 if p_charge_type != 'RAC':
@@ -787,6 +806,8 @@ class TtReservationTrain(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -816,6 +837,7 @@ class TtReservationTrain(models.Model):
                     curr_dict['pax_type'] = p_type
                     curr_dict['booking_train_id'] = self.id
                     curr_dict['description'] = provider.pnr
+                    curr_dict['ho_id'] = self.ho_id.id if self.ho_id else ''
                     curr_dict.update(c_val)
                     values.append((0,0,curr_dict))
 
@@ -1102,7 +1124,7 @@ class TtReservationTrain(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

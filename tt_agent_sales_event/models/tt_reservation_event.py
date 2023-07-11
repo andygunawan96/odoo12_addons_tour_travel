@@ -44,9 +44,11 @@ class ReservationEvent(models.Model):
         invoice_id = False
         ho_invoice_id = False
 
+        temp_ho_obj = self.agent_id.ho_id
         if not invoice_id:
             invoice_id = self.env['tt.agent.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -58,6 +60,7 @@ class ReservationEvent(models.Model):
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': invoice_id.id,
             'reference': self.name,
             'desc': self.get_segment_description(),
@@ -76,6 +79,7 @@ class ReservationEvent(models.Model):
                 is_use_credit_limit = False
             ho_invoice_id = self.env['tt.ho.invoice'].create({
                 'booker_id': self.booker_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
@@ -88,6 +92,7 @@ class ReservationEvent(models.Model):
         ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': ho_invoice_id.id,
             'reference': self.name,
             'desc': self.get_segment_description(),
@@ -134,10 +139,13 @@ class ReservationEvent(models.Model):
                             agent_id = self.agent_id.id
                         else:
                             agent_id = cost_charge.commission_agent_id.id
-                        if agent_id not in commission_list:
-                            commission_list[agent_id] = 0
-                        commission_list[agent_id] += cost_charge.amount * -1
-                    elif cost_charge.commission_agent_id != self.env.ref('tt_base.rodex_ho'):
+                        if self.agent_id.id != agent_id:
+                            if agent_id not in commission_list:
+                                commission_list[agent_id] = 0
+                            commission_list[agent_id] += cost_charge.amount * -1
+                        else:
+                            price_unit += cost_charge.amount
+                    elif cost_charge.commission_agent_id != (temp_ho_obj and temp_ho_obj or False):
                         price_unit += cost_charge.amount
             ### FARE
             self.env['tt.ho.invoice.line.detail'].create({
@@ -145,6 +153,7 @@ class ReservationEvent(models.Model):
                 'price_unit': price_unit,
                 'quantity': 1,
                 'invoice_line_id': ho_invoice_line_id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'commission_agent_id': self.agent_id.id
             })
             total_price += price_unit
@@ -155,6 +164,7 @@ class ReservationEvent(models.Model):
                 'price_unit': commission_list[rec],
                 'quantity': 1,
                 'invoice_line_id': ho_invoice_line_id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'commission_agent_id': rec,
                 'is_commission': True
             })
@@ -183,6 +193,7 @@ class ReservationEvent(models.Model):
                     'price_unit': total_use_point,
                     'quantity': 1,
                     'invoice_line_id': ho_invoice_line_id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                     'commission_agent_id': self.agent_id.id,
                     'is_point_reward': True
                 })
@@ -210,6 +221,7 @@ class ReservationEvent(models.Model):
             payref_id_list.append(upc_id.id)
 
         payment_vals = {
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'agent_id': self.agent_id.id,
             'acquirer_id': data['acquirer_id'].id,
             'real_total_amount': invoice_id.grand_total,
@@ -237,6 +249,7 @@ class ReservationEvent(models.Model):
         acq_obj = False
         if payment_method_to_ho == 'credit_limit':
             ho_payment_vals = {
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
                 'acquirer_id': acq_obj,
                 'real_total_amount': ho_invoice_id.grand_total,

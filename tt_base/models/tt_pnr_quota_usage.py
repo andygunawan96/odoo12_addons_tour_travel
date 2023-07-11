@@ -1,4 +1,5 @@
-from odoo import api,fields,models
+from odoo import api,fields,models, _
+from odoo.exceptions import UserError
 
 INVENTORY_TYPE = [
     ('internal', 'Internal'),
@@ -29,9 +30,12 @@ class TtPnrQuotaUsage(models.Model):
     ref_provider_type = fields.Char('Ref Provider Type')
     ref_provider = fields.Char('Ref Provider')
     usage_quota = fields.Integer('Usage Quota')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     active = fields.Boolean('Active', default=True)
 
     def open_reservation(self):
+        if self.inventory != 'internal':
+            raise UserError(_("This function only works for internal inventories."))
         try:
             form_id = self.env[self.res_model_resv].get_form_id()
         except:

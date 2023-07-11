@@ -347,13 +347,14 @@ class TtProviderTour(models.Model):
                 scs['pax_count'] = 0
                 scs['total'] = 0
                 for psg in self.ticket_ids:
-                    scs['currency_id'] = currency_obj.get_id('IDR')
-                    scs['foreign_currency_id'] = currency_obj.get_id('IDR')
+                    scs['currency_id'] = currency_obj.get_id(service_charge_vals[0].get('currency'), default_param_idr=True)
+                    scs['foreign_currency_id'] = currency_obj.get_id(service_charge_vals[0].get('foreign_currency'),default_param_idr=True)
                     scs['provider_tour_booking_id'] = self.id
                     scs['passenger_tour_ids'].append(psg.passenger_id.id)
                     scs['pax_count'] += 1
                     scs['total'] += scs['amount']
                     scs['description'] = self.pnr and self.pnr or ''
+                    scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
                 if scs['total'] != 0:
                     scs['passenger_tour_ids'] = [(6, 0, scs['passenger_tour_ids'])]
                     service_chg_obj.create(scs)
@@ -371,8 +372,8 @@ class TtProviderTour(models.Model):
 
         for scs in service_charge_vals_dup:
             scs['passenger_tour_ids'] = []
-            scs['currency_id'] = currency_obj.get_id('IDR')
-            scs['foreign_currency_id'] = currency_obj.get_id('IDR')
+            scs['currency_id'] = currency_obj.get_id(scs.get('currency'), default_param_idr=True)
+            scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'), default_param_idr=True)
             scs['provider_tour_booking_id'] = self.id
             for psg in self.ticket_ids:
                 if scs.get('tour_room_code'):
@@ -413,6 +414,7 @@ class TtProviderTour(models.Model):
             # scs.pop('currency')
             # scs.pop('foreign_currency')
             scs['passenger_tour_ids'] = [(6,0,scs['passenger_tour_ids'])]
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if scs['total'] != 0:
                 service_chg_obj.create(scs)
 

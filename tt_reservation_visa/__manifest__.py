@@ -11,8 +11,8 @@ Tour & Travel - Reservation Visa
 Key Features
 ------------
     """,
-    'author': 'PT Roda Express Sukses Mandiri',
-    'website': 'rodextravel.tours',
+    'author': 'PT Orbis Daya Asia',
+    'website': 'orbisway.com',
     'depends': ['base', 'tt_base', 'tt_engine_pricing', 'tt_traveldoc', 'tt_reservation', 'tt_report_common'],
 
     # always loaded
@@ -30,7 +30,7 @@ Key Features
         'data/tt_api_webhook_data.xml',
         'data/tt_pricing_agent_visa_data.xml',
         'data/tt_transport_carrier_visa.xml',
-
+        'wizard/visa_assign_products_wizard_views.xml',
         'views/tt_reservation_visa_menuheader.xml',
         'views/tt_reservation_visa_views.xml',
         'views/tt_reservation_visa_order_passengers_views.xml',

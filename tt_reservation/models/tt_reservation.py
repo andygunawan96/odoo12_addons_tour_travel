@@ -87,6 +87,9 @@ class TtReservation(models.Model):
     adult = fields.Integer('Adult', default=1, readonly=True, states={'draft': [('readonly', False)]})
     child = fields.Integer('Child', default=0, readonly=True, states={'draft': [('readonly', False)]})
     infant = fields.Integer('Infant', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    student = fields.Integer('Student', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    labour = fields.Integer('Labour', default=0, readonly=True, states={'draft': [('readonly', False)]})
+    seaman = fields.Integer('Seaman', default=0, readonly=True, states={'draft': [('readonly', False)]})
 
     departure_date = fields.Char('Journey Date', readonly=True, states={'draft': [('readonly', False)]})  # , required=True
     return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
@@ -137,7 +140,9 @@ class TtReservation(models.Model):
     parent_agent_commission = fields.Monetary(string='Parent Agent Commission', default=0, compute='_compute_parent_agent_commission',store=True)
     ho_commission = fields.Monetary(string='HO Commission', default=0, compute='_compute_ho_commission',store=True)
 
-    # yang jual
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True,
+                               default=lambda self: self.env.user.ho_id,
+                               readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,
                                default=lambda self: self.env.user.agent_id,
                                readonly=True, states={'draft': [('readonly', False)]})
@@ -177,18 +182,24 @@ class TtReservation(models.Model):
 
     total_pax = fields.Integer('Total Pax', readonly=True, compute='_compute_total_pax')
 
+    estimated_currency = fields.Char('Estimated Currency')
+
     @api.model
     def create(self, vals_list):
         try:
             vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
             vals_list['res_model'] = self._name
+            if not vals_list.get('ho_id') and vals_list.get('agent_id'):
+                agent_id = self.env['tt.agent'].browse(vals_list['agent_id'])
+                if agent_id:
+                    vals_list['ho_id'] = agent_id.ho_id.id
         except:
             pass
         return super(TtReservation, self).create(vals_list)
 
     def write(self, vals):
         if vals.get('hold_date'):
-            if self.agent_type_id.id == self.env.ref('tt_base.agent_type_btc').id:
+            if self.agent_id.is_btc_agent:
                 vals.pop('hold_date')
                 if not self.hold_date:
                     if vals.get('booked_date'):
@@ -242,6 +253,7 @@ class TtReservation(models.Model):
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
 
         vals.update({
+            'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
@@ -433,6 +445,7 @@ class TtReservation(models.Model):
         country = self.env['res.country'].sudo().search([('code', '=', vals.pop('nationality_code'))])
 
         vals.update({
+            'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
@@ -463,7 +476,7 @@ class TtReservation(models.Model):
 
         res_ids = []
         # identity_req = ['identity_number','identity_country_of_issued_id','identity_expdate','identity_type']
-
+        ho_agent_obj = self.env['tt.agent'].browse(context['co_ho_id'])
         for psg in passengers:
             country = country_obj.search([('code', '=', psg.pop('nationality_code'))])
             psg['nationality_id'] = country and country[0].id or False
@@ -490,6 +503,10 @@ class TtReservation(models.Model):
                         vals_for_update.update({
                             'birth_date': psg['birth_date']
                         })
+                    if ho_agent_obj:
+                        vals_for_update.update({
+                            'ho_id': ho_agent_obj.id
+                        })
 
                     #manual aja
                     # [vals_for_update.update({
@@ -511,12 +528,14 @@ class TtReservation(models.Model):
                     res_ids.append(current_passenger)
                     continue
 
+            psg['ho_id'] = context['co_ho_id']
             psg['agent_id'] = context['co_agent_id']
 
             psg.update({
                 'marital_status': 'married' if psg.get('title') == 'MRS' else '',
                 'is_get_booking_from_vendor': psg.get('is_get_booking_from_vendor', False),
-                'register_uid': context['co_uid']
+                'register_uid': context['co_uid'],
+                'ho_id': ho_agent_obj.id
             })
             # sepertinya tidak terpakai
             # #if ada phone, kalau dari frontend cache passenger
@@ -700,27 +719,25 @@ class TtReservation(models.Model):
         for rec in self:
             agent_nta_total = 0
             for sale in rec.sale_service_charge_ids:
-                if (sale.charge_code != 'rac' and sale.charge_type == 'RAC'):
+                if (sale.charge_code != 'rac' and sale.charge_type == 'RAC') and sale.charge_code != 'csc':
                     agent_nta_total += sale.total * -1
             rec.agent_nta = agent_nta_total + rec.total_nta
 
     @api.depends("sale_service_charge_ids")
     def _compute_parent_agent_commission(self):
-        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and sale.commission_agent_id.id != id_ho:
+                if sale.charge_type == 'RAC' and sale.charge_code != 'rac' and sale.commission_agent_id and not sale.commission_agent_id.is_ho_agent:
                     commission_total += abs(sale.total)
             rec.parent_agent_commission = commission_total
 
     @api.depends("sale_service_charge_ids")
     def _compute_ho_commission(self):
-        id_ho = self.env.ref('tt_base.rodex_ho').id
         for rec in self:
             commission_total = 0
             for sale in rec.sale_service_charge_ids:
-                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.id == id_ho:
+                if sale.charge_type == 'RAC' and sale.commission_agent_id and sale.commission_agent_id.is_ho_agent:
                     commission_total += abs(sale.total)
             rec.ho_commission = commission_total
 
@@ -737,7 +754,7 @@ class TtReservation(models.Model):
         except:
             raise RequestException(1008)
 
-        if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
+        if book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids or book_obj.agent_id.is_btc_agent or book_obj.user_id.agent_id.is_btc_agent:
             payment_acq_number = ''
             bank_code = ''
             url = ''
@@ -783,7 +800,7 @@ class TtReservation(models.Model):
         #         })
         include_total_nta = False
         if context and context.get('co_agent_id'):
-            include_total_nta = context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id
+            include_total_nta = context['co_agent_id'] == context['co_ho_id']
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
             if self.payment_acquirer_number_id.state == 'close':
@@ -798,7 +815,8 @@ class TtReservation(models.Model):
                             'va_number': self.payment_acquirer_number_id.va_number,
                             'url': self.payment_acquirer_number_id.url,
                             'amount': self.payment_acquirer_number_id.get_total_amount(),
-                            'order_number': self.payment_acquirer_number_id.number
+                            'order_number': self.payment_acquirer_number_id.number,
+                            'currency': self.payment_acquirer_number_id.currency_id.name
                         }
                     else:
                         self.cancel_payment_method()
@@ -824,6 +842,7 @@ class TtReservation(models.Model):
         res = {
             'order_number': self.name,
             'book_id': self.id,
+            'ho_id': self.ho_id.id if self.ho_id else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'agent_name': self.agent_id.name if self.agent_id else '',
             'customer_parent_name': self.customer_parent_id.name if self.customer_parent_id else '',
@@ -862,6 +881,8 @@ class TtReservation(models.Model):
             'issued_date': self.issued_date and self.issued_date.strftime('%Y-%m-%d %H:%M:%S') or '',
             'use_point': self.is_using_point_reward,
             'signature_booked': self.sid_booked,
+            'currency': self.currency_id.name,
+            'estimated_currency': json.loads(self.estimated_currency) if self.estimated_currency else {}
             # END
         }
         if self.booker_insentif:
@@ -971,25 +992,123 @@ class TtReservation(models.Model):
                     _logger.error('%s, %s' % (str(e), traceback.format_exc()))
 
     def create_svc_upsell(self):
-        if self.state in ['booked', 'halt_booked','halt', 'draft']:
-            svc_list = []
-            total_pax = {
-                "ADT": {
-                    "total": 0,
-                    "id": []
-                },
-                "CHD": {
-                    "total": 0,
-                    "id": []
-                },
-                "INF": {
-                    "total": 0,
-                    "id": []
-                },
-            }
+        # if self.state in ['booked', 'halt_booked','halt', 'draft']: ## check reservasi terluar
+        #     svc_list = []
+        #     total_pax = {
+        #         "ADT": {
+        #             "total": 0,
+        #             "id": []
+        #         },
+        #         "CHD": {
+        #             "total": 0,
+        #             "id": []
+        #         },
+        #         "INF": {
+        #             "total": 0,
+        #             "id": []
+        #         },
+        #     }
+        #
+        #     for idx, rec in enumerate(self.provider_booking_ids):
+        #         total_provider = len(self.provider_booking_ids)
+        #         for pax in self.passenger_ids:
+        #             pax_type = ''
+        #             if idx == 0:
+        #                 if hasattr(rec, 'ticket_ids'):
+        #                     for ticket in rec.ticket_ids:
+        #                         if pax.id == ticket.passenger_id.id:
+        #                             pax_type = ticket.pax_type
+        #                             total_pax[pax_type]['total'] += 1
+        #                             total_pax[pax_type]['id'].append(pax.id)
+        #                             break
+        #                 else:
+        #                     # tidak ada ticket upsell per reservasi asumsi adult 1
+        #                     ## hotel, ppob
+        #                     pax_type = 'ADT'
+        #                     total_pax[pax_type]['total'] = 1
+        #                     total_pax[pax_type]['id'].append(pax.id)
+        #
+        #             for sc in pax.channel_service_charge_ids:
+        #                 sc_pax = copy.deepcopy(sc.to_dict())
+        #
+        #                 if pax_type != '' and total_pax[pax_type]['total'] == 1 or '.' in sc_pax['charge_code']:
+        #                     sc_pax.update({
+        #                         "charge_type": 'ROC',
+        #                         "amount": sc_pax['amount'] / total_provider,
+        #                         "pax_type": pax_type,
+        #                         "pax_count": 0,
+        #                         "foreign_amount": sc_pax['amount'] / total_provider,
+        #                     })
+        #                     if '.' in sc_pax['charge_code']: ## untuk upsell after sales per orang
+        #                         sc_pax.update({
+        #                             "pax_count": 1,
+        #                             "passenger_%s_ids" % self.provider_type_id.code: [(6, 0, [pax.id])]
+        #                         })
+        #                     svc_list.append(sc_pax)
+        #
+        #                     sc_pax = copy.deepcopy(sc_pax)
+        #                     ## jika harga lebih dari 0 bikin rac upsell, jika kurang dari 0 discount tidak bikin rac
+        #                     ## FIXME DOWNSELL UPSELL TETAP BIKIN RAC 16 MARET 2023
+        #                     # if sc['amount'] > 0:
+        #                     sc_pax.update({
+        #                         "charge_type": 'RAC',
+        #                         "amount": sc_pax['amount'] * -1,
+        #                     })
+        #                     svc_list.append(sc_pax)
+        #     if svc_list:
+        #         for rec in self.provider_booking_ids:
+        #             svc_list_to_save_backend = []
+        #             for svc in svc_list:
+        #                 svc.update({
+        #                     "description": rec.pnr if rec.pnr != False else '',
+        #                     'total': svc['amount'] * svc.get('pax_count', 0),
+        #                     'currency_id': rec.currency_id.id,
+        #                     'foreign_currency_id': rec.currency_id.id,
+        #                 })
+        #                 if svc['total'] == 0:
+        #                     svc.update({
+        #                         "passenger_%s_ids" % self.provider_type_id.code: [(6, 0, total_pax[svc['pax_type']]['id'])],
+        #                         'pax_count': total_pax[svc['pax_type']]['total'],
+        #                         'total': svc['amount'] * total_pax[svc['pax_type']]['total'],
+        #                     })
+        #                 svc_list_to_save_backend.append((4, self.env['tt.service.charge'].create(svc).id))
+        #             ##update cost service charges passenger
+        #             for svc in rec.cost_service_charge_ids:
+        #                 if 'csc' in svc.charge_code and svc.charge_type in ['RAC', 'ROC']:
+        #                     svc_list_to_save_backend.append((2, svc.id))
+        #             rec.write({
+        #                 'cost_service_charge_ids': svc_list_to_save_backend
+        #             })
+        #         self.calculate_service_charge()
+        #         self.is_upsell_in_service_charge = True
+        #         _logger.info('update upsell for %s' % self.name)
+        #     else:
+        #         _logger.info('upsell not found for %s' % self.name)
+        ho_obj = False
+        if self.ho_id:
+            ho_obj = self.ho_id
+        elif self.agent_id:
+            ho_obj = self.agent_id.ho_id
 
-            for idx, rec in enumerate(self.provider_booking_ids):
-                total_provider = len(self.provider_booking_ids)
+        svc_list = []
+        total_pax = {
+            "ADT": {
+                "total": 0,
+                "id": []
+            },
+            "CHD": {
+                "total": 0,
+                "id": []
+            },
+            "INF": {
+                "total": 0,
+                "id": []
+            },
+        }
+
+        for idx, rec in enumerate(self.provider_booking_ids):
+            total_provider = len(self.provider_booking_ids)
+            if rec.state in ['booked', 'halt_booked','halt', 'draft']:
                 for pax in self.passenger_ids:
                     pax_type = ''
                     if idx == 0:
@@ -1027,41 +1146,43 @@ class TtReservation(models.Model):
 
                             sc_pax = copy.deepcopy(sc_pax)
                             ## jika harga lebih dari 0 bikin rac upsell, jika kurang dari 0 discount tidak bikin rac
-                            if sc['amount'] > 0:
-                                sc_pax.update({
-                                    "charge_type": 'RAC',
-                                    "amount": sc_pax['amount'] * -1,
-                                })
-                                svc_list.append(sc_pax)
-            if svc_list:
-                for rec in self.provider_booking_ids:
-                    svc_list_to_save_backend = []
-                    for svc in svc_list:
-                        svc.update({
-                            "description": rec.pnr if rec.pnr != False else '',
-                            'total': svc['amount'] * svc.get('pax_count', 0),
-                            'currency_id': rec.currency_id.id,
-                            'foreign_currency_id': rec.currency_id.id,
-                        })
-                        if svc['total'] == 0:
-                            svc.update({
-                                "passenger_%s_ids" % self.provider_type_id.code: [(6, 0, total_pax[svc['pax_type']]['id'])],
-                                'pax_count': total_pax[svc['pax_type']]['total'],
-                                'total': svc['amount'] * total_pax[svc['pax_type']]['total'],
+                            ## FIXME DOWNSELL UPSELL TETAP BIKIN RAC 16 MARET 2023
+                            # if sc['amount'] > 0:
+                            sc_pax.update({
+                                "charge_type": 'RAC',
+                                "amount": sc_pax['amount'] * -1,
                             })
-                        svc_list_to_save_backend.append((4, self.env['tt.service.charge'].create(svc).id))
-                    ##update cost service charges passenger
-                    for svc in rec.cost_service_charge_ids:
-                        if 'csc' in svc.charge_code and svc.charge_type in ['RAC', 'ROC']:
-                            svc_list_to_save_backend.append((2, svc.id))
-                    rec.write({
-                        'cost_service_charge_ids': svc_list_to_save_backend
+                            svc_list.append(sc_pax)
+        if svc_list:
+            for rec in self.provider_booking_ids:
+                svc_list_to_save_backend = []
+                for svc in svc_list:
+                    svc.update({
+                        "description": rec.pnr if rec.pnr != False else '',
+                        'total': svc['amount'] * svc.get('pax_count', 0),
+                        'currency_id': rec.currency_id.id,
+                        'foreign_currency_id': rec.currency_id.id,
+                        'ho_id': ho_obj and ho_obj.id or False
                     })
-                self.calculate_service_charge()
-                self.is_upsell_in_service_charge = True
-                _logger.info('update upsell for %s' % self.name)
-            else:
-                _logger.info('upsell not found for %s' % self.name)
+                    if svc['total'] == 0:
+                        svc.update({
+                            "passenger_%s_ids" % self.provider_type_id.code: [(6, 0, total_pax[svc['pax_type']]['id'])],
+                            'pax_count': total_pax[svc['pax_type']]['total'],
+                            'total': svc['amount'] * total_pax[svc['pax_type']]['total'],
+                        })
+                    svc_list_to_save_backend.append((4, self.env['tt.service.charge'].create(svc).id))
+                ##update cost service charges passenger
+                for svc in rec.cost_service_charge_ids:
+                    if 'csc' in svc.charge_code and svc.charge_type in ['RAC', 'ROC']:
+                        svc_list_to_save_backend.append((2, svc.id))
+                rec.write({
+                    'cost_service_charge_ids': svc_list_to_save_backend
+                })
+            self.calculate_service_charge()
+            self.is_upsell_in_service_charge = True
+            _logger.info('update upsell for %s' % self.name)
+        else:
+            _logger.info('upsell not found for %s' % self.name)
 
     ##butuh field
     def booker_insentif_api(self, req, context):
@@ -1127,6 +1248,9 @@ class TtReservation(models.Model):
         for provider_obj in self.provider_booking_ids:
             # if provider_obj.state == 'issued':
             #     continue
+            ## 19 JUN 2023 IVAN fail_booked tidak dihitung
+            if provider_obj.state in ['fail_booked']:
+                continue
             for sc in provider_obj.cost_service_charge_ids:
                 if sc.is_ledger_created or (sc.charge_type == 'RAC' and sc.charge_code not in ['rac', 'csc']):
                     continue
@@ -1197,6 +1321,7 @@ class TtReservation(models.Model):
                 'res_model': book_obj._name,
                 'res_id': book_obj.id,
                 'booker_id': booker_obj.id,
+                'ho_id': context.get('co_ho_id', book_obj.ho_id.id),
                 'agent_id': context.get('co_agent_id', book_obj.agent_id.id),
                 'customer_parent_id': context.get('co_customer_parent_id', book_obj.customer_parent_id.id),
                 'cur_approval_seq': context.get('co_hierarchy_sequence', booker_hierarchy)
@@ -1350,7 +1475,7 @@ class TtReservation(models.Model):
                 #cek balance due book di sini, mungkin suatu saat yang akan datang
                 if book_obj.state == 'issued':
                     _logger.error('Transaction Has been paid.')
-                    raise RequestException(1009)
+                    raise RequestException(1009,additional_message="Please re-check your booking status first.")
                 # May 13, 2020 - SAM
                 # if book_obj.state not in ['booked']:
                 #     # _logger.error('Cannot issue not [Booked] State.')
@@ -1378,8 +1503,8 @@ class TtReservation(models.Model):
                     agent_check_amount = book_obj.get_unpaid_nta_amount(payment_method)
 
                 is_use_point = False
-                website_use_point_reward = self.env['ir.config_parameter'].sudo().get_param('use_point_reward')
-                if website_use_point_reward == 'True':
+                website_use_point_reward = book_obj.agent_id.ho_id.is_use_point_reward
+                if website_use_point_reward:
                     is_use_point = req.get('use_point')
 
                 total_use_point = 0
@@ -1455,52 +1580,53 @@ class TtReservation(models.Model):
                         raise RequestException(1017,additional_message=", Customer.")
 
                 for provider in book_obj.provider_booking_ids:
-                    _logger.info('create quota pnr')
-                    ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point, payment_method_use_to_ho) ##payment method untuk bayar full / installment, payment method use to ho --> payment agent to HO (balance / credit limit)
-                    # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
-                    if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
-                        try:
-                            ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id','=',self.env.ref('tt_base.rodex_ho').id)])
-                            amount = 0
-                            for ledger in ledger_obj:
-                                amount += ledger.debit
-                            carrier_code = []
-                            carrier_str = ''
-                            if hasattr(provider, 'journey_ids'):
-                                for journey in provider.journey_ids:
-                                    if hasattr(journey, 'segment_ids'):
-                                        for segment in journey.segment_ids:
-                                            if segment.carrier_code not in carrier_code:
-                                                carrier_code.append(segment.carrier_code)
-                                    else:
-                                        if journey.carrier_code not in carrier_code:
-                                            carrier_code.append(journey.carrier_code)
-                            for carrier in carrier_code:
-                                if carrier_str != '' and carrier != '':
-                                    carrier += ', '
-                                carrier_str += carrier
-                            agent_obj.use_pnr_quota({
-                                'res_model_resv': book_obj._name,
-                                'res_id_resv': book_obj.id,
-                                'res_model_prov': provider._name,
-                                'res_id_prov': provider.id,
-                                'ref_pnrs': provider.pnr,
-                                'ref_carriers': carrier_str,
-                                'ref_provider': provider.provider_id.code,
-                                'ref_name': book_obj.name,
-                                'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
-                                'ref_pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,  # total pax
-                                'ref_r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
-                                'inventory': 'internal',
-                                'amount': amount
-                            })
-                        except Exception as e:
-                            _logger.error(traceback.format_exc(e))
-                        # if not quota_used:
-                        #     print("5k woi")
+                    if provider.state not in ['fail_booked']:
+                        ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point, payment_method_use_to_ho) ##payment method untuk bayar full / installment, payment method use to ho --> payment agent to HO (balance / credit limit)
+                        # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
+                        if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
+                            try:
+                                _logger.info('create quota pnr')
+                                ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id.is_ho_agent','=',True)])
+                                amount = 0
+                                for ledger in ledger_obj:
+                                    amount += ledger.debit
+                                carrier_code = []
+                                carrier_str = ''
+                                if hasattr(provider, 'journey_ids'):
+                                    for journey in provider.journey_ids:
+                                        if hasattr(journey, 'segment_ids'):
+                                            for segment in journey.segment_ids:
+                                                if segment.carrier_code not in carrier_code:
+                                                    carrier_code.append(segment.carrier_code)
+                                        else:
+                                            if journey.carrier_code not in carrier_code:
+                                                carrier_code.append(journey.carrier_code)
+                                for carrier in carrier_code:
+                                    if carrier_str != '' and carrier != '':
+                                        carrier += ', '
+                                    carrier_str += carrier
+                                agent_obj.use_pnr_quota({
+                                    'res_model_resv': book_obj._name,
+                                    'res_id_resv': book_obj.id,
+                                    'res_model_prov': provider._name,
+                                    'res_id_prov': provider.id,
+                                    'ref_pnrs': provider.pnr,
+                                    'ref_carriers': carrier_str,
+                                    'ref_provider': provider.provider_id.code,
+                                    'ref_name': book_obj.name,
+                                    'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
+                                    'ref_pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,  # total pax
+                                    'ref_r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
+                                    'inventory': 'internal',
+                                    'amount': amount
+                                })
+                            except Exception as e:
+                                _logger.error(traceback.format_exc(e))
+                            # if not quota_used:
+                            #     print("5k woi")
 
                 ## add point reward for agent
-                if website_use_point_reward == 'True' and payment_method_use_to_ho != 'credit_limit':
+                if website_use_point_reward and payment_method_use_to_ho != 'credit_limit':
                     ## ASUMSI point reward didapat dari total harga yg di bayar
                     ## karena kalau per pnr per pnr 55 rb & rules point reward kelipatan 10 rb agent rugi 1 point
                     self.env['tt.point.reward'].add_point_reward(book_obj, agent_check_amount, context['co_uid'])
@@ -1569,7 +1695,10 @@ class TtReservation(models.Model):
 
     def get_email_reply_to(self):
         try:
-            final_email = self.env['ir.config_parameter'].sudo().get_param('tt_base.website_default_email_address', default='')
+            final_email = ''
+            if self.agent_id:
+                ho_agent_obj = self.agent_id.ho_id
+                final_email = ho_agent_obj.email_server_id.smtp_user
         except Exception as e:
             _logger.info(str(e))
             final_email = ''
@@ -1622,7 +1751,8 @@ class TtReservation(models.Model):
                 for prices in rec.sale_service_charge_ids:
                     if prices.charge_type == 'RAC':
                         if prices.charge_code in ['dif','fac','hoc']:
-                            prices.commission_agent_id = self.env.ref('tt_base.rodex_ho').id
+                            ho_obj = self.agent_id.ho_id
+                            prices.commission_agent_id = ho_obj and ho_obj.id or False
                         elif prices.charge_code == 'rac':
                             prices.commission_agent_id = False
                         elif prices.charge_code != 'rac':

@@ -50,7 +50,8 @@ class ActivityResendVoucher(models.TransientModel):
         req = {
             'provider': self.provider_name,
             'book_id': self.pnr,
-            'user_email_address': self.user_email_add
+            'user_email_address': self.user_email_add,
+            'ho_id': self.agent_id.ho_id.id
         }
         res = self.env['tt.activity.api.con'].resend_voucher(req)
         if res['response'].get('success'):
@@ -228,7 +229,11 @@ class ReservationActivity(models.Model):
             'message': 'PNR %s is now %s, current balance: %s' % (pnr, state, balance),
             'provider': self.provider_name,
         }
-        GatewayConnector().telegram_notif_api(data, {})
+        context = {
+            "co_ho_id": self.agent_id.ho_id.id
+        }
+        ## tambah context
+        GatewayConnector().telegram_notif_api(data, context)
 
     def action_issued_vendor(self):
         req = {
@@ -236,6 +241,7 @@ class ReservationActivity(models.Model):
             'provider': self.activity_id.provider_id.code,
             'book_id': self.id,
             'pnr': self.pnr,
+            'ho_id': self.agent_id.ho_id.id
         }
         res = self.env['tt.activity.api.con'].issued_booking_vendor(req)
 
@@ -461,6 +467,8 @@ class ReservationActivity(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -490,6 +498,7 @@ class ReservationActivity(models.Model):
                     curr_dict['pax_type'] = p_type
                     curr_dict['booking_activity_id'] = self.id
                     curr_dict['description'] = provider.pnr
+                    curr_dict['ho_id'] = self.ho_id.id if self.ho_id else ''
                     curr_dict.update(c_val)
                     values.append((0, 0, curr_dict))
 
@@ -598,6 +607,18 @@ class ReservationActivity(models.Model):
                             'pax_type': temp_sku.pax_type,
                         })
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for svc in pricing:
+                if not currency:
+                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             header_val.update({
                 'contact_id': contact_obj.id,
                 'booker_id': booker_obj.id,
@@ -608,6 +629,7 @@ class ReservationActivity(models.Model):
                 'contact_phone': contact_data.get('mobile') and str(contact_data['calling_code']) + " - "+ str(
                     contact_data['mobile']),
                 'date': datetime.now(),
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
@@ -618,10 +640,11 @@ class ReservationActivity(models.Model):
                 'transport_type': 'activity',
                 'provider_name': activity_type_id.activity_id.provider_id.code,
                 'file_upload': file_upload,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
             })
 
             # create header & Update customer_parent_id
-            book_obj = self.sudo().create(header_val)
+            book_obj = self.create(header_val)
 
             if option['perBooking']:
                 for rec in option['perBooking']:
@@ -778,7 +801,8 @@ class ReservationActivity(models.Model):
                 'order_number': obj.name,
                 'uuid': obj.booking_uuid,
                 'pnr': obj.pnr,
-                'provider': provider
+                'provider': provider,
+                'ho_id': obj.agent_id.ho_id.id
             }
             attachment_objs = []
             res2 = self.env['tt.activity.api.con'].get_vouchers(req)
@@ -1263,7 +1287,11 @@ class ReservationActivity(models.Model):
             'message': 'Activity Booking Status Updated: ' + desc,
             'provider': self.provider_name,
         }
-        GatewayConnector().telegram_notif_api(data, {})
+        context = {
+            "co_ho_id": activity_booking.agent_id.ho_id.id
+        }
+        ## tambah context
+        GatewayConnector().telegram_notif_api(data, context)
 
     def action_activity_print_invoice(self):
         self.ensure_one()
@@ -1296,11 +1324,14 @@ class ReservationActivity(models.Model):
 
     def get_aftersales_desc(self):
         desc_txt = 'PNR: ' + self.pnr + '<br/>'
-        desc_txt += 'Activity: ' + self.activity_id.name + '<br/>'
-        desc_txt += 'Product: ' + self.activity_product_id.name + '<br/>'
-        desc_txt += 'Visit Date: ' + self.visit_date.strftime('%d %b %Y')
-        if self.timeslot:
-            desc_txt += ' (' + self.timeslot + ')'
+        for rec in self.provider_booking_ids:
+            for rec2 in rec.activity_detail_ids:
+                desc_txt += 'Activity: ' + rec2.activity_id.name + '<br/>'
+                desc_txt += 'Product: ' + rec2.activity_product_id.name + '<br/>'
+                desc_txt += 'Visit Date: ' + rec2.visit_date.strftime('%d %b %Y')
+                if rec2.timeslot:
+                    desc_txt += ' (' + rec2.timeslot + ')'
+                desc_txt += '<br/><br/>'
         return desc_txt
 
     def get_passenger_pricing_breakdown(self):
@@ -1342,7 +1373,7 @@ class ReservationActivity(models.Model):
                         pax_pnr_data['agent_nta'] += rec3.amount
                     if rec3.charge_type == 'RAC':
                         pax_pnr_data['total_commission'] -= rec3.amount
-                        if rec3.commission_agent_id.agent_type_id.id == self.env.ref('tt_base.agent_type_ho').id:
+                        if rec3.commission_agent_id.is_ho_agent:
                             pax_pnr_data['ho_commission'] -= rec3.amount
                     if rec3.charge_type != 'RAC':
                         pax_pnr_data['grand_total'] += rec3.amount

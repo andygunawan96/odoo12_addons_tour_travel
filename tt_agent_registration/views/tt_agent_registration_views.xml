@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="tt_agent_registration_search_view" model="ir.ui.view">
+            <field name="name">tt.agent.registration.search.view</field>
+            <field name="model">tt.agent.registration</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="registration_num"/>
+                    <field name="name"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Head Office" name="ho_id" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    </group>
+                </search>
+            </field>
+        </record>
 
         <record id="tt_agent_registration_form_view" model="ir.ui.view">
             <field name="name">tt.agent.registration.form.view</field>
@@ -55,6 +69,7 @@
                         <group>
                             <group>
                                 <field name="create_uid"/>
+                                <field name="ho_id" groups="base.group_erp_manager"/>
                                 <field name="agent_id"/>
                                 <field name="agent_type_id" domain="[('can_be_registered','in',[True])]"/>
                                 <field name="reference_id"/>
@@ -135,7 +150,7 @@
             <field name="name">tt.agent.registration.form.view.tour.travel</field>
             <field name="model">tt.agent.registration</field>
             <field name="inherit_id" ref="tt_agent_registration.tt_agent_registration_form_view"/>
-            <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_operator'),ref('tt_base.group_tt_tour_travel')])]" />
+            <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_operator'),ref('tt_base.group_tt_tour_travel'),ref('base.group_erp_manager')])]" />
             <field name="priority">2</field>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='registration_document_ids']" position="replace">
@@ -184,11 +199,11 @@
         <menuitem id="top_transaction_registration" parent="tt_base.main_transaction"
               name="Registration" sequence="20"/>
 
-            <menuitem id="menu_transaction_agent" parent="top_transaction_registration"
-                  name="Agent" sequence="2"/>
+        <menuitem id="menu_transaction_agent" parent="top_transaction_registration"
+              name="Agent" sequence="2"/>
 
-                <menuitem id="submenu_transaction_request" parent="menu_transaction_agent"
-                      name="Request" groups="tt_base.group_agent_registration_level_1" action="tt_agent_registration_action_view" sequence="1"/>
+        <menuitem id="submenu_transaction_request" parent="menu_transaction_agent"
+              name="Request" groups="tt_base.group_agent_registration_level_1" action="tt_agent_registration_action_view" sequence="1"/>
 
     </data>
 </odoo>

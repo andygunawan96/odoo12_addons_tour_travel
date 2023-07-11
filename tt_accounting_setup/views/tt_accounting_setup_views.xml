@@ -39,6 +39,7 @@
                         </div>
                         <group>
                             <group>
+                                <field name="ho_id" groups="base.group_erp_manager"/>
                                 <field name="accounting_provider"/>
                                 <field name="notes"/>
                                 <field name="sequence"/>
@@ -53,11 +54,14 @@
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Only Airline transactions can be sent.</p>
                         <group>
                             <group>
-                                <field name="is_send_topup"/>
-                                <field name="is_send_commission"/>
+                                <field name="is_create_customer"/>
+                                <field name="is_send_reverse_transaction"/>
+                                <field name="is_send_update_transaction"/>
                             </group>
                             <group>
+                                <field name="is_send_topup"/>
                                 <field name="is_send_refund"/>
+                                <field name="is_send_commission"/>
                             </group>
                         </group>
                         <separator string="Variables"/>
@@ -109,7 +113,7 @@
 
         <menuitem id="menu_administration_accounting_setup"
                   parent="tt_base.top_tour_travel_administration"
-                  groups="base.user_admin"
+                  groups="base.group_erp_manager,tt_base.group_after_sales_master_level_4"
                   name="Accounting Setup"
                   sequence="6"
                   action="tt_accounting_setup.tt_accounting_setup_action_view"/>

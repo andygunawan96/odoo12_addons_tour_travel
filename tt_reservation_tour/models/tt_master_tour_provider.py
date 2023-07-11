@@ -17,7 +17,11 @@ class MasterTourProvider(models.Model):
     total_price = fields.Monetary('Total Price', default=0)
     details = fields.Html('Details', default='')
     is_lg_required = fields.Boolean('Is LG Required', readonly=True, compute='compute_is_lg_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantee(s)', readonly=True)
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantee(s)', readonly=True, domain=_get_res_model_domain)
 
     @api.onchange('provider_id')
     def compute_is_lg_required(self):
@@ -58,11 +62,13 @@ class MasterTourProvider(models.Model):
                 'currency_id': self.currency_id.id,
                 'price_per_mult': price_per_mul,
                 'price': self.total_price,
+                'ho_id': self.env.user.ho_id.id
             }
             new_lg_obj = self.env['tt.letter.guarantee'].create(lg_vals)
             line_vals = {
                 'lg_id': new_lg_obj.id,
                 'ref_number': self.master_tour_id.tour_code,
-                'description': desc_str + self.details
+                'description': desc_str + self.details,
+                'ho_id': self.env.user.ho_id.id
             }
             self.env['tt.letter.guarantee.lines'].create(line_vals)

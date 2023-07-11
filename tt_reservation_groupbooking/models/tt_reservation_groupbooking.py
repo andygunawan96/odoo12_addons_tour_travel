@@ -522,7 +522,7 @@ class ReservationGroupBooking(models.Model):
             raise UserError('Please Set to Sent first!')
 
     def action_sent_groupbooking(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 133')
         error_msg = self.validate_data()
         if error_msg:
@@ -578,7 +578,7 @@ class ReservationGroupBooking(models.Model):
                 scs.is_ledger_created = True
         try:
             self.env['tt.groupbooking.api.con'].send_approve_notification(self.name, self.env.user.name,
-                                                                     self.get_total_amount())
+                                                                     self.get_total_amount(), self.agent_id.ho_id.id)
         except Exception as e:
             _logger.error("Send ISSUED GROUP BOOKING Approve Notification Telegram Error")
 
@@ -601,24 +601,32 @@ class ReservationGroupBooking(models.Model):
 
     def check_lg_required(self):
         required = False
-        for rec in self.provider_booking_ids:
-            if rec.provider_id.is_using_lg:
-                if not rec.letter_of_guarantee_ids:
-                    required = True
-                else:
-                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'lg'):
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
+            for rec in self.provider_booking_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_lg:
+                    if not rec.letter_of_guarantee_ids:
                         required = True
+                    else:
+                        if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'lg'):
+                            required = True
         return required
 
     def check_po_required(self):
         required = False
-        for rec in self.provider_booking_ids:
-            if rec.provider_id.is_using_po:
-                if not rec.letter_of_guarantee_ids:
-                    required = True
-                else:
-                    if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'po'):
+        temp_ho_obj = self.agent_id.ho_id
+        if temp_ho_obj:
+            for rec in self.provider_booking_ids:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    if not rec.letter_of_guarantee_ids:
                         required = True
+                    else:
+                        if not rec.letter_of_guarantee_ids.filtered(lambda x: x.type == 'po'):
+                            required = True
         return required
 
     def fixing_adult_count(self):
@@ -816,6 +824,7 @@ class ReservationGroupBooking(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 c_code = ''
+                c_type = ''
                 if p_charge_type != 'RAC':
                     if p_charge_code == 'csc':
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
@@ -836,6 +845,8 @@ class ReservationGroupBooking(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -867,6 +878,7 @@ class ReservationGroupBooking(models.Model):
                         'pax_type': p_type,
                         'booking_groupbooking_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_airline_id'] = self.id
@@ -912,7 +924,7 @@ class ReservationGroupBooking(models.Model):
     def create_final_ho_ledger(self):
         for rec in self:
             ledger = self.env['tt.ledger']
-
+            ho_obj = rec.agent_id.ho_id
             if rec.nta_price > rec.vendor_amount:
                 ledger.create_ledger_vanilla(
                     self._name,
@@ -923,7 +935,7 @@ class ReservationGroupBooking(models.Model):
                     3,
                     rec.currency_id.id,
                     self.env.user.id,
-                    self.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     rec.ho_final_amount,
                     0,
@@ -942,7 +954,7 @@ class ReservationGroupBooking(models.Model):
                     3,
                     rec.currency_id.id,
                     self.env.user.id,
-                    self.env.ref('tt_base.rodex_ho').id,
+                    ho_obj and ho_obj.id or False,
                     False,
                     0,
                     rec.ho_final_amount,
@@ -1141,7 +1153,7 @@ class ReservationGroupBooking(models.Model):
                 elif scs.charge_type == 'RAC':
                     if scs.commission_agent_id.id == self.agent_id.id:
                         agent_comm += abs(scs.total)
-                    elif scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    elif scs.commission_agent_id.is_ho_agent:
                         ho_comm += abs(scs.total)
                     else:
                         parent_comm += abs(scs.total)
@@ -1184,14 +1196,14 @@ class ReservationGroupBooking(models.Model):
             """ Jika ho_diff != 0, lakukan pembulatan komisi ho di pricing """
             if ho_diff < self.ho_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    if scs.commission_agent_id.is_ho_agent:
                         if scs.charge_code != 'hoc':
                             scs.amount -= ho_diff
                             scs.total -= ho_diff
                             break
             elif ho_diff > self.ho_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id == self.env.ref('tt_base.rodex_ho').id:
+                    if scs.commission_agent_id.is_ho_agent:
                         if scs.charge_code != 'hoc':
                             scs.amount += ho_diff
                             scs.total += ho_diff
@@ -1200,16 +1212,14 @@ class ReservationGroupBooking(models.Model):
             """ Jika parent_diff != 0, lakukan pembulatan komisi parent di pricing """
             if parent_diff < self.parent_agent_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id != self.env.ref(
-                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                    if not scs.commission_agent_id.is_ho_agent and scs.commission_agent_id.id != self.agent_id.id:
                         if scs.charge_type != 'FARE':
                             scs.amount -= ho_diff
                             scs.total -= ho_diff
                         break
             elif parent_diff > self.parent_agent_commission:
                 for scs in self.provider_booking_ids[0].cost_service_charge_ids:
-                    if scs.commission_agent_id.id != self.env.ref(
-                            'tt_base.rodex_ho').id and scs.commission_agent_id.id != self.agent_id.id:
+                    if not scs.commission_agent_id.is_ho_agent and scs.commission_agent_id.id != self.agent_id.id:
                         if scs.charge_type != 'FARE':
                             scs.amount += parent_diff
                             scs.total += parent_diff
@@ -1283,7 +1293,7 @@ class ReservationGroupBooking(models.Model):
             return ''
 
     def get_fee_amount(self, agent_id, provider_type_id, input_commission, passenger_id=None):
-        ho_agent = self.env.ref('tt_base.rodex_ho').sudo()
+        ho_agent = agent_id.ho_id.sudo()
 
         pricing_obj = self.env['tt.pricing.agent'].sudo()
 
@@ -1493,6 +1503,14 @@ class ReservationGroupBooking(models.Model):
                 segment_count = len(self.line_ids)
                 route_count = len(pnr_list)
 
+        agent_obj = self.booking_id.agent_id
+        ho_agent_obj = agent_obj.ho_id
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
+
         for rec in pnr_list:
             prov_code = ''
             carrier_code = ''
@@ -1545,6 +1563,7 @@ class ReservationGroupBooking(models.Model):
                 'segment_count': segment_count,
                 'show_commission': True,
                 'pricing_datetime': '',
+                'context': context
             }
             repr_tool.calculate_pricing(**rule_param)
         return scs_dict['service_charges']
@@ -1566,7 +1585,7 @@ class ReservationGroupBooking(models.Model):
                     if scs.get('charge_type') == 'RAC':
                         if not scs.get('commission_agent_id') or scs.get('commission_agent_id') == rec.agent_id.id:
                             rec.agent_commission -= scs['total']
-                        elif scs.get('commission_agent_id') == rec.agent_id.parent_agent_id.id and rec.agent_id.parent_agent_id.id != self.env.ref('tt_base.agent_type_ho').id:
+                        elif scs.get('commission_agent_id') == rec.agent_id.parent_agent_id.id and not rec.agent_id.parent_agent_id.is_ho_agent:
                             rec.parent_agent_commission -= scs['total']
                         else:
                             rec.ho_commission -= scs['total']
@@ -1974,14 +1993,14 @@ class ReservationGroupBooking(models.Model):
         return ERR.get_no_error()
 
     def action_issued_installment_groupbooking(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 135')
         self.write({
             'state_groupbooking': 'issued_installment',
         })
 
     def action_done_groupbooking(self):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 136')
         self.write({
             'state_groupbooking': 'done',
@@ -2323,13 +2342,14 @@ class ReservationGroupBooking(models.Model):
                 'state_groupbooking': 'draft',
                 "hold_date": (datetime.strptime(data['provider_data']['departure_date'], '%Y-%m-%d') + timedelta(days=-1)).strftime('%Y-%m-%d'),
                 'booked_date': datetime.now(),
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
             }
 
 
-            book_obj = self.sudo().create(header_val)
+            book_obj = self.create(header_val)
 
             res = {
                 'order_number': book_obj.name

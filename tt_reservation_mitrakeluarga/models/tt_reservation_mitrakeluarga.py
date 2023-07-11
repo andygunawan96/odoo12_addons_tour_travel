@@ -309,6 +309,17 @@ class ReservationMitraKeluarga(models.Model):
                         cito_suplement_price = timeslot_objs.cito_surcharge
                     else:
                         break
+        elif carrier_id in [self.env.ref('tt_reservation_mitrakeluarga.tt_transport_carrier_mitrakeluarga_drivethru_test_darah').id]: # SRBD
+            for rec in timeslot_objs:
+                for blood_test_price_pax in rec.blood_test_price_ids:
+                    if req['pax_count'] >= blood_test_price_pax['min_pax']:
+                        base_price = blood_test_price_pax.base_price
+                        commission_price = blood_test_price_pax.commission
+                        overtime_price = timeslot_objs.overtime_surcharge
+                        single_suplement_price = timeslot_objs.single_supplement
+                        cito_suplement_price = timeslot_objs.cito_surcharge
+                    else:
+                        break
         else: # SRBD
             for rec in timeslot_objs:
                 for srbd_price_pax in rec.srbd_price_ids:
@@ -356,6 +367,19 @@ class ReservationMitraKeluarga(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
 
+
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for svc in req['provider_bookings']['service_charges']:
+                if not currency:
+                    currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                #     book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -366,6 +390,7 @@ class ReservationMitraKeluarga(models.Model):
                 'contact_email': contact_obj.email,
                 'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
                 'passenger_ids': list_passenger_value,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
             })
 
             book_obj = self.create(values)
@@ -601,6 +626,7 @@ class ReservationMitraKeluarga(models.Model):
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': booking_data['adult'],
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],
@@ -692,6 +718,7 @@ class ReservationMitraKeluarga(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 c_code = ''
+                c_type = ''
                 if p_charge_type != 'RAC':
                     if p_charge_code == 'csc':
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
@@ -712,6 +739,8 @@ class ReservationMitraKeluarga(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -1076,6 +1105,8 @@ class ReservationMitraKeluarga(models.Model):
             template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_pcr_information')
         elif self.carrier_name == 'MKHCKSRBD':
             template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_homecare_srbd_information')
+        elif self.carrier_name == 'MKHCKBT':
+            template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_test_darah_information')
         else:
             template_obj = self.env.ref('tt_reservation_mitrakeluarga.mitrakeluarga_drivethru_srbd_information')
         return template_obj.html

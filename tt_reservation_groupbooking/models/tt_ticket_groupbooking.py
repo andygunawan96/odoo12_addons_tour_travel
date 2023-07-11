@@ -256,6 +256,15 @@ class TtPaxPriceGroupBooking(models.Model):
 
         repr_tool.add_ticket_fare(scs_dict)
         carrier_code = ''
+
+        agent_obj = self.fare_id.ticket_id.booking_id.agent_id
+        ho_agent_obj = agent_obj.ho_id
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
+
         rule_param = {
             'provider': self.fare_id.ticket_id.provider_id.code,
             'carrier_code': self.fare_id.ticket_id.booking_id.carrier_code_id.code,
@@ -263,6 +272,7 @@ class TtPaxPriceGroupBooking(models.Model):
             'segment_count': segment_count,
             'show_commission': True,
             'pricing_datetime': '',
+            'context': context
         }
         repr_tool.calculate_pricing(**rule_param)
 

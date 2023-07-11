@@ -7,7 +7,7 @@ class TtTicketTrain(models.Model):
 
     provider_id = fields.Many2one('tt.provider.train', 'Provider')
     passenger_id = fields.Many2one('tt.reservation.passenger.train', 'Passenger')
-    pax_type  = fields.Selection(variables.PAX_TYPE,'Pax Type')
+    pax_type = fields.Selection(variables.PAX_TYPE,'Pax Type')
     ticket_number = fields.Char('Ticket Number')
 
 

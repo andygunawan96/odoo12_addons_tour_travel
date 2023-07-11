@@ -63,6 +63,7 @@ class ProviderPricing(models.Model):
 
     line_ids = fields.One2many('tt.provider.pricing.line', 'pricing_id', string='Rules', context={'active_test': False}, copy=True)
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
@@ -180,16 +181,18 @@ class ProviderPricing(models.Model):
             for obj in objs:
                 if not obj.active:
                     continue
-
-                vals = obj.get_data()
-                provider_type_code = vals['provider_type_code']
-                if provider_type_code not in provider_pricing_data:
-                    provider_pricing_data[provider_type_code] = {
-                        'provider_pricing_list': [],
-                        'create_date': date_now,
-                        'expired_date': expired_date,
-                    }
-                provider_pricing_data[provider_type_code]['provider_pricing_list'].append(vals)
+                if obj.ho_id:
+                    vals = obj.get_data()
+                    provider_type_code = vals['provider_type_code']
+                    if provider_type_code not in provider_pricing_data:
+                        provider_pricing_data[provider_type_code] = {}
+                    if str(obj.ho_id.id) not in provider_pricing_data[provider_type_code]:
+                        provider_pricing_data[provider_type_code][str(obj.ho_id.id)] = {
+                            'provider_pricing_list': [],
+                            'create_date': date_now,
+                            'expired_date': expired_date,
+                        }
+                    provider_pricing_data[provider_type_code][str(obj.ho_id.id)]['provider_pricing_list'].append(vals)
 
             payload = {
                 'provider_pricing_data': provider_pricing_data
@@ -210,6 +213,7 @@ class ProviderPricingLine(models.Model):
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
     pricing_id = fields.Many2one('tt.provider.pricing', 'Provider Pricing', readonly=1, ondelete='cascade')
+    currency_id = fields.Many2one('res.currency', 'Currency', ondelete='cascade')
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', related='pricing_id.provider_type_id')
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
@@ -400,6 +404,7 @@ class ProviderPricingLine(models.Model):
             'sequence': self.sequence,
             'name': self.name if self.name else '',
             'pricing_type': self.pricing_type,
+            'currency_code': self.currency_id.name if self.currency_id else '',
             'set_expiration_date': self.set_expiration_date,
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
             'date_to': self.date_to.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_to else '',

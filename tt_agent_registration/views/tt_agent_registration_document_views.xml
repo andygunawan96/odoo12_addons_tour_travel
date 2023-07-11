@@ -37,7 +37,7 @@
             <field name="arch" type="xml">
                 <tree string="Agent Registration Document" editable="bottom" create="false">
                     <button name="%(tt_base.tt_upload_center_wizard_action_view)d" string="Upload Document" type="action"
-                                    class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel"
+                                    class="oe_stat_button" icon="fa-upload" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
                                     context="{'default_target_field_name': 'document_attach_ids'}"/>
 <!--                                    context="{'default_agent_id': agent_id,-->
 <!--                                              'default_target_field_name': 'document_attach_ids'}"/>-->

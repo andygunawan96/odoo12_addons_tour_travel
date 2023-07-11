@@ -52,6 +52,11 @@ class TtReservationCustomer(models.Model):
                 currency = sc['currency'] if sc.get('currency') else 'IDR'
                 foreign_currency = sc['foreign_currency'] if sc.get('foreign_currency') else 'IDR'
                 currency_id = currency_obj.search([('name', '=', currency)], limit=1).id
+                ho_obj = False
+                if self.booking_id and self.booking_id.agent_id:
+                    ho_obj = self.booking_id.agent_id.ho_id
+                if ho_obj:
+                    sc['ho_id'] = ho_obj.id
                 sc['currency_id'] = currency_id
                 sc['foreign_currency_id'] = currency_obj.search([('name','=', foreign_currency)],limit=1).id
                 sc['description'] = pnr

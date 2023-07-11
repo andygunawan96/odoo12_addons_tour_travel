@@ -11,8 +11,8 @@ Tour & Travel - All Complete Install
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['base', 'base_setup','web_m2x_options',
                 'tt_api_management',
                 'tt_reschedule',

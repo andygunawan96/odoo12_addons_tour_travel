@@ -30,6 +30,7 @@ class TtPnrQuota(models.Model):
     start_date = fields.Date('Start')
     expired_date = fields.Date('Valid Until', store=True)
     usage_ids = fields.One2many('tt.pnr.quota.usage', 'pnr_quota_id','Quota Usage', readonly=True, domain=['|',('active', '=', True),('active', '=', False)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent','Agent', domain="[('is_using_pnr_quota','=',True)]")
     state = fields.Selection([('active', 'Active'), ('waiting', 'Waiting'), ('done', 'Done'), ('failed', 'Failed')], 'State',compute="_compute_state",store=True)
     transaction_amount_internal = fields.Monetary('Transaction Amount Internal', copy=False, readonly=True)
@@ -162,7 +163,7 @@ class TtPnrQuota(models.Model):
                                                             2,
                                                             rec.currency_id.id,
                                                             self.env.user.id,
-                                                            self.env.ref('tt_base.rodex_ho').id,
+                                                            self.env.user.ho_id.id,
                                                             False,
                                                             debit=rec.total_amount,
                                                             credit=0,
@@ -225,11 +226,13 @@ class TtPnrQuota(models.Model):
 
             new_pnr_quota = self.create({
                 'agent_id': agent_obj.id,
+                'ho_id': agent_obj.ho_id.id,
                 'price_package_id': price_package_obj.id
             })
 
             agent_obj.unban_user_api()
-
+            if req.get('is_called_from_backend'):
+                return new_pnr_quota.id
             return ERR.get_no_error()
         except RequestException as e:
             _logger.error(traceback.format_exc())
@@ -320,6 +323,10 @@ class TtPnrQuota(models.Model):
                     usage_obj.amount = calculate_price_dict['price']
                 usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
         self.usage_quota = quota_pnr_usage
+        self.calc_amount_internal()
+        self.calc_amount_external()
+        self.calc_amount_total()
+
 
     def force_domain_agent_pnr_quota(self):
         return {

@@ -27,7 +27,7 @@ class TtTopUpApiCon(models.Model):
             raise RequestException(999)
         return res
 
-    def send_approve_notification(self,document_number,approve_uid,amount,agent_name):
+    def send_approve_notification(self,document_number,approve_uid,amount,agent_name, ho_id):
         request = {
             'code': 9907,
             'message': 'Top Up from {} has been Approved by {} Rp {:,}'.format(agent_name,approve_uid,amount),
@@ -35,4 +35,4 @@ class TtTopUpApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_code')
+                                            ,'notification_code', ho_id=ho_id)

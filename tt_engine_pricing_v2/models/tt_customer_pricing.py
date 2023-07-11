@@ -39,6 +39,8 @@ class CustomerPricing(models.Model):
     name = fields.Char('Name', compute='_compute_name', store=True)
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True, default=lambda self: self.env.user.agent_id)
 
     customer_parent_type_name = fields.Char('Customer Parent Type Name', compute='_compute_customer_parent_type_name', store=True)
@@ -191,16 +193,19 @@ class CustomerPricing(models.Model):
             for obj in objs:
                 if not obj.active:
                     continue
-
-                vals = obj.get_data()
-                agent_id = str(vals['agent_id'])
-                if agent_id not in customer_pricing_data:
-                    customer_pricing_data[agent_id] = {
-                        'customer_pricing_list': [],
-                        'create_date': date_now,
-                        'expired_date': expired_date,
-                    }
-                customer_pricing_data[agent_id]['customer_pricing_list'].append(vals)
+                if obj.ho_id:
+                    ho_id = str(obj.ho_id.id)
+                    if ho_id not in customer_pricing_data:
+                        customer_pricing_data[ho_id] = {}
+                    vals = obj.get_data()
+                    agent_id = str(vals['agent_id'])
+                    if agent_id not in customer_pricing_data[ho_id]:
+                        customer_pricing_data[ho_id][agent_id] = {
+                            'customer_pricing_list': [],
+                            'create_date': date_now,
+                            'expired_date': expired_date,
+                        }
+                    customer_pricing_data[ho_id][agent_id]['customer_pricing_list'].append(vals)
 
             payload = {
                 'customer_pricing_data': customer_pricing_data
@@ -221,6 +226,7 @@ class CustomerPricingLine(models.Model):
     description = fields.Text('Description')
     sequence = fields.Integer('Sequence', default=10)
     pricing_id = fields.Many2one('tt.customer.pricing', 'Customer Pricing', readonly=1, ondelete='cascade')
+    currency_id = fields.Many2one('res.currency', 'Currency', ondelete='cascade')
     set_expiration_date = fields.Boolean('Set Expiration Date', default=False)
     date_from = fields.Datetime('Date From')
     date_to = fields.Datetime('Date To')
@@ -297,6 +303,7 @@ class CustomerPricingLine(models.Model):
             'sequence': self.sequence,
             'name': self.name if self.name else '',
             'set_expiration_date': self.set_expiration_date,
+            'currency_code': self.currency_id.name if self.currency_id else '',
             'date_from': self.date_from.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_from else '',
             'date_to': self.date_to.strftime(FORMAT_DATETIME) if self.set_expiration_date and self.date_to else '',
             'route': {

@@ -291,6 +291,17 @@ class ReservationInsurance(models.Model):
             for psg in list_passenger_value:
                 util.pop_empty_key(psg[2])
 
+            ## 22 JUN 2023 - IVAN
+            ## GET CURRENCY CODE
+            currency = ''
+            currency_obj = None
+            for svc in book_data['service_charges']:
+                currency = svc['currency']
+            if currency:
+                currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
+                # if currency_obj:
+                    # book_obj.currency_id = currency_obj.id
+
             values.update({
                 'user_id': context['co_uid'],
                 'sid_booked': context['signature'],
@@ -302,6 +313,7 @@ class ReservationInsurance(models.Model):
                 'contact_phone': contact_obj.phone_ids and "%s - %s" % (contact_obj.phone_ids[0].calling_code,contact_obj.phone_ids[0].calling_number) or '-',
                 'passenger_ids': list_passenger_value,
                 'is_force_issued': is_force_issued,
+                'currency_id': currency_obj.id if currency and currency_obj else self.env.user.company_id.currency_id.id
                 # END
             })
 
@@ -559,6 +571,7 @@ class ReservationInsurance(models.Model):
             'sector_type': book_data.get('international') and 'international' or 'domestic',
             'provider_type_id': provider_type_id.id,
             'adult': book_data['pax_count'],
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid']
@@ -688,7 +701,8 @@ class ReservationInsurance(models.Model):
                                                         'acquirer_seq_id': req.get('acquirer_seq_id', False)}, context)
                 if payment_res['error_code'] != 0:
                     try:
-                        self.env['tt.insurance.api.con'].send_force_issued_not_enough_balance_notification(self.name, context)
+                        ho_id = self.agent_id.ho_id.id
+                        self.env['tt.insurance.api.con'].send_force_issued_not_enough_balance_notification(self.name, context, ho_id)
                     except Exception as e:
                         _logger.error("Send TOP UP Approve Notification Telegram Error\n" + traceback.format_exc())
                     raise RequestException(payment_res['error_code'],additional_message=payment_res['error_msg'])
@@ -800,6 +814,7 @@ class ReservationInsurance(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 c_code = ''
+                c_type = ''
                 if p_charge_type != 'RAC':
                     if p_charge_code == 'csc':
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
@@ -820,6 +835,8 @@ class ReservationInsurance(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -851,6 +868,7 @@ class ReservationInsurance(models.Model):
                         'pax_type': p_type,
                         'booking_insurance_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_insurance_id'] = self.id
@@ -1058,7 +1076,7 @@ class ReservationInsurance(models.Model):
 
         if not book_obj.printout_ticket_original_ids:
             # gateway get ticket
-            req = {"data": [], "provider": ''}
+            req = {"data": [], "provider": '','ho_id': book_obj.agent_id.ho_id.id}
             for provider_booking_obj in book_obj.provider_booking_ids:
                 req.update({
                     'provider': provider_booking_obj.provider_id.code

@@ -20,10 +20,12 @@ provider_selection = [
         ('sia', 'Singapore Airline NDC'),
         ('scoot', 'Scoot'),
         ('jetstar', 'Jetstar'),
-        ('rodextrip_airline', 'Rodextrip Airline'),
+        ('rodextrip_airline', 'RT Airline'),
         ('airasia', 'Airasia'),
         ('airasia_web', 'Airasia Web'),
         ('qatar', 'Qatar'),
+        ('pelita', 'Pelita Air'),
+        ('transnusa_web', 'Transnusa Web'),
         # ('sabre', 'Sabre'),
     ]
 
@@ -35,6 +37,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     provider = fields.Selection(provider_selection, string='Provider', required=True)
 
     parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related ="agent_id.parent_agent_id")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', required=True, domain=[('id','=',-1)])
     user_id = fields.Many2one('res.users', 'User', required=True, domain=[('id','=',-1)])
@@ -83,7 +86,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     def _onchange_pnr(self):
         if self.pnr:
             return {'domain': {
-                'agent_id': [('id','!=',self.env.ref('tt_base.rodex_ho').id)]
+                'agent_id': [('is_ho_agent','!=',True)]
             }}
 
     @api.onchange("is_database_contact")
@@ -137,7 +140,10 @@ class TtGetBookingFromVendor(models.TransientModel):
                 'is_retrieved': True,
                 'pricing_date': str(self.pricing_date)
             })
-
+        if self.agent_id:
+            req.update({
+                'ho_id': self.agent_id.ho_id.id
+            })
         res = self.env['tt.airline.api.con'].send_get_booking_from_vendor(req)
         if res['error_code'] != 0:
             raise UserError(res['error_msg'])
@@ -277,6 +283,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
     pnr = fields.Char("PNR")
     status = fields.Char("Status")
     user_id = fields.Many2one("res.users","User")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one("tt.agent","Agent")
     customer_parent_id = fields.Many2one("tt.customer.parent","Customer Parent")
 
@@ -375,8 +382,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                     "first_name": booker_obj.first_name or "",
                     "last_name": booker_obj.last_name or "",
                     "email": booker_obj.email,
-                    "calling_code": booker_obj.phone_ids and booker_obj.phone_ids[
-                        0].calling_code or '',
+                    "calling_code": booker_obj.phone_ids and booker_obj.phone_ids[0].calling_code or '',
                     "mobile": booker_obj.phone_ids and booker_obj.phone_ids[0].calling_number or '',
                     "nationality_code": booker_obj.nationality_id.code,
                     "is_also_booker": True,
@@ -465,7 +471,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 "CHD": pax_type_res.get('CHD',0),
                 "INF": pax_type_res.get('INF',0)
             },
-            "promo_codes": [],
+            "promo_codes": retrieve_res.get('promo_codes', []),
             "schedule_id": 1
         })
 
@@ -498,7 +504,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "child": pax_type_res.get('CHD',0),
             "infant": pax_type_res.get('INF',0),
             "booking_state_provider": schedules_req_list, ## ini itu schedule
-            "promo_codes": [],
+            "promo_codes": retrieve_res.get('promo_codes', []),
         }
 
         create_res = self.env['tt.reservation.airline'].create_booking_airline_api(create_req,context={
@@ -506,6 +512,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             'co_user_name': self.user_id.name,
             'co_agent_id': self.agent_id.id,
             'co_agent_name': self.agent_id.name,
+            'co_ho_id': self.agent_id.ho_id.id,
             'signature': signature
         })
 
@@ -547,7 +554,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "hold_date": retrieve_res.get('hold_date'),
             "tickets": ticket_req_list,##
             "error_msg": "",
-            "promo_codes": [],
+            "promo_codes": retrieve_res.get('promo_codes', []),
             "reference": retrieve_res['reference'],
             "expired_date": "",
             "status": retrieve_res['status'],

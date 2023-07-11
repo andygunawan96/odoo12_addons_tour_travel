@@ -40,6 +40,7 @@ class TtCustomer(models.Model):
                                  ('owner','Owner')],'Job Position')
     user_ids = fields.One2many('res.users', 'customer_id', 'User')
     # customer_bank_detail_ids = fields.One2many('customer.bank.detail', 'customer_id', 'Customer Bank Detail')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', default=lambda self: self.env.user.agent_id)  # , default=lambda self: self.env.user.agent_id
     agent_as_staff_id = fields.Many2one('tt.agent', 'Agent as Staff')  # , default=lambda self: self.env.user.agent_id
     # user_agent_id = fields.Many2one('tt.agent', 'Agent User', default=lambda self: self.env.user.agent_id)
@@ -295,7 +296,7 @@ class TtCustomer(models.Model):
     def get_customer_list_api(self,req,context):
         try:
             agent_id_list = [context['co_agent_id']]
-            if context['co_agent_id'] == self.env.ref('tt_base.rodex_ho').id:
+            if context['co_agent_id'] == context['co_ho_id']:
                 agent_id_list += self.env['tt.agent'].search([('is_share_cust_ho', '=', True)]).ids
             dom = [('agent_id','in',agent_id_list), ('is_search_allowed','=',True)]
 
@@ -528,13 +529,14 @@ class TtCustomer(models.Model):
         #     'domain': [('agent_id', '=', self.env.user.agent_id.id)]
         # }
 
-    def create_customer_user_api(self, data):
+    def create_customer_user_api(self, data, context):
         try:
             # Create Agent B2C
             name = (data['first_name'] or '') + ' ' + (data.get('last_name') or '')
+            ho_parent_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
             vals_list = {
-                'agent_type_id': self.env.ref('tt_base.agent_type_btc').id,
-                'parent_agent_id': self.env.ref('tt_base.rodex_ho').id,
+                'agent_type_id': ho_parent_obj.btc_agent_type_id.id,
+                'parent_agent_id': context['co_ho_id'],
                 'name': name,
                 'email': data.get('email'),
                 'is_send_email_cust': True

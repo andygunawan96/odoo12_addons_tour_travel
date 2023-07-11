@@ -57,6 +57,7 @@ class AgentInvoice(models.Model):
              " * The 'Paid' status is set when the payment total .\n"
              " * The 'Cancelled' status is used when user cancel invoice.")
     prev_state = fields.Char("Previous Status", readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, readonly=True, states={'draft': [('readonly', False)]})
     agent_id = fields.Many2one('tt.agent', string='Agent', required=True, readonly=True, states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer', readonly=True, states={'draft': [('readonly', False)]}, help='COR/POR Name')
     customer_parent_type_id = fields.Many2one('tt.customer.parent.type', 'Customer Parent Type',
@@ -121,6 +122,20 @@ class AgentInvoice(models.Model):
     #     # if 'payment_ids' in vals:
     #     self.check_paid_status()
     #     return res
+
+    def recompute_lines_pnr_and_ho_id(self):
+        inv_objs = self.search([('pnr','=','')])
+        inv_c = 0
+        for rec in inv_objs:
+            for rec2 in rec.invoice_line_ids:
+                rec2._compute_invoice_line_ho_id()
+                rec2._compute_invoice_line_pnr()
+            rec._compute_invoice_pnr()
+            _logger.info('%s done recompute lines PNR and HO ID' % rec.name)
+            inv_c += 1
+            if inv_c > 1000:
+                self.env.cr.commit()
+                inv_c = 0
 
     @api.depends("invoice_line_ids.pnr")
     def _compute_invoice_pnr(self):
@@ -593,8 +608,8 @@ class AgentInvoice(models.Model):
 
     def unlink_all_printout(self, type='All'):
         for rec in self:
-            rec.printout_invoice_id.unlink()
-            rec.printout_kwitansi_id.unlink()
+            rec.printout_invoice_id.sudo().unlink()
+            rec.printout_kwitansi_id.sudo().unlink()
 
     def open_dynamic_print_wizard(self):
         wizard_model = self.env['tt.dynamic.print.invoice.wizard']

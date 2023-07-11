@@ -55,6 +55,7 @@ class SplitInvoice(models.Model):
 
         invoice_line_list = []
         for idx,inv_count in enumerate(range(0,self.split_count)):
+            temp_ho_obj = self.current_invoice_line.agent_id.ho_id
             new_invoice = self.env['tt.agent.invoice.line'].create({
                 'name': '%s%s' % (self.current_invoice_name, chr(idx + 97)),
                 'res_model_resv': self.res_model_resv,
@@ -62,7 +63,8 @@ class SplitInvoice(models.Model):
                 'reference': self.current_invoice_line.reference,
                 'desc': self.current_invoice_line.desc,
                 'invoice_id': self.invoice_id.id,
-                'agent_id': self.current_invoice_line.agent_id.id
+                'agent_id': self.current_invoice_line.agent_id.id,
+                'ho_id': temp_ho_obj and temp_ho_obj.id or False
             })
             invoice_line_list.append(new_invoice)
 

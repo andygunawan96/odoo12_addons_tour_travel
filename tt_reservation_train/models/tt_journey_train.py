@@ -38,7 +38,9 @@ class TtJourneyTrain(models.Model):
         res ={
             'sequence': self.sequence,
             'origin': self.origin_id.code,
+            'origin_display_name': self.origin_id.name,
             'destination': self.destination_id.code,
+            'destination_display_name': self.destination_id.name,
             'departure_date': self.departure_date,
             'arrival_date': self.arrival_date,
             'pnr': self.pnr,

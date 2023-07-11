@@ -31,6 +31,7 @@ class TtProviderPPOB(models.Model):
     customer_number = fields.Char('Customer Number', readonly=True, states={'draft': [('readonly', False)]})
     customer_name = fields.Char('Customer Name', readonly=True, states={'draft': [('readonly', False)]})
     customer_id_number = fields.Char('Customer ID', readonly=True, states={'draft': [('readonly', False)]})
+    game_zone_id = fields.Char('Customer Game Zone ID', readonly=True, states={'draft': [('readonly', False)]})
     unit_code = fields.Char('Unit Code', readonly=True, states={'draft': [('readonly', False)]})
     unit_name = fields.Char('Unit Name', readonly=True, states={'draft': [('readonly', False)]})
     unit_phone_number = fields.Char('Unit Phone Number', readonly=True, states={'draft': [('readonly', False)]})
@@ -373,6 +374,7 @@ class TtProviderPPOB(models.Model):
                     scs_pax_count += 1
                     scs['total'] += scs['amount']
             scs['passenger_ppob_ids'] = [(6,0,scs['passenger_ppob_ids'])]
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             service_chg_obj.create(scs)
 
         # "sequence": 1,
@@ -519,6 +521,7 @@ class TtProviderPPOB(models.Model):
             'customer_number': self.customer_number and self.customer_number or '',
             'customer_name': self.customer_name and self.customer_name or '',
             'customer_id_number': self.customer_id_number and self.customer_id_number or '',
+            'game_zone_id': self.game_zone_id and self.game_zone_id or '',
             'unit_code': self.unit_code and self.unit_code or '',
             'unit_name': self.unit_name and self.unit_name or '',
             'unit_phone_number': self.unit_phone_number and self.unit_phone_number or '',

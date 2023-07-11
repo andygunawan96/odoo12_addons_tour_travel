@@ -13,6 +13,16 @@ class tt_ledger(models.Model):
             'description': 'Ledger for ' + resv_obj.name,
             'agent_id': vals.get('agent_id') or resv_obj.agent_id.id,
         })
+        if not vals.get('ho_id'):
+            if vals.get('agent_id'):
+                agent_obj = self.env['tt.agent'].browse(int(vals['agent_id']))
+                ho_obj = agent_obj and agent_obj.ho_id or False
+            else:
+                ho_obj = resv_obj.agent_id.ho_id
+            if ho_obj:
+                vals.update({
+                    'ho_id': ho_obj.id
+                })
         return vals
 
     # @api.model

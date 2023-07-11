@@ -11,8 +11,8 @@ Tour & Travel - Agent Sales Agent Registration
 Key Features
 ------------
     """,
-    'author': "PT Roda Express Sukses Mandiri",
-    'website': "rodextravel.tours",
+    'author': "PT Orbis Daya Asia",
+    'website': "orbisway.com",
     'depends': ['base', 'tt_agent_sales', 'tt_agent_registration'],
 
     # always loaded

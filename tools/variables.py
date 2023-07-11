@@ -194,7 +194,10 @@ PAX_TYPE = [
     ('YCD', 'Elder'),
     ('ADT', 'Adult'),
     ('CHD', 'Child'),
-    ('INF', 'Infant')
+    ('INF', 'Infant'),
+    ('STU', 'Student'),
+    ('LBR', 'Labour'),
+    ('SEA', 'Seaman')
 ]
 
 PROVIDER_TYPE = []##akan di isi saat run oleh tt_provider_type.py
@@ -228,6 +231,7 @@ ACC_TRANSPORT_TYPE = {
     'tt.agent.invoice': 'Invoice Agent',
     'tt.top.up': 'Top Up',
     'tt.adjustment': 'Adjustment',
+    'tt.customer.parent': 'Customer Parent',
 }
 
 ACC_TRANSPORT_TYPE_REVERSE = {
@@ -246,6 +250,7 @@ ACC_TRANSPORT_TYPE_REVERSE = {
     'Invoice Agent': 'tt.agent.invoice',
     'Top Up': 'tt.top.up',
     'Adjustment': 'tt.adjustment',
+    'Customer Parent': 'tt.customer.parent',
 }
 
 FEE_CHARGE_TYPE = [

@@ -16,6 +16,7 @@ class TransportCarrier(models.Model):
     carrier_id = fields.Many2one('tt.transport.carrier','Carrier',required=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type',related="carrier_id.provider_type_id")
     is_default = fields.Boolean("Default Search", help="Usually on ALL")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id)
     is_favorite = fields.Boolean("Favorite Search", help="Will make this search appear on top of the list")
     is_excluded_from_b2c = fields.Boolean('Excluded From B2C', help='Will Make this search disappear from B2C')
     sequence = fields.Integer("Sequence",default=200)
@@ -24,6 +25,12 @@ class TransportCarrier(models.Model):
                                     domain="[('provider_type_id','=',provider_type_id)]")
 
     active = fields.Boolean('Active', default=True)
+
+    @api.multi
+    def write(self, vals):
+        if 'ho_id' not in vals and not self.ho_id:
+            vals['ho_id'] = self.env.user.agent_id.ho_id.id
+        return super(TransportCarrier, self).write(vals)
 
     @api.onchange('carrier_id')
     def _onchange_search_display_name(self):
@@ -48,14 +55,17 @@ class TransportCarrier(models.Model):
                 search_param.append(('provider_type_id.code', '=', data['provider_type']))
             if not _is_all_data:
                 search_param.append(('active', '=', True))
+            search_param.append(('ho_id', '!=', False))
             _obj = self.sudo().with_context(active_test=False).search(search_param)
             res = {}
             for idx,rec in enumerate(_obj):
+                if rec.ho_id.seq_id not in res:
+                    res[rec.ho_id.seq_id] = {}
                 curr_rec = rec.to_dict()
                 if rec.is_default:
-                    res[curr_rec['code']] = curr_rec
+                    res[rec.ho_id.seq_id][curr_rec['code']] = curr_rec
                 else:
-                    res["%s~%s" % (curr_rec['code'],idx+1)] = curr_rec
+                    res[rec.ho_id.seq_id]["%s~%s" % (curr_rec['code'],idx+1)] = curr_rec
             res = ERR.get_no_error(res)
         except Exception as e:
             _logger.error(traceback.format_exc())

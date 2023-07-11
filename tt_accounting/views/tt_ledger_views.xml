@@ -10,9 +10,10 @@
                 <field name="ref"/>
                 <field name="description"/>
                 <field name="source_of_funds_type"/>
-                <field name="transaction_type" groups="tt_base.group_tt_tour_travel"/>
-                <field name="agent_id" groups="tt_base.group_tt_tour_travel"/>
-                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                <field name="transaction_type" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
+                <field name="agent_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                <field name="customer_parent_id" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 <separator/>
                 <filter name="today" string="Today" domain="[('date','&gt;=',time.strftime('%%Y-%%m-%%d'))]"/>
                 <filter name="yesterday" string="Yesterday"
@@ -28,13 +29,17 @@
                             ]"/>
                 <filter string="This Month" name="thismonth" domain="[('date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
                 <filter string="This Year" name="thisyear" domain="[('date','&gt;=',time.strftime('%%Y-01-01'))]"/>
-
+                <separator/>
+                <filter name="sof_balance" string="SoF Balance" domain="[('source_of_funds_type','=','balance')]"/>
+                <filter name="sof_credit_limit" string="SoF Credit Limit" domain="[('source_of_funds_type','=','credit_limit')]"/>
+                <filter name="sof_point" string="SoF Point" domain="[('source_of_funds_type','=','point')]"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
-                    <filter name="group_by_transaction_type" string="Transaction Type" domain="[]" context="{'group_by':'transaction_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel"/>
+                    <filter name="group_by_ho_id" string="Head Office" domain="[]" context="{'group_by':'ho_id'}" groups="base.group_erp_manager"/>
+                    <filter name="group_by_agent_id" string="Agent" domain="[]" context="{'group_by':'agent_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_agent_type_id" string="Agent Type" domain="[]" context="{'group_by':'agent_type_id'}" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_id" string="Customer Parent" domain="[]" context="{'group_by':'customer_parent_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_customer_parent_type_id" string="Customer Parent Type" domain="[]" context="{'group_by':'customer_parent_type_id'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <filter name="group_by_transaction_type" string="Transaction Type" domain="[]" context="{'group_by':'transaction_type'}" groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </group>
             </search>
         </field>
@@ -48,7 +53,7 @@
                 <header>
                     <!-- JNGAN di SYNC -->
                     <!-- Trial Reverse -->
-                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_ledger_level_4" attrs="{'invisible':[('is_reversed','=',True)]}" confirm="Are you sure you want to reverse this ledger?"/>
+                    <button string="Reverse Ledger" name="reverse_ledger" type="object" groups="tt_base.group_ledger_level_5" attrs="{'invisible':[('is_reversed','=',True)]}" confirm="Are you sure you want to reverse this ledger?"/>
 <!--                    <button string="Fixing Description Adjustment Ledger" name="fixing_description_ledger_adjustment" type="object" groups="base.group_system"/>-->
                 </header>
                 <sheet>
@@ -60,6 +65,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="agent_id"/>
                             <field name="agent_type_id"/>
                             <field name="customer_parent_id"/>
@@ -113,6 +119,7 @@
             <tree create="false">
                 <field name="date"/>
                 <field name="ref"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="agent_id"/>
                 <field name="agent_type_id"/>
                 <field name="customer_parent_id"/>
@@ -138,6 +145,7 @@
             <tree create="false">
                 <field name="date"/>
                 <field name="ref"/>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="pnr"/>
                 <field name="agent_id"/>
                 <field name="description"/>
@@ -158,6 +166,20 @@
         <field name="inherit_id" ref="tt_accounting.tt_ledger_tree_view"/>
         <field name="groups_id" eval="[(6, 0, [ref('tt_base.group_tt_tour_travel_operator'),ref('tt_base.group_tt_tour_travel')])]" />
         <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <field name="pnr" position="after">
+                <field name="display_provider_name"/>
+                <field name="agent_type_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="tt_ledger_tree_view_adm_inh" model="ir.ui.view">
+        <field name="name">tt.ledger.tree.view.adm.inh</field>
+        <field name="model">tt.ledger</field>
+        <field name="inherit_id" ref="tt_accounting.tt_ledger_tree_view"/>
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_erp_manager')])]" />
+        <field name="priority">5</field>
         <field name="arch" type="xml">
             <field name="pnr" position="after">
                 <field name="display_provider_name"/>
@@ -213,49 +235,6 @@
         </field>
     </record>
 
-    <record id="tt_ledger_waiting_list_form_view" model="ir.ui.view">
-        <field name="name">tt.ledger.waiting.list.form.view</field>
-        <field name="model">tt.ledger.waiting.list</field>
-        <field name="arch" type="xml">
-            <form>
-                <header>
-                    <button name="turn_off_all_transaction" string="Turn Off Transaction" type="object"/>
-                </header>
-                <sheet>
-                    <group>
-                        <field name="create_date"/>
-                        <field name="agent_id"/>
-                        <field name="customer_parent_id"/>
-                        <field name="comment"/>
-                        <field name="is_in_transaction"/>
-                        <field name="waiting_number"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="tt_ledger_waiting_list_tree_view" model="ir.ui.view">
-        <field name="name">tt.ledger.waiting.list.tree.view</field>
-        <field name="model">tt.ledger.waiting.list</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="create_date"/>
-                <field name="agent_id"/>
-                <field name="customer_parent_id"/>
-                <field name="comment"/>
-                <field name="is_in_transaction"/>
-                <field name="waiting_number"/>
-            </tree>
-        </field>
-    </record>
-
-    <record id="tt_ledger_waiting_list_action" model="ir.actions.act_window">
-        <field name="name">Ledger Waiting List</field>
-        <field name="res_model">tt.ledger.waiting.list</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-    </record>
 
     <menuitem id="top_transaction_ledger" parent="tt_base.main_transaction"
               name="Ledger" sequence="20"
@@ -264,16 +243,12 @@
 
     <menuitem id="menu_transaction_ledger" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action" sequence="10"
-              groups="tt_base.group_tt_tour_travel"
+              groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
     />
 
     <menuitem id="menu_transaction_ledger_agent_user" parent="tt_accounting.top_transaction_ledger"
               name="Ledger" action="tt_ledger_action_agent_user" sequence="12"
               groups="tt_base.group_tt_agent_user"
     />
-
-    <menuitem id="menu_transaction_ledger_waiting_list" parent="tt_accounting.top_transaction_ledger"
-              name="Ledger Waiting List" action="tt_ledger_waiting_list_action" sequence="16"
-              groups="base.group_system"/>
 
 </odoo>

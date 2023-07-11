@@ -26,8 +26,9 @@ class AddressDetail(models.Model):
     sub_district_id = fields.Many2one('res.sub.district', string='Sub District')
     customer_id = fields.Many2one('tt.customer', string='Customer')
     customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', string='Agent')
-    provider_id = fields.Many2one('tt.provider', string='Provider')
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', string='Provider HO Data')
     active = fields.Boolean('Active', default=True)
 
     # @api.onchange('agent_id')

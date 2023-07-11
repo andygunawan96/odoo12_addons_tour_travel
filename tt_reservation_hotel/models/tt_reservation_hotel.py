@@ -529,7 +529,7 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_confirm(self, kwargs=False):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 141')
         self.state = 'confirm'
         self.booked_date = fields.Datetime.now()
@@ -586,7 +586,7 @@ class HotelReservation(models.Model):
             rec.state = 'issued'
 
     def action_issued_backend(self):
-        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_agent_user').id, self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 145')
         if not self.ensure_one():
             raise UserError('Cannot Issued more than 1 Resv.')
@@ -601,13 +601,13 @@ class HotelReservation(models.Model):
 
     @api.one
     def action_set_to_issued(self, kwargs=False):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 146')
         self.state = 'issued'
 
     @api.one
     def action_set_to_failed(self, kwargs=False):
-        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
+        if not ({self.env.ref('tt_base.group_tt_tour_travel').id, self.env.ref('base.group_erp_manager').id, self.env.ref('base.group_system').id}.intersection(set(self.env.user.groups_id.ids))):
             raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 147')
         self.state = 'fail_issued'
 
@@ -974,12 +974,13 @@ class HotelReservation(models.Model):
         #                                                 'booked_name': self.room_detail_ids[0].name,
         #                                                 'issued_name': self.room_detail_ids[0].issued_name,
         #                                                 }, api_context)
+        ho_id = self.agent_id.ho_id
         res = self.env['tt.hotel.api.con'].check_booking_status({'name': self.name, 'provider': self.room_detail_ids[0].provider_id.code,
                                                                  'sid_booked': self.sid_booked, 'sid_issued': self.sid_issued,
                                                                  'booking_id': self.id,
                                                                  'booked_name': self.room_detail_ids[0].name,
                                                                  'issued_name': self.room_detail_ids[0].issued_name,
-                                                                 })
+                                                                 }, ho_id=ho_id)
         if res['error_code'] != 0:
             raise ('Error')
         else:
@@ -1058,7 +1059,8 @@ class HotelReservation(models.Model):
         req = {
             'order_number': book_obj.name,
             'user_id': book_obj.booked_uid.id,
-            'provider_type': 'hotel'
+            'provider_type': 'hotel',
+            'ho_id': book_obj.agent_id.ho_id.id
         }
         res = self.env['tt.payment.api.con'].send_payment(req)
         #tutup payment acq number
@@ -1079,6 +1081,7 @@ class HotelReservation(models.Model):
                 if not sc_value.get(p_pax_type):
                     sc_value[p_pax_type] = {}
                 c_code = ''
+                c_type = ''
                 if p_charge_type != 'RAC':
                     if p_charge_code == 'csc':
                         c_type = "%s%s" % (p_charge_code, p_charge_type.lower())
@@ -1099,6 +1102,8 @@ class HotelReservation(models.Model):
                         }
                     if not c_code:
                         c_code = p_charge_type.lower()
+                    if not c_type:
+                        c_type = p_charge_type
                 elif p_charge_type == 'RAC':
                     if not sc_value[p_pax_type].get(p_charge_code):
                         sc_value[p_pax_type][p_charge_code] = {}
@@ -1130,6 +1135,7 @@ class HotelReservation(models.Model):
                         'pax_type': p_type,
                         'booking_airline_id': self.id,
                         'description': provider.pnr,
+                        'ho_id': self.ho_id.id if self.ho_id else ''
                     }
                     # curr_dict['pax_type'] = p_type
                     # curr_dict['booking_airline_id'] = self.id
@@ -1162,6 +1168,7 @@ class HotelReservation(models.Model):
         cancellation_policy = data.get('cancellation_policy', '')
 
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
+        context['ho_id'] = context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(context['co_uid']).ho_id.id
 
         booker_obj = self.env['tt.reservation.hotel'].create_booker_api(data['booker'], context)
         contact_objs = []
@@ -1173,7 +1180,7 @@ class HotelReservation(models.Model):
         vals = self.prepare_resv_value(backend_hotel_obj, data['hotel_obj'], data['checkin_date'],
                                        data['checkout_date'], data['price_codes'],
                                        booker_obj, contact_obj, provider_data, special_req, data['passengers'],
-                                       context['agent_id'], cancellation_policy, context.get('hold_date', False))
+                                       context['ho_id'], context['agent_id'], cancellation_policy, context.get('hold_date', False))
         # Set Customer Type by Payment
         if data['payment_id']:
             acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_id']['acquirer_seq_id'])])
@@ -1254,6 +1261,10 @@ class HotelReservation(models.Model):
                             'resv_hotel_id': resv_id.id,
                             'total': price['amount'] * price['pax_count'],
                         })
+                        if not price.get('ho_id'):
+                            price.update({
+                                'ho_id': context.get('co_ho_id') and context['co_ho_id'] or (resv_id.ho_id.id if resv_id.ho_id else '')
+                            })
                         self.env['tt.service.charge'].create(price)
 
                 # todo Room Info IDS
@@ -1368,6 +1379,7 @@ class HotelReservation(models.Model):
             refund_line_ids.append(line_obj.id)
 
             res_vals = {
+                'ho_id': hotel_obj.ho_id.id,
                 'agent_id': hotel_obj.agent_id.id,
                 'customer_parent_id': hotel_obj.customer_parent_id.id,
                 'booker_id': hotel_obj.booker_id.id,

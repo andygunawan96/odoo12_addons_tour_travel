@@ -99,6 +99,7 @@ class TtRefundLineCustomer(models.Model):
     citra_fee = fields.Monetary('Additional Fee', default=0, readonly=False)
     total_amount = fields.Monetary('Total Amount', default=0, required=True, readonly=True, compute='_compute_total_amount')
     refund_id = fields.Many2one('tt.refund', 'Refund', readonly=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], related='refund_id.ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='refund_id.agent_id')
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id', readonly=True)
     acquirer_id = fields.Many2one('payment.acquirer', 'Payment Acquirer', domain="[('agent_id','=',agent_id)]")
@@ -155,6 +156,9 @@ class TtRefund(models.Model):
                                   " * The 'Done' status means the request has been done.\n"
                                   " * The 'Canceled' status is used for Agent or HO to cancel the request.\n"
                                   " * The 'Expired' status means the request has been expired.\n")
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True,
+                               default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True,
                                default=lambda self: self.env.user.agent_id)
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', related='agent_id.agent_type_id',
@@ -258,6 +262,7 @@ class TtRefund(models.Model):
         return {
             'order_number': self.name,
             'refund_type': self.refund_type_id.name if self.refund_type_id else '',
+            'ho_id': self.ho_id.id if self.ho_id else '',
             'agent_id': self.agent_id.id if self.agent_id else '',
             'referenced_pnr': self.referenced_pnr,
             'referenced_document': self.referenced_document,
@@ -293,18 +298,25 @@ class TtRefund(models.Model):
                 temp_total += rec2.real_refund_amount
             rec.real_refund_amount = temp_total
 
-    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular'):
+    def get_refund_admin_fee_rule(self, agent_id, refund_type='regular', ho_id=False):
+        search_param = [('after_sales_type', '=', 'refund')]
         if refund_type == 'quick':
-            search_param = ('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_quick_refund').id)
+            search_param.append(('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_quick_refund').id))
             default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_quick')
         else:
-            search_param = ('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_regular_refund').id)
+            search_param.append(('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_regular_refund').id))
             default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
-        refund_admin_fee_list = self.env['tt.master.admin.fee'].search([('after_sales_type', '=', 'refund'), search_param], order='sequence, id desc')
+        agent_obj = self.env['tt.agent'].browse(int(agent_id))
+        if ho_id:
+            ho_obj = self.env['tt.agent'].browse(int(ho_id))
+        else:
+            ho_obj = agent_obj and agent_obj.ho_id or False
+        if ho_obj:
+            search_param.append(('ho_id', '=', ho_obj.id))
+        refund_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
         if not refund_admin_fee_list:
             current_refund_env = default_refund_env
         else:
-            agent_obj = self.env['tt.agent'].browse(int(agent_id))
             qualified_admin_fee = []
             for admin_fee in refund_admin_fee_list:
                 is_agent = False
@@ -459,7 +471,7 @@ class TtRefund(models.Model):
                     'state': self.state,
                     'type': 'set_to_confirm'
                 }
-                self.env['tt.refund.api.con'].send_refund_request(data)
+                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.ho_id.id)
 
         self.write({
             'state': 'confirm',
@@ -527,7 +539,7 @@ class TtRefund(models.Model):
                             'provider': rec.provider_id.code,
                             'type': 'confirm'
                         }
-                        self.env['tt.refund.api.con'].send_refund_request(data)
+                        self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
             else:
                 _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
                 raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
@@ -577,7 +589,7 @@ class TtRefund(models.Model):
                             'provider': rec.provider_id.code,
                             'type': 'confirm'
                         }
-                        self.env['tt.refund.api.con'].send_refund_request(data)
+                        self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
             else:
                 _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
                 raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
@@ -734,7 +746,7 @@ class TtRefund(models.Model):
                     'provider': rec.provider_id.code,
                     'type': 'validate'
                 }
-                self.env['tt.refund.api.con'].send_refund_request(data)
+                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
 
         # HO ke BTBO2
         if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
@@ -992,7 +1004,7 @@ class TtRefund(models.Model):
                     **{'refund_id': self.id}
                 )
 
-                ho_agent = self.env.ref('tt_base.rodex_ho')
+                ho_agent = self.agent_id.ho_id
                 credit = 0
                 debit = self.final_admin_fee_ho
                 self.env['tt.ledger'].create_ledger_vanilla(
@@ -1071,7 +1083,7 @@ class TtRefund(models.Model):
             credit = value < 0 and value * -1 or 0
 
             ledger_type = 4
-            ho_agent = self.env.ref('tt_base.rodex_ho')
+            ho_agent = self.agent_id.ho_id
 
             self.env['tt.ledger'].create_ledger_vanilla(
                 self.res_model,

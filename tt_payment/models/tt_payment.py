@@ -58,6 +58,8 @@ class PaymentTransaction(models.Model):
     cancel_uid = fields.Many2one('res.users', 'Cancel By',readonly=True)
     cancel_date = fields.Datetime('Cancel Date',readonly=True)
     reference = fields.Char('Validate Ref.', help='Transaction Reference / Approval number', states={'validated': [('readonly', True)], 'validated2': [('readonly', True)], 'approved': [('readonly', True)]})
+
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, readonly=True, states={'draft': [('readonly', False)]}, default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True,readonly=True,states={'draft': [('readonly', False)]})
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer',readonly=True,states={'draft': [('readonly', False)]}, domain="[('parent_agent_id', '=', agent_id)]")
     # acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', domain=_get_acquirer_domain,states={'validated': [('readonly', True)]})

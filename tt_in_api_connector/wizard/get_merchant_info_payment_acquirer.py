@@ -7,13 +7,18 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
     _description = 'Get Merchant Info Payment Acquirer'
 
     provider = fields.Selection([('espay','Espay')],'Provider', help="Please turn on cron Auto-top-up-validator")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
 
     def sync_info(self):
         try:
-            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider, 'type': 'close'})
+            if self.ho_id:
+                ho_obj = self.ho_id
+            else:
+                ho_obj = self.env.user.agent_id.ho_id
+            res = self.env['tt.payment.api.con'].get_merchant_info({'provider':self.provider, 'type': 'close'}, ho_obj.id)
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:
-                ho_obj = self.env.ref('tt_base.rodex_ho')
+
                 for bank_res in res['response']:
                     bank_obj = self.env['tt.bank'].search([('code','=',bank_res['bankCode'])], limit=1)
                     existing_payment_acquirer = self.env['payment.acquirer'].search([
@@ -29,13 +34,13 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                             'name': bank_res['productName'],
                             'bank_id': bank_obj.id,
                             'agent_id': ho_obj.id,
+                            'ho_id': ho_obj.id,
                             'website_published': True
                         })
 
-            res = self.env['tt.payment.api.con'].get_merchant_info({'provider': self.provider, 'type': 'open'})
+            res = self.env['tt.payment.api.con'].get_merchant_info({'provider': self.provider, 'type': 'open'}, ho_obj.id)
             _logger.info(json.dumps(res))
             if res['error_code'] == 0:
-                ho_obj = self.env.ref('tt_base.rodex_ho')
                 bank_code_list = [x['bankCode'] for x in res['response']]
                 bank_code_list = set(bank_code_list)
                 bank_code_list.discard('503')
@@ -49,6 +54,7 @@ class GetMerchantInfoPaymentAcquirer(models.TransientModel):
                                 'type': 'va',
                                 'bank_id': bank_obj.id,
                                 'agent_id': ho_obj.id,
+                                'ho_id': ho_obj.id,
                                 'website_published': False,
                                 'name': 'Your Virtual Account at %s' % (bank_obj.name),
                             })

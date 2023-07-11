@@ -65,23 +65,35 @@ class ProviderOffline(models.Model):
 
     is_lg_required = fields.Boolean('Is LG Required', readonly=True, compute='compute_is_lg_required')
     is_po_required = fields.Boolean('Is PO Required', readonly=True, compute='compute_is_po_required')
-    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantees / Purchase Orders', readonly=True)
+
+    def _get_res_model_domain(self):
+        return [('res_model', '=', self._name)]
+
+    letter_of_guarantee_ids = fields.One2many('tt.letter.guarantee', 'res_id', 'Letter of Guarantees / Purchase Orders', readonly=True, domain=_get_res_model_domain)
 
     @api.onchange('provider_id')
     def compute_is_lg_required(self):
         for rec in self:
-            if rec.provider_id.is_using_lg:
-                rec.is_lg_required = True
-            else:
-                rec.is_lg_required = False
+            temp_req = False
+            temp_ho_obj = rec.booking_id.agent_id.ho_id
+            if temp_ho_obj:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_lg:
+                    temp_req = True
+            rec.is_lg_required = temp_req
 
     @api.onchange('provider_id')
     def compute_is_po_required(self):
         for rec in self:
-            if rec.provider_id.is_using_po:
-                rec.is_po_required = True
-            else:
-                rec.is_po_required = False
+            temp_req = False
+            temp_ho_obj = rec.booking_id.agent_id.ho_id
+            if temp_ho_obj:
+                prov_ho_obj = self.env['tt.provider.ho.data'].search(
+                    [('ho_id', '=', temp_ho_obj.id), ('provider_id', '=', rec.provider_id.id)], limit=1)
+                if prov_ho_obj and prov_ho_obj[0].is_using_po:
+                    temp_req = True
+            rec.is_po_required = temp_req
 
     def generate_lg_or_po(self, lg_type):
         if self.booking_id.state_offline == 'validate':
@@ -178,7 +190,10 @@ class ProviderOffline(models.Model):
                         mult_amount += 1
 
                 price_per_mul = self.total_price / mult_amount / qty_amount
-
+                if self.booking_id.ho_id:
+                    ho_obj = self.booking_id.ho_id
+                else:
+                    ho_obj = self.booking_id.agent_id.ho_id
                 lg_vals = {
                     'res_model': self._name,
                     'res_id': self.id,
@@ -193,13 +208,15 @@ class ProviderOffline(models.Model):
                     'currency_id': self.currency_id.id,
                     'price_per_mult': price_per_mul,
                     'price': self.total_price,
+                    'ho_id': ho_obj and ho_obj.id or False
                 }
                 new_lg_obj = self.env['tt.letter.guarantee'].create(lg_vals)
                 for key, val in desc_dict.items():
                     line_vals = {
                         'lg_id': new_lg_obj.id,
                         'ref_number': key,
-                        'description': val
+                        'description': val,
+                        'ho_id': ho_obj and ho_obj.id or False
                     }
                     self.env['tt.letter.guarantee.lines'].create(line_vals)
         else:
@@ -539,6 +556,14 @@ class ProviderOffline(models.Model):
         for line in self.booking_id.line_ids:
             if line.pnr == self.pnr and line.carrier_id:
                 carrier_code = line.carrier_id.code
+
+        agent_obj = self.booking_id.agent_id
+        ho_agent_obj = agent_obj.ho_id
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
         rule_param = {
             'provider': self.provider_id.code,
             'carrier_code': carrier_code,
@@ -546,6 +571,7 @@ class ProviderOffline(models.Model):
             'segment_count': segment_count,
             'show_commission': True,
             'pricing_datetime': '',
+            'context': context
         }
         repr_tool.calculate_pricing(**rule_param)
 
@@ -574,6 +600,7 @@ class ProviderOffline(models.Model):
         service_chg_obj = self.env['tt.service.charge']
         for scs in scs_list:
             scs['passenger_offline_ids'] = [(6, 0, scs['passenger_offline_ids'])]
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if abs(scs['total']) != 0:
                 service_chg_obj.create(scs)
 
@@ -789,8 +816,7 @@ class ProviderOffline(models.Model):
                 'total': basic_admin_fee * line_obj.obj_qty * days_int_current,
             })
 
-            ho_agent = self.env['tt.agent'].sudo().search(
-                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            ho_agent = self.env['tt.agent'].sudo().search([('is_ho_agent', '=', True)], limit=1)
             scs_list.append({
                 'commission_agent_id': ho_agent and ho_agent[0].id or False,
                 'amount': -basic_admin_fee * line_obj.obj_qty * days_int_current,
@@ -948,8 +974,7 @@ class ProviderOffline(models.Model):
                 'total': basic_admin_fee * line_obj.obj_qty * days_int_current,
             })
 
-            ho_agent = self.env['tt.agent'].sudo().search(
-                [('agent_type_id.id', '=', self.env.ref('tt_base.agent_type_ho').id)], limit=1)
+            ho_agent = self.env['tt.agent'].sudo().search([('is_ho_agent', '=', True)], limit=1)
             scs_dict['service_charges'].append({
                 'commission_agent_id': ho_agent and ho_agent[0].id or False,
                 'amount': -basic_admin_fee * line_obj.obj_qty * days_int_current,
@@ -962,6 +987,14 @@ class ProviderOffline(models.Model):
             })
         repr_tool.add_ticket_fare(scs_dict)
 
+        agent_obj = self.booking_id.agent_id
+        ho_agent_obj = agent_obj.ho_id
+
+        context = {
+            "co_ho_id": ho_agent_obj.id,
+            "co_ho_seq_id": ho_agent_obj.seq_id
+        }
+
         rule_param = {
             'provider': self.provider_id.code,
             'carrier_code': carrier_code,
@@ -969,6 +1002,7 @@ class ProviderOffline(models.Model):
             'segment_count': segment_count,
             'show_commission': True,
             'pricing_datetime': '',
+            'context': context
         }
         repr_tool.calculate_pricing(**rule_param)
 
@@ -997,6 +1031,7 @@ class ProviderOffline(models.Model):
         service_chg_obj = self.env['tt.service.charge']
         for scs_2 in scs_list:
             scs_2['passenger_offline_ids'] = [(6, 0, scs_2['passenger_offline_ids'])]
+            scs_2['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             if abs(scs_2['total']) != 0:
                 service_chg_obj.create(scs_2)
 

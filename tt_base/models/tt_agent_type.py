@@ -16,6 +16,7 @@ class TtAgentType(models.Model):
     registration_fee = fields.Monetary('Registration Fee')
     benefit = fields.Many2many('tt.agent.type.benefit', 'tt_agent_type_benefit_rel', 'agent_benefit', 'benefit')
     registration_form = fields.Html(string="Registration Form")
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_ids = fields.One2many('tt.agent', 'agent_type_id', 'Agent')
     can_register_agent = fields.Boolean('Can Register Agent', default=False)
     can_be_registered = fields.Boolean('Can be Registered', default=False)
@@ -38,33 +39,33 @@ class TtAgentType(models.Model):
         sequence_obj = self.env['ir.sequence'].sudo().create({
             'name': new_agent_type.name,
             'code': 'tt.agent.type.%s' % (new_agent_type.code),
-            'prefix': '{}.%(day)s%(sec)s'.format(new_agent_type.seq_prefix),
+            'prefix': '{}.{}%(day)s%(sec)s'.format(new_agent_type.seq_prefix, str(new_agent_type.id)),
             'padding': 3
         })
         new_agent_type.sequence_prefix_id = sequence_obj.id
-        new_agent_type.create_menuitem()
-        try:
-            """ Set registration upline menjadi HO """
-            new_agent_type.write({
-                'registration_upline_ids': [(4, self.env.ref('tt_base.agent_type_ho').id)],
-            })
-        except ValueError:
-            """ Jika belum ada HO, kosongi """
-            pass
+        # new_agent_type.create_menuitem()
+        # try:
+        #     """ Set registration upline menjadi HO """
+        #     new_agent_type.write({
+        #         'registration_upline_ids': [(4, self.env.ref('tt_base.agent_type_ho').id)],
+        #     })
+        # except ValueError:
+        #     """ Jika belum ada HO, kosongi """
+        #     pass
         return new_agent_type
 
-    def unlink(self):
-        self.delete_menuitem()
-        super(TtAgentType, self).unlink()
+    # def unlink(self):
+    #     self.delete_menuitem()
+    #     super(TtAgentType, self).unlink()
 
     def write(self, vals):
         super(TtAgentType, self).write(vals)
-        if 'name' in vals:
-            menuitem_obj = self.sudo().menuitem_id
-            menuitem_obj.name = vals['name']
-            menuitem_obj.action.name = vals['name']
-            arch = menuitem_obj.action.search_view_id.arch
-            menuitem_obj.action.search_view_id.arch = arch[:arch.find("string=")]+'string="%s" ' % (vals['name'])+arch[arch.find(" name="):]
+        # if 'name' in vals:
+        #     menuitem_obj = self.sudo().menuitem_id
+        #     menuitem_obj.name = vals['name']
+        #     menuitem_obj.action.name = vals['name']
+        #     arch = menuitem_obj.action.search_view_id.arch
+        #     menuitem_obj.action.search_view_id.arch = arch[:arch.find("string=")]+'string="%s" ' % (vals['name'])+arch[arch.find(" name="):]
         if 'code' in vals:
             self.sequence_prefix_id.sudo().code = 'tt.agent.type.%s' % (vals['code'])
             self.sequence_prefix_id.sudo().name = 'Agent %s' % (vals['code'].title())
@@ -119,6 +120,20 @@ class TtAgentType(models.Model):
             self.menuitem_id.action.search_view_id.sudo().unlink()
             self.menuitem_id.action.sudo().unlink()
             self.menuitem_id.sudo().unlink()
+
+    def action_view_agents(self):
+        return {
+            'name': _('Agent(s)'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'tree,form',
+            'res_model': 'tt.agent',
+            'domain': [('agent_type_id', '=', self.id)],
+            'context': {
+                'form_view_ref': 'tt_base.tt_agent_form_view',
+                'tree_view_ref': 'tt_base.tt_agent_tree_view'
+            },
+        }
 
     # fixme : nanti akan diubah
     def calc_commission(self, amount, multiplier, carrier_id=False):
@@ -204,4 +219,3 @@ class CommissionRule(models.Model):
     #                                  value[key],  # New Value
     #                                  self.env.user.name))  # User that Changed the Value
     #     return super(TtAgentType, self).write(value)
-

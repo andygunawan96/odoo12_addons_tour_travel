@@ -50,6 +50,7 @@ class TtProviderVisa(models.Model):
     pnr2 = fields.Char('PNR2')
     provider_id = fields.Many2one('tt.provider', 'Provider')
     booking_id = fields.Many2one('tt.reservation.visa', 'Order Number', ondelete='cascade')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], related='booking_id.ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', related='booking_id.agent_id')
     visa_id = fields.Many2one('tt.reservation.visa.pricelist', 'Visa Pricelist')
     state = fields.Selection(variables.BOOKING_STATE, 'Status', default='draft')
@@ -195,14 +196,15 @@ class TtProviderVisa(models.Model):
             scs['currency_id'] = currency_obj.get_id(scs.get('currency'), default_param_idr=True)
             scs['foreign_currency_id'] = currency_obj.get_id(scs.get('foreign_currency'), default_param_idr=True)
             scs['provider_visa_booking_id'] = self.id
-            for psg in self.ticket_ids:
-                if scs['pax_type'] == psg.pax_type and scs_pax_count < scs['pax_count']:
+            for idx,psg in enumerate(self.ticket_ids):
+                if scs['pax_type'] == psg.pax_type and scs_pax_count < scs['pax_count'] and self.booking_id.passenger_ids[idx].price_list_code == scs['price_list_code']:
                     scs['passenger_visa_ids'].append(psg.passenger_id.id)
                     # scs['pax_count'] += 1
                     scs_pax_count += 1
                     scs['total'] += scs['amount']
             scs['passenger_visa_ids'] = [(6, 0, scs['passenger_visa_ids'])]
             scs['description'] = self.pnr and self.pnr or str(self.sequence)
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             service_chg_obj.create(scs)
 
     def delete_service_charge(self):

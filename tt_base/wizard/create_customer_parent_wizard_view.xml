@@ -9,6 +9,7 @@
                 <group>
                     <field name="name"/>
                     <field name="customer_parent_type_id"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="parent_agent_id"/>
                     <field name="email"/>
                     <field name="currency_id"/>
@@ -32,7 +33,7 @@
 
     <menuitem id="menu_create_customer_parent_wizard_customer"
               parent="tt_base.top_customers_customers"
-              groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user"
+              groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"
               name="Create Customer Parent"
               sequence="2"
               action="create_customer_parent_wizard_action_view"/>

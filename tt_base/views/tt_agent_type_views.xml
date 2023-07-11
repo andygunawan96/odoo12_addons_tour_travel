@@ -34,6 +34,10 @@
                 <form>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
+                            <button name="action_view_agents" type="object" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
+                                    class="oe_stat_button" icon="fa-money">
+                                <field name="agent_ids" widget="statinfo" string="Agent(s)"/>
+                            </button>
                             <button name="toggle_active" type="object" groups="base.group_user"
                                     class="oe_stat_button" icon="fa-archive">
                                 <field name="active" widget="boolean_button"
@@ -52,6 +56,7 @@
                                     <!--<field name="downline_ids"/>-->
                                     <field name="code"/>
                                     <field name="seq_prefix"/>
+                                    <field name="ho_id" groups="base.group_erp_manager"/>
                                     <field name="can_register_agent"/>
                                     <field name="can_be_registered"/>
                                     <field name="is_using_pnr_quota"/>
@@ -74,9 +79,9 @@
 <!--                                    <field name="recruitment_fee"/>-->
                                 </group>
                             </group>
-                            <group>
-                                <field name="agent_ids"/>
-                            </group>
+<!--                            <group>-->
+<!--                                <field name="agent_ids"/>-->
+<!--                            </group>-->
                         </div></div>
                         <notebook>
                             <page string="Registration Upline" name="registration_upline">
@@ -111,6 +116,7 @@
                     <field name="rounding_amount_type"/>
                     <field name="rounding_places"/>
                     <field name="description"/>
+                    <button name="action_view_agents" type="object" string="View Agents" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"></button>
                 </tree>
             </field>
         </record>
@@ -132,10 +138,10 @@
 
 
         <menuitem id="sub_menu_item_tour_travel_agent_type"
-                  parent="tt_base.menu_tour_travel_configuration_tt_agent"
+                  parent="tt_base.top_tour_travel_customers"
                   groups="tt_base.group_agent_type_level_1"
                   name="Agent Type"
-                  sequence="1"
+                  sequence="14"
                   action="tt_agent_type_action_view"/>
 
     </data>

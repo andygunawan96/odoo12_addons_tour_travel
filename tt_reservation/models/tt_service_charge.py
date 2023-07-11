@@ -20,6 +20,7 @@ class TbServiceCharge(models.Model):
     sequence = fields.Integer('Sequence')
     description = fields.Text('Description')
 
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id)
     commission_agent_id = fields.Many2one('tt.agent', 'Agent ( Commission )', help='''Agent who get commission''')
 
     is_ledger_created = fields.Boolean('Ledger Created')

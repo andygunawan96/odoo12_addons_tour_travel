@@ -21,7 +21,7 @@ class TtCronLogInhResv(models.Model):
                         if datetime.now() >= (booking.hold_date or datetime.min):
                             if rec in ['airline'] and auto_cancel_on_vendor and booking.agent_type_id.is_auto_cancel_booking:
                                 #send gateway cancel airline
-                                res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name})
+                                res = self.env['tt.%s.api.con' % rec].cancel_booking({"order_number": booking.name}, ho_id=booking.agent_id.ho_id.id)
                                 if res['error_code']:
                                     error_list.append('%s\nRESPONSE\n%s\n' % (booking.name, json.dumps(res)))
                             booking.action_expired()
@@ -58,16 +58,16 @@ class TtCronLogInhResv(models.Model):
                                 'provider_type': rec,
                                 'order_number': book_obj.name,
                                 'r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
+                                'ho_id': book_obj.agent_id.ho_id.id
                             }
                             # tembak gateway
                             res = self.env['tt.payment.api.con'].sync_reservation_btbo_quota_pnr(data)
-                            if res['error_code']:
-                                sync = False
-                        if sync == True:
-                            book_obj.sync_reservation = True
+                            # if res['error_code']:
+                            #     sync = False
+                        # if sync == True:
+                        #     book_obj.sync_reservation = True
                     except Exception as e:
-                        _logger.error(
-                            '%s something failed during expired cron.\n' % (book_obj.name) + traceback.format_exc())
+                        _logger.error('%s something failed during expired cron.\n' % (book_obj.name) + traceback.format_exc())
         except Exception as e:
             self.create_cron_log_folder()
             self.write_cron_log('auto expired booking')
@@ -78,33 +78,35 @@ class TtCronLogInhResv(models.Model):
             ok_provider = []
             yesterday_datetime = datetime.now(pytz.timezone("Asia/Jakarta")) - timedelta(days=timedelta_days)
             for provider_obj in self.env['tt.provider'].search([('is_reconcile', '=', True)]):
-                wiz_obj = self.env['tt.reconcile.transaction.wizard'].create({
-                    'provider_type_id': provider_obj.provider_type_id.id,
-                    'provider_id': provider_obj.id,
-                    'date_from': yesterday_datetime, #klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
-                    'date_to': yesterday_datetime,
-                })
-
                 try:
-                    recon_obj_list = wiz_obj.send_recon_request_data()
-                    for recon_obj in recon_obj_list:
-                        recon_obj.compare_reconcile_data(notif_to_telegram=True)
+                    for provider_ho_agent_obj in self.env['tt.provider.ho.data'].search([('provider_id','=', provider_obj.id)]):
+                        wiz_obj = self.env['tt.reconcile.transaction.wizard'].create({
+                            'provider_type_id': provider_obj.provider_type_id.id,
+                            'provider_id': provider_obj.id,
+                            'date_from': yesterday_datetime,  # klo hari ini tgl 23 Jan 00:00 liat record e 22 Jan
+                            'date_to': yesterday_datetime,
+                            'ho_id': provider_ho_agent_obj.ho_id and provider_ho_agent_obj.ho_id.id or False
+                        })
+                        recon_obj_list = wiz_obj.send_recon_request_data()
+                        for recon_obj in recon_obj_list:
+                            recon_obj.compare_reconcile_data(notif_to_telegram=True)
 
-                        # Todo: Fungsi Cek apakah masih ada data yg state issued / booked tpi blum ter reconcile
-                        if check_unreconciled_reservation:
-                            need_to_check_dict = recon_obj.find_unreconciled_reservation(yesterday_datetime, yesterday_datetime)
-                            if need_to_check_dict:
-                                try:
-                                    data = {
-                                        'code': 9909,
-                                        'message': 'Issued in System not issued in Vendor:\n' + recon_obj.ntc_to_str(need_to_check_dict),
-                                        'provider': provider_obj.name,
-                                    }
-                                    self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code')
-                                except Exception as e:
-                                    _logger.error('Notification Find Unreconciled Reservation.\n %s' % (traceback.format_exc()))
-                            else:
-                                ok_provider.append(provider_obj.name)
+                            # Todo: Fungsi Cek apakah masih ada data yg state issued / booked tpi blum ter reconcile
+                            if check_unreconciled_reservation:
+                                need_to_check_dict = recon_obj.find_unreconciled_reservation(yesterday_datetime, yesterday_datetime)
+                                if need_to_check_dict:
+                                    try:
+                                        data = {
+                                            'code': 9909,
+                                            'message': 'Issued in System not issued in Vendor:\n' + recon_obj.ntc_to_str(need_to_check_dict),
+                                            'provider': provider_obj.name,
+                                        }
+                                        ho_id = provider_ho_agent_obj.ho_id.id
+                                        self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data, 'notification_code', ho_id)
+                                    except Exception as e:
+                                        _logger.error('Notification Find Unreconciled Reservation.\n %s' % (traceback.format_exc()))
+                                else:
+                                    ok_provider.append(provider_obj.name)
 
 
                 except Exception as e:
@@ -117,6 +119,7 @@ class TtCronLogInhResv(models.Model):
                     'message': 'Reconcile Done, Provider:\n' + '\n-'.join(ok_provider),
                     'provider': 'Cron Reconcile',
                 }
+                ## tambah context
                 self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,'notification_code')
 
             if error_list:
@@ -144,6 +147,7 @@ class TtCronLogInhResv(models.Model):
                                     'member': book_obj.is_member,  # kalo bayar pake BCA / MANDIRI PASTI MEMBER FALSE
                                     'acquirer_seq_id': seq_id,
                                     'force_issued': True,
+                                    'ho_id': book_obj.agent_id.ho_id.id
                                 }
                                 res = self.env['tt.payment.api.con'].send_payment(req)
                                 if res['error_code'] == 0:

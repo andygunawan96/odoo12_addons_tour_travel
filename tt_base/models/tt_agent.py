@@ -46,7 +46,8 @@ class TtAgent(models.Model):
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
     email_cc = fields.Char(string="Email CC(s) (Split by comma for multiple CCs)", required=False, )
-    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.user.company_id.currency_id)
+    currency_id = fields.Many2one('res.currency', string='Default Currency', default=lambda self: self.env.user.company_id.currency_id)
+    currency_ids = fields.Many2many("res.currency","res_currency_tt_agent_rel","tt_agent_id", "res_currency_id", "Other Currency")
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'agent_id', string='Phones')
     social_media_ids = fields.One2many('social.media.detail', 'agent_id', 'Social Media')
@@ -58,6 +59,13 @@ class TtAgent(models.Model):
 
     parent_agent_id = fields.Many2one('tt.agent', string="Parent Agent", default=lambda self: self.set_default_agent())
     agent_type_id = fields.Many2one('tt.agent.type', 'Agent Type', required=True)
+    is_ho_agent = fields.Boolean('Is HO Agent')
+    is_btc_agent = fields.Boolean('Is BTC Agent')
+    btc_agent_type_id = fields.Many2one('tt.agent.type', 'Default BTC Agent Type')
+    website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
+    email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
+    redirect_url_signup = fields.Char('Redirect URL Signup', default='/')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
     payment_acquirer_ids = fields.One2many('payment.acquirer','agent_id',string="Payment Acquirer")  # payment_acquirer
@@ -84,6 +92,7 @@ class TtAgent(models.Model):
     point_reward = fields.Monetary(string="Point Reward")
     actual_point_reward = fields.Monetary(string="Actual Point Reward")
     unprocessed_point_reward = fields.Monetary(string="Unprocess Point Reward")
+    is_use_point_reward = fields.Boolean('Is Use Point Reward', default=False)
 
     state = fields.Selection([("draft", "Draft"), ("done", "Done")],'State', default='done')
 
@@ -111,13 +120,13 @@ class TtAgent(models.Model):
 
     @api.model
     def create(self, vals_list):
-        ho_type_id = self.env.ref('tt_base.agent_type_ho').id
-        if vals_list['agent_type_id'] == self.env.ref('tt_base.agent_type_ho').id:
-            ho_agent_objs = self.search([('agent_type_id','=',ho_type_id), '|', ('active', '=', True), ('active', '=', False)])
-            if ho_agent_objs:
-                raise UserError('Cannot create more than 1 HO.')
-            if 'parent_agent_id' in vals_list:
+        is_ho = False
+        if vals_list.get('is_ho_agent'):
+            if vals_list.get('parent_agent_id'):
                 raise UserError('Cannot set HO parent agent.')
+            if vals_list.get('is_btc_agent'):
+                vals_list.pop('is_btc_agent')
+            is_ho = True
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
 
@@ -128,34 +137,56 @@ class TtAgent(models.Model):
         new_acquirer = self.env['payment.acquirer'].create({
             'name': 'Cash',
             'provider': 'manual',
+            'ho_id': is_ho and new_agent.id or new_agent.ho_id.id,
             'agent_id': new_agent.id,
             'type': 'cash',
             'website_published': True
         })
 
-        new_agent.write({
+        write_vals = {
             'customer_parent_walkin_id': walkin_obj.id,
             'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code)),
             'default_acquirer_id': new_acquirer.id
-        })
+        }
+        if is_ho:
+            write_vals.update({
+                'ho_id': new_agent.id
+            })
+        new_agent.write(write_vals)
         return new_agent
 
     def write(self, vals):
-        ho_type_id = self.env.ref('tt_base.agent_type_ho').id
-        if 'agent_type_id' in vals:
-            if vals['agent_type_id'] == ho_type_id:
-                ho_agent_objs = self.search([('agent_type_id','=',ho_type_id), '|', ('active', '=', True), ('active', '=', False)])
-                if ho_agent_objs:
-                    raise UserError('Cannot create more than 1 HO.')
         if 'parent_agent_id' in vals:
             if vals['parent_agent_id'] == self.id:
                 raise UserError('Parent agent cannot be itself.')
-            if self.agent_type_id.id == ho_type_id:
+            if self.is_ho_agent or vals.get('is_ho_agent'):
                 raise UserError('Cannot set HO parent agent.')
+        if vals.get('is_ho_agent') and vals.get('is_btc_agent'):
+            vals.pop('is_btc_agent')
+        if vals.get('is_ho_agent'):
+            vals.update({
+                'ho_id': self.id,
+                'is_btc_agent': False
+            })
+        if vals.get('is_btc_agent'):
+            vals.update({
+                'is_ho_agent': False
+            })
         super(TtAgent, self).write(vals)
+
+    @api.onchange('is_ho_agent')
+    def _compute_is_btc(self):
+        if self.is_ho_agent and self.is_btc_agent:
+            self.is_btc_agent = False
+
+    @api.onchange('is_btc_agent')
+    def _compute_is_ho(self):
+        if self.is_btc_agent and self.is_ho_agent:
+            self.is_ho_agent = False
 
     def create_walkin_obj_val(self,new_agent,agent_name):
         return{
+            'ho_id': new_agent.ho_id.id,
             'parent_agent_id': new_agent.id,
             'customer_parent_type_id': self.env.ref('tt_base.customer_type_fpo').id,
             'name': agent_name + ' FPO',
@@ -210,7 +241,9 @@ class TtAgent(models.Model):
 
     def set_default_agent(self):
         try:
-            return self.env.ref('tt_base.rodex_ho').id
+            if self.env.user.has_group('base.group_erp_manager'):
+                return False
+            return self.env.user.ho_id.id
         except:
             return False
 
@@ -222,7 +255,7 @@ class TtAgent(models.Model):
             balance = 0
             point_reward = 0
             customer_parent_balance = customer_parent_obj.actual_balance
-            currency_code = ''
+            currency_code = customer_parent_obj.currency_id.name
             customer_parent_currency_code = customer_parent_obj.currency_id.name
             credit_limit = customer_parent_obj.credit_limit
             is_show_balance = False
@@ -491,7 +524,8 @@ class TtAgent(models.Model):
     def action_show_agent_target_history(self):
         tree_view_id = self.env.ref('tt_base.view_agent_target_tree').id
         form_view_id = self.env.ref('tt_base.view_agent_target_form').id
-        return {
+
+        vals = {
             'name': _('Target History'),
             'type': 'ir.actions.act_window',
             'view_type': 'form',
@@ -504,6 +538,12 @@ class TtAgent(models.Model):
                 'default_currency_id': self.currency_id.id,
             },
         }
+        temp_ho_obj = self.ho_id
+        if temp_ho_obj:
+            vals['context'].update({
+                'default_ho_id': temp_ho_obj.id
+            })
+        return vals
 
     def get_transaction_api(self,req,context):
         try:
@@ -542,7 +582,7 @@ class TtAgent(models.Model):
                 dom = [('agent_id', '=', agent_obj.id)]
 
             if req.get('pnr'):
-                dom.append(('pnr','=ilike',req['pnr']))
+                dom.append(('provider_booking_ids.pnr','=',req['pnr']))
             if req.get('order_number'):
                 dom.append(('name','=ilike',req['order_number']))
             if req.get('booker_name'):
@@ -641,17 +681,19 @@ class TtAgent(models.Model):
             quota_obj_list = self.quota_ids.filtered(lambda x: x.state == 'active')
 
             if len(quota_obj_list) == 0:## kalau tidak ada quota_obj yg aktif di buatkan 1
-                self.env['tt.pnr.quota'].create_pnr_quota_api(
+                new_quota_id = self.env['tt.pnr.quota'].create_pnr_quota_api(
                     {
-                        'quota_seq_id': self.quota_package_id.seq_id
+                        'quota_seq_id': self.quota_package_id.seq_id,
+                        'is_called_from_backend': True
                     },
                     {
                         'co_agent_id': self.id
                     }
                 )
-
-            #ambl yg index 0, terbaru
-            quota_obj = quota_obj_list[0]
+                quota_obj = self.env['tt.pnr.quota'].browse(int(new_quota_id))
+            else:
+                #ambl yg index 0, terbaru
+                quota_obj = quota_obj_list[0]
             total_quota_pnr_used = quota_obj.usage_quota
             type_price = 'pax'
             if req['inventory'] == 'external':
@@ -668,6 +710,7 @@ class TtAgent(models.Model):
                 if type_price != 'pnr':
                     amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
             self.env['tt.pnr.quota.usage'].create({
+                'ho_id': quota_obj.ho_id and quota_obj.ho_id.id or quota_obj.agent_id.ho_id.id,
                 'res_model_resv': req.get('res_model_resv'),
                 'res_id_resv': req.get('res_id_resv'),
                 'res_model_prov': req.get('res_model_prov'),
@@ -813,6 +856,13 @@ class TtAgent(models.Model):
             email_cc = ",".join(email_cc_list)
         return email_cc
 
+    def get_printout_agent_color(self):
+        base_color = '#FFFFFF'
+        agent_ho_obj = self.ho_id.sudo()
+        if agent_ho_obj.website_default_color:
+            base_color = agent_ho_obj.website_default_color if agent_ho_obj.website_default_color[0] == '#' else '#%s' % agent_ho_obj.website_default_color
+        return base_color
+
     def get_simple_agent_list_data(self):
         '''
         start_index=None, limit=None
@@ -856,6 +906,41 @@ class TtAgent(models.Model):
             })
         return payload
 
+    def get_agent_api(self):
+        res = []
+        # agent_objs = self.search([]) ## ALL AGENT
+        agent_objs = self.search([('is_ho_agent','=', True)]) ## HANYA HO
+        for agent_obj in agent_objs:
+            other_currency = []
+            for currency_obj in agent_obj.currency_ids:
+                other_currency.append(currency_obj.name)
+            res.append({
+                "name": agent_obj.name,
+                "seq_id": agent_obj.seq_id,
+                "is_ho_agent": agent_obj.is_ho_agent,
+                "id": agent_obj.id,
+                "currency_id": agent_obj.currency_id.name,
+                "other_currency": other_currency
+            })
+        res = ERR.get_no_error({"agent_dict": res})
+        return res
+
+    def get_ho_currency_api(self):
+        res = {}
+        agent_objs = self.search([('is_ho_agent', '=', True)])  ## HANYA HO
+        for agent_obj in agent_objs:
+            currency_list = []
+            if agent_obj.currency_id:
+                currency_list.append(agent_obj.currency_id.name)
+            for currency_obj in agent_obj.currency_ids:
+                if currency_obj.name not in currency_list:
+                    currency_list.append(currency_obj.name)
+            res[agent_obj.seq_id] = {
+                "currency_list": currency_list,
+                "default_currency": agent_obj.currency_id.name
+            }
+        res = ERR.get_no_error({"currency_dict": res})
+        return res
 
 class AgentTarget(models.Model):
     _inherit = ['tt.history']
@@ -864,6 +949,7 @@ class AgentTarget(models.Model):
     _description = 'Historical Target Agent per Satuan waktu (tahun/bulan)'
 
     name = fields.Char('Target Name')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent')
     start_date = fields.Date('Start Date')
     end_date = fields.Date('End Date')
@@ -880,6 +966,7 @@ class AgentMOU(models.Model):
     # Catet Perjanian kerja sama antara citra dengan agent contoh: Fipro target e brpa klo kurang dia mesti bayar
 
     name = fields.Char('Target Name')
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', domain=[('parent_id', '=', False)], required=True)
 
     start_date = fields.Date('Start Date')

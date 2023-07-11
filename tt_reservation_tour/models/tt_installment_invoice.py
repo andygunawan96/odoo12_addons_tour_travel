@@ -64,7 +64,8 @@ class InstallmentInvoice(models.Model):
                 'co_uid': self.env.user.id,
                 'co_user_name': self.env.user.name,
             }
-            self.env['tt.tour.api.con'].send_tour_payment_expired_notification(data, context)
+            ho_id = self.booking_id.agent_id.ho_id.id
+            self.env['tt.tour.api.con'].send_tour_payment_expired_notification(data, context, ho_id)
         except Exception as e:
             _logger.error("Send Tour Payment Expired Notification Telegram Error\n" + traceback.format_exc())
 
