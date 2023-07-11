@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import json, logging
 from ...tools.db_connector import GatewayConnector
 import traceback
+import copy
 from dateutil.relativedelta import relativedelta
 
 
@@ -586,12 +587,28 @@ class TtProviderAirline(models.Model):
                             break
 
                 _logger.info(str(psg_obj))
+                ticket_number_list = ''
+                try:
+                    if psg.get('ticket_number_list'):
+                        merge_tickets = ';'.join(psg['ticket_number_list'])
+                        ticket_number_list = merge_tickets
+                except:
+                    pass
                 ticket_vals = {
                     'pax_type': psg.get('pax_type'),
                     'ticket_number': psg.get('ticket_number'),
                     'passenger_id': psg_obj.id,
                     'ff_number': psg.get('ff_number'),
                     'ff_code': psg.get('ff_code'),
+                    'title': psg.get('title'),
+                    'first_name': psg.get('first_name'),
+                    'last_name': psg.get('last_name'),
+                    'birth_date': psg.get('birth_date'),
+                    'identity_type': psg.get('identity_type'),
+                    'identity_number': psg.get('identity_number'),
+                    'identity_expdate': psg.get('identity_expdate'),
+                    'identity_country_of_issued_code': psg.get('identity_country_of_issued_code'),
+                    'ticket_number_list': ticket_number_list,
                 }
                 ticket_list.append((0, 0, ticket_vals))
                 psg_obj.is_ticketed = True
@@ -605,17 +622,35 @@ class TtProviderAirline(models.Model):
 
         psg_with_no_ticket = self.booking_id.passenger_ids.filtered(lambda x: x.is_ticketed == False)
         for idx, psg in enumerate(ticket_not_found):
+            ticket_number_list = ''
+            try:
+                if psg.get('ticket_number_list'):
+                    merge_tickets = ';'.join(psg['ticket_number_list'])
+                    ticket_number_list = merge_tickets
+            except:
+                pass
+            ticket_vals = {
+                'pax_type': psg.get('pax_type'),
+                'ticket_number': psg.get('ticket_number'),
+                'ff_number': psg.get('ff_number'),
+                'ff_code': psg.get('ff_code'),
+                'title': psg.get('title'),
+                'first_name': psg.get('first_name'),
+                'last_name': psg.get('last_name'),
+                'birth_date': psg.get('birth_date'),
+                'identity_type': psg.get('identity_type'),
+                'identity_number': psg.get('identity_number'),
+                'identity_expdate': psg.get('identity_expdate'),
+                'identity_country_of_issued_code': psg.get('identity_country_of_issued_code'),
+                'ticket_number_list': ticket_number_list,
+            }
             if idx >= len(psg_with_no_ticket):
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
-                }))
+                ticket_list.append((0, 0, ticket_vals))
             else:
-                ticket_list.append((0, 0, {
-                    'pax_type': psg.get('pax_type'),
-                    'ticket_number': psg.get('ticket_number'),
+                ticket_vals.update({
                     'passenger_id': psg_with_no_ticket[idx].id
-                }))
+                })
+                ticket_list.append((0, 0, ticket_vals))
                 psg_with_no_ticket[idx].is_ticketed = True
                 psg_with_no_ticket[idx].create_ssr(psg['fees'],pnr,self.id)
 
@@ -650,7 +685,200 @@ class TtProviderAirline(models.Model):
             'ticket_ids': ticket_list
         })
 
-    def update_ticket_api(self,passengers):##isi ticket number
+    def update_ticket_api(self, passengers):
+        # July 10, 2023 - SAM
+        # Init data pax dari backend (reservasi)
+        backend_pax_repo = []
+        backend_pax_obj_repo = {}
+        if self.booking_id:
+            for rec in self.booking_id.passenger_ids:
+                first_name = ''.join(rec.first_name.split()).lower() if rec.first_name else ''
+                last_name = ''.join(rec.last_name.split()).lower() if rec.last_name else ''
+                key_1 = '%s%s' % (last_name, first_name)
+                key_2 = '%s%s' % (first_name, first_name)
+                vals = {
+                    'passenger_id': rec.id,
+                    'key_1': key_1,
+                    'key_2': key_2,
+                    'first_name': rec.first_name if rec.first_name else '',
+                    'last_name': rec.last_name if rec.last_name else '',
+                    'has_ticket': False,
+                }
+                backend_pax_repo.append(vals)
+                backend_pax_obj_repo[str(rec.id)] = rec
+
+        # Init data pax dari provider tickets
+        ticket_repo = []
+        ticket_obj_repo = {}
+        for rec in self.ticket_ids:
+            vals = {
+                'ticket_id': rec.id,
+                'passenger_id': '',
+                'key_1': '',
+                'key_2': '',
+                'first_name': '',
+                'last_name': '',
+                'is_sync': False,
+            }
+            if rec.first_name or rec.last_name:
+                first_name = ''.join(rec.first_name.split()).lower() if rec.first_name else ''
+                last_name = ''.join(rec.last_name.split()).lower() if rec.last_name else ''
+                key_1 = '%s%s' % (last_name, first_name)
+                key_2 = '%s%s' % (first_name, first_name)
+                vals.update({
+                    'key_1': key_1,
+                    'key_2': key_2,
+                    'first_name': rec.first_name if rec.first_name else '',
+                    'last_name': rec.last_name if rec.last_name else '',
+                })
+                if rec.passenger_id:
+                    vals.update({'passenger_id': rec.passenger_id.id})
+            elif rec.passenger_id:
+                is_found = False
+                for psg in backend_pax_repo:
+                    if psg['passenger_id'] == rec.passenger_id:
+                        is_found = True
+                        vals.update(copy.deepcopy(psg))
+                        if 'has_ticket' in vals:
+                            vals.pop('has_ticket')
+                        break
+                if not is_found:
+                    psg_obj = rec.passenger_id
+                    first_name = ''.join(psg_obj.first_name.split()).lower() if psg_obj.first_name else ''
+                    last_name = ''.join(psg_obj.last_name.split()).lower() if psg_obj.last_name else ''
+                    key_1 = '%s%s' % (last_name, first_name)
+                    key_2 = '%s%s' % (first_name, first_name)
+                    vals.update({
+                        'key_1': key_1,
+                        'key_2': key_2,
+                        'first_name': psg_obj.first_name if psg_obj.first_name else '',
+                        'last_name': psg_obj.last_name if psg_obj.last_name else '',
+                        'passenger_id': psg_obj.id,
+                    })
+            ticket_repo.append(vals)
+            ticket_obj_repo[str(rec.id)] = rec
+
+        # Check dan update data
+        ticket_ids = []
+        new_ticket_list = []
+        for rec in passengers:
+            # Setup data
+            ticket_vals = {
+                'pax_type': rec.get('pax_type', ''),
+                'ticket_number': rec.get('ticket_number', ''),
+                'ff_number': rec.get('ff_number', ''),
+                'ff_code': rec.get('ff_code', ''),
+                'title': rec.get('title', ''),
+                'first_name': rec.get('first_name', ''),
+                'last_name': rec.get('last_name', ''),
+                'birth_date': rec.get('birth_date', ''),
+                'identity_type': '',
+                'identity_number': '',
+                'identity_expdate': '',
+                'identity_country_of_issued_code': '',
+                'ticket_number_list': '',
+            }
+            if rec.get('identity'):
+                ticket_vals.update({
+                    'identity_type': rec['identity'].get('identity_type', ''),
+                    'identity_number': rec['identity'].get('identity_number', ''),
+                    'identity_expdate': rec['identity'].get('identity_expdate', ''),
+                    'identity_country_of_issued_code': rec['identity'].get('identity_country_of_issued_code', ''),
+                })
+            if rec.get('ticket_number_list'):
+                try:
+                    ticket_number_list = ';'.join(rec['ticket_number_list'])
+                    if ticket_number_list:
+                        ticket_vals['ticket_number_list'] = ticket_number_list
+                except:
+                    pass
+
+            # Setup key
+            first_name = ''.join(rec['first_name'].split()).lower() if rec.get('first_name') else ''
+            last_name = ''.join(rec['last_name'].split()).lower() if rec.get('last_name') else ''
+            key_1 = '%s%s' % (last_name, first_name)
+            key_2 = '%s%s' % (first_name, first_name)
+            # Search if data exist, update
+            is_ticket_found = False
+            for tkt in ticket_repo:
+                if tkt['is_sync']:
+                    continue
+                if key_1 in tkt['key_1'] or key_2 in tkt['key_2']:
+                    is_ticket_found = True
+                    tkt['is_sync'] = True
+                    ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
+                    if tkt['passenger_id']:
+                        for psg in backend_pax_repo:
+                            if psg['passenger_id'] == tkt['passenger_id']:
+                                psg['has_ticket'] = True
+                                break
+                        if str(tkt['passenger_id']) in backend_pax_obj_repo:
+                            backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
+                    else:
+                        for psg in backend_pax_repo:
+                            if key_1 in psg['key_1'] or key_2 in psg['key_2']:
+                                psg['has_ticket'] = True
+                                passenger_id = psg['passenger_id']
+                                if str(passenger_id) in backend_pax_obj_repo:
+                                    backend_pax_obj_repo[str(passenger_id)].is_ticketed = True
+                                ticket_vals.update({
+                                    'passenger_id': passenger_id
+                                })
+                                break
+                    break
+            # if not exist, tampung dulu
+            if not is_ticket_found:
+                new_ticket_list.append(ticket_vals)
+
+        if new_ticket_list:
+            # Hitung jumlah pax backend yang belum punya tiket
+            new_ticket_count = len(new_ticket_list)
+            no_ticket_backend_pax_count = 0
+            no_ticket_backend_pax_list = []
+            for rec in backend_pax_repo:
+                if not rec['has_ticket']:
+                    no_ticket_backend_pax_count += 1
+                    no_ticket_backend_pax_list.append(rec)
+
+            # Kalau sama sama 1, langsung update data backend
+            if new_ticket_count == 1 and no_ticket_backend_pax_count == 1:
+                tkt_vals = new_ticket_list[0]
+                psg_vals = no_ticket_backend_pax_list[0]
+                passenger_id = psg_vals['passenger_id']
+                tkt_vals.update({
+                    'passenger_id': passenger_id
+                })
+                if str(passenger_id) in backend_pax_obj_repo:
+                    name_list = []
+                    if tkt_vals['first_name']:
+                        name_list.append(tkt_vals['first_name'])
+                    if tkt_vals['last_name']:
+                        name_list.append(tkt_vals['last_name'])
+                    name = ' '.join(name_list)
+                    backend_pax_obj_repo[str(passenger_id)].write({
+                        'name': name,
+                        'title': tkt_vals['title'],
+                        'first_name': tkt_vals['first_name'],
+                        'last_name': tkt_vals['last_name'],
+                    })
+                    if backend_pax_obj_repo[str(passenger_id)].customer_id:
+                        backend_pax_obj_repo[str(passenger_id)].customer_id.write({
+                            'first_name': tkt_vals['first_name'],
+                            'last_name': tkt_vals['last_name'],
+                        })
+            for tkt in new_ticket_list:
+                ticket_ids.append((0, 0, tkt))
+
+        # Hapus ticket yang tidak tersync
+        for rec in ticket_repo:
+            if not rec['is_sync']:
+                ticket_ids.append((2, rec['ticket_id']))
+        self.write({
+            'ticket_ids': ticket_ids
+        })
+        # END
+
+    def update_ticket_api_backup_20230710(self,passengers):##isi ticket number
         ticket_not_found = []
         # September 29, 2021 - SAM
         # Update mekanisme kriteria match tiket.

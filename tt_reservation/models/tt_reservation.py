@@ -189,7 +189,7 @@ class TtReservation(models.Model):
         try:
             vals_list['name'] = self.env['ir.sequence'].next_by_code(self._name)
             vals_list['res_model'] = self._name
-            if vals_list.get('agent_id'):
+            if not vals_list.get('ho_id') and vals_list.get('agent_id'):
                 agent_id = self.env['tt.agent'].browse(vals_list['agent_id'])
                 if agent_id:
                     vals_list['ho_id'] = agent_id.ho_id.id

@@ -108,6 +108,8 @@ class TtReportCommonSetting(models.Model):
                                     'name': rec.name,
                                     'html': printout_ho.html or ''
                                 })
+                                printout_check = 0
+                                break
                     if printout_check: ## default kosong
                         res.append({
                             'code': rec.code,

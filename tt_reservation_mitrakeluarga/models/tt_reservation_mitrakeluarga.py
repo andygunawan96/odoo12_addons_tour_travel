@@ -626,6 +626,7 @@ class ReservationMitraKeluarga(models.Model):
             'origin_id': dest_obj.get_id(booking_data['origin'], provider_type_id),
             'provider_type_id': provider_type_id.id,
             'adult': booking_data['adult'],
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],

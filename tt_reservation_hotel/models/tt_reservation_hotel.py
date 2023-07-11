@@ -1168,6 +1168,7 @@ class HotelReservation(models.Model):
         cancellation_policy = data.get('cancellation_policy', '')
 
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
+        context['ho_id'] = context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(context['co_uid']).ho_id.id
 
         booker_obj = self.env['tt.reservation.hotel'].create_booker_api(data['booker'], context)
         contact_objs = []
@@ -1179,7 +1180,7 @@ class HotelReservation(models.Model):
         vals = self.prepare_resv_value(backend_hotel_obj, data['hotel_obj'], data['checkin_date'],
                                        data['checkout_date'], data['price_codes'],
                                        booker_obj, contact_obj, provider_data, special_req, data['passengers'],
-                                       context['agent_id'], cancellation_policy, context.get('hold_date', False))
+                                       context['ho_id'], context['agent_id'], cancellation_policy, context.get('hold_date', False))
         # Set Customer Type by Payment
         if data['payment_id']:
             acq_obj = self.env['payment.acquirer'].search([('seq_id', '=', data['payment_id']['acquirer_seq_id'])])
@@ -1260,6 +1261,10 @@ class HotelReservation(models.Model):
                             'resv_hotel_id': resv_id.id,
                             'total': price['amount'] * price['pax_count'],
                         })
+                        if not price.get('ho_id'):
+                            price.update({
+                                'ho_id': context.get('co_ho_id') and context['co_ho_id'] or (resv_id.ho_id.id if resv_id.ho_id else '')
+                            })
                         self.env['tt.service.charge'].create(price)
 
                 # todo Room Info IDS

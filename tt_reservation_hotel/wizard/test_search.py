@@ -558,7 +558,7 @@ class TestSearch(models.Model):
 
     def prepare_resv_value(self, backend_hotel_obj, hotel_obj, check_in, check_out, room_rates,
                            booker_obj, contact_obj, provider_data, special_req, guest_list,
-                           agent_id, cancellation_policy, hold_date):
+                           ho_id, agent_id, cancellation_policy, hold_date):
         room_count = 0
         for rec in room_rates:
             room_count += sum(int(a['qty']) or 1 for a in rec['rooms'])
@@ -586,6 +586,7 @@ class TestSearch(models.Model):
             'display_mobile': False, #
             'adult': len(list(filter(lambda i: i['pax_type'] == 'ADT', guest_list))),
             'provider_data': provider_data,
+            'ho_id': ho_id,
             'agent_id': agent_id,
             'special_req': special_req,
             # 'sub_agent_id': cust_partner_obj.agent_id.id,
@@ -631,6 +632,7 @@ class TestSearch(models.Model):
         norm_str = req.get('norm_str', '')
 
         context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
+        context['ho_id'] = context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(context['co_uid']).ho_id.id
 
         for idx,pax in enumerate(req['passengers']):
             pax.update({
@@ -655,7 +657,7 @@ class TestSearch(models.Model):
         backend_hotel_obj = self.get_backend_object(req['price_codes'][0]['provider'], req['hotel_obj']['id'])
         vals = self.prepare_resv_value(backend_hotel_obj, req['hotel_obj'], req['checkin_date'], req['checkout_date'], req['price_codes'],
                                        booker_obj, contact_obj, provider_data, special_req, req['passengers'],
-                                       context['agent_id'], cancellation_policy, context.get('hold_date', False))
+                                       context['ho_id'], context['agent_id'], cancellation_policy, context.get('hold_date', False))
 
         if req.get('member'):
             customer_parent_id = self.env['tt.customer.parent'].search([('seq_id', '=', req['acquirer_seq_id'])], limit=1)[0]
@@ -734,7 +736,7 @@ class TestSearch(models.Model):
                             'currency_id': self.env['res.currency'].get_id(scs.get('currency'), default_param_idr=True),
                             'foreign_currency_id': self.env['res.currency'].get_id(scs.get('foreign_currency'), default_param_idr=True),
                             'description': '',
-                            'ho_id': '',
+                            'ho_id': context.get('co_ho_id') and context['co_ho_id'] or (resv_id.ho_id.id if resv_id.ho_id else '')
                         })
                         self.env['tt.service.charge'].create(scs)
 

@@ -75,11 +75,47 @@
                     </group>
                     <separator string="Passengers"/>
                     <field name="ticket_ids">
+                        <form>
+                            <sheet>
+                                <group string="General">
+                                    <group>
+                                        <field name="provider_id"/>
+                                        <field name="passenger_id"/>
+                                    </group>
+                                    <group>
+                                        <field name="loyalty_program_id"/>
+                                    </group>
+                                </group>
+                                <group string="Vendor Data">
+                                    <group>
+                                        <field name="title"/>
+                                        <field name="first_name"/>
+                                        <field name="last_name"/>
+                                        <field name="pax_type"/>
+                                        <field name="birth_date"/>
+                                        <field name="identity_type"/>
+                                        <field name="identity_number"/>
+                                        <field name="identity_expdate"/>
+                                        <field name="identity_country_of_issued_code"/>
+                                    </group>
+                                    <group>
+                                        <field name="ticket_number"/>
+                                        <field name="ff_number"/>
+                                        <field name="ff_code"/>
+                                        <field name="ticket_number_list"/>
+                                    </group>
+                                </group>
+                            </sheet>
+                        </form>
                         <tree>
-                            <field name="passenger_id"/>
-                            <field name="loyalty_program_id"/>
+                            <field name="title"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="pax_type"/>
+                            <field name="identity_number"/>
                             <field name="ff_number"/>
                             <field name="ticket_number"/>
+                            <field name="passenger_id"/>
                         </tree>
                     </field>
                     <separator string="Journeys"/>

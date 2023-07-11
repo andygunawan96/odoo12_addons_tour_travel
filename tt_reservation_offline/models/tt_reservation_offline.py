@@ -2136,6 +2136,7 @@ class IssuedOffline(models.Model):
                 "quick_validate": data_reservation_offline.get('quick_validate'),
                 'state': 'draft',
                 'state_offline': 'confirm',
+                'ho_id': context['co_ho_id'],
                 'agent_id': context['co_agent_id'],
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
@@ -2147,7 +2148,7 @@ class IssuedOffline(models.Model):
                 header_val.update({
                     'sector_type': data_reservation_offline.get('sector_type'),
                 })
-            book_obj = self.sudo().create(header_val)
+            book_obj = self.create(header_val)
             book_obj.update({
                 'input_total': data_reservation_offline['total_sale_price']
             })

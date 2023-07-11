@@ -1437,6 +1437,7 @@ class ReservationAirline(models.Model):
             'student': searchRQ.get('student', 0),
             'labour': searchRQ.get('labour', 0),
             'seaman': searchRQ.get('seaman', 0),
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],
@@ -2315,20 +2316,30 @@ class ReservationAirline(models.Model):
         else:
             co_uid = self.env.user.id
         attachments = []
-        for idx, base64 in enumerate(data['response'], start=1):
-            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
-                {
-                    'filename': 'Airline Ticket Original %s-%s.pdf' % (book_obj.name, idx),
-                    'file_reference': 'Airline Ticket Original',
-                    'file': base64['base64'],
-                    'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
-                },
-                {
-                    'co_agent_id': co_agent_id,
-                    'co_uid': co_uid
-                }
-            )
-            attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
+        for idx, data_eticket in enumerate(data['response'], start=1):
+            is_pdf_found = False
+            for printout_ori_obj in book_obj.printout_ticket_original_ids:
+                path = printout_ori_obj.path
+                with open(path, "rb") as pdf_file:
+                    encoded_string = base64.b64encode(pdf_file.read()).decode('utf-8')
+                    if encoded_string == data_eticket['base64']:
+                        is_pdf_found = True
+                if is_pdf_found:
+                    break
+            if not is_pdf_found:
+                res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                    {
+                        'filename': 'Airline Ticket Original %s-%s.pdf' % (book_obj.name, idx),
+                        'file_reference': 'Airline Ticket Original',
+                        'file': data_eticket['base64'],
+                        'delete_date': datetime.strptime(book_obj.arrival_date,'%Y-%m-%d') + timedelta(days=7)
+                    },
+                    {
+                        'co_agent_id': co_agent_id,
+                        'co_uid': co_uid
+                    }
+                )
+                attachments.append(book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1).id)
         for rec_attachment in attachments:
             book_obj.printout_ticket_original_ids = [(4, rec_attachment)]
 
@@ -2347,6 +2358,7 @@ class ReservationAirline(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         datas['is_with_price'] = True
+        is_force_update = data.get('force_update', False)
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
         has_ticket_ori = False
@@ -2354,7 +2366,7 @@ class ReservationAirline(models.Model):
             if rec_ticket_ori.active == True:
                 has_ticket_ori = True
 
-        if not has_ticket_ori:
+        if not has_ticket_ori or is_force_update:
             # gateway get ticket
             req = {"data": [], 'ho_id': book_obj.agent_id.ho_id.id}
             for provider_booking_obj in book_obj.provider_booking_ids:
@@ -3357,3 +3369,103 @@ class ReservationAirline(models.Model):
                     pax_data['pnr_list'].append(pax_pnr_data)
             pax_list.append(pax_data)
         return pax_list
+
+    def apply_pax_name_airline_api(self, req, context, **kwargs):
+        try:
+            book_obj = self.get_book_obj(req.get('book_id'), req.get('order_number'))
+            try:
+                book_obj.create_date
+            except:
+                raise RequestException(1001)
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                raise RequestException(1008)
+
+            if not book_obj:
+                raise RequestException(1003, req['order_number'])
+
+            ticket_repo = {}
+            for rec in book_obj.provider_booking_ids:
+                pnr = rec.pnr
+                for tkt in rec.ticket_ids:
+                    ticket_id = 'TKT_%s' % tkt.id
+                    key = '%s_%s' % (pnr, ticket_id)
+                    ticket_repo[key] = tkt
+
+            passenger_repo = {}
+            for rec in book_obj.passenger_ids:
+                key = str(rec.sequence)
+                passenger_repo[key] = rec
+
+            passengers = []
+            passengers_data = req.get('passengers', [])
+            for psg in passengers_data:
+                is_success = False
+                error_msg_list = []
+                psg_number = psg['passenger_number']
+                pnr = psg['pnr']
+                ticket_id = psg['ticket_id']
+                psg_key = str(psg_number)
+                ticket_key = '%s_%s' % (pnr, ticket_id)
+                psg_obj = passenger_repo[psg_key] if psg_key in passenger_repo else None
+                tkt_obj = ticket_repo[ticket_key] if ticket_key in ticket_repo else None
+                if psg_obj and tkt_obj:
+                    try:
+                        name_list = []
+                        if tkt_obj.first_name:
+                            name_list.append(tkt_obj.first_name)
+                        if tkt_obj.last_name:
+                            name_list.append(tkt_obj.last_name)
+                        name = ' '.join(name_list)
+                        psg_obj.write({
+                            'name': name,
+                            'title': tkt_obj.title,
+                            'first_name': tkt_obj.first_name,
+                            'last_name': tkt_obj.last_name,
+                        })
+                        if psg_obj.customer_id:
+                            psg_obj.customer_id.write({
+                                'first_name': tkt_obj.first_name,
+                                'last_name': tkt_obj.last_name,
+                            })
+                        tkt_obj.write({
+                            'passenger_id': psg_obj.id
+                        })
+                        is_success = True
+                    except Exception as e:
+                        error_msg_list.append(str(e))
+                else:
+                    if not psg_obj:
+                        error_msg_list.append('Passenger number not found in %s' % book_obj.name)
+                    if not tkt_obj:
+                        error_msg_list.append('Ticket ID not found in %s, PNR %s, Ticket ID %s' % (book_obj.name, pnr, ticket_id))
+
+                error_msg = ', '.join(error_msg_list)
+                if is_success:
+                    vals = copy.deepcopy(psg)
+                    vals.update({
+                        'status': 'SUCCESS',
+                        'error_code': 0,
+                        'error_msg': error_msg
+                    })
+                else:
+                    vals = copy.deepcopy(psg)
+                    vals.update({
+                        'status': 'FAILED',
+                        'error_code': 500,
+                        'error_msg': error_msg,
+                    })
+                passengers.append(vals)
+            response = {
+                'passengers': passengers,
+            }
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error('Error Apply Pax Name Airline API, %s' % traceback.format_exc())
+            return e.error_dict()
+        except:
+            _logger.error('Error Apply Pax Name Airline API, %s' % traceback.format_exc())
+            return ERR.get_error(500)

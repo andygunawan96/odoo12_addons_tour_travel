@@ -23,6 +23,6 @@ class ResCompanyApiCon(models.Model):
                     "default_incoterm": company.incoterm_id.code if company.incoterm_id else '',
                     "currency": company.currency_id.name if company.currency_id else ''
                 })
-            return ERR.get_no_error(company_data)
+            return ERR.get_no_error({"currency_company_dict": company_data})
         else:
             raise RequestException(999)

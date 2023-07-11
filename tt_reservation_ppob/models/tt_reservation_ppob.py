@@ -631,6 +631,7 @@ class ReservationPpob(models.Model):
             'adult': 1,
             'child': 0,
             'infant': 0,
+            'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
             'user_id': context['co_uid'],
         }
@@ -745,7 +746,7 @@ class ReservationPpob(models.Model):
                 'customer_parent_id': context.get('co_customer_parent_id', False),
             })
 
-            resv_obj = self.env['tt.reservation.ppob'].create(values)
+            resv_obj = self.create(values)
 
             ## 22 JUN 2023 - IVAN
             ## GET CURRENCY CODE

@@ -571,6 +571,7 @@ class ReservationInsurance(models.Model):
             'sector_type': book_data.get('international') and 'international' or 'domestic',
             'provider_type_id': provider_type_id.id,
             'adult': book_data['pax_count'],
+            'ho_id': context_gateway['co_ho_id'],
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid']
