@@ -642,7 +642,7 @@ class ReservationAirline(models.Model):
                         # whitelist di sini
                         dom = [('name', 'ilike', name.name), ('chances_left', '>', 0)]
                         if ho_agent_obj:
-                            dom.append(('ho_id','=', ho_agent_obj))
+                            dom.append(('ho_id','=', ho_agent_obj.id))
                         whitelist_name = self.env['tt.whitelisted.name'].sudo().search(dom, limit=1)
 
                         if whitelist_name:
@@ -651,7 +651,7 @@ class ReservationAirline(models.Model):
 
                         dom = [('passport','=',name.identity_number),('chances_left','>',0)]
                         if ho_agent_obj:
-                            dom.append(('ho_id', '=', ho_agent_obj))
+                            dom.append(('ho_id', '=', ho_agent_obj.id))
                         whitelist_passport = self.env['tt.whitelisted.passport'].sudo().search(dom, limit=1)
 
                         if whitelist_passport:
