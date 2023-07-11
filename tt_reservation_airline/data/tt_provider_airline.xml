@@ -142,7 +142,7 @@
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
         </record>
         <record id="tt_provider_airline_aerodili" model="tt.provider">
-            <field name="name">Aerodiliiiiiiiiiii</field>
+            <field name="name">Aerodili</field>
             <field name="code">aerodili</field>
             <field name="active" eval="True"/>
             <field name="provider_type_id" ref="tt_provider_type_airline"/>
