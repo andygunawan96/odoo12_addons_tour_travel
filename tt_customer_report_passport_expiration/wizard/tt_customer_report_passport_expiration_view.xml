@@ -41,7 +41,7 @@
         name="Customer Passport Expiration Report"
         parent="tt_base.top_tour_travel_customers"
         action="action_customer_report_passport_expiration_menu"
-        sequence="13"
+        sequence="3"
     />
 
     <menuitem
@@ -49,7 +49,7 @@
         name="Customer Passport Expiration Report"
         parent="tt_base.top_customers_customers"
         action="action_customer_report_passport_expiration_menu"
-        sequence="13"
+        sequence="3"
     />
 
 </odoo>
