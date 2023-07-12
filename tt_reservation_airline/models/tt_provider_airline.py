@@ -95,6 +95,11 @@ class TtProviderAirline(models.Model):
     pricing_ids = fields.One2many('tt.provider.airline.pricing', 'provider_id', 'Pricing')
     # END
 
+    # July 12, 2023 - SAM
+    pnr_references = fields.Char('PNR References', default='')
+    duplicates = fields.Char('Duplicates', default='')
+    # END
+
     @api.depends('ticket_ids', 'ticket_ids.ticket_number')
     def _compute_ticket_numbers(self):
         for rec in self:
@@ -272,6 +277,22 @@ class TtProviderAirline(models.Model):
 
         if provider_data.get('expired_date'):
             values['expired_date'] = datetime.strptime(provider_data['expired_date'], "%Y-%m-%d %H:%M:%S")
+
+        # July 12, 2023 - SAM
+        if provider_data.get('pnr_references'):
+            try:
+                pnr_references = ';'.join(provider_data['pnr_references'])
+                values['pnr_references'] = pnr_references
+            except:
+                pass
+
+        if provider_data.get('duplicates'):
+            try:
+                duplicates = ';'.join(provider_data['duplicates'])
+                values['duplicates'] = duplicates
+            except:
+                pass
+        # END
 
         # June 4, 2020 - SAM
         # Menambahkan info warning dari bookingan
@@ -1080,6 +1101,24 @@ class TtProviderAirline(models.Model):
         for rec in self.rule_ids:
             rules.append(rec.to_dict())
 
+        # July 12, 2023 - SAM
+        pnr_references = []
+        try:
+            if self.pnr_references:
+                temp = [rec.strip() for rec in self.pnr_references.split(';')]
+                pnr_references = temp
+        except:
+            pass
+
+        duplicates = []
+        try:
+            if self.duplicates:
+                temp = [rec.strip() for rec in self.duplicates.split(';')]
+                duplicates = temp
+        except:
+            pass
+        # END
+
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -1114,6 +1153,10 @@ class TtProviderAirline(models.Model):
             # END
             # June 28, 2021 - SAM
             'rules': rules,
+            # END
+            # July 12, 2023 - SAM
+            'pnr_references': pnr_references,
+            'duplicates': duplicates,
             # END
         }
         return res
