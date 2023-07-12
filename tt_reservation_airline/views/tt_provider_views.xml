@@ -59,6 +59,10 @@
                             <field name="reschedule_date"/>
                         </group>
                     </group>
+                    <group>
+                        <field name="pnr_references"/>
+                        <field name="duplicates"/>
+                    </group>
                     <group string="Itinerary Info">
                         <group>
                             <field name="origin_id"/>
