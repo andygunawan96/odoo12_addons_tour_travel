@@ -60,7 +60,7 @@
             <field name="name">Drive Thru Blood Test</field>
             <field name="code">MKHCKBT</field> <!--PAKAI KODE HC AGAR FRONTEND ADA JAMNYA-->
             <field name="icao">MKHCKBT</field>
-            <field name="call_sign">DRIVE THRU Blood Test</field>
+            <field name="call_sign">Paket Medical Check Up</field>
             <field name="active">1</field>
             <field name="provider_type_id" ref="tt_reservation_mitrakeluarga.tt_provider_type_mitrakeluarga"/>
         </record>
