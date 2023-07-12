@@ -98,44 +98,44 @@
                         <field name="is_ho_agent" readonly="0" groups="base.group_erp_manager"/>
                         <field name="is_btc_agent" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                         <field name="ho_id" readonly="0" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',True)]}"/>
-                        <field name="btc_agent_type_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
-                        <field name="redirect_url_signup" readonly="1" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','!=',True)]}"/>
+                        <field name="parent_agent_id" readonly="1"/>
                         <field name="agent_type_id" readonly="1"/>
                         <field name="reference" readonly="1"/>
+                        <separator/>
+                        <field name="btc_agent_type_id" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+                        <field name="redirect_url_signup" readonly="1" groups="base.group_erp_manager" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                         <field name="website_default_color" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
                         <field name="is_use_point_reward" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
                         <field name="email_server_id" attrs="{'invisible': [('is_ho_agent','=',False)]}" />
-                        <field name="parent_agent_id" readonly="1"/>
-                        <field name="user_ids" readonly="1"/>
-                        <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
-                        <!--                        <field name="agent_bank_detail_ids" invisible="1"/>-->
                     </group>
 
-                    <group string="Information">
+                    <group string="Billing Information">
                         <field name="email" placeholder="Agent's Email" readonly="1"/>
                         <field name="email_cc" placeholder="CC to Email(s) (Split by comma for multiple CCs)" readonly="1"/>
                         <field name="website" readonly="1"/>
                         <field name="npwp" readonly="1"/>
-                        <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="0"/>
                     </group>
 
                     <group name="Ledger">
                     </group>
                     <notebook colspan="3">
-                        <page string="Addresses">
-                            <field name="address_ids" readonly="1"/>
-                        </page>
-                        <page string="Phones">
+                        <page string="Addresses And Phones">
                             <field name="phone_ids" readonly="1"/>
-                        </page>
-                        <page string="Social Media">
+                            <field name="address_ids" readonly="1"/>
                             <field name="social_media_ids" readonly="1"/>
+                        </page>
+                        <page string="Users">
+                            <field name="user_ids" readonly="1"/>
+                        </page>
+                        <page string="Corporates">
+                            <field name="customer_parent_ids" context="{'form_view_ref' : 'tt_base.tt_customer_parent_form_view'}" readonly="1"/>
                         </page>
                         <page string="Staff Information">
                             <field name="staff_information_ids" readonly="1"/>
                         </page>
                         <page string="Payment Acquirer Number">
                             <field name="payment_acq_ids" readonly="1"/>
+                            <field name="payment_acquirer_ids" context="{'form_view_ref':'tt_base.payment_acquirer_form_view','tree_view_ref': 'tt_base.payment_acquirer_tree_view'}" readonly="0"/>
                         </page>
                         <page string="Third Party Key">
                             <field name="third_party_key_ids" readonly="1"/>
