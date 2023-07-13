@@ -37,7 +37,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     provider = fields.Selection(provider_selection, string='Provider', required=True)
 
     parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related ="agent_id.parent_agent_id")
-    ho_id = fields.Many2one('tt.agent', 'Head Office', readonly=True, domain=[('is_ho_agent', '=', True)], required=True, related='', compute='_compute_ho_id', store=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', readonly=True, domain=[('is_ho_agent', '=', True)], required=True, compute='_compute_ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', required=True, domain=[('id','=',-1)])
     user_id = fields.Many2one('res.users', 'User', required=True, domain=[('id','=',-1)])
