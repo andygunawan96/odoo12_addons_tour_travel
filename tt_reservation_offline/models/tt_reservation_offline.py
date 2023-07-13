@@ -2254,7 +2254,7 @@ class IssuedOffline(models.Model):
                     line_list.append(line_obj.id)
             elif provider_type == 'activity':
                 for line in lines:
-                    visit_time = datetime.strptime(line.get('visit_date'), '%Y-%m-%d')
+                    visit_time = line.get('visit_date') and datetime.strptime(line['visit_date'], '%Y-%m-%d %H:%M:%S') or ''
                     line_tmp = {
                         "pnr": line.get('pnr'),
                         "activity_name": line.get('name'),
