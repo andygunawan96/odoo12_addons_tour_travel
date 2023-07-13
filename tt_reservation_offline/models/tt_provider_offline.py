@@ -156,7 +156,7 @@ class ProviderOffline(models.Model):
                             multiplier = 'Pax'
                             quantity = 'Qty'
                             qty_amount = 1
-                            visit_date_str = datetime.strptime(rec.visit_date, '%Y-%m-%d').strftime('%d %B %Y')
+                            visit_date_str = datetime.strptime(rec.visit_date, '%Y-%m-%d %H:%M:%S').strftime('%d %B %Y %H:%M:%S')
                             desc_dict[rec.pnr] += '%s (%s) - %s<br/>' % (rec.activity_name, rec.activity_package, visit_date_str)
                         elif self.booking_id.offline_provider_type == 'visa':
                             multiplier = 'Pax'
