@@ -3187,16 +3187,31 @@ class ReservationAirline(models.Model):
             user_id = book_obj.user_id
 
             co_user_info = self.env['tt.agent'].sudo().get_agent_level(user_id.agent_id.id)
+            # context = {
+            #     "co_uid": user_id.id,
+            #     "co_user_name": user_id.name,
+            #     "co_user_login": user_id.login,
+            #     "co_agent_id": user_id.agent_id.id,
+            #     "co_agent_name": user_id.agent_id.name,
+            #     "co_agent_type_id": user_id.agent_id.agent_type_id.id,
+            #     "co_agent_type_name": user_id.agent_id.agent_type_id.name,
+            #     "co_agent_type_code": user_id.agent_id.agent_type_id.code,
+            #     "co_user_info": co_user_info,
+            # }
+
             context = {
-                "co_uid": user_id.id,
-                "co_user_name": user_id.name,
-                "co_user_login": user_id.login,
-                "co_agent_id": user_id.agent_id.id,
-                "co_agent_name": user_id.agent_id.name,
-                "co_agent_type_id": user_id.agent_id.agent_type_id.id,
-                "co_agent_type_name": user_id.agent_id.agent_type_id.name,
-                "co_agent_type_code": user_id.agent_id.agent_type_id.code,
-                "co_user_info": co_user_info,
+              "co_uid": user_id.id,
+              "co_user_name": user_id.name,
+              "co_user_login": user_id.login,
+              "co_ho_id": user_id.agent_id.ho_id.id,
+              "co_agent_id": user_id.agent_id.id,
+              "co_agent_name": user_id.agent_id.name,
+              "co_agent_type_id": user_id.agent_id.agent_type_id.id,
+              "co_agent_type_name": user_id.agent_id.agent_type_id.name,
+              "co_agent_type_code": user_id.agent_id.agent_type_id.code,
+              "co_ho_seq_id": user_id.agent_id.ho_id.seq_id,
+              "co_ho_name": user_id.agent_id.ho_id.name,
+              "co_user_info": co_user_info,
             }
 
             response = {
