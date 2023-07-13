@@ -279,7 +279,7 @@ class VisaPricelist(models.Model):
 
     ho_ids = fields.Many2many('tt.agent', 'tt_master_visa_ho_agent_rel', 'visa_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
 
-    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
+    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     @api.multi
     @api.depends('cost_price', 'sale_price')
