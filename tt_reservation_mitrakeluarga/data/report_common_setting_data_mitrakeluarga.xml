@@ -56,20 +56,6 @@
             <field name="active" eval="True"/>
         </record>
 
-        <record id="mitrakeluarga_drivethru_blood_test_information" model="tt.report.common.setting">
-            <field name="name">Mitra Keluarga Drive Thru Blood Test Information</field>
-            <field name="code">mitrakeluarga_drivethru_blood_test_information</field>
-            <field name="sequence">99</field>
-            <field name="agent_id" ref="tt_base.rodex_ho"/>
-            <field name="ho_id" ref="tt_base.rodex_ho"/>
-            <field name="html" type="html">
-                <div class="col-12" style="margin-top:20px;">
-                    Information PCR
-                </div>
-            </field>
-            <field name="active" eval="True"/>
-        </record>
-
         <record id="mitrakeluarga_homecare_srbd_information" model="tt.report.common.setting">
             <field name="name">Mitra Keluarga Home Care SRBD Information</field>
             <field name="code">mitrakeluarga_homecare_srbd_information</field>
