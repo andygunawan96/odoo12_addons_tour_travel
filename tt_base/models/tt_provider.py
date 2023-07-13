@@ -92,6 +92,15 @@ class TtProvider(models.Model):
             _logger.error(traceback.format_exc())
             return RequestException(500)
 
+    def get_provider_api(self): ## data awal gateway
+        res = []
+        for rec in self.search([]):
+            res.append({
+                "name": rec.name,
+                "code": rec.code
+            })
+        return ERR.get_no_error(res)
+
 class TtProviderCode(models.Model):
     _name = 'tt.provider.code'
     _description = 'Provider Code Model'
