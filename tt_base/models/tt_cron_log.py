@@ -95,22 +95,23 @@ class TtCronLog(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto-expire quota pnr')
 
-    def cron_payment_pnr_quota(self):
+    def cron_payment_pnr_quota(self, date=14): ## cron jalan di jam 12:05:00 datetime.now utc masih 14
         try:
-            pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'waiting')])
-            for rec in pnr_quota_obj:
-                if rec.agent_id.is_payment_by_system:
-                    rec.payment_pnr_quota_api()
-                    if rec.state != 'done':
-                        rec.agent_id.ban_user_api()
-                        rec.state = 'failed'
-                else:
-                    ## agent bill manual jika belum bayar saat cron jalan ban agent
-                    if rec.state != 'done' and rec.total_amount != 0:
-                        rec.agent_id.ban_user_api()
-                        rec.state = 'failed'
-                    elif rec.total_amount == 0: ## TOTAL BAYAR FREE
-                        rec.state = 'done'
+            if datetime.now().day == date:
+                pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'waiting')])
+                for rec in pnr_quota_obj:
+                    if rec.agent_id.is_payment_by_system:
+                        rec.payment_pnr_quota_api()
+                        if rec.state != 'done':
+                            rec.agent_id.ban_user_api()
+                            rec.state = 'failed'
+                    else:
+                        ## agent bill manual jika belum bayar saat cron jalan ban agent
+                        if rec.state != 'done' and rec.total_amount != 0:
+                            rec.agent_id.ban_user_api()
+                            rec.state = 'failed'
+                        elif rec.total_amount == 0: ## TOTAL BAYAR FREE
+                            rec.state = 'done'
 
         except Exception as e:
             _logger.error(traceback.format_exc())
