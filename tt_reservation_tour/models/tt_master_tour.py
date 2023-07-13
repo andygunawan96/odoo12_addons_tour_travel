@@ -109,7 +109,7 @@ class MasterTour(models.Model):
     tour_line_ids = fields.One2many('tt.master.tour.lines', 'master_tour_id', 'Tour Lines')
     tour_line_amount = fields.Integer('Available Schedule(s)', readonly=True, compute='_compute_tour_line_amount')
 
-    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
+    owner_ho_id = fields.Many2one('tt.agent', 'Owner Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     ho_ids = fields.Many2many('tt.agent', 'tt_master_tour_ho_agent_rel', 'tour_id', 'ho_id', string='Allowed Head Office(s)', domain=[('is_ho_agent', '=', True)])
     agent_id = fields.Many2one('tt.agent', 'Agent')
 

@@ -11,7 +11,7 @@
                 <sheet>
                     <div>
                         <h1>
-                            <field name="title" class="oe_inline"/>
+                            <field name="title" class="oe_inline" style="margin-right:10px;"/>
                             <field name="name" class="oe_inline"/>
                         </h1>
                     </div>

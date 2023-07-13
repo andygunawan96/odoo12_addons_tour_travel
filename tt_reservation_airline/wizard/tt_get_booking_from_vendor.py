@@ -37,7 +37,11 @@ class TtGetBookingFromVendor(models.TransientModel):
     provider = fields.Selection(provider_selection, string='Provider', required=True)
 
     parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related ="agent_id.parent_agent_id")
+<<<<<<< HEAD
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True)
+=======
+    ho_id = fields.Many2one('tt.agent', 'Head Office', readonly=True, domain=[('is_ho_agent', '=', True)], required=True, compute='_compute_ho_id')
+>>>>>>> b7ead569e2f6e129d92dacc64161e02e6ca3717e
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', required=True, domain=[('id','=',-1)])
     user_id = fields.Many2one('res.users', 'User', required=True, domain=[('id','=',-1)])
@@ -55,6 +59,11 @@ class TtGetBookingFromVendor(models.TransientModel):
     is_bypass_pnr_validator = fields.Boolean('Is Bypass PNR Validator')
 
     pricing_date = fields.Date('Pricing Date')
+
+    @api.depends('agent_id')
+    @api.onchange('agent_id')
+    def _compute_ho_id(self):
+        self.ho_id = self.agent_id.ho_id.id
 
     def get_provider_booking_from_vendor_api(self):
         try:
@@ -250,6 +259,7 @@ class TtGetBookingFromVendor(models.TransientModel):
             'pnr': get_booking_res['pnr'],
             'status': get_booking_res['status'],
             'user_id': self.user_id.id,
+            'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
             'booker_id': self.booker_id and self.booker_id.id or False,
@@ -283,7 +293,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
     pnr = fields.Char("PNR")
     status = fields.Char("Status")
     user_id = fields.Many2one("res.users","User")
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one("tt.agent","Agent")
     customer_parent_id = fields.Many2one("tt.customer.parent","Customer Parent")
 
@@ -399,6 +409,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'pnr': get_booking_res['pnr'],
                 'status': get_booking_res['status'],
                 'user_id': int(context['co_uid']),
+                'ho_id': int(context['co_ho_id']),
                 'agent_id': int(context['co_agent_id']),
                 'booker_id': booker_obj.id,
                 "booker_data": json.dumps(booker_data),
@@ -594,6 +605,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             payment_res = self.env['tt.reservation.airline'].payment_reservation_api('airline', update_req,context={
                 'co_uid': self.user_id.id,
                 'co_user_name': self.user_id.name,
+                'co_ho_id': self.agent_id.ho_id.id,
                 'co_agent_id': self.agent_id.id,
                 'co_agent_name': self.agent_id.name,
                 'signature': signature
@@ -604,6 +616,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
         update_res = self.env['tt.reservation.airline'].update_pnr_provider_airline_api(update_req,context={
             'co_uid': self.user_id.id,
             'co_user_name': self.user_id.name,
+            'co_ho_id': self.agent_id.ho_id.id,
             'co_agent_id': self.agent_id.id,
             'co_agent_name': self.agent_id.name,
             'signature': signature
