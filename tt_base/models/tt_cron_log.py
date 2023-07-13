@@ -95,7 +95,7 @@ class TtCronLog(models.Model):
             self.create_cron_log_folder()
             self.write_cron_log('auto-expire quota pnr')
 
-    def cron_payment_pnr_quota(self, date=14): ## cron jalan di jam 12:05:00 datetime.now utc masih 14
+    def cron_payment_pnr_quota(self, date=15): ## cron jalan di jam 12:05:00
         try:
             if datetime.now().day == date:
                 pnr_quota_obj = self.env['tt.pnr.quota'].search([('state', '=', 'waiting')])
