@@ -181,13 +181,18 @@ class ApiManagement(models.Model):
                     pass
                 raise RequestException(1029,additional_message=additional_msg)
 
-            response = _user.get_credential(prefix='co_')
+            # July 13, 2023 - SAM
+            # Update untuk support OCN gateway
+            context = _user.get_credential()
+            context.update(_user.get_credential(prefix='co_'))
+            context.update(_user.agent_id.ho_id.get_ho_credential(prefix='co_'))
+            # END
 
             # April 9, 2019 - SAM
             # Menambahkan uplines dari user
-            co_user_info = self.env['tt.agent'].sudo().get_agent_level(response['co_agent_id'])
-            response['co_user_info'] = co_user_info
-            res = Response().get_no_error(response)
+            co_user_info = self.env['tt.agent'].sudo().get_agent_level(context['co_agent_id'])
+            context['co_user_info'] = co_user_info
+            res = Response().get_no_error(context)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
