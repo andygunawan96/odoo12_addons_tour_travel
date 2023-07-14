@@ -313,10 +313,10 @@ class TtPnrQuota(models.Model):
             if package_obj.is_calculate_all_inventory or usage_obj.inventory == 'external':
                 calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, usage_obj)
                 ## check free
-                if free_pnr_quota > current_quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
+                if free_pnr_quota >= current_quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
                     usage_obj.amount = 0
                 ## check quota pro rata
-                elif current_quota_pnr_usage < free_pnr_quota and current_quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] >= free_pnr_quota and calculate_price_dict['type_price'] != 'pnr':
+                elif free_pnr_quota > current_quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
                     usage_obj.amount = ((current_quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
                 else:
                     usage_obj.amount = calculate_price_dict['price']
