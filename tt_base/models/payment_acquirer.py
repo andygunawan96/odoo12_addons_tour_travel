@@ -343,6 +343,8 @@ class PaymentAcquirer(models.Model):
 
                     if can_use_payment_gateway_only: ##YANG BAYAR BEDA AGAR SEMUA PAYMENT METHOD TIDAK DAPAT
                         dom.append(('type', '=', 'payment_gateway'))
+                    else: ## UNTUK AGENT NYA AGAR TOP UP CREDIT CARD TIDAK TEMBUS
+                        dom.append(('type', '!=', 'creditcard_topup'))
                 unique = 0
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO

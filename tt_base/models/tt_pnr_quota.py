@@ -308,21 +308,21 @@ class TtPnrQuota(models.Model):
         self.amount = int(self.price_package_id.minimum_fee)
         package_obj = self.price_package_id
         free_pnr_quota = package_obj.free_usage
-        quota_pnr_usage = 0
-        ## IVAN 9 NOV 2022 update ke all inventory --> karena kebutuhan (bunga)
+        current_quota_pnr_usage = 0
         for usage_obj in self.usage_ids[::-1]: ## reverse paling bawah duluan agar urutan free pnr tidak berubah
-            ##check free juga
             if package_obj.is_calculate_all_inventory or usage_obj.inventory == 'external':
                 calculate_price_dict = self.calculate_price(package_obj.available_price_list_ids, usage_obj)
-                quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
-                if free_pnr_quota > quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
+                ## check free
+                if free_pnr_quota >= current_quota_pnr_usage + calculate_price_dict['quota_pnr_usage']:
                     usage_obj.amount = 0
-                elif free_pnr_quota > quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
-                    usage_obj.amount = ((quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
+                ## check quota pro rata
+                elif free_pnr_quota > current_quota_pnr_usage and calculate_price_dict['type_price'] != 'pnr':
+                    usage_obj.amount = ((current_quota_pnr_usage + calculate_price_dict['quota_pnr_usage'] - free_pnr_quota) / calculate_price_dict['quota_pnr_usage']) * calculate_price_dict['price']
                 else:
                     usage_obj.amount = calculate_price_dict['price']
                 usage_obj.usage_quota = calculate_price_dict['quota_pnr_usage']
-        self.usage_quota = quota_pnr_usage
+                current_quota_pnr_usage += calculate_price_dict['quota_pnr_usage']
+        self.usage_quota = current_quota_pnr_usage
         self.calc_amount_internal()
         self.calc_amount_external()
         self.calc_amount_total()
