@@ -525,6 +525,12 @@ class ReservationAirline(models.Model):
                     'INF': 0,
                     'YCD': 0,
                 }
+
+                # July 14, 2023 - SAM
+                provider_values = rsv_prov_obj.set_provider_detail_info(commit_data)
+                rsv_prov_obj.write(provider_values)
+                # END
+
                 for tkt_obj in rsv_prov_obj.ticket_ids:
                     pax_type = tkt_obj.pax_type
                     if pax_type not in rsv_prov_pax_count_dict:
