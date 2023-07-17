@@ -163,6 +163,7 @@ class TtTimeslotMitraKeluarga(models.Model):
                 'time': str(rec.datetimeslot)[11:16],
                 'seq_id': rec.seq_id,
                 'availability': rec.get_availability(),
+                'quota': rec.total_timeslot - rec.used_count,
                 'group_booking': True if rec.agent_id else False
             })
             if rec.datetimeslot_end:
