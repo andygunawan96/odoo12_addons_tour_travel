@@ -19,7 +19,7 @@ class ApiManagement(models.Model):
     name = fields.Char('Name', required=True)
     api_key = fields.Char(string='API Key')
     active = fields.Boolean(string='Active', default=True)
-    api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator')
+    api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator') ## ADMIN UNTUK 1 FRONTEND BANYAK AGENT, MANAGER UNTUK 1 FRONTEND 1 AGENT, OPERATOR UNTUK BTBO2
     device_type = fields.Selection(selection=variables.DEVICE_TYPE, default='general')
     user_id = fields.Many2one(comodel_name='res.users', string='User')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
@@ -136,7 +136,7 @@ class ApiManagement(models.Model):
                 if _co_user:
                     is_admin = _co_user.has_group('base.group_erp_manager') or _co_user.has_group('base.group_system')
                     is_ho = api_cred_obj.ho_id.id == _co_user.agent_id.ho_id.id
-                    if api_cred_obj.api_role == 'admin' and not is_admin:
+                    if api_cred_obj.api_role == 'admin' and not is_admin: ## JIKA YG LOGIN FRONTEND DENGAN API ROLE ADMIN TETAPI BUKAN HO & TIDAK PUNYA ACCESS RIGHT HAPUS FRONTEND PERMISSION ADMIN
                         if not is_ho:
                             agent_frontend_security = values.get('co_agent_frontend_security', [])
                             code_to_delete = 'admin'
