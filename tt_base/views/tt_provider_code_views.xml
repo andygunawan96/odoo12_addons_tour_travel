@@ -119,6 +119,17 @@
         <field name="view_mode">tree,form</field>
     </record>
 
+    <record model="ir.actions.server" id="action_mass_bind_provider_code">
+        <field name="name">Mass Bind Provider Code</field>
+        <field name="model_id" ref="tt_base.model_tt_provider_code"/>
+        <field name="binding_model_id" ref="tt_base.model_tt_provider_code"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = records.find_city_country()
+        </field>
+    </record>
+
     <menuitem id="sub_menu_tour_travel_provider_code"
                   parent="tt_base.menu_tour_travel_provider"
                   groups="base.group_system"
