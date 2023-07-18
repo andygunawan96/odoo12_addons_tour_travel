@@ -29,8 +29,9 @@ class ResRate(models.Model):
             for rec in _objs:
                 if rec.provider_ho_data_id:
                     if rec.provider_ho_data_id.ho_id.seq_id not in currency_rate:
-                        currency_rate[rec.provider_ho_data_id.ho_id.seq_id] = []
-                    currency_rate[rec.provider_ho_data_id.ho_id.seq_id].append(rec.get_currency_rate_data())
+                        currency_rate[rec.provider_ho_data_id.ho_id.seq_id] = {}
+                    currency_rate[rec.provider_ho_data_id.ho_id.seq_id][rec.provider_ho_data_id.provider_id.code] = rec.get_currency_rate_data()
+                    # currency_rate[rec.provider_ho_data_id.ho_id.seq_id].append(rec.get_currency_rate_data())
             response = {
                 'currency_rate_data': currency_rate,
             }
