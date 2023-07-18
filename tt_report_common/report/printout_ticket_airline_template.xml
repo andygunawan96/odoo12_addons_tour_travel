@@ -239,6 +239,17 @@
 
                 <!-- Segment Only -->
                 <t t-foreach="line.segment_ids" t-as="segment_obj">
+                    <!-- Prepare Segment Height -->
+                    <t t-set="height_origin_code" t-value="(len(segment_obj.origin_id.city) + len(segment_obj.origin_id.code) + 3) / 20"/>
+                    <t t-set="height_origin_name" t-value="len(segment_obj.origin_id.name) / 22"/>
+                    <t t-set="height_origin" t-value="int(height_origin_code + height_origin_name) * 38"/>
+
+                    <t t-set="height_destination_code" t-value="(len(segment_obj.destination_id.city) + len(segment_obj.destination_id.code) + 3) / 20"/>
+                    <t t-set="height_destination_name" t-value="len(segment_obj.destination_id.name) / 22"/>
+                    <t t-set="height_destination" t-value="int(height_destination_code + height_destination_name) * 38"/>
+
+                    <t t-set="segment_height" t-value="str(max(height_origin,height_destination,75))"/>
+
                     <t t-if="row_idx == len(line.segment_ids)-1">
                         <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 40px">
                             <div class="col-2" style="background: #F0F0F0; border-radius: 0 0 0px 20px; border-color: #CCC; padding: 10px 10px 10px 20px; margin-right: 10px; border: 1px solid #BBB;">
@@ -262,14 +273,13 @@
                             <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding: 10px 25px; margin-left: -10px;">
                                 <div class="row">
                                     <div class="col-5" style="margin-right: 0px">
-                                        <div style="min-height: 75px; max-height: 150px">
+                                        <div t-att-style="'height: '+ segment_height +'px;'">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.origin_id.city"/> (<span t-field="segment_obj.origin_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.origin_id.name"/></span><br/>
                                             <span style="font-size: 16px; font-weight:200"><t t-if="segment_obj.origin_terminal">Terminal <span t-field="segment_obj.origin_terminal"/></t></span>
                                         </div>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.departure_date[10:16]"/></span>
-
                                     </div>
                                     <div class="col-2" style="text-align: center;">
                                         <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
@@ -277,7 +287,7 @@
                                         <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                     </div>
                                     <div class="col-5">
-                                        <div style="min-height: 75px; max-height: 150px">
+                                        <div t-att-style="'height: '+ segment_height +'px;'">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.destination_id.city"/> (<span t-field="segment_obj.destination_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.destination_id.name"/></span><br/>
                                             <span style="font-size: 16px; font-weight:200"><t t-if="segment_obj.destination_terminal">Terminal <span t-field="segment_obj.destination_terminal"/></t></span>
@@ -306,13 +316,12 @@
                             <div class="col-8" style="background-color: #FFF; border-color: #CCC; border: 1px solid #BBB; padding: 10px 25px; margin-left: -10px;">
                                 <div class="row">
                                     <div class="col-5" style="margin-right: 0px">
-                                        <div style="height: 75px; max-height: 150px">
+                                        <div t-att-style="'height: '+ segment_height +'px;'">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.origin_id.city"/> (<span t-field="segment_obj.origin_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.origin_id.name"/></span>
                                         </div>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(segment_obj.departure_date[:10],'%Y-%m-%d'))"/></span><br/>
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.departure_date[10:16]"/></span>
-
                                     </div>
                                     <div class="col-2" style="text-align: center;">
                                         <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
@@ -320,7 +329,7 @@
                                         <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                     </div>
                                     <div class="col-5">
-                                        <div style="height: 75px; max-height: 150px">
+                                        <div t-att-style="'height: '+ segment_height +'px;'">
                                             <span style="font-size: 18px; font-weight:500"><span t-field="segment_obj.destination_id.city"/> (<span t-field="segment_obj.destination_id.code"/>)</span><br/>
                                             <span style="font-size: 16px; font-weight:200"><span t-field="segment_obj.destination_id.name"/></span>
                                         </div>

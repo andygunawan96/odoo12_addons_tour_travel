@@ -65,7 +65,7 @@ class Country(models.Model):
                 search_params = ['|',search_params[0],('code','=ilike',str_name)]
             found = self.search(search_params, limit=limit)
             if len(found) < limit:
-                for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
+                for rec in self.env['tt.destination.alias'].search([('name', '=ilike', str_name),('country_id','!=',False)], limit=limit-len(found)):
                     found += rec.country_id
             return found
         return False
@@ -112,14 +112,13 @@ class CountryState(models.Model):
     def find_state_by_name(self, str_name, limit=1, country_id=None):
         if str_name:
             str_name = str_name.rstrip()
-            dom = []
-            dom.append(('name', '=ilike', str_name))
+            dom = ['|', ('name', '=ilike', str_name), ('code', '=ilike', str_name)]
             if country_id:
                 dom.append(('country_id', '=', country_id))
             found = self.search(dom, limit=limit)
             if len(found) < limit:
-                for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name),('state_id','!=',False)], limit=limit-len(found)):
-                    found += rec.country_id
+                for rec in self.env['tt.destination.alias'].search([('name', '=ilike', str_name),('state_id','!=',False)], limit=limit-len(found)):
+                    found += rec.state_id
             return found
         return False
 
@@ -152,7 +151,7 @@ class CountryCity(models.Model):
                 dom.append(('state_id','=',state_id))
             found = self.search(dom, limit=limit)
             if len(found) < limit:
-                for rec in self.env['tt.destination.alias'].search([('name', 'ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):
+                for rec in self.env['tt.destination.alias'].search([('name', '=ilike', str_name), ('city_id','!=',False), ('city_id','not in', found.ids)], limit=limit-len(found)):
                     found += rec.city_id
             return found
         else:
