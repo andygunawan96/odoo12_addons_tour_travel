@@ -535,13 +535,16 @@ class AccountingConnectorITM(models.Model):
                 raise Exception('Request cannot be sent because some field requirements are not met.')
         elif request['category'] == 'reschedule':
             include_service_taxes = self.env['tt.accounting.setup.variables'].search([('accounting_setup_id.accounting_provider', '=', 'itm'), ('accounting_setup_id.active', '=', True), ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'is_include_service_taxes')], limit=1)
-            pnr_list = [request['referenced_pnr']]
-            if request['new_pnr'] != request['referenced_pnr']:
-                pnr_list.append(request['new_pnr'])
+            pnr_str = request['referenced_pnr'].replace(', ', '_')
+            if request.get('new_pnr') and request['new_pnr'] != request['referenced_pnr']:
+                pnr_str += '__%s' % request['new_pnr'].replace(', ', '_')
+            resch_provider_list = []
             adm_fee_total = request.get('admin_fee') and request['admin_fee'] or 0
             adm_fee_agent = 0
             adm_fee_ho = 0
             for resch_line in request['reschedule_lines']:
+                if resch_line.get('provider'):
+                    resch_provider_list.append(resch_line['provider'])
                 adm_fee_agent += resch_line.get('admin_fee_agent') and resch_line['admin_fee_agent'] or 0
                 adm_fee_ho += resch_line.get('admin_fee_ho') and resch_line['admin_fee_ho'] or 0
             total_sales = agent_nta = request.get('reschedule_amount', 0)
@@ -553,9 +556,13 @@ class AccountingConnectorITM(models.Model):
                 agent_nta += adm_fee_ho
                 tot_ho_profit = adm_fee_ho
                 tot_agent_profit = adm_fee_agent
+            used_provider_bookings = []
+            for prov in request['provider_bookings']:
+                if prov.get('provider') and prov['provider'] in resch_provider_list:
+                    used_provider_bookings.append(prov)
             provider_list = []
             supplier_list = []
-            for idx, prov in enumerate(request['provider_bookings']):
+            for idx, prov in enumerate(used_provider_bookings):
                 sup_search_param = [('accounting_setup_id.accounting_provider', '=', 'itm'),
                                     ('accounting_setup_id.active', '=', True),
                                     ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
@@ -630,11 +637,11 @@ class AccountingConnectorITM(models.Model):
                     vat = 0
                 else:
                     if vat_var_obj.variable_value == 'ho_profit':
-                        vat = round((tot_ho_profit / len(request['provider_bookings'])) * float(vat_perc_obj.variable_value) / 100)
+                        vat = round((tot_ho_profit / len(pax_list) / len(used_provider_bookings)) * float(vat_perc_obj.variable_value) / 100)
                     elif vat_var_obj.variable_value == 'agent_profit':
-                        vat = round((tot_agent_profit / len(request['provider_bookings'])) * float(vat_perc_obj.variable_value) / 100)
+                        vat = round((tot_agent_profit / len(pax_list) / len(used_provider_bookings)) * float(vat_perc_obj.variable_value) / 100)
                     elif vat_var_obj.variable_value == 'total_comm':
-                        vat = round((adm_fee_total / len(request['provider_bookings'])) * float(vat_perc_obj.variable_value) / 100)
+                        vat = round((adm_fee_total / len(pax_list) / len(used_provider_bookings)) * float(vat_perc_obj.variable_value) / 100)
                     else:
                         vat = 0
 
@@ -646,11 +653,11 @@ class AccountingConnectorITM(models.Model):
                     "CArrierName": first_carrier_name or '',
                     "Description": prov['pnr'],
                     "Quantity": 1,
-                    "Cost": request.get('reschedule_amount') and request['reschedule_amount'] / len(request['provider_bookings']) or 0,
-                    "Profit": (tot_ho_profit / len(request['provider_bookings'])) - vat,
+                    "Cost": request.get('reschedule_amount') and request['reschedule_amount'] / len(pax_list) / len(used_provider_bookings) or 0,
+                    "Profit": (tot_ho_profit / len(pax_list) / len(used_provider_bookings)) - vat,
                     "ServiceFee": 0,
                     "VAT": vat,
-                    "Sales": total_sales / len(request['provider_bookings']),
+                    "Sales": total_sales / len(pax_list) / len(used_provider_bookings),
                     "Itin": journey_list,
                     "Pax": pax_list
                 }
@@ -666,13 +673,13 @@ class AccountingConnectorITM(models.Model):
             uniquecode = '%s_%s%s' % (request.get('order_number', ''), datetime.now().strftime('%m%d%H%M%S'), chr(randrange(65, 90)))
             travel_file_data = {
                 "TypeTransaction": 111,
-                "TransactionCode": "%s_%s" % ('_'.join(pnr_list), request.get('reservation_name', '')),
+                "TransactionCode": "%s_%s" % (pnr_str, request.get('reservation_name', '')),
                 "Date": "",
                 "ReffCode": request.get('order_number', ''),
                 "CustomerCode": "",
                 "CustomerName": customer_name,
                 "TransID": trans_id,
-                "Description": "%s for %s" % (request['reschedule_type'], '_'.join(pnr_list)),
+                "Description": "%s for %s" % (request['reschedule_type'], pnr_str),
                 "ActivityDate": "",
                 "SupplierCode": supplier_list and supplier_list[0]['supplier_code'] or '',
                 "SupplierName": supplier_list and supplier_list[0]['supplier_name'] or '',

@@ -124,6 +124,7 @@ class TtRescheduleLine(models.Model):
             'admin_fee_agent': self.admin_fee_agent or 0,
             'total_amount': self.total_amount or 0,
             'currency': self.currency_id.name if self.currency_id else '',
+            'provider': self.provider_id.code if self.provider_id else '',
             'state': self.state
         }
 
