@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="tt_pnr_quota_filter_view" model="ir.ui.view">
+            <field name="name">tt.pnr.quota.filter.view</field>
+            <field name="model">tt.pnr.quota</field>
+            <field name="arch" type="xml">
+                <search string="Search Letter of Guarantee">
+                    <field name="name"/>
+                    <field name="agent_id"/>
+                    <field name="ho_id" string="Head Office" groups="base.group_erp_manager"/>
+                </search>
+            </field>
+        </record>
+
         <record id="tt_pnr_quota_form_view" model="ir.ui.view">
             <field name="name">tt.pnr.quota.form.view</field>
             <field name="model">tt.pnr.quota</field>
@@ -67,6 +79,7 @@
                     <field name="total_room_night"/>
                     <field name="usage_quota"/>
                     <field name="expired_date"/>
+                    <field name="total_amount"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -81,6 +94,7 @@
             <field name="arch" type="xml">
                 <field name="expired_date" position="after">
                     <field name="agent_id"/>
+                    <field name='ho_id' groups="base.group_erp_manager"/>
                 </field>
             </field>
         </record>
@@ -121,10 +135,10 @@
                   sequence="16"/>
 
         <menuitem id="menu_customer_pnr_quota_agent"
-              parent="tt_base.top_customers_customers"
-              groups="tt_base.group_access_vendor_report"
-              name="PNR Quota"
-              sequence="15"/>
+                  parent="tt_base.top_customers_customers"
+                  groups="tt_base.group_access_vendor_report"
+                  name="PNR Quota"
+                  sequence="15"/>
 
         <menuitem id="submenu_customer_pnr_quota_agent"
                   parent="tt_base.menu_customer_pnr_quota_agent"

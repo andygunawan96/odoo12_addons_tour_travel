@@ -53,7 +53,7 @@ class TtReservation(models.Model):
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
 
-    booked_uid = fields.Many2one('res.users', 'Booked by', readonly=True)
+    booked_uid = fields.Many2one('res.users', 'Updated by', readonly=True)
     booked_date = fields.Datetime('Booked Date', readonly=True)
     issued_uid = fields.Many2one('res.users', 'Issued by', readonly=True)
     issued_date = fields.Datetime('Issued Date', readonly=True)
@@ -63,7 +63,7 @@ class TtReservation(models.Model):
     refund_date = fields.Datetime('Refund Date', readonly=True)
     payment_date = fields.Datetime('Payment Date', readonly=True)
 
-    user_id = fields.Many2one('res.users', 'Create by', readonly=True)  # create_uid
+    user_id = fields.Many2one('res.users', 'Booked by', readonly=True)  # create_uid
     sync_reservation = fields.Boolean('Sync Reservation', default=False) ## QUOTA PNR BTBO2
     #utk adjustment
     res_model = fields.Char('Res Model', invisible=1, readonly=True)
