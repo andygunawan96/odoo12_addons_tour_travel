@@ -43,8 +43,9 @@
             <field name="arch" type="xml">
                 <tree string="PNR Quota Price Package">
                     <field name="name"/>
+                    <field name="free_usage"/>
                     <field name="minimum_fee"/>
-                    <field name="currency_id"/>
+                    <field name="currency_id" invisible="1"/>
                     <field name="active"/>
                 </tree>
             </field>
