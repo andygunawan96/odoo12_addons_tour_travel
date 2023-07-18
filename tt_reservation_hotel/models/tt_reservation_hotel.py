@@ -1167,8 +1167,10 @@ class HotelReservation(models.Model):
         special_req = data.get('special_request', 'No Special Request')
         cancellation_policy = data.get('cancellation_policy', '')
 
-        context['agent_id'] = self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id
-        context['ho_id'] = context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(context['co_uid']).ho_id.id
+        context.update({
+            'agent_id': self.sudo().env['res.users'].browse(context['co_uid']).agent_id.id,
+            'ho_id': context.get('co_ho_id') and context['co_ho_id'] or self.sudo().env['res.users'].browse(context['co_uid']).ho_id.id
+        })
 
         booker_obj = self.env['tt.reservation.hotel'].create_booker_api(data['booker'], context)
         contact_objs = []

@@ -37,7 +37,12 @@
                                 <field name="provider_ids"/>
                             </group>
                         </page>
-                        <page string="Hotel">
+                        <page string="Hotel Raw">
+                            <group>
+                                <field name="hotel_raw_ids"/>
+                            </group>
+                        </page>
+                        <page string="Hotel Master">
                             <group>
                                 <field name="hotel_ids"/>
                             </group>
@@ -57,6 +62,8 @@
                 <field name="city_id"/>
                 <field name="country_str"/>
                 <field name="country_id"/>
+                <field name="provider_ids"/>
+                <field name="hotel_raw_ids"/>
                 <field name="hotel_ids"/>
                 <!--<field name="state"/>-->
                 <field name="active"/>
@@ -70,10 +77,12 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
-                <field name="city_str"/>
-                <field name="city_id"/>
-                <field name="country_str"/>
-                <field name="country_id"/>
+                <!--<field name="city_str"/>-->
+                <!--<field name="city_id"/>-->
+                <field name="city_id" filter_domain="['|', ('city_str', 'ilike', self), ('city_id.name', 'ilike', self)]" string="City Name"/>
+                <!--<field name="country_str"/>-->
+                <!--<field name="country_id"/>-->
+                <field name="country_id" filter_domain="['|', ('country_str', 'ilike', self), ('country_id.name', 'ilike', self)]" string="Country Name"/>
                 <filter name="find_active" string="Active" domain="[('active','=',True)]"/>
                 <filter name="inactive" string="Archived" domain="[('active','=',False)]"/>
 

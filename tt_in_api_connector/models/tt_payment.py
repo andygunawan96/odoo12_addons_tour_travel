@@ -283,7 +283,8 @@ class TtPaymentApiCon(models.Model):
             'provider': 'espay',
             'email': req['email'],
             'name': req['name'],
-            'bank_code_list': req['bank_code_list']
+            'bank_code_list': req['bank_code_list'],
+            'currency': req['currency']
         }
         return self.send_request_to_gateway('%s/payment' % (self.url), data, 'delete_va', ho_id=ho_id)
 

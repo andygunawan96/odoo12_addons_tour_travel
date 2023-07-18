@@ -369,8 +369,7 @@ class HotelInformationCompare(models.Model):
     def merge_facility(self):
         # Note: Dulu kita copy ulang gmbare skrg cman tmbahin value sja
         if hasattr(self.hotel_id, 'facility_ids'):
-            for fac in self.hotel_id.facility_ids:
-                self.similar_id.facility_ids = [(4, fac.id)]
+            self.similar_id.facility_ids = [(4, fac.id) for fac in self.hotel_id.facility_ids]
 
     # Temporary function karena ada rbah strukture DB
     def re_calc_facility(self):
