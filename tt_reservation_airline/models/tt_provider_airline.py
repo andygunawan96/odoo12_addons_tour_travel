@@ -32,6 +32,7 @@ class TtProviderAirline(models.Model):
     departure_date = fields.Char('Departure Date', readonly=True, states={'draft': [('readonly', False)]})
     return_date = fields.Char('Return Date', readonly=True, states={'draft': [('readonly', False)]})
     arrival_date = fields.Char('Arrival Date', readonly=True, states={'draft': [('readonly', False)]})
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
 
     sid_issued = fields.Char('SID Issued', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri
     sid_cancel = fields.Char('SID Cancel', readonly=True, states={'draft': [('readonly', False)]})#signature generate sendiri

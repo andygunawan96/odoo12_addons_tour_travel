@@ -48,11 +48,11 @@
         </field>
     </record>
 
-    <menuitem id="submenu_reservations_airline_provider_rule"
-              parent="tt_reservation_airline.menu_reservations_airline_provider"
-              name="Provider Rule Form"
-              sequence="11"
-              groups="tt_base.group_reservation_provider_level_1"
-              action="tt_reservation_airline.tt_provider_airline_rule_action_views"/>
+<!--    <menuitem id="submenu_reservations_airline_provider_rule"-->
+<!--              parent="tt_reservation_airline.menu_reservations_airline_provider"-->
+<!--              name="Provider Rule Form"-->
+<!--              sequence="11"-->
+<!--              groups="tt_base.group_reservation_provider_level_1"-->
+<!--              action="tt_reservation_airline.tt_provider_airline_rule_action_views"/>-->
 
 </odoo>

@@ -245,6 +245,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         prov_val = {
                             'sequence': rec.sequence,
                             'booking_id': new_book_obj.id,
+                            'ho_id': rec.ho_id and rec.ho_id.id or False,
                             'state': rec.state,
                             'pnr': new_pnr_dict[rec.pnr],
                             'pnr2': new_pnr_dict[rec.pnr],
@@ -503,6 +504,7 @@ class TtSplitReservationWizard(models.TransientModel):
                             prov_val = {
                                 'sequence': rec.sequence,
                                 'booking_id': new_book_obj.id,
+                                'ho_id': rec.ho_id and rec.ho_id.id or False,
                                 'state': rec.state,
                                 'pnr': new_pnr_dict[rec.pnr],
                                 'pnr2': new_pnr_dict[rec.pnr],
@@ -808,6 +810,7 @@ class TtSplitReservationWizard(models.TransientModel):
                         prov_val = {
                             'sequence': rec.sequence,
                             'booking_id': new_book_obj.id,
+                            'ho_id': rec.ho_id and rec.ho_id.id or False,
                             'state': rec.state,
                             'pnr': new_pnr_dict[rec.pnr],
                             'pnr2': new_pnr_dict[rec.pnr],

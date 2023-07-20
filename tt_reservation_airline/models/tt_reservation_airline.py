@@ -1895,6 +1895,7 @@ class ReservationAirline(models.Model):
                 'reference': schedule.get('reference', ''),
                 'provider_id': provider_id,
                 'booking_id': self.id,
+                'ho_id': self.ho_id and self.ho_id.id or False,
                 'sequence': sequence,
                 'origin_id': provider_origin,
                 'destination_id': provider_destination,
