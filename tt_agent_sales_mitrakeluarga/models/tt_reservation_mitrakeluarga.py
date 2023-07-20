@@ -39,7 +39,10 @@ class ReservationMitraKeluarga(models.Model):
     def get_segment_description(self):
         # TODO: soale mnurut ku biar ada nomor pendaftarane walo g kepake nomer e
         # Opsi 1: Jika Nama reservation dan PNR e sdah sama pakai yg ini
-        tmp = '%s\n' % (self.provider_booking_ids[0].carrier_id.name)
+        tmp = '%s' % (self.provider_booking_ids[0].carrier_id.name)
+        if self.provider_booking_ids[0].additional_info:
+            tmp += ' - %s' % self.provider_booking_ids[0].additional_info
+        tmp += '\n'
         # Opsi 2: Jika PNR dan resv ne beda pakek yg ini
         # tmp = self.name + '\n'
         for timeslot_obj in self.timeslot_ids:

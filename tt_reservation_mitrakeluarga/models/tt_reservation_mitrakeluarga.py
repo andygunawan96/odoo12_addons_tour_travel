@@ -278,6 +278,13 @@ class ReservationMitraKeluarga(models.Model):
             cito_surcharge = True
 
 
+        ### UNTUK BLOOD TEST ######
+        overtime_surcharge = req.get('overtime_surcharge', False) ## Hba1c
+        cito_surcharge = req.get('cito_surcharge', False) ## HBsAg & Anti Hbs Kuantitatif
+
+        ###########################
+
+
         base_price = 0
         commission_price = 0
         overtime_price = 0
@@ -591,7 +598,7 @@ class ReservationMitraKeluarga(models.Model):
         provider_type_id = self.env.ref('tt_reservation_mitrakeluarga.tt_provider_type_mitrakeluarga')
         provider_obj = self.env['tt.provider'].sudo().search([('code', '=', booking_data['provider']), ('provider_type_id', '=', provider_type_id.id)])
         carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', booking_data['carrier_code']), ('provider_type_id', '=', provider_type_id.id)])
-
+        additional_info = booking_data.get('additional_info', False)
         # "pax_type": "ADT",
         # "pax_count": 1,
         # "amount": 150000,
@@ -611,12 +618,12 @@ class ReservationMitraKeluarga(models.Model):
             'hold_date': fields.Datetime.now() + timedelta(minutes=10),
             'balance_due': booking_data['total'],
             'total_price': booking_data['total'],
-            'is_additional_info': booking_data.get('peduli_lindungi') or False,
             'sequence': 1,
             'provider_id': provider_obj and provider_obj.id or False,
             'carrier_id': carrier_obj and carrier_obj.id or False,
             'carrier_code': carrier_obj and carrier_obj.code or False,
-            'carrier_name': carrier_obj and carrier_obj.name or False
+            'carrier_name': carrier_obj and carrier_obj.name or False,
+            'additional_info': additional_info
         }
 
         timeslot_write_data = self.env['tt.timeslot.mitrakeluarga'].search([('seq_id','in',booking_data['timeslot_list'])])
