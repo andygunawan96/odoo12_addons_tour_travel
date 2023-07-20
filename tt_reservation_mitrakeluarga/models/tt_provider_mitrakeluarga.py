@@ -52,7 +52,7 @@ class TtProviderMitraKeluarga(models.Model):
     error_history_ids = fields.One2many('tt.reservation.err.history', 'res_id', 'Error History',
                                         domain=[('res_model', '=', 'tt.provider.mitrakeluarga')])
 
-    is_additional_info = fields.Boolean('Peduli Lindungi', default=False)
+    additional_info = fields.Char('Additional Info', default=False)
 
     # reconcile purpose#
     reconcile_line_id = fields.Many2one('tt.reconcile.transaction.lines', 'Reconciled')
@@ -405,7 +405,7 @@ class TtProviderMitraKeluarga(models.Model):
             'carrier_code': self.carrier_id and self.carrier_id.code or '',
             'error_msg': self.error_history_ids and self.error_history_ids[-1].error_msg or '',
             'tickets': ticket_list,
-            'is_additional_info': self.is_additional_info
+            'additional_info': self.additional_info
         }
 
         return res

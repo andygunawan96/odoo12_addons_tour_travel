@@ -35,7 +35,7 @@ class PaymentAcquirer(models.Model):
     description_msg = fields.Text('Description')
     show_device_type = fields.Selection([('web', 'Website'), ('mobile', 'Mobile'), ('all', 'All')], 'Show Device', default='all')
     save_url = fields.Boolean('Save URL', help="""For Shopee, Modern channel, linkAja, Credit Card""")
-    is_calculate_credit_card_fee = fields.Boolean('Is Credit Card', help="""For Credit Card""")
+    is_calculate_credit_card_fee = fields.Boolean('Is Credit Card Fee (Espay)', help="""For Credit Card""")
     minimum_amount = fields.Float('Minimum Amount', help="""Minimum fee amount""")
 
     agent_type_access_type = fields.Selection([("all", "ALL"), ("allow", "Allowed"), ("restrict", "Restricted")],'Agent Type Access Type', default='all')
