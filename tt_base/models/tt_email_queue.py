@@ -21,6 +21,7 @@ class TtEmailQueue(models.Model):
     res_model = fields.Char('Related Model Name', index=True)
     res_id = fields.Integer('Related Model ID', index=True, help='Id of the followed resource')
     last_sent_attempt_date = fields.Datetime('Last Sent Attempt Date', readonly=True)
+    attempt_count = fields.Integer('Attempt Count', default=0, readonly=True)
     failure_reason = fields.Text('Failure Reason', readonly=True)
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)])
     active = fields.Boolean('Active', default=True)
@@ -604,7 +605,14 @@ class TtEmailQueue(models.Model):
                 'failure_reason': ''
             })
         except Exception as e:
-            self.write({
+            new_attempt_count = self.attempt_count + 1
+            write_vals = {
                 'last_sent_attempt_date': datetime.now(),
-                'failure_reason': '%s : %s' % (traceback.format_exc(), str(e))
-            })
+                'failure_reason': '%s : %s' % (traceback.format_exc(), str(e)),
+                'attempt_count': new_attempt_count
+            }
+            if new_attempt_count >= 20:
+                write_vals.update({
+                    'active': False
+                })
+            self.write(write_vals)
