@@ -28,6 +28,7 @@ class ActivitySyncProducts(models.TransientModel):
         domain_id = self.env.ref('tt_reservation_activity.tt_provider_type_activity').id
         return [('provider_type_id.id', '=', int(domain_id))]
 
+    action_type = fields.Selection([('configure_product', 'Configure Product'), ('generate_json', 'Generate Json'), ('sync_product', 'Sync Product')], 'Action', required=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     provider_code = fields.Char('Provider Code')
     start_num = fields.Char('Start Number', default='1')
@@ -37,14 +38,13 @@ class ActivitySyncProducts(models.TransientModel):
         file_ext = 'json'
         self.env['tt.master.activity'].action_check_json_length(self.provider_id.code, file_ext, True)
 
-    def generate_json(self):
-        self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
-
-    def sync_product(self):
-        self.env['tt.master.activity'].action_sync_products(self.provider_id.code, self.start_num, self.end_num)
-
-    def config_product(self):
-        self.env['tt.master.activity'].action_sync_config(self.provider_id.code)
+    def execute_wizard(self):
+        if self.action_type == 'configure_product':
+            self.env['tt.master.activity'].action_sync_config(self.provider_id.code)
+        elif self.action_type == 'generate_json':
+            self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
+        else:
+            self.env['tt.master.activity'].action_sync_products(self.provider_id.code, self.start_num, self.end_num)
 
     def deactivate_product(self):
         products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
@@ -180,11 +180,6 @@ class MasterActivity(models.Model):
     def action_generate_json(self, provider_code, per_page_amt=100):
         if provider_code == 'bemyguest':
             req_post = {
-                'query': '',
-                'type': '',
-                'category': '',
-                'country': '',
-                'city': '',
                 'sort': 'price',
                 'page': 1,
                 'per_page': per_page_amt,
@@ -206,26 +201,19 @@ class MasterActivity(models.Model):
                 provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '!=', False)])
             else:
                 provider_code_objs = []
-            all_gt_country_codes = []
             gt_country_codes = []
-            check_gt_country_codes = []
             for rec in provider_code_objs:
-                if str(rec.code) not in check_gt_country_codes:
-                    check_gt_country_codes.append(str(rec.code))
+                if str(rec.code) not in gt_country_codes:
                     gt_country_codes.append(str(rec.code))
-                    if len(gt_country_codes) >= 30:
-                        temp_gt_country_codes = copy.deepcopy(gt_country_codes)
-                        all_gt_country_codes.append(temp_gt_country_codes)
-                        gt_country_codes = []
 
             storage_page = 1
             item_count = 0
             batch_data = {
                 'product_detail': []
             }
-            for rec_list in all_gt_country_codes:
+            for rec in gt_country_codes:
                 req_post = {
-                    'country_codes': rec_list,
+                    'country': rec,
                     'provider': provider_code
                 }
                 res = self.env['tt.master.activity.api.con'].search_provider(req_post)
@@ -284,19 +272,12 @@ class MasterActivity(models.Model):
             pass
 
     def write_bmg_json(self, provider=None, per_page_amt=100, data=None, page=None):
-        file = False
         req_post = {
-            'query': '',
-            'type': '',
-            'category': '',
-            'country': '',
-            'city': '',
             'sort': 'price',
             'page': page,
             'per_page': per_page_amt,
             'provider': provider
         }
-
         temp = []
         res = self.env['tt.master.activity.api.con'].search_provider(req_post)
         if res['error_code'] == 0:

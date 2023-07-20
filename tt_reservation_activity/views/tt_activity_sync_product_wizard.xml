@@ -8,18 +8,17 @@
 				<form string="Message">
 					<group>
 						<group>
+							<field name="action_type"/>
 							<field name="provider_id"/>
 							<field name="provider_code" invisible="1"/>
 						</group>
 						<group>
-							<field name="start_num"/>
-							<field name="end_num"/>
+							<field name="start_num" attrs="{'invisible': [('action_type','!=','sync_product')]}"/>
+							<field name="end_num" attrs="{'invisible': [('action_type','!=','sync_product')]}"/>
 						</group>
 					</group>
 					<footer>
-						<button string="Configure Products" name="config_product" type="object" class="btn-primary" />
-						<button string="Generate JSON" name="generate_json" type="object" class="btn-primary" />
-						<button string="Sync Products" name="sync_product" type="object" class="btn-primary" />
+						<button string="Execute" name="execute_wizard" type="object" class="btn-primary" />
 						<button string="Check JSON Length" name="check_json_length" type="object" class="btn-default" />
 						<button string="Deactivate Products" name="deactivate_product" type="object" class="btn-default" confirm="Deactivate all Activity Products of this provider?" />
 						<button string="Cancel" class="btn-default" special="cancel" />
