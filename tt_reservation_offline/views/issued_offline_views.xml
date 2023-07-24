@@ -251,9 +251,9 @@
                                 <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="payment_date" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                                <field name="is_get_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                                <field name="is_using_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                                <field name="payment_method_to_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                                <field name="is_get_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                                <field name="is_using_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
+                                <field name="payment_method_to_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'readonly': [('state_offline', 'not in', ['draft', 'confirm'])]}"/>
                             </group>
                         </group>
                         <group>
