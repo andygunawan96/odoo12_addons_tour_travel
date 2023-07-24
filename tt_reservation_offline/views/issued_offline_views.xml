@@ -247,9 +247,13 @@
                                     <field name="cancel_uid" class="oe_inline"/>
                                 </div>
                                 <field name="quick_validate" groups="tt_base.group_tt_tour_travel,base.group_erp_manager" attrs="{'readonly': [('state_offline', 'not in', ['draft'])]}"/>
+                                <field name="split_from_resv_id" attrs="{'invisible': [('split_from_resv_id', '=', False)]}"/>
+                                <field name="is_member" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                                <field name="payment_method" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                                <field name="payment_date" readonly="1" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="is_get_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                                 <field name="is_using_point_reward" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
-                                <field name="split_from_resv_id" attrs="{'invisible': [('split_from_resv_id', '=', False)]}"/>
+                                <field name="payment_method_to_ho" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                             </group>
                         </group>
                         <group>

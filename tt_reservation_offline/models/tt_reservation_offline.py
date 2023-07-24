@@ -2141,6 +2141,7 @@ class IssuedOffline(models.Model):
                 'customer_parent_id': context.get('co_customer_parent_id', False),
                 'user_id': context['co_uid'],
                 'is_using_point_reward': is_using_point_reward,
+                'payment_method_to_ho': payment.get('agent_payment_method') and payment['agent_payment_method'] or 'balance',
                 'currency_id': self.env['tt.agent'].browse(context['co_agent_id']).ho_id.currency_id.id
             }
 
