@@ -25,6 +25,7 @@ provider_selection = [
         ('airasia_web', 'Airasia Web'),
         ('qatar', 'Qatar'),
         ('pelita', 'Pelita Air'),
+        ('pelita_api', 'Pelita Air API'),
         ('transnusa_web', 'Transnusa Web'),
         # ('sabre', 'Sabre'),
     ]
