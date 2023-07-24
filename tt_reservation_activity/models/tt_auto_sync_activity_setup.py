@@ -29,7 +29,11 @@ class TtAutoSyncActivitySetup(models.Model):
 
     def execute_sync_products(self):
         if not self.is_json_generated:
-            self.env['tt.master.activity'].action_generate_json(self.provider_id.code, self.item_amt_per_json)
+            filter_data = {
+                'per_page_amt': self.item_amt_per_json,
+                'is_empty_json_directory': True
+            }
+            self.env['tt.master.activity'].action_generate_json(self.provider_id.code, filter_data)
             _logger.info('Auto Sync Activity: Generating Json for provider %s. Will start to sync products on next execution.' % self.provider_id.name)
             self.write({
                 'is_json_generated': True,

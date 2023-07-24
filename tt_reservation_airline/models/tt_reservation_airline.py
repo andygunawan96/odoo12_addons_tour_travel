@@ -613,7 +613,7 @@ class ReservationAirline(models.Model):
 
                     found_segments = self.env['tt.segment.airline'].search(search_query,order='id DESC')
 
-                    valid_segments = found_segments.filtered(lambda x: x.booking_id.state in ['booked', 'issued', 'cancel2', 'fail_issue'])
+                    valid_segments = found_segments.filtered(lambda x: x.booking_id.state in ['booked', 'issued', 'cancel2', 'fail_issue', 'void', 'cancel'])
                     # for seg in found_segments:
                     #     try:
                     #         curr_state = seg.state
@@ -1895,6 +1895,7 @@ class ReservationAirline(models.Model):
                 'reference': schedule.get('reference', ''),
                 'provider_id': provider_id,
                 'booking_id': self.id,
+                'ho_id': self.ho_id and self.ho_id.id or False,
                 'sequence': sequence,
                 'origin_id': provider_origin,
                 'destination_id': provider_destination,

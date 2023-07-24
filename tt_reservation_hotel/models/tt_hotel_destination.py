@@ -30,6 +30,7 @@ class HotelDestination(models.Model):
     cancel_date = fields.Datetime('Cancel Date', readonly=True)
 
     hotel_ids = fields.One2many('tt.hotel.master', 'destination_id', 'Hotel Master')
+    hotel_raw_ids = fields.One2many('tt.hotel', 'destination_id', 'Hotel Raw')
 
     # Func Find City
     def find_city_obj(self):

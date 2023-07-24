@@ -98,8 +98,8 @@
             <field name="name">Default Timeslot Data Drive Thru Blood Test</field>
             <!--DEFAULT DATA SBY-->
             <field name="single_supplement">0</field>
-            <field name="overtime_surcharge">0</field>
-            <field name="cito_surcharge">0</field>
+            <field name="overtime_surcharge">60000</field>
+            <field name="cito_surcharge">85000</field>
             <field name="max_book_datetime" eval="(datetime.now().replace(hour=17,minute=0,second=0).isoformat())"/>
             <field name="blood_test_price_ids"
                    eval="[(6,0,[ref('tt_reservation_mitrakeluarga.tt_price_list_mitrakeluarga_drivethru_test_darah')

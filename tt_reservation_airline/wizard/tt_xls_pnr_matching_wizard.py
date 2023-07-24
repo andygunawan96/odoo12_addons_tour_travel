@@ -4,6 +4,7 @@ from odoo.exceptions import UserError
 from io import BytesIO
 import xlrd,xlwt
 from urllib.request import urlretrieve
+import requests
 import base64,json
 import logging,traceback
 
@@ -20,9 +21,10 @@ class TtXlsPnrMatchingWizard(models.TransientModel):
             raise UserError('Please upload / choose XLS File!')
         if self.xls_file.filename.split('.')[-1] not in ['xls', 'xlsx', 'csv']:
             raise UserError('Please upload only Excel supported formats!')
-        file_name, headers = urlretrieve(self.xls_file.url)
-        # file_name, headers = urlretrieve('https://staticinternal.rodextrip.com/2023/03/27/faee/7726/1a52/20230315.xlsx')
-        dataframe = xlrd.open_workbook(file_name)
+        # file_resp, headers = urlretrieve(self.xls_file.url)
+        file_resp = requests.get(self.xls_file.url)
+        # file_resp = requests.get('https://static.rodextrip.com/2023/07/20/c6bf/ad96/fb26/20230715.xlsx')
+        dataframe = xlrd.open_workbook(file_contents=file_resp.content)
         sheet = dataframe.sheet_by_index(0)
 
         row_list = []
