@@ -21,7 +21,7 @@ provider_selection = [
         ('lionair', 'Lion Air'),
         ('lionairapi', 'Lion Air API'),
         ('pelita', 'Pelita Air Web'),
-        ('pelita_api', 'Pelita Air API')
+        ('pelita_api', 'Pelita Air API'),
         ('sriwijaya', 'Sriwijaya'),
         ('sia', 'Singapore Airline NDC'),
         ('scoot', 'Scoot'),
