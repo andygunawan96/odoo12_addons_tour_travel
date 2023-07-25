@@ -176,6 +176,17 @@
                                 <group>
                                 </group>
                             </group>
+                            <group string="Reservation Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="provider_rsv_com_tax_amount"/>
+                                    <field name="provider_rsv_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="provider_rsv_com_rounding"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
                             <hr/>
                             <h3>Ticketing</h3>
                             <group string="Ticketing Sales" col="3" colspan="3">
@@ -279,6 +290,17 @@
                                     <field name="provider_tkt_nta_agent_upsell_route"/>
                                     <field name="provider_tkt_nta_agent_upsell_segment"/>
                                     <field name="provider_tkt_nta_agent_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Ticketing Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="provider_tkt_com_tax_amount"/>
+                                    <field name="provider_tkt_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="provider_tkt_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
