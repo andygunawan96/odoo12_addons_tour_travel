@@ -602,7 +602,7 @@ class ReservationAirline(models.Model):
 
             if rule_check_type == 'passenger':
                 for name in segment.booking_id.passenger_ids:
-                    if name.identity_number:
+                    if name.is_valid_identity:
                         search_query = [('segment_code','=',segment.segment_code),
                                         '|',
                                         ('booking_id.passenger_ids.identity_number','=ilike',name.identity_number),
