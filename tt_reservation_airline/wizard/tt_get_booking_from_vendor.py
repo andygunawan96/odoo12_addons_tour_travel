@@ -13,19 +13,21 @@ _logger = logging.getLogger(__name__)
 provider_selection = [
         ('altea', 'Garuda Altea'),
         ('amadeus', 'Amadeus'),
+        ('airasia', 'Airasia'),
+        ('airasia_web', 'Airasia Web'),
+        ('aerodili', 'Aero Dili'),
+        ('citilink', 'Citilink'),
+        ('jetstar', 'Jetstar'),
         ('lionair', 'Lion Air'),
         ('lionairapi', 'Lion Air API'),
-        ('citilink', 'Citilink'),
+        ('pelita', 'Pelita Air Web'),
+        ('pelita_api', 'Pelita Air API')
         ('sriwijaya', 'Sriwijaya'),
         ('sia', 'Singapore Airline NDC'),
         ('scoot', 'Scoot'),
-        ('jetstar', 'Jetstar'),
-        ('rodextrip_airline', 'RT Airline'),
-        ('airasia', 'Airasia'),
-        ('airasia_web', 'Airasia Web'),
         ('qatar', 'Qatar'),
-        ('pelita', 'Pelita Air'),
         ('transnusa_web', 'Transnusa Web'),
+        ('rodextrip_airline', 'RT Airline'),
         # ('sabre', 'Sabre'),
     ]
 

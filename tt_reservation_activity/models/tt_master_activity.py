@@ -9,7 +9,7 @@ import base64
 import pickle
 from datetime import datetime
 import csv
-import os
+import os, shutil
 import re
 import copy
 from odoo.exceptions import UserError
@@ -28,9 +28,16 @@ class ActivitySyncProducts(models.TransientModel):
         domain_id = self.env.ref('tt_reservation_activity.tt_provider_type_activity').id
         return [('provider_type_id.id', '=', int(domain_id))]
 
-    action_type = fields.Selection([('configure_product', 'Configure Product'), ('generate_json', 'Generate Json'), ('sync_product', 'Sync Product')], 'Action', required=True)
+    action_type = fields.Selection([('configure_product', 'Configure Product'), ('generate_json', 'Generate Json'), ('sync_products', 'Sync Products')], 'Action', required=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
-    provider_code = fields.Char('Provider Code')
+
+    # generate json
+    query = fields.Char('Search Query')
+    country_id = fields.Many2one('res.country', 'Country (leave empty to search all countries)')
+    per_page_amt = fields.Integer('Amount of Data Per Page (only used for certain providers)', default=100)
+    is_create_progress_tracking = fields.Boolean('Create and Use Progress Tracking', default=False)
+
+    # sync products
     start_num = fields.Char('Start Number', default='1')
     end_num = fields.Char('End Number', default='1')
 
@@ -42,22 +49,29 @@ class ActivitySyncProducts(models.TransientModel):
         if self.action_type == 'configure_product':
             self.env['tt.master.activity'].action_sync_config(self.provider_id.code)
         elif self.action_type == 'generate_json':
-            self.env['tt.master.activity'].action_generate_json(self.provider_id.code)
+            filter_data = {
+                'query': self.query and self.query or '',
+                'country_id': self.country_id and self.country_id.id or 0,
+                'per_page_amt': self.per_page_amt,
+                'is_empty_json_directory': True,
+                'is_create_progress_tracking': self.is_create_progress_tracking
+            }
+            self.env['tt.master.activity'].action_generate_json(self.provider_id.code, filter_data)
         else:
             self.env['tt.master.activity'].action_sync_products(self.provider_id.code, self.start_num, self.end_num)
 
     def deactivate_product(self):
         products = self.env['tt.master.activity'].sudo().search([('provider_id', '=', self.provider_id.id)])
+        prod_count = 0
         for rec in products:
             if rec.active:
                 rec.sudo().write({
                     'active': False
                 })
-
-    @api.depends('provider_id')
-    @api.onchange('provider_id')
-    def _compute_provider_code(self):
-        self.provider_code = self.provider_id.code
+                prod_count += 1
+                if prod_count >= 80:
+                    self.env.cr.commit()
+                    prod_count = 0
 
 
 class MasterActivity(models.Model):
@@ -177,28 +191,76 @@ class MasterActivity(models.Model):
                     num_str += str(m)
             return int(num_str)
 
-    def action_generate_json(self, provider_code, per_page_amt=100):
+    def empty_json_directory(self, directory_path):
+        for filename in os.listdir(directory_path):
+            file_path = os.path.join(directory_path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+    def action_generate_json(self, provider_code, filter_data):
+        per_page_amt = filter_data.get('per_page_amt') and int(filter_data['per_page_amt']) or 100
+        folder_path = '/var/log/tour_travel/%s_master_data' % provider_code
+        if not os.path.exists(folder_path):
+            os.mkdir(folder_path)
+        elif filter_data.get('is_empty_json_directory'):
+            self.empty_json_directory(folder_path)
         if provider_code == 'bemyguest':
+            provider_code_objs = []
+            if filter_data.get('country_id'):
+                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
+                provider_id = provider_obj and provider_obj[0].id or False
+                if provider_id:
+                    provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '=', int(filter_data['country_id']))], limit=1)
             req_post = {
+                'query': filter_data.get('query') and filter_data['query'] or '',
+                'country': provider_code_objs and provider_code_objs[0] or '',
                 'sort': 'price',
                 'page': 1,
                 'per_page': per_page_amt,
                 'provider': provider_code
             }
 
-            file = {}
+            temp = {}
             res = self.env['tt.master.activity.api.con'].search_provider(req_post)
             if res['error_code'] == 0:
-                file = res['response']
-            if file:
-                total_pages = file['total_pages']
-                for page in range(total_pages):
-                    self.write_bmg_json(provider_code, per_page_amt, False, page + 1)
+                temp = res['response']
+            if temp:
+                total_pages = temp['total_pages']
+                if temp.get('product_detail'):
+                    file = open('/var/log/tour_travel/%s_master_data/%s_master_data1.json' % (provider_code, provider_code), 'w')
+                    file.write(json.dumps(temp))
+                    file.close()
+                for page in range(1, total_pages):
+                    req_post = {
+                        'query': filter_data.get('query') and filter_data['query'] or '',
+                        'country': provider_code_objs and provider_code_objs[0] or '',
+                        'sort': 'price',
+                        'page': page + 1,
+                        'per_page': per_page_amt,
+                        'provider': provider_code
+                    }
+                    temp = {}
+                    res = self.env['tt.master.activity.api.con'].search_provider(req_post)
+                    if res['error_code'] == 0:
+                        temp = res['response']
+                    if temp.get('product_detail'):
+                        file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page)), 'w')
+                        file.write(json.dumps(temp))
+                        file.close()
         elif provider_code == 'globaltix':
             provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
             provider_id = provider_obj and provider_obj[0].id or False
             if provider_id:
-                provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '!=', False)])
+                if filter_data.get('country_id'):
+                    second_search_param = ('country_id', '=', int(filter_data['country_id']))
+                else:
+                    second_search_param = ('country_id', '!=', False)
+                provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), second_search_param])
             else:
                 provider_code_objs = []
             gt_country_codes = []
@@ -213,6 +275,7 @@ class MasterActivity(models.Model):
             }
             for rec in gt_country_codes:
                 req_post = {
+                    'query': filter_data.get('query') and filter_data['query'] or '',
                     'country': rec,
                     'provider': provider_code
                 }
@@ -221,12 +284,9 @@ class MasterActivity(models.Model):
                     for temp in res['response']:
                         if temp.get('product_detail'):
                             batch_data['product_detail'] += temp['product_detail']
-                            item_count += 16
+                            item_count += len(temp['product_detail'])
                             if item_count >= per_page_amt:
-                                folder_path = '/var/log/tour_travel/globaltix_master_data'
-                                if not os.path.exists(folder_path):
-                                    os.mkdir(folder_path)
-                                file = open('/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json', 'w')
+                                file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(storage_page)), 'w')
                                 file.write(json.dumps(batch_data))
                                 file.close()
                                 batch_data = {
@@ -235,61 +295,47 @@ class MasterActivity(models.Model):
                                 item_count = 0
                                 storage_page += 1
             if item_count > 0:
-                folder_path = '/var/log/tour_travel/globaltix_master_data'
-                if not os.path.exists(folder_path):
-                    os.mkdir(folder_path)
-                file = open(
-                    '/var/log/tour_travel/globaltix_master_data/globaltix_master_data' + str(storage_page) + '.json',
-                    'w')
+                file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(storage_page)), 'w')
                 file.write(json.dumps(batch_data))
                 file.close()
         elif provider_code == 'rodextrip_activity':
+            provider_code_objs = []
+            if filter_data.get('country_id'):
+                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
+                provider_id = provider_obj and provider_obj[0].id or False
+                if provider_id:
+                    provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '=', int(filter_data['country_id']))], limit=1)
             req_post = {
+                'query': filter_data.get('query') and filter_data['query'] or '',
+                'country': provider_code_objs and provider_code_objs[0] or '',
                 'provider': provider_code
             }
-
             res = self.env['tt.master.activity.api.con'].search_provider(req_post)
             if res['error_code'] == 0:
                 temp = res['response']
-                page = 1
-                temp_idx = 0
-                # for rec in temp:
                 if temp.get('product_detail'):
-                    folder_path = '/var/log/tour_travel/rodextrip_activity_master_data'
-                    if not os.path.exists(folder_path):
-                        os.mkdir(folder_path)
-                    file = open(
-                        '/var/log/tour_travel/rodextrip_activity_master_data/rodextrip_activity_master_data' + str(
-                            page) + '.json', 'w')
-                    file.write(json.dumps(temp))
-                    file.close()
-                    temp_idx += 1
-                    if temp_idx == per_page_amt:
-                        page += 1
+                    batch_data = {
+                        'product_detail': []
+                    }
+                    page = 1
+                    for temp2 in temp['product_detail']:
+                        batch_data['product_detail'].append(temp2)
+                        if len(batch_data['product_detail']) >= per_page_amt:
+                            file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page)), 'w')
+                            file.write(json.dumps(batch_data))
+                            file.close()
+                            batch_data = {
+                                'product_detail': []
+                            }
+                            page += 1
+                    if len(batch_data['product_detail']) > 0:
+                        file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page)), 'w')
+                        file.write(json.dumps(batch_data))
+                        file.close()
             else:
                 _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
         else:
             pass
-
-    def write_bmg_json(self, provider=None, per_page_amt=100, data=None, page=None):
-        req_post = {
-            'sort': 'price',
-            'page': page,
-            'per_page': per_page_amt,
-            'provider': provider
-        }
-        temp = []
-        res = self.env['tt.master.activity.api.con'].search_provider(req_post)
-        if res['error_code'] == 0:
-            temp = res['response']
-
-        if temp.get('product_detail'):
-            folder_path = '/var/log/tour_travel/bemyguest_master_data'
-            if not os.path.exists(folder_path):
-                os.mkdir(folder_path)
-            file = open('/var/log/tour_travel/bemyguest_master_data/bemyguest_master_data' + str(page) + '.json', 'w')
-            file.write(json.dumps(temp))
-            file.close()
 
     def action_sync_products(self, provider_code, start, end):
         for i in range(int(start), int(end) + 1):

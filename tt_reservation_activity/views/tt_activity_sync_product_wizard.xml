@@ -10,16 +10,19 @@
 						<group>
 							<field name="action_type"/>
 							<field name="provider_id"/>
-							<field name="provider_code" invisible="1"/>
 						</group>
 						<group>
-							<field name="start_num" attrs="{'invisible': [('action_type','!=','sync_product')]}"/>
-							<field name="end_num" attrs="{'invisible': [('action_type','!=','sync_product')]}"/>
+							<field name="query" attrs="{'invisible': [('action_type','!=','generate_json')]}"/>
+							<field name="country_id" attrs="{'invisible': [('action_type','!=','generate_json')]}"/>
+							<field name="per_page_amt" attrs="{'invisible': [('action_type','!=','generate_json')]}"/>
+							<field name="is_create_progress_tracking" attrs="{'invisible': [('action_type','!=','generate_json')]}"/>
+							<field name="start_num" attrs="{'invisible': [('action_type','!=','sync_products')]}"/>
+							<field name="end_num" attrs="{'invisible': [('action_type','!=','sync_products')]}"/>
 						</group>
 					</group>
 					<footer>
 						<button string="Execute" name="execute_wizard" type="object" class="btn-primary" />
-						<button string="Check JSON Length" name="check_json_length" type="object" class="btn-default" />
+						<button string="Check Current JSON Length" name="check_json_length" type="object" class="btn-default" />
 						<button string="Deactivate Products" name="deactivate_product" type="object" class="btn-default" confirm="Deactivate all Activity Products of this provider?" />
 						<button string="Cancel" class="btn-default" special="cancel" />
 					</footer>
