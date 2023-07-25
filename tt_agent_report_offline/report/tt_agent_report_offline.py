@@ -195,7 +195,7 @@ class AgentReportOffline(models.AbstractModel):
 
     def _convert_data(self, lines):
         odoobot_user = self.env['res.users'].sudo().search([('id', '=', 1), ('active', '=', False)])
-        tz = odoobot_user.tz
+        tz = odoobot_user.tz and odoobot_user.tz or 'utc'
         local = pytz.timezone(tz)
         for i in lines:
             i['create_date'] = self._datetime_user_context(i['create_date'])

@@ -1,0 +1,97 @@
+<odoo>
+    <record id="tt_activity_sync_progress_tracking_view_filter" model="ir.ui.view">
+        <field name="name">tt.activity.sync.progress.tracking.view.filter</field>
+        <field name="model">tt.activity.sync.progress.tracking</field>
+        <field name="arch" type="xml">
+            <search string="Search Activity Sync Progress Tracking">
+                <field name="query"/>
+                <field name="country_id"/>
+                <field name="provider_id"/>
+
+                <group expand="0" string="Group By">
+                    <filter name="group_by_provider_id" string="Provider" domain="[]" context="{'group_by':'provider_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_activity_sync_progress_tracking_view_form">
+        <field name="name">tt.activity.sync.progress.tracking.view.form</field>
+        <field name="model">tt.activity.sync.progress.tracking</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button string="Continue Generate JSON" name="continue_generate_json" type="object" groups="base.group_erp_manager,tt_base.group_master_data_activity_level_2" attrs="{'invisible': [('active','!=',True)]}"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object"
+                                class="oe_stat_button" icon="fa-archive"
+                                groups="tt_base.group_master_data_activity_level_3">
+                            <field name="active" widget="boolean_button"
+                                   options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="provider_id"/>
+                            <field name="query"/>
+                            <field name="per_page_amt"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group>
+                            <field name="country_provider_codes_str"/>
+                            <field name="vendor_last_page"/>
+                            <field name="last_json_number"/>
+                            <label for="create_uid" string="Created by"/>
+                            <div>
+                                <field name="create_uid" readonly="1" class="oe_inline"/> /
+                                <field name="create_date" readonly="1" class="oe_inline"/>
+                            </div>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tt_activity_sync_progress_tracking_view_tree" >
+        <field name="name">tt.activity.sync.progress.tracking.view.tree</field>
+        <field name="model">tt.activity.sync.progress.tracking</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="ho_id" groups="base.group_erp_manager"/>
+                <field name="provider_id"/>
+                <field name="query"/>
+                <field name="per_page_amt"/>
+                <field name="country_id"/>
+                <field name="create_date"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="tt_activity_sync_progress_tracking_view_action">
+        <field name="name">Activity Sync Progress Tracking</field>
+        <field name="res_model">tt.activity.sync.progress.tracking</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {
+            'form_view_ref': 'tt_reservation_activity.tt_activity_sync_progress_tracking_view_form',
+            'tree_view_ref': 'tt_reservation_activity.tt_activity_sync_progress_tracking_view_tree',
+            }
+        </field>
+    </record>
+
+    <menuitem
+            id="sub_menu_activity_sync_progress_tracking"
+            name="Activity Sync Progress Tracking"
+            parent="tt_reservation_activity.menu_tour_travel_activity_config"
+            action="tt_activity_sync_progress_tracking_view_action"
+            sequence="5"
+            groups="base.group_erp_manager,tt_base.group_master_data_activity_level_2"
+    />
+</odoo>

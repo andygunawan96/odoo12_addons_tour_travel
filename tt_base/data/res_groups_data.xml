@@ -2727,8 +2727,7 @@
 
         <record id="base.user_admin" model="res.users">
             <field name="groups_id"
-                   eval="[(6,0,[
-                               ref('base.group_system'),
+                   eval="[(6,0,[ref('base.group_system'),
                                ref('base.group_user'),
                                ref('tt_base.group_tt_process_channel_bookings'),
                                ref('tt_base.group_master_data_hotel_level_5'),
@@ -2806,12 +2805,42 @@
                                ref('tt_base.group_error_api_list_level_5'),
                                ref('tt_base.group_user_data_level_5'),
                                ref('tt_base.group_api_management_level_5')])]"/>
+            <field name="frontend_security_ids"
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_admin'),
+                                ref('tt_base.able_to_update_cache_version'),
+                                ref('tt_base.able_to_create_page'),
+                                ref('tt_base.able_to_edit_appearance'),
+                                ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_psg_cache_3'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_swabexpress'),
+                                ref('tt_base.able_to_ticketing_mitra_keluarga'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
+                                ref('tt_base.able_to_see_commission'),
+                                ref('tt_base.report')])]"
+            />
         </record>
 
         <record id="base.user_root" model="res.users">
             <field name="groups_id"
-                   eval="[(6,0,[
-                               ref('base.group_system'),
+                   eval="[(6,0,[ref('base.group_system'),
                                ref('base.group_user'),
                                ref('tt_base.group_tt_process_channel_bookings'),
                                ref('tt_base.group_master_data_hotel_level_5'),
@@ -2889,6 +2918,37 @@
                                ref('tt_base.group_error_api_list_level_5'),
                                ref('tt_base.group_user_data_level_5'),
                                ref('tt_base.group_api_management_level_5')])]"/>
+            <field name="frontend_security_ids"
+                   eval="[(6,0,[ref('tt_base.able_to_login'),
+                                ref('tt_base.able_to_admin'),
+                                ref('tt_base.able_to_update_cache_version'),
+                                ref('tt_base.able_to_create_page'),
+                                ref('tt_base.able_to_edit_appearance'),
+                                ref('tt_base.able_to_ticketing'),
+                                ref('tt_base.able_to_book'),
+                                ref('tt_base.able_to_issued'),
+                                ref('tt_base.able_to_psg_cache_1'),
+                                ref('tt_base.able_to_psg_cache_2'),
+                                ref('tt_base.able_to_psg_cache_3'),
+                                ref('tt_base.able_to_ticketing_activity'),
+                                ref('tt_base.able_to_ticketing_airline'),
+                                ref('tt_base.able_to_ticketing_event'),
+                                ref('tt_base.able_to_ticketing_hotel'),
+                                ref('tt_base.able_to_ticketing_offline'),
+                                ref('tt_base.able_to_ticketing_ppob'),
+                                ref('tt_base.able_to_ticketing_tour'),
+                                ref('tt_base.able_to_ticketing_train'),
+                                ref('tt_base.able_to_ticketing_visa'),
+                                ref('tt_base.able_to_ticketing_periksain'),
+                                ref('tt_base.able_to_ticketing_phc'),
+                                ref('tt_base.able_to_ticketing_swabexpress'),
+                                ref('tt_base.able_to_ticketing_mitra_keluarga'),
+                                ref('tt_base.able_to_ticketing_bus'),
+                                ref('tt_base.able_to_ticketing_insurance'),
+                                ref('tt_base.able_to_ticketing_groupbooking'),
+                                ref('tt_base.able_to_see_commission'),
+                                ref('tt_base.report')])]"
+            />
         </record>
     </data>
 </odoo>

@@ -40,7 +40,7 @@
 				name="Activity Product Management"
 				parent="tt_reservation_activity.menu_tour_travel_activity_config"
 				action="action_activity_assign_products_wizard"
-				sequence="5"
+				sequence="6"
 				groups="base.group_erp_manager"
 		/>
 

@@ -24,11 +24,12 @@ class ActivitySyncProducts(models.TransientModel):
     _name = "activity.sync.product.wizard"
     _description = 'Activity Sync Products Wizard'
 
+    action_type = fields.Selection([('configure_product', 'Configure Product'), ('generate_json', 'Generate Json'), ('sync_products', 'Sync Products')], 'Action', required=True)
+
     def get_domain(self):
         domain_id = self.env.ref('tt_reservation_activity.tt_provider_type_activity').id
         return [('provider_type_id.id', '=', int(domain_id))]
 
-    action_type = fields.Selection([('configure_product', 'Configure Product'), ('generate_json', 'Generate Json'), ('sync_products', 'Sync Products')], 'Action', required=True)
     provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
 
     # generate json
@@ -73,6 +74,37 @@ class ActivitySyncProducts(models.TransientModel):
                     self.env.cr.commit()
                     prod_count = 0
 
+
+class ActivitySyncProgressTracking(models.Model):
+    _name = 'tt.activity.sync.progress.tracking'
+    _description = 'Activity Sync Generate Products JSON Progress Tracking'
+
+    def get_domain(self):
+        domain_id = self.env.ref('tt_reservation_activity.tt_provider_type_activity').id
+        return [('provider_type_id.id', '=', int(domain_id))]
+
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
+    query = fields.Char('Search Query')
+    per_page_amt = fields.Integer('Amount of Data Per Page (only used for certain providers)', default=100, required=True)
+    country_id = fields.Many2one('res.country', 'Country')
+    country_provider_codes_str = fields.Char('Country Provider Codes')
+    vendor_last_page = fields.Integer('Vendor Last Page', default=0)
+    last_json_number = fields.Integer('Last JSON Number', default=0)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
+    active = fields.Boolean('Active', default=True)
+
+    def continue_generate_json(self):
+        filter_data = {
+            'query': self.query and self.query or '',
+            'country_id': self.country_id and self.country_id.id or 0,
+            'per_page_amt': self.per_page_amt,
+            'is_empty_json_directory': False,
+            'country_provider_codes': self.country_provider_codes_str,
+            'vendor_last_page': self.vendor_last_page,
+            'last_json_number': self.last_json_number,
+            'progress_tracking_id': self.id
+        }
+        self.env['tt.master.activity'].action_generate_json(self.provider_id.code, filter_data)
 
 class MasterActivity(models.Model):
     _inherit = ['tt.history']
@@ -209,18 +241,33 @@ class MasterActivity(models.Model):
             os.mkdir(folder_path)
         elif filter_data.get('is_empty_json_directory'):
             self.empty_json_directory(folder_path)
+        start_page = filter_data.get('vendor_last_page') and int(filter_data['vendor_last_page']) + 1 or 1
+        starting_json_number = filter_data.get('last_json_number') and int(filter_data['last_json_number']) + 1 or 1
+        provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
+        provider_id = provider_obj and provider_obj[0].id or False
+        if filter_data.get('progress_tracking_id'):
+            progress_tracking_obj = self.env['tt.activity.sync.progress.tracking'].browse(int(filter_data['progress_tracking_id']))
+        elif filter_data.get('is_create_progress_tracking'):
+            progress_tracking_obj = self.env['tt.activity.sync.progress.tracking'].create({
+                'provider_id': provider_id,
+                'query': filter_data.get('query') and filter_data['query'] or '',
+                'country_id': filter_data.get('country_id') and int(filter_data['country_id']) or False,
+                'per_page_amt': per_page_amt,
+                'ho_id': self.env.user.ho_id.id
+            })
+        else:
+            progress_tracking_obj = False
+
         if provider_code == 'bemyguest':
             provider_code_objs = []
             if filter_data.get('country_id'):
-                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
-                provider_id = provider_obj and provider_obj[0].id or False
                 if provider_id:
                     provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '=', int(filter_data['country_id']))], limit=1)
             req_post = {
                 'query': filter_data.get('query') and filter_data['query'] or '',
                 'country': provider_code_objs and provider_code_objs[0] or '',
                 'sort': 'price',
-                'page': 1,
+                'page': start_page,
                 'per_page': per_page_amt,
                 'provider': provider_code
             }
@@ -232,10 +279,17 @@ class MasterActivity(models.Model):
             if temp:
                 total_pages = temp['total_pages']
                 if temp.get('product_detail'):
-                    file = open('/var/log/tour_travel/%s_master_data/%s_master_data1.json' % (provider_code, provider_code), 'w')
+                    file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(start_page)), 'w')
                     file.write(json.dumps(temp))
                     file.close()
-                for page in range(1, total_pages):
+
+                if progress_tracking_obj:
+                    progress_tracking_obj.write({
+                        'vendor_last_page': start_page,
+                        'last_json_number': start_page
+                    })
+                    self.env.cr.commit()
+                for page in range(start_page, total_pages):
                     req_post = {
                         'query': filter_data.get('query') and filter_data['query'] or '',
                         'country': provider_code_objs and provider_code_objs[0] or '',
@@ -249,26 +303,34 @@ class MasterActivity(models.Model):
                     if res['error_code'] == 0:
                         temp = res['response']
                     if temp.get('product_detail'):
-                        file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page)), 'w')
+                        file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page + 1)), 'w')
                         file.write(json.dumps(temp))
                         file.close()
+                    if progress_tracking_obj:
+                        progress_tracking_obj.write({
+                            'vendor_last_page': page + 1,
+                            'last_json_number': page + 1
+                        })
+                        self.env.cr.commit()
         elif provider_code == 'globaltix':
-            provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
-            provider_id = provider_obj and provider_obj[0].id or False
-            if provider_id:
-                if filter_data.get('country_id'):
-                    second_search_param = ('country_id', '=', int(filter_data['country_id']))
-                else:
-                    second_search_param = ('country_id', '!=', False)
-                provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), second_search_param])
+            if filter_data.get('country_provider_codes'):
+                gt_country_codes = json.loads(filter_data['country_provider_codes'])
             else:
-                provider_code_objs = []
-            gt_country_codes = []
-            for rec in provider_code_objs:
-                if str(rec.code) not in gt_country_codes:
-                    gt_country_codes.append(str(rec.code))
+                if provider_id:
+                    if filter_data.get('country_id'):
+                        second_search_param = ('country_id', '=', int(filter_data['country_id']))
+                    else:
+                        second_search_param = ('country_id', '!=', False)
+                    provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), second_search_param])
+                else:
+                    provider_code_objs = []
+                gt_country_codes = []
+                for rec in provider_code_objs:
+                    if str(rec.code) not in gt_country_codes:
+                        gt_country_codes.append(str(rec.code))
 
-            storage_page = 1
+            country_codes_progress = gt_country_codes
+            storage_page = starting_json_number
             item_count = 0
             batch_data = {
                 'product_detail': []
@@ -279,6 +341,10 @@ class MasterActivity(models.Model):
                     'country': rec,
                     'provider': provider_code
                 }
+                if start_page > 1:
+                    req_post.update({
+                        'page': start_page
+                    })
                 res = self.env['tt.master.activity.api.con'].search_provider(req_post)
                 if res['error_code'] == 0:
                     for temp in res['response']:
@@ -289,11 +355,24 @@ class MasterActivity(models.Model):
                                 file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(storage_page)), 'w')
                                 file.write(json.dumps(batch_data))
                                 file.close()
+                                if progress_tracking_obj:
+                                    progress_tracking_obj.write({
+                                        'vendor_last_page': 1,
+                                        'last_json_number': storage_page
+                                    })
+                                    self.env.cr.commit()
                                 batch_data = {
                                     'product_detail': []
                                 }
                                 item_count = 0
                                 storage_page += 1
+                country_codes_progress.remove(rec)
+                if progress_tracking_obj:
+                    progress_tracking_obj.write({
+                        'country_provider_codes_str': json.dumps(country_codes_progress),
+                    })
+                    self.env.cr.commit()
+
             if item_count > 0:
                 file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(storage_page)), 'w')
                 file.write(json.dumps(batch_data))
@@ -301,8 +380,6 @@ class MasterActivity(models.Model):
         elif provider_code == 'rodextrip_activity':
             provider_code_objs = []
             if filter_data.get('country_id'):
-                provider_obj = self.env['tt.provider'].search([('code', '=', provider_code), ('provider_type_id.code', '=', 'activity')], limit=1)
-                provider_id = provider_obj and provider_obj[0].id or False
                 if provider_id:
                     provider_code_objs = self.env['tt.provider.code'].search([('provider_id', '=', provider_id), ('country_id', '=', int(filter_data['country_id']))], limit=1)
             req_post = {
@@ -317,13 +394,19 @@ class MasterActivity(models.Model):
                     batch_data = {
                         'product_detail': []
                     }
-                    page = 1
+                    page = starting_json_number
                     for temp2 in temp['product_detail']:
                         batch_data['product_detail'].append(temp2)
                         if len(batch_data['product_detail']) >= per_page_amt:
                             file = open('/var/log/tour_travel/%s_master_data/%s_master_data%s.json' % (provider_code, provider_code, str(page)), 'w')
                             file.write(json.dumps(batch_data))
                             file.close()
+                            if progress_tracking_obj:
+                                progress_tracking_obj.write({
+                                    'vendor_last_page': 1,
+                                    'last_json_number': page
+                                })
+                                self.env.cr.commit()
                             batch_data = {
                                 'product_detail': []
                             }
@@ -336,6 +419,14 @@ class MasterActivity(models.Model):
                 _logger.error('ACTIVITY ERROR, Generate rodextrip_activity JSON: %s, %s' % (res['error_code'], res['error_msg']))
         else:
             pass
+        if progress_tracking_obj:
+            progress_tracking_obj.write({
+                'active': False,
+                'country_provider_codes_str': '',
+                'vendor_last_page': 0,
+                'last_json_number': 0
+            })
+            self.env.cr.commit()
 
     def action_sync_products(self, provider_code, start, end):
         for i in range(int(start), int(end) + 1):
