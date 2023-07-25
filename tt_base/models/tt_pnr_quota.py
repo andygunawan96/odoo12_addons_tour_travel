@@ -127,13 +127,11 @@ class TtPnrQuota(models.Model):
             if minimum == 0: #check jika minimum 0 ambil dari package
                 rec.amount = rec.price_package_id.minimum_fee
                 minimum = rec.price_package_id.minimum_fee
-            if rec.price_package_id.fix_profit_share == False:
-                if rec.transaction_amount_internal > minimum:
-                    rec.total_amount = rec.transaction_amount_external
-                else:
-                    rec.total_amount = minimum - rec.transaction_amount_internal + rec.transaction_amount_external
+            total = rec.transaction_amount_external + rec.transaction_amount_internal
+            if total > minimum:
+                rec.total_amount = total
             else:
-                rec.total_amount = minimum + rec.transaction_amount_external
+                rec.total_amount = minimum
 
     def payment_pnr_quota_api(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_pnr_quota_level_3').id}.intersection(set(self.env.user.groups_id.ids))):
