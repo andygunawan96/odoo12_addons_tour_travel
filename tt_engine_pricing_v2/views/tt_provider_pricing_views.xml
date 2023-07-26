@@ -376,7 +376,7 @@ Amadeus cryptic sample request will be : FM5
                                         </group>
                                     </group>
                                 </page>
-                                <page string="Commission" name="reservation_commission">
+                                <page string="Commission Tax" name="reservation_commission">
                                     <group>
                                         <group string="Commission Tax">
                                             <field name="rsv_com_tax_percentage"/>
@@ -502,7 +502,7 @@ Amadeus cryptic sample request will be : FM5
                                         </group>
                                     </group>
                                 </page>
-                                <page string="Commission" name="ticketing_commission">
+                                <page string="Commission Tax" name="ticketing_commission">
                                     <group>
                                         <group string="Commission Tax">
                                             <field name="tkt_com_tax_percentage"/>
