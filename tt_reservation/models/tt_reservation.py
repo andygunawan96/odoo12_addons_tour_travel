@@ -238,6 +238,7 @@ class TtReservation(models.Model):
 
                     if not number_entered:
                         new_phone=[(0,0,{
+                            'ho_id': context['co_ho_id'],
                             'calling_code': vals.get('calling_code', ''),
                             'calling_number': vals.get('mobile', ''),
                             'phone_number': vals_phone_number
@@ -258,6 +259,7 @@ class TtReservation(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
+                'ho_id': context['co_ho_id'],
                 'calling_code': vals.get('calling_code',''),
                 'calling_number': vals.get('mobile',''),
                 'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
@@ -430,6 +432,7 @@ class TtReservation(models.Model):
                             break
                     if not number_entered:
                         new_phone = [(0, 0, {
+                            'ho_id': context['co_ho_id'],
                             'calling_code': vals.get('calling_code', ''),
                             'calling_number': vals.get('mobile', ''),
                             'phone_number': vals_phone_number
@@ -450,6 +453,7 @@ class TtReservation(models.Model):
             'nationality_id': country and country[0].id or False,
             'email': vals.get('email'),
             'phone_ids': [(0,0,{
+                'ho_id': context['co_ho_id'],
                 'calling_code': vals.get('calling_code', ''),
                 'calling_number': vals.get('mobile', ''),
                 'phone_number': '%s%s' % (vals.get('calling_code',''),vals.get('mobile','')),
