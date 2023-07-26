@@ -28,7 +28,6 @@
         <record id="tt_pnr_quota_price_package_standard" model="tt.pnr.quota.price.package">
             <field name="name">Standard Package</field>
             <field name="minimum_fee">1500000</field>
-            <field name="fix_profit_share" eval="True"/>
         </record>
 
     </data>
