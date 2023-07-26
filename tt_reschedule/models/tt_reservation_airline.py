@@ -529,7 +529,7 @@ class ReservationAirline(models.Model):
                 # July 14, 2023 - SAM
                 provider_values = rsv_prov_obj.set_provider_detail_info(commit_data)
 
-                ## 25 jul 2023 - IVAN pop agar pnr awal tidak berubah
+                ## 25 jul 2023 - IVAN pop agar pnr awal tidak berubah, agar bisa detect split
                 provider_values.pop('pnr')
                 provider_values.pop('pnr2')
                 ## end
