@@ -1670,6 +1670,15 @@ class TtProviderAirlinePricing(models.Model):
     provider_rsv_sales_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
     provider_rsv_sales_upsell_maximum = fields.Char('Maximum Amount', readonly=1)
     provider_rsv_sales_upsell_has_maximum = fields.Char('Has Maximum', readonly=1)
+    provider_rsv_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    provider_rsv_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    provider_rsv_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    provider_tkt_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    provider_tkt_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    provider_tkt_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    provider_anc_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    provider_anc_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    provider_anc_com_rounding = fields.Char('Commission Rounding', readonly=1)
 
     agent_pricing_id = fields.Many2one('tt.agent.pricing', 'Agent Pricing', readonly=1, ondelete='set null')
     agent_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -2206,6 +2215,24 @@ class TtProviderAirlinePricing(models.Model):
                     'provider_rsv_sales_upsell_maximum': provider_data['reservation']['sales']['upsell_by_percentage']['maximum'],
                     'provider_rsv_sales_upsell_has_maximum': provider_data['reservation']['sales']['upsell_by_percentage']['has_maximum'],
                 })
+                if provider_data['reservation'].get('commission'):
+                    values.update({
+                        'provider_rsv_com_tax_amount': provider_data['reservation']['commission'].get('tax_amount', ''),
+                        'provider_rsv_com_tax_percentage': provider_data['reservation']['commission'].get('tax_percentage', ''),
+                        'provider_rsv_com_rounding': provider_data['reservation']['commission'].get('rounding', ''),
+                    })
+                if provider_data['ticketing'].get('commission'):
+                    values.update({
+                        'provider_tkt_com_tax_amount': provider_data['ticketing']['commission'].get('tax_amount', ''),
+                        'provider_tkt_com_tax_percentage': provider_data['ticketing']['commission'].get('tax_percentage', ''),
+                        'provider_tkt_com_rounding': provider_data['ticketing']['commission'].get('rounding', ''),
+                    })
+                if provider_data['ancillary'].get('commission'):
+                    values.update({
+                        'provider_anc_com_tax_amount': provider_data['ancillary']['commission'].get('tax_amount', ''),
+                        'provider_anc_com_tax_percentage': provider_data['ancillary']['commission'].get('tax_percentage', ''),
+                        'provider_anc_com_rounding': provider_data['ancillary']['commission'].get('rounding', ''),
+                    })
 
         if agent_data:
             agent_pricing_obj = self.env['tt.agent.pricing'].search([('id', '=', agent_data['pricing_id'])], limit=1)
