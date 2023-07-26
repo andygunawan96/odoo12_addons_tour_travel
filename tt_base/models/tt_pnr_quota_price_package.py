@@ -14,11 +14,10 @@ class TtPnrQuotaPricePackage(models.Model):
     minimum_fee = fields.Monetary('Minimum Fee',default=0)
     validity = fields.Integer('Validity Month', default=1)
     free_usage = fields.Integer('Free Usage', default=1000)
-    fix_profit_share = fields.Boolean('Fix Profit Share', default=True, help="""Check to ignore internal inventory""") ## DEPRECATED DARI BUNGA ISSUED FEE & TRANSACTION FEE BEDA ##
     currency_id = fields.Many2one('res.currency', 'Currency', default=lambda self:self.env.user.company_id.currency_id.id)
     active = fields.Boolean('Active', default=True)
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id.id)
-    is_calculate_all_inventory = fields.Boolean('Is count internal inventory', default=False, help="""to calculate all inventory""") ## UNTUK HITUNG TRANSACTION FEE INTERNAL INVENTORY
+    is_calculate_all_inventory = fields.Boolean('Is count internal inventory', default=False, help="""True for calculate all inventory and False for calculate external inventory""") ## UNTUK HITUNG TRANSACTION FEE INTERNAL INVENTORY
 
     @api.model
     def create(self, vals_list):

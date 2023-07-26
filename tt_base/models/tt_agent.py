@@ -696,19 +696,21 @@ class TtAgent(models.Model):
                 quota_obj = quota_obj_list[0]
             total_quota_pnr_used = quota_obj.usage_quota
             type_price = 'pax'
-            if req['inventory'] == 'external':
-                calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
-                amount = calculate_price_dict['price']
-                usage_pnr_quota = calculate_price_dict['quota_pnr_usage'] ## hanya untuk product milik btbo2 karena tidak sharing profit
-                type_price = calculate_price_dict['type_price']
+            ## update calculate_price ke semua hanya catat transaction fee
+            calculate_price_dict = self.env['tt.pnr.quota'].calculate_price(quota_obj.price_package_id.available_price_list_ids, req)
+            amount = calculate_price_dict['price']
+            usage_pnr_quota = calculate_price_dict['quota_pnr_usage'] ## check semua
+            type_price = calculate_price_dict['type_price']
+            if self.quota_package_id.is_calculate_all_inventory or req['inventory'] == 'external':
+                if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
+                    amount = 0
+                elif self.quota_package_id.free_usage > total_quota_pnr_used:
+                    if type_price != 'pnr':
+                        amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
             else:
-                amount = req.get('amount')
-                usage_pnr_quota = 0 ## untuk inventory internal tidak potong quota karena sudah sharing profit
-            if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
+                ## not calculate internal inventory
                 amount = 0
-            elif self.quota_package_id.free_usage > total_quota_pnr_used:
-                if type_price != 'pnr':
-                    amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
+                usage_pnr_quota = 0
             self.env['tt.pnr.quota.usage'].create({
                 'ho_id': quota_obj.ho_id and quota_obj.ho_id.id or quota_obj.agent_id.ho_id.id,
                 'res_model_resv': req.get('res_model_resv'),
