@@ -96,6 +96,17 @@ class CreateHOAgentWizard(models.TransientModel):
             'frontend_security_ids': [(6, 0, self.env.ref('tt_base.agent_b2c_user').frontend_security_ids.ids)]
         })
 
+        # template ho system manager
+        self.env['res.users'].create({
+            'name': 'Template HO System Manager (%s)' % self.agent_type_name,
+            'ho_id': new_ho_obj.id,
+            'login': 'template_ho_user_system_manager_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
+            'is_user_template': True,
+            'agent_type_id': new_ho_agent_type_obj.id,
+            'groups_id': [(6, 0, self.env.ref('tt_base.template_ho_user_system_manager').groups_id.ids)],
+            'frontend_security_ids': [(6, 0, self.env.ref('tt_base.template_ho_user_system_manager').frontend_security_ids.ids)]
+        })
+
         # template ho ops manager
         self.env['res.users'].create({
             'name': 'Template HO Operational Manager (%s)' % self.agent_type_name,
