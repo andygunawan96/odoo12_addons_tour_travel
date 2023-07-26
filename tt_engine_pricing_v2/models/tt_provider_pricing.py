@@ -398,6 +398,18 @@ class ProviderPricingLine(models.Model):
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
+    # July 24, 2023 - SAM
+    rsv_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    rsv_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    rsv_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    tkt_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    tkt_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    tkt_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    anc_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    anc_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    anc_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    # END
+
     def get_data(self):
         res = {
             'id': self.id,
@@ -540,6 +552,11 @@ class ProviderPricingLine(models.Model):
                         # 'is_pax': self.tkt_sales_upsell_pax,
                         'is_infant': self.tkt_sales_upsell_amount_infant
                     }
+                },
+                'commission': {
+                    'tax_amount': self.tkt_com_tax_amount,
+                    'tax_percentage': self.tkt_com_tax_percentage,
+                    'rounding': self.tkt_com_rounding_places,
                 }
             },
             'ancillary': {
@@ -614,6 +631,11 @@ class ProviderPricingLine(models.Model):
                     'upsell_by_amount': {
                         'amount': self.anc_sales_upsell_amount,
                     }
+                },
+                'commission': {
+                    'tax_amount': self.anc_com_tax_amount,
+                    'tax_percentage': self.anc_com_tax_percentage,
+                    'rounding': self.anc_com_rounding_places,
                 }
             },
             'reservation': {
@@ -658,6 +680,11 @@ class ProviderPricingLine(models.Model):
                         'maximum': self.rsv_sales_upsell_maximum,
                         'has_maximum': self.rsv_sales_upsell_has_maximum,
                     },
+                },
+                'commission': {
+                    'tax_amount': self.rsv_com_tax_amount,
+                    'tax_percentage': self.rsv_com_tax_percentage,
+                    'rounding': self.rsv_com_rounding_places,
                 }
             },
             'state': self.state,

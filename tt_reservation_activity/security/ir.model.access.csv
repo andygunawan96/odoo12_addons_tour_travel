@@ -1,5 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 tt_master_activity_for_all,tt.master.activity.for.all,model_tt_master_activity,,1,0,0,0
+tt_activity_sync_progress_tracking_for_all,tt.activity.sync.progress.tracking.for.all,model_tt_activity_sync_progress_tracking,,1,0,0,0
 tt_reservation_activity_for_all,tt.reservation.activity.for.all,model_tt_reservation_activity,,1,0,0,0
 tt_activity_category_for_all,tt.activity.category.for.all,model_tt_activity_category,,1,0,0,0
 tt_activity_category_lines_for_all,tt.activity.category.lines.for.all,model_tt_activity_category_lines,,1,0,0,0
@@ -24,6 +25,12 @@ tt_master_activity_for_master_data_activity_level_2,tt.master.activity.for.maste
 tt_master_activity_for_master_data_activity_level_3,tt.master.activity.for.master.data.activity.level.3,model_tt_master_activity,tt_base.group_master_data_activity_level_3,1,1,1,0
 tt_master_activity_for_master_data_activity_level_4,tt.master.activity.for.master.data.activity.level.4,model_tt_master_activity,tt_base.group_master_data_activity_level_4,1,1,1,0
 tt_master_activity_for_master_data_activity_level_5,tt.master.activity.for.master.data.activity.level.5,model_tt_master_activity,tt_base.group_master_data_activity_level_5,1,1,1,1
+,,,,,,,
+tt_activity_sync_progress_tracking_for_master_data_activity_level_1,tt.activity.sync.progress.tracking.for.master.data.activity.level.1,model_tt_activity_sync_progress_tracking,tt_base.group_master_data_activity_level_1,1,0,0,0
+tt_activity_sync_progress_tracking_for_master_data_activity_level_2,tt.activity.sync.progress.tracking.for.master.data.activity.level.2,model_tt_activity_sync_progress_tracking,tt_base.group_master_data_activity_level_2,1,1,1,0
+tt_activity_sync_progress_tracking_for_master_data_activity_level_3,tt.activity.sync.progress.tracking.for.master.data.activity.level.3,model_tt_activity_sync_progress_tracking,tt_base.group_master_data_activity_level_3,1,1,1,0
+tt_activity_sync_progress_tracking_for_master_data_activity_level_4,tt.activity.sync.progress.tracking.for.master.data.activity.level.4,model_tt_activity_sync_progress_tracking,tt_base.group_master_data_activity_level_4,1,1,1,0
+tt_activity_sync_progress_tracking_for_master_data_activity_level_5,tt.activity.sync.progress.tracking.for.master.data.activity.level.5,model_tt_activity_sync_progress_tracking,tt_base.group_master_data_activity_level_5,1,1,1,1
 ,,,,,,,
 tt_reservation_activity_for_reservation_level_1,tt.reservation.activity.for.reservation.level.1,model_tt_reservation_activity,tt_base.group_reservation_level_1,1,0,0,0
 tt_reservation_activity_for_reservation_level_2,tt.reservation.activity.for.reservation.level.2,model_tt_reservation_activity,tt_base.group_reservation_level_2,1,0,1,0

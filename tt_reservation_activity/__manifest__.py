@@ -37,6 +37,7 @@ Key Features
         'views/tt_reservation_activity_option_views.xml',
         'views/tt_master_activity_views.xml',
         'views/tt_master_activity_lines_views.xml',
+        'views/tt_activity_sync_progress_tracking_views.xml',
         'views/tt_auto_sync_activity_setup_views.xml',
         'views/tt_reservation_activity_views.xml',
         'views/tt_provider_views.xml',
