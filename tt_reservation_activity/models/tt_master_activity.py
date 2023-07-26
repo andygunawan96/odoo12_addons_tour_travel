@@ -749,6 +749,7 @@ class MasterActivity(models.Model):
                     })
                     activity_type_exist = self.env['tt.master.activity.lines'].sudo().search([('activity_id', '=', product_id), ('uuid', '=', rec['uuid']), '|',('active', '=', False), ('active', '=', True)], limit=1)
                     vals = rec
+                    util.pop_empty_key(vals, whitelist=['isNonRefundable', 'instantConfirmation', 'voucherRequiresPrinting'])
 
                     if 'voucher_validity' in vals.keys():
                         vals.pop('voucher_validity')

@@ -85,7 +85,6 @@
                                 ref('tt_base.able_to_update_cache_version'),
                                 ref('tt_base.able_to_create_page'),
                                 ref('tt_base.able_to_edit_appearance'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_psg_cache_1'),
@@ -202,7 +201,6 @@
                                 ref('tt_base.able_to_update_cache_version'),
                                 ref('tt_base.able_to_create_page'),
                                 ref('tt_base.able_to_edit_appearance'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_psg_cache_1'),
@@ -303,7 +301,6 @@
                                 ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -401,7 +398,6 @@
                                  ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -435,7 +431,6 @@
             <field name="agent_type_id" eval="ref('tt_base.agent_type_ho')"/>
             <field name="groups_id"
                    eval="[(6,0,[ref('tt_base.group_tt_agent_user'),
-                                 ref('tt_base.able_to_ticketing'),
                                  ref('tt_base.able_to_book'),
                                  ref('tt_base.able_to_issued'),
                                  ref('tt_base.group_master_data_hotel_level_1'),
@@ -502,7 +497,6 @@
                                  ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -602,7 +596,6 @@
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -702,7 +695,6 @@
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -802,7 +794,6 @@
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_ticketing_activity'),
@@ -1129,7 +1120,6 @@
                                 ref('tt_base.able_to_update_cache_version'),
                                 ref('tt_base.able_to_create_page'),
                                 ref('tt_base.able_to_edit_appearance'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_psg_cache_1'),
@@ -1241,7 +1231,6 @@
                                 ref('tt_base.able_to_update_cache_version'),
                                 ref('tt_base.able_to_create_page'),
                                 ref('tt_base.able_to_edit_appearance'),
-                                ref('tt_base.able_to_ticketing'),
                                 ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_psg_cache_1'),
@@ -6096,8 +6085,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_psg_cache_1'),
@@ -6190,8 +6178,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_psg_cache_1'),
@@ -6284,8 +6271,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_psg_cache_1'),
@@ -6385,8 +6371,7 @@
                              ref('tt_base.group_pricing_customer_level_1'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -6488,8 +6473,7 @@
                              ref('tt_base.group_pricing_customer_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -6591,8 +6575,7 @@
                              ref('tt_base.group_pricing_customer_level_5'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -6695,8 +6678,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -6798,8 +6780,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -6901,8 +6882,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7005,8 +6985,7 @@
                              ref('tt_base.group_adjustment_level_4'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7108,8 +7087,7 @@
                              ref('tt_base.group_pricing_customer_level_1'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7211,8 +7189,7 @@
                              ref('tt_base.group_pricing_customer_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7314,8 +7291,7 @@
                              ref('tt_base.group_pricing_customer_level_5'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7418,8 +7394,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7521,8 +7496,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7624,8 +7598,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -7729,8 +7702,7 @@
                              ref('tt_base.group_adjustment_level_4'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -8092,7 +8064,6 @@
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_use_pnr_quota'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -8174,7 +8145,6 @@
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_use_pnr_quota'),
                                 ref('tt_base.report')])]"
             />
         </record>
@@ -8256,7 +8226,6 @@
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_use_pnr_quota'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
             />
@@ -8340,7 +8309,6 @@
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
-                                ref('tt_base.able_to_use_pnr_quota'),
                                 ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.report')])]"
             />
@@ -8434,8 +8402,7 @@
                              ref('tt_base.group_pricing_customer_level_1'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -8538,8 +8505,7 @@
                              ref('tt_base.group_pricing_customer_level_1'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -8643,8 +8609,7 @@
                              ref('tt_base.group_pricing_customer_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -8748,8 +8713,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -8852,8 +8816,7 @@
                              ref('tt_base.group_pricing_customer_level_5'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -8956,8 +8919,7 @@
                              ref('tt_base.group_point_reward_level_3'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),
@@ -9060,8 +9022,7 @@
                              ref('tt_base.group_adjustment_level_4'),
                              ref('tt_base.group_user_data_level_1')])]"/>
             <field name="frontend_security_ids"
-                   eval="[(6,0,[ref('tt_base.able_to_ticketing'),
-                                ref('tt_base.able_to_book'),
+                   eval="[(6,0,[ref('tt_base.able_to_book'),
                                 ref('tt_base.able_to_issued'),
                                 ref('tt_base.able_to_top_up'),
                                 ref('tt_base.able_to_login'),

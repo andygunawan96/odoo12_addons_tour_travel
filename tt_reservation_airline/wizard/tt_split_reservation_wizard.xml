@@ -24,7 +24,21 @@
                     <field name="new_pnr_text" attrs="{'invisible': [('is_split_passenger', '!=', True),('is_split_journey', '!=', True)]}"/>
                     <field name="currency_id" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>
                     <field name="splitted_journey_price" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>
-                    <field name="provider_ids" attrs="{'invisible': [('is_split_provider', '!=', True)]}"/>
+                    <field name="provider_ids" attrs="{'invisible': [('is_split_provider', '!=', True)]}">
+                        <tree create="true">
+                            <field name="ho_id" groups="base.group_erp_manager"/>
+                            <field name="pnr"/>
+                            <field name="provider_id" groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                            <field name="origin_id"/>
+                            <field name="destination_id"/>
+                            <field name="departure_date"/>
+                            <field name="arrival_date"/>
+                            <!--<field name="total"/>-->
+                            <field name="state"/>
+                            <field name="is_hold_date_sync"/>
+                            <field name="is_advance_purchase"/>
+                        </tree>
+                    </field>
                     <field name="passenger_ids" attrs="{'invisible': [('is_split_passenger', '!=', True)]}"/>
                     <field name="journey_ids" attrs="{'invisible': [('is_split_journey', '!=', True)]}"/>
                 </group>
