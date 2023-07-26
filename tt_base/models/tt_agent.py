@@ -702,11 +702,10 @@ class TtAgent(models.Model):
             usage_pnr_quota = calculate_price_dict['quota_pnr_usage'] ## check semua
             type_price = calculate_price_dict['type_price']
             if self.quota_package_id.is_calculate_all_inventory or req['inventory'] == 'external':
-                if self.quota_package_id.free_usage > total_quota_pnr_used + usage_pnr_quota:
+                if self.quota_package_id.free_usage >= total_quota_pnr_used + usage_pnr_quota:
                     amount = 0
-                elif self.quota_package_id.free_usage > total_quota_pnr_used:
-                    if type_price != 'pnr':
-                        amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / total_quota_pnr_used) * amount
+                elif self.quota_package_id.free_usage > total_quota_pnr_used and type_price != 'pnr':
+                    amount = ((total_quota_pnr_used + usage_pnr_quota - self.quota_package_id.free_usage) / usage_pnr_quota) * amount
             else:
                 ## not calculate internal inventory
                 amount = 0
