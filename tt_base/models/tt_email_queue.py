@@ -28,7 +28,7 @@ class TtEmailQueue(models.Model):
 
     def create_email_queue(self, data, context=None):
         # Data {'provider_type':'', 'url_booking':'', 'order_number':'', 'type':''}
-        if data.get('provider_type') in ['airline', 'train', 'hotel', 'visa', 'passport', 'activity', 'tour', 'ppob', 'bus', 'periksain', 'phc', 'medical', 'swabexpress', 'labpintar', 'sentramedika']:
+        if data.get('provider_type') in ['airline', 'train', 'hotel', 'visa', 'passport', 'activity', 'tour', 'ppob', 'bus', 'periksain', 'phc', 'medical', 'swabexpress', 'labpintar', 'sentramedika', 'mitrakeluarga']:
             try:
                 self.env.get('tt.reservation.{}'.format(data['provider_type']))._name
             except:

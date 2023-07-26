@@ -162,6 +162,17 @@ class CreateHOAgentWizard(models.TransientModel):
             'frontend_security_ids': [(6, 0, self.env.ref('tt_base.template_ho_ticketing_user_manager').frontend_security_ids.ids)]
         })
 
+        # template ho btbo api
+        self.env['res.users'].create({
+            'name': 'Template HO BTBO User API (%s)' % self.agent_type_name,
+            'ho_id': new_ho_obj.id,
+            'login': 'template_ho_btbo_user_api_%s%s' % (datetime.now().strftime('%m%d%M%S'), str(btc_agent_obj.id)),
+            'is_user_template': True,
+            'agent_type_id': new_ho_agent_type_obj.id,
+            'groups_id': [(6, 0, self.env.ref('tt_base.template_btbo_user_api').groups_id.ids)],
+            'frontend_security_ids': [(6, 0, self.env.ref('tt_base.template_btbo_user_api').frontend_security_ids.ids)]
+        })
+
         # template btc user
         self.env['res.users'].create({
             'name': 'Template BTC Agent (%s)' % self.btc_agent_type_name,

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="able_to_ticketing" model="tt.frontend.security">
-        <field name="name">Ticketing</field>
-        <field name="code">ticketing</field>
-    </record>
+<!--    <record id="able_to_ticketing" model="tt.frontend.security">-->
+<!--        <field name="name">Ticketing</field>-->
+<!--        <field name="code">ticketing</field>-->
+<!--    </record>-->
 
     <record id="able_to_ticketing_insurance" model="tt.frontend.security">
         <field name="name">Ticketing Insurance</field>
@@ -215,20 +215,20 @@
         <field name="code">get_booking_from_vendor</field>
     </record>
 
-    <record id="dashboard" model="tt.frontend.security">
-        <field name="name">Dashboard</field>
-        <field name="code">dashboard</field>
-    </record>
+<!--    <record id="dashboard" model="tt.frontend.security">-->
+<!--        <field name="name">Dashboard</field>-->
+<!--        <field name="code">dashboard</field>-->
+<!--    </record>-->
 
     <record id="report" model="tt.frontend.security">
         <field name="name">Report</field>
         <field name="code">report</field>
     </record>
 
-    <record id="able_to_use_pnr_quota" model="tt.frontend.security">
-        <field name="name">PNR Quota</field>
-        <field name="code">pnr_quota</field>
-    </record>
+<!--    <record id="able_to_use_pnr_quota" model="tt.frontend.security">-->
+<!--        <field name="name">PNR Quota</field>-->
+<!--        <field name="code">pnr_quota</field>-->
+<!--    </record>-->
 
     <record id="able_to_use_get_booking_b2c" model="tt.frontend.security">
         <field name="name">Get Booking b2c</field>
