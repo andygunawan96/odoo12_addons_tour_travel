@@ -585,6 +585,20 @@ class ReservationAirline(models.Model):
                         if pax_type not in pax_count_dict:
                             pax_count_dict[pax_type] = 0
                         pax_count_dict[pax_type] += 1
+
+                        # 27 Jul 2023 CSC
+                        for pax_obj in rsv_prov_obj.booking_id.passenger_ids:
+                            if pax_obj.id == psg_id and pax_obj.channel_service_charge_ids:
+                                pax['upsell'] = []
+                                for csc_obj in pax_obj.channel_service_charge_ids:
+                                    pax['upsell'].append({
+                                        "charge_code": csc_obj.charge_code,
+                                        "charge_type": csc_obj.charge_type,
+                                        "currency": csc_obj.currency_id.name,
+                                        "amount": csc_obj.amount
+                                    })
+
+
                     # END
 
                     # Service Charges
@@ -1912,6 +1926,31 @@ class ReservationAirline(models.Model):
                     'order_number': new_resv_obj.name,
                     'provider_bookings': new_provider_bookings,
                 }
+
+                ## 27 Jul 2023 add CSC
+                data_request_upsell = {
+                    "order_number": new_resv_obj.name,
+                    "passengers": [],
+                    "provider_type": 'airline'
+                }
+                for psg_obj in new_resv_obj.passenger_ids:
+                    for psg_dict in commit_data['passengers']:
+                        if psg_obj.id == psg_dict['passenger_id'] and psg_dict.get('upsell'):
+                            pax_upsell = {
+                                "pricing": []
+                            }
+                            for data_upsell_dict in psg_dict['upsell']:
+                                pax_upsell['pricing'].append({
+                                    "currency_code": data_upsell_dict['currency'],
+                                    "amount": data_upsell_dict['amount']
+                                })
+                            psg_obj.create_channel_pricing(pax_upsell['pricing'])
+                # if pax_upsell:
+                #     data_request_upsell['passengers'] = pax_upsell
+                #     new_resv_obj.channel_pricing_api(data_request_upsell, context) ## ga bisa di pakai karena fungsi langsung calculate nanti harga di provider kosong
+                #####
+
+
                 self.env['tt.reservation.airline'].update_pnr_provider_airline_api(new_payload, context)
                 new_resv_passenger_number_dict = {}
                 for psg in new_resv_obj.passenger_ids:
