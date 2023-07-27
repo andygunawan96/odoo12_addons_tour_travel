@@ -1,5 +1,9 @@
 from odoo import api,fields,models, _
 from odoo.exceptions import UserError
+import logging
+import traceback
+from ...tools.ERR import RequestException
+_logger = logging.getLogger(__name__)
 
 INVENTORY_TYPE = [
     ('internal', 'Internal'),
@@ -32,6 +36,20 @@ class TtPnrQuotaUsage(models.Model):
     usage_quota = fields.Integer('Usage Quota')
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id.id)
     active = fields.Boolean('Active', default=True)
+
+    # 27 Jul 2023 ASUMSI CREATE TIDAK CONCURRENT
+    @api.model
+    def create(self, vals_list):
+        try:
+            quota_pnr_obj = super(TtPnrQuotaUsage, self).create(vals_list)
+        except Exception as e:
+            # raise Exception(traceback.format_exc())
+            _logger.error(traceback.format_exc())
+            # raise Exception("Sigh... Concurrent Update. %s" % (vals_list['debit']))
+
+            raise RequestException(1028)
+        _logger.info('Created Quota PNR Succesfully %s' % (quota_pnr_obj.id))
+        return quota_pnr_obj
 
     def open_reservation(self):
         if self.inventory != 'internal':
