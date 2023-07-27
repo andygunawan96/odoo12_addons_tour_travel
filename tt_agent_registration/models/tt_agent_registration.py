@@ -520,6 +520,7 @@ class AgentRegistration(models.Model):
         for address in self.address_ids:
             address_ids.append(address.id)
         vals = {
+            'ho_id': self.ho_id.id,
             'name': self.name,
             'est_date': datetime.now(),
             'balance': self.opening_balance,
@@ -544,6 +545,7 @@ class AgentRegistration(models.Model):
         for idx, address in enumerate(self.address_ids):
             partner_obj.write({
                 'address_ids': [(0, 0, {
+                    'ho_id': address.ho_id.id if address.ho_id else self.ho_id.id,
                     'type': address.type if address.type else '',
                     'name': address.name if address.name else '',
                     'address': address.address if address.address else '',

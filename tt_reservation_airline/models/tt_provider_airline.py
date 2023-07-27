@@ -265,12 +265,12 @@ class TtProviderAirline(models.Model):
                 provider_sequence = str(self.sequence)
                 for sc in self.cost_service_charge_ids:
                     # todo ini kalau misal ternyata infonya uda pnr di skip, kalau belum di update
-                    if sc.description != provider_data[key]:
+                    if sc.description != provider_data[key] and len(sc.description) < 5: ## default pnr 6 digit kalau uda di isi tidak di update (kata ko sam kalau update bukan fungsi yg ini)
                         sc.write({'description': pnr})
 
                 for ledger in self.booking_id.ledger_ids:
                     # todo ini kalau misal ternyata infonya uda pnr di skip, kalau belum di update
-                    if ledger.pnr == provider_sequence:
+                    if ledger.pnr == provider_sequence and len(ledger.pnr) < 5: ## default pnr 6 digit kalau uda di isi tidak di update (kata ko sam kalau update bukan fungsi yg ini)
                         ledger.write({'pnr': pnr})
 
         if provider_data.get('hold_date'):
