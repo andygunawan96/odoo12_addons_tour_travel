@@ -600,7 +600,7 @@ class ReservationAirline(models.Model):
             else:
                 continue
 
-            if rule_check_type == 'passenger':
+            if rule_check_type == 'passenger' or rule_check_type == False: ## False jika tidak ter isi
                 for name in segment.booking_id.passenger_ids:
                     if name.is_valid_identity:
                         search_query = [('segment_code','=',segment.segment_code),
