@@ -59,7 +59,7 @@ class ttCronTopUpValidator(models.Model):
                         continue
             except Exception as e:
                 self.create_cron_log_folder()
-                self.write_cron_log('auto tup-up validator by system')
+                self.write_cron_log('auto top-up validator by system')
             #payment reservation
             try:
                 ## UNTUK YG BAYAR BCA
@@ -299,7 +299,7 @@ class ttCronTopUpValidator(models.Model):
                         self._cr.commit()
             except Exception as e:
                 self.create_cron_log_folder()
-                self.write_cron_log('auto tup-up validator by system')
+                self.write_cron_log('auto top-up validator by system')
         else:
             # _logger.error("Cron only works between 0300 to 2100 UTC +7")
             _logger.error("Outside of Cron work time")
