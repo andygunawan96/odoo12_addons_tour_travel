@@ -973,7 +973,10 @@ class TtReservation(models.Model):
                 return ERR.get_error(1001)
             if book_obj.agent_id.id == context['co_agent_id']:
                 for psg in req['passengers']:
-                    book_obj.passenger_ids[psg['sequence']].create_channel_pricing(psg['pricing'], req.get('type', ''))
+                    for psg_obj in book_obj.passenger_ids:
+                        if psg['sequence'] == psg_obj.sequence:
+                            psg_obj.create_channel_pricing(psg['pricing'], req.get('type', ''))
+                            break
                 book_obj.create_svc_upsell()
             else:
                 return ERR.get_error(1001)
@@ -1588,44 +1591,41 @@ class TtReservation(models.Model):
                         ledger_created = provider.action_create_ledger(context['co_uid'], payment_method, is_use_point, payment_method_use_to_ho) ##payment method untuk bayar full / installment, payment method use to ho --> payment agent to HO (balance / credit limit)
                         # if agent_obj.is_using_pnr_quota: ##selalu potong quota setiap  attemp payment
                         if agent_obj.is_using_pnr_quota and ledger_created: #tidak potong quota jika tidak membuat ledger
-                            try:
-                                _logger.info('create quota pnr')
-                                ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id.is_ho_agent','=',True)])
-                                amount = 0
-                                for ledger in ledger_obj:
-                                    amount += ledger.debit
-                                carrier_code = []
-                                carrier_str = ''
-                                if hasattr(provider, 'journey_ids'):
-                                    for journey in provider.journey_ids:
-                                        if hasattr(journey, 'segment_ids'):
-                                            for segment in journey.segment_ids:
-                                                if segment.carrier_code not in carrier_code:
-                                                    carrier_code.append(segment.carrier_code)
-                                        else:
-                                            if journey.carrier_code not in carrier_code:
-                                                carrier_code.append(journey.carrier_code)
-                                for carrier in carrier_code:
-                                    if carrier_str != '' and carrier != '':
-                                        carrier += ', '
-                                    carrier_str += carrier
-                                agent_obj.use_pnr_quota({
-                                    'res_model_resv': book_obj._name,
-                                    'res_id_resv': book_obj.id,
-                                    'res_model_prov': provider._name,
-                                    'res_id_prov': provider.id,
-                                    'ref_pnrs': provider.pnr,
-                                    'ref_carriers': carrier_str,
-                                    'ref_provider': provider.provider_id.code,
-                                    'ref_name': book_obj.name,
-                                    'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
-                                    'ref_pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,  # total pax
-                                    'ref_r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
-                                    'inventory': 'internal',
-                                    'amount': amount
-                                })
-                            except Exception as e:
-                                _logger.error(traceback.format_exc(e))
+                            _logger.info('create quota pnr')
+                            ledger_obj = self.env['tt.ledger'].search([('res_model', '=', book_obj._name),('res_id','=',book_obj.id),('is_reversed','=',False),('agent_id.is_ho_agent','=',True)])
+                            amount = 0
+                            for ledger in ledger_obj:
+                                amount += ledger.debit
+                            carrier_code = []
+                            carrier_str = ''
+                            if hasattr(provider, 'journey_ids'):
+                                for journey in provider.journey_ids:
+                                    if hasattr(journey, 'segment_ids'):
+                                        for segment in journey.segment_ids:
+                                            if segment.carrier_code not in carrier_code:
+                                                carrier_code.append(segment.carrier_code)
+                                    else:
+                                        if journey.carrier_code not in carrier_code:
+                                            carrier_code.append(journey.carrier_code)
+                            for carrier in carrier_code:
+                                if carrier_str != '' and carrier != '':
+                                    carrier += ', '
+                                carrier_str += carrier
+                            agent_obj.use_pnr_quota({
+                                'res_model_resv': book_obj._name,
+                                'res_id_resv': book_obj.id,
+                                'res_model_prov': provider._name,
+                                'res_id_prov': provider.id,
+                                'ref_pnrs': provider.pnr,
+                                'ref_carriers': carrier_str,
+                                'ref_provider': provider.provider_id.code,
+                                'ref_name': book_obj.name,
+                                'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
+                                'ref_pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,  # total pax
+                                'ref_r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
+                                'inventory': 'internal',
+                                'amount': amount
+                            })
                             # if not quota_used:
                             #     print("5k woi")
 
