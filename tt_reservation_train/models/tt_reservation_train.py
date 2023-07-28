@@ -694,28 +694,30 @@ class TtReservationTrain(models.Model):
                 raise RequestException(1008)
             # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            res = book_obj.to_dict(context)
-            psg_list = []
-            for rec in book_obj.sudo().passenger_ids:
-                psg_list.append(rec.to_dict())
-            prov_list = []
-            for rec in book_obj.provider_booking_ids:
-                prov_list.append(rec.to_dict())
-            res.update({
-                'direction': book_obj.direction,
-                'origin': book_obj.origin_id.code,
-                'origin_display_name': book_obj.origin_id.name,
-                'destination': book_obj.destination_id.code,
-                'destination_display_name': book_obj.destination_id.name,
-                'sector_type': book_obj.sector_type,
-                'passengers': psg_list,
-                'provider_bookings': prov_list,
-                # 'provider_type': book_obj.provider_type_id.code
-            })
-            # _logger.info("Get resp\n" + json.dumps(res))
-            return ERR.get_no_error(res)
-            # else:
-            #     raise RequestException(1035)
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                res = book_obj.to_dict(context)
+                psg_list = []
+                for rec in book_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
+                prov_list = []
+                for rec in book_obj.provider_booking_ids:
+                    prov_list.append(rec.to_dict())
+                res.update({
+                    'direction': book_obj.direction,
+                    'origin': book_obj.origin_id.code,
+                    'origin_display_name': book_obj.origin_id.name,
+                    'destination': book_obj.destination_id.code,
+                    'destination_display_name': book_obj.destination_id.name,
+                    'sector_type': book_obj.sector_type,
+                    'passengers': psg_list,
+                    'provider_bookings': prov_list,
+                    # 'provider_type': book_obj.provider_type_id.code
+                })
+                # _logger.info("Get resp\n" + json.dumps(res))
+                return ERR.get_no_error(res)
+            else:
+                raise RequestException(1035)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())

@@ -525,30 +525,32 @@ class ReservationInsurance(models.Model):
                 user_obj.create_date
             except:
                 raise RequestException(1008)
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                res = book_obj.to_dict(context)
+                psg_list = []
+                for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
+                    rec_data = rec.to_dict()
+                    rec_data.update({
+                        'passenger_number': rec.sequence
+                    })
+                    psg_list.append(rec_data)
+                prov_list = []
+                for rec in book_obj.provider_booking_ids:
+                    prov_list.append(rec.to_dict())
 
-            res = book_obj.to_dict(context)
-            psg_list = []
-            for rec_idx, rec in enumerate(book_obj.sudo().passenger_ids):
-                rec_data = rec.to_dict()
-                rec_data.update({
-                    'passenger_number': rec.sequence
+                res.update({
+                    'origin': book_obj.origin,
+                    'destination': book_obj.destination,
+                    'sector_type': book_obj.sector_type,
+                    'start_date': book_obj.start_date,
+                    'end_date': book_obj.end_date,
+                    'passengers': psg_list,
+                    'provider_bookings': prov_list,
                 })
-                psg_list.append(rec_data)
-            prov_list = []
-            for rec in book_obj.provider_booking_ids:
-                prov_list.append(rec.to_dict())
-
-            res.update({
-                'origin': book_obj.origin,
-                'destination': book_obj.destination,
-                'sector_type': book_obj.sector_type,
-                'start_date': book_obj.start_date,
-                'end_date': book_obj.end_date,
-                'passengers': psg_list,
-                'provider_bookings': prov_list,
-            })
-            return Response().get_no_error(res)
-
+                return Response().get_no_error(res)
+            else:
+                raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
