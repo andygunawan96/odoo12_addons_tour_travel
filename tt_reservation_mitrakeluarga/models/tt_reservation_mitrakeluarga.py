@@ -549,38 +549,40 @@ class ReservationMitraKeluarga(models.Model):
             #         book_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or \
             #         book_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            res = book_obj.to_dict(context)
-            psg_list = []
-            for rec_idx, rec in enumerate(book_obj.passenger_ids):
-                rec_data = rec.to_dict()
-                rec_data.update({
-                    'passenger_number': rec.sequence
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                res = book_obj.to_dict(context)
+                psg_list = []
+                for rec_idx, rec in enumerate(book_obj.passenger_ids):
+                    rec_data = rec.to_dict()
+                    rec_data.update({
+                        'passenger_number': rec.sequence
+                    })
+                    psg_list.append(rec_data)
+                prov_list = []
+                for rec in book_obj.provider_booking_ids:
+                    prov_list.append(rec.to_dict())
+
+                timeslot_list = []
+                for timeslot_obj in book_obj.timeslot_ids:
+                    timeslot_list.append(timeslot_obj.to_dict())
+
+                picked_timeslot = {}
+                if book_obj.picked_timeslot_id:
+                    picked_timeslot = book_obj.picked_timeslot_id.to_dict()
+
+                res.update({
+                    'origin': book_obj.origin_id.code,
+                    'passengers': psg_list,
+                    'provider_bookings': prov_list,
+                    'test_address': book_obj.test_address,
+                    'test_address_map_link': book_obj.test_address_map_link,
+                    'picked_timeslot': picked_timeslot,
+                    'timeslot_list': timeslot_list
                 })
-                psg_list.append(rec_data)
-            prov_list = []
-            for rec in book_obj.provider_booking_ids:
-                prov_list.append(rec.to_dict())
-
-            timeslot_list = []
-            for timeslot_obj in book_obj.timeslot_ids:
-                timeslot_list.append(timeslot_obj.to_dict())
-
-            picked_timeslot = {}
-            if book_obj.picked_timeslot_id:
-                picked_timeslot = book_obj.picked_timeslot_id.to_dict()
-
-            res.update({
-                'origin': book_obj.origin_id.code,
-                'passengers': psg_list,
-                'provider_bookings': prov_list,
-                'test_address': book_obj.test_address,
-                'test_address_map_link': book_obj.test_address_map_link,
-                'picked_timeslot': picked_timeslot,
-                'timeslot_list': timeslot_list
-            })
-            return Response().get_no_error(res)
-            # else:
-            #     raise RequestException(1035)
+                return Response().get_no_error(res)
+            else:
+                raise RequestException(1035)
 
         except RequestException as e:
             _logger.error(traceback.format_exc())

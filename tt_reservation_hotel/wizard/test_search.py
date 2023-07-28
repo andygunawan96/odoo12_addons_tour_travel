@@ -974,52 +974,54 @@ class TestSearch(models.Model):
                 raise RequestException(1008)
             # if resv_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids or resv_obj.agent_type_id.name == self.env.ref('tt_base.agent_b2c').agent_type_id.name or resv_obj.user_id.login == self.env.ref('tt_base.agent_b2c_user').login:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
-            passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
-            bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if resv_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                rooms = self.sudo().prepare_booking_room(resv_obj.room_detail_ids, resv_obj.passenger_ids)
+                passengers = self.sudo().prepare_passengers(resv_obj.passenger_ids)
+                bookers = self.sudo().prepare_bookers(resv_obj.booker_id)
 
-            passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
-            if len(resv_obj.passenger_ids[0].channel_service_charge_ids.ids) > 0: ##ASUMSI UPSELL HANYA 1 PER PASSENGER & HOTEL UPSELL PER RESERVASI (MASUK KE PAX 1)
-                svc_csc = self.sudo().prepare_service_charge(resv_obj.passenger_ids[0].channel_service_charge_ids, resv_obj.pnr or resv_obj.name)
-                for pnr in svc_csc:
-                    passengers[0]['channel_service_charges'] = {
-                        "amount": svc_csc[pnr]['CSC']['amount'],
-                        "currency": svc_csc[pnr]['CSC']['currency']
-                    }
-            provider_bookings = []
-            for provider_booking in resv_obj.provider_booking_ids:
-                provider_bookings.append(provider_booking.to_dict())
-            new_vals = resv_obj.to_dict(context)
-            for a in ['arrival_date', 'departure_date']:
-                new_vals.pop(a)
-            new_vals.update({
-                "state_description": dict(self.env['tt.reservation.hotel']._fields['state'].selection).get(resv_obj.state),
-                "room_count": resv_obj.room_count,
-                "checkin_date": str(resv_obj.checkin_date),
-                "checkout_date": str(resv_obj.checkout_date),
-                # "provider_type": "hotel",
-                'passengers': passengers,
-                'hotel_name': resv_obj.hotel_name,
-                'hotel_address': resv_obj.hotel_address,
-                'hotel_phone': resv_obj.hotel_phone,
-                'hotel_city_name': resv_obj.hotel_city,
-                'hotel_rating': 0,
-                'images': [],
-                'cancellation_policy': [],
-                'lat': '',
-                'long': '',
-                'hotel_rooms': rooms,
-                'sid_booked': resv_obj.sid_booked,
-                'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
-                'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
-                'cancellation_policy_str': resv_obj.cancellation_policy_str,
-                'special_request': resv_obj.special_req,
-                'currency': resv_obj.currency_id.name,
-                'provider_bookings': provider_bookings,
-                'total': resv_obj.total,
-            })
-            # else:
-            #     raise RequestException(1035)
+                passengers[0]['sale_service_charges'] = self.sudo().prepare_service_charge(resv_obj.sale_service_charge_ids, resv_obj.pnr or resv_obj.name)
+                if len(resv_obj.passenger_ids[0].channel_service_charge_ids.ids) > 0: ##ASUMSI UPSELL HANYA 1 PER PASSENGER & HOTEL UPSELL PER RESERVASI (MASUK KE PAX 1)
+                    svc_csc = self.sudo().prepare_service_charge(resv_obj.passenger_ids[0].channel_service_charge_ids, resv_obj.pnr or resv_obj.name)
+                    for pnr in svc_csc:
+                        passengers[0]['channel_service_charges'] = {
+                            "amount": svc_csc[pnr]['CSC']['amount'],
+                            "currency": svc_csc[pnr]['CSC']['currency']
+                        }
+                provider_bookings = []
+                for provider_booking in resv_obj.provider_booking_ids:
+                    provider_bookings.append(provider_booking.to_dict())
+                new_vals = resv_obj.to_dict(context)
+                for a in ['arrival_date', 'departure_date']:
+                    new_vals.pop(a)
+                new_vals.update({
+                    "state_description": dict(self.env['tt.reservation.hotel']._fields['state'].selection).get(resv_obj.state),
+                    "room_count": resv_obj.room_count,
+                    "checkin_date": str(resv_obj.checkin_date),
+                    "checkout_date": str(resv_obj.checkout_date),
+                    # "provider_type": "hotel",
+                    'passengers': passengers,
+                    'hotel_name': resv_obj.hotel_name,
+                    'hotel_address': resv_obj.hotel_address,
+                    'hotel_phone': resv_obj.hotel_phone,
+                    'hotel_city_name': resv_obj.hotel_city,
+                    'hotel_rating': 0,
+                    'images': [],
+                    'cancellation_policy': [],
+                    'lat': '',
+                    'long': '',
+                    'hotel_rooms': rooms,
+                    'sid_booked': resv_obj.sid_booked,
+                    'uid_booked': self.sudo().env.ref('tt_base.agent_b2c_user').id,
+                    'uname_booked': self.sudo().env.ref('tt_base.agent_b2c_user').name,
+                    'cancellation_policy_str': resv_obj.cancellation_policy_str,
+                    'special_request': resv_obj.special_req,
+                    'currency': resv_obj.currency_id.name,
+                    'provider_bookings': provider_bookings,
+                    'total': resv_obj.total,
+                })
+            else:
+                raise RequestException(1035)
             return ERR.get_no_error(new_vals)
         except RequestException as e:
             _logger.error(traceback.format_exc())

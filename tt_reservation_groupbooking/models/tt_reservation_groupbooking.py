@@ -1812,142 +1812,144 @@ class ReservationGroupBooking(models.Model):
                 raise RequestException(1008)
             # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            res_dict = book_obj.sudo().to_dict(context)
-            ticket_list = []
-            provider_booking_list = []
-            passengers = []
-            res_dict.pop('book_id')
-            res_dict.pop('agent_id')
-            res_dict.pop('arrival_date')
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                res_dict = book_obj.sudo().to_dict(context)
+                ticket_list = []
+                provider_booking_list = []
+                passengers = []
+                res_dict.pop('book_id')
+                res_dict.pop('agent_id')
+                res_dict.pop('arrival_date')
 
-            #ticket
-            for idx, ticket in enumerate(book_obj.ticket_list_ids):
-                ticket_list.append(ticket.to_dict())
+                #ticket
+                for idx, ticket in enumerate(book_obj.ticket_list_ids):
+                    ticket_list.append(ticket.to_dict())
 
-            # passengers
-            for idx, psg in enumerate(book_obj.passenger_ids):
-                passengers.append(psg.to_dict())
-                passengers[len(passengers)-1].update({
-                    'sequence': int(idx)
-                })
+                # passengers
+                for idx, psg in enumerate(book_obj.passenger_ids):
+                    passengers.append(psg.to_dict())
+                    passengers[len(passengers)-1].update({
+                        'sequence': int(idx)
+                    })
 
 
-            # provider bookings
-            for provider_booking in book_obj.provider_booking_ids:
-                provider_booking_list.append(provider_booking.to_dict())
+                # provider bookings
+                for provider_booking in book_obj.provider_booking_ids:
+                    provider_booking_list.append(provider_booking.to_dict())
 
-            list_payment_rules = []
-            if book_obj.state_groupbooking == 'sent':
-                payment_rules_obj = self.env['tt.payment.rules.groupbooking'].search([('active','=',True)])
-                for rec in payment_rules_obj:
-                    list_payment_rules.append(rec.to_dict(book_obj.currency_id.name, book_obj.total))
+                list_payment_rules = []
+                if book_obj.state_groupbooking == 'sent':
+                    payment_rules_obj = self.env['tt.payment.rules.groupbooking'].search([('active','=',True)])
+                    for rec in payment_rules_obj:
+                        list_payment_rules.append(rec.to_dict(book_obj.currency_id.name, book_obj.total))
+                    res_dict.update({
+                        'payment_rules_available': list_payment_rules
+                    })
+
+
+                for idx, rec in enumerate(book_obj.ticket_list_ids):
+                    segment_carrier_code_list = []
+                    for segment_obj in rec.segment_ids:
+                        segment_carrier_code_list.append(segment_obj.carrier_code_id.code)
+                    tnc_list = []
+                    for tnc_obj in self.env['tt.tnc.groupbooking'].search([('active','=',True)]):
+                        carrier_list = []
+                        cabin_class_list = []
+                        for cabin_class_obj in tnc_obj.cabin_class_ids:
+                            cabin_class_list.append(cabin_class_obj.code)
+                        for carrier in tnc_obj.carrier_ids:
+                            carrier_list.append(carrier.code)
+                        is_carrier = False
+                        is_provider = False
+                        is_cabin_class = False
+                        if tnc_obj.provider_type_id.code == book_obj.groupbooking_provider_type:
+                            is_provider = True
+
+                        if tnc_obj.cabin_class_access_type == 'all':
+                            is_cabin_class = True
+                        elif tnc_obj.cabin_class_access_type == 'allow' and book_obj.cabin_class in cabin_class_list:
+                            is_cabin_class = True
+                        elif tnc_obj.cabin_class_access_type == 'restrict' and book_obj.cabin_class not in cabin_class_list:
+                            is_cabin_class = True
+
+                        if tnc_obj.carrier_access_type == 'all':
+                            is_carrier = True
+                        elif tnc_obj.carrier_access_type == 'allow' and list(set(carrier_list) & set(segment_carrier_code_list)):
+                            is_carrier = True
+                        elif tnc_obj.carrier_access_type == 'restrict' and len(set(carrier_list).intersection(segment_carrier_code_list)) == 0:
+                            is_carrier = True
+
+                        if is_cabin_class and is_carrier and is_provider:
+                            tnc_list.append(tnc_obj.to_dict())
+                    ticket_list[idx].update({
+                        'rules': tnc_list
+                    })
                 res_dict.update({
-                    'payment_rules_available': list_payment_rules
+                    'order_number': book_obj.name,
+                    'pnr': book_obj.pnr,
+                    'state': book_obj.state,
+                    'state_groupbooking': book_obj.state_groupbooking,
+                    'groupbooking_provider_type': book_obj.groupbooking_provider_type,
+                    'ticket_list': ticket_list,
+                    'passengers': passengers,
+                    'total': book_obj.total,
+                    'currency': book_obj.currency_id.name,
+                    'provider_bookings': provider_booking_list,
+                    'request': {
+                        'pax': {
+                            'ADT': book_obj.adult,
+                            'CHD': book_obj.child,
+                            'INF': book_obj.infant
+                        },
+                        'cabin_class': book_obj.cabin_class,
+                        'journey_type': book_obj.journey_type,
+                        'origin': {
+                            'code': book_obj.origin_id.code,
+                            'city': book_obj.origin_id.city,
+                            'name': book_obj.origin_id.name
+                        },
+                        'destination': {
+                            'code': book_obj.destination_id.code,
+                            'city': book_obj.destination_id.city,
+                            'name': book_obj.destination_id.name
+                        },
+                        'carrier_code': book_obj.carrier_code_id.code,
+                        'provider_type': book_obj.groupbooking_provider_type,
+                        'departure_date': str(res_dict.pop('departure_date')),
+                        'return_date': str(book_obj.return_date) if book_obj.return_date else '',
+                    },
+                    'groupbooking_provider_type_name': book_obj.groupbooking_provider_type_name,
+                    # 'total_with_fees': self.total_with_fees,
+                    'description': book_obj.description,
                 })
-
-
-            for idx, rec in enumerate(book_obj.ticket_list_ids):
-                segment_carrier_code_list = []
-                for segment_obj in rec.segment_ids:
-                    segment_carrier_code_list.append(segment_obj.carrier_code_id.code)
-                tnc_list = []
-                for tnc_obj in self.env['tt.tnc.groupbooking'].search([('active','=',True)]):
-                    carrier_list = []
-                    cabin_class_list = []
-                    for cabin_class_obj in tnc_obj.cabin_class_ids:
-                        cabin_class_list.append(cabin_class_obj.code)
-                    for carrier in tnc_obj.carrier_ids:
-                        carrier_list.append(carrier.code)
-                    is_carrier = False
-                    is_provider = False
-                    is_cabin_class = False
-                    if tnc_obj.provider_type_id.code == book_obj.groupbooking_provider_type:
-                        is_provider = True
-
-                    if tnc_obj.cabin_class_access_type == 'all':
-                        is_cabin_class = True
-                    elif tnc_obj.cabin_class_access_type == 'allow' and book_obj.cabin_class in cabin_class_list:
-                        is_cabin_class = True
-                    elif tnc_obj.cabin_class_access_type == 'restrict' and book_obj.cabin_class not in cabin_class_list:
-                        is_cabin_class = True
-
-                    if tnc_obj.carrier_access_type == 'all':
-                        is_carrier = True
-                    elif tnc_obj.carrier_access_type == 'allow' and list(set(carrier_list) & set(segment_carrier_code_list)):
-                        is_carrier = True
-                    elif tnc_obj.carrier_access_type == 'restrict' and len(set(carrier_list).intersection(segment_carrier_code_list)) == 0:
-                        is_carrier = True
-
-                    if is_cabin_class and is_carrier and is_provider:
-                        tnc_list.append(tnc_obj.to_dict())
-                ticket_list[idx].update({
-                    'rules': tnc_list
-                })
-            res_dict.update({
-                'order_number': book_obj.name,
-                'pnr': book_obj.pnr,
-                'state': book_obj.state,
-                'state_groupbooking': book_obj.state_groupbooking,
-                'groupbooking_provider_type': book_obj.groupbooking_provider_type,
-                'ticket_list': ticket_list,
-                'passengers': passengers,
-                'total': book_obj.total,
-                'currency': book_obj.currency_id.name,
-                'provider_bookings': provider_booking_list,
-                'request': {
-                    'pax': {
-                        'ADT': book_obj.adult,
-                        'CHD': book_obj.child,
-                        'INF': book_obj.infant
-                    },
-                    'cabin_class': book_obj.cabin_class,
-                    'journey_type': book_obj.journey_type,
-                    'origin': {
-                        'code': book_obj.origin_id.code,
-                        'city': book_obj.origin_id.city,
-                        'name': book_obj.origin_id.name
-                    },
-                    'destination': {
-                        'code': book_obj.destination_id.code,
-                        'city': book_obj.destination_id.city,
-                        'name': book_obj.destination_id.name
-                    },
-                    'carrier_code': book_obj.carrier_code_id.code,
-                    'provider_type': book_obj.groupbooking_provider_type,
-                    'departure_date': str(res_dict.pop('departure_date')),
-                    'return_date': str(book_obj.return_date) if book_obj.return_date else '',
-                },
-                'groupbooking_provider_type_name': book_obj.groupbooking_provider_type_name,
-                # 'total_with_fees': self.total_with_fees,
-                'description': book_obj.description,
-            })
-            if book_obj.price_pick_departure_id:
-                res_dict['price_pick_departure'] = book_obj.price_pick_departure_id.get_fare_detail()
-                found = False
-                for ticket in ticket_list:
-                    for fare in ticket['fare_list']:
-                        if fare['fare_seq_id'] == res_dict['price_pick_departure']['fare']['fare_seq_id']:
-                            res_dict['price_pick_departure']['rules'] = ticket['rules']
-                            found = True
+                if book_obj.price_pick_departure_id:
+                    res_dict['price_pick_departure'] = book_obj.price_pick_departure_id.get_fare_detail()
+                    found = False
+                    for ticket in ticket_list:
+                        for fare in ticket['fare_list']:
+                            if fare['fare_seq_id'] == res_dict['price_pick_departure']['fare']['fare_seq_id']:
+                                res_dict['price_pick_departure']['rules'] = ticket['rules']
+                                found = True
+                                break
+                        if found:
                             break
-                    if found:
-                        break
-            if book_obj.price_pick_return_id:
-                res_dict['price_pick_return'] = book_obj.price_pick_return_id.get_fare_detail()
-                found = False
-                for ticket in ticket_list:
-                    for fare in ticket['fare_list']:
-                        if fare['fare_seq_id'] == res_dict['price_pick_return']['fare']['fare_seq_id']:
-                            res_dict['price_pick_return']['rules'] = ticket['rules']
-                            found = True
+                if book_obj.price_pick_return_id:
+                    res_dict['price_pick_return'] = book_obj.price_pick_return_id.get_fare_detail()
+                    found = False
+                    for ticket in ticket_list:
+                        for fare in ticket['fare_list']:
+                            if fare['fare_seq_id'] == res_dict['price_pick_return']['fare']['fare_seq_id']:
+                                res_dict['price_pick_return']['rules'] = ticket['rules']
+                                found = True
+                                break
+                        if found:
                             break
-                    if found:
-                        break
-            # print(res)
-            _logger.info("Get resp\n" + json.dumps(res_dict))
-            return Response().get_no_error(res_dict)
-            # else:
-            #     raise RequestException(1035)
+                # print(res)
+                _logger.info("Get resp\n" + json.dumps(res_dict))
+                return Response().get_no_error(res_dict)
+            else:
+                raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
