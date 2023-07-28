@@ -1089,53 +1089,54 @@ class ReservationActivity(models.Model):
             # if book_obj.agent_id.id == context.get('co_agent_id',-1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
             #     if book_obj.agent_id.id != context.get('co_agent_id', -1):
             #         raise RequestException(1001)
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                book_option_ids = []
+                for rec in book_obj.option_ids:
+                    book_option_ids.append({
+                        'name': rec.name,
+                        'value': rec.value,
+                        'description': rec.description,
+                    })
 
-            book_option_ids = []
-            for rec in book_obj.option_ids:
-                book_option_ids.append({
-                    'name': rec.name,
-                    'value': rec.value,
-                    'description': rec.description,
+                # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (book_obj[0]['id'],))
+                # api_price_ids = self.env.cr.dictfetchall()
+                psg_list = []
+                for rec in book_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
+
+                voucher_url_parsed = []
+                activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(book_obj.id))])
+                if res.get('voucher_url') and not activity_voucher_urls:
+                    new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
+                        'name': res['voucher_url'],
+                        'booking_id': book_obj.id
+                    })
+                    voucher_url_parsed = [new_vouch_obj.name]
+                elif activity_voucher_urls:
+                    voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
+
+                if book_obj.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_booked', 'fail_issued', 'fail_refunded']:
+                    book_obj.sudo().write({
+                        'state': res['status']
+                    })
+                    self.env.cr.commit()
+
+                prov_list = []
+                for prov in book_obj.provider_booking_ids:
+                    prov_list.append(prov.to_dict())
+                response = book_obj.to_dict(context)
+                response.update({
+                    'passengers': psg_list,
+                    'provider_booking': prov_list,
+                    'booking_uuid': book_obj.booking_uuid,
+                    'booking_options': book_option_ids,
+                    'voucher_url': voucher_url_parsed and voucher_url_parsed or []
                 })
-
-            # self.env.cr.execute("""SELECT * FROM tt_service_charge WHERE booking_activity_id=%s""", (book_obj[0]['id'],))
-            # api_price_ids = self.env.cr.dictfetchall()
-            psg_list = []
-            for rec in book_obj.sudo().passenger_ids:
-                psg_list.append(rec.to_dict())
-
-            voucher_url_parsed = []
-            activity_voucher_urls = self.env['tt.reservation.activity.vouchers'].sudo().search([('booking_id', '=', int(book_obj.id))])
-            if res.get('voucher_url') and not activity_voucher_urls:
-                new_vouch_obj = self.env['tt.reservation.activity.vouchers'].sudo().create({
-                    'name': res['voucher_url'],
-                    'booking_id': book_obj.id
-                })
-                voucher_url_parsed = [new_vouch_obj.name]
-            elif activity_voucher_urls:
-                voucher_url_parsed = [url_voucher.name for url_voucher in activity_voucher_urls]
-
-            if book_obj.state not in ['booked', 'issued', 'rejected', 'refund', 'cancel', 'cancel2', 'fail_booked', 'fail_issued', 'fail_refunded']:
-                book_obj.sudo().write({
-                    'state': res['status']
-                })
-                self.env.cr.commit()
-
-            prov_list = []
-            for prov in book_obj.provider_booking_ids:
-                prov_list.append(prov.to_dict())
-            response = book_obj.to_dict(context)
-            response.update({
-                'passengers': psg_list,
-                'provider_booking': prov_list,
-                'booking_uuid': book_obj.booking_uuid,
-                'booking_options': book_option_ids,
-                'voucher_url': voucher_url_parsed and voucher_url_parsed or []
-            })
-            result = ERR.get_no_error(response)
-            return result
-            # else:
-            #     raise RequestException(1035)
+                result = ERR.get_no_error(response)
+                return result
+            else:
+                raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()
