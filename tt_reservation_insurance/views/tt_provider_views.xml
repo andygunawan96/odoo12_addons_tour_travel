@@ -10,7 +10,7 @@
                             groups="tt_base.group_reservation_provider_level_4"
                             context="{'default_provider_id': id,}"/>
                     <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued"
-                            type="object" groups="tt_base.group_reservation_provider_level_4"/>
+                            type="object" groups="tt_base.group_ledger_level_4"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued"/>
                 </header>
                 <sheet>
