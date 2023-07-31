@@ -97,7 +97,7 @@ class TtPaymentApiCon(models.Model):
                                         'fee': pay_acq_num.fee_amount
                                     }
                                     res = self.env['tt.top.up'].action_va_top_up(request, context, pay_acq_num[len(pay_acq_num)-1].id)
-                                    pay_acq_num[len(pay_acq_num) - 1].state = 'waiting'
+                                    pay_acq_num[len(pay_acq_num) - 1].state = 'process'
 
                     if data['provider_type'] != 'top.up':
                         ## RESERVASI
@@ -253,6 +253,8 @@ class TtPaymentApiCon(models.Model):
             res = self.env['tt.reservation'].use_pnr_quota_api(data,context)
         elif action == 'set_sync_reservation':
             res = self.env['tt.reservation'].set_sync_reservation_api(data,context)
+        elif action == 'update_payment_acq_number':
+            res = self.env['payment.acquirer.number'].update_payment_acq_number(data,context)
         else:
             raise RequestException(999)
         return res
