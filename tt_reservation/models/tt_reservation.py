@@ -48,8 +48,8 @@ class TtReservation(models.Model):
     va_number = fields.Char('VA Number', readonly=True)
 
     date = fields.Datetime('Booking Date', default=lambda self: fields.Datetime.now(), readonly=True, states={'draft': [('readonly', False)]})
-    expired_date = fields.Datetime('Expired Date', readonly=True)  # fixme terpakai?
-    hold_date = fields.Datetime('Hold Date', readonly=True, states={'draft': [('readonly',False)]})
+    expired_date = fields.Datetime('Expired Timelimit', readonly=True)  # fixme terpakai?
+    hold_date = fields.Datetime('Price Guarantee Timelimit', readonly=True, states={'draft': [('readonly',False)]})
 
     state = fields.Selection(variables.BOOKING_STATE, 'State', default='draft')
 
@@ -807,7 +807,7 @@ class TtReservation(models.Model):
             include_total_nta = context['co_agent_id'] == context['co_ho_id']
         payment_acquirer_number = {}
         if self.payment_acquirer_number_id:
-            if self.payment_acquirer_number_id.state == 'close':
+            if self.payment_acquirer_number_id.state in ['close', 'process', 'waiting']: ## agar process & waiting tetap muncul di frontend
                 if self.payment_acquirer_number_id.time_limit:
                     different_time = self.payment_acquirer_number_id.time_limit - datetime.now()
                     if different_time > timedelta(seconds=0):  ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
@@ -820,7 +820,8 @@ class TtReservation(models.Model):
                             'url': self.payment_acquirer_number_id.url,
                             'amount': self.payment_acquirer_number_id.get_total_amount(),
                             'order_number': self.payment_acquirer_number_id.number,
-                            'currency': self.payment_acquirer_number_id.currency_id.name
+                            'currency': self.payment_acquirer_number_id.currency_id.name,
+                            'state': self.payment_acquirer_number_id.state
                         }
                     else:
                         self.cancel_payment_method()
