@@ -299,18 +299,19 @@ class ReservationActivity(models.Model):
             'state': 'partial_issued'
         })
 
+    @api.multi
+    def action_set_as_cancel(self):
+        for rec in self:
+            rec.state = 'cancel'
+
     def action_cancel(self):
         if not self.env.user.has_group('tt_base.group_reservation_level_4'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 98')
-        for rec in self.invoice_id:
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 112')
+        super(ReservationActivity, self).action_cancel()
+        for rec in self.provider_booking_ids:
             rec.action_cancel()
-        self._create_anti_ledger_activity()
-        self._create_anti_commission_ledger_activity()
-        self.write({
-            'state': 'cancel',
-            'cancelled_date': datetime.now(),
-            'cancelled_uid': self.env.user.id
-        })
+        if self.payment_acquirer_number_id:
+            self.payment_acquirer_number_id.state = 'cancel'
 
     def action_failed(self, data):
         booking_rec = self.browse(int(data['book_id']))
@@ -431,6 +432,38 @@ class ReservationActivity(models.Model):
             })
             self.env.cr.commit()
         return True
+
+    def cancel_booking_by_api(self, data, context, **kwargs):
+        try:
+            if data.get('book_id'):
+                book_obj = self.env['tt.reservation.activity'].sudo().browse(int(data['book_id']))
+            else:
+                book_objs = self.env['tt.reservation.activity'].sudo().search([('name', '=', data['order_number'])], limit=1)
+                book_obj = book_objs[0]
+
+            book_obj.action_cancel()
+            provider_booking_list = []
+            for prov in book_obj.provider_booking_ids:
+                provider_booking_list.append(prov.to_dict())
+            response = book_obj.to_dict(context)
+            response.update({
+                'provider_booking': provider_booking_list,
+            })
+            return ERR.get_no_error(response)
+        except RequestException as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return e.error_dict()
+        except Exception as e:
+            _logger.error(traceback.format_exc())
+            try:
+                book_obj.notes += traceback.format_exc()+'\n'
+            except:
+                _logger.error('Creating Notes Error')
+            return ERR.get_error(1005)
 
     # to generate sale service charge
     def calculate_service_charge(self):
@@ -1041,7 +1074,7 @@ class ReservationActivity(models.Model):
                 for rec in book_obj.provider_booking_ids:
                     provider = rec.provider_id.code
 
-                req = {
+                res = {
                     'provider': provider,
                     'uuid': book_obj.booking_uuid,
                     'pnr': book_obj.pnr,
@@ -1049,7 +1082,7 @@ class ReservationActivity(models.Model):
                     'book_id': book_obj.id,
                     'state': book_obj.state
                 }
-                result = ERR.get_no_error(req)
+                result = ERR.get_no_error(res)
             else:
                 raise RequestException(1001)
             return result
