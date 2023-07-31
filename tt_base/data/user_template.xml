@@ -1501,7 +1501,7 @@
                              ref('tt_base.group_adjustment_level_4'),
                              ref('tt_base.group_lg_po_level_5'),
                              ref('tt_base.group_reconcile_level_4'),
-                             ref('tt_base.group_ledger_level_4'),
+                             ref('tt_base.group_ledger_level_5'),
                              ref('tt_base.group_agent_registration_master_level_1'),
                              ref('tt_base.group_agent_registration_level_3'),
                              ref('tt_base.group_agent_level_3'),
