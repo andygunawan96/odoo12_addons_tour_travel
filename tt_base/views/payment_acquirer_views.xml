@@ -228,7 +228,6 @@
                         <filter string="Closed" name="filter_closed" domain="[('state','=','close')]"/>
                         <filter string="Done" name="filter_done" domain="[('state','=','done')]"/>
                         <filter string="Expired" name="filter_expired" domain="[('state','=','cancel')]"/>
-                        <filter string="Process" name="filter_process" domain="[('state','=','process')]"/>
                         <filter string="Waiting" name="filter_waiting" domain="[('state','=','waiting')]"/>
                     </group>
                 </search>
