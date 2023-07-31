@@ -2,7 +2,8 @@ from odoo import api, fields, models, _
 
 BED_TYPE = [
     ('double', 'Double/Twin'),
-    ('triple', 'Triple')
+    ('triple', 'Triple'),
+    ('quad', 'Quad')
 ]
 
 
