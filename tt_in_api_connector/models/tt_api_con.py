@@ -93,7 +93,7 @@ class TtApiCon(models.Model):
         res['signature'] = signature
         return res
 
-    def send_cron_error_notification(self,cron_name):
+    def send_cron_error_notification(self,cron_name, ho_id):
         request = {
             'code': 9903,
             'message': '{}'.format(cron_name),
@@ -101,7 +101,7 @@ class TtApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % (self.url),
                                             request
-                                            ,'notification_code')
+                                            ,'notification_code', ho_id=ho_id)
 
     def send_ban_user_error_notification(self, user_name, reason, ho_id):
         request = {
@@ -119,8 +119,8 @@ class TtApiCon(models.Model):
         }
         return self.send_request_to_gateway('%s/notification' % self.url, request, 'notification_code')
 
-    def send_webhook_to_children(self, request):
-        return self.send_request_to_gateway('%s/content' % self.url, request, 'send_webhook_to_children', timeout=request.get('timeout', 300))
+    def send_webhook_to_children(self, request, ho_id):
+        return self.send_request_to_gateway('%s/content' % self.url, request, 'send_webhook_to_children', timeout=request.get('timeout', 300), ho_id=ho_id)
 
     def send_reconcile_request(self,request, ho_id):
         return self.send_request_to_gateway('%s/account/%s' % (self.url,request['provider_type']),

@@ -22,7 +22,7 @@ class TtBusApiCon(models.Model):
             raise RequestException(999)
         return res
 
-    def sync_data(self, req):
+    def sync_data(self, req, ho_id):
         request = {
             "provider": "traveloka_bus"
         }
@@ -30,8 +30,8 @@ class TtBusApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/bus/private' % (self.url),
                                             request,
                                             action,
-                                            timeout=180)
-    def sync_get_data_journey(self, req):
+                                            timeout=180, ho_id=ho_id)
+    def sync_get_data_journey(self, req, ho_id):
         request = {
             "provider": "traveloka_bus",
             "id": req['id']
@@ -40,4 +40,4 @@ class TtBusApiCon(models.Model):
         return self.send_request_to_gateway('%s/booking/bus/private' % (self.url),
                                             request,
                                             action,
-                                            timeout=180)
+                                            timeout=180, ho_id=ho_id)

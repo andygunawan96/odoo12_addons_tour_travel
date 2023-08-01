@@ -80,7 +80,9 @@ class VisaSyncProducts(models.TransientModel):
             'provider': 'rodextrip_visa'
         }
         ## tambah context
-        res = self.env['tt.visa.api.con'].get_product_vendor(req)
+        ## kurang test
+        ho_id = self.env.user.ho_id.id
+        res = self.env['tt.visa.api.con'].get_product_vendor(req, ho_id)
         if res['error_code'] == 0:
             folder_path = '/var/log/tour_travel/rt_visa_master_data'
             if not os.path.exists(folder_path):
@@ -123,7 +125,9 @@ class VisaSyncProducts(models.TransientModel):
                         'code': rec
                     }
                     ## tambah context
-                    res = self.env['tt.visa.api.con'].get_product_detail_vendor(req)
+                    ## kurang test
+                    ho_id = self.env.user.ho_id.id
+                    res = self.env['tt.visa.api.con'].get_product_detail_vendor(req, ho_id)
                     #create object
                     if res['error_code'] == 0:
                         master_data = self.env['tt.reservation.visa.pricelist'].search([('reference_code','=',res['response']['reference_code'] + '_rdx')], limit=1)

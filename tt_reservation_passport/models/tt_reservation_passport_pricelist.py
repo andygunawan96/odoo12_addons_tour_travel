@@ -74,6 +74,7 @@ class PassportSyncProducts(models.TransientModel):
             'provider': 'rodextrip_passport'
         }
         ## tambah context
+        ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
         res = self.env['tt.passport.api.con'].get_product_vendor(req)
         if res['error_code'] == 0:
             folder_path = '/var/log/tour_travel/rodextrip_passport_master_data'
@@ -117,6 +118,7 @@ class PassportSyncProducts(models.TransientModel):
                         'code': rec
                     }
                     ## tambah context
+                    ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
                     res = self.env['tt.passport.api.con'].get_product_detail_vendor(req)
                     #create object
                     if res['error_code'] == 0:

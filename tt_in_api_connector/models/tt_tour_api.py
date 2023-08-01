@@ -74,11 +74,11 @@ class TtMasterTourApiCon(models.Model):
 
         return res
 
-    def search_provider(self, data):
-        return self.send_request_to_gateway('%s/booking/tour' % (self.url), data, 'search_provider')
+    def search_provider(self, data, ho_id):
+        return self.send_request_to_gateway('%s/booking/tour' % (self.url), data, 'search_provider', ho_id=ho_id)
 
-    def get_details_provider(self, data):
-        return self.send_request_to_gateway('%s/booking/tour' % (self.url), data, 'get_details_provider')
+    def get_details_provider(self, data, ho_id):
+        return self.send_request_to_gateway('%s/booking/tour' % (self.url), data, 'get_details_provider', ho_id=ho_id)
 
     def send_tour_request_notification(self,data,context, ho_id):
         request = {

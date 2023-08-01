@@ -51,8 +51,8 @@ class TtProviderAirline(models.Model):
     booked_date = fields.Datetime('Booking Date', readonly=True, states={'draft': [('readonly', False)]})
     issued_uid = fields.Many2one('res.users', 'Issued By', readonly=True, states={'draft': [('readonly', False)]})
     issued_date = fields.Datetime('Issued Date', readonly=True, states={'draft': [('readonly', False)]})
-    hold_date = fields.Char('Hold Date', readonly=True, states={'draft': [('readonly', False)]})
-    expired_date = fields.Char('Expired Date', readonly=True, states={'draft': [('readonly', False)]})
+    hold_date = fields.Char('Price Guarantee Timelimit', readonly=True, states={'draft': [('readonly', False)]})
+    expired_date = fields.Char('Expired Timelimit', readonly=True, states={'draft': [('readonly', False)]})
     cancel_uid = fields.Many2one('res.users', 'Cancel By', readonly=True, states={'draft': [('readonly', False)]})
     cancel_date = fields.Datetime('Cancel Date', readonly=True, states={'draft': [('readonly', False)]})
     #
@@ -1247,7 +1247,6 @@ class TtProviderAirline(models.Model):
                 context = {
                     "co_ho_id": self.booking_id.agent_id.ho_id.id
                 }
-                ## tambah context
                 GatewayConnector().telegram_notif_api(data, context)
                 return False
 
@@ -1268,7 +1267,6 @@ class TtProviderAirline(models.Model):
             context = {
                 "co_ho_id": self.booking_id.agent_id.ho_id.id
             }
-            ## tambah context
             GatewayConnector().telegram_notif_api(data, context)
         except:
             _logger.error('Action reprice provider, error notif telegram, %s, %s' % (self.pnr, traceback.format_exc()))
@@ -1327,7 +1325,6 @@ class TtProviderAirline(models.Model):
                 context = {
                     "co_ho_id": self.booking_id.agent_id.ho_id.id
                 }
-                ## tambah context
                 GatewayConnector().telegram_notif_api(data, context)
                 raise UserError('Error void, %s' % res['error_msg'])
 
@@ -1346,7 +1343,6 @@ class TtProviderAirline(models.Model):
             context = {
                 "co_ho_id": self.booking_id.agent_id.ho_id.id
             }
-            ## tambah context
             GatewayConnector().telegram_notif_api(data, context)
         except UserError as e:
             raise UserError(str(e))

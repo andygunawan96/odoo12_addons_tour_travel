@@ -24,6 +24,7 @@ class TtCronLogInhphc(models.Model):
             #         _logger.error(
             #             '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto done state vendor phc')
 
@@ -52,6 +53,7 @@ class TtCronLogInhphc(models.Model):
                     continue
                 self.env['create.timeslot.phc.wizard'].generate_drivethru_timeslot(this_date.strftime('%Y-%m-%d'), dt_max_timeslot, dt_adult_timeslot, pcr_timeslot)
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot phc')
 
@@ -62,9 +64,11 @@ class TtCronLogInhphc(models.Model):
                 'message': "Daily Summary\n\n %s" % (self.env['tt.reservation.phc'].get_verified_summary())
             }
             ## tambah context
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.env['tt.api.con'].send_request_to_gateway('%s/notification' % (self.env['tt.api.con'].url), data,
                                                            'notification_code')
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto notification timeslot quota data phc')
 
@@ -74,5 +78,6 @@ class TtCronLogInhphc(models.Model):
             for book_obj in book_objs:
                 book_obj.sync_verified_with_phc()
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto sync verification data phc')

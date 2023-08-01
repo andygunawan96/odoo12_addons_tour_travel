@@ -9,8 +9,10 @@ class TtCronLogInhAccRecon(models.Model):
     _inherit = 'tt.cron.log'
 
     def cron_send_reconciled_transactions_to_vendor(self):
-        try:
-            self.env['tt.reconcile.transaction'].send_recon_batches_to_accounting(1)
-        except:
-            self.create_cron_log_folder()
-            self.write_cron_log('auto-send reconciled transactions to vendor')
+        ho_objs = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
+        for ho_obj in ho_objs:
+            try:
+                self.env['tt.reconcile.transaction'].send_recon_batches_to_accounting(1, ho_obj.id)
+            except:
+                self.create_cron_log_folder()
+                self.write_cron_log('auto-send reconciled transactions to vendor', ho_id=ho_obj.id)
