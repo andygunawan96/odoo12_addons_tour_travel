@@ -200,7 +200,7 @@ class ttCronTopUpValidator(models.Model):
 
                 except Exception as e:
                     self.create_cron_log_folder()
-                    self.write_cron_log('auto top-up validator by system (payment close)')
+                    self.write_cron_log('auto top-up validator by system (payment close)', ho_id=payment_acq_number_obj.ho_id.id)
         else:
             # _logger.error("Cron only works between 0300 to 2100 UTC +7")
             _logger.error("Outside of Cron work time")
@@ -309,7 +309,7 @@ class ttCronTopUpValidator(models.Model):
                         self._cr.commit()
             except Exception as e:
                 self.create_cron_log_folder()
-                self.write_cron_log('auto top-up validator by system (payment waiting)')
+                self.write_cron_log('auto top-up validator by system (payment waiting)', ho_id=payment_acq_obj.ho_id.id)
 
     def cron_auto_get_bank_transaction(self,start_time="03:00",end_time="22:00"):
         start_time_obj = datetime.strptime(start_time,"%H:%M")
@@ -333,7 +333,7 @@ class ttCronTopUpValidator(models.Model):
                         self.cron_auto_top_up_validator()
                     except Exception as e:
                         self.create_cron_log_folder()
-                        self.write_cron_log('auto get bank transaction',rec.bank_account_number)
+                        self.write_cron_log('auto get bank transaction',rec.bank_account_number, ho_id=rec.ho_id.id)
                 else:
                     error_log = ''
                     if rec.bank_id:
@@ -346,19 +346,23 @@ class ttCronTopUpValidator(models.Model):
         else:
             # _logger.error("Cron only works between 0300 AM to 2100 PM UTC+7")
             _logger.error("Outside of Cron work time")
+
     def cron_auto_proceed_bank_transaction(self):
-        try:
-            bank_transaction_data = self.env['tt.bank.transaction'].search([('transaction_date', '<', datetime.today()), ('transaction_process', '=', 'unprocess')])
-            for i in bank_transaction_data:
-                i.change_process_status()
-        except Exception as e:
-            self.create_cron_log_folder()
-            self.write_cron_log("auto proceed yesterday transaction data")
+        ho_objs = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
+        for ho_obj in ho_objs:
+            try:
+                bank_transaction_data = self.env['tt.bank.transaction'].search([('transaction_date', '<', datetime.today()), ('transaction_process', '=', 'unprocess'), ('bank_account_id.ho_id','=',ho_obj.id)])
+                for i in bank_transaction_data:
+                    i.change_process_status()
+            except Exception as e:
+                self.create_cron_log_folder()
+                self.write_cron_log("auto proceed yesterday transaction data",ho_id=ho_obj.id)
 
     def cron_auto_change_nextcall_get_bank_transaction(self,int_values=30):
         try:
             self.env.ref('tt_bank_transaction.cron_auto_get_bank_transaction').interval_number = int_values
         except Exception as e:
             self.create_cron_log_folder()
+            ## tidak tahu pakai context apa
             self.write_cron_log('auto change nexctcall get bank transaction')
 

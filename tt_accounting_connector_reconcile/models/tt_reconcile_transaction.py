@@ -11,9 +11,9 @@ _logger = logging.getLogger(__name__)
 class TtReservationPassport(models.Model):
     _inherit = 'tt.reconcile.transaction'
 
-    def send_recon_batches_to_accounting(self, days):
+    def send_recon_batches_to_accounting(self, days, ho_id):
         start_date = date.today() - timedelta(days=days)
-        recon_list = self.env['tt.reconcile.transaction.lines'].search([('state', '=', 'match'), ('reconcile_transaction_id.transaction_date', '>=', start_date)])
+        recon_list = self.env['tt.reconcile.transaction.lines'].search([('state', '=', 'match'), ('reconcile_transaction_id.transaction_date', '>=', start_date), ('ho_id','=', ho_id)])
         for rec in recon_list:
             found_rec = []
             if rec.type == 'reissue':

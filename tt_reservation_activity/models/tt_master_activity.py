@@ -444,8 +444,11 @@ class MasterActivity(models.Model):
                     'message': 'Activity Sync Products Failed (File Number: %s). %s : %s' % (str(i), traceback.format_exc(), str(e)),
                     'provider': provider_obj and provider_obj[0] or '',
                 }
+                context = {
+                    "co_ho_id": self.env.user.ho_id.id
+                }
                 ## tambah context
-                GatewayConnector().telegram_notif_api(data, {})
+                GatewayConnector().telegram_notif_api(data, context)
 
     # temporary function
     def update_activity_uuid_temp(self):
