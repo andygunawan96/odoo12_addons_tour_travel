@@ -867,265 +867,267 @@ class TtVisa(models.Model):
                 raise RequestException(1008)
             # if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            res_dict = book_obj.sudo().to_dict(context)
-            passenger = []
-            requirement_check = True
-            for idx, pax in enumerate(book_obj.passenger_ids, 0):
-                requirement = []
-                interview = {
-                    'needs': pax.interview
-                }
-                biometrics = {
-                    'needs': pax.biometrics
-                }
-                channel_service_charges = {}
-                if len(pax.channel_service_charge_ids.ids) > 0:
-                    channel_service_charges = pax.get_channel_service_charges()
-                sale_service_charges = pax.get_service_charges()
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if book_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                res_dict = book_obj.sudo().to_dict(context)
+                passenger = []
+                requirement_check = True
+                for idx, pax in enumerate(book_obj.passenger_ids, 0):
+                    requirement = []
+                    interview = {
+                        'needs': pax.interview
+                    }
+                    biometrics = {
+                        'needs': pax.biometrics
+                    }
+                    channel_service_charges = {}
+                    if len(pax.channel_service_charge_ids.ids) > 0:
+                        channel_service_charges = pax.get_channel_service_charges()
+                    sale_service_charges = pax.get_service_charges()
 
 
-                """ Requirements """
-                for require in pax.to_requirement_ids:
-                    if require.is_copy == False and require.is_ori == False:
-                        requirement_check = False
-                    requirement.append({
-                        'name': require.requirement_id.name,
-                        'is_copy': require.is_copy,
-                        'is_original': require.is_ori
-                    })
-                """ Interview """
-                interview_list = []
-                if pax.interview is True:
-                    for intvw in pax.interview_ids:
-                        interview_list.append({
-                            'datetime': str(intvw.datetime),
-                            'ho_employee': intvw.ho_employee,
-                            'meeting_point': intvw.meeting_point,
-                            'location': intvw.location_interview_id
+                    """ Requirements """
+                    for require in pax.to_requirement_ids:
+                        if require.is_copy == False and require.is_ori == False:
+                            requirement_check = False
+                        requirement.append({
+                            'name': require.requirement_id.name,
+                            'is_copy': require.is_copy,
+                            'is_original': require.is_ori
                         })
-                interview['interview_list'] = interview_list
-                """ Biometrics """
-                biometrics_list = []
-                if pax.biometrics is True:
-                    for bio in pax.biometrics_ids:
-                        biometrics_list.append({
-                            'datetime': str(bio.datetime),
-                            'ho_employee': bio.ho_employee,
-                            'meeting_point': bio.meeting_point,
-                            'location': bio.location_biometrics_id
-                        })
-                biometrics['biometrics_list'] = biometrics_list
+                    """ Interview """
+                    interview_list = []
+                    if pax.interview is True:
+                        for intvw in pax.interview_ids:
+                            interview_list.append({
+                                'datetime': str(intvw.datetime),
+                                'ho_employee': intvw.ho_employee,
+                                'meeting_point': intvw.meeting_point,
+                                'location': intvw.location_interview_id
+                            })
+                    interview['interview_list'] = interview_list
+                    """ Biometrics """
+                    biometrics_list = []
+                    if pax.biometrics is True:
+                        for bio in pax.biometrics_ids:
+                            biometrics_list.append({
+                                'datetime': str(bio.datetime),
+                                'ho_employee': bio.ho_employee,
+                                'meeting_point': bio.meeting_point,
+                                'location': bio.location_biometrics_id
+                            })
+                    biometrics['biometrics_list'] = biometrics_list
 
-                """ PROVIDER BOOKING IDS"""
-                prov_list = []
-                for rec in book_obj.provider_booking_ids:
-                    prov_list.append(rec.to_dict())
+                    """ PROVIDER BOOKING IDS"""
+                    prov_list = []
+                    for rec in book_obj.provider_booking_ids:
+                        prov_list.append(rec.to_dict())
 
-                pax_type = ''
-                for pnr in sale_service_charges:
-                    for svc in sale_service_charges[pnr]:
-                        pax_type = sale_service_charges[pnr][svc]['pax_type']
+                    pax_type = ''
+                    for pnr in sale_service_charges:
+                        for svc in sale_service_charges[pnr]:
+                            pax_type = sale_service_charges[pnr][svc]['pax_type']
+                            break
                         break
-                    break
 
-                passenger.append({
-                    'title': pax.title,
-                    'first_name': pax.first_name,
-                    'last_name': pax.last_name,
-                    'name': '%s %s' % (pax.first_name, pax.last_name),
-                    'birth_date': str(pax.birth_date),
-                    'gender': pax.gender,
-                    'age': pax.age.split(' ')[0][:-1],
-                    'passport_number': pax.passport_number or '',
-                    'passport_expdate': str(pax.passport_expdate) or '',
-                    'visa': {
-                        'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(
-                            pax.pricelist_id.entry_type) if pax.pricelist_id else '',
-                        'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(
-                            pax.pricelist_id.visa_type) if pax.pricelist_id else '',
-                        'process': dict(pax.pricelist_id._fields['process_type'].selection).get(
-                            pax.pricelist_id.process_type) if pax.pricelist_id else '',
-                        'pax_type': pax.pricelist_id.pax_type if pax.pricelist_id else '',
-                        'duration': pax.pricelist_id.duration if pax.pricelist_id else '',
-                        'immigration_consulate': pax.pricelist_id.immigration_consulate if pax.pricelist_id else '',
-                        'requirement': requirement,
-                        'interview': interview,
-                        'biometrics': biometrics
-                    },
-                    'channel_service_charges': channel_service_charges,
-                    'sale_service_charges': sale_service_charges,
-                    'pax_type': pax_type,
-                    'sequence': idx
-                })
-            state_visa = {}
-            for rec in STATE_VISA:
-                if rec[0] == 'expired':
-                    break
-                if rec[0] == 'draft' or rec[0] == 'doc_check':
+                    passenger.append({
+                        'title': pax.title,
+                        'first_name': pax.first_name,
+                        'last_name': pax.last_name,
+                        'name': '%s %s' % (pax.first_name, pax.last_name),
+                        'birth_date': str(pax.birth_date),
+                        'gender': pax.gender,
+                        'age': pax.age.split(' ')[0][:-1],
+                        'passport_number': pax.passport_number or '',
+                        'passport_expdate': str(pax.passport_expdate) or '',
+                        'visa': {
+                            'entry_type': dict(pax.pricelist_id._fields['entry_type'].selection).get(
+                                pax.pricelist_id.entry_type) if pax.pricelist_id else '',
+                            'visa_type': dict(pax.pricelist_id._fields['visa_type'].selection).get(
+                                pax.pricelist_id.visa_type) if pax.pricelist_id else '',
+                            'process': dict(pax.pricelist_id._fields['process_type'].selection).get(
+                                pax.pricelist_id.process_type) if pax.pricelist_id else '',
+                            'pax_type': pax.pricelist_id.pax_type if pax.pricelist_id else '',
+                            'duration': pax.pricelist_id.duration if pax.pricelist_id else '',
+                            'immigration_consulate': pax.pricelist_id.immigration_consulate if pax.pricelist_id else '',
+                            'requirement': requirement,
+                            'interview': interview,
+                            'biometrics': biometrics
+                        },
+                        'channel_service_charges': channel_service_charges,
+                        'sale_service_charges': sale_service_charges,
+                        'pax_type': pax_type,
+                        'sequence': idx
+                    })
+                state_visa = {}
+                for rec in STATE_VISA:
+                    if rec[0] == 'expired':
+                        break
+                    if rec[0] == 'draft' or rec[0] == 'doc_check':
+                        state_visa.update({
+                            rec[0]: {
+                                "name": rec[1],
+                                "value": True,
+                                'date': book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                            }
+                        })
+                    else:
+                        state_visa.update({
+                            rec[0]: {
+                                "name": rec[1],
+                                "value": False
+                            }
+                        })
+
+                if requirement_check:
+                    state_visa['doc_complete'].update({
+                        "value": True,
+                        'date': book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                    })
+                if book_obj.confirmed_date != False:
+                    state_visa['confirm'].update({
+                        "value": True,
+                        'date': book_obj.confirmed_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        'confirm': book_obj.confirmed_uid.name
+                    })
+                if book_obj.validate_date != False:
+                    state_visa['partial_validate'].update({
+                        "value": True,
+                        'date': book_obj.validate_date.strftime("%Y-%m-%d %H:%M:%S"),
+                        'confirm': book_obj.validate_uid.name
+                    })
+                if book_obj.to_vendor_date != False:
+                    state_visa['to_vendor'].update({
+                        "value": True,
+                        'date': book_obj.to_vendor_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.vendor_process_date != False:
+                    state_visa['vendor_process'].update({
+                        "value": True,
+                        'date': book_obj.vendor_process_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.in_process_date != False:
+                    state_visa['in_process'].update({
+                        "value": True,
+                        'date': book_obj.in_process_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.payment_date != False:
+                    state_visa['payment'].update({
+                        "value": True,
+                        'date': book_obj.payment_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.process_by_consulate_date != False:
+                    state_visa['process_by_consulate'].update({
+                        "value": True,
+                        'date': book_obj.process_by_consulate_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.partial_proceed_date != False:
+                    state_visa['partial_proceed'].update({
+                        "value": True,
+                        'date': book_obj.partial_proceed_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.proceed_date != False:
+                    state_visa['proceed'].update({
+                        "value": True,
+                        'date': book_obj.proceed_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.partial_approve_date != False:
+                    state_visa['partial_approve'].update({
+                        "value": True,
+                        'date': book_obj.partial_approve_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.approve_date != False:
+                    state_visa['approve'].update({
+                        "value": True,
+                        'date': book_obj.approve_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+                if book_obj.reject_date != False:
+                    state_visa['reject'].update({
+                        "value": True,
+                        'date': book_obj.reject_date.strftime("%Y-%m-%d %H:%M:%S")
+                    })
+
+                if book_obj.state_visa == 'expired':
                     state_visa.update({
-                        rec[0]: {
-                            "name": rec[1],
+                        STATE_VISA[17][0]: {
+                            "name": STATE_VISA[15][1],
+                            "value": True, 'date': ''
+                        }
+                    })
+                elif book_obj.state_visa == 'fail_booked':
+                    state_visa.update({
+                        STATE_VISA[18][0]: {
+                            "name": STATE_VISA[16][1],
+                            "value": True, 'date': ''
+                        }
+                    })
+                elif book_obj.state_visa == 'cancel':
+                    state_visa.update({
+                        STATE_VISA[19][0]: {
+                            "name": STATE_VISA[17][1],
                             "value": True,
-                            'date': book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                            'date': ''
+                        }
+                    })
+                elif book_obj.state_visa == 'cancel2':
+                    state_visa.update({
+                        STATE_VISA[20][0]: {
+                            "name": STATE_VISA[18][1],
+                            "value": True,
+                            'date': ''
+                        }
+                    })
+                elif book_obj.state_visa == 'refund':
+                    state_visa.update({
+                        STATE_VISA[21][0]: {
+                            "name": STATE_VISA[19][1],
+                            "value": True,
+                            'date': ''
+                        }
+                    })
+                elif book_obj.state_visa == 'done':
+                    state_visa.update({
+                        STATE_VISA[22][0]: {
+                            "name": STATE_VISA[20][1],
+                            "value": True,
+                            'date': book_obj.done_date.strftime("%Y-%m-%d %H:%M:%S")
                         }
                     })
                 else:
                     state_visa.update({
-                        rec[0]: {
-                            "name": rec[1],
-                            "value": False
+                        STATE_VISA[22][0]: {
+                            "name": STATE_VISA[20][1],
+                            "value": False,
+                            'date': ''
                         }
                     })
-
-            if requirement_check:
-                state_visa['doc_complete'].update({
-                    "value": True,
-                    'date': book_obj.create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                res_dict.pop('book_id')
+                res_dict.pop('agent_id')
+                res_dict.update({
+                    'contact': {
+                        'title': res_dict['contact']['title'],
+                        'name': res_dict['contact']['name'],
+                        'email': res_dict['contact']['email'],
+                        'phone': res_dict['contact']['phone']
+                    },
+                    'journey': {
+                        'country': book_obj.country_id.name,
+                        'departure_date': str(res_dict['departure_date']),
+                        'in_process_date': str(book_obj['in_process_date'].strftime("%Y-%m-%d")) if book_obj[
+                            'in_process_date'] else '',
+                        'name': res_dict['order_number'],
+                        'payment_status': book_obj.commercial_state,
+                        'state': res_dict['state'],
+                        'state_visa': dict(book_obj._fields['state_visa'].selection).get(book_obj.state_visa)
+                    },
+                    'passengers': passenger,
+                    'state_visa_arr': state_visa,
+                    'provider_bookings': prov_list
                 })
-            if book_obj.confirmed_date != False:
-                state_visa['confirm'].update({
-                    "value": True,
-                    'date': book_obj.confirmed_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    'confirm': book_obj.confirmed_uid.name
-                })
-            if book_obj.validate_date != False:
-                state_visa['partial_validate'].update({
-                    "value": True,
-                    'date': book_obj.validate_date.strftime("%Y-%m-%d %H:%M:%S"),
-                    'confirm': book_obj.validate_uid.name
-                })
-            if book_obj.to_vendor_date != False:
-                state_visa['to_vendor'].update({
-                    "value": True,
-                    'date': book_obj.to_vendor_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.vendor_process_date != False:
-                state_visa['vendor_process'].update({
-                    "value": True,
-                    'date': book_obj.vendor_process_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.in_process_date != False:
-                state_visa['in_process'].update({
-                    "value": True,
-                    'date': book_obj.in_process_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.payment_date != False:
-                state_visa['payment'].update({
-                    "value": True,
-                    'date': book_obj.payment_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.process_by_consulate_date != False:
-                state_visa['process_by_consulate'].update({
-                    "value": True,
-                    'date': book_obj.process_by_consulate_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.partial_proceed_date != False:
-                state_visa['partial_proceed'].update({
-                    "value": True,
-                    'date': book_obj.partial_proceed_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.proceed_date != False:
-                state_visa['proceed'].update({
-                    "value": True,
-                    'date': book_obj.proceed_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.partial_approve_date != False:
-                state_visa['partial_approve'].update({
-                    "value": True,
-                    'date': book_obj.partial_approve_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.approve_date != False:
-                state_visa['approve'].update({
-                    "value": True,
-                    'date': book_obj.approve_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-            if book_obj.reject_date != False:
-                state_visa['reject'].update({
-                    "value": True,
-                    'date': book_obj.reject_date.strftime("%Y-%m-%d %H:%M:%S")
-                })
-
-            if book_obj.state_visa == 'expired':
-                state_visa.update({
-                    STATE_VISA[17][0]: {
-                        "name": STATE_VISA[15][1],
-                        "value": True, 'date': ''
-                    }
-                })
-            elif book_obj.state_visa == 'fail_booked':
-                state_visa.update({
-                    STATE_VISA[18][0]: {
-                        "name": STATE_VISA[16][1],
-                        "value": True, 'date': ''
-                    }
-                })
-            elif book_obj.state_visa == 'cancel':
-                state_visa.update({
-                    STATE_VISA[19][0]: {
-                        "name": STATE_VISA[17][1],
-                        "value": True,
-                        'date': ''
-                    }
-                })
-            elif book_obj.state_visa == 'cancel2':
-                state_visa.update({
-                    STATE_VISA[20][0]: {
-                        "name": STATE_VISA[18][1],
-                        "value": True,
-                        'date': ''
-                    }
-                })
-            elif book_obj.state_visa == 'refund':
-                state_visa.update({
-                    STATE_VISA[21][0]: {
-                        "name": STATE_VISA[19][1],
-                        "value": True,
-                        'date': ''
-                    }
-                })
-            elif book_obj.state_visa == 'done':
-                state_visa.update({
-                    STATE_VISA[22][0]: {
-                        "name": STATE_VISA[20][1],
-                        "value": True,
-                        'date': book_obj.done_date.strftime("%Y-%m-%d %H:%M:%S")
-                    }
-                })
+                _logger.info("Get resp\n" + json.dumps(res_dict))
+                return Response().get_no_error(res_dict)
             else:
-                state_visa.update({
-                    STATE_VISA[22][0]: {
-                        "name": STATE_VISA[20][1],
-                        "value": False,
-                        'date': ''
-                    }
-                })
-            res_dict.pop('book_id')
-            res_dict.pop('agent_id')
-            res_dict.update({
-                'contact': {
-                    'title': res_dict['contact']['title'],
-                    'name': res_dict['contact']['name'],
-                    'email': res_dict['contact']['email'],
-                    'phone': res_dict['contact']['phone']
-                },
-                'journey': {
-                    'country': book_obj.country_id.name,
-                    'departure_date': str(res_dict['departure_date']),
-                    'in_process_date': str(book_obj['in_process_date'].strftime("%Y-%m-%d")) if book_obj[
-                        'in_process_date'] else '',
-                    'name': res_dict['order_number'],
-                    'payment_status': book_obj.commercial_state,
-                    'state': res_dict['state'],
-                    'state_visa': dict(book_obj._fields['state_visa'].selection).get(book_obj.state_visa)
-                },
-                'passengers': passenger,
-                'state_visa_arr': state_visa,
-                'provider_bookings': prov_list
-            })
-            _logger.info("Get resp\n" + json.dumps(res_dict))
-            return Response().get_no_error(res_dict)
-            # else:
-            #     raise RequestException(1035)
+                raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

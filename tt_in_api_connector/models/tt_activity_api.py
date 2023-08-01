@@ -23,6 +23,8 @@ class TtActivityApiCon(models.Model):
             res = table_obj.update_booking_by_api(data,context)
         elif action == 'update_booking2':
             res = table_obj.update_booking_by_api2(data)
+        elif action == 'cancel_booking':
+            res = table_obj.cancel_booking_by_api(data,context)
         elif action == 'action_failed':
             res = table_obj.action_failed(data)
         elif action == 'get_booking':

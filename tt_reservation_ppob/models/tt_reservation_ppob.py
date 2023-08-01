@@ -503,29 +503,31 @@ class ReservationPpob(models.Model):
 
             # if inq_obj.agent_id.id == context.get('co_agent_id', -1) or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
             # SEMUA BISA LOGIN PAYMENT DI IF CHANNEL BOOKING KALAU TIDAK PAYMENT GATEWAY ONLY
-            provider_code = ''
-            provider_list = []
-            total_price = 0
-            for rec in inq_obj.provider_booking_ids:
-                provider_code = rec.provider_id and rec.provider_id.code or ''
-                total_price += rec.total
-                provider_list.append(rec.to_dict())
-            psg_list = []
-            for rec in inq_obj.sudo().passenger_ids:
-                psg_list.append(rec.to_dict())
+            _co_user = self.env['res.users'].sudo().browse(int(context['co_uid']))
+            if inq_obj.ho_id.id == context.get('co_ho_id', -1) or _co_user.has_group('base.group_system'):
+                provider_code = ''
+                provider_list = []
+                total_price = 0
+                for rec in inq_obj.provider_booking_ids:
+                    provider_code = rec.provider_id and rec.provider_id.code or ''
+                    total_price += rec.total
+                    provider_list.append(rec.to_dict())
+                psg_list = []
+                for rec in inq_obj.sudo().passenger_ids:
+                    psg_list.append(rec.to_dict())
 
-            res = inq_obj.to_dict()
-            res.update({
-                'provider_booking': provider_list,
-                'passengers': psg_list,
-                'state': inq_obj.state,
-                'prepaid_value': inq_obj.prepaid_value and inq_obj.prepaid_value or 0,
-                'total_price': total_price,
-                'provider': provider_code
-            })
-            return ERR.get_no_error(res)
-            # else:
-            #     raise RequestException(1035)
+                res = inq_obj.to_dict()
+                res.update({
+                    'provider_booking': provider_list,
+                    'passengers': psg_list,
+                    'state': inq_obj.state,
+                    'prepaid_value': inq_obj.prepaid_value and inq_obj.prepaid_value or 0,
+                    'total_price': total_price,
+                    'provider': provider_code
+                })
+                return ERR.get_no_error(res)
+            else:
+                raise RequestException(1035)
         except RequestException as e:
             _logger.error(traceback.format_exc())
             return e.error_dict()

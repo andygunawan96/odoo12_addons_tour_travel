@@ -72,7 +72,7 @@
                     <button name="set_to_confirm" string="Set to Confirm" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','not in', ['sent', 'validate', 'final', 'cancel'])]}"/>
                     <button name="set_to_approve" string="Set to Approved" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','!=', 'payment')]}"/>
                     <button name="cancel_refund_from_button" string="Cancel" type="object" attrs="{'invisible':[('state','in', ['approve', 'done', 'cancel', 'payment', 'approve_cust'])]}"/>
-                    <button name="cancel_refund_reverse_ledger" string="Cancel (Reverse Ledger)" type="object" groups="tt_base.group_after_sales_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
+                    <button name="cancel_refund_reverse_ledger" string="Cancel (Reverse Ledger)" type="object" groups="tt_base.group_ledger_level_4" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
                     <button name="create_profit_loss_ledger" string="Create Profit Loss" type="object" groups="tt_base.group_after_sales_master_level_3" attrs="{'invisible':[('state','not in', ['approve', 'done', 'payment', 'approve_cust'])]}"/>
                     <button name="toggle_is_vendor_received" string="Toggle Received Refund from Vendor" type="object" groups="tt_base.group_after_sales_master_level_5" attrs="{'invisible':[('state','!=','final')]}"/>
                     <button string="Change Admin Fee" name="%(tt_accounting.tt_change_admin_fee_wizard_action_view)d" type="action"
