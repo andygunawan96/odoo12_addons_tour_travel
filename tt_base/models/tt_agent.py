@@ -156,7 +156,7 @@ class TtAgent(models.Model):
         return new_agent
 
     def write(self, vals):
-        if 'parent_agent_id' in vals:
+        if vals.get('parent_agent_id'):
             if vals['parent_agent_id'] == self.id:
                 raise UserError('Parent agent cannot be itself.')
             if self.is_ho_agent or vals.get('is_ho_agent'):
