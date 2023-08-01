@@ -62,9 +62,9 @@ class TtTopUp(models.Model):
                     'posted_acc_actions': temp_post
                 })
 
-    def send_transaction_batches_to_accounting(self, days):
+    def send_transaction_batches_to_accounting(self, days, ho_id):
         start_datetime = datetime.strptime((date.today() - timedelta(days=days)).strftime('%Y-%m-%d') + ' 00:00:00', "%Y-%m-%d %H:%M:%S")
-        transaction_list = self.env['tt.top.up'].search([('state', '=', 'approved'), ('approve_date', '>=', start_datetime)])
+        transaction_list = self.env['tt.top.up'].search([('state', '=', 'approved'), ('approve_date', '>=', start_datetime), ('ho_id','=', ho_id)])
         for rec in transaction_list:
             temp_post = rec.posted_acc_actions or ''
             if 'reconcile' not in temp_post.split(',') and 'transaction_batch' not in temp_post.split(','):

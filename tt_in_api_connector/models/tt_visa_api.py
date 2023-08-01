@@ -43,8 +43,8 @@ class TtVisaApiCon(models.Model):
     def get_balance(self,provider, ho_id):
         return self.send_request_to_gateway('%s/account/visa' % (self.url),{'provider': provider},'get_vendor_balance', ho_id=ho_id)
 
-    def get_product_vendor(self, data):
-        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_provider', timeout=600)
+    def get_product_vendor(self, data, ho_id):
+        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_provider', timeout=600, ho_id=ho_id)
 
-    def get_product_detail_vendor(self, data):
-        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_detail_provider', timeout=600)
+    def get_product_detail_vendor(self, data, ho_id):
+        return self.send_request_to_gateway('%s/booking/visa' % (self.url), data, 'get_product_detail_provider', timeout=600, ho_id=ho_id)

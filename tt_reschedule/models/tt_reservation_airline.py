@@ -1671,7 +1671,7 @@ class ReservationAirline(models.Model):
                             '- Change Service charges not applied (for BOOKED reservation)'
                         ]
                         msg = '\n'.join(msg_list)
-                        thread_obj = Thread(target=self._do_error_notif, args=('Update Error Notif', msg))
+                        thread_obj = Thread(target=self._do_error_notif, args=('Update Error Notif', msg, airline_obj.ho_id.id))
                         thread_obj.start()
                     except Exception as e:
                         _logger.error('Error do error notif, %s' % str(e))
@@ -2094,16 +2094,17 @@ class ReservationAirline(models.Model):
             _logger.error('Error Create Reschedule Airline API, %s' % traceback.format_exc())
             return ERR.get_error(1030)
 
-    def _do_error_notif(self, title, message):
+    def _do_error_notif(self, title, message, ho_id):
         data = {
             'code': 9903,
             'title': title,
             'message': message,
         }
         context = {
-            "co_ho_id": self.agent_id.ho_id.id
+            "co_ho_id": ho_id
         }
         ## tambah context
+        ## kurang test
         GatewayConnector().telegram_notif_api(data, context)
         return True
 

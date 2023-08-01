@@ -42,6 +42,7 @@ class TtCronLogInhPeriksain(models.Model):
                     _logger.error(
                         '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto done state vendor periksain')
 
@@ -97,5 +98,6 @@ class TtCronLogInhPeriksain(models.Model):
                         break
             # time_string
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot periksain')

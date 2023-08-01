@@ -278,7 +278,9 @@ class MasterTour(models.Model):
             'provider': 'rodextrip_tour',
         }
         ## tambah context
-        res = self.env['tt.master.tour.api.con'].search_provider(req_post)
+        ## kurang test
+        ho_id = self.env.user.ho_id.id
+        res = self.env['tt.master.tour.api.con'].search_provider(req_post, ho_id)
         temp = {}
         if res['error_code'] == 0:
             temp = res['response']
@@ -504,7 +506,9 @@ class MasterTour(models.Model):
                     'provider': rec['provider'],
                 }
                 ## tambah context
-                det_res = self.env['tt.master.tour.api.con'].get_details_provider(req_post)
+                ## kurang test
+                ho_id = self.env.user.ho_id.id
+                det_res = self.env['tt.master.tour.api.con'].get_details_provider(req_post, ho_id)
                 if det_res['error_code'] == 0:
                     for temp_line in new_tour_obj.tour_line_ids:
                         temp_line.sudo().write({

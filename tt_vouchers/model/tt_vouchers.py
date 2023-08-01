@@ -70,8 +70,8 @@ class TtVoucher(models.Model):
         return res
 
     # function for cron
-    def expire_voucher(self):
-        voucher = self.env['tt.voucher'].search([('state', '=', 'confirm')])
+    def expire_voucher(self, ho_id):
+        voucher = self.env['tt.voucher'].search([('state', '=', 'confirm'), ('ho_id','=',ho_id)])
         for voucher_obj in voucher:
             expired = True
             for voucher_detail_obj in voucher_obj.voucher_detail_ids:
@@ -578,8 +578,8 @@ class TtVoucherDetail(models.Model):
         return voucher
 
     #function for cron
-    def activate_voucher(self):
-        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'not-active')])
+    def activate_voucher(self, ho_id):
+        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'not-active'),('ho_id','=',ho_id)])
         for i in voucher:
             if i.voucher_start_date.strftime("%Y-%m-%d") <= datetime.today().strftime("%Y-%m-%d"):
                 i.write({
@@ -588,8 +588,8 @@ class TtVoucherDetail(models.Model):
         return 0
 
     #function for cron
-    def expire_detail_voucher(self):
-        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'active')])
+    def expire_detail_voucher(self, ho_id):
+        voucher = self.env['tt.voucher.detail'].search([('state', '=', 'active'),('ho_id','=',ho_id)])
         for i in voucher:
             if i.voucher_expire_date.strftime("%Y-%m-%d") < datetime.today().strftime("%Y-%m-%d"):
                 i.write({

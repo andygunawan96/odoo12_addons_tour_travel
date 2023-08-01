@@ -444,8 +444,11 @@ class MasterActivity(models.Model):
                     'message': 'Activity Sync Products Failed (File Number: %s). %s : %s' % (str(i), traceback.format_exc(), str(e)),
                     'provider': provider_obj and provider_obj[0] or '',
                 }
+                context = {
+                    "co_ho_id": self.env.user.ho_id.id
+                }
                 ## tambah context
-                GatewayConnector().telegram_notif_api(data, {})
+                GatewayConnector().telegram_notif_api(data, context)
 
     # temporary function
     def update_activity_uuid_temp(self):
@@ -1382,6 +1385,10 @@ class MasterActivity(models.Model):
                             'required': activity_opt_obj.required,
                             'formatRegex': activity_opt_obj.formatRegex,
                             'inputType': activity_opt_obj.inputType,
+                            'minNumber': activity_opt_obj.minNumber,
+                            'maxNumber': activity_opt_obj.maxNumber,
+                            'validFrom': activity_opt_obj.validFrom,
+                            'validTo': activity_opt_obj.validTo,
                             'type': activity_opt_obj.type,
                             'price': activity_opt_obj.price,
                             'currency_id': activity_opt_obj.currency_id and activity_opt_obj.currency_id.id or False,
@@ -1856,6 +1863,10 @@ class MasterActivity(models.Model):
                             'required': rec3['required'],
                             'formatRegex': rec3['formatRegex'],
                             'inputType': rec3['inputType'],
+                            'minNumber': rec3['minNumber'],
+                            'maxNumber': rec3['maxNumber'],
+                            'validFrom': rec3['validFrom'],
+                            'validTo': rec3['validTo'],
                             'type': rec3['type'],
                             'price': rec3['price'],
                             'currency_id': opt_currency_obj and opt_currency_obj[0].id or False,
@@ -2037,6 +2048,10 @@ class ActivitySyncProductsChildren(models.TransientModel):
                             'required': rec3.required,
                             'formatRegex': rec3.formatRegex,
                             'inputType': rec3.inputType,
+                            'minNumber': rec3.minNumber,
+                            'maxNumber': rec3.maxNumber,
+                            'validFrom': rec3.validFrom,
+                            'validTo': rec3.validTo,
                             'type': rec3.type,
                             'price': new_rec3_price,
                             'currency_code': new_currency,

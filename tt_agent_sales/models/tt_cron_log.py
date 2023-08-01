@@ -24,4 +24,5 @@ class TtCronLogInhResv(models.Model):
 
         except Exception as e:
             self.create_cron_log_folder()
+            ## tidak tahu pakai context apa
             self.write_cron_log('Update installment invoice Tour')

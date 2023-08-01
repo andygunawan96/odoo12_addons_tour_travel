@@ -8,12 +8,13 @@ class ttCronPointRewardHandler(models.Model):
     _inherit = "tt.cron.log"
 
     def cron_point_reward_expired(self):
-        ### BELUM UPDATE
-        try:
-            self.env['tt.voucher'].expire_voucher()
-        except Exception as e:
-            self.create_cron_log_folder()
-            self.write_cron_log("voucher expire cron")
+        ho_objs = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
+        for ho_obj in ho_objs:
+            try:
+                self.env['tt.voucher'].expire_voucher(ho_obj.id)
+            except Exception as e:
+                self.create_cron_log_folder()
+                self.write_cron_log("voucher expire cron", ho_id=ho_obj.id)
 
 
 
