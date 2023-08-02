@@ -22,7 +22,7 @@ class ApiManagement(models.Model):
     api_role = fields.Selection(selection=variables.ROLE_TYPE, required=True, default='operator') ## ADMIN UNTUK 1 FRONTEND BANYAK AGENT, MANAGER UNTUK 1 FRONTEND 1 AGENT, OPERATOR UNTUK BTBO2
     device_type = fields.Selection(selection=variables.DEVICE_TYPE, default='general')
     user_id = fields.Many2one(comodel_name='res.users', string='User')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id, required=True)
 
     def to_dict(self):
         res = {

@@ -35,6 +35,10 @@ class TtReservationTrain(models.Model):
     provider_type_id = fields.Many2one('tt.provider.type','Provider Type',
                                        default= lambda self: self.env.ref('tt_reservation_train.tt_provider_type_train'))
 
+    boarding_pass_id = fields.Many2one('tt.upload.center', 'Boarding Pass', readonly=True)
+
+
+
     def get_form_id(self):
         return self.env.ref("tt_reservation_train.tt_reservation_train_form_views")
 
@@ -1145,3 +1149,65 @@ class TtReservationTrain(models.Model):
                     pax_data['pnr_list'].append(pax_pnr_data)
             pax_list.append(pax_data)
         return pax_list
+
+    @api.multi
+    def print_boarding_pass(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.train'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        train_itinerary_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_train_boarding_pass')
+        is_web_checkin = False
+        for passenger_obj in book_obj.passenger_ids:
+            if passenger_obj.temporary_field:
+                for temp_field in json.loads(passenger_obj.temporary_field):
+                    if temp_field.get('web_check_in'):
+                        is_web_checkin = True
+                        break
+        if book_obj.boarding_pass_id:
+            book_obj.boarding_pass_id.unlink()
+        if not book_obj.boarding_pass_id and is_web_checkin:
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = train_itinerary_id.report_action(book_obj, data=datas)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report_bytes = train_itinerary_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Boarding Pass Train %s.pdf' % book_obj.name,
+                    'file_reference': 'Boarding PassTrain',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid,
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.boarding_pass_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': book_obj.boarding_pass_id.url,
+        }
+        return url
