@@ -111,12 +111,12 @@
                             <!--CANDY: delete expired date & is_manual-->
                             <!--<field name="expired_date"/>-->
                             <!--<field name="is_manual"/>-->
-                            <label for="user_id" string="Created by"/>
+                            <label for="user_id" string="Booked by"/>
                             <div>
                                 <field name="user_id" readonly="1" class="oe_inline"/> /
                                 <field name="create_date" readonly="1" class="oe_inline"/>
                             </div>
-                            <label for="booked_uid" string="Booked By"/>
+                            <label for="booked_uid" string="Updated By"/>
                             <div name="booked_div">
                                 <field name="booked_uid" readonly="1" class="oe_inline"/> /
                                 <field name="booked_date" readonly="1" class="oe_inline"/>
