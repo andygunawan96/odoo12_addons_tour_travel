@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from ....tools.api import Response
 import logging, traceback
 
@@ -14,6 +15,24 @@ class DestinationAlias(models.Model):
     state_id = fields.Many2one('res.country.state', 'State')
     country_id = fields.Many2one('res.country', 'Country')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 370')
+        return super(DestinationAlias, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 371')
+        return super(DestinationAlias, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 372')
+        return super(DestinationAlias, self).unlink()
+
 
 class Country(models.Model):
     _inherit = 'res.country'
@@ -26,6 +45,24 @@ class Country(models.Model):
     address_detail_ids = fields.One2many('address.detail', 'country_id', string='Addresses')
     provide_code_ids = fields.One2many('tt.provider.code', 'country_id', string='Provide Code')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(Country, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(Country, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(Country, self).unlink()
 
     def get_country_data(self):
         res = {
