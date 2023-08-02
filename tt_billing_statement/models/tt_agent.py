@@ -86,7 +86,7 @@ class TtAgentInh(models.Model):
         return val
 
 
-    def cron_create_billing_statement(self):
+    def cron_create_billing_statement(self, ho_id):
         ##search for COR billed today
         tz_utc7 = pytz.timezone('Asia/Jakarta')
         today_date = datetime.now(tz_utc7).date()
@@ -97,7 +97,8 @@ class TtAgentInh(models.Model):
                                     '|',
                                     ('billing_cycle_ids.day','=',DAY_TO_INT[today_str]), ## 'mon'
                                     ('billing_cycle_ids.day','=',today_int), # date 1
-                                    ('billing_cycle_ids.day','=', 32) # daily
+                                    ('billing_cycle_ids.day','=', 32), # daily
+                                    ('ho_id','=',ho_id)
                                    ])
 
         for agent_obj in agent_list_obj:

@@ -375,6 +375,81 @@ class PrintoutTicketTrainForm(models.AbstractModel):
 
         return vals
 
+class PrintoutBoardingPassTrainForm(models.AbstractModel):
+    _name = 'report.tt_report_common.printout_train_boarding_pass'
+    _description = 'Report Common Printout Boarding Pass Train'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        if not data.get('context'):
+            # internal_model_id = docids.pop(0)
+            data['context'] = {}
+            data['context']['active_model'] = 'tt.reservation.train'
+            data['context']['active_ids'] = docids
+        values = {}
+        agent_id = False
+        for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            values[rec.id] = []
+            a = {}
+            for rec2 in rec.sale_service_charge_ids:
+                if rec2.pax_type not in a.keys():
+                    a[rec2.pax_type] = {
+                        'pax_type': rec2.pax_type,
+                        'fare': 0,
+                        'tax': 0,
+                        'qty': 0,
+                    }
+                if rec2.charge_type.lower() == 'fare':
+                    a[rec2.pax_type]['fare'] += rec2.amount
+                    a[rec2.pax_type]['qty'] = rec2.pax_count
+                elif rec2.charge_type.lower() in ['roc', 'tax']:
+                    a[rec2.pax_type]['tax'] += rec2.amount
+            values[rec.id] = [a[new_a] for new_a in a]
+            agent_id = rec.agent_id
+        train_ticket_footer = self.env['tt.report.common.setting'].get_footer('train_ticket', agent_id)
+        ## printout
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        base_color = '#FFFFFF'
+        if hasattr(data_object, 'agent_id'):
+            base_color = data_object.agent_id.get_printout_agent_color()
+        vals = {
+            'doc_ids': data['context']['active_ids'],
+            'doc_model': data['context']['active_model'],
+            'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_lines': values,
+            'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
+            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'base_color': base_color,
+            'static_url': static_url
+        }
+        if 'is_with_price' in data:
+            vals.update({
+                'with_price': data.get('is_with_price') or False,
+            })
+        elif 'is_with_price' in data.get('data',''):
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        else:
+            vals.update({
+                'with_price': False,
+            })
+
+        if 'is_hide_agent_logo' in data:
+            vals.update({
+                'is_hide_agent_logo': data.get('is_hide_agent_logo') or False,
+            })
+        elif 'is_hide_agent_logo' in data.get('data', {}):
+            vals.update({
+                'is_hide_agent_logo': data['data'].get('is_hide_agent_logo') or False
+            })
+        else:
+            vals.update({
+                'is_hide_agent_logo': False
+            })
+
+        return vals
+
 
 class PrintoutTicketEventForm(models.AbstractModel):
     _name = 'report.tt_report_common.printout_event_ticket'

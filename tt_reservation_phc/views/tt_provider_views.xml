@@ -10,7 +10,7 @@
                             groups="tt_base.group_reservation_provider_level_4"
                             context="{'default_provider_id': id,}"/>
                     <button string="Reverse Ledger" name="action_reverse_ledger_from_button" states="issued,cancel2,fail_issued,issued_pending"
-                            type="object" groups="tt_base.group_reservation_provider_level_4"/>
+                            type="object" groups="tt_base.group_ledger_level_4"/>
                     <button string="Update Pax Ticket Number" name="update_ticket_number_pax" groups="base.group_system" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,booked,issued_pending,issued,done"/>
                 </header>

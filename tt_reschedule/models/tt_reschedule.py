@@ -728,6 +728,8 @@ class TtReschedule(models.Model):
 
     def cancel_reschedule_from_button(self):
         if self.state in ['validate', 'final', 'done']:
+            if not self.env.user.has_group('tt_base.group_ledger_level_4'):
+                raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 369')
             if not self.cancel_message:
                 raise UserError("Please fill the cancellation message!")
             for rec in self.ledger_ids:

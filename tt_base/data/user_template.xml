@@ -78,7 +78,8 @@
                              ref('tt_base.group_search_configuration_level_4'),
                              ref('tt_base.group_voucher_level_4'),
                              ref('tt_base.group_point_reward_level_4'),
-                             ref('tt_base.group_user_data_level_3')])]"/>
+                             ref('tt_base.group_user_data_level_3'),
+                             ref('tt_base.group_api_management_level_5')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
                                 ref('tt_base.able_to_admin'),
@@ -1224,6 +1225,7 @@
                              ref('tt_base.group_search_configuration_level_5'),
                              ref('tt_base.group_voucher_level_5'),
                              ref('tt_base.group_point_reward_level_5'),
+                             ref('tt_base.group_api_management_level_5')
                              ref('tt_base.group_user_data_level_5')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
@@ -1501,7 +1503,7 @@
                              ref('tt_base.group_adjustment_level_4'),
                              ref('tt_base.group_lg_po_level_5'),
                              ref('tt_base.group_reconcile_level_4'),
-                             ref('tt_base.group_ledger_level_4'),
+                             ref('tt_base.group_ledger_level_5'),
                              ref('tt_base.group_agent_registration_master_level_1'),
                              ref('tt_base.group_agent_registration_level_3'),
                              ref('tt_base.group_agent_level_3'),

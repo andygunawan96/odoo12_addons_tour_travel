@@ -232,7 +232,6 @@ class ReservationActivity(models.Model):
         context = {
             "co_ho_id": self.agent_id.ho_id.id
         }
-        ## tambah context
         GatewayConnector().telegram_notif_api(data, context)
 
     def action_issued_vendor(self):
@@ -1324,7 +1323,6 @@ class ReservationActivity(models.Model):
         context = {
             "co_ho_id": activity_booking.agent_id.ho_id.id
         }
-        ## tambah context
         GatewayConnector().telegram_notif_api(data, context)
 
     def action_activity_print_invoice(self):

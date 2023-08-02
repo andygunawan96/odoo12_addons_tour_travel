@@ -56,7 +56,9 @@ class ApiWebhookData(models.Model):
                                     'timeout': req.get('timeout', 300)
                                 }
                                 ## tambah context
-                                res = self.env['tt.api.con'].send_webhook_to_children(vals)
+                                ## kurang test
+                                ho_id = rec.credential_data_id.ho_id.id
+                                res = self.env['tt.api.con'].send_webhook_to_children(vals, ho_id)
                                 _logger.info("Receive webhook data from children...")
                                 _logger.info(json.dumps(res))
                                 send_limit += 1

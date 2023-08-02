@@ -597,6 +597,8 @@ class AgentInvoice(models.Model):
 
     def multi_mass_approve_invoice(self):
         _logger.info("Mass Approve Invoice Starting")
+        if not self.env.user.has_group('tt_base.group_lg_po_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 368')
         for inv in self:
             _logger.info(inv.name)
             for payment_m2m in inv.payment_ids:

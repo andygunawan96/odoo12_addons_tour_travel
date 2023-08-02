@@ -54,6 +54,8 @@
                             <field name="name"/>
                             <field name="inputType"/>
                             <field name="type"/>
+                            <field name="validFrom"/>
+                            <field name="validTo"/>
                             <field name="price"/>
                             <field name="items"/>
                         </tree>

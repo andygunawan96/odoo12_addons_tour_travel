@@ -592,9 +592,10 @@ class PaymentAcquirerNumber(models.Model):
     fee_amount = fields.Float('Fee Amount') ## HANYA UNTUK CLOSE VA
     time_limit = fields.Datetime('Time Limit', readonly=True)
     amount = fields.Float('Amount')
-    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type', help="""
+    state = fields.Selection([('open', 'Open'), ('close', 'Closed'), ('process', 'Process'), ('waiting', 'Waiting Next Cron'), ('done','Done'), ('cancel','Expired'), ('cancel2', 'Cancelled'), ('fail', 'Failed')], 'Payment Type', help="""
     OPEN FOR VA OPEN
     CLOSED FOR PAYMENT RESERVATION
+    PROCESS FOR ONPROCESS RESERVATION
     WAITING NEXT CRON FOR ALREADY PAY BUT ERROR ISSUED DO ISSUED AUTOMATICALLY
     DONE FOR DONE PAYMENT RESERVATION
     EXPIRED FOR NO PAYMENT BEFORE MORE THAN TIME LIMIT
@@ -770,6 +771,14 @@ class PaymentAcquirerNumber(models.Model):
             return ERR.get_error(additional_message='Set payment acq number fail, error vendor')
         else:
             return ERR.get_error(additional_message='Payment Acquirer not found')
+
+    def update_payment_acq_number(self, data, context):
+        payment_acq_number = self.search([('number', '=', data['payment_acq_number']), ('ho_id', '=', context['co_ho_id'])], order='create_date desc', limit=1)
+        if payment_acq_number:
+            payment_acq_number.state = data['state']
+            return ERR.get_no_error()
+        else:
+            return ERR.get_error(additional_message='Payment Acquirer Number not found')
 
     def get_total_amount(self):
         return self.amount + self.fee_amount + self.unique_amount

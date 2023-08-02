@@ -162,6 +162,7 @@ class TtTimeslotPeriksain(models.Model):
 
     def get_config_cron(self):
         ## tambah context
+        ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
         result = self.env['tt.periksain.api.con'].get_config_cron()
         return result
 

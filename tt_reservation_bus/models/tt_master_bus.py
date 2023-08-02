@@ -36,7 +36,9 @@ class BusStation(models.Model):
 
     def action_bus_sync_data_traveloka(self):
         ## tambah context
-        res = self.env['tt.bus.api.con'].sync_data({})
+        ## kurang test
+        ho_id = self.env.user.ho_id.id
+        res = self.env['tt.bus.api.con'].sync_data({}, ho_id)
         _logger.info(json.dumps(res))
         #self.env['res.city'].find_city_by_name(rec.city, limit=5)
         if res['error_code'] == 0:
@@ -133,11 +135,13 @@ class BusStation(models.Model):
 
     def action_bus_sync_get_bus_journey_traveloka(self):
         data = self.search([])
+        ho_id = self.env.user.ho_id.id
         for rec in data:
             ## tambah context
+            ## kurang test
             res = self.env['tt.bus.api.con'].sync_get_data_journey({
                 "id": rec.code
-            })
+            }, ho_id)
             if res['error_code'] == 0:
                 data_bus_list = self.search([('code', 'in', res['response']['data'])])
                 list_id = []

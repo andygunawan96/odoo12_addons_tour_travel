@@ -42,6 +42,7 @@ class TtCronLogInhLabPintar(models.Model):
                     _logger.error(
                         '%s something failed during expired cron.\n' % (booking.name) + traceback.format_exc())
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto done state vendor lab pintar')
 
@@ -71,5 +72,6 @@ class TtCronLogInhLabPintar(models.Model):
                 wiz_obj.generate_timeslot(True)
             # time_string
         except Exception as e:
+            ## TIDAK DIPAKAI JADI TIDAK DI UPDATE
             self.create_cron_log_folder()
             self.write_cron_log('auto create timeslot labpintar')

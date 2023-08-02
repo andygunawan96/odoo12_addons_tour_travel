@@ -22,6 +22,7 @@ class TtCronLogInhResv(models.Model):
                     rec.action_trouble()
 
         except Exception as e:
+            ## tidak tahu pakai context apa, table tidak ada HO ID
             self.create_cron_log_folder()
             self.write_cron_log('Update installment invoice Group Booking')
 
@@ -65,5 +66,6 @@ class TtCronLogInhResv(models.Model):
                             'Installment Overdue email for {} is already created!'.format(rec.booking_id.name))
 
         except Exception as e:
+            ## tidak tahu pakai context apa, table tidak ada HO ID
             self.create_cron_log_folder()
             self.write_cron_log('Send installment reminder Group Booking')
