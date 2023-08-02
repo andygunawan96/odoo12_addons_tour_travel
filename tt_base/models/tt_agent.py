@@ -129,6 +129,10 @@ class TtAgent(models.Model):
             is_ho = True
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
+        if is_ho:
+            new_agent.write({
+                'ho_id': new_agent.id
+            })
 
         walkin_obj_val = self.create_walkin_obj_val(new_agent,agent_name)
 
@@ -148,10 +152,6 @@ class TtAgent(models.Model):
             'seq_id': self.env['ir.sequence'].next_by_code('tt.agent.type.%s' % (new_agent.agent_type_id.code)),
             'default_acquirer_id': new_acquirer.id
         }
-        if is_ho:
-            write_vals.update({
-                'ho_id': new_agent.id
-            })
         new_agent.write(write_vals)
         return new_agent
 
