@@ -1225,7 +1225,7 @@
                              ref('tt_base.group_search_configuration_level_5'),
                              ref('tt_base.group_voucher_level_5'),
                              ref('tt_base.group_point_reward_level_5'),
-                             ref('tt_base.group_api_management_level_5')
+                             ref('tt_base.group_api_management_level_5'),
                              ref('tt_base.group_user_data_level_5')])]"/>
             <field name="frontend_security_ids"
                    eval="[(6,0,[ref('tt_base.able_to_login'),
