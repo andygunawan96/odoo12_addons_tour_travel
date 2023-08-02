@@ -58,7 +58,7 @@ class ResPartner(models.Model):
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True, required=True, default=lambda self: self.env.user.ho_id.id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True, required=False, default=lambda self: self.env.user.ho_id.id)
     agent_id = fields.Many2one('tt.agent', 'Agent', readonly=True)
     agent_type_related_id = fields.Many2one('tt.agent.type','Agent Related Type', related='agent_id.agent_type_id')
     transaction_limit = fields.Monetary('Transaction Limit')
