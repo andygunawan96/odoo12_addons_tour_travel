@@ -69,6 +69,11 @@
                     <button name="print_eticket"
                             class="oe_stat_button" states="issued,done,refund,rescheduled,reissue"
                             string="Print E-Ticket" type="object" icon="fa-print"/>
+
+                    <button name="print_boarding_pass"
+                            class="oe_stat_button" states="issued,done,refund,rescheduled,reissue"
+                            string="Get Boarding Pass Ticket" type="object" icon="fa-print"/>
+
                     <button name="print_eticket_with_price"
                             class="oe_stat_button" states="issued,done,refund,rescheduled,reissue"
                             string="Print E-Ticket (Price)" type="object" icon="fa-print"/>

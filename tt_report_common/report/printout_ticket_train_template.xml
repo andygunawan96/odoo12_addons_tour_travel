@@ -295,4 +295,205 @@
             <t t-call="tt_report_common.train_footer"/>
         </div>
     </template>
+
+    <template id="printout_train_boarding_pass_template">
+        <t t-foreach="doc.provider_booking_ids" t-as="provider">
+            <t t-if="provider.journey_ids.seat_ids">
+                <t t-foreach="provider.journey_ids.seat_ids" t-as="psg">
+                    <div class="article" style="margin: 0px !important; padding: 0px !important; font-family: Times New Roman, Georgia, Serif;">
+                        <t t-call="tt_report_common.report_rodex_e_tickettrain_logo"/>
+                        <div class="oe_structure"/>
+                        <div>
+                            <div class="row" style="border-top: 1px black solid; border-bottom: 1px black solid;">
+                                <div class="col-2">
+                                    <img src="/tt_report_common/static/images/logo_tors_small.png" style="max-height: 110px; margin-top: 9px;"/>
+                                </div>
+                                <div class="col-8" style="padding-left: 30px; font-size: 24px; font-weight: bold;">
+                                    <span><center>BOARDING PASS KERETA API</center></span><br/>
+                                </div>
+                                <div class="col-2">
+                                    <t t-if="not is_hide_agent_logo">
+                                        <t t-if="doc.agent_id.logo">
+                                            <img t-if="doc.agent_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" style="max-height: 80px; margin-top: 9px;"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="doc.agent_id.name" style="margin-top: 9px; font-size: 28px;"/>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-9" style="font-size: 20px; padding-left: 0px;">
+                                    <div class="row" style="padding-top: 15px;">
+                                        <div class="col-3" style="max-width: 27.5%;"><strong><span>Kode Booking</span></strong></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <t t-if="provider.pnr">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span t-esc="provider.pnr"/></strong></div>
+                                        </t>
+                                        <t t-if="not provider.pnr">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase;"><strong><span style="color: white;">kosong</span></strong></div>
+                                        </t>
+                                    </div>
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Nama KA</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <t t-if="provider.journey_ids.carrier_name">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span t-esc="provider.journey_ids.carrier_name"/> (<span t-if="provider.journey_ids.carrier_name" t-esc="provider.journey_ids.carrier_number"/>)</div>
+                                        </t>
+                                        <t t-if="not provider.journey_ids.carrier_name">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
+                                        </t>
+                                    </div>
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Tgl Pemesanan</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <t t-if="doc.issued_date">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                                <span t-field="doc.issued_date" t-options='{"format": "dd MMM yyyy HH:mm:ss"}'/>  <!--provider.journey_ids.departure_date">-->
+                                            </div>
+                                        </t>
+                                        <t t-if="not doc.issued_date">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300"><span style="color: white;">kosong</span></div>
+                                        </t>
+                                    </div>
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>St. Asal</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <t t-if="provider.journey_ids.origin_id">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                                <t t-if="provider.journey_ids.origin_id.city == provider.journey_ids.origin_id.name">
+                                                    <span t-esc="provider.journey_ids.origin_id.city"/><br/>
+                                                </t>
+                                                <t t-elif="provider.journey_ids.origin_id.city != provider.journey_ids.origin_id.name">
+                                                    <span t-esc="provider.journey_ids.origin_id.city"/> <span t-esc="provider.journey_ids.origin_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['origin_city']"/>-->
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-if="not provider.journey_ids.origin_id">
+                                            <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                        </t>
+                                    </div>
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Tgl Berangkat</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <t t-if="provider.journey_ids.departure_date">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                                <span t-if="provider.journey_ids.departure_date" t-esc="provider.journey_ids.departure_date"/>
+                                            </div>
+                                        </t>
+                                        <t t-if="provider.journey_ids.departure_date">
+                                            <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                        </t>
+                                    </div>
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>St. Tujuan</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <t t-if="provider.journey_ids.destination_id">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                                <t t-if="provider.journey_ids.destination_id.city == provider.journey_ids.destination_id.name">
+                                                    <span t-esc="provider.journey_ids.destination_id.city"/><br/>
+                                                </t>
+                                                <t t-if="provider.journey_ids.destination_id.city != provider.journey_ids.destination_id.name">
+                                                    <span t-esc="provider.journey_ids.destination_id.city"/> <span t-esc="provider.journey_ids.destination_id.name"/><br/>  <!--<span t-esc="line_ids[line_index]['destination_city']"/>-->
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-if="not provider.journey_ids.destination_id.name">
+                                            <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                        </t>
+                                    </div>
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Tgl Tiba</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <t t-if="provider.journey_ids.arrival_date">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                                <span t-if="provider.journey_ids.arrival_date" t-esc="provider.journey_ids.arrival_date"/>
+                                            </div>
+                                        </t>
+                                        <t t-if="provider.journey_ids.arrival_date">
+                                            <div class="col-7" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                        </t>
+                                    </div>
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Kelas</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                            <t t-if="provider.journey_ids.cabin_class">
+                                                <span t-if="'B' in provider.journey_ids.cabin_class">Bisnis</span><span t-if="'K' in provider.journey_ids.cabin_class">Ekonomi</span><span t-if="'E' in provider.journey_ids.cabin_class">Eksekutif</span>
+                                                <span t-if="'' in provider.journey_ids.cabin_class">-</span>
+                                            </t>
+                                            <t t-if="provider.journey_ids.class_of_service">
+                                                <span t-esc="provider.journey_ids.class_of_service"/>
+                                            </t>
+                                        </div>
+                                        <t t-if="not provider.journey_ids.class_of_service">
+                                            <div class="col-8" style="padding: 0px; text-transform:uppercase"><span style="color: white;">kosong</span></div>
+                                        </t>
+                                    </div>
+
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Nama Penumpang</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                            <span t-field="psg.passenger_id.first_name"/><span style="color: white;">.</span><span t-field="psg.passenger_id.last_name"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>ID Penumpang</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                            <span t-field="psg.passenger_id.identity_number"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Tiket Number</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                            <t t-foreach="provider.ticket_ids" t-as="ticket">
+                                                <t t-if="ticket.passenger_id.id == psg.passenger_id.id">
+                                                    <span t-field="ticket.ticket_number"/>
+                                                </t>
+                                            </t>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="padding: 0px; margin-top: -3px">
+                                        <div class="col-3" style="max-width: 27.5%;"><span>Seat</span></div>
+                                        <div class="col-1" style="max-width: 6%; padding: 0px;">:<span style="color: white;">..</span></div>
+                                        <div class="col-8" style="padding: 0px; text-transform:uppercase; font-weight: 300">
+                                            <span t-field="psg.seat"/>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-3 col-offset-1 text-right">
+                                    <t t-foreach="provider.ticket_ids" t-as="ticket">
+                                        <t t-if="ticket.passenger_id.id == psg.passenger_id.id">
+                                            <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('QR', ticket.ticket_number, 180, 180)" style="width:200px;height:200px; margin-top: 20px;"/>
+                                        </t>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="printout_train_boarding_pass">
+        <t t-set="data_report_header_spacing" t-value="20"/>
+        <t t-set="data_report_margin_top" t-value="2"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <t t-set="data_report_margin_top" t-value="10"/>
+                    <t t-set="data_report_margin_bottom" t-value="0"/>
+                    <t t-call="tt_report_common.printout_train_boarding_pass_template"/>
+                </div>
+            </t>
+        </t>
+    </template>
 </odoo>
