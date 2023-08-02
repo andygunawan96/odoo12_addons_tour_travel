@@ -146,6 +146,27 @@ class CountryState(models.Model):
     other_name_ids = fields.One2many('tt.destination.alias', 'state_id', 'Dest. Alias', help='Destination Alias or Other Name')
     address_detail_ids = fields.One2many('address.detail', 'state_id', string='Addresses')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryState, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryState, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryState, self).unlink()
+
     def find_state_by_name(self, str_name, limit=1, country_id=None):
         if str_name:
             str_name = str_name.rstrip()
@@ -176,6 +197,27 @@ class CountryCity(models.Model):
     latitude = fields.Float('Latitude Degree', digits=(3, 7))
     longitude = fields.Float('Longitude Degree', digits=(3, 7))
     city_alias_name = fields.Char('Alias Name', compute='city_search_name', store=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryCity, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryCity, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryCity, self).unlink()
 
     def find_city_by_name(self, str_name, limit=1, country_id=None, state_id=None):
         if str_name:
@@ -228,6 +270,27 @@ class CountryDistrict(models.Model):
 
     address_detail_ids = fields.One2many('address.detail', 'district_id', string='Addresses')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryDistrict, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryDistrict, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountryDistrict, self).unlink()
+
 
 class CountrySubDistrict(models.Model):
     _name = 'res.sub.district'
@@ -238,3 +301,24 @@ class CountrySubDistrict(models.Model):
     district_id = fields.Many2one('res.district', string='District')
     address_detail_ids = fields.One2many('address.detail', 'sub_district_id', string='Addresses')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountrySubDistrict, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountrySubDistrict, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(CountrySubDistrict, self).unlink()
