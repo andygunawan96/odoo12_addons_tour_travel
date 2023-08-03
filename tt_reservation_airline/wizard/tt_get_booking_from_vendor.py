@@ -414,7 +414,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'grand_total': grand_total,
                 'total_commission': abs(commission),
                 'get_booking_json': json.dumps(res),
-                'pax_type_data': json.dumps(pax_count)
+                'pax_type_data': json.dumps(pax_count),
+                'payment_method_to_ho': req.get('payment_method_to_ho', False)
             }
             new = view_id.create(vals)
             return new
