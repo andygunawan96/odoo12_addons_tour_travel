@@ -42,7 +42,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     ho_id = fields.Many2one('tt.agent', 'Head Office', readonly=True, domain=[('is_ho_agent', '=', True)], required=True, compute='_compute_ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', required=True, domain=[('id','=',-1)])
-    payment_method_to_ho = fields.Selection([('balance', 'Balance'), ('credit_limit', 'Credit Limit')], 'Payment Method to HO (Only used if reservation is issued)', default='balance')
+    payment_method_to_ho = fields.Selection([('balance', 'Balance'), ('credit_limit', 'Credit Limit')], 'Payment Method to HO', default='balance')
     user_id = fields.Many2one('res.users', 'User', required=True, domain=[('id','=',-1)])
 
     is_database_booker = fields.Boolean('Is Database Booker', default=True)
@@ -487,7 +487,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "child": pax_type_res.get('CHD',0),
             "infant": pax_type_res.get('INF',0),
             "direction": "OTHER",
-            "is_get_booking_from_vendor": True
+            "is_get_booking_from_vendor": True,
+            "payment_method_to_ho": self.payment_method_to_ho
         }
 
         for rec in retrieve_res['passengers']:
