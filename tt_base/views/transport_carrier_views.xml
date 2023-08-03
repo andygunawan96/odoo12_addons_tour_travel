@@ -29,6 +29,7 @@
                             <field name="is_adult_birth_date_required"/>
                             <field name="required_identity_required_domestic"/>
                             <field name="required_identity_required_international"/>
+                            <field name="required_frequent_flyer"/>
                             <field name="is_identity_can_be_expired"/>
                             <field name="is_identity_can_be_empty"/>
                         </group>
