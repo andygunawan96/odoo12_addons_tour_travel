@@ -92,7 +92,7 @@
             ]"/>
             <field name="loyalty_program_ids" eval="[
                 (4, ref('tt_reservation_airline.tt_loyalty_program_asiamiles')),
-                (4, ref('tt_reservation_airline.tt_frequent_flyer_airline_marco_polo_club')),
+                (4, ref('tt_reservation_airline.tt_loyalty_program_themarcopoloclub')),
             ]"/>
         </record>
     </data>
