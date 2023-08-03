@@ -70,6 +70,7 @@ class ReservationMitraKeluarga(models.Model):
         inv_line_obj = self.env['tt.agent.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': invoice_id.id,
             'reference': 'Order Number:\n%s' % (self.name),
             'desc': self.get_segment_description(),
@@ -102,6 +103,7 @@ class ReservationMitraKeluarga(models.Model):
         ho_inv_line_obj = self.env['tt.ho.invoice.line'].create({
             'res_model_resv': self._name,
             'res_id_resv': self.id,
+            'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'invoice_id': ho_invoice_id.id,
             'reference': self.name,
             'desc': self.get_segment_description(),
@@ -199,6 +201,7 @@ class ReservationMitraKeluarga(models.Model):
                     'price_unit': admin_fee_medical / len(provider.ticket_ids.ids),
                     'quantity': len(provider.ticket_ids.ids),
                     'invoice_line_id': ho_invoice_line_id,
+                    'ho_id': temp_ho_obj and temp_ho_obj.id or False
                 })
         ## RAC
         for rec in commission_list:
