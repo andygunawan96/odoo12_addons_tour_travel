@@ -32,6 +32,7 @@ class TransportCarrier(models.Model):
     is_adult_birth_date_required = fields.Boolean('Is Adult Birth Date Required', default=True)
     required_identity_required_domestic = fields.Boolean('Is Identity Required Domestic', default=False) ## must be input before flight and for notif purpose
     required_identity_required_international = fields.Boolean('Is Identity Required International', default=False) ## must be input before flight and for notif purpose
+    required_frequent_flyer = fields.Boolean('Is FF Required', default=False)
     is_identity_can_be_expired = fields.Boolean('Is Identity Can Be Expired', help="For input to vendor", default=False)
     is_identity_can_be_empty = fields.Boolean('Is Identity Can Be Empty', help="For input to vendor", default=False)
     active = fields.Boolean('Active', default=True)
@@ -77,6 +78,7 @@ class TransportCarrier(models.Model):
             'required_identity_required_domestic': self.required_identity_required_domestic,
             'required_identity_required_international': self.required_identity_required_international,
             'is_identity_can_be_expired': self.is_identity_can_be_expired,
+            'required_frequent_flyer': self.required_frequent_flyer,
             'is_identity_can_be_empty': self.is_identity_can_be_empty,
             'active': self.active,
         }
@@ -97,6 +99,7 @@ class TransportCarrier(models.Model):
             'required_identity_required_international': self.required_identity_required_international,
             'is_identity_can_be_expired': self.is_identity_can_be_expired,
             'is_identity_can_be_empty': self.is_identity_can_be_empty,
+            'required_frequent_flyer': self.required_frequent_flyer,
             'active': self.active,
         }
         return res
