@@ -42,6 +42,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     ho_id = fields.Many2one('tt.agent', 'Head Office', readonly=True, domain=[('is_ho_agent', '=', True)], required=True, compute='_compute_ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', required=True, domain=[('id','=',-1)])
+    payment_method_to_ho = fields.Selection([('balance', 'Balance'), ('credit_limit', 'Credit Limit')], 'Payment Method to HO', default='balance')
     user_id = fields.Many2one('res.users', 'User', required=True, domain=[('id','=',-1)])
 
     is_database_booker = fields.Boolean('Is Database Booker', default=True)
@@ -253,6 +254,7 @@ class TtGetBookingFromVendor(models.TransientModel):
             'ho_id': self.ho_id.id,
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
+            'payment_method_to_ho': self.payment_method_to_ho,
             'booker_id': self.booker_id and self.booker_id.id or False,
             "booker_data": json.dumps(booker_data),
             'journey_ids_char': journey_values,
@@ -287,6 +289,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     agent_id = fields.Many2one("tt.agent","Agent")
     customer_parent_id = fields.Many2one("tt.customer.parent","Customer Parent")
+    payment_method_to_ho = fields.Selection([('balance', 'Balance'), ('credit_limit', 'Credit Limit')], 'Payment Method to HO', default='balance')
 
     # journey_ids = fields.One2many("")
     journey_ids_char = fields.Text("Journeys")
@@ -411,7 +414,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
                 'grand_total': grand_total,
                 'total_commission': abs(commission),
                 'get_booking_json': json.dumps(res),
-                'pax_type_data': json.dumps(pax_count)
+                'pax_type_data': json.dumps(pax_count),
+                'payment_method_to_ho': req.get('payment_method_to_ho', False)
             }
             new = view_id.create(vals)
             return new
@@ -483,7 +487,8 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "child": pax_type_res.get('CHD',0),
             "infant": pax_type_res.get('INF',0),
             "direction": "OTHER",
-            "is_get_booking_from_vendor": True
+            "is_get_booking_from_vendor": True,
+            "payment_method_to_ho": self.payment_method_to_ho
         }
 
         for rec in retrieve_res['passengers']:
@@ -576,6 +581,7 @@ class TtGetBookingFromVendorReview(models.TransientModel):
             "order_number": create_res['order_number'],
             "force_issued": True,
             "provider_bookings": provider_bookings_req,
+            "agent_payment_method": self.payment_method_to_ho,
             "member": False,
             "acquirer_seq_id": ""
         }
