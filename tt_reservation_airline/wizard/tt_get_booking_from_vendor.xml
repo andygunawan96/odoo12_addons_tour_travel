@@ -18,6 +18,7 @@
                         <field name="agent_id"/>
                         <field name="customer_parent_id"/>
                         <field name="user_id"/>
+                        <field name="payment_method_to_ho"/>
                     </group>
                 </group>
                 <group attrs="{'invisible': [('user_id', '=', False)]}">
@@ -73,6 +74,7 @@
                         <field name="agent_id" readonly="1"/>
                         <field name="customer_parent_id" readonly="1"/>
                         <field name="booker_id" readonly="1"/>
+                        <field name="payment_method_to_ho" readonly="1"/>
                     </group>
                 </group>
                 <separator string="Journeys"/>
