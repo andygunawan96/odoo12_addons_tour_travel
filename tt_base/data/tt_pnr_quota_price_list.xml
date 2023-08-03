@@ -14,6 +14,7 @@
             <field name="provider_access_type">all</field>
             <field name="carrier_access_type">all</field>
             <field name="price">0</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
         </record>
 
 <!--        Price Package-->
@@ -23,11 +24,13 @@
             <field name="available_price_list_ids" eval="[(6, 0,[
                                                             ref('tt_base.tt_pnr_quota_price_999c'),
                                                            ])]"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
         </record>
 
         <record id="tt_pnr_quota_price_package_standard" model="tt.pnr.quota.price.package">
             <field name="name">Standard Package</field>
             <field name="minimum_fee">1500000</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
         </record>
 
     </data>
