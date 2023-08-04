@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 import random
 
 
@@ -18,6 +19,27 @@ class ResBank(models.Model):
     active = fields.Boolean('Active', default=True)
     image = fields.Binary('Bank Logo', attachment=True)
     image_id = fields.Many2one('tt.upload.center', compute="_compute_image_id",store=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 409')
+        return super(ResBank, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 410')
+        return super(ResBank, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 411')
+        return super(ResBank, self).unlink()
 
     @api.depends('image')
     def _compute_image_id(self):

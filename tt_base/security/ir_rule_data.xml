@@ -510,4 +510,32 @@
         <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
     </record>
 
+    <record id="social_media_detail_for_ho" model="ir.rule">
+        <field name="name">Social Media Detail For HO</field>
+        <field name="model_id" ref="model_social_media_detail"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel_operator'))]"/>
+    </record>
+
+    <record id="social_media_detail_for_ho_user" model="ir.rule">
+        <field name="name">Social Media Detail For HO User</field>
+        <field name="model_id" ref="model_social_media_detail"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_tour_travel'))]"/>
+    </record>
+
+    <record id="social_media_detail_for_agent" model="ir.rule">
+        <field name="name">Social Media Detail For Agent</field>
+        <field name="model_id" ref="model_social_media_detail"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user_operator'))]"/>
+    </record>
+
+    <record id="social_media_detail_for_agent_user" model="ir.rule">
+        <field name="name">Social Media Detail For Agent User</field>
+        <field name="model_id" ref="model_social_media_detail"/>
+        <field name="domain_force">[('ho_id','=',user.ho_id.id)]</field>
+        <field name="groups" eval="[(4,ref('tt_base.group_tt_agent_user'))]"/>
+    </record>
+
 </odoo>

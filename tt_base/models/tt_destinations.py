@@ -45,10 +45,25 @@ class Destinations(models.Model):
     # is_international_flight = fields.Boolean('International Flight', default=True)
     active = fields.Boolean('Active', default=True)
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+        return super(Destinations, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 374')
+        return super(Destinations, self).write(vals)
+
     @api.multi
     def unlink(self):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_destination_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Action failed due to security restriction. Required Destination Level 5 permission.')
+        if not self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_destination_level_5'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 375')
         return super(Destinations, self).unlink()
 
     @api.multi
