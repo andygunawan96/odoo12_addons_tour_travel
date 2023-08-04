@@ -33,17 +33,17 @@
             </xpath>
             <field name="currency_id" position="after">
                 <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
-                <label for="point_reward" string="Point Reward"/>
-                <div name="point_reward_div">
-                    <field name="point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/> pts
+                <label for="point_reward" string="Point Reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                <div name="point_reward_div" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager">
+                    <field name="point_reward"/> pts
                 </div>
-                <label for="actual_point_reward" string="Actual Point Reward"/>
-                <div name="actual_point_reward_div">
-                    <field name="actual_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/> pts
+                <label for="actual_point_reward" string="Actual Point Reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                <div name="actual_point_reward_div" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager">
+                    <field name="actual_point_reward"/> pts
                 </div>
-                <label for="unprocessed_point_reward" string="Unprocessed Point Reward"/>
-                <div name="unprocessed_point_div">
-                    <field name="unprocessed_point_reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/> pts
+                <label for="unprocessed_point_reward" string="Unprocessed Point Reward" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                <div name="unprocessed_point_div" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager">
+                    <field name="unprocessed_point_reward"/> pts
                 </div>
             </field>
             <field name="credit_limit" position="after">
@@ -102,7 +102,7 @@
                 <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
             </field>
             <xpath expr="//span[@name='email_for_inh']" position="after">
-                <span class="o_kanban_record_subtitle">Balance: <field name="balance" widget="float"/></span>
+                <span class="o_kanban_record_subtitle" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager">Balance: <field name="balance" widget="float"/></span>
             </xpath>
         </field>
     </record>
@@ -116,7 +116,7 @@
                 <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
             </field>
             <xpath expr="//span[@name='email_for_inh']" position="after">
-                <span class="o_kanban_record_subtitle">Balance: <field name="balance" widget="float"/></span>
+                <span class="o_kanban_record_subtitle" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager">Balance: <field name="balance" widget="float"/></span>
             </xpath>
         </field>
     </record>

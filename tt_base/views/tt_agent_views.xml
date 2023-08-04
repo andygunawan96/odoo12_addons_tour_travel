@@ -87,8 +87,8 @@
                             <!--                            <field name="annual_profit_target"/>-->
                         </group>
                         <group>
-                            <field name="credit_limit" attrs="{'readonly': [('agent_type_id', '==', 'tt_base.agent_type_ho')]}"/>
-                            <field name="est_date" readonly="1"/>
+                            <field name="credit_limit" attrs="{'readonly': [('is_ho_agent', '=', True)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                            <field name="est_date" readonly="1" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
                             <!--                            <field name="mou_start"/>-->
                             <!--                            <field name="mou_end"/>-->
                         </group>
@@ -159,7 +159,7 @@
                             </group>
                             <field name="quota_ids"/>
                         </page>
-                        <page string="Credit Limit" attrs="{'invisible': [('credit_limit','=',0)]}">
+                        <page string="Credit Limit" attrs="{'invisible': [('credit_limit','=',0)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager">
                             <group>
                                 <field name="agent_credit_limit_provider_type_access_type"/>
                                 <field name="agent_credit_limit_provider_type_eligibility_ids"/>
