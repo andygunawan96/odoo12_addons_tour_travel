@@ -1251,56 +1251,110 @@ class ReservationAirline(models.Model):
                     # September 23, 2022 - SAM
                     journey_obj_id_list = []
                     journey_obj_list = []
-                    for journey in commit_data['journeys']:
+
+                    # August 6, 2023 - SAM
+                    # prov_journey_obj_repo = {}
+                    # prov_seg_obj_repo = {}
+                    # temp_seg_obj = None
+                    for prov_journey_obj in rsv_prov_obj.journey_ids:
+                        # origin = prov_journey_obj.origin_id.code if prov_journey_obj.origin_id else ''
+                        # destination = prov_journey_obj.destination_id.code if prov_journey_obj.destination_id else ''
+                        # jKey = '%s-%s' % (origin, destination)
+                        # prov_journey_obj_repo[jKey] = prov_journey_obj
+                        for prov_seg_obj in prov_journey_obj.segment_ids:
+                            # if not temp_seg_obj:
+                            #     temp_seg_obj = prov_seg_obj.copy()
+                            #     temp_seg_obj.write({
+                            #         'provider_id': None,
+                            #         'booking_id': None,
+                            #     })
+                            prov_seg_obj.write({
+                                'journey_id': None,
+                            })
+                            old_segment_list.append(prov_seg_obj.id)
+                            # s_origin = prov_seg_obj.origin_id.code if prov_seg_obj.origin_id else ''
+                            # s_destination = prov_seg_obj.destination_id.code if prov_seg_obj.destination_id else ''
+                            # sKey = '%s-%s' % (s_origin, s_destination)
+                            # prov_seg_obj_repo[sKey] = prov_seg_obj
+                        prov_journey_obj.write({
+                            'provider_booking_id': None
+                        })
+                    # END
+
+                    # this_pnr_journey.append((0, 0, {
+                    #     'provider_id': provider_id,
+                    #     'sequence': journey_sequence,
+                    #     'origin_id': this_journey_seg[0][2]['origin_id'],
+                    #     'destination_id': this_journey_seg[dest_idx][2]['destination_id'],
+                    #     'departure_date': this_journey_seg[0][2]['departure_date'],
+                    #     'arrival_date': this_journey_seg[-1][2]['arrival_date'],
+                    #     'segment_ids': this_journey_seg,
+                    #     'journey_code': journey.get('journey_code', ''),
+                    #     'banner_ids': this_journey_banner,
+                    #     'is_vtl_flight': journey.get('is_vtl_flight', False),
+                    # }))
+
+                    for journey_idx, journey in enumerate(commit_data['journeys']):
+                        origin_id = self.env['tt.destinations'].get_id(journey.get('origin', ''), airline_obj.provider_type_id)
+                        destination_id = self.env['tt.destinations'].get_id(journey.get('destination', ''), airline_obj.provider_type_id)
+                        prov_jrn_obj = self.env['tt.journey.airline'].create({
+                            'sequence': journey_idx,
+                            'origin_id': origin_id if origin_id else None,
+                            'destination_id': destination_id if destination_id else None,
+                            'departure_date': journey.get('departure_date', ''),
+                            'arrival_date': journey.get('arrival_date', ''),
+                            'journey_code': journey.get('journey_code', ''),
+                            'provider_booking_id': rsv_prov_obj.id,
+                        })
                         new_segment_obj_list = []
                         for seg in journey['segments']:
-                            seg_key = '{origin}-{destination}'.format(**seg)
-                            if seg_key not in resv_segment_dict:
-                                _logger.error('Segment not found %s, segment list in data %s' % (seg_key, resv_segment_str))
-                                continue
-
-                            prov_segment_data = resv_segment_dict[seg_key]
-                            # if prov_segment_data.departure_date == seg['departure_date'] and prov_segment_data.arrival_date == seg['arrival_date']:
+                            # seg_key = '{origin}-{destination}'.format(**seg)
+                            # if seg_key not in resv_segment_dict:
+                            #     _logger.error('Segment not found %s, segment list in data %s' % (seg_key, resv_segment_str))
                             #     continue
-
-                            is_same_departure = True if prov_segment_data.departure_date == seg['departure_date'] else False
-                            is_same_arrival = True if prov_segment_data.arrival_date == seg['arrival_date'] else False
-                            is_same_class_of_service = False
-                            is_same_fare_basis_code = False
-                            try:
-                                class_of_service_flag_list = []
-                                fare_basis_code_flag_list = []
-                                for fare in seg.get('fares', []):
-                                    fare_cos = fare.get('class_of_service', '')
-                                    fare_fbc = fare.get('fare_basis_code', '')
-                                    if prov_segment_data.class_of_service == fare_cos:
-                                        class_of_service_flag_list.append(True)
-                                    else:
-                                        class_of_service_flag_list.append(False)
-                                    if prov_segment_data.fare_basis_code == fare_fbc:
-                                        fare_basis_code_flag_list.append(True)
-                                    else:
-                                        fare_basis_code_flag_list.append(False)
-
-                                if class_of_service_flag_list and all(flag == True for flag in class_of_service_flag_list):
-                                    is_same_class_of_service = True
-                                if fare_basis_code_flag_list and all(flag == True for flag in fare_basis_code_flag_list):
-                                    is_same_fare_basis_code = True
-                            except:
-                                _logger.error('Error compare class of service in segments')
-                            # END
-
-                            # if journey_prov_data.departure_date == orig_segment['departure_date'] and journey_prov_data.arrival_date == dest_segment['arrival_date']:
-                            #     if commit_segment_total == prov_data_segment_total:
-                            #         continue
-
-                            if is_same_departure and is_same_arrival and is_same_class_of_service and is_same_fare_basis_code:
-                                continue
-
-                            if seg_key not in journey_id_dict_temp:
-                                journey_id_dict_temp[seg_key] = {
-                                    'journey_id': prov_segment_data.journey_id.id if prov_segment_data.journey_id else None
-                                }
+                            #
+                            # prov_segment_data = resv_segment_dict[seg_key]
+                            # # if prov_segment_data.departure_date == seg['departure_date'] and prov_segment_data.arrival_date == seg['arrival_date']:
+                            # #     continue
+                            #
+                            # is_same_departure = True if prov_segment_data.departure_date == seg['departure_date'] else False
+                            # is_same_arrival = True if prov_segment_data.arrival_date == seg['arrival_date'] else False
+                            # is_same_class_of_service = False
+                            # is_same_fare_basis_code = False
+                            # try:
+                            #     class_of_service_flag_list = []
+                            #     fare_basis_code_flag_list = []
+                            #     for fare in seg.get('fares', []):
+                            #         fare_cos = fare.get('class_of_service', '')
+                            #         fare_fbc = fare.get('fare_basis_code', '')
+                            #         if prov_segment_data.class_of_service == fare_cos:
+                            #             class_of_service_flag_list.append(True)
+                            #         else:
+                            #             class_of_service_flag_list.append(False)
+                            #         if prov_segment_data.fare_basis_code == fare_fbc:
+                            #             fare_basis_code_flag_list.append(True)
+                            #         else:
+                            #             fare_basis_code_flag_list.append(False)
+                            #
+                            #     if class_of_service_flag_list and all(flag == True for flag in class_of_service_flag_list):
+                            #         is_same_class_of_service = True
+                            #     if fare_basis_code_flag_list and all(flag == True for flag in fare_basis_code_flag_list):
+                            #         is_same_fare_basis_code = True
+                            # except:
+                            #     _logger.error('Error compare class of service in segments')
+                            # # END
+                            #
+                            # # if journey_prov_data.departure_date == orig_segment['departure_date'] and journey_prov_data.arrival_date == dest_segment['arrival_date']:
+                            # #     if commit_segment_total == prov_data_segment_total:
+                            # #         continue
+                            #
+                            # if is_same_departure and is_same_arrival and is_same_class_of_service and is_same_fare_basis_code:
+                            #     continue
+                            #
+                            # if seg_key not in journey_id_dict_temp:
+                            #     journey_id_dict_temp[seg_key] = {
+                            #         'journey_id': prov_segment_data.journey_id.id if prov_segment_data.journey_id else None
+                            #     }
 
                             # if prov_segment_data.id not in old_segment_list:
                             #     old_segment_list.append(prov_segment_data.id)
@@ -1391,15 +1445,15 @@ class ReservationAirline(models.Model):
                             # Membuat data baru untuk reservasi
                             n_seg_values.update({
                                 'provider_id': provider_obj.id if provider_obj else None,
-                                'journey_id': journey_id_dict_temp[seg_key]['journey_id'],
+                                'journey_id': prov_jrn_obj.id,
                             })
 
-                            if journey_id_dict_temp[seg_key] and journey_id_dict_temp[seg_key].id not in journey_obj_id_list:
-                                journey_obj_id_list.append(journey_id_dict_temp[seg_key].id)
-                                journey_obj_list.append(journey_id_dict_temp[seg_key])
-                                journey_id_dict_temp[seg_key].write({
-                                    'journey_code': journey['journey_code'] if journey.get('journey_code') else '',
-                                })
+                            # if prov_segment_data.journey_id and prov_segment_data.journey_id.id not in journey_obj_id_list:
+                            #     journey_obj_id_list.append(prov_segment_data.journey_id.id)
+                            #     journey_obj_list.append(prov_segment_data.journey_id)
+                            #     prov_segment_data.journey_id.write({
+                            #         'journey_code': journey['journey_code'] if journey.get('journey_code') else '',
+                            #     })
 
                             n_resv_seg_obj = self.env['tt.segment.airline'].sudo().create(n_seg_values)
                             leg_values.update({
@@ -1409,24 +1463,23 @@ class ReservationAirline(models.Model):
                             self.env['tt.leg.airline'].sudo().create(leg_values)
 
                             # Menghilangkan data lama pada tt reservation airline
-                            prov_segment_data.write({
-                                'journey_id': None
-                            })
-                            if prov_segment_data.id not in old_segment_list:
-                                old_segment_list.append(prov_segment_data.id)
+                            # prov_segment_data.write({
+                            #     'journey_id': None
+                            # })
+                            # if prov_segment_data.id not in old_segment_list:
+                            #     old_segment_list.append(prov_segment_data.id)
                         # if prov_segment_data.journey_id.is_vtl_flight != journey.get('is_vtl_flight', False):
                         #     journey_prov_data.write({
                         #         'is_vtl_flight': journey['is_vtl_flight']
                         #     })
 
                     for journey_obj in journey_obj_list:
-                        if journey_obj_list.segment_ids:
+                        if journey_obj.segment_ids:
                             journey_obj.write({
-                                'origin_id': journey_obj_list.segment_ids[0].origin_id.id if journey_obj_list.segment_ids[0].origin_id else None,
-                                'destination_id': journey_obj_list.segment_ids[-1].destination_id.id if journey_obj_list.segment_ids[-1].destination_id else None,
-                                'departure_date': journey_obj_list.segment_ids[0].departure_date if journey_obj_list.segment_ids[0].departure_date else '',
-                                'arrival_date': journey_obj_list.segment_ids[-1].arrival_date if journey_obj_list.segment_ids[-1].arrival_date else '',
-
+                                'origin_id': journey_obj.segment_ids[0].origin_id.id if journey_obj.segment_ids[0].origin_id else None,
+                                'destination_id': journey_obj.segment_ids[-1].destination_id.id if journey_obj.segment_ids[-1].destination_id else None,
+                                'departure_date': journey_obj.segment_ids[0].departure_date if journey_obj.segment_ids[0].departure_date else '',
+                                'arrival_date': journey_obj.segment_ids[-1].arrival_date if journey_obj.segment_ids[-1].arrival_date else '',
                             })
                 # END
 
