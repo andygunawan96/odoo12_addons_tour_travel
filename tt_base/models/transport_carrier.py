@@ -40,14 +40,23 @@ class TransportCarrier(models.Model):
 
     @api.model
     def create(self, vals):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_transport_carrier_level_2').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Action failed due to security restriction. Required Transport Carrier Level 2 permission.')
+        if not self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_transport_carrier_level_2'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 403')
         return super(TransportCarrier, self).create(vals)
 
     @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 404')
+        return super(TransportCarrier, self).write(vals)
+
+    @api.multi
     def unlink(self):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_transport_carrier_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Action failed due to security restriction. Required Transport Carrier Level 5 permission.')
+        if not self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_transport_carrier_level_5'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 405')
         return super(TransportCarrier, self).unlink()
 
     @api.model
@@ -201,6 +210,27 @@ class TransportCarrierType(models.Model):
     icao = fields.Char('ICAO Code', help="ICAO code for airline")
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 406')
+        return super(TransportCarrierType, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 407')
+        return super(TransportCarrierType, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 408')
+        return super(TransportCarrierType, self).unlink()
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):

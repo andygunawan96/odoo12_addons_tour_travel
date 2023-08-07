@@ -39,10 +39,25 @@ class TtProvider(models.Model):
     #             })]
     #         })
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 415')
+        return super(TtProvider, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 416')
+        return super(TtProvider, self).write(vals)
+
     @api.multi
     def unlink(self):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_provider_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Action failed due to security restriction. Required Provider Level 5 permission.')
+        if not self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_provider_level_5'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 417')
         return super(TtProvider, self).unlink()
 
     def to_dict(self):
@@ -115,6 +130,27 @@ class TtProviderCode(models.Model):
 
     res_model = fields.Char('Related Reservation Name', index=True, readonly=False)
     res_id = fields.Integer('Related Reservation ID', index=True, help='ID of the followed resource', readonly=False)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 418')
+        return super(TtProviderCode, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 419')
+        return super(TtProviderCode, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 420')
+        return super(TtProviderCode, self).unlink()
 
     def open_record(self, rec_id):
         try:

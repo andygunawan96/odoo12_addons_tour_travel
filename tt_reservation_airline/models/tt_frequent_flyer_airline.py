@@ -29,6 +29,27 @@ class TtFrequentFlyerAirline(models.Model):
     display_carriers = fields.Char('Display Carriers', compute='_compute_display_carriers', store=True, readonly=1)
     loyalty_program_ids = fields.Many2many('tt.loyalty.program', 'frequent_flyer_airline_loyalty_program_rel', 'frequent_flyer_airline_id', 'loyalty_program_id', 'Loyalty Programs')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 460')
+        return super(TtFrequentFlyerAirline, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 461')
+        return super(TtFrequentFlyerAirline, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 462')
+        return super(TtFrequentFlyerAirline, self).unlink()
+
     def to_dict(self):
         # providers = [{'name': rec.name, 'code': rec.code} for rec in self.provider_ids if rec.active]
         # carriers = [{'name': rec.name, 'code': rec.code} for rec in self.carrier_ids if rec.active]

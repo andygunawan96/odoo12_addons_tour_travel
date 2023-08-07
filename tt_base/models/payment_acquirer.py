@@ -830,6 +830,9 @@ class PaymentUniqueAmount(models.Model):
 
     @api.model
     def create(self, vals_list):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 397')
         query = "SELECT unique_number FROM unique_amount WHERE unique_number != 0 and active IS TRUE;"
         self.env.cr.execute(query)
         unique_amount_dict_list = self.env.cr.dictfetchall()
@@ -844,6 +847,20 @@ class PaymentUniqueAmount(models.Model):
         vals_list['unique_number'] = unique_number
         new_unique = super(PaymentUniqueAmount, self).create(vals_list)
         return new_unique
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 398')
+        return super(PaymentUniqueAmount, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 399')
+        return super(PaymentUniqueAmount, self).unlink()
 
     @api.depends('amount', 'unique_number')
     @api.multi

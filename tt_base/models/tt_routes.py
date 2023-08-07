@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from datetime import datetime, timedelta
 from ...tools.api import Response
 from ...tools import ERR
@@ -30,6 +31,27 @@ class Routes(models.Model):
     destination_utc = fields.Float('Origin Timezone Hour', related='destination_id.timezone_hour', store=True)
     departure_time = fields.Char('Departure Time', required=True)
     arrival_time = fields.Char('Arrival Time', required=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 424')
+        return super(Routes, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 425')
+        return super(Routes, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 426')
+        return super(Routes, self).unlink()
 
     @api.depends('carrier_name', 'carrier_code', 'carrier_number')
     def _compute_name(self):
@@ -404,6 +426,27 @@ class RoutesLeg(models.Model):
     provider = fields.Char('Provider', required=True)
     segment_id = fields.Many2one('tt.routes.segment', 'Segment', ondelete='cascade')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 427')
+        return super(RoutesLeg, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 428')
+        return super(RoutesLeg, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 429')
+        return super(RoutesLeg, self).unlink()
+
     @api.depends('carrier_code', 'carrier_number', 'origin', 'destination', 'departure_date')
     def _compute_name(self):
         for rec in self:
@@ -452,6 +495,27 @@ class RoutesSegment(models.Model):
     segment_code = fields.Char('Segment Code', default='')
     route_code = fields.Char('Route Code', default='')
     journey_id = fields.Many2one('tt.routes.journey', 'Journey', ondelete='cascade')
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 430')
+        return super(RoutesSegment, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 431')
+        return super(RoutesSegment, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 432')
+        return super(RoutesSegment, self).unlink()
 
     @api.depends('carrier_code', 'carrier_number', 'origin', 'destination', 'departure_date')
     def _compute_name(self):
@@ -532,6 +596,27 @@ class RoutesJourney(models.Model):
     operating_airline_code_list = fields.Char('Operating Airline Code List')
     schedule_id = fields.Many2one('tt.routes.schedule', 'Schedule', ondelete='cascade')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 433')
+        return super(RoutesJourney, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 434')
+        return super(RoutesJourney, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 435')
+        return super(RoutesJourney, self).unlink()
+
     @api.depends('origin', 'destination', 'departure_date')
     def _compute_name(self):
         for rec in self:
@@ -605,6 +690,27 @@ class RoutesSchedule(models.Model):
     departure_date = fields.Char('Departure Date', compute='_compute_departure_date', store=True)
     provider = fields.Char('Provider', related='journey_ids.provider', store=True)
     provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 436')
+        return super(RoutesSchedule, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 437')
+        return super(RoutesSchedule, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 438')
+        return super(RoutesSchedule, self).unlink()
 
     def test_button(self):
         import json
@@ -827,6 +933,27 @@ class RoutesFare(models.Model):
     fare_detail_ids = fields.One2many('tt.routes.fare.detail', 'fare_id', 'Fare Details')
     pax_fare_ids = fields.One2many('tt.routes.pax.fare', 'fare_id', 'Pax Fares')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 439')
+        return super(RoutesFare, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 440')
+        return super(RoutesFare, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 441')
+        return super(RoutesFare, self).unlink()
+
     def _compute_name(self):
         for rec in self:
             temp = rec.get_data(False)
@@ -865,6 +992,27 @@ class RoutesFareDetail(models.Model):
     detail_name = fields.Char('Detail Name', default='')
     fare_id = fields.Many2one('tt.routes.fare', 'Fare', ondelete='cascade')
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 442')
+        return super(RoutesFareDetail, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 443')
+        return super(RoutesFareDetail, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 444')
+        return super(RoutesFareDetail, self).unlink()
+
     def _compute_name(self):
         for rec in self:
             temp = rec.get_data()
@@ -893,6 +1041,27 @@ class RoutesPaxFare(models.Model):
     total_amount = fields.Float('Total Amount', default=0)
     fare_id = fields.Many2one('tt.routes.fare', 'Fare', ondelete='cascade')
     service_charge_ids = fields.One2many('tt.routes.service.charge', 'pax_fare_id', 'Service Charges')
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 445')
+        return super(RoutesPaxFare, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 446')
+        return super(RoutesPaxFare, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 447')
+        return super(RoutesPaxFare, self).unlink()
 
     def _compute_name(self):
         for rec in self:
@@ -924,6 +1093,27 @@ class RoutesServiceCharge(models.Model):
     foreign_amount = fields.Float('Foreign Amount', default=0)
     pax_type = fields.Char('Pax Type', default='')
     pax_fare_id = fields.Many2one('tt.routes.pax.fare', 'Pax Fare', ondelete='cascade')
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 448')
+        return super(RoutesServiceCharge, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 449')
+        return super(RoutesServiceCharge, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 450')
+        return super(RoutesServiceCharge, self).unlink()
 
     def _compute_name(self):
         for rec in self:

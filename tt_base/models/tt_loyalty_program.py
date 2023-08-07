@@ -20,6 +20,27 @@ class TtLoyaltyProgram(models.Model):
     description = fields.Text('Description', default='')
     active = fields.Boolean('Active', default=True)
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 412')
+        return super(TtLoyaltyProgram, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 413')
+        return super(TtLoyaltyProgram, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 414')
+        return super(TtLoyaltyProgram, self).unlink()
+
     def to_dict(self):
         res = {
             'name': self.name,
