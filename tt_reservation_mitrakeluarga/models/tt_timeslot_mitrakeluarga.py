@@ -38,9 +38,9 @@ class TtTimeslotMitraKeluarga(models.Model):
 
     destination_id = fields.Many2one('tt.destinations','Area')
 
-    selected_count = fields.Integer('Selected Counter',compute="_compute_selected_counter",store=True)
+    selected_count = fields.Integer('Selected Counter PAX',compute="_compute_selected_counter",store=True)
 
-    used_count = fields.Integer('Used Counter',compute="_compute_used_counter",store=True)
+    used_count = fields.Integer('Used Counter PAX',compute="_compute_used_counter",store=True)
 
     booking_ids = fields.Many2many('tt.reservation.mitrakeluarga','tt_reservation_mitrakeluarga_timeslot_rel', 'timeslot_id', 'booking_id', 'Selected on By Customer Booking(s)')
 
@@ -84,7 +84,10 @@ class TtTimeslotMitraKeluarga(models.Model):
     @api.depends('booking_ids')
     def _compute_selected_counter(self):
         for rec in self:
-            rec.selected_count = len(rec.booking_ids.ids)
+            total_pax = 0
+            for book_obj in rec.booking_ids:
+                total_pax += len(book_obj.passenger_ids.ids)
+            rec.selected_count = total_pax
 
     @api.onchange('booking_used_ids')
     @api.depends('booking_used_ids')
@@ -93,7 +96,7 @@ class TtTimeslotMitraKeluarga(models.Model):
             used_count = 0
             for rec2 in rec.booking_used_ids:
                 if rec2.state in ['booked', 'issued']:
-                    used_count += 1
+                    used_count += len(rec2.passenger_ids.ids)
             rec.used_count = used_count
 
     # {
