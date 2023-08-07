@@ -43,15 +43,12 @@
                             </group>
                         </group>
                         <notebook colspan="4">
-                            <page string="Social Media">
-                                <field name="social_media_ids" readonly="1"/>
+                            <page string="Provider HO Datas" groups="tt_base.group_tt_tour_travel,base.group_erp_manager">
+                                <field name="provider_ho_data_ids"/>
                             </page>
-
                             <page string="Provider Codes">
                                 <field name="provider_code_ids"/>
                             </page>
-
-
                             <page string="Payment Acquirers">
                                 <field name="payment_acquirer_ids">
                                     <tree>
@@ -60,8 +57,6 @@
                                     </tree>
                                 </field>
                             </page>
-
-
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
@@ -197,6 +192,9 @@
                             </page>
                             <page string="Phones">
                                 <field name="phone_ids" readonly="1"/>
+                            </page>
+                            <page string="Social Medias">
+                                <field name="social_media_ids" readonly="1"/>
                             </page>
                             <page string="Allowed Destination">
                                 <!--                                <button name="clear_destination_ids" type="object" string="Clear Destination" groups="tt_base.group_tt_tour_travel_operator"/>-->
