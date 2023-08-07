@@ -19,6 +19,7 @@ Key Features
                 'tt_merge_record',
 
                 'tt_frontend_banner',
+                'tt_search_result_banner',
                 'tt_bank_transaction',
                 'tt_billing_statement',
 
