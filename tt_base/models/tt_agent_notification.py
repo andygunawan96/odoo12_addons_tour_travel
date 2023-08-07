@@ -161,7 +161,7 @@ class TtReservationNotification(models.Model):
                 dom.append(('test_datetime', '>', datetime.now()))
             elif provider_type in ['insurance']:
                 dom.append(('start_date', '>', datetime.now().strftime('%Y-%m-%d')))
-            dom.append('ho_id','=',ho_id)
+            dom.append(('ho_id','=',ho_id))
             book_objs = self.env['tt.reservation.%s' % provider_type].search(dom)
             for book_obj in book_objs:
                 last_record_notif = self.search([('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)], limit=1)

@@ -238,7 +238,7 @@
               name="Reservations"
               web_icon="hr,static/description/icon.png"
               sequence="2"
-              groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+              groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,tt_base.group_tt_corpor_user,base.group_erp_manager"/>
 
     <!-- Top Menu -->
     <!-- Medical Placeholder -->

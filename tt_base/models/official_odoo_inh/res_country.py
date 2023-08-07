@@ -49,19 +49,19 @@ class Country(models.Model):
     @api.model
     def create(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 379')
         return super(Country, self).create(vals)
 
     @api.multi
     def write(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 380')
         return super(Country, self).write(vals)
 
     @api.multi
     def unlink(self):
         if not self.env.user.has_group('base.group_erp_manager'):
-            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 381')
         return super(Country, self).unlink()
 
     def get_country_data(self):
@@ -150,21 +150,21 @@ class CountryState(models.Model):
     def create(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 382')
         return super(CountryState, self).create(vals)
 
     @api.multi
     def write(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 383')
         return super(CountryState, self).write(vals)
 
     @api.multi
     def unlink(self):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 384')
         return super(CountryState, self).unlink()
 
     def find_state_by_name(self, str_name, limit=1, country_id=None):
@@ -202,21 +202,21 @@ class CountryCity(models.Model):
     def create(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 385')
         return super(CountryCity, self).create(vals)
 
     @api.multi
     def write(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 386')
         return super(CountryCity, self).write(vals)
 
     @api.multi
     def unlink(self):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 387')
         return super(CountryCity, self).unlink()
 
     def find_city_by_name(self, str_name, limit=1, country_id=None, state_id=None):
@@ -274,21 +274,21 @@ class CountryDistrict(models.Model):
     def create(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 388')
         return super(CountryDistrict, self).create(vals)
 
     @api.multi
     def write(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 389')
         return super(CountryDistrict, self).write(vals)
 
     @api.multi
     def unlink(self):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 390')
         return super(CountryDistrict, self).unlink()
 
 
@@ -306,19 +306,19 @@ class CountrySubDistrict(models.Model):
     def create(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 391')
         return super(CountrySubDistrict, self).create(vals)
 
     @api.multi
     def write(self, vals):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 392')
         return super(CountrySubDistrict, self).write(vals)
 
     @api.multi
     def unlink(self):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
-                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 373')
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 393')
         return super(CountrySubDistrict, self).unlink()

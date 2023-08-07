@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from ...tools.api import Response
 import logging
 import traceback
@@ -18,6 +19,27 @@ class TtSSRCategory(models.Model):
     key = fields.Char('Key', required=True, help='Key pada response dari API ke User API', default='')
     icon = fields.Char('Icon')
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 451')
+        return super(TtSSRCategory, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 452')
+        return super(TtSSRCategory, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 453')
+        return super(TtSSRCategory, self).unlink()
 
     def to_dict(self):
         res = {
@@ -59,6 +81,27 @@ class TtSSRList(models.Model):
     is_premium_economy = fields.Boolean('Premium Economy Class', default=True)
     is_business = fields.Boolean('Business Class', default=True)
     is_first_class = fields.Boolean('First Class', default=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 454')
+        return super(TtSSRList, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 455')
+        return super(TtSSRList, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 456')
+        return super(TtSSRList, self).unlink()
 
     def to_dict(self):
         line_ids = [rec.to_dict() for rec in self.line_ids]
@@ -327,6 +370,27 @@ class TtSSRListLine(models.Model):
     value = fields.Char('Value', default='')
     ssr_id = fields.Many2one('tt.ssr.list', 'SSR', readonly=1)
     active = fields.Boolean('Active', default=True)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 457')
+        return super(TtSSRListLine, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 458')
+        return super(TtSSRListLine, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 459')
+        return super(TtSSRListLine, self).unlink()
 
     def to_dict(self):
         res = {

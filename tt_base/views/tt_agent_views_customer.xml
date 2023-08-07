@@ -14,9 +14,9 @@
                             <!--<field name="active" widget="boolean_button"-->
                                    <!--options='{"terminology": "archive"}'/>-->
                         <!--</button>-->
-                        <!--<button name="action_create_user" type="object" string="Create User" icon="fa-user"-->
-                                <!--class="oe_stat_button" groups="tt_base.group_tt_agent_management_operator">-->
-                        <!--</button>-->
+                        <button name="action_create_user" type="object" string="Create User" icon="fa-user"
+                                class="oe_stat_button" groups="tt_base.group_user_data_level_3">
+                        </button>
                     </div>
                     <field name="logo" widget='image' class="oe_avatar"/>  <!-- options='{"preview_image":"logo_thumb"}'-->
                     <div class="oe_title">
@@ -45,8 +45,8 @@
                             <!--                            <field name="credit_limit"/>-->
                         </group>
                         <group>
-                            <field name="credit_limit" readonly="1"/>
-                            <field name="est_date" readonly="1"/>
+                            <field name="credit_limit" readonly="1" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
+                            <field name="est_date" readonly="1" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
 <!--                            <field name="agent_bank_detail_ids" invisible="1"/>-->
                             <!--                            <field name="mou_start"/>-->
                             <!--                            <field name="mou_end"/>-->
@@ -95,7 +95,7 @@
                             </group>
                             <field name="quota_ids"/>
                         </page>
-                        <page string="Credit Limit" attrs="{'invisible': [('credit_limit','=',0)]}">
+                        <page string="Credit Limit" attrs="{'invisible': [('credit_limit','=',0)]}" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager">
                             <group>
                                 <field name="agent_credit_limit_provider_type_access_type" readonly="1"/>
                                 <field name="agent_credit_limit_provider_type_eligibility_ids" readonly="1"/>
@@ -200,7 +200,7 @@
                 <field name="name"/>
                 <field name="agent_type_id"/>
                 <field name="email"/>
-                <field name="balance"/>
+                <field name="balance" groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
                 <!--                <field name="currency_id"/>-->
                 <templates>
                     <t t-name="kanban-box">
