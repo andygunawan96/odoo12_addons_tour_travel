@@ -16,6 +16,7 @@
 
                     <group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="description"/>
                             <field name="type"/>
                             <field name="country_id"/>
@@ -41,6 +42,7 @@
         <field name="model">phone.detail</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="description"/>
                 <field name="type"/>
                 <field name="phone_number"/>

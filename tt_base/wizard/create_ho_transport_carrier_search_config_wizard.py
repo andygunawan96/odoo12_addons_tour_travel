@@ -1,5 +1,8 @@
 from odoo import api, fields, models, _
 from datetime import datetime
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class CreateHOTransportCarrierSearchConfigWizard(models.TransientModel):
@@ -32,8 +35,4 @@ class CreateHOTransportCarrierSearchConfigWizard(models.TransientModel):
                 'provider_ids': [(6, 0, provider_ids)],
                 'active': rec.active,
             })
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'reload',
-        }
+        _logger.info('Create Transport Carrier Search Config Done.')

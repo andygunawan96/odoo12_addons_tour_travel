@@ -54,8 +54,8 @@ class ReservationAirline(models.Model):
                     for prov in vals['sell_reschedule_provider']:
                         for journey in prov['journeys']:
                             for seg in journey['segments']:
-                                carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
-                                provider_obj = self.env['tt.provider'].sudo().search([('code', '=', seg['provider'])], limit=1)
+                                carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
+                                provider_obj = self.env['tt.provider'].sudo().search([('code', '=', seg['provider']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
                                 origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
                                 destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
                                 n_seg_values = {
@@ -1121,12 +1121,9 @@ class ReservationAirline(models.Model):
                             #     continue
 
                             provider_obj = rsv_prov_obj.provider_id if rsv_prov_obj else None
-                            carrier_obj = self.env['tt.transport.carrier'].sudo().search(
-                                [('code', '=', seg['carrier_code'])], limit=1)
-                            origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin'])],
-                                                                                   limit=1)
-                            destination_obj = self.env['tt.destinations'].sudo().search(
-                                [('code', '=', seg['destination'])], limit=1)
+                            carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
+                            origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin'], ('provider_type_id', '=', airline_obj.provider_type_id.id))], limit=1)
+                            destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
 
                             segment_addons_ids = []
                             n_seg_values = {
@@ -1361,8 +1358,8 @@ class ReservationAirline(models.Model):
 
                             provider_obj = rsv_prov_obj.provider_id if rsv_prov_obj else None
                             carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
-                            origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin'])], limit=1)
-                            destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination'])], limit=1)
+                            origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
+                            destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination']), ('provider_type_id', '=', airline_obj.provider_type_id.id)], limit=1)
                             segment_addons_ids = []
                             n_seg_values = {
                                 'segment_code': seg['segment_code'],
@@ -1860,7 +1857,6 @@ class ReservationAirline(models.Model):
                 })
 
                 dest_obj = self.env['tt.destinations']
-                provider_type_id = self.env.ref('tt_reservation_airline.tt_provider_type_airline')
 
                 origin_code = ''
                 departure_date = ''
@@ -1900,8 +1896,8 @@ class ReservationAirline(models.Model):
                         elif psg['pax_type'] == 'INF':
                             infant += 1
 
-                origin_id = dest_obj.get_id(origin_code, provider_type_id)
-                destination_id = dest_obj.get_id(destination_code, provider_type_id)
+                origin_id = dest_obj.get_id(origin_code, airline_obj.provider_type_id)
+                destination_id = dest_obj.get_id(destination_code, airline_obj.provider_type_id)
 
                 new_vals = {
                     'split_from_resv_id': airline_obj.id,
