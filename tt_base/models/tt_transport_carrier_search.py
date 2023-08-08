@@ -28,8 +28,9 @@ class TransportCarrier(models.Model):
 
     @api.multi
     def write(self, vals):
-        if 'ho_id' not in vals and not self.ho_id:
-            vals['ho_id'] = self.env.user.agent_id.ho_id.id
+        for rec in self:
+            if 'ho_id' not in vals and not rec.ho_id:
+                vals['ho_id'] = self.env.user.agent_id.ho_id.id
         return super(TransportCarrier, self).write(vals)
 
     @api.onchange('carrier_id')

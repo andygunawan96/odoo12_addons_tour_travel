@@ -4092,9 +4092,8 @@ class PrintoutRefund(models.AbstractModel):
                 'active_ids': docids
             }
 
-        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        header_width = 90
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        header_width = 90
         base_color = '#FFFFFF'
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
@@ -4103,7 +4102,7 @@ class PrintoutRefund(models.AbstractModel):
         return_dat = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
-            'docs': temp_docs,
+            'docs': data_object,
             'is_ho': data['data'].get('is_ho') and data['data']['is_ho'] or False,
             'is_agent': data['data'].get('is_agent') and data['data']['is_agent'] or False,
             'is_est': data['data'].get('is_est') and data['data']['is_est'] or False,
@@ -4136,17 +4135,15 @@ class PrintoutReschedule(models.AbstractModel):
                 'active_ids': docids
             }
 
-        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        header_width = 90
-
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        header_width = 90
         base_color = '#FFFFFF'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
-            'docs': temp_docs,
+            'docs': data_object,
             'header_width': str(header_width),
             'base_color': base_color,
             'static_url': static_url,
@@ -4167,9 +4164,8 @@ class PrintoutVoucher(models.AbstractModel):
                 'active_ids': docids
             }
 
-        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        header_width = 90
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        header_width = 90
         base_color = '#FFFFFF'
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
@@ -4179,9 +4175,9 @@ class PrintoutVoucher(models.AbstractModel):
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'voucher',
-            'docs': temp_docs,
-            'doc_start_date': temp_docs.voucher_start_date and temp_docs.voucher_start_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
-            'doc_expire_date': temp_docs.voucher_expire_date and temp_docs.voucher_expire_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
+            'docs': data_object,
+            'doc_start_date': data_object.voucher_start_date and data_object.voucher_start_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
+            'doc_expire_date': data_object.voucher_expire_date and data_object.voucher_expire_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
             'header_width': str(header_width),
             'base_color': base_color,
             'static_url': static_url,
@@ -4203,28 +4199,31 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
                 'active_ids': docids
             }
         agent_id = False
-        temp_docs = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
         # for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
         #     agent_id = rec.agent_id
         lg_po_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee_po', agent_id)
         lg_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee', agent_id)
-        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#FFFFFF'
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
             ho_obj = data_object.agent_id.ho_id
+        elif hasattr(data_object, 'ho_id'):
+            base_color = data_object.ho_id.get_printout_agent_color()
+            ho_obj = data_object.ho_id
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'letter_of_guarantee',
-            'docs': temp_docs,
+            'docs': data_object,
             'lg_po_footer': lg_po_footer and lg_po_footer[0].html or '',
             'lg_footer': lg_footer and lg_footer[0].html or '',
             'header_width': str(header_width),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
+            'provider_ho_obj': data_object.get_provider_ho_data(),
             'ho_obj': ho_obj or False
         }
