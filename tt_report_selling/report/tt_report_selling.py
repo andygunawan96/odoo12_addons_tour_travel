@@ -1241,6 +1241,12 @@ class ReportSelling(models.Model):
         return where
 
     @staticmethod
+    def _where_customer_parent(customer_parent_seq_id):
+        where = """customer_parent.seq_id = '%s'
+           """ % (customer_parent_seq_id)
+        return where
+
+    @staticmethod
     def _where_agent_type(agent_type_code):
         where = """agent_type.code = '%s'""" % (agent_type_code)
         return where
@@ -1513,7 +1519,7 @@ class ReportSelling(models.Model):
     #   for more information of what each query do, se explanation above every select function
     #   name of select function is the same as the _lines_[function name] or get_[function_name]
     ################
-    def _lines(self, date_from, date_to, agent_seq_id, ho_seq_id, provider_type, provider_checker, context):
+    def _lines(self, date_from, date_to, agent_seq_id, ho_seq_id, customer_parent_seq_id, provider_type, provider_checker, context):
         if provider_checker == 'airline' or provider_checker == 'overall_airline':
             query = 'SELECT {} '.format(self._select_airline())
         elif provider_checker == 'train' or provider_checker == 'overall_train':
@@ -1575,6 +1581,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
 
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by())
@@ -1590,6 +1598,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'hotel':
@@ -1604,6 +1614,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'activity':
@@ -1618,6 +1630,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'tour':
@@ -1632,6 +1646,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'visa':
@@ -1646,6 +1662,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'offline':
@@ -1660,6 +1678,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'event':
             query += 'FROM {} '.format(self._from_event())
@@ -1673,6 +1693,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'ppob':
@@ -1687,6 +1709,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'phc':
@@ -1701,6 +1725,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_phc())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'periksain':
@@ -1715,6 +1741,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_periksain())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'medical':
@@ -1729,6 +1757,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_medical())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'bus':
@@ -1743,6 +1773,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_bus())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'insurance':
@@ -1757,6 +1789,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_insurance())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'swabexpress':
@@ -1771,6 +1805,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_swabexpress())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'labpintar':
@@ -1785,6 +1821,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'mitrakeluarga':
@@ -1799,6 +1837,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'sentramedika':
@@ -1813,6 +1853,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'GROUP BY {} '.format(self._group_by_sentramedika())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'groupbooking':
@@ -1827,6 +1869,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
@@ -1840,6 +1884,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by_overall_airline())
@@ -1855,6 +1901,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1870,6 +1918,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1885,6 +1935,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1900,6 +1952,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1915,6 +1969,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1930,6 +1986,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1945,6 +2003,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_ppob':
@@ -1959,6 +2019,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1974,6 +2036,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_phc())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -1989,6 +2053,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_periksain())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2004,6 +2070,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_medical())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2019,6 +2087,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_bus())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2034,6 +2104,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_insurance())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2049,6 +2121,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_swabexpress())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2064,6 +2138,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2079,6 +2155,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2094,6 +2172,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'GROUP BY {} '.format(self._group_by_sentramedika())
             query += 'ORDER BY {} '.format(self._order_by_issued())
@@ -2109,6 +2189,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_passport':
@@ -2123,6 +2205,8 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_airline':
@@ -2258,15 +2342,17 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_ho(ho_seq_id))
             if agent_seq_id:
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
+            if customer_parent_seq_id:
+                query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         _logger.info(query)
         self.env.cr.execute(query)
         # _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, provider_type, context = {}):
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, context = {}):
         if provider_type != 'all' and provider_type != 'overall':
-            lines = self._lines(date_from, date_to, agent_id, ho_id, provider_type, provider_type, context)
+            lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, provider_type, context)
             if provider_type == 'airline':
                 lines = self._convert_data_airline(lines)
             elif provider_type == 'train':
@@ -2315,7 +2401,7 @@ class ReportSelling(models.Model):
             providers = variables.PROVIDER_TYPE
             for i in providers:
                 # if i != 'activity':
-                line = self._lines(date_from, date_to, agent_id, ho_id, i, 'overall_' + i, context)
+                line = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, i, 'overall_' + i, context)
                 # else:
                 #     continue
                 for j in line:
@@ -2327,7 +2413,7 @@ class ReportSelling(models.Model):
             providers = variables.PROVIDER_TYPE
             for i in providers:
                 # if i != 'activity':
-                line = self._lines(date_from, date_to, agent_id, ho_id, i, 'all', context)
+                line = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, i, 'all', context)
                 # else:
                 #     continue
                 for j in line:
@@ -2347,10 +2433,13 @@ class ReportSelling(models.Model):
         date_to = data_form['date_to']
         ho_id = ''
         agent_id = ''
+        customer_parent_id = ''
         if data_form.get('ho_id'):
             ho_id = self.env['tt.agent'].search([('id', '=', data_form['ho_id'])]).seq_id
         if data_form.get('agent_id'):
             agent_id = self.env['tt.agent'].search([('id','=',data_form['agent_id'])]).seq_id
+        if data_form.get('customer_parent_id'):
+            customer_parent_id = self.env['tt.customer.parent'].search([('id','=',data_form['customer_parent_id'])]).seq_id
         provider_type = data_form['provider_type']
         # proceed data
         context = {
@@ -2360,7 +2449,7 @@ class ReportSelling(models.Model):
             'reservation': '',
             'provider': ''
         }
-        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, provider_type, context)
+        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, context)
         self._report_title(data_form)
         return {
             'lines': line,
@@ -2375,6 +2464,7 @@ class ReportSelling(models.Model):
         ho_id = data['ho_seq_id']
         # get agent data
         agent_id = data['agent_seq_id']
+        customer_parent_id = data['customer_parent_seq_id']
         agent_type = data['agent_type']
         # get provider
         provider = data['provider']
@@ -2402,7 +2492,7 @@ class ReportSelling(models.Model):
             'reservation': reservation,
             'provider': provider
         }
-        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, provider_type, context)
+        line = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, context)
         return {
             'lines': line
         }

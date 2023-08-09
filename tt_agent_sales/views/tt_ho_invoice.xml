@@ -239,10 +239,10 @@
         </field>
     </record>
 
-    <record model="ir.actions.server" id="action_multi_mass_approve_tt_agent_sales">
+    <record model="ir.actions.server" id="action_multi_mass_approve_tt_agent_sales_ho">
         <field name="name">Mass Approve</field>
-        <field name="model_id" ref="tt_agent_sales.model_tt_agent_invoice"/>
-        <field name="binding_model_id" ref="tt_agent_sales.model_tt_agent_invoice"/>
+        <field name="model_id" ref="tt_agent_sales.model_tt_ho_invoice"/>
+        <field name="binding_model_id" ref="tt_agent_sales.model_tt_ho_invoice"/>
         <field name="state">code</field>
         <field name="code">
             if records:

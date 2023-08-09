@@ -550,6 +550,7 @@ class ReservationPpob(models.Model):
         # split product code in case of BTBO 2
         provider_vals = {
             'state': 'booked',
+            'pnr': '1',
             'booked_uid': context['co_uid'],
             'booked_date': fields.Datetime.now(),
             'hold_date': fields.Datetime.now() + timedelta(hours=1),
@@ -635,7 +636,7 @@ class ReservationPpob(models.Model):
             'infant': 0,
             'ho_id': context['co_ho_id'],
             'agent_id': context['co_agent_id'],
-            'user_id': context['co_uid'],
+            'user_id': context['co_uid']
         }
         if data.get('prepaid_value'):
             booking_tmp.update({
@@ -760,12 +761,14 @@ class ReservationPpob(models.Model):
                 currency_obj = self.env['res.currency'].search([('name', '=', currency)], limit=1)
                 if currency_obj:
                     resv_obj.currency_id = currency_obj.id
+            pnr_list = []
             total_price = 0
             for prov_obj in resv_obj.provider_booking_ids:
                 prov_obj.create_ticket_api(passengers)
                 prov_obj.create_service_charge(data['data']['service_charges'])
                 total_price += prov_obj.total
-            resv_obj.check_provider_state(context)
+                pnr_list.append(prov_obj.pnr)
+            resv_obj.check_provider_state(context, pnr_list)
             provider_list = []
             for rec in resv_obj.provider_booking_ids:
                 provider_list.append(rec.to_dict())
@@ -918,13 +921,15 @@ class ReservationPpob(models.Model):
                     if currency_obj:
                         resv_obj.currency_id = currency_obj.id
                 provider_list = []
+                pnr_list = []
                 total_price = 0
                 for rec in resv_obj.provider_booking_ids:
                     rec.create_ticket_api(passengers)
                     rec.create_service_charge(data['data']['service_charges'])
                     total_price += rec.total
+                    pnr_list.append(rec.pnr)
                     provider_list.append(rec.to_dict())
-                resv_obj.check_provider_state(context)
+                resv_obj.check_provider_state(context, pnr_list)
                 psg_list = []
                 for rec in resv_obj.sudo().passenger_ids:
                     psg_list.append(rec.to_dict())
@@ -1123,10 +1128,12 @@ class ReservationPpob(models.Model):
                 raise RequestException(1003)
 
             provider_list = []
+            pnr_list = []
             for rec in resv_obj.provider_booking_ids:
                 rec.update_status_api_ppob(data, context)
+                pnr_list.append(rec.pnr)
                 provider_list.append(rec.to_dict())
-            resv_obj.check_provider_state(context)
+            resv_obj.check_provider_state(context, pnr_list)
             psg_list = []
             for rec in resv_obj.sudo().passenger_ids:
                 psg_list.append(rec.to_dict())
