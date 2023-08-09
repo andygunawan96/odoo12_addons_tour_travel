@@ -9,6 +9,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">allow</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">100</field>
         </record>
         <record id="admin_fee_refund_quick_special" model="tt.master.admin.fee">
@@ -19,6 +20,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">allow</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">101</field>
         </record>
         <record id="admin_fee_refund_regular" model="tt.master.admin.fee">
@@ -29,6 +31,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">102</field>
         </record>
         <record id="admin_fee_refund_quick" model="tt.master.admin.fee">
@@ -39,6 +42,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">103</field>
         </record>
         <record id="admin_fee_refund_free" model="tt.master.admin.fee">
@@ -47,6 +51,7 @@
             <field name="min_amount">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">104</field>
         </record>
         <record id="admin_fee_reschedule_special" model="tt.master.admin.fee">
@@ -56,6 +61,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">allow</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">100</field>
         </record>
         <record id="admin_fee_reschedule" model="tt.master.admin.fee">
@@ -65,6 +71,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">101</field>
         </record>
         <record id="admin_fee_photo_printing" model="tt.master.admin.fee">
@@ -74,6 +81,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">102</field>
         </record>
         <record id="admin_fee_delivery" model="tt.master.admin.fee">
@@ -83,6 +91,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">103</field>
         </record>
         <record id="admin_fee_free" model="tt.master.admin.fee">
@@ -92,6 +101,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">104</field>
         </record>
         <record id="admin_fee_offline_airline_gds" model="tt.master.admin.fee">
@@ -101,6 +111,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">100</field>
         </record>
         <record id="admin_fee_offline_airline_nongds" model="tt.master.admin.fee">
@@ -110,6 +121,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">101</field>
         </record>
         <record id="admin_fee_offline_hotel" model="tt.master.admin.fee">
@@ -119,6 +131,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">102</field>
         </record>
         <record id="admin_fee_offline_free" model="tt.master.admin.fee">
@@ -128,6 +141,7 @@
             <field name="min_amount_agent">0</field>
             <field name="agent_type_access_type">all</field>
             <field name="agent_access_type">all</field>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="sequence">103</field>
         </record>
     </data>

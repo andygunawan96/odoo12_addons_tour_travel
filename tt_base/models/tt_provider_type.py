@@ -16,10 +16,25 @@ class ProviderType(models.Model):
     code = fields.Char(string='Code', required=True)
     active = fields.Boolean(string='Active', default=True)
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 421')
+        return super(ProviderType, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 422')
+        return super(ProviderType, self).write(vals)
+
     @api.multi
     def unlink(self):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_provider_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Action failed due to security restriction. Required Provider Level 5 permission.')
+        if not self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_provider_level_5'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 423')
         return super(ProviderType, self).unlink()
 
     def get_provider_type(self):

@@ -51,6 +51,7 @@
             <field name="line_ids" eval="[(6,0, [
                                         ref('tt_agent_commission_ho_line_standard')
                                         ])]"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="active">False</field>
         </record>
         <record id="tt_agent_commission_btc" model="tt.agent.commission">
@@ -66,6 +67,7 @@
             <field name="line_ids" eval="[(6,0, [
                                         ref('tt_agent_commission_btc_line_standard')
                                         ])]"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="active">False</field>
         </record>
         <record id="tt_agent_commission_all_agent" model="tt.agent.commission">
@@ -78,6 +80,7 @@
             <field name="line_ids" eval="[(6,0, [
                                         ref('tt_agent_commission_all_agent_line_standard')
                                         ])]"/>
+            <field name="ho_id" ref="tt_base.rodex_ho"/>
             <field name="active">False</field>
         </record>
     </data>

@@ -1,5 +1,8 @@
 from odoo import api, fields, models, _
 from datetime import datetime
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class CreateProviderHODataWizard(models.TransientModel):
@@ -39,8 +42,4 @@ class CreateProviderHODataWizard(models.TransientModel):
                     'name': rec.name,
                 })
                 self.env['tt.provider.ho.data'].create(vals)
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'reload',
-        }
+        _logger.info('Create Provider HO Data Done.')

@@ -820,12 +820,19 @@ class TtProviderAirline(models.Model):
             last_name = ''.join(rec['last_name'].split()).lower() if rec.get('last_name') else ''
             key_1 = '%s%s' % (last_name, first_name)
             key_2 = '%s%s' % (first_name, first_name)
+            key_type = '1'
+            if not first_name or not last_name:
+                key_type = '2'
+            elif first_name == last_name:
+                key_type = '2'
+
             # Search if data exist, update
             is_ticket_found = False
             for tkt in ticket_repo:
                 if tkt['is_sync']:
                     continue
-                if key_1 in tkt['key_1'] or key_2 in tkt['key_2']:
+                # if key_1 in tkt['key_1'] or key_2 in tkt['key_2']:
+                if (key_type == '1' and key_1 in tkt['key_1']) or (key_type == '2' and key_2 in tkt['key_2']):
                     is_ticket_found = True
                     tkt['is_sync'] = True
                     ticket_ids.append((1, tkt['ticket_id'], ticket_vals))

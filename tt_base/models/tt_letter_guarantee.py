@@ -93,6 +93,12 @@ class TtLetterGuarantee(models.Model):
             'state': 'draft',
         })
 
+    def get_provider_ho_data(self):
+        provider_ho_datas = self.env['tt.provider.ho.data'].search([('provider_id', '=', self.provider_id.id), ('ho_id', '=', self.ho_id.id)], limit=1)
+        if not provider_ho_datas:
+            return False
+        return provider_ho_datas[0]
+
     def open_reference(self):
         try:
             form_id = self.env[self.res_model].get_form_id()

@@ -279,8 +279,8 @@ class TtReservation(models.Model):
             res = {}
             if req['product'] == 'airline':
                 if req['forget_booking']:
-                    origin = self.env['tt.destinations'].search([('code','=',req['origin'])],limit=1)
-                    destination = self.env['tt.destinations'].search([('code','=',req['destination'])],limit=1)
+                    origin = self.env['tt.destinations'].search([('code','=',req['origin']),('provider_type_id.code','=','airline')],limit=1)
+                    destination = self.env['tt.destinations'].search([('code','=',req['destination']),('provider_type_id.code','=','airline')],limit=1)
                     if origin and destination:
                         book_objs = self.env['tt.reservation.%s' % req['product']].search([('origin_id','=',origin.id), ('destination_id','=',destination.id), ('contact_phone','=',req['phone_number']), ('departure_date','=',req['date'])])
                         res = []
@@ -307,8 +307,8 @@ class TtReservation(models.Model):
 
             elif req['product'] == 'train':
                 if req['forget_booking']:
-                    origin = self.env['tt.destinations'].search([('code','=',req['origin'])],limit=1)
-                    destination = self.env['tt.destinations'].search([('code','=',req['destination'])],limit=1)
+                    origin = self.env['tt.destinations'].search([('code','=',req['origin']),('provider_type_id.code','=','train')],limit=1)
+                    destination = self.env['tt.destinations'].search([('code','=',req['destination']),('provider_type_id.code','=','train')],limit=1)
                     if origin and destination:
                         book_objs = self.env['tt.reservation.%s' % req['product']].search([('origin_id','=',origin.id), ('destination_id','=',destination.id), ('contact_phone','=',req['phone_number']), ('departure_date','=',req['date'])])
                         res = []

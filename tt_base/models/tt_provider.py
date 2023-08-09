@@ -20,7 +20,6 @@ class TtProvider(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency')
     email = fields.Char(string="Email", required=False, )
     payment_acquirer_ids = fields.One2many('payment.acquirer', 'provider_id', 'Payment Acquirers')
-    social_media_ids = fields.One2many('social.media.detail', 'provider_id', 'Social Media')
     provider_ho_data_ids = fields.One2many('tt.provider.ho.data', 'provider_id', 'Provider HO Data')
     active = fields.Boolean('Active', default=True)
     track_balance = fields.Boolean('Do balance tracking')
@@ -39,10 +38,25 @@ class TtProvider(models.Model):
     #             })]
     #         })
 
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 415')
+        return super(TtProvider, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 416')
+        return super(TtProvider, self).write(vals)
+
     @api.multi
     def unlink(self):
-        if not ({self.env.ref('base.group_system').id, self.env.ref('tt_base.group_provider_level_5').id}.intersection(set(self.env.user.groups_id.ids))):
-            raise UserError('Action failed due to security restriction. Required Provider Level 5 permission.')
+        if not self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_provider_level_5'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 417')
         return super(TtProvider, self).unlink()
 
     def to_dict(self):
@@ -115,6 +129,27 @@ class TtProviderCode(models.Model):
 
     res_model = fields.Char('Related Reservation Name', index=True, readonly=False)
     res_id = fields.Integer('Related Reservation ID', index=True, help='ID of the followed resource', readonly=False)
+
+    @api.model
+    def create(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 418')
+        return super(TtProviderCode, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 419')
+        return super(TtProviderCode, self).write(vals)
+
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group('base.group_erp_manager'):
+            raise UserError(
+                'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 420')
+        return super(TtProviderCode, self).unlink()
 
     def open_record(self, rec_id):
         try:
@@ -230,9 +265,10 @@ class TtProviderHOData(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency')
     address_ids = fields.One2many('address.detail', 'provider_ho_data_id', string='Addresses')
     phone_ids = fields.One2many('phone.detail', 'provider_ho_data_id', string='Phones')
+    social_media_ids = fields.One2many('social.media.detail', 'provider_ho_data_id', 'Social Media')
     rate_ids = fields.One2many('tt.provider.rate', 'provider_ho_data_id', 'Provider Codes')
 
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)],default=lambda self: self.env.user.ho_id)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], required=True, default=lambda self: self.env.user.ho_id)
     balance = fields.Monetary('Balance', related="provider_ledger_ids.balance")
     provider_destination_ids = fields.One2many('tt.provider.destination', 'provider_ho_data_id', 'Destination')
 

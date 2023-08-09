@@ -314,6 +314,7 @@ class TtProviderMitraKeluarga(models.Model):
                     scs['total'] += scs['amount']
             scs['passenger_mitrakeluarga_ids'] = [(6, 0, scs['passenger_mitrakeluarga_ids'])]
             scs['description'] = self.pnr and self.pnr or str(self.sequence)
+            scs['ho_id'] = self.booking_id.ho_id.id if self.booking_id and self.booking_id.ho_id else ''
             service_chg_obj.create(scs)
 
         # "sequence": 1,

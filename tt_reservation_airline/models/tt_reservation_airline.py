@@ -1443,7 +1443,8 @@ class ReservationAirline(models.Model):
             'agent_id': context_gateway['co_agent_id'],
             'customer_parent_id': context_gateway.get('co_customer_parent_id',False),
             'user_id': context_gateway['co_uid'],
-            'is_get_booking_from_vendor': searchRQ.get('is_get_booking_from_vendor', False)
+            'is_get_booking_from_vendor': searchRQ.get('is_get_booking_from_vendor', False),
+            'payment_method_to_ho': searchRQ.get('payment_method_to_ho', False)
         }
 
         return booking_tmp

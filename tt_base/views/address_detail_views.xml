@@ -16,6 +16,7 @@
 
                     <group>
                         <group>
+                            <field name="ho_id" groups="base.group_erp_manager"/>
                             <field name="type"/>
                             <field name="name" attrs="{'invisible': [('type','!=','custom')]}"/>
                             <field name="country_id"/>
@@ -41,6 +42,7 @@
         <field name="model">address.detail</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="ho_id" groups="base.group_erp_manager"/>
                 <field name="name"/>
                 <field name="address"/>
                 <field name="active"/>

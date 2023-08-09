@@ -142,25 +142,25 @@
                                         <!--<t t-set="o_addr" t-value="doc.booker_id"/>-->
                                         <!--<t t-call="tt_report_common.address_layout"/>-->
                                         <span t-field="doc.provider_id.name"/><br/>
-                                        <t t-if="doc.provider_id.address_ids">
-                                            <span t-field="doc.provider_id.address_ids[0].address"/><span>, </span>
-                                            <t t-if="doc.provider_id.address_ids[0].district_id">
-                                                <span t-field="doc.provider_id.address_ids[0].district_id.name"/><span>, </span>
+                                        <t t-if="provider_ho_obj.address_ids">
+                                            <span t-field="provider_ho_obj.address_ids[0].address"/><span>, </span>
+                                            <t t-if="provider_ho_obj.address_ids[0].district_id">
+                                                <span t-field="provider_ho_obj.address_ids[0].district_id.name"/><span>, </span>
                                             </t>
-                                            <t t-if="doc.provider_id.address_ids[0].sub_district_id">
-                                                <span t-field="doc.provider_id.address_ids[0].sub_district_id.name"/><span>, </span>
+                                            <t t-if="provider_ho_obj.address_ids[0].sub_district_id">
+                                                <span t-field="provider_ho_obj.address_ids[0].sub_district_id.name"/><span>, </span>
                                             </t>
-                                            <t t-if="doc.provider_id.address_ids[0].city_id">
-                                                <span t-field="doc.provider_id.address_ids[0].city_id.name"/><span>, </span>
+                                            <t t-if="provider_ho_obj.address_ids[0].city_id">
+                                                <span t-field="provider_ho_obj.address_ids[0].city_id.name"/><span>, </span>
                                             </t>
-                                            <t t-if="doc.provider_id.address_ids[0].zip">
-                                                <span t-field="doc.provider_id.address_ids[0].zip"/>
+                                            <t t-if="provider_ho_obj.address_ids[0].zip">
+                                                <span t-field="provider_ho_obj.address_ids[0].zip"/>
                                             </t><br/>
-                                            <t t-if="doc.provider_id.address_ids[0].state_id">
-                                                <span t-field="doc.provider_id.address_ids[0].state_id.name"/><span> - </span>
+                                            <t t-if="provider_ho_obj.address_ids[0].state_id">
+                                                <span t-field="provider_ho_obj.address_ids[0].state_id.name"/><span> - </span>
                                             </t>
-                                            <t t-if="doc.provider_id.address_ids[0].country_id">
-                                                <span t-field="doc.provider_id.address_ids[0].country_id.name"/>
+                                            <t t-if="provider_ho_obj.address_ids[0].country_id">
+                                                <span t-field="provider_ho_obj.address_ids[0].country_id.name"/>
                                             </t>
                                         </t>
                                     </td>
