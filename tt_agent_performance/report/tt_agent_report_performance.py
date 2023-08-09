@@ -37,6 +37,7 @@ class AgentReportPerformance(models.Model):
         where += """AND sales.state != 'cancel'"""
         if ho_id:
             where += """ AND sales.ho_id = """ + str(ho_id)
+            where += """ AND agent_type.ho_id = """ + str(ho_id)
         if agent_type != 'all':
             where += """ AND agent_type.code = '{}'""".format(agent_type)
         return where
