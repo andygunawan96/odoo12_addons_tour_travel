@@ -654,7 +654,8 @@ class TtAgent(models.Model):
                         'transaction_additional_info': rec.get_transaction_additional_info(),
                         'flight_number': rec.flight_number_name if hasattr(rec,'flight_number_name') else '',
                         'departure_date': rec.departure_date if hasattr(rec,'departure_date') else '',
-                        'total_pax': rec.total_pax
+                        'total_pax': rec.total_pax,
+                        'passenger_list': ["%s %s %s" % (passenger.title, passenger.first_name, passenger.last_name) for passenger in rec.passenger_ids]
                     })
 
             # _logger.info('Get Transaction Resp:\n'+json.dumps(res_list[req.get('minimum',0):req.get('maximum',20)]))

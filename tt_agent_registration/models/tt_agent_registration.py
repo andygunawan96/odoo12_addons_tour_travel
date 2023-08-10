@@ -877,11 +877,6 @@ class AgentRegistration(models.Model):
                 # contact_ids = self.prepare_contact(pic)
                 agent_registration_customer_ids = self.prepare_customer(pic)
                 address_ids = self.prepare_address(address)
-                agent_obj = self.env['tt.agent'].browse(int(context['co_agent_id']))
-                if not agent_obj.is_btc_agent:
-                    reference_id = context['co_agent_id'],
-                else:
-                    reference_id = context['co_ho_id']
                 header.update({
                     'agent_registration_customer_ids': [(6, 0, agent_registration_customer_ids)],
                     'address_ids': [(6, 0, address_ids)],
@@ -889,7 +884,7 @@ class AgentRegistration(models.Model):
                     'registration_fee': agent_type.registration_fee,
                     'registration_date': datetime.now(),
                     'promotion_id': promotion_id,
-                    'reference_id': reference_id,
+                    'reference_id': context['co_agent_id'],
                     'parent_agent_id': parent_agent_id,
                     'tac': agent_type.terms_and_condition,
                     'create_uid': context['co_uid'],

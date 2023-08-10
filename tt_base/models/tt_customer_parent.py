@@ -61,6 +61,7 @@ class TtCustomerParent(models.Model):
     done_date = fields.Datetime('Approved Date', readonly=True)
     reject_uid = fields.Many2one('res.users', 'Rejected by', readonly=True)
     reject_date = fields.Datetime('Rejected Date', readonly=True)
+    notes = fields.Text('Notes')
 
     def _compute_unprocessed_amount(self):
         for rec in self:
@@ -351,3 +352,131 @@ class TtCustomerParent(models.Model):
                                                                                                                  util.get_rupiah(self.credit_limit))
         else:
             return 'Remaining Credit: %s %s / %s %s' % (self.currency_id.name, util.get_rupiah(self.actual_balance), self.currency_id.name, util.get_rupiah(self.credit_limit))
+
+    def create_request_cor_api(self, data, context):
+        try:
+            customer_parent_type_obj = self.env.ref('tt_base.customer_type_cor')
+            address_obj = self.env['address.detail'].create({
+                'type': 'work',
+                'address': data['company_address']
+            })
+            phone_ids = []
+            calling_code = data['company_phone_number'][:1] if data['company_phone_number'][:1] == '0' else data['company_phone_number'][:2]
+            calling_number = data['company_phone_number'][1:] if data['company_phone_number'][:1] == '0' else data['company_phone_number'][2:]
+            phone_obj = self.env['phone.detail'].create({
+                'type': 'work',
+                'calling_code': calling_code,
+                'calling_number': calling_number
+            })
+            phone_ids.append(phone_obj.id)
+
+            calling_code = data['owner_phone_number'][:1] if data['owner_phone_number'][:1] == '0' else data['owner_phone_number'][:2]
+            calling_number = data['owner_phone_number'][1:] if data['owner_phone_number'][:1] == '0' else data['owner_phone_number'][2:]
+            phone_obj = self.env['phone.detail'].create({
+                'type': 'work',
+                'calling_code': calling_code,
+                'calling_number': calling_number
+            })
+            phone_ids.append(phone_obj.id)
+
+            calling_code = data['director_phone_number'][:1] if data['director_phone_number'][:1] == '0' else data['director_phone_number'][:2]
+            calling_number = data['director_phone_number'][1:] if data['director_phone_number'][:1] == '0' else data['director_phone_number'][2:]
+            phone_obj = self.env['phone.detail'].create({
+                'type': 'work',
+                'calling_code': calling_code,
+                'calling_number': calling_number
+            })
+            phone_ids.append(phone_obj.id)
+
+            calling_code = data['accounting_phone_number'][:1] if data['accounting_phone_number'][:1] == '0' else data['accounting_phone_number'][:2]
+            calling_number = data['accounting_phone_number'][1:] if data['accounting_phone_number'][:1] == '0' else data['accounting_phone_number'][2:]
+            phone_obj = self.env['phone.detail'].create({
+                'type': 'work',
+                'calling_code': calling_code,
+                'calling_number': calling_number
+            })
+            phone_ids.append(phone_obj.id)
+
+            notes = 'Company Name: %s\n' % data['company_name']
+            notes += 'Company Address: %s\n' % data['company_address']
+            notes += 'Company Property: %s\n' % data['company_property']
+            notes += 'Company Phone Number: %s\n' % data['company_phone_number']
+            notes += 'Company Email: %s\n' % data['company_email']
+            notes += 'Company Established Date: %s\n' % data['company_established_date']
+            notes += 'Company Worker: %s\n' % data['company_worker']
+            notes += 'Company Business Field: %s\n' % data['company_business_field']
+            notes += 'Company Bank Data: %s\n' % data['company_bank_data']
+            notes += 'How to know us: %s\n\n' % data['company_how_to_know_us']
+
+            notes += 'Owner Name: %s\n' % data['owner_name']
+            notes += 'Owner Position: %s\n' % data['owner_position']
+            notes += 'Owner Birth Date: %s\n' % data['owner_birth_date']
+            notes += 'Owner Phone Number: %s\n' % data['owner_phone_number']
+            notes += 'Owner Email: %s\n\n' % data['owner_email']
+
+            notes += 'Director Name: %s\n' % data['director_name']
+            notes += 'Director Position: %s\n' % data['director_position']
+            notes += 'Director Birth Date: %s\n' % data['director_birth_date']
+            notes += 'Director Phone Number: %s\n' % data['director_phone_number']
+            notes += 'Director Email: %s\n\n' % data['director_email']
+
+            notes += 'Accounting Name: %s\n' % data['accounting_name']
+            notes += 'Accounting Position: %s\n' % data['accounting_position']
+            notes += 'Accounting Birth Date: %s\n' % data['accounting_birth_date']
+            notes += 'Accounting Phone Number: %s\n' % data['accounting_phone_number']
+            notes += 'Accounting Email: %s\n' % data['accounting_email']
+
+            notes += 'PIC Name: %s %s %s\n' % (data['pic_title'], data['pic_first_name'], data['pic_last_name'])
+            notes += 'PIC Position: %s\n' % data['pic_position']
+            notes += 'PIC Birth Date: %s\n' % data['pic_birth_date']
+            notes += 'PIC Phone Number: %s\n' % data['pic_phone_number']
+            notes += 'PIC Email: %s\n' % data['pic_email']
+
+            calling_code = data['pic_phone_number'][:1] if data['pic_phone_number'][:1] == '0' else data['pic_phone_number'][:2]
+            calling_number = data['pic_phone_number'][1:] if data['pic_phone_number'][:1] == '0' else data['pic_phone_number'][2:]
+            phone_obj = self.env['phone.detail'].create({
+                'type': 'work',
+                'calling_code': calling_code,
+                'calling_number': calling_number
+            })
+            phone_ids.append(phone_obj.id)
+
+            customer_obj = self.env['tt.customer'].create({
+                "first_name": data['pic_first_name'],
+                "last_name": data['pic_last_name'],
+                "birth_date": data['pic_birth_date'],
+                "phone_ids": [(4, phone_obj.id)],
+                "email": data['pic_email'],
+                "marital_status": "married" if data['pic_title'] else "single"
+            })
+
+            notes += 'Want to have account in System: %s' % ('Yes' if data['account_web'] else 'No')
+
+            if data.get('airline'):
+                notes += 'Airline Corporate\n-%s' % ("\n- ".join(data['airline']))
+
+            customer_parent_obj = self.create({
+                "name": data['company_name'],
+                "email": data['company_email'],
+                "email_cc": "%s,%s,%s" % (data['owner_email'], data['director_email'], data['accounting_email']),
+                "company_bank_data": data['company_bank_data'],
+                "address_ids": [(4, address_obj.id)],
+                "phone_ids": [(6, 0, phone_ids)],
+                "notes": notes,
+                "customer_parent_type_id": customer_parent_type_obj.id,
+                'ho_id': context['ho_id'],
+                "parent_agent_id": context['co_agent_id'],
+                "customer_ids": [(6, 0, [customer_obj.id])]
+            })
+            self.env['tt.customer.parent.booker.rel'].create({
+                "customer_parent_id": customer_parent_obj.id,
+                "customer_id": customer_obj.id,
+            })
+            customer_parent_obj.action_confirm()
+            customer_parent_obj.action_request()
+            customer_parent_obj.action_validate()
+            return ERR.get_no_error()
+        except Exception as e:
+            _logger.error("%s, %s", (str(e), traceback.format_exc()))
+            return ERR.get_error()
+

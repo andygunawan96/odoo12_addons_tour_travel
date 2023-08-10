@@ -260,4 +260,9 @@
         <field name="code">see_commission</field>
     </record>
 
+    <record id="able_to_request_corporate" model="tt.frontend.security">
+        <field name="name">Create Request Corporate</field>
+        <field name="code">create_request_corporate</field>
+    </record>
+
 </odoo>
