@@ -1571,7 +1571,6 @@ class ReportSelling(models.Model):
         if provider_checker == 'airline':
             query += 'FROM {} '.format(self._from_airline())
             query += '{}'.format(self._from_currency())
-            query += 'LEFT JOIN res_currency currency ON currency.id = reservation.currency_id'
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
