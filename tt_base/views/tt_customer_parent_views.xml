@@ -141,6 +141,9 @@
                         <page string="Social Media">
                             <field name="social_media_ids"/>
                         </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

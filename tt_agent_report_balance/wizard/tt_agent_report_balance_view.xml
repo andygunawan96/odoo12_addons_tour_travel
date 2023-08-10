@@ -7,6 +7,12 @@
             <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
             <field name="arch" type="xml">
                 <field name="all_ho" position="before"/>
+                <field name="all_customer_parent" position="replace">
+                    <field name="all_customer_parent" invisible="1"/>
+                </field>
+                <field name="customer_parent_id" position="replace">
+                    <field name="customer_parent_id" invisible="1"/>
+                </field>
                 <xpath expr="//group[@name='group_period']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

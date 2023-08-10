@@ -115,7 +115,7 @@ class AgentReportRecapReservation(models.Model):
         return query
 
     @staticmethod
-    def _where(date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _where(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
@@ -133,13 +133,15 @@ class AgentReportRecapReservation(models.Model):
             where += """ AND rsv.ho_id = %s """ % ho_id
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
+        if customer_parent_id:
+            where += """ AND rsv.customer_parent_id = %s""" % customer_parent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
         # where += """ AND ledger.transaction_type = 3"""
         return where
 
     @staticmethod
-    def _where_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _where_join_service_charge(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
@@ -157,13 +159,15 @@ class AgentReportRecapReservation(models.Model):
             where += """ AND rsv.ho_id = %s """ % ho_id
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
+        if customer_parent_id:
+            where += """ AND rsv.customer_parent_id = %s""" % customer_parent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
         # where += """ AND ledger.transaction_type = 3"""
         return where
 
     @staticmethod
-    def _where_join_channel_repricing(date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _where_join_channel_repricing(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
@@ -181,6 +185,8 @@ class AgentReportRecapReservation(models.Model):
             where += """ AND rsv.ho_id = %s """ % ho_id
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
+        if customer_parent_id:
+            where += """ AND rsv.customer_parent_id = %s""" % customer_parent_id
         if provider_type and provider_type != 'all':
             where += """ AND provider_type.code = '%s' """ % provider_type
         # where += """ AND booking_service_charge.charge_type = 'CSC'"""
@@ -228,7 +234,7 @@ class AgentReportRecapReservation(models.Model):
             rsv.create_date, rsv.name
             """
 
-    def _lines(self, date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _lines(self, date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         # SELECT
         query = 'SELECT ' + self._select()
 
@@ -236,7 +242,7 @@ class AgentReportRecapReservation(models.Model):
         query += 'FROM ' + self._from(provider_type)
 
         # WHERE
-        query += 'WHERE ' + self._where(date_from, date_to, agent_id, ho_id, provider_type, state)
+        query += 'WHERE ' + self._where(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
 
         # GROUP BY & ORDER BY
         # query += 'GROUP BY ' + self._group_by()
@@ -248,7 +254,7 @@ class AgentReportRecapReservation(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def _lines_join_service_charge(self, date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _lines_join_service_charge(self, date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         # SELECT
         query = 'SELECT ' + self._select_join_service_charge()
 
@@ -256,7 +262,7 @@ class AgentReportRecapReservation(models.Model):
         query += 'FROM ' + self._from_join_service_charge(provider_type)
 
         # WHERE
-        query += 'WHERE ' + self._where_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type, state)
+        query += 'WHERE ' + self._where_join_service_charge(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
 
         # ORDER BY
         query += 'ORDER BY ' + self._order_by_join_service_charge()
@@ -265,7 +271,7 @@ class AgentReportRecapReservation(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    def _lines_join_channel_repricing(self, date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _lines_join_channel_repricing(self, date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         # SELECT
         query = 'SELECT ' + self._select_join_channel_repricing()
 
@@ -273,7 +279,7 @@ class AgentReportRecapReservation(models.Model):
         query += 'FROM ' + self._from_join_channel_repricing(provider_type)
 
         # WHERE
-        query += 'WHERE ' + self._where_join_channel_repricing(date_from, date_to, agent_id, ho_id, provider_type, state)
+        query += 'WHERE ' + self._where_join_channel_repricing(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
 
         # ORDER BY
         query += 'ORDER BY ' + self._order_by_join_channel_repricing()
@@ -332,41 +338,41 @@ class AgentReportRecapReservation(models.Model):
             })
         return lines
 
-    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         lines = []
         if provider_type != 'all':
-            lines = self._lines(date_from, date_to, agent_id, ho_id, provider_type, state)
+            lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
             lines = self._convert_data(lines, provider_type)
         else:
             provider_types = variables.PROVIDER_TYPE
             for provider_type in provider_types:
-                report_lines = self._lines(date_from, date_to, agent_id, ho_id, provider_type, state)
+                report_lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
                 report_lines = self._convert_data(report_lines, provider_type)
                 report_lines = self._convert_data_commission(report_lines, provider_type)
                 for line in report_lines:
                     lines.append(line)
         return lines
 
-    def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _get_lines_data_join_service_charge(self, date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         lines = []
         if provider_type != 'all':
-            lines = self._lines_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type, state)
+            lines = self._lines_join_service_charge(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
         else:
             provider_types = variables.PROVIDER_TYPE
             for provider_type in provider_types:
-                report_lines = self._lines_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type, state)
+                report_lines = self._lines_join_service_charge(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
                 for j in report_lines:
                     lines.append(j)
         return lines
 
-    def _get_lines_data_join_channel_repricing(self, date_from, date_to, agent_id, ho_id, provider_type, state):
+    def _get_lines_data_join_channel_repricing(self, date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state):
         lines = []
         if provider_type != 'all':
-            lines = self._lines_join_channel_repricing(date_from, date_to, agent_id, ho_id, provider_type, state)
+            lines = self._lines_join_channel_repricing(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
         else:
             provider_types = variables.PROVIDER_TYPE
             for provider_type in provider_types:
-                report_lines = self._lines_join_channel_repricing(date_from, date_to, agent_id, ho_id, provider_type, state)
+                report_lines = self._lines_join_channel_repricing(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state)
                 for j in report_lines:
                     lines.append(j)
         return lines
@@ -417,12 +423,13 @@ class AgentReportRecapReservation(models.Model):
             data_form['state'] = 'all'
         agent_id = data_form['agent_id']
         ho_id = data_form['ho_id']
+        customer_parent_id = data_form['customer_parent_id']
         state = data_form['state']
         provider_type = data_form['provider_type']
         # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
-        lines = self._get_lines_data(date_from, date_to, agent_id, ho_id, provider_type, state) #BOOKING
-        second_lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, ho_id, provider_type, state) #SERVICE CHARGE
-        third_lines = self._get_lines_data_join_channel_repricing(date_from, date_to, agent_id, ho_id, provider_type, state) #UPSELL
+        lines = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state) #BOOKING
+        second_lines = self._get_lines_data_join_service_charge(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state) #SERVICE CHARGE
+        third_lines = self._get_lines_data_join_channel_repricing(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, state) #UPSELL
         self._report_title(data_form)
 
         return {
