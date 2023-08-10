@@ -61,6 +61,7 @@ class TtSsrAirline(models.Model):
             'currency': self.currency_id.name,
             'journey_code': self.journey_code and self.journey_code or '',
             'pnr': self.provider_id and self.provider_id.pnr or '',
+            'passenger_number': self.passenger_id.sequence if self.passenger_id else '',
         }
 
     @api.depends('journey_code')
@@ -94,3 +95,11 @@ class TtProviderAirlineInherit(models.Model):
     # May 18, 2020 - SAM
     fee_ids = fields.One2many('tt.fee.airline', 'provider_id', 'Fees')
     # END
+
+    def to_dict(self):
+        result = super().to_dict()
+        fees = [rec.to_dict() for rec in self.fee_ids]
+        result.update({
+            'fees': fees,
+        })
+        return result
