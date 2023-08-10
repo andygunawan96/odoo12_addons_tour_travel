@@ -201,7 +201,7 @@ class ReportDashboardOverall(models.Model):
     # this function responsible to build and execute query to get agent
     def get_agent_lines(self, ho_id=''):
         query = """
-                SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, ho.seq_id as ho_seq_id 
+                SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, COALESCE(ho.seq_id, '') as ho_seq_id 
                 FROM tt_agent agent 
                 LEFT JOIN tt_agent ho ON ho.id = agent.ho_id 
                 """
@@ -215,7 +215,7 @@ class ReportDashboardOverall(models.Model):
     # this function responsible to build and execute query to get customer parent
     def get_customer_parent_lines(self, ho_id='', agent_id=''):
         query = """
-                SELECT COALESCE(customer_parent.seq_id, '') as seq_id, customer_parent.name, customer_parent.customer_parent_type_id, ho.seq_id as ho_seq_id, agent.seq_id as agent_seq_id 
+                SELECT COALESCE(customer_parent.seq_id, '') as seq_id, customer_parent.name, customer_parent.customer_parent_type_id, COALESCE(ho.seq_id, '') as ho_seq_id, COALESCE(agent.seq_id, '') as agent_seq_id 
                 FROM tt_customer_parent customer_parent 
                 LEFT JOIN tt_agent ho ON ho.id = customer_parent.ho_id 
                 LEFT JOIN tt_agent agent ON agent.id = customer_parent.parent_agent_id 
