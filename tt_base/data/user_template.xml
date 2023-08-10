@@ -6109,6 +6109,7 @@
                                 ref('tt_base.able_to_ticketing_bus'),
                                 ref('tt_base.able_to_ticketing_insurance'),
                                 ref('tt_base.able_to_ticketing_groupbooking'),
+                                ref('tt_base.report')
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -6202,6 +6203,7 @@
                                 ref('tt_base.able_to_ticketing_bus'),
                                 ref('tt_base.able_to_ticketing_insurance'),
                                 ref('tt_base.able_to_ticketing_groupbooking'),
+                                ref('tt_base.report')
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>
@@ -6295,6 +6297,7 @@
                                 ref('tt_base.able_to_ticketing_bus'),
                                 ref('tt_base.able_to_ticketing_insurance'),
                                 ref('tt_base.able_to_ticketing_groupbooking'),
+                                ref('tt_base.report')
                                 ref('tt_base.corp_limitation')])]"
             />
         </record>

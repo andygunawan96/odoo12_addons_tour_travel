@@ -279,7 +279,7 @@ class TtReportDashboard(models.Model):
     # in short this is the main function
     def get_report_json_api(self, data, context = {}):
         logged_user = self.env['res.users'].browse(int(context['co_uid']))
-        is_admin = logged_user.has_group('base.group_erp_manager') or logged_user.has_group('base.group_system')
+        is_admin = logged_user.has_group('base.group_erp_manager')
         if is_admin and data['ho_seq_id'] == "":
             data['ho_seq_id'] = False
         elif is_admin and data['ho_seq_id'] != "":
@@ -297,6 +297,15 @@ class TtReportDashboard(models.Model):
         else:
             # get the id of the agent
             data['agent_seq_id'] = self.env['tt.agent'].browse(context['co_agent_id']).seq_id
+
+        is_not_corpor = not logged_user.has_group('tt_base.group_tt_corpor_user') or is_admin
+        if is_not_corpor and data['customer_parent_seq_id'] == "":
+            data['customer_parent_seq_id'] = False
+        elif is_not_corpor and data['customer_parent_seq_id'] != "":
+            pass
+        else:
+            # get the id of the customer parent
+            data['customer_parent_seq_id'] = self.env['tt.customer.parent'].browse(context['co_customer_parent_id']).seq_id
 
         if data['provider'] != 'all' and data['provider'] != '':
             # check if provider is exist
@@ -392,11 +401,14 @@ class TtReportDashboard(models.Model):
             res['dependencies'] = {
                 'is_admin': 1,
                 'is_ho': 1,
+                'is_not_corpor': 1,
                 'current_ho': self.env['tt.agent'].search([('seq_id', '=', data['ho_seq_id'])], limit=1).name,
                 'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
+                'current_customer_parent': self.env['tt.customer.parent'].search([('seq_id', '=', data['customer_parent_seq_id'])], limit=1).name,
                 'ho_list': self.env['report.tt_report_dashboard.overall'].get_ho_all(),
                 'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_all(),
+                'customer_parent_list': self.env['report.tt_report_dashboard.overall'].get_customer_parent_all(),
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'form_data': data
@@ -405,11 +417,32 @@ class TtReportDashboard(models.Model):
             res['dependencies'] = {
                 'is_admin': 0,
                 'is_ho': 1,
+                'is_not_corpor': 1,
                 'current_ho': self.env['tt.agent'].browse(context['co_ho_id']).name,
                 'current_agent': self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name,
+                'current_customer_parent': self.env['tt.customer.parent'].search([('seq_id', '=', data['customer_parent_seq_id'])], limit=1).name,
                 'ho_list': [],
-                'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_all(),
+                'agent_type': self.env['report.tt_report_dashboard.overall'].get_agent_type_by_ho(self.env['tt.agent'].browse(context['co_ho_id']).id),
                 'agent_list': self.env['report.tt_report_dashboard.overall'].get_agent_by_ho(self.env['tt.agent'].browse(context['co_ho_id']).id),
+                'customer_parent_list': self.env['report.tt_report_dashboard.overall'].get_customer_parent_by_ho(self.env['tt.agent'].browse(context['co_ho_id']).id),
+                'provider_type': variables.PROVIDER_TYPE,
+                'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
+                'form_data': data
+            }
+        elif is_not_corpor:
+            res['profit_ho'] = 0
+            res['profit_agent'] = 0
+            res['dependencies'] = {
+                'is_admin': 0,
+                'is_ho': 0,
+                'is_not_corpor': 1,
+                'current_ho': self.env['tt.agent'].browse(context['co_ho_id']).name,
+                'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
+                'current_customer_parent': self.env['tt.customer.parent'].search([('seq_id', '=', data['customer_parent_seq_id'])], limit=1).name,
+                'ho_list': [],
+                'agent_type': [],
+                'agent_list': [],
+                'customer_parent_list': self.env['report.tt_report_dashboard.overall'].get_customer_parent_by_agent(self.env['tt.agent'].browse(context['co_ho_id']).id, self.env['tt.agent'].browse(context['co_agent_id']).id),
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'form_data': data
@@ -420,11 +453,14 @@ class TtReportDashboard(models.Model):
             res['dependencies'] = {
                 'is_admin': 0,
                 'is_ho': 0,
+                'is_not_corpor': 0,
                 'current_ho': self.env['tt.agent'].browse(context['co_ho_id']).name,
                 'current_agent': self.env['tt.agent'].browse(context['co_agent_id']).name,
+                'current_customer_parent': self.env['tt.customer.parent'].browse(context['co_customer_parent_id']).name,
                 'ho_list': [],
                 'agent_type': [],
                 'agent_list': [],
+                'customer_parent_list': [],
                 'provider_type': variables.PROVIDER_TYPE,
                 'provider': self.env['report.tt_report_dashboard.overall'].get_provider_all(),
                 'form_data': data
@@ -459,7 +495,7 @@ class TtReportDashboard(models.Model):
                 'end_date': data['end_date'],
                 'provider': data['provider'],
                 'provider_type': data['report_type'],
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
                 'agent_type_seq_id': data['agent_type_seq_id']
             }
 
@@ -484,7 +520,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'book_issued'
             }
@@ -699,7 +736,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': 8,
                 'addons': 'chanel'
@@ -916,7 +954,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': 8,
                 'addons': 'chanel'
@@ -1055,7 +1094,7 @@ class TtReportDashboard(models.Model):
             agent_seq_id_name = None
             if context:
                 agent_name_context = context['co_agent_name']
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id','=', data['agent_seq_id'])], limit=1).name
             if data['provider']:
                 provider_type = self.env['tt.provider'].search([('code', '=', data['provider'])])
@@ -1080,7 +1119,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
                 'addons': 'none'
@@ -1127,7 +1167,8 @@ class TtReportDashboard(models.Model):
                 'type': 'invoice',
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
                 'reservation': reservation_ids,
@@ -1750,7 +1791,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -1772,7 +1813,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -1848,7 +1890,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -1862,7 +1905,7 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'reservation': '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -3191,7 +3234,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -3213,7 +3256,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -3283,7 +3327,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -4005,7 +4050,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -4027,7 +4072,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -4065,7 +4111,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -4685,7 +4732,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -4706,7 +4753,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -4743,7 +4791,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -5168,7 +5217,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -5189,7 +5238,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -5226,7 +5276,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -5646,7 +5697,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -5667,7 +5718,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -5704,7 +5756,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -6121,7 +6174,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -6142,7 +6195,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -6179,7 +6233,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -6583,7 +6638,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -6604,7 +6659,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -6641,7 +6697,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -7045,7 +7102,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -7066,7 +7123,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -7102,7 +7160,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -7506,7 +7565,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -7529,7 +7588,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -7572,7 +7632,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -7948,7 +8009,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -7969,7 +8030,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -8005,7 +8067,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -8407,7 +8470,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -8428,7 +8491,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -8464,7 +8528,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -8866,7 +8931,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -8887,7 +8952,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -8923,7 +8989,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -9325,7 +9392,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -9347,7 +9414,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -9417,7 +9485,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -10134,7 +10203,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -10155,7 +10224,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -10191,7 +10261,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -10593,7 +10664,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -10614,7 +10685,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -10650,7 +10722,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -11052,7 +11125,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -11073,7 +11146,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -11109,7 +11183,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -11511,7 +11586,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -11532,7 +11607,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -11568,7 +11644,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -11970,7 +12047,7 @@ class TtReportDashboard(models.Model):
         try:
             agent_name_context = None
             agent_seq_id_name = None
-            if data['agent_seq_id']:
+            if data.get('agent_seq_id'):
                 agent_seq_id_name = self.env['tt.agent'].search([('seq_id', '=', data['agent_seq_id'])], limit=1).name
             if context:
                 agent_name_context = context['co_agent_name']
@@ -11991,7 +12068,8 @@ class TtReportDashboard(models.Model):
                 'type': data['report_type'],
                 'provider': data['provider'],
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }
@@ -12027,7 +12105,8 @@ class TtReportDashboard(models.Model):
                 'provider': data['provider'],
                 'reservation': reservation_ids,
                 'ho_seq_id': data.get('ho_seq_id') and data['ho_seq_id'] or '',
-                'agent_seq_id': data['agent_seq_id'],
+                'agent_seq_id': data.get('agent_seq_id') and data['agent_seq_id'] or '',
+                'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 'addons': 'none'
             }

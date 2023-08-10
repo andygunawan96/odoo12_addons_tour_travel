@@ -201,7 +201,7 @@ class ReportDashboardOverall(models.Model):
     # this function responsible to build and execute query to get agent
     def get_agent_lines(self, ho_id=''):
         query = """
-                SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, ho.seq_id as ho_seq_id 
+                SELECT COALESCE(agent.seq_id, '') as seq_id, agent.name, agent.agent_type_id, COALESCE(ho.seq_id, '') as ho_seq_id 
                 FROM tt_agent agent 
                 LEFT JOIN tt_agent ho ON ho.id = agent.ho_id 
                 """
@@ -212,10 +212,35 @@ class ReportDashboardOverall(models.Model):
         _logger.info(query)
         return self.env.cr.dictfetchall()
 
-    # this function responsible to build and execute query to get agent type
-    def get_agent_type_lines(self):
-        query = "SELECT agent.name, agent.code ,agent.id FROM tt_agent_type agent ORDER BY name"
+    # this function responsible to build and execute query to get customer parent
+    def get_customer_parent_lines(self, ho_id='', agent_id=''):
+        query = """
+                SELECT COALESCE(customer_parent.seq_id, '') as seq_id, customer_parent.name, customer_parent.customer_parent_type_id, COALESCE(ho.seq_id, '') as ho_seq_id, COALESCE(agent.seq_id, '') as agent_seq_id 
+                FROM tt_customer_parent customer_parent 
+                LEFT JOIN tt_agent ho ON ho.id = customer_parent.ho_id 
+                LEFT JOIN tt_agent agent ON agent.id = customer_parent.parent_agent_id 
+                """
+        if ho_id:
+            query += """WHERE ho.id = {} """.format(int(ho_id))
+            if agent_id:
+                query += """AND agent.id = {} """.format(int(agent_id))
+        elif agent_id:
+            query += """WHERE agent.id = {} """.format(int(agent_id))
+        query += """ORDER BY customer_parent.name"""
+        self.env.cr.execute(query)
+        _logger.info(query)
+        return self.env.cr.dictfetchall()
 
+    # this function responsible to build and execute query to get agent type
+    def get_agent_type_lines(self, ho_id=''):
+        query = """
+                SELECT agent.name, agent.code ,agent.id 
+                FROM tt_agent_type agent
+                LEFT JOIN tt_agent ho ON ho.id = agent.ho_id 
+                """
+        if ho_id:
+            query += """WHERE ho.id = {} """.format(int(ho_id))
+        query += """ORDER BY agent.name"""
         self.env.cr.execute(query)
         _logger.info(query)
         return self.env.cr.dictfetchall()
@@ -351,11 +376,33 @@ class ReportDashboardOverall(models.Model):
         # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
         return lines
 
-    # get all agent
+    # get all customer parent
+    # input - none
+    # return [{'seq_id': xxx, 'name': 'John'}]
+    def get_customer_parent_all(self):
+        lines = self.get_customer_parent_lines()
+        # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
+        return lines
+
+    def get_customer_parent_by_ho(self, ho_id):
+        lines = self.get_customer_parent_lines(ho_id)
+        # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
+        return lines
+
+    def get_customer_parent_by_agent(self, ho_id, agent_id):
+        lines = self.get_customer_parent_lines(ho_id, agent_id)
+        # lines.insert(0, {'seq_id': '', 'name': 'All', 'agent_type_id': ''})
+        return lines
+
+    # get all agent type
     # input - none
     # return [{'seq_id': xxx, 'name': 'John'}]
     def get_agent_type_all(self):
         lines = self.get_agent_type_lines()
+        return lines
+
+    def get_agent_type_by_ho(self, ho_id):
+        lines = self.get_agent_type_lines(ho_id)
         return lines
 
     # get all agent

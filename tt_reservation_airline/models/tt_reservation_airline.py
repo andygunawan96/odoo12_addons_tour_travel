@@ -3176,6 +3176,7 @@ class ReservationAirline(models.Model):
             book_obj = None
             provider_obj = None
             provider_data_obj = None
+            provider_data = {}
             if 'provider' in data:
                 provider_obj = self.env['tt.provider'].sudo().search([('code', '=', data['provider'])], limit=1)
                 if not provider_obj:
@@ -3184,6 +3185,15 @@ class ReservationAirline(models.Model):
             if provider_obj and 'pnr' in data:
                 provider_data_obj = self.env['tt.provider.airline'].sudo().search([('pnr', '=', data['pnr']), ('provider_id', '=', provider_obj.id), ('state', 'in', ['booked', 'issued'])], limit=1)
                 book_obj = provider_data_obj.booking_id
+                passengers = []
+                for psg in book_obj.passenger_ids:
+                    psg_data = psg.to_dict()
+                    passengers.append(psg_data)
+
+                provider_data = provider_data_obj.to_dict()
+                provider_data.update({
+                    'passengers': passengers,
+                })
 
             if not book_obj:
                 raise Exception('Booking Object not Found')
@@ -3222,6 +3232,7 @@ class ReservationAirline(models.Model):
                 'book_id': book_obj.id,
                 'order_number': book_obj.name,
                 'provider_id': provider_data_obj.id,
+                'provider_data': provider_data,
                 'context': context
             }
             return ERR.get_no_error(response)
