@@ -2122,6 +2122,8 @@ class IssuedOffline(models.Model):
                 rec[2].update({
                     'customer_id': list_customer_id[idx].id
                 })
+            user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+            utc_tz = pytz.timezone('UTC')
             header_val = {
                 'booker_id': booker_obj.id,
                 'passenger_ids': list_passenger_value,
@@ -2134,7 +2136,7 @@ class IssuedOffline(models.Model):
                 'input_total': data_reservation_offline['total_sale_price'],
                 "social_media_type": self._get_social_media_id_by_name(data_reservation_offline.get('social_media_id')),
                 # "expired_date": data_reservation_offline.get('expired_date'),
-                "hold_date": data_reservation_offline.get('expired_date'),
+                "hold_date": data_reservation_offline.get('expired_date') and user_tz.localize(datetime.strptime(data_reservation_offline['expired_date'], '%Y-%m-%d %H:%M')).astimezone(utc_tz) or '',
                 "quick_validate": data_reservation_offline.get('quick_validate'),
                 'state': 'draft',
                 'state_offline': 'confirm',
