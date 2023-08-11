@@ -13,7 +13,10 @@ class AgentReportCommon(models.TransientModel):
         return self.env.user.has_group('base.group_erp_manager')
 
     def _check_ho_user(self):
-        return self.env.user.has_group('base.group_erp_manager') or self.env.user.agent_id.is_ho_agent
+        return self.env.user.has_group('base.group_erp_manager') or self.env.user.has_group('tt_base.group_tt_tour_travel')
+
+    def _check_not_corpor_user(self):
+        return self.env.user.has_group('base.group_erp_manager') or not self.env.user.has_group('tt_base.group_tt_corpor_user')
 
     company_id = fields.Many2one('res.company', string='Company', readonly=True,
                                  default=lambda self: self.env.user.company_id)
@@ -37,8 +40,19 @@ class AgentReportCommon(models.TransientModel):
 
     agent_id = fields.Many2one('tt.agent', string='Agent', domain=get_agent_domain, default=lambda self: self.env.user.agent_id)
     all_agent = fields.Boolean('All Agent', default=False)
+
+    def get_customer_parent_domain(self):
+        if self.all_agent or not self.agent_id:
+            dom = []
+        else:
+            dom = [('parent_agent_id', '=', self.agent_id.id)]
+        return dom
+
+    customer_parent_id = fields.Many2one('tt.customer.parent', string='Customer Parent', domain=get_customer_parent_domain, default=lambda self: self.env.user.customer_parent_id)
+    all_customer_parent = fields.Boolean('All Customer Parents', default=False)
     is_admin = fields.Boolean('Admin User', default=_check_adm_user)
-    is_ho = fields.Boolean('Ho User', default=_check_ho_user)
+    is_ho = fields.Boolean('HO User', default=_check_ho_user)
+    is_not_corpor = fields.Boolean('Not Corporate User', default=_check_not_corpor_user)
 
     subtitle_report = fields.Char('Subtitle', help='This field use for report subtitle')
 
@@ -46,6 +60,12 @@ class AgentReportCommon(models.TransientModel):
     def _onchange_domain_agent(self):
         return {'domain': {
             'agent_id': self.get_agent_domain()
+        }}
+
+    @api.onchange('all_agent', 'agent_id')
+    def _onchange_domain_customer_parent(self):
+        return {'domain': {
+            'customer_parent_id': self.get_customer_parent_domain()
         }}
 
     @api.onchange('period')
@@ -104,7 +124,7 @@ class AgentReportCommon(models.TransientModel):
         data['form']['subtitle'] = self.subtitle_report
 
         # ============= ho id and name ==========
-        if self.all_ho == True:
+        if self.all_ho:
             data['form']['ho_id'] = ''
             data['form']['ho_name'] = 'All Head Office'
         else:
@@ -116,16 +136,27 @@ class AgentReportCommon(models.TransientModel):
             data['form']['ho_name'] = ho_name
 
         # ============= agent id and name ==========
-        if self.all_agent == True:
+        if self.all_agent:
             data['form']['agent_id'] = ''
             data['form']['agent_name'] = 'All Agent'
         else:
             agent_id = data['form']['agent_id'][0] if data['form']['agent_id'] else False
-            if agent_id != self.env.user.agent_id.id and not self.env.user.agent_id.is_ho_agent:
+            if agent_id != self.env.user.agent_id.id and not self.env.user.has_group('tt_base.group_tt_tour_travel') and not self.env.user.has_group('base.group_erp_manager'):
                 agent_id = self.env.user.agent_id.id
             agent_name = self.env['tt.agent'].sudo().browse(agent_id).name if agent_id else 'All Agent'
             data['form']['agent_id'] = agent_id
             data['form']['agent_name'] = agent_name
+
+        if self.all_customer_parent:
+            data['form']['customer_parent_id'] = ''
+            data['form']['customer_parent_name'] = 'All Customer Parent'
+        else:
+            customer_parent_id = data['form']['customer_parent_id'][0] if data['form']['customer_parent_id'] else False
+            if customer_parent_id != self.env.user.customer_parent_id.id and self.env.user.has_group('tt_base.group_tt_corpor_user') and not self.env.user.has_group('base.group_erp_manager'):
+                customer_parent_id = self.env.user.customer_parent_id.id
+            customer_parent_name = self.env['tt.customer.parent'].sudo().browse(customer_parent_id).name if customer_parent_id else 'All Customer Parent'
+            data['form']['customer_parent_id'] = customer_parent_id
+            data['form']['customer_parent_name'] = customer_parent_name
 
         if 'agent_type_id' in data['form']:
             agent_type = data['form']['agent_type_id']
@@ -145,7 +176,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'all_ho', 'ho_id', 'all_agent', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'all_ho', 'ho_id', 'all_agent', 'agent_id', 'all_customer_parent', 'customer_parent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
         })
 
         self._prepare_form(data)
@@ -158,7 +189,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'ho_id', 'agent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type', 'logging_daily', 'period_mode', 'state_vendor', 'after_sales_type'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'ho_id', 'agent_id', 'customer_parent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type', 'logging_daily', 'period_mode', 'state_vendor', 'after_sales_type'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)

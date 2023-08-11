@@ -252,11 +252,11 @@ class VisaPricelist(models.Model):
     process_type = fields.Selection(PROCESS_TYPE, 'Process Type')
 
     reference_code = fields.Char('Reference Code', required=False, copy=False)
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain)
+    provider_id = fields.Many2one('tt.provider', 'Provider', domain=get_domain, required=True)
     active = fields.Boolean('Active', default=True)
 
-    country_id = fields.Many2one('res.country', 'Country')
-    immigration_consulate = fields.Char('Immigration Consulate')
+    country_id = fields.Many2one('res.country', 'Country', required=True)
+    immigration_consulate = fields.Char('Immigration Consulate', required=True)
     notes = fields.Html('Notes')
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True,
                                   default=lambda self: self.env.user.company_id.currency_id)

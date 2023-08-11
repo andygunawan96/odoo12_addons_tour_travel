@@ -18,7 +18,13 @@ class AgentReportPerformance(models.TransientModel):
 
     def _compute_provider_type_selection(self):
         value = [('all', 'All')]
-        provider_type = self.env['tt.agent.type'].search([])
+        if self.env.user.has_group('base.group_erp_manager'):
+            search_param = []
+        elif self.env.user.ho_id:
+            search_param = [('ho_id', '=', self.env.user.ho_id.id)]
+        else:
+            search_param = [('id', '=', -1)]
+        provider_type = self.env['tt.agent.type'].search(search_param)
         for rec in provider_type:
             temp_dict = (rec.code, rec.name)
             if not temp_dict in value:

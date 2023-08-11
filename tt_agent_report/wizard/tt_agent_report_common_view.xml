@@ -15,10 +15,13 @@
                     <group>
                         <field name="is_admin" invisible="1"/>
                         <field name="is_ho" invisible="1"/>
+                        <field name="is_not_corpor" invisible="1"/>
                         <field name="all_ho" attrs="{'invisible': [('is_admin', '=', False)]}" groups="base.group_erp_manager"/>
                         <field name="ho_id" attrs="{'invisible': ['|', ('is_admin', '=', False), ('all_ho', '=', True)]}" groups="base.group_erp_manager"/>
                         <field name="all_agent" attrs="{'invisible': [('is_ho', '=', False)]}"/>
-                        <field name="agent_id" attrs="{'invisible': ['|', ('is_ho', '=', False), ('all_agent', '=', True)]}"/>  <!--attrs="{'invisible': [('is_ho_user', '=', False)]}"-->
+                        <field name="agent_id" attrs="{'invisible': ['|', ('is_ho', '=', False), ('all_agent', '=', True)]}"/>
+                        <field name="all_customer_parent" attrs="{'invisible': [('is_not_corpor', '=', False)]}"/>
+                        <field name="customer_parent_id" attrs="{'invisible': ['|', ('is_not_corpor', '=', False), ('all_customer_parent', '=', True)]}"/>
                     </group>
                 </group>
                 <footer>

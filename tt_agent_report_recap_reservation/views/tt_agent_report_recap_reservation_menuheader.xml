@@ -2,6 +2,6 @@
 <odoo>
     <menuitem id="top_reservations_reports" parent="tt_reservation.main_reservations"
                   name="Reports" sequence='999'
-                  groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                  groups="tt_base.group_tt_corpor_user,tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"/>
 
 </odoo>

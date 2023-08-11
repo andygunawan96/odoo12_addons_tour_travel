@@ -87,7 +87,7 @@ class AgentReportRecapAfterSales(models.Model):
     #   name of the function correspond to respected SELECT, FORM functions for easy development
     ################
     @staticmethod
-    def _where(date_from, date_to, agent_id, ho_id, after_sales_type, state):
+    def _where(date_from, date_to, agent_id, ho_id, customer_parent_id, after_sales_type, state):
         where = """rsv.create_date >= '%s' and rsv.create_date <= '%s'""" % (date_from, date_to)
         # if state == 'failed':
         #     where += """ AND rsv.state IN ('fail_booking', 'fail_issue')"""
@@ -96,6 +96,8 @@ class AgentReportRecapAfterSales(models.Model):
             where += """ AND rsv.ho_id = %s """ % ho_id
         if agent_id:
             where += """ AND rsv.agent_id = %s""" % agent_id
+        if customer_parent_id:
+            where += """ AND rsv.customer_parent_id = %s""" % customer_parent_id
         if after_sales_type == 'refund':
             where += """ AND (rsv.state = 'approve' OR rsv.state = 'payment' OR rsv.state = 'approve_cust' OR rsv.state = 'done') """
         else:
@@ -118,7 +120,7 @@ class AgentReportRecapAfterSales(models.Model):
     #   for more information of what each query do, se explanation above every select function
     #   name of select function is the same as the _lines_[function name] or get_[function_name]
     ################
-    def _lines(self, date_from, date_to, agent_id, ho_id, after_sales_type, state):
+    def _lines(self, date_from, date_to, agent_id, ho_id, customer_parent_id, after_sales_type, state):
         # SELECT
         query = 'SELECT ' + self._select()
         if after_sales_type == 'refund':
@@ -130,7 +132,7 @@ class AgentReportRecapAfterSales(models.Model):
         query += 'FROM ' + self._from(after_sales_type)
 
         # WHERE
-        query += 'WHERE ' + self._where(date_from, date_to, agent_id, ho_id, after_sales_type, state)
+        query += 'WHERE ' + self._where(date_from, date_to, agent_id, ho_id, customer_parent_id, after_sales_type, state)
 
         # 'GROUP BY' + self._group_by() + \
         query += 'ORDER BY ' + self._order_by()
@@ -140,7 +142,7 @@ class AgentReportRecapAfterSales(models.Model):
         return self.env.cr.dictfetchall()
 
     # this function handle preparation to call query builder for service charge
-    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, after_sales_type, state):
+    def _get_lines_data(self, date_from, date_to, agent_id, ho_id, customer_parent_id, after_sales_type, state):
         after_sales_type_dict = {
             'refund': 'Refund',
             'after_sales': 'After Sales'
@@ -153,7 +155,7 @@ class AgentReportRecapAfterSales(models.Model):
                 except:
                     _logger.info('After Sales module is not installed.')
                     raise Exception('After Sales module is not installed.')
-            lines = self._lines(date_from, date_to, agent_id, ho_id, after_sales_type, state)
+            lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, after_sales_type, state)
             lines = self._convert_data(lines, after_sales_type)
             lines = self._convert_data_commission(lines, after_sales_type)
             for line in lines:
@@ -166,7 +168,7 @@ class AgentReportRecapAfterSales(models.Model):
                 after_sales_types.remove('after_sales')
                 _logger.info('After Sales module is not installed.')
             for after_sales_type in after_sales_types:
-                report_lines = self._lines(date_from, date_to, agent_id, ho_id, after_sales_type, state)
+                report_lines = self._lines(date_from, date_to, agent_id, ho_id, customer_parent_id, after_sales_type, state)
                 report_lines = self._convert_data(report_lines, after_sales_type)
                 report_lines = self._convert_data_commission(report_lines, after_sales_type)
                 for line in report_lines:
@@ -213,10 +215,11 @@ class AgentReportRecapAfterSales(models.Model):
         #     data_form['state'] = 'all'
         agent_id = data_form['agent_id']
         ho_id = data_form['ho_id']
+        customer_parent_id = data_form['customer_parent_id']
         state = data_form['state']
         after_sales_type = data_form['after_sales_type']
         # lines = self._get_lines_data_search(date_from, date_to, agent_id, provider_type, state)
-        lines = self._get_lines_data(date_from, date_to, agent_id, ho_id, after_sales_type, state) #BOOKING
+        lines = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, after_sales_type, state) #BOOKING
         # second_lines = []
         self._report_title(data_form)
 
