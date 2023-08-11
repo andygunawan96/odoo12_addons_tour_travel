@@ -539,7 +539,7 @@ class TtRefund(models.Model):
                             'provider': rec.provider_id.code,
                             'type': 'confirm'
                         }
-                        self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
+                        self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.ho_id.id)
             else:
                 _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
                 raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
@@ -589,7 +589,7 @@ class TtRefund(models.Model):
                             'provider': rec.provider_id.code,
                             'type': 'confirm'
                         }
-                        self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
+                        self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.ho_id.id)
             else:
                 _logger.info('Refund Confirmed email for {} is already created!'.format(self.name))
                 raise Exception('Refund Confirmed email for {} is already created!'.format(self.name))
@@ -746,7 +746,7 @@ class TtRefund(models.Model):
                     'provider': rec.provider_id.code,
                     'type': 'validate'
                 }
-                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.get_parent_ho_agent().id)
+                self.env['tt.refund.api.con'].send_refund_request(data, self.agent_id.ho_id.id)
 
         # HO ke BTBO2
         if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
