@@ -1113,6 +1113,8 @@ class TtReportDashboard(models.Model):
             # first step of this function is to get reservation date, base on issued date
 
             # get all data by issued date (between start and end)
+            currency_obj = None
+            currency_obj = self.env['res.currency'].search([('name','=', data['currency'])], limit=1)
             temp_dict = {
                 'start_date': data['start_date'],
                 'end_date': data['end_date'],
@@ -1123,7 +1125,8 @@ class TtReportDashboard(models.Model):
                 'customer_parent_seq_id': data.get('customer_parent_seq_id') and data['customer_parent_seq_id'] or '',
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
-                'addons': 'none'
+                'addons': 'none',
+                'currency_id': currency_obj.id if currency_obj else None
             }
 
             # execute the query
@@ -1172,7 +1175,8 @@ class TtReportDashboard(models.Model):
                 'agent_type': data['agent_type_seq_id'],
                 # 'agent_seq_id': False,
                 'reservation': reservation_ids,
-                'addons': 'none'
+                'addons': 'none',
+                'currency_id': currency_obj.id if currency_obj else None
             }
 
             #executing invoice search
