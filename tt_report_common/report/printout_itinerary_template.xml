@@ -5,7 +5,7 @@
         <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
         <table width="100%">
             <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
-                <td><b>Pax Type</b></td>
+                <td><b>Pax</b></td>
                 <td><b>Qty</b></td>
                 <td><b>Total per Pax</b></td>
                 <td><b>Total</b></td>
@@ -154,7 +154,7 @@
                                 Birth Date
                             </div>
                             <div class="col-2" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
                                 Facility(s)
@@ -352,7 +352,7 @@
                             Name
                         </div>
                         <div class="col-1" style="text-align: center; font-size:17px;">
-                            Pax Type
+                            Pax
                         </div>
                         <div class="col-4" style="text-align: center; font-size:17px;">
                             Facility(s)
@@ -459,7 +459,7 @@
                                 Birth Date
                             </div>
                             <div class="col-2" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
                                 Facility(s)
@@ -558,7 +558,7 @@
                                 Birth Date
                             </div>
                             <div class="col-2" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
                                 Ticket
@@ -703,7 +703,7 @@
                             Birth Date
                         </div>
                         <div class="col-3" style="text-align: center; font-size:17px;">
-                            Pax Type
+                            Pax
                         </div>
                     </div>
                     <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
@@ -785,7 +785,7 @@
                                 Birth Date
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                         </div>
                         <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
@@ -855,7 +855,7 @@
                                 Birth Date
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                         </div>
                         <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
@@ -1239,7 +1239,7 @@
                                 Birth Date
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                         </div>
                         <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
@@ -1476,7 +1476,7 @@
                                 Birth Date
                             </div>
                             <div class="col-2" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
                                 Facility(s)
@@ -1558,7 +1558,7 @@
                                 Birth Date
                             </div>
                             <div class="col-2" style="text-align: center; font-size:17px;">
-                                Pax Type
+                                Pax
                             </div>
                             <div class="col-3" style="text-align: center; font-size:17px;">
                                 Facility(s)
@@ -1687,7 +1687,7 @@
                             Name
                         </div>
                         <div class="col-2" style="text-align: center;">
-                            Pax Type
+                            Pax
                         </div>
                         <div class="col-3" style="text-align: center;">
                             Birth Date
