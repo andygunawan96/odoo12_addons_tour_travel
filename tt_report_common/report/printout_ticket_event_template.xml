@@ -5,7 +5,7 @@
         <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
         <table width="100%">
             <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
-                <td><b>Pax Type</b></td>
+                <td><b>Pax</b></td>
                 <td><b>Base Fare</b></td>
                 <td><b>Tax</b></td>
                 <td><b>Total</b></td>
