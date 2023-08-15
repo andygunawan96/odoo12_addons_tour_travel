@@ -224,7 +224,7 @@ class TtReservationNotification(models.Model):
         ### NOTIF UNTUK INVALID IDENTITY
         provider_types = ['airline']
         for provider_type in provider_types:
-            book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('state', 'in', ['booked', 'issued', 'done', 'partial_booked', 'issued_pending', 'partial_issued', 'partial_refund', 'rescheduled', 'partial_rescheduled'])]) ## hanya state yg aktif yg di notif
+            book_objs = self.env['tt.reservation.%s' % provider_type].search([('passenger_ids.is_valid_identity', '=', False), ('state', 'in', ['booked', 'issued', 'done', 'partial_booked', 'issued_pending', 'partial_issued', 'partial_refund', 'rescheduled', 'partial_rescheduled']), ('ho_id','=', ho_id)]) ## hanya state yg aktif yg di notif
             for book_obj in book_objs:
                 create_record = True
                 dom = [('name', '=', book_obj.name), ('active', '=', True), ('snooze_days', '!=', 0)]
