@@ -20,6 +20,7 @@ class AgentReportCommon(models.TransientModel):
 
     company_id = fields.Many2one('res.company', string='Company', readonly=True,
                                  default=lambda self: self.env.user.company_id)
+    currency_id = fields.Many2one('res.currency', 'Currency (Leave empty to select all currencies)')
 
     period = fields.Selection([('today', 'Today'), ('yesterday', 'Yesterday'),
                                ('1', 'This month'), ('2', 'A month ago'), ('3', 'Two month ago'),
@@ -158,6 +159,11 @@ class AgentReportCommon(models.TransientModel):
             data['form']['customer_parent_id'] = customer_parent_id
             data['form']['customer_parent_name'] = customer_parent_name
 
+        if self.currency_id:
+            data['form']['currency_id'] = self.currency_id.id
+        else:
+            data['form']['currency_id'] = ''
+
         if 'agent_type_id' in data['form']:
             agent_type = data['form']['agent_type_id']
             if not agent_type:
@@ -176,7 +182,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'all_ho', 'ho_id', 'all_agent', 'agent_id', 'all_customer_parent', 'customer_parent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'all_ho', 'ho_id', 'all_agent', 'agent_id', 'all_customer_parent', 'customer_parent_id', 'state', 'provider_type', 'currency_id', 'chart_frequency', 'agent_type_id'])[0]
         })
 
         self._prepare_form(data)
@@ -189,7 +195,7 @@ class AgentReportCommon(models.TransientModel):
         self.ensure_one()
         data = ({
             'model': self.env.context.get('active_model', 'ir.ui.menu'),
-            'form': self.read(['date_from', 'date_to', 'period', 'ho_id', 'agent_id', 'customer_parent_id', 'state', 'provider_type', 'chart_frequency', 'agent_type_id', 'agent_type', 'logging_daily', 'period_mode', 'state_vendor', 'after_sales_type'])[0]
+            'form': self.read(['date_from', 'date_to', 'period', 'ho_id', 'agent_id', 'customer_parent_id', 'state', 'provider_type', 'currency_id', 'chart_frequency', 'agent_type_id', 'agent_type', 'logging_daily', 'period_mode', 'state_vendor', 'after_sales_type'])[0]
         })
         self._prepare_form(data)
         used_context = self._build_contexts(data)

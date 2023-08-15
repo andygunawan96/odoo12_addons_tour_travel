@@ -1274,7 +1274,7 @@ class ReportSelling(models.Model):
     @staticmethod
     def _where_currency(context):
         if context.get('currency_id'):
-            return """AND currency.id = %s""" % context.get('currency_id')
+            return """AND currency.id = %s""" % context['currency_id']
         else:
             return ""
 
@@ -2417,6 +2417,7 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         _logger.info(query)
         self.env.cr.execute(query)
@@ -2514,13 +2515,15 @@ class ReportSelling(models.Model):
         if data_form.get('customer_parent_id'):
             customer_parent_id = self.env['tt.customer.parent'].search([('id','=',data_form['customer_parent_id'])]).seq_id
         provider_type = data_form['provider_type']
+        currency_id = data_form.get('currency_id', '')
         # proceed data
         context = {
             'agent_seq_id': '',
             'agent_type_code': '',
             # 'provider_code': data['provider_code'],
             'reservation': '',
-            'provider': ''
+            'provider': '',
+            'currency_id': currency_id
         }
         line = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, context)
         self._report_title(data_form)
