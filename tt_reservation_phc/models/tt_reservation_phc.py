@@ -1065,7 +1065,7 @@ class Reservationphc(models.Model):
                         'carrier_code': self.carrier_name,
                         'ticket_number': rec.ticket_number,
                         'provider': self.provider_booking_ids[0].provider_id.code,
-                    }, ho_id=self.agent_id.get_parent_ho_agent().id)
+                    }, ho_id=self.agent_id.ho_id.id)
                     if phc_status_res['error_code'] == 0:
                         if phc_status_res['response']['verified']:
                             rec.verify = phc_status_res['response']['verified']

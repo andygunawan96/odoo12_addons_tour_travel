@@ -53,7 +53,7 @@ class ReportSelling(models.Model):
     @staticmethod
     def _select_invoice():
         return """
-        COUNT(*), create_date as create_date_og
+        COUNT(*), agent_invoice_line.create_date as create_date_og
         """
 
     # select airline is a spesific function to build query for airline search only
@@ -770,12 +770,21 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _from_invoice():
-        return """tt_agent_invoice_line"""
+        return """
+        tt_agent_invoice_line agent_invoice_line
+        LEFT JOIN tt_agent_invoice agent_invoice ON agent_invoice_line.invoice_id = agent_invoice.id
+        """
 
     @staticmethod
-    def _from_currency():
+    def _from_reservation_currency():
         return """
         LEFT JOIN res_currency currency ON currency.id = reservation.currency_id
+        """
+
+    @staticmethod
+    def _from_invoice_currency():
+        return """
+        LEFT JOIN res_currency currency ON currency.id = agent_invoice.currency_id
         """
 
     #only works for airline and train
@@ -1204,7 +1213,7 @@ class ReportSelling(models.Model):
 
     @staticmethod
     def _group_by_invoice():
-        return """invoice_id, create_date"""
+        return """invoice_id, agent_invoice_line.create_date, currency.name"""
 
     ################
     #   All of WHERE function to build WHERE function in SQL
@@ -1262,6 +1271,13 @@ class ReportSelling(models.Model):
         where = """ ledger.is_reversed = 'FALSE'"""
         return where
 
+    @staticmethod
+    def _where_currency(context):
+        if context.get('currency_id'):
+            return """AND currency.id = %s""" % context['currency_id']
+        else:
+            return ""
+
     ################
     #   All of ORDER function to build ORDER BY function in SQL
     #   name of the function correspond to respected SELECT, FORM, WHERE, GROUP BY functions for easy development
@@ -1288,7 +1304,7 @@ class ReportSelling(models.Model):
     @staticmethod
     def _order_by_invoice():
         return """
-        create_date
+        agent_invoice_line.create_date
         """
 
     ################
@@ -1565,12 +1581,12 @@ class ReportSelling(models.Model):
         else:
             query = 'SELECT {}'.format(self._select())
         ## 22 JUNI ADD CURRENCY
-        if provider_checker != 'invoice':
-            query += '{}'.format(self._select_currency())
+        # if provider_checker != 'invoice':
+        query += '{}'.format(self._select_currency())
 
         if provider_checker == 'airline':
             query += 'FROM {} '.format(self._from_airline())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1582,12 +1598,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
-
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'train':
             query += 'FROM {} '.format(self._from_train())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1599,11 +1615,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'hotel':
             query += 'FROM {} '.format(self._from_hotel())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1615,11 +1632,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'activity':
             query += 'FROM {} '.format(self._from_activity())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1631,11 +1649,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'tour':
             query += 'FROM {} '.format(self._from_tour())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1647,11 +1666,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'visa':
             query += 'FROM {} '.format(self._from_visa())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1663,11 +1683,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'offline':
             query += 'FROM {} '.format(self._from_offline())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1679,10 +1700,11 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'event':
             query += 'FROM {} '.format(self._from_event())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1694,11 +1716,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'ppob':
             query += 'FROM {} '.format(self._from_ppob())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1710,11 +1733,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'phc':
             query += 'FROM {} '.format(self._from_phc())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1726,11 +1750,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_phc())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'periksain':
             query += 'FROM {} '.format(self._from_periksain())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1742,11 +1767,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_periksain())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'medical':
             query += 'FROM {} '.format(self._from_medical())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1758,11 +1784,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_medical())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'bus':
             query += 'FROM {} '.format(self._from_bus())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1774,11 +1801,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_bus())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'insurance':
             query += 'FROM {} '.format(self._from_insurance())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1790,11 +1818,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_insurance())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'swabexpress':
             query += 'FROM {} '.format(self._from_swabexpress())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1806,11 +1835,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_swabexpress())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'labpintar':
             query += 'FROM {} '.format(self._from_labpintar())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1822,11 +1852,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'mitrakeluarga':
             query += 'FROM {} '.format(self._from_mitrakeluarga())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1838,11 +1869,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'sentramedika':
             query += 'FROM {} '.format(self._from_sentramedika())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1854,11 +1886,12 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_sentramedika())
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'groupbooking':
             query += 'FROM {} '.format(self._from_groupbooking())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1870,10 +1903,11 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by())
         elif provider_checker == 'overall_airline':
             query += 'FROM {} '.format(self._from_airline())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1886,11 +1920,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by_overall_airline())
         elif provider_checker == 'overall_activity':
             query += 'FROM {} '.format(self._from_activity())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1903,11 +1938,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_event':
             query += 'FROM {} '.format(self._from_event())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1920,11 +1956,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_tour':
             query += 'FROM {} '.format(self._from_tour())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1937,11 +1974,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_train':
             query += 'FROM {} '.format(self._from_train())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1954,11 +1992,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_hotel':
             query += 'FROM {} '.format(self._from_hotel())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1971,11 +2010,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_visa':
             query += 'FROM {} '.format(self._from_visa())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -1988,11 +2028,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_offline':
             query += 'FROM {} '.format(self._from_offline())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2005,10 +2046,11 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_ppob':
             query += 'FROM {} '.format(self._from_ppob())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2021,11 +2063,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_phc':
             query += 'FROM {} '.format(self._from_phc())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2038,11 +2081,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_phc())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_periksain':
             query += 'FROM {} '.format(self._from_periksain())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2055,11 +2099,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_periksain())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_medical':
             query += 'FROM {} '.format(self._from_medical())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2072,11 +2117,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_medical())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_bus':
             query += 'FROM {} '.format(self._from_bus())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2089,11 +2135,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_bus())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_insurance':
             query += 'FROM {} '.format(self._from_insurance())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2106,11 +2153,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_insurance())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_swabexpress':
             query += 'FROM {} '.format(self._from_swabexpress())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2123,11 +2171,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_swabexpress())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_labpintar':
             query += 'FROM {} '.format(self._from_labpintar())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2140,11 +2189,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_mitrakeluarga':
             query += 'FROM {} '.format(self._from_mitrakeluarga())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2157,11 +2207,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_sentramedika':
             query += 'FROM {} '.format(self._from_sentramedika())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2174,11 +2225,12 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_sentramedika())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_groupbooking':
             query += 'FROM {} '.format(self._from_groupbooking())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2191,10 +2243,11 @@ class ReportSelling(models.Model):
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
             query += 'AND {} '.format(self._where_issued(date_from, date_to))
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'overall_passport':
             query += 'FROM {} '.format(self._from('passport'))
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where_profit())
             if context['provider']:
                 query += 'AND {} '.format(self._where_provider(context['provider']))
@@ -2210,118 +2263,138 @@ class ReportSelling(models.Model):
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_airline':
             query += 'FROM {} '.format(self._from_airline())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_airline())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_activity':
             query += 'FROM {} '.format(self._from_activity())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_activity())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_event':
             query += 'FROM {} '.format(self._from_event())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_event())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_hotel':
             query += 'FROM {} '.format(self._from_hotel())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_hotel())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_tour':
             query += 'FROM {} '.format(self._from_tour())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_tour())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_train':
             query += 'FROM {} '.format(self._from_train())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_train())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_visa':
             query += 'FROM {} '.format(self._from_visa())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_visa())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_offline':
             query += 'FROM {} '.format(self._from_offline())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_ppob':
             query += 'FROM {} '.format(self._from_ppob())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_ppob())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_phc':
             query += 'FROM {} '.format(self._from_phc())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_phc())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_periksain':
             query += 'FROM {} '.format(self._from_periksain())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_periksain())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_medical':
             query += 'FROM {} '.format(self._from_medical())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_medical())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_bus':
             query += 'FROM {} '.format(self._from_bus())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_bus())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_insurance':
             query += 'FROM {} '.format(self._from_insurance())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_insurance())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_swabexpress':
             query += 'FROM {} '.format(self._from_swabexpress())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_swabexpress())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_labpintar':
             query += 'FROM {} '.format(self._from_labpintar())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_labpintar())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_mitrakeluarga':
             query += 'FROM {} '.format(self._from_mitrakeluarga())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_mitrakeluarga())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_sentramedika':
             query += 'FROM {} '.format(self._from_sentramedika())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_sentramedika())
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'chanel_overall_groupbooking':
             query += 'FROM {} '.format(self._from_groupbooking())
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} AND {} '.format(self._where_chanel(date_from, date_to), self._where_profit())
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         elif provider_checker == 'invoice':
             query += 'FROM {} '.format(self._from_invoice())
+            query += '{}'.format(self._from_invoice_currency())
             first_data = True
             for i in context['reservation']:
                 if first_data:
@@ -2329,11 +2402,12 @@ class ReportSelling(models.Model):
                     first_data = False
                 else:
                     query += 'OR {} '.format(self._where_invoice(i))
+            query += '{}'.format(self._where_currency(context))
             query += 'GROUP BY {} '.format(self._group_by_invoice())
             query += 'ORDER BY {} '.format(self._order_by_invoice())
         else:
             query += 'FROM {} '.format(self._from(provider_type))
-            query += '{}'.format(self._from_currency())
+            query += '{}'.format(self._from_reservation_currency())
             query += 'WHERE {} '.format(self._where(date_from, date_to))
             if context['agent_type_code']:
                 query += 'AND {} '.format(self._where_agent_type(context['agent_type_code']))
@@ -2343,6 +2417,7 @@ class ReportSelling(models.Model):
                 query += 'AND {} '.format(self._where_agent(agent_seq_id))
             if customer_parent_seq_id:
                 query += 'AND {} '.format(self._where_customer_parent(customer_parent_seq_id))
+            query += '{}'.format(self._where_currency(context))
             query += 'ORDER BY {} '.format(self._order_by_issued())
         _logger.info(query)
         self.env.cr.execute(query)
@@ -2440,13 +2515,15 @@ class ReportSelling(models.Model):
         if data_form.get('customer_parent_id'):
             customer_parent_id = self.env['tt.customer.parent'].search([('id','=',data_form['customer_parent_id'])]).seq_id
         provider_type = data_form['provider_type']
+        currency_id = data_form.get('currency_id', '')
         # proceed data
         context = {
             'agent_seq_id': '',
             'agent_type_code': '',
             # 'provider_code': data['provider_code'],
             'reservation': '',
-            'provider': ''
+            'provider': '',
+            'currency_id': currency_id
         }
         line = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, context)
         self._report_title(data_form)
@@ -2467,6 +2544,7 @@ class ReportSelling(models.Model):
         agent_type = data['agent_type']
         # get provider
         provider = data['provider']
+        currency_id = data.get('currency_id', '')
 
         if data['addons'] == 'book_issued':
             #for group we're gonna remove the overall prefix
@@ -2489,7 +2567,8 @@ class ReportSelling(models.Model):
             'agent_type_code': agent_type,
             # 'provider_code': data['provider_code'],
             'reservation': reservation,
-            'provider': provider
+            'provider': provider,
+            'currency_id': currency_id
         }
         line = self._get_lines_data(date_from, date_to, agent_id, ho_id, customer_parent_id, provider_type, context)
         return {

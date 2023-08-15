@@ -535,6 +535,7 @@ class TtCustomer(models.Model):
             name = (data['first_name'] or '') + ' ' + (data.get('last_name') or '')
             ho_parent_obj = self.env['tt.agent'].browse(int(context['co_ho_id']))
             vals_list = {
+                'ho_id': ho_parent_obj.id,
                 'agent_type_id': ho_parent_obj.btc_agent_type_id.id,
                 'parent_agent_id': context['co_ho_id'],
                 'name': name,
@@ -551,6 +552,7 @@ class TtCustomer(models.Model):
                 'login': data.get('email'),
                 'email': data.get('email'),
                 'password': ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(16)),
+                'ho_id': ho_parent_obj.id,
                 'agent_id': agent_id.id
             }
 

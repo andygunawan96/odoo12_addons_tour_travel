@@ -148,6 +148,8 @@ class ResUsers(models.Model):
     def write(self, vals):
         admin_obj_id = self.env.ref('base.user_admin').id
         root_obj_id = self.env.ref('base.user_root').id
+        if not self.env.user.id in [admin_obj_id, root_obj_id] and (self.id in [admin_obj_id, root_obj_id] or (self.has_group('base.group_system') and not self.env.user.has_group('base.group_system')) or (self.has_group('base.group_erp_manager') and not self.env.user.has_group('base.group_erp_manager'))):
+            raise UserError('You do not have permission to edit this record.')
         if vals.get('sel_groups_2_3'):
             if (vals['sel_groups_2_3'] == 3 and not self.env.user.id in [admin_obj_id, root_obj_id]) or (vals['sel_groups_2_3'] == 2 and not self.env.user.has_group('base.group_system')):
                 vals.pop('sel_groups_2_3')
