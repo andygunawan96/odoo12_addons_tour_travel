@@ -27,8 +27,9 @@ class TtBanUser(models.Model):
             if agent_obj:
                 ho_agent_obj = agent_obj.ho_id
         dom = [('user_id','=',user_obj.id)]
-        if ho_agent_obj:
-            dom.append(('ho_id','=',ho_agent_obj.id))
+        if not ho_agent_obj:
+            ho_agent_obj = user_obj.ho_id
+        dom.append(('ho_id','=',ho_agent_obj.id))
         current_ban_time = self.search(dom, order='id desc',limit=1)
         if current_ban_time:
             current_ban_time.write({
