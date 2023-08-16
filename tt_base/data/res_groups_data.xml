@@ -2833,6 +2833,7 @@
                                 ref('tt_base.able_to_ticketing_insurance'),
                                 ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
+                                ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.able_to_request_corporate'),
                                 ref('tt_base.report')])]"
             />
@@ -2946,6 +2947,7 @@
                                 ref('tt_base.able_to_ticketing_insurance'),
                                 ref('tt_base.able_to_ticketing_groupbooking'),
                                 ref('tt_base.able_to_see_commission'),
+                                ref('tt_base.is_agent_setting_printout'),
                                 ref('tt_base.able_to_request_corporate'),
                                 ref('tt_base.report')])]"
             />
