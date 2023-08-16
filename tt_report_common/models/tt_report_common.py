@@ -100,21 +100,21 @@ class TtReportCommonSetting(models.Model):
                             })
                             printout_check = 0
                             break
-                    if printout_check: ## default HO
+                    if printout_check: ## default HO AGENT
                         for printout_ho in data_ho_report_common_ho_obj:
                             if rec['code'] == printout_ho['code']:
                                 res.append({
                                     'code': rec.code,
                                     'name': rec.name,
-                                    'html': printout_ho.html or ''
+                                    'html': printout_ho.html
                                 })
                                 printout_check = 0
                                 break
-                    if printout_check: ## default kosong
+                    if printout_check: ## default HO XML
                         res.append({
                             'code': rec.code,
                             'name': rec.name,
-                            'html': ''
+                            'html': rec.html
                         })
         return res
 
