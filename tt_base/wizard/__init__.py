@@ -7,3 +7,4 @@ from . import create_customer_parent_wizard
 from . import notification_pop_up_wizard
 from . import create_ho_transport_carrier_search_config_wizard
 from . import create_provider_ho_data_wizard
+from . import move_agent_ho_wizard
