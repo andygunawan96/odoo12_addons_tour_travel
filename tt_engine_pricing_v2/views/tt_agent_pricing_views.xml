@@ -180,7 +180,7 @@
 If not set (empty), it will be applied for all currencies.</pre>
                     </div>
                     <notebook>
-                        <page string="Route" name="route">
+                        <page string="Requirements" name="requirements">
                             <notebook>
                                 <page string="Origin" name="origin">
                                     <group string="Origin Route">
@@ -298,6 +298,32 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                         </group>
                                     </group>
                                 </page>
+                                <page string="Total Amount" name="total_amount">
+                                    <group string="Total Amount">
+                                        <group>
+                                            <field name="total_access_type" widget="radio"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'less')]}">
+                                            <field name="total_less_amount" string="&lt;" attrs="{'invisible': [('total_is_less_equal', '=', True)]}"/>
+                                            <field name="total_less_amount" string="&lt;=" attrs="{'invisible': [('total_is_less_equal', '=', False)]}"/>
+                                            <field name="total_is_less_equal" widget="boolean_toggle"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'between')]}">
+                                            <field name="total_greater_amount" string="&gt;" attrs="{'invisible': [('total_is_greater_equal', '=', True)]}"/>
+                                            <field name="total_greater_amount" string="&gt;=" attrs="{'invisible': [('total_is_greater_equal', '=', False)]}"/>
+                                            <field name="total_is_greater_equal" widget="boolean_toggle"/>
+                                            <br/>
+                                            <field name="total_less_amount" string="&lt;" attrs="{'invisible': [('total_is_less_equal', '=', True)]}"/>
+                                            <field name="total_less_amount" string="&lt;=" attrs="{'invisible': [('total_is_less_equal', '=', False)]}"/>
+                                            <field name="total_is_less_equal" widget="boolean_toggle"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'greater')]}">
+                                            <field name="total_greater_amount" string="&gt;" attrs="{'invisible': [('total_is_greater_equal', '=', True)]}"/>
+                                            <field name="total_greater_amount" string="&gt;=" attrs="{'invisible': [('total_is_greater_equal', '=', False)]}"/>
+                                            <field name="total_is_greater_equal" widget="boolean_toggle"/>
+                                        </group>
+                                    </group>
+                                </page>
                             </notebook>
                         </page>
                         <!--
@@ -409,6 +435,17 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                                         </group>
                                     </group>
                                 </page>
+                                <page string="Commission Tax" name="reservation_commission">
+                                    <group>
+                                        <group string="Commission Tax">
+                                            <field name="rsv_com_tax_percentage"/>
+                                            <field name="rsv_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="rsv_com_rounding_places"/>
+                                        </group>
+                                    </group>
+                                </page>
                             </notebook>
                         </page>
                         <page string="Ticketing" name="ticketing">
@@ -489,6 +526,17 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                                         </group>
                                     </group>
                                 </page>
+                                <page string="Commission Tax" name="ticketing_commission">
+                                    <group>
+                                        <group string="Commission Tax">
+                                            <field name="tkt_com_tax_percentage"/>
+                                            <field name="tkt_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="tkt_com_rounding_places"/>
+                                        </group>
+                                    </group>
+                                </page>
                             </notebook>
                         </page>
                         <page string="Ancillary" name="ancillary">
@@ -552,6 +600,17 @@ Uplines sequence order from parent to HO (Up to Down)</pre>
                                         </group>
                                         <group string="By Amount">
                                             <field name="anc_nta_agent_upsell_amount"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="Commission" name="ancillary_commission">
+                                    <group>
+                                        <group string="Commission Tax">
+                                            <field name="anc_com_tax_percentage"/>
+                                            <field name="anc_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="anc_com_rounding_places"/>
                                         </group>
                                     </group>
                                 </page>

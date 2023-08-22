@@ -23,6 +23,13 @@ ACCESS_TYPE_2 = [
     ('if_blank', 'If no value'),
 ]
 
+ACCESS_TYPE_3 = [
+    ('all', 'ALL'),
+    ('less', 'Less'),
+    ('greater', 'Greater'),
+    ('between', 'In between'),
+]
+
 STATE = [
     ('enable', 'Enable'),
     ('disable', 'Disable'),
@@ -410,6 +417,15 @@ class ProviderPricingLine(models.Model):
     anc_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
     # END
 
+    # August 15, 2023 - SAM
+    total_name = fields.Char('Amount Name')
+    total_access_type = fields.Selection(ACCESS_TYPE_3, 'Amount Access Type', default='all', required=True)
+    total_is_less_equal = fields.Boolean('Is Less Equal to', default=False)
+    total_less_amount = fields.Float('Less than amount', default=0.0)
+    total_is_greater_equal = fields.Boolean('Is Greater Equal to', default=False)
+    total_greater_amount = fields.Float('Greater than amount', default=0.0)
+    # END
+
     def get_data(self):
         res = {
             'id': self.id,
@@ -449,6 +465,13 @@ class ProviderPricingLine(models.Model):
                     'access_type': self.dot_access_type,
                     'start_date': self.dot_start_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_start_date else '',
                     'end_date': self.dot_end_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_end_date else '',
+                },
+                'total': {
+                    'access_type': self.total_access_type,
+                    'is_less_equal': self.total_is_less_equal,
+                    'less_amount': self.total_less_amount,
+                    'is_greater_equal': self.total_is_greater_equal,
+                    'greater_amount': self.total_greater_amount,
                 }
             },
             'less': {

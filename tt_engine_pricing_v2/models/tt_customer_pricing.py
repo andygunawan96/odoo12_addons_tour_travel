@@ -21,6 +21,13 @@ ACCESS_TYPE_2 = [
     ('if_blank', 'If no value'),
 ]
 
+ACCESS_TYPE_3 = [
+    ('all', 'ALL'),
+    ('less', 'Less'),
+    ('greater', 'Greater'),
+    ('between', 'In between'),
+]
+
 STATE = [
     ('enable', 'Enable'),
     ('disable', 'Disable'),
@@ -297,6 +304,25 @@ class CustomerPricingLine(models.Model):
     state = fields.Selection(STATE, 'State', default='enable')
     active = fields.Boolean('Active', default=True)
 
+    # August 15, 2023 - SAM
+    rsv_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    rsv_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    rsv_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    tkt_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    tkt_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    tkt_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+    anc_com_tax_amount = fields.Float('Commission Tax Amount', default=0)
+    anc_com_tax_percentage = fields.Float('Commission Tax Percentage (%)', default=0)
+    anc_com_rounding_places = fields.Integer('Commission Rounding Places', default=0)
+
+    total_name = fields.Char('Amount Name')
+    total_access_type = fields.Selection(ACCESS_TYPE_3, 'Amount Access Type', default='all', required=True)
+    total_is_less_equal = fields.Boolean('Is Less Equal to', default=False)
+    total_less_amount = fields.Float('Less than amount', default=0.0)
+    total_is_greater_equal = fields.Boolean('Is Greater Equal to', default=False)
+    total_greater_amount = fields.Float('Greater than amount', default=0.0)
+    # END
+
     def get_data(self):
         res = {
             'id': self.id,
@@ -335,6 +361,13 @@ class CustomerPricingLine(models.Model):
                     'access_type': self.dot_access_type,
                     'start_date': self.dot_start_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_start_date else '',
                     'end_date': self.dot_end_date.strftime('%Y-%m-%d %H:%M:%S') if self.dot_end_date else '',
+                },
+                'total': {
+                    'access_type': self.total_access_type,
+                    'is_less_equal': self.total_is_less_equal,
+                    'less_amount': self.total_less_amount,
+                    'is_greater_equal': self.total_is_greater_equal,
+                    'greater_amount': self.total_greater_amount,
                 }
             },
             'ticketing': {
@@ -354,6 +387,11 @@ class CustomerPricingLine(models.Model):
                         # 'is_pax': self.tkt_sales_upsell_pax,
                         'is_infant': self.tkt_sales_upsell_amount_infant
                     }
+                },
+                'commission': {
+                    'tax_amount': self.tkt_com_tax_amount,
+                    'tax_percentage': self.tkt_com_tax_percentage,
+                    'rounding': self.tkt_com_rounding_places,
                 }
             },
             'ancillary': {
@@ -368,6 +406,11 @@ class CustomerPricingLine(models.Model):
                     'upsell_by_amount': {
                         'amount': self.anc_sales_upsell_amount,
                     }
+                },
+                'commission': {
+                    'tax_amount': self.anc_com_tax_amount,
+                    'tax_percentage': self.anc_com_tax_percentage,
+                    'rounding': self.anc_com_rounding_places,
                 }
             },
             'reservation': {
@@ -384,6 +427,11 @@ class CustomerPricingLine(models.Model):
                         'maximum': self.rsv_sales_upsell_maximum,
                         'has_maximum': self.rsv_sales_upsell_has_maximum,
                     },
+                },
+                'commission': {
+                    'tax_amount': self.rsv_com_tax_amount,
+                    'tax_percentage': self.rsv_com_tax_percentage,
+                    'rounding': self.rsv_com_rounding_places,
                 }
             },
             'state': self.state,
