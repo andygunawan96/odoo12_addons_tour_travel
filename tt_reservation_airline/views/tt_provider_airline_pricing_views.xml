@@ -47,11 +47,12 @@
                         <group>
                             <field name="rule_class_of_service_list"/>
                             <field name="rule_tour_code_list"/>
+                            <field name="rule_charge_code_list"/>
                         </group>
                         <group>
-                            <field name="rule_charge_code_list"/>
                             <field name="rule_departure_date_list"/>
                             <field name="rule_currency_code_list"/>
+                            <field name="rule_total_amount"/>
                         </group>
                     </group>
                     <notebook>
@@ -115,6 +116,17 @@
                                     <field name="provider_dot_access_type"/>
                                     <field name="provider_dot_start_date"/>
                                     <field name="provider_dot_end_date"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="provider_total_type"/>
+                                </group>
+                                <group>
+                                    <field name="provider_total_less_amount"/>
+                                    <field name="provider_total_is_less_equal"/>
+                                    <field name="provider_total_greater_amount"/>
+                                    <field name="provider_total_is_greater_equal"/>
                                 </group>
                             </group>
                             <group string="Less">
@@ -378,6 +390,17 @@
                                     <field name="agent_dot_end_date"/>
                                 </group>
                             </group>
+                            <group>
+                                <group>
+                                    <field name="agent_total_type"/>
+                                </group>
+                                <group>
+                                    <field name="agent_total_less_amount"/>
+                                    <field name="agent_total_is_less_equal"/>
+                                    <field name="agent_total_greater_amount"/>
+                                    <field name="agent_total_is_greater_equal"/>
+                                </group>
+                            </group>
                             <hr/>
                             <h3>Reservation</h3>
                             <group string="Reservation Sales" col="3" colspan="3">
@@ -408,6 +431,17 @@
                                     <field name="agent_rsv_nta_agent_upsell_amount"/>
                                     <field name="agent_rsv_nta_agent_upsell_route"/>
                                     <field name="agent_rsv_nta_agent_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Reservation Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="agent_rsv_com_tax_amount"/>
+                                    <field name="agent_rsv_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="agent_rsv_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
@@ -484,6 +518,17 @@
                                 <group>
                                 </group>
                             </group>
+                            <group string="Ticketing Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="agent_tkt_com_tax_amount"/>
+                                    <field name="agent_tkt_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="agent_tkt_com_rounding"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
                         </page>
                         <page string="Customer" name="pricing_customer">
                             <group string="Pricing">
@@ -556,7 +601,19 @@
                                     <field name="customer_dot_start_date"/>
                                     <field name="customer_dot_end_date"/>
                                 </group>
-                            </group>customer                     <h3>Reservation</h3>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="customer_total_type"/>
+                                </group>
+                                <group>
+                                    <field name="customer_total_less_amount"/>
+                                    <field name="customer_total_is_less_equal"/>
+                                    <field name="customer_total_greater_amount"/>
+                                    <field name="customer_total_is_greater_equal"/>
+                                </group>
+                            </group>
+                            <h3>Reservation</h3>
                             <group string="Reservation Sales" col="3" colspan="3">
                                 <group>
                                     <field name="customer_rsv_sales_upsell_percentage"/>
@@ -569,6 +626,17 @@
                                     <field name="customer_rsv_sales_upsell_amount"/>
                                     <field name="customer_rsv_sales_upsell_route"/>
                                     <field name="customer_rsv_sales_upsell_segment"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Reservation Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="customer_rsv_com_tax_amount"/>
+                                    <field name="customer_rsv_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="customer_rsv_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
@@ -589,6 +657,17 @@
                                     <field name="customer_tkt_sales_upsell_route"/>
                                     <field name="customer_tkt_sales_upsell_segment"/>
                                     <field name="customer_tkt_sales_upsell_amount_infant"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group string="Ticketing Commission" col="3" colspan="3">
+                                <group string="Commission Tax">
+                                    <field name="customer_tkt_com_tax_amount"/>
+                                    <field name="customer_tkt_com_tax_percentage"/>
+                                </group>
+                                <group string="Commission Rounding">
+                                    <field name="customer_tkt_com_rounding"/>
                                 </group>
                                 <group>
                                 </group>
@@ -664,6 +743,17 @@
                                     <field name="agent_commission_dot_access_type"/>
                                     <field name="agent_commission_dot_start_date"/>
                                     <field name="agent_commission_dot_end_date"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
+                                    <field name="agent_commission_total_type"/>
+                                </group>
+                                <group>
+                                    <field name="agent_commission_total_less_amount"/>
+                                    <field name="agent_commission_total_is_less_equal"/>
+                                    <field name="agent_commission_total_greater_amount"/>
+                                    <field name="agent_commission_total_is_greater_equal"/>
                                 </group>
                             </group>
                             <h3>Commission</h3>

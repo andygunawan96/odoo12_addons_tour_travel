@@ -48,6 +48,7 @@
                             <field name="description_text"/>
                         </group>
                         <group>
+                            <field name="status"/>
                             <field name="class_of_service"/>
                             <field name="fare_basis_code"/>
                             <field name="tour_code"/>
@@ -100,6 +101,7 @@
                 <field name="departure_date"/>
                 <field name="arrival_date"/>
                 <field name="operating_airline_code"/>
+                <field name="status"/>
             </tree>
         </field>
     </record>

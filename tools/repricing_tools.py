@@ -1211,6 +1211,14 @@ class ProviderPricing(object):
                 is_charge_code = False
                 is_tour_code = False
                 is_dot = False
+                is_currency = False
+                is_total_amount = False
+                if not rule.get('currency_code'):
+                    is_currency = True
+                elif rule['currency_code'] and rule['currency_code'] in currency_code_list:
+                    is_currency = True
+                if not is_currency:
+                    continue
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -1340,7 +1348,52 @@ class ProviderPricing(object):
                 elif dot_data['access_type'] == 'restrict' and not all(dot_data['start_date'] <= departure_date <= dot_data['end_date'] for departure_date in departure_date_list):
                     is_dot = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
+                total_data = util.get_tree_data(rule, ['route', 'total'])
+                if not total_data or total_data['access_type'] == 'all':
+                    is_total_amount = True
+                elif total_data['access_type'] == 'less':
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount < less_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'greater':
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount > greater_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'between':
+                    less_flag = greater_flag = False
+
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            less_flag = True
+                    else:
+                        if total_amount < less_amount:
+                            less_flag = True
+
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            greater_flag = True
+                    else:
+                        if total_amount > greater_amount:
+                            greater_flag = True
+
+                    if less_flag and greater_flag:
+                        is_total_amount = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot, is_total_amount]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -1358,7 +1411,7 @@ class ProviderPricing(object):
                 return rule
         return {}
 
-    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         is_infant = True if pax_type == 'INF' else False
         total_amount = fare_amount + tax_amount
         final_fare_amount = fare_amount
@@ -1402,11 +1455,15 @@ class ProviderPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
+                flag = False
                 if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
+                    flag = True
                 if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
-
+                    flag = True
+                if not flag and not upsell_by_amount_charge:
+                    multiply_amount = 0
                 add_amount = upsell_data['amount'] * multiply_amount
                 final_total_amount += add_amount
 
@@ -1417,22 +1474,40 @@ class ProviderPricing(object):
         }
         return payload
 
-    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         sales_data = rule_obj['ticketing']['sales']
-        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
         sales_total_amount = fare_amount + tax_amount + total_upsell_amount
 
         nta_data = rule_obj['ticketing']['nta']
-        nta_res = self.calculate_price(nta_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        nta_res = self.calculate_price(nta_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
         nta_total_amount = fare_amount + tax_amount + nta_res['upsell_amount']
 
         nta_agent_data = rule_obj['ticketing']['nta_agent']
-        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
         nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
 
         # total_commission_amount = sales_total_amount - nta_total_amount
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        # July 25, 2023 - SAM
+        if total_commission_amount > 0 and rule_obj['ticketing'].get('commission', {}):
+            com_data = rule_obj['ticketing']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            if com_tax_percentage != 0:
+                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+                total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                temp = total_commission_amount / digit
+                total_commission_amount = ceil(temp) * digit
+        # END
         ho_commission_amount = nta_agent_total_amount - nta_total_amount
         payload = {
             'rule_id': rule_obj['id'],
@@ -1481,22 +1556,40 @@ class ProviderPricing(object):
         }
         return payload
 
-    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, **kwargs):
+    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         sales_data = rule_obj['reservation']['sales']
-        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
         sales_total_amount = total_upsell_amount
 
         nta_data = rule_obj['reservation']['nta']
-        nta_res = self.calculate_price(nta_data, total_amount, 0.0, '', route_count, segment_count)
+        nta_res = self.calculate_price(nta_data, total_amount, 0.0, '', route_count, segment_count, upsell_by_amount_charge)
         nta_total_amount = nta_res['upsell_amount']
 
         nta_agent_data = rule_obj['reservation']['nta_agent']
-        nta_agent_res = self.calculate_price(nta_agent_data, total_amount, 0.0, '', route_count, segment_count)
+        nta_agent_res = self.calculate_price(nta_agent_data, total_amount, 0.0, '', route_count, segment_count, upsell_by_amount_charge)
         nta_agent_total_amount = nta_agent_res['upsell_amount']
 
         # total_commission_amount = sales_total_amount - nta_total_amount
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        # July 25, 2023 - SAM
+        if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
+            com_data = rule_obj['reservation']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            if com_tax_percentage != 0:
+                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+                total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                temp = total_commission_amount / digit
+                total_commission_amount = ceil(temp) * digit
+        # END
         ho_commission_amount = nta_agent_total_amount - nta_total_amount
         payload = {
             'rule_id': rule_obj['id'],
@@ -1640,6 +1733,14 @@ class AgentPricing(object):
                 is_charge_code = False
                 is_tour_code = False
                 is_dot = False
+                is_currency = False
+                is_total_amount = False
+                if not rule.get('currency_code'):
+                    is_currency = True
+                elif rule['currency_code'] and rule['currency_code'] in currency_code_list:
+                    is_currency = True
+                if not is_currency:
+                    continue
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -1775,7 +1876,52 @@ class AgentPricing(object):
                         departure_date_list):
                     is_dot = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
+                total_data = util.get_tree_data(rule, ['route', 'total'])
+                if not total_data or total_data['access_type'] == 'all':
+                    is_total_amount = True
+                elif total_data['access_type'] == 'less':
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount < less_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'greater':
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount > greater_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'between':
+                    less_flag = greater_flag = False
+
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            less_flag = True
+                    else:
+                        if total_amount < less_amount:
+                            less_flag = True
+
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            greater_flag = True
+                    else:
+                        if total_amount > greater_amount:
+                            greater_flag = True
+
+                    if less_flag and greater_flag:
+                        is_total_amount = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot, is_total_amount]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -1793,7 +1939,7 @@ class AgentPricing(object):
                 return rule
         return {}
 
-    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         is_infant = True if pax_type == 'INF' else False
         total_amount = fare_amount + tax_amount
         final_fare_amount = fare_amount
@@ -1838,10 +1984,15 @@ class AgentPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
+                flag = False
                 if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
+                    flag = True
                 if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
+                    flag = True
+                if not flag and not upsell_by_amount_charge:
+                    multiply_amount = 0
 
                 add_amount = upsell_data['amount'] * multiply_amount
                 final_total_amount += add_amount
@@ -1977,19 +2128,38 @@ class AgentPricing(object):
         }
         return payload
 
-    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         sales_data = rule_obj['ticketing']['sales']
-        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
         sales_total_amount = fare_amount + tax_amount + total_upsell_amount
 
         nta_total_amount = fare_amount + tax_amount
 
         nta_agent_data = rule_obj['ticketing'].get('nta_agent', {})
-        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        nta_agent_res = self.calculate_price(nta_agent_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
         nta_agent_total_amount = fare_amount + tax_amount + nta_agent_res['upsell_amount']
 
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        # August 16, 2023 - SAM
+        if total_commission_amount > 0 and rule_obj['ticketing'].get('commission', {}):
+            com_data = rule_obj['ticketing']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            if com_tax_percentage != 0:
+                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+                total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                temp = total_commission_amount / digit
+                total_commission_amount = ceil(temp) * digit
+            # nta_agent_total_amount = sales_total_amount - total_commission_amount
+        # END
         ho_commission_amount = nta_agent_total_amount - nta_total_amount
         payload = {
             'rule_id': rule_obj['id'],
@@ -2036,19 +2206,38 @@ class AgentPricing(object):
         }
         return payload
 
-    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, **kwargs):
+    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         sales_data = rule_obj['reservation']['sales']
-        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
         sales_total_amount = total_amount + total_upsell_amount
 
         nta_total_amount = total_amount
 
         nta_agent_data = rule_obj['reservation'].get('nta_agent', {})
-        nta_agent_res = self.calculate_price(nta_agent_data, total_amount, 0.0, '', route_count, segment_count)
+        nta_agent_res = self.calculate_price(nta_agent_data, total_amount, 0.0, '', route_count, segment_count, upsell_by_amount_charge)
         nta_agent_total_amount = total_amount + nta_agent_res['upsell_amount']
 
         total_commission_amount = sales_total_amount - nta_agent_total_amount
+        # August 16, 2023 - SAM
+        if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
+            com_data = rule_obj['reservation']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            if com_tax_percentage != 0:
+                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+                total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                temp = total_commission_amount / digit
+                total_commission_amount = ceil(temp) * digit
+            # nta_agent_total_amount = sales_total_amount - total_commission_amount
+        # END
         ho_commission_amount = nta_agent_total_amount - nta_total_amount
 
         payload = {
@@ -2262,6 +2451,14 @@ class CustomerPricing(object):
                 is_charge_code = False
                 is_tour_code = False
                 is_dot = False
+                is_currency = False
+                is_total_amount = False
+                if not rule.get('currency_code'):
+                    is_currency = True
+                elif rule['currency_code'] and rule['currency_code'] in currency_code_list:
+                    is_currency = True
+                if not is_currency:
+                    continue
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -2395,7 +2592,52 @@ class CustomerPricing(object):
                         departure_date_list):
                     is_dot = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
+                total_data = util.get_tree_data(rule, ['route', 'total'])
+                if not total_data or total_data['access_type'] == 'all':
+                    is_total_amount = True
+                elif total_data['access_type'] == 'less':
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount < less_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'greater':
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount > greater_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'between':
+                    less_flag = greater_flag = False
+
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            less_flag = True
+                    else:
+                        if total_amount < less_amount:
+                            less_flag = True
+
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            greater_flag = True
+                    else:
+                        if total_amount > greater_amount:
+                            greater_flag = True
+
+                    if less_flag and greater_flag:
+                        is_total_amount = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot, is_total_amount]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -2413,7 +2655,7 @@ class CustomerPricing(object):
                 return rule
         return {}
 
-    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+    def calculate_price(self, price_data, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         is_infant = True if pax_type == 'INF' else False
         total_amount = fare_amount + tax_amount
         final_total_amount = total_amount
@@ -2433,10 +2675,15 @@ class CustomerPricing(object):
             upsell_data = price_data['upsell_by_amount']
             if not is_infant or (is_infant and upsell_data.get('is_infant', False)):
                 multiply_amount = 1
+                flag = False
                 if 'is_route' in upsell_data and upsell_data['is_route']:
                     multiply_amount *= route_count
+                    flag = True
                 if 'is_segment' in upsell_data and upsell_data['is_segment']:
                     multiply_amount *= segment_count
+                    flag = True
+                if not flag and not upsell_by_amount_charge:
+                    multiply_amount = 0
 
                 add_amount = upsell_data['amount'] * multiply_amount
                 final_total_amount += add_amount
@@ -2448,15 +2695,35 @@ class CustomerPricing(object):
         }
         return payload
 
-    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, **kwargs):
+    def get_ticketing_calculation(self, rule_obj, fare_amount, tax_amount, pax_type='', route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         sales_data = rule_obj['ticketing']['sales']
-        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, fare_amount, tax_amount, pax_type, route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
         sales_total_amount = fare_amount + tax_amount + total_upsell_amount
 
         nta_total_amount = fare_amount + tax_amount
 
         total_commission_amount = sales_total_amount - nta_total_amount
+        # August 16, 2023 - SAM
+        if total_commission_amount > 0 and rule_obj['ticketing'].get('commission', {}):
+            com_data = rule_obj['ticketing']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            if com_tax_percentage != 0:
+                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+                total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                temp = total_commission_amount / digit
+                total_commission_amount = ceil(temp) * digit
+            # nta_total_amount = sales_total_amount - total_commission_amount
+        # END
+
         payload = {
             'rule_id': rule_obj['id'],
             'section': 'ticketing',
@@ -2493,10 +2760,30 @@ class CustomerPricing(object):
         }
         return payload
 
-    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, **kwargs):
+    def get_reservation_calculation(self, rule_obj, total_amount, route_count=0, segment_count=0, upsell_by_amount_charge=True, **kwargs):
         sales_data = rule_obj['reservation']['sales']
-        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count)
+        sales_res = self.calculate_price(sales_data, total_amount, 0.0, '', route_count, segment_count, upsell_by_amount_charge)
         total_upsell_amount = sales_res['upsell_amount']
+
+        # August 16, 2023 - SAM
+        total_commission_amount = total_upsell_amount
+        if total_commission_amount > 0 and rule_obj['reservation'].get('commission', {}):
+            com_data = rule_obj['ticketing']['commission']
+            com_tax_percentage = com_data.get('tax_percentage', 0)
+            com_tax_amount = com_data.get('tax_amount', 0)
+            com_rounding = com_data.get('rounding', 0)
+            if com_tax_percentage != 0:
+                com_tax_charge = (total_commission_amount * com_tax_percentage) / 100
+                total_commission_amount = total_commission_amount + com_tax_charge
+            if com_tax_amount != 0:
+                total_commission_amount = total_commission_amount + com_tax_amount
+            if com_rounding > 0:
+                digit = 1
+                for i in range(com_rounding):
+                    digit *= 10
+                temp = total_commission_amount / digit
+                total_commission_amount = ceil(temp) * digit
+        # END
 
         payload = {
             'rule_id': rule_obj['id'],
@@ -2504,7 +2791,7 @@ class CustomerPricing(object):
             'route_count': route_count,
             'segment_count': segment_count,
             'upsell_amount': total_upsell_amount,
-            'commission_amount': total_upsell_amount
+            'commission_amount': total_commission_amount
         }
         return payload
 
@@ -2548,7 +2835,6 @@ class AgentCommission(object):
                 agent_commission_data = self.data[str(kwargs['context']['co_ho_id'])]['agent_commission_list']
             else:
                 agent_commission_data = []
-
         for rec_idx, rec in enumerate(agent_commission_data):
             if rec['state'] == 'disable':
                 continue
@@ -2626,6 +2912,14 @@ class AgentCommission(object):
                 is_charge_code = False
                 is_tour_code = False
                 is_dot = False
+                is_currency = False
+                is_total_amount = False
+                if not rule.get('currency_code'):
+                    is_currency = True
+                elif rule['currency_code'] and rule['currency_code'] in currency_code_list:
+                    is_currency = True
+                if not is_currency:
+                    continue
 
                 route_data_origin = rule['route']['origin']
                 if route_data_origin['access_type'] == 'all':
@@ -2761,7 +3055,52 @@ class AgentCommission(object):
                         departure_date_list):
                     is_dot = True
 
-                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot]
+                total_data = util.get_tree_data(rule, ['route', 'total'])
+                if not total_data or total_data['access_type'] == 'all':
+                    is_total_amount = True
+                elif total_data['access_type'] == 'less':
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount < less_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'greater':
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            is_total_amount = True
+                    else:
+                        if total_amount > greater_amount:
+                            is_total_amount = True
+                elif total_data['access_type'] == 'between':
+                    less_flag = greater_flag = False
+
+                    is_less_equal = total_data['is_less_equal']
+                    less_amount = total_data['less_amount']
+                    if is_less_equal:
+                        if total_amount <= less_amount:
+                            less_flag = True
+                    else:
+                        if total_amount < less_amount:
+                            less_flag = True
+
+                    is_greater_equal = total_data['is_greater_equal']
+                    greater_amount = total_data['greater_amount']
+                    if is_greater_equal:
+                        if total_amount >= greater_amount:
+                            greater_flag = True
+                    else:
+                        if total_amount > greater_amount:
+                            greater_flag = True
+
+                    if less_flag and greater_flag:
+                        is_total_amount = True
+
+                result_2_list = [is_origin, is_destination, is_class_of_service, is_charge_code, is_tour_code, is_dot, is_total_amount]
                 if not all(res for res in result_2_list):
                     continue
 
@@ -3068,8 +3407,14 @@ class RepricingToolsV2(object):
         return res
 
     def round(self, data, agent_data={}):
+        # June 27, 2023 - SAM
+        # Karena mostly data decimal 2 terbanyak, sementara hardcode untuk default 2 decimal di belakang koma
+        data_with_two_dec = float(data) * 100
+        data_round = round(data_with_two_dec)
+        data = data_round / 100
         if not agent_data:
-            res = round(data)
+            # res = round(data)
+            res = data
             return res
 
         if agent_data['rounding_amount_type'] == 'round':
@@ -3103,6 +3448,7 @@ class RepricingToolsV2(object):
         class_of_service_list = []
         charge_code_list = []
         tour_code_list = []
+        currency_code_list = []
         pax_count_dict = {
             'ADT': 0
         }
@@ -3121,6 +3467,9 @@ class RepricingToolsV2(object):
                 charge_code = sc['charge_code']
                 if charge_code not in charge_code_list:
                     charge_code_list.append(charge_code)
+                currency_code = sc['currency']
+                if currency_code not in currency_code_list:
+                    currency_code_list.append(currency_code)
 
                 pax_type = sc['pax_type']
                 pax_count = sc['pax_count']
@@ -3143,9 +3492,11 @@ class RepricingToolsV2(object):
             'charge_code_list': charge_code_list,
             'pricing_datetime': datetime.now().strftime(FORMAT_DATETIME),
             'departure_date_list': departure_date_list,
+            'currency_code_list': currency_code_list,
             'context': context,
         }
         rule_obj = self.provider_pricing.get_pricing_data(**rule_param)
+
         pricing_less_list = []
         for pax_type, pax_count in pax_count_dict.items():
             if not pax_count:
@@ -3161,7 +3512,7 @@ class RepricingToolsV2(object):
         }
         return payload
 
-    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], tour_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, departure_date_list=[], context={}, **kwargs):
+    def calculate_pricing(self, provider='', carrier_code='', origin='', origin_city='', origin_country='', destination='', destination_city='', destination_country='', class_of_service_list=[], charge_code_list=[], tour_code_list=[], route_count=0, segment_count=0, show_commission=True, show_upline_commission=True, pricing_datetime=None, departure_date_list=[], upsell_by_amount_charge=True, context={}, **kwargs):
         '''
             pricing_datetime = %Y-%m-%d %H:%M:%S
         '''
@@ -3195,6 +3546,11 @@ class RepricingToolsV2(object):
         temp_cos_list = []
         temp_tc_list = []
         temp_sc_list = []
+        class_of_service_list = []
+        charge_code_list = []
+        currency_code_list = []
+        tour_code_list = []
+        total_amount = Decimal("0.0")
         for fare in self.ticket_fare_list:
             cos = fare.get('class_of_service', '')
             if cos and cos not in class_of_service_list:
@@ -3206,6 +3562,17 @@ class RepricingToolsV2(object):
                 c_code = sc.get('charge_code', '')
                 if c_code and c_code not in charge_code_list:
                     charge_code_list.append(c_code)
+                cur_code = sc.get('currency', '')
+                if cur_code and cur_code not in currency_code_list:
+                    currency_code_list.append(cur_code)
+
+                charge_type = sc.get('charge_type', '')
+                pax_count = sc.get('pax_count', 0)
+                amount = sc.get('amount', 0.0)
+                if pax_count and amount and charge_type not in ['ROC', 'RAC']:
+                    total = Decimal(str(pax_count)) * Decimal(str(amount))
+                    total_amount += total
+        total_amount = float(total_amount)
 
         # if not class_of_service_list:
         #     class_of_service_list = temp_cos_list
@@ -3229,11 +3596,13 @@ class RepricingToolsV2(object):
             'tour_code_list': tour_code_list,
             'pricing_datetime': pricing_datetime,
             'departure_date_list': departure_date_list,
-            'context': context
+            'currency_code_list': currency_code_list,
+            'upsell_by_amount_charge': upsell_by_amount_charge,
+            'context': context,
+            'total_amount': total_amount
         }
         co_ho_id = context['co_ho_id'] if context and context.get('co_ho_id') else ''
-        rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city,destination_country, pricing_datetime, self.provider_type, str(self.agent_type),str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id), '-',str(co_ho_id)] + class_of_service_list + charge_code_list + tour_code_list
-        rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_type), str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id)] + class_of_service_list + charge_code_list + tour_code_list
+        rule_key_list = [provider, carrier_code, origin, origin_city, origin_country, destination, destination_city, destination_country, pricing_datetime, self.provider_type, str(self.agent_type), str(self.agent_id), str(self.customer_parent_type), str(self.customer_parent_id), '-', str(co_ho_id), '-', str(total_amount)] + class_of_service_list + charge_code_list + tour_code_list + currency_code_list
         rule_key = ''.join(rule_key_list)
         if rule_key in self.provider_data_dict:
             rule_obj = self.provider_data_dict[rule_key]
@@ -3278,6 +3647,8 @@ class RepricingToolsV2(object):
         total_reservation_amount = 0.0
         sc_temp = None
         pax_type_list = []
+
+        has_roc_rac = False
         for fare in self.ticket_fare_list:
             # if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
             #     class_of_service_list.append(fare['class_of_service'])
@@ -3317,9 +3688,11 @@ class RepricingToolsV2(object):
                 if sc['charge_type'] == 'FARE':
                     sc_data['total_fare_amount'] += sc_total
                     total_reservation_amount += sc_total
-                # elif sc['charge_type'] == 'ROC':
-                #     sc_data['total_upsell_amount'] += sc_total
+                elif sc['charge_type'] == 'ROC':
+                    has_roc_rac = True
+                    # sc_data['total_upsell_amount'] += sc_total
                 elif sc['charge_type'] == 'RAC':
+                    has_roc_rac = True
                     if pricing_type == 'from_nta':
                         rac_nta_list.append(sc)
                     elif pricing_type == 'from_sales':
@@ -3428,6 +3801,7 @@ class RepricingToolsV2(object):
                     'pax_type': pax_type,
                     'route_count': route_count,
                     'segment_count': segment_count,
+                    'upsell_by_amount_charge': upsell_by_amount_charge,
                 }
                 if pricing_idx == 0:
                     if rule_obj:

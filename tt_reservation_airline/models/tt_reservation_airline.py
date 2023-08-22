@@ -1071,6 +1071,7 @@ class ReservationAirline(models.Model):
                                 'carrier_number': segment_data['carrier_number'],
                                 'arrival_date': segment_data['arrival_date'],
                                 'departure_date': segment_data['departure_date'],
+                                'status': segment_data.get('status', ''),
                                 'class_of_service': segment_data['fares'][0]['class_of_service'],
                                 'cabin_class': segment_data['fares'][0].get('cabin_class', ''),
                                 'fare_basis_code': segment_data['fares'][0].get('fare_basis_code', ''),
@@ -1092,109 +1093,370 @@ class ReservationAirline(models.Model):
             if self.direction != 'OW':
                 self.arrival_date = arrival_date
         else:
-            departure_date = ''
-            arrival_date = ''
-            prov_segment_dict = {}
-            for journey in provider['journeys']:
-                for seg in journey['segments']:
-                    key = '{origin}{destination}'.format(**seg)
-                    prov_segment_dict[key] = seg
+            # August 21, 2023 - SAM
+            # NEW FLOW
+            # Sementara untuk flow perubahan jadwal akan mengganti struktur journeys nya apabila ada perbedaan
+            # Antisipasi untuk struktur journey dari SIA yang dapat berubah
+            # Kemungkinan karena pengaruh fare class nya juga yang dapat berubah dari sisi SQ
+            # Kalau tidak diubah, akan pengaruh ke reschedule nya
+            # Contoh :
+            # Data Awal
+            # Journey 1 : SUB - SIN - MEL
+            # Menjadi
+            # Journey 1 : SUB - SIN
+            # Joruney 2 : SIN - MEL
+            rsv_prov_obj = None
+            pnr = provider.get('pnr', '')
+            for rec in self.provider_booking_ids:
+                if rec.pnr == pnr:
+                    rsv_prov_obj = rec
+                    break
 
-            for idx, provider_obj in enumerate(self.provider_booking_ids):
-                if provider_obj.pnr == provider['pnr']:
-                    for journey_obj in provider_obj.journey_ids:
-                        for segment_obj in journey_obj.segment_ids:
-                            origin = segment_obj.origin_id.code if segment_obj.origin_id else '-'
-                            destination = segment_obj.destination_id.code if segment_obj.destination_id else '-'
-                            key = '%s%s' % (origin, destination)
-                            if key not in prov_segment_dict:
-                                _logger.error('Update journeys failed, key not found %s' % (key))
-                                continue
+            if not rsv_prov_obj:
+                _logger.error('No Update journeys, pnr not found, %s' % pnr)
+                return False
 
-                            segment_data = prov_segment_dict[key]
-                            leg_key_dict = {}
-                            for leg in segment_data['legs']:
-                                leg_key = '{origin}{destination}'.format(**leg)
-                                leg_key_dict[leg_key] = leg
-                            leg_key_list = [key for key in leg_key_dict.keys()]
-                            leg_key_str = ';'.join(leg_key_list)
+            if not provider.get('journeys', []):
+                _logger.info('No Update journeys, journeys not found in response, %s' % pnr)
+                return False
 
-                            leg_ids = []
-                            for leg_obj in segment_obj.leg_ids:
-                                origin = leg_obj.origin_id.code if leg_obj.origin_id else '-'
-                                destination = leg_obj.destination_id.code if leg_obj.destination_id else '-'
-                                leg_key = '%s%s' % (origin, destination)
-                                if not leg_key in leg_key_dict:
-                                    _logger.error('Update journeys failed, key not found %s, leg key list %s' % (leg_key, leg_key_str))
-                                    leg_ids.append((4, leg_obj.id))
-                                    continue
+            prov_segment_key_list = []
+            prov_journey_count = 0
+            prov_departure_date_list = []
+            prov_arrival_date_list = []
+            prov_class_of_service_list = []
+            prov_fare_basis_code_list = []
+            for prov_journey_obj in rsv_prov_obj.journey_ids:
+                prov_journey_count += 1
+                for prov_seg_obj in prov_journey_obj.segment_ids:
+                    origin = prov_seg_obj.origin_id.code if prov_seg_obj.origin_id else ''
+                    destination = prov_seg_obj.destination_id.code if prov_seg_obj.destination_id else ''
+                    key = '%s-%s' % (origin, destination)
+                    prov_segment_key_list.append(key)
 
-                                leg_data = leg_key_dict[leg_key]
-                                val = {
-                                    'leg_code': leg_data['leg_code'],
-                                    'departure_date': leg_data['departure_date'],
-                                    'arrival_date': leg_data['arrival_date'],
-                                }
-                                leg_ids.append((1, leg_obj.id, val))
+                    cos = prov_seg_obj.class_of_service if prov_seg_obj.class_of_service else ''
+                    prov_class_of_service_list.append(cos)
+                    fbs = prov_seg_obj.fare_basis_code if prov_seg_obj.fare_basis_code else ''
+                    prov_fare_basis_code_list.append(fbs)
 
-                            # November 29, 2022 - SAM
-                            fare_detail_dict = {}
-                            for fare in segment_data.get('fares', []):
-                                for fare_detail in fare.get('fare_details', []):
-                                    detail_type = fare_detail.get('detail_type', '')
-                                    detail_code = fare_detail.get('detail_code', '')
-                                    if not detail_type and not detail_code:
-                                        continue
-                                    key = '%s-%s' % (detail_type, detail_code)
-                                    fare_detail_dict[key] = fare_detail
+                    dep_date = prov_seg_obj.departure_date if prov_seg_obj.departure_date else ''
+                    prov_departure_date_list.append(dep_date)
+                    arr_date = prov_seg_obj.arrival_date if prov_seg_obj.arrival_date else ''
+                    prov_arrival_date_list.append(arr_date)
 
-                            segment_addons_ids = []
-                            for fare_detail_obj in segment_obj.segment_addons_ids:
-                                detail_type = fare_detail_obj.detail_type
-                                detail_code = fare_detail_obj.detail_code
-                                if not detail_type and not detail_code:
-                                    continue
-                                key = '%s-%s' % (detail_type, detail_code)
-                                if key not in fare_detail_dict:
-                                    segment_addons_ids.append((2, fare_detail_obj.id))
-                                else:
-                                    fare_detail_data = fare_detail_dict.pop(key)
-                                    if not fare_detail_data.get('description'):
-                                        fare_detail_data['description'] = json.dumps('[]')
-                                    else:
-                                        fare_detail_data['description'] = json.dumps(fare_detail_data['description'])
-                                    segment_addons_ids.append((1, fare_detail_obj.id, fare_detail_data))
-                            for fare_detail_data in fare_detail_dict.values():
-                                segment_addons_ids.append((0, 0, fare_detail_data))
-                            # END
+            com_segment_key_list = []
+            is_structure_valid = True
+            com_journey_count = 0
+            com_departure_date_list = []
+            com_arrival_date_list = []
+            com_class_of_service_list = []
+            com_fare_basis_code_list = []
+            for journey in provider.get('journeys', []):
+                com_journey_count += 1
+                segments = journey.get('segments', [])
+                if segments:
+                    if segments[0].get('origin', '') == segments[-1].get('destination', ''):
+                        is_structure_valid = False
+                for seg in segments:
+                    origin = seg['origin'] if seg.get('origin') else ''
+                    destination = seg['destination'] if seg.get('destination') else ''
+                    key = '%s-%s' % (origin, destination)
+                    com_segment_key_list.append(key)
 
-                            segment_obj.write({
-                                'segment_code': segment_data['segment_code'],
-                                'carrier_code': segment_data['carrier_code'],
-                                'carrier_type_code': segment_data.get('carrier_type_code', ''),
-                                'carrier_number': segment_data['carrier_number'],
-                                'arrival_date': segment_data['arrival_date'],
-                                'departure_date': segment_data['departure_date'],
-                                'class_of_service': segment_data['fares'][0]['class_of_service'],
-                                'cabin_class': segment_data['fares'][0].get('cabin_class', ''),
-                                'fare_basis_code': segment_data['fares'][0].get('fare_basis_code', ''),
-                                'tour_code': segment_data['fares'][0].get('tour_code', ''),
-                                'leg_ids': leg_ids,
-                                'segment_addons_ids': segment_addons_ids,
-                            })
-                        journey_obj.compute_detail_info()
-                    provider_obj.write({
-                        'departure_date': provider_obj.journey_ids[0]['departure_date'],
-                        'arrival_date': provider_obj.journey_ids[-1]['arrival_date'],
+                    dep_date = seg['departure_date'] if seg.get('departure_date') else ''
+                    com_departure_date_list.append(dep_date)
+                    arr_date = seg['arrival_date'] if seg.get('arrival_date') else ''
+                    com_arrival_date_list.append(arr_date)
+
+                    for fare in seg.get('fares', []):
+                        cos = fare['class_of_service'] if fare.get('class_of_service') else ''
+                        com_class_of_service_list.append(cos)
+                        fbs = fare['fare_basis_code'] if fare.get('fare_basis_code') else ''
+                        com_fare_basis_code_list.append(fbs)
+
+            if sorted(prov_segment_key_list) == sorted(com_segment_key_list):
+                is_same_journeys = True
+                # print('### HERE : same journeys')
+            else:
+                # print('### HERE : not same journeys')
+                is_same_journeys = False
+
+            if prov_journey_count == com_journey_count:
+                # print('### HERE : journey count same, %s' % prov_journey_count)
+                is_same_journey_count = True
+            else:
+                # print('### HERE : journey count not same, prov %s, com %s' % (prov_journey_count, com_journey_count))
+                is_same_journey_count = False
+
+            if sorted(prov_departure_date_list) == sorted(com_departure_date_list):
+                is_same_departure = True
+                # print('### HERE : same depart')
+            else:
+                is_same_departure = False
+                # print('### HERE : not same depart')
+
+            if sorted(prov_arrival_date_list) == sorted(com_arrival_date_list):
+                is_same_arrival = True
+                # print('### HERE : same arrival')
+            else:
+                is_same_arrival = False
+                # print('### HERE : not same arrival')
+
+            if sorted(prov_class_of_service_list) == sorted(com_class_of_service_list):
+                is_same_class_of_service = True
+                # print('### HERE : same class of service')
+            else:
+                is_same_class_of_service = False
+                # print('### HERE : not same class of service')
+
+            if sorted(prov_fare_basis_code_list) == sorted(com_fare_basis_code_list):
+                is_same_fare_basis_code = True
+                # print('### HERE : same fare basis code')
+            else:
+                is_same_fare_basis_code = False
+                # print('### HERE : not same fare basis code')
+
+            process_update_segments_info = False
+            if not is_same_journeys or not is_same_departure or not is_same_arrival or not is_same_class_of_service or not is_same_fare_basis_code or not is_same_journey_count:
+                process_update_segments_info = True
+
+            if process_update_segments_info:
+                for prov_journey_obj in rsv_prov_obj.journey_ids:
+                    for prov_seg_obj in prov_journey_obj.segment_ids:
+                        prov_seg_obj.write({
+                            'journey_id': None,
+                        })
+                    prov_journey_obj.write({
+                        'provider_booking_id': None
                     })
-                if idx == 0:
-                    departure_date = provider_obj.departure_date[:10]
-                    arrival_date = provider_obj.arrival_date[:10]
-                else:
-                    arrival_date = provider_obj.departure_date[:10]
-            self.departure_date = departure_date
-            if self.direction != 'OW':
-                self.arrival_date = arrival_date
+
+                departure_date = ''
+                arrival_date = ''
+                for journey_idx, journey in enumerate(provider.get('journeys', [])):
+                    if journey_idx == 0:
+                        departure_date = journey.get('departure_date', '')[:10]
+                    arrival_date = journey.get('arrival_date', '')[:10]
+                    origin_id = self.env['tt.destinations'].get_id(journey.get('origin', ''), self.provider_type_id)
+                    destination_id = self.env['tt.destinations'].get_id(journey.get('destination', ''), self.provider_type_id)
+                    prov_jrn_obj = self.env['tt.journey.airline'].create({
+                        'sequence': journey_idx,
+                        'origin_id': origin_id if origin_id else None,
+                        'destination_id': destination_id if destination_id else None,
+                        'departure_date': journey.get('departure_date', ''),
+                        'arrival_date': journey.get('arrival_date', ''),
+                        'journey_code': journey.get('journey_code', ''),
+                        'provider_booking_id': rsv_prov_obj.id,
+                    })
+                    new_segment_obj_list = []
+                    for seg in journey['segments']:
+                        provider_obj = rsv_prov_obj.provider_id if rsv_prov_obj else None
+                        carrier_obj = self.env['tt.transport.carrier'].sudo().search([('code', '=', seg['carrier_code'])], limit=1)
+                        origin_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['origin']), ('provider_type_id', '=', self.provider_type_id.id)], limit=1)
+                        destination_obj = self.env['tt.destinations'].sudo().search([('code', '=', seg['destination']), ('provider_type_id', '=', self.provider_type_id.id)], limit=1)
+                        segment_addons_ids = []
+                        n_seg_values = {
+                            'segment_code': seg['segment_code'],
+                            'pnr': provider['pnr'],
+                            'fare_code': '',
+                            'carrier_code': seg['carrier_code'],
+                            'carrier_number': seg['carrier_number'],
+                            'origin_terminal': seg['origin_terminal'],
+                            'destination_terminal': seg['destination_terminal'],
+                            'departure_date': seg['departure_date'],
+                            'arrival_date': seg['arrival_date'],
+                            'status': seg.get('status', ''),
+                            'class_of_service': '',
+                            'cabin_class': '',
+                            'sequence': seg.get('sequence', 0),
+                        }
+                        if carrier_obj:
+                            n_seg_values['carrier_id'] = carrier_obj.id
+                        if provider_obj:
+                            n_seg_values['provider_id'] = provider_obj.id
+                        if origin_obj:
+                            n_seg_values['origin_id'] = origin_obj.id
+                        if destination_obj:
+                            n_seg_values['destination_id'] = destination_obj.id
+
+                        for fare in seg['fares']:
+                            n_seg_values.update({
+                                'fare_code': fare['fare_code'],
+                                'class_of_service': fare['class_of_service'],
+                                'cabin_class': fare['cabin_class'],
+                                'fare_basis_code': fare.get('fare_basis_code', ''),
+                                'tour_code': fare.get('tour_code', ''),
+                                'fare_class': fare.get('fare_class', ''),
+                                'fare_name': fare.get('fare_name', ''),
+                            })
+                            # for sc in fare['service_charge_summary']:
+                            #     total_amount += sc['total_price']
+                            for fare_detail in fare.get('fare_details', []):
+                                fare_detail_data = copy.deepcopy(fare_detail)
+                                if not fare_detail_data.get('description'):
+                                    fare_detail_data['description'] = json.dumps('[]')
+                                else:
+                                    fare_detail_data['description'] = json.dumps(fare_detail_data['description'])
+                                segment_addons_ids.append((0, 0, fare_detail_data))
+
+                        n_seg_values.update({
+                            'segment_addons_ids': segment_addons_ids
+                        })
+
+                        leg_values = {
+                            'segment_id': None,
+                            'origin_terminal': n_seg_values['origin_terminal'],
+                            'destination_terminal': n_seg_values['destination_terminal'],
+                            'departure_date': n_seg_values['departure_date'],
+                            'arrival_date': n_seg_values['arrival_date'],
+                        }
+                        if n_seg_values.get('carrier_id'):
+                            leg_values.update({
+                                'carrier_id': n_seg_values['carrier_id']
+                            })
+
+                        if n_seg_values.get('provider_id'):
+                            leg_values.update({
+                                'provider_id': n_seg_values['provider_id']
+                            })
+
+                        if n_seg_values.get('origin_id'):
+                            leg_values.update({
+                                'origin_id': n_seg_values['origin_id']
+                            })
+
+                        if n_seg_values.get('destination_id'):
+                            leg_values.update({
+                                'destination_id': n_seg_values['destination_id']
+                            })
+
+                        # Membuat data baru untuk reservasi
+                        n_seg_values.update({
+                            'provider_id': provider_obj.id if provider_obj else None,
+                            'journey_id': prov_jrn_obj.id,
+                        })
+
+                        n_resv_seg_obj = self.env['tt.segment.airline'].sudo().create(n_seg_values)
+                        leg_values.update({
+                            'segment_id': n_resv_seg_obj.id,
+                            'provider_id': provider_obj.id if provider_obj else None,
+                        })
+                        self.env['tt.leg.airline'].sudo().create(leg_values)
+
+                book_vals = {}
+                if departure_date:
+                    book_vals['departure_date'] = departure_date
+                if arrival_date:
+                    book_vals['arrival_date'] = arrival_date
+                if book_vals:
+                    self.write(book_vals)
+            # END
+            # August 21, 2023 - SAM
+            # OLD FLOW COMMENT
+            # departure_date = ''
+            # arrival_date = ''
+            # prov_segment_dict = {}
+            # for journey in provider['journeys']:
+            #     for seg in journey['segments']:
+            #         key = '{origin}{destination}'.format(**seg)
+            #         prov_segment_dict[key] = seg
+            #
+            # for idx, provider_obj in enumerate(self.provider_booking_ids):
+            #     if provider_obj.pnr == provider['pnr']:
+            #         for journey_obj in provider_obj.journey_ids:
+            #             for segment_obj in journey_obj.segment_ids:
+            #                 origin = segment_obj.origin_id.code if segment_obj.origin_id else '-'
+            #                 destination = segment_obj.destination_id.code if segment_obj.destination_id else '-'
+            #                 key = '%s%s' % (origin, destination)
+            #                 if key not in prov_segment_dict:
+            #                     _logger.error('Update journeys failed, key not found %s' % (key))
+            #                     continue
+            #
+            #                 segment_data = prov_segment_dict[key]
+            #                 leg_key_dict = {}
+            #                 for leg in segment_data['legs']:
+            #                     leg_key = '{origin}{destination}'.format(**leg)
+            #                     leg_key_dict[leg_key] = leg
+            #                 leg_key_list = [key for key in leg_key_dict.keys()]
+            #                 leg_key_str = ';'.join(leg_key_list)
+            #
+            #                 leg_ids = []
+            #                 for leg_obj in segment_obj.leg_ids:
+            #                     origin = leg_obj.origin_id.code if leg_obj.origin_id else '-'
+            #                     destination = leg_obj.destination_id.code if leg_obj.destination_id else '-'
+            #                     leg_key = '%s%s' % (origin, destination)
+            #                     if not leg_key in leg_key_dict:
+            #                         _logger.error('Update journeys failed, key not found %s, leg key list %s' % (leg_key, leg_key_str))
+            #                         leg_ids.append((4, leg_obj.id))
+            #                         continue
+            #
+            #                     leg_data = leg_key_dict[leg_key]
+            #                     val = {
+            #                         'leg_code': leg_data['leg_code'],
+            #                         'departure_date': leg_data['departure_date'],
+            #                         'arrival_date': leg_data['arrival_date'],
+            #                     }
+            #                     leg_ids.append((1, leg_obj.id, val))
+            #
+            #                 # November 29, 2022 - SAM
+            #                 fare_detail_dict = {}
+            #                 for fare in segment_data.get('fares', []):
+            #                     for fare_detail in fare.get('fare_details', []):
+            #                         detail_type = fare_detail.get('detail_type', '')
+            #                         detail_code = fare_detail.get('detail_code', '')
+            #                         if not detail_type and not detail_code:
+            #                             continue
+            #                         key = '%s-%s' % (detail_type, detail_code)
+            #                         fare_detail_dict[key] = fare_detail
+            #
+            #                 segment_addons_ids = []
+            #                 for fare_detail_obj in segment_obj.segment_addons_ids:
+            #                     detail_type = fare_detail_obj.detail_type
+            #                     detail_code = fare_detail_obj.detail_code
+            #                     if not detail_type and not detail_code:
+            #                         continue
+            #                     key = '%s-%s' % (detail_type, detail_code)
+            #                     if key not in fare_detail_dict:
+            #                         segment_addons_ids.append((2, fare_detail_obj.id))
+            #                     else:
+            #                         fare_detail_data = fare_detail_dict.pop(key)
+            #                         if not fare_detail_data.get('description'):
+            #                             fare_detail_data['description'] = json.dumps('[]')
+            #                         else:
+            #                             fare_detail_data['description'] = json.dumps(fare_detail_data['description'])
+            #                         segment_addons_ids.append((1, fare_detail_obj.id, fare_detail_data))
+            #                 for fare_detail_data in fare_detail_dict.values():
+            #                     segment_addons_ids.append((0, 0, fare_detail_data))
+            #                 # END
+            #
+            #                 segment_obj.write({
+            #                     'segment_code': segment_data['segment_code'],
+            #                     'carrier_code': segment_data['carrier_code'],
+            #                     'carrier_type_code': segment_data.get('carrier_type_code', ''),
+            #                     'carrier_number': segment_data['carrier_number'],
+            #                     'arrival_date': segment_data['arrival_date'],
+            #                     'departure_date': segment_data['departure_date'],
+            #                     'status': segment_data.get('status', ''),
+            #                     'class_of_service': segment_data['fares'][0]['class_of_service'],
+            #                     'cabin_class': segment_data['fares'][0].get('cabin_class', ''),
+            #                     'fare_basis_code': segment_data['fares'][0].get('fare_basis_code', ''),
+            #                     'tour_code': segment_data['fares'][0].get('tour_code', ''),
+            #                     'leg_ids': leg_ids,
+            #                     'segment_addons_ids': segment_addons_ids,
+            #                 })
+            #             journey_obj.compute_detail_info()
+            #         provider_obj.write({
+            #             'departure_date': provider_obj.journey_ids[0]['departure_date'],
+            #             'arrival_date': provider_obj.journey_ids[-1]['arrival_date'],
+            #         })
+            #     if idx == 0:
+            #         departure_date = provider_obj.departure_date[:10]
+            #         arrival_date = provider_obj.arrival_date[:10]
+            #     else:
+            #         arrival_date = provider_obj.departure_date[:10]
+            # self.departure_date = departure_date
+            # if self.direction != 'OW':
+            #     self.arrival_date = arrival_date
+            # END
 
     def get_booking_airline_api(self,req, context):
         try:
@@ -1821,6 +2083,9 @@ class ReservationAirline(models.Model):
                         # April 12, 2022 - SAM
                         'operating_airline_id': operating_id and operating_id.id or False,
                         'operating_airline_code': segment.get('operating_airline_code', ''),
+                        # END
+                        # August 14, 2023 - SAM
+                        'status': segment.get('status', ''),
                         # END
                     }
                     segment_values.update(fare_data)

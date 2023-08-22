@@ -81,6 +81,18 @@
                 <td style="text-align:left;"><b>Name</b></td>
                 <td style="text-align:right;"><b>Price</b></td>
             </thead>
+            <t t-if="price_breakdown">
+                <t t-foreach="price_breakdown" t-as="svc">
+                    <tr>
+                        <td style="text-align:left;">
+                            <t t-esc="svc"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <t t-esc="float(price_breakdown[svc])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </td>
+                    </tr>
+                </t>
+            </t>
             <t t-if="discount_value">
                 <tr>
                     <td style="text-align:left;">Discount</td>

@@ -185,7 +185,7 @@ From Sales : Start pricing from Sales price, exclude commission details.
 If not set (empty), it will be applied for all currencies.</pre>
                     </div>
                     <notebook>
-                        <page string="Route" name="route">
+                        <page string="Requirements" name="requirements">
                             <notebook>
                                 <page string="Origin" name="origin">
                                     <group string="Origin Route">
@@ -300,6 +300,32 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                         <group attrs="{'invisible': [('dot_access_type', 'in', ['all'])]}">
                                             <field name="dot_start_date" attrs="{'required': [('dot_access_type', '!=', 'all')]}"/>
                                             <field name="dot_end_date" attrs="{'required': [('dot_access_type', '!=', 'all')]}"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="Total Amount" name="total_amount">
+                                    <group string="Total Amount">
+                                        <group>
+                                            <field name="total_access_type" widget="radio"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'less')]}">
+                                            <field name="total_less_amount" string="&lt;" attrs="{'invisible': [('total_is_less_equal', '=', True)]}"/>
+                                            <field name="total_less_amount" string="&lt;=" attrs="{'invisible': [('total_is_less_equal', '=', False)]}"/>
+                                            <field name="total_is_less_equal" widget="boolean_toggle"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'between')]}">
+                                            <field name="total_greater_amount" string="&gt;" attrs="{'invisible': [('total_is_greater_equal', '=', True)]}"/>
+                                            <field name="total_greater_amount" string="&gt;=" attrs="{'invisible': [('total_is_greater_equal', '=', False)]}"/>
+                                            <field name="total_is_greater_equal" widget="boolean_toggle"/>
+                                            <br/>
+                                            <field name="total_less_amount" string="&lt;" attrs="{'invisible': [('total_is_less_equal', '=', True)]}"/>
+                                            <field name="total_less_amount" string="&lt;=" attrs="{'invisible': [('total_is_less_equal', '=', False)]}"/>
+                                            <field name="total_is_less_equal" widget="boolean_toggle"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'greater')]}">
+                                            <field name="total_greater_amount" string="&gt;" attrs="{'invisible': [('total_is_greater_equal', '=', True)]}"/>
+                                            <field name="total_greater_amount" string="&gt;=" attrs="{'invisible': [('total_is_greater_equal', '=', False)]}"/>
+                                            <field name="total_is_greater_equal" widget="boolean_toggle"/>
                                         </group>
                                     </group>
                                 </page>
