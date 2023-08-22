@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="move_agent_ho_wizard_form_view" model="ir.ui.view">
+        <field name="name">Move Agent Head Office Wizard</field>
+        <field name="model">move.agent.ho.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Move Agent Head Office Wizard">
+                <group>
+                    <group>
+                        <field name="agent_id"/>
+                    </group>
+                    <group>
+                        <field name="old_ho_id"/>
+                        <field name="new_ho_id"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="submit_move_ho" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="move_agent_ho_wizard_action_view" model="ir.actions.act_window">
+        <field name="name">Move Agent Head Office Wizard</field>
+        <field name="res_model">move.agent.ho.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+<!--    <menuitem id="menu_move_agent_ho_wizard"-->
+<!--              parent="tt_base.top_tour_travel_administration"-->
+<!--              groups="base.group_erp_manager"-->
+<!--              name="Move Agent Head Office"-->
+<!--              sequence="8"-->
+<!--              action="move_agent_ho_wizard_action_view"/>-->
+
+</odoo>
