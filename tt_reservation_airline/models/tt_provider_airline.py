@@ -7,6 +7,7 @@ from ...tools.db_connector import GatewayConnector
 import traceback
 import copy
 from dateutil.relativedelta import relativedelta
+from ...tools import util
 
 
 _logger = logging.getLogger(__name__)
@@ -716,8 +717,9 @@ class TtProviderAirline(models.Model):
             for rec in self.booking_id.passenger_ids:
                 first_name = ''.join(rec.first_name.split()).lower() if rec.first_name else ''
                 last_name = ''.join(rec.last_name.split()).lower() if rec.last_name else ''
-                key_1 = '%s%s' % (last_name, first_name)
-                key_2 = '%s%s' % (first_name, first_name)
+                title = ''.join(rec.title.split()).lower() if rec.title else ''
+                key_1 = '%s%s%s' % (last_name, first_name, title)
+                key_2 = '%s%s%s' % (first_name, first_name, title)
                 vals = {
                     'passenger_id': rec.id,
                     'key_1': key_1,
@@ -745,8 +747,9 @@ class TtProviderAirline(models.Model):
             if rec.first_name or rec.last_name:
                 first_name = ''.join(rec.first_name.split()).lower() if rec.first_name else ''
                 last_name = ''.join(rec.last_name.split()).lower() if rec.last_name else ''
-                key_1 = '%s%s' % (last_name, first_name)
-                key_2 = '%s%s' % (first_name, first_name)
+                title = ''.join(rec.title.split()).lower() if rec.title else ''
+                key_1 = '%s%s%s' % (last_name, first_name, title)
+                key_2 = '%s%s%s' % (first_name, first_name, title)
                 vals.update({
                     'key_1': key_1,
                     'key_2': key_2,
@@ -768,11 +771,13 @@ class TtProviderAirline(models.Model):
                     psg_obj = rec.passenger_id
                     first_name = ''.join(psg_obj.first_name.split()).lower() if psg_obj.first_name else ''
                     last_name = ''.join(psg_obj.last_name.split()).lower() if psg_obj.last_name else ''
-                    key_1 = '%s%s' % (last_name, first_name)
-                    key_2 = '%s%s' % (first_name, first_name)
+                    title = ''.join(psg_obj.title.split()).lower() if psg_obj.title else ''
+                    key_1 = '%s%s%s' % (last_name, first_name, title)
+                    key_2 = '%s%s%s' % (first_name, first_name, title)
                     vals.update({
                         'key_1': key_1,
                         'key_2': key_2,
+                        'title': psg_obj.title if psg_obj.title else '',
                         'first_name': psg_obj.first_name if psg_obj.first_name else '',
                         'last_name': psg_obj.last_name if psg_obj.last_name else '',
                         'passenger_id': psg_obj.id,
@@ -818,8 +823,9 @@ class TtProviderAirline(models.Model):
             # Setup key
             first_name = ''.join(rec['first_name'].split()).lower() if rec.get('first_name') else ''
             last_name = ''.join(rec['last_name'].split()).lower() if rec.get('last_name') else ''
-            key_1 = '%s%s' % (last_name, first_name)
-            key_2 = '%s%s' % (first_name, first_name)
+            title = ''.join(rec['title'].split()).lower() if rec.get('title') else ''
+            key_1 = '%s%s%s' % (last_name, first_name, title)
+            key_2 = '%s%s%s' % (first_name, first_name, title)
             key_type = '1'
             if not first_name or not last_name:
                 key_type = '2'
