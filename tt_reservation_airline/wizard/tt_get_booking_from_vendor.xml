@@ -10,12 +10,12 @@
                     <group>
                         <field name="pnr"/>
                         <field name="is_bypass_pnr_validator"/>
-                        <field name="provider"/>
+                        <field name="agent_id"/>
+                        <field name="provider_ho_data_id" attrs="{'invisible': [('agent_id','=',False)]}" />
                     </group>
-                    <group attrs="{'invisible': ['|',('provider','=',False),('pnr', '=', False)]}">
+                    <group attrs="{'invisible': ['|',('provider_ho_data_id','=',False),('pnr', '=', False)]}">
                         <field name="ho_id" groups="base.group_erp_manager"/>
                         <field name="parent_agent_id"/>
-                        <field name="agent_id"/>
                         <field name="customer_parent_id"/>
                         <field name="user_id"/>
                         <field name="payment_method_to_ho"/>

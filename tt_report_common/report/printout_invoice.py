@@ -74,8 +74,12 @@ class PrintoutTicketForm(models.AbstractModel):
         refund_fee = 0
         reschedule_fee = 0
         agent_id = False
-
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             csc_pax_list = []
@@ -93,9 +97,17 @@ class PrintoutTicketForm(models.AbstractModel):
                     for rec2 in pax.passenger_id.cost_service_charge_ids:
                         # if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc', 'ssr', 'seat']:
                         if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc']:
+                            if is_break_down_price:
+                                if rec2.charge_type not in price_breakdown:
+                                    price_breakdown[rec2.charge_type] = 0
+                                price_breakdown[rec2.charge_type] += rec2.amount
                             price_target['total_price'] += rec2.amount
 
                     for csc in pax.passenger_id.fee_ids:
+                        if is_break_down_price:
+                            if csc.category not in price_breakdown:
+                                price_breakdown[csc.category] = 0
+                            price_breakdown[csc.category] += csc.amount
                         price_target['total_price'] += csc.amount
 
                     # if pax.passenger_id.id not in csc_pax_list:
@@ -152,6 +164,7 @@ class PrintoutTicketForm(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'refund_fee': refund_fee,
@@ -237,7 +250,12 @@ class PrintoutTicketBusForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         agent_id = False
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -253,6 +271,10 @@ class PrintoutTicketBusForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
+                if is_break_down_price:
+                    if rec2.charge_type not in price_breakdown:
+                        price_breakdown[rec2.charge_type] = 0
+                    price_breakdown[rec2.charge_type] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
             agent_id = rec.agent_id
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('bus_ticket', agent_id)
@@ -266,6 +288,7 @@ class PrintoutTicketBusForm(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -313,7 +336,12 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         agent_id = False
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -329,6 +357,10 @@ class PrintoutTicketTrainForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
+                if is_break_down_price:
+                    if rec2.charge_type not in price_breakdown:
+                        price_breakdown[rec2.charge_type] = 0
+                    price_breakdown[rec2.charge_type] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
             agent_id = rec.agent_id
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('train_ticket', agent_id)
@@ -342,6 +374,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -388,7 +421,12 @@ class PrintoutBoardingPassTrainForm(models.AbstractModel):
             data['context']['active_ids'] = docids
         values = {}
         agent_id = False
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -404,6 +442,10 @@ class PrintoutBoardingPassTrainForm(models.AbstractModel):
                     a[rec2.pax_type]['qty'] = rec2.pax_count
                 elif rec2.charge_type.lower() in ['roc', 'tax']:
                     a[rec2.pax_type]['tax'] += rec2.amount
+                if is_break_down_price:
+                    if rec2.charge_type not in price_breakdown:
+                        price_breakdown[rec2.charge_type] = 0
+                    price_breakdown[rec2.charge_type] += rec2.amount
             values[rec.id] = [a[new_a] for new_a in a]
             agent_id = rec.agent_id
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('train_ticket', agent_id)
@@ -417,6 +459,7 @@ class PrintoutBoardingPassTrainForm(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -465,7 +508,12 @@ class PrintoutTicketEventForm(models.AbstractModel):
         values = {}
         pnr_length = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             csc_pax_list = []
@@ -484,6 +532,10 @@ class PrintoutTicketEventForm(models.AbstractModel):
                                                                                                             'roc',
                                                                                                             'tax',
                                                                                                             'disc']:
+                            if is_break_down_price:
+                                if rec2.charge_type not in price_breakdown:
+                                    price_breakdown[rec2.charge_type] = 0
+                                price_breakdown[rec2.charge_type] += rec2.amount
                             price_target['total_price'] += rec2.amount
 
                     # if pax.id not in csc_pax_list:
@@ -505,6 +557,7 @@ class PrintoutTicketEventForm(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
@@ -580,7 +633,12 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
         pnr_length = 0
         header_width = 90
         agent_id = False
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -592,6 +650,10 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
                         'qty': rec2.pax_count  # asumsi yang pertama fare, qtynya benar
                     }
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.amount
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
             # tidak ada ticket with price, dan tidak ada pax type
@@ -624,6 +686,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'pnr_length': pnr_length,
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'header_width': str(header_width),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'refund_fee': self.get_refund_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
@@ -670,7 +733,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         token = token.replace(" ", "")
         return '-'.join(token[i:i+4] for i in range(0, len(token), 4))
 
-    def get_pln_postpaid_values(self, rec):
+    def get_pln_postpaid_values(self, rec, is_break_down_price):
         values = {}
 
         # Variables
@@ -679,13 +742,17 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         before_meter = -1
         after_meter = -1
         total_tagihan_pln = 0
-
+        price_breakdown = {}
         # Get PLN Postpaid Data
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
             provider = rec.provider_booking_ids[0]
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code in ['rfc', 'rrc']:
+                    if is_break_down_price:
+                        if scs.charge_type not in price_breakdown:
+                            price_breakdown[scs.charge_type] = 0
+                        price_breakdown[scs.charge_type] += scs.amount
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
@@ -718,9 +785,9 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'period': ', '.join(period),
             'admin_bank': "{:,.0f}".format(admin_bank)
         })
-        return values
+        return values, price_breakdown
 
-    def get_pln_prepaid_values(self, rec):
+    def get_pln_prepaid_values(self, rec, is_break_down_price):
         values = {}
 
         # Variables
@@ -732,6 +799,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         jumlah_kwh = 0
         installment = 0
         token_number = ''
+        price_breakdown = {}
 
         # Get PLN Prepaid Data
         if rec.provider_booking_ids:
@@ -740,6 +808,10 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code in ['rfc', 'rrc']:
+                    if is_break_down_price:
+                        if scs.charge_type not in price_breakdown:
+                            price_breakdown[scs.charge_type] = 0
+                        price_breakdown[scs.charge_type] += scs.amount
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
@@ -765,16 +837,16 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'admin_bank': "{:,.0f}".format(admin_bank),
             'installment': "{:,.2f}".format(installment)
         })
-        return values
+        return values, price_breakdown
 
-    def get_non_electricity_bills(self, rec):
+    def get_non_electricity_bills(self, rec, is_break_down_price):
         values = {}
 
         # Variables
         admin_bank = 0
         total_tagihan_pln = 0
         tgl_registrasi = ''
-
+        price_breakdown = {}
         # Get Non Electricity Bills
         if rec.provider_booking_ids:
             # Admin Bank (ambil dari ROC service charge)
@@ -782,6 +854,10 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             tgl_registrasi = provider.registration_date.strftime('%d %b %y')
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code in ['rfc', 'rrc']:
+                    if is_break_down_price:
+                        if scs.charge_type not in price_breakdown:
+                            price_breakdown[scs.charge_type] = 0
+                        price_breakdown[scs.charge_type] += scs.amount
                     admin_bank += scs.total
 
             if provider.ppob_bill_ids:
@@ -794,9 +870,9 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'total_tagihan_pln': "{:,.0f}".format(total_tagihan_pln),
             'admin_bank': "{:,.0f}".format(admin_bank)
         })
-        return values
+        return values, price_breakdown
 
-    def get_bpjs_kesehatan_values(self, rec):
+    def get_bpjs_kesehatan_values(self, rec, is_break_down_price):
         values = {}
 
         # Variables
@@ -806,7 +882,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         jumlah_peserta = 0
         unpaid_bill_display = 0
         date = ''
-
+        price_breakdown = {}
         # Get BPJS Kesehatan Data
         if rec.provider_booking_ids:
             provider = rec.provider_booking_ids[0]
@@ -815,6 +891,10 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
 
             for scs in provider.cost_service_charge_ids:
                 if scs.charge_code in ['rfc', 'rrc']:
+                    if is_break_down_price:
+                        if scs.charge_type not in price_breakdown:
+                            price_breakdown[scs.charge_type] = 0
+                        price_breakdown[scs.charge_type] += scs.amount
                     admin_fee += scs.total
 
             if provider.ppob_bill_ids:
@@ -835,25 +915,25 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'admin_fee': "{:,.0f}".format(admin_fee),
             'jumlah_peserta': jumlah_peserta
         })
-        return values
+        return values, price_breakdown
 
-    def get_mobile_prepaid_values(self, rec):
+    def get_mobile_prepaid_values(self, rec, is_break_down_price):
         values = {}
-
+        price_breakdown = {}
         values.update({
             'total': "{:,.0f}".format(rec.total)
         })
 
-        return values
+        return values, price_breakdown
 
-    def get_ppob_general_values(self, rec):
+    def get_ppob_general_values(self, rec, is_break_down_price):
         values = {}
-
+        price_breakdown = {}
         values.update({
             'total': "{:,.0f}".format(rec.total)
         })
 
-        return values
+        return values, price_breakdown
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -866,7 +946,12 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         header_width = 90
         va_length = 0
         agent_id = False
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             # Get PPOB Type & Values
             ppob_type = ''
             ppob_type_name = ''
@@ -876,17 +961,17 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
                 ppob_type = ppob_carrier.code
                 ppob_type_name = ppob_carrier.name
                 if ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_bpjs').code:
-                    values = self.get_bpjs_kesehatan_values(rec)
+                    values, price_breakdown = self.get_bpjs_kesehatan_values(rec, is_break_down_price)
                 elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_postpln').code:
-                    values = self.get_pln_postpaid_values(rec)
+                    values, price_breakdown = self.get_pln_postpaid_values(rec, is_break_down_price)
                 elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepln').code:
-                    values = self.get_pln_prepaid_values(rec)
+                    values, price_breakdown = self.get_pln_prepaid_values(rec, is_break_down_price)
                 elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_notaglispln').code:
-                    values = self.get_non_electricity_bills(rec)
+                    values, price_breakdown = self.get_non_electricity_bills(rec, is_break_down_price)
                 elif ppob_type == self.env.ref('tt_reservation_ppob.tt_transport_carrier_ppob_prepaidmobile').code:
-                    values = self.get_mobile_prepaid_values(rec)
+                    values, price_breakdown = self.get_mobile_prepaid_values(rec, is_break_down_price)
                 else:
-                    values = self.get_ppob_general_values(rec)
+                    values, price_breakdown = self.get_ppob_general_values(rec, is_break_down_price)
 
             if rec.provider_booking_ids[0].customer_number:
                 va_number = rec.provider_booking_ids[0].customer_number
@@ -914,6 +999,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'values': values,
+            'price_breakdown': price_breakdown,
             'pnr_length': va_length,
             'header_width': str(header_width),
             'footer_ppob_bpjs': footer_ppob_bpjs and footer_ppob_bpjs[0].html or '',
@@ -1008,7 +1094,13 @@ class PrintoutInvoiceVendor(models.AbstractModel):
         values = {}
         pnr_length = 0
         header_width = 90
+        ## BELUM TAHU PRICE BREAKDOWN AMBIL DIMANA ##
+        price_breakdown = []
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             pax_data = self.get_invoice_data(rec, data.get('context'), data)
@@ -1026,6 +1118,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
             'doc_type': 'vendor_invoice',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'inv_lines': values,
             'pnr_length': pnr_length,
             'header_width': str(header_width),
@@ -1123,7 +1216,8 @@ class PrintoutInvoiceHO(models.AbstractModel):
                     'total': sum([rec3.total for rec3 in rec2.cost_service_charge_ids if rec3.charge_type != 'RAC'])
                 } for rec2 in rec.passenger_ids],
                 'descs': descs,
-                'provider_type': rec.provider_type_id.name
+                'provider_type': rec.provider_type_id.name,
+                'price_breakdown': []
             }
             # a[issued_name]['descs'].append(self.get_description(rec, data))
         else:
@@ -1412,8 +1506,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'price_lines': values,
             'inv_lines': values,
             'pnr_length': pnr_length,
-            'terbilang': self.compute_terbilang_from_objs(
-                self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
+            'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'ho_obj': ho_obj,
             'header_width': str(header_width),
@@ -2763,7 +2856,12 @@ class PrintoutIteneraryForm(models.AbstractModel):
         discount_value = 0
         header_width = 90
         agent_id = False
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -2776,6 +2874,10 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
@@ -2824,6 +2926,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values, #Old format Here
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
@@ -2854,7 +2957,12 @@ class PrintoutIteneraryForm(models.AbstractModel):
         discount_value = 0
         header_width = 90
         agent_id = False
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
 
             if data['context']['active_model'] == 'tt.reservation.airline':
@@ -2863,6 +2971,10 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     pax_type = psg.cost_service_charge_ids[-1].pax_type # Notes Pax type bisa jadi slah first bisa di isi SSR
                     for cost_sc in psg.cost_service_charge_ids:
                         if cost_sc.charge_type.lower() in ['fare', 'roc', 'tax']:
+                            if is_break_down_price:
+                                if cost_sc.charge_type not in price_breakdown:
+                                    price_breakdown[cost_sc.charge_type] = 0
+                                price_breakdown[cost_sc.charge_type] += cost_sc.amount
                             total_price_pax += cost_sc.amount
                         elif cost_sc.charge_type.lower() == 'disc':
                             discount_value += cost_sc.amount
@@ -2882,6 +2994,10 @@ class PrintoutIteneraryForm(models.AbstractModel):
                         for ssr_sc in psg.fee_ids:
                             ssr_seg_applied = ';' + ssr_sc.journey_code.split(',')[2] + '-' + ssr_sc.journey_code.split(',')[4] if ssr_sc.journey_code else ""
                             ssr_descs.append({'name': ssr_sc.name + ssr_seg_applied, 'value': ssr_sc.value, 'category_icon': ssr_sc.category_icon})
+                            if is_break_down_price:
+                                if ssr_sc.category not in price_breakdown:
+                                    price_breakdown[ssr_sc.category] = 0
+                                price_breakdown[ssr_sc.category] += ssr_sc.amount
                             total_price_pax += ssr_sc.amount
 
                     values[rec.id].append({
@@ -2897,6 +3013,10 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 total_price_pax = 0
                 for sc in rec.sale_service_charge_ids:
                     if sc.charge_type.lower() in ['fare', 'roc', 'tax']:
+                        if is_break_down_price:
+                            if sc.charge_type not in price_breakdown:
+                                price_breakdown[sc.charge_type] = 0
+                            price_breakdown[sc.charge_type] += sc.amount
                         total_price_pax += sc.amount
                     elif sc.charge_type.lower() == 'disc':
                         discount_value += sc.amount
@@ -2920,6 +3040,10 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     pax_type = psg.cost_service_charge_ids[-1].pax_type # Notes Pax type bisa jadi slah first bisa di isi SSR
                     for cost_sc in psg.cost_service_charge_ids:
                         if cost_sc.charge_type.lower() in ['fare', 'roc', 'tax']:
+                            if is_break_down_price:
+                                if cost_sc.charge_type not in price_breakdown:
+                                    price_breakdown[cost_sc.charge_type] = 0
+                                price_breakdown[cost_sc.charge_type] += cost_sc.amount
                             total_price_pax += cost_sc.amount
                         elif cost_sc.charge_type.lower() == 'disc':
                             discount_value += cost_sc.amount
@@ -2963,6 +3087,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'price_lines': values,
             'discount_value': discount_value,
             'customer_grand_total': customer_grand_total + discount_value, #Disc value (-1)
+            'price_breakdown': price_breakdown,
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -2999,7 +3124,12 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3012,13 +3142,23 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3051,6 +3191,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3087,7 +3228,12 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3100,13 +3246,23 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3139,6 +3295,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3175,7 +3332,12 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3188,13 +3350,23 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3227,6 +3399,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3263,7 +3436,12 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3276,13 +3454,23 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3315,6 +3503,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3351,7 +3540,12 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3364,13 +3558,23 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3406,6 +3610,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3442,7 +3647,12 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3455,13 +3665,23 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3490,6 +3710,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3528,7 +3749,12 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3541,13 +3767,23 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3576,6 +3812,7 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3619,7 +3856,12 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3632,13 +3874,23 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3667,6 +3919,7 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3712,7 +3965,12 @@ class PrintoutBusItineraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3725,13 +3983,23 @@ class PrintoutBusItineraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3760,6 +4028,7 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3807,7 +4076,12 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
         customer_grand_total = 0
         discount_value = 0
         header_width = 90
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             values[rec.id] = []
             a = {}
             for rec2 in rec.sale_service_charge_ids:
@@ -3820,13 +4094,23 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
                     }
 
                 if rec2.charge_type.lower() in ['fare', 'roc', 'tax']:
+                    if is_break_down_price:
+                        if rec2.charge_type not in price_breakdown:
+                            price_breakdown[rec2.charge_type] = 0
+                        price_breakdown[rec2.charge_type] += rec2.total
                     a[rec2.pax_type]['price_per_pax'] += rec2.amount
                     a[rec2.pax_type]['price_total'] += rec2.total
                 elif rec2.charge_type.lower() == 'disc':
                     discount_value += rec2.amount
 
-            a.update({'DISC': {'pax_type': 'DISC', 'price_per_pax': discount_value, 'price_total': discount_value,
-                               'qty': 1, }})
+            a.update({
+                'DISC': {
+                    'pax_type': 'DISC',
+                    'price_per_pax': discount_value,
+                    'price_total': discount_value,
+                    'qty': 1,
+                }
+            })
 
             # csc_found = []
             # for psg in rec.passenger_ids:
@@ -3855,6 +4139,7 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             'pnr_length': pnr_length,
             'header_width': str(header_width),
             'price_lines': values,
+            'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'base_color': base_color,
@@ -3914,6 +4199,8 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
         '''
         values = {}
         header_width = 90
+        ## BELUM TAHU AMBIL BREAKDOWN DIMANA ##
+        price_breakdown = {}
         if data.get('context'):
             values = json.loads(data['context']['json_content'])
             # values = [{
@@ -3959,6 +4246,7 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             'doc_model': 'tt.reservation.hotel',  # Can be set to as any model
             'doc_type': 'itin', #untuk judul report
             'docs': [values,],
+            'price_breakdown': price_breakdown,
             'header_width': str(header_width),
             'date_now': fields.Date.today().strftime('%d %b %Y'),
             'currency_id': self.env.user.company_id.currency_id,
@@ -3988,7 +4276,13 @@ class PrintoutBilling(models.AbstractModel):
         header_width = 90
         agent_id = False
         cust_parent_id = False
+        ## TIDAK DI BREAKDOWN ##
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
+            if rec.agent_id.is_btc_agent:
+                is_break_down_price = rec.ho_id.is_btc_breakdown_price_printout
+            else:
+                is_break_down_price = rec.ho_id.is_agent_breakdown_price_printout
             agent_id = rec.agent_id
             cust_parent_id = rec.customer_parent_id
         billing_footer = self.env['tt.report.common.setting'].get_footer('billing_statement', agent_id)
@@ -4003,6 +4297,7 @@ class PrintoutBilling(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'doc_type': 'ho_billing' if not cust_parent_id else '',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
+            'price_breakdown': price_breakdown,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             # 'last_billing': self.last_billing(
@@ -4036,6 +4331,8 @@ class PrintoutTopUp(models.AbstractModel):
             }
         values = {}
         agent_id = False
+        ## TIDAK DI BREAKDOWN ##
+        price_breakdown = {}
         for rec in self.env[data['context']['active_model']].browse(data['context']['active_ids']):
             values.update({
                 'amount': rec.amount,
@@ -4059,6 +4356,7 @@ class PrintoutTopUp(models.AbstractModel):
             'doc_type': 'top_up',
             'docs': self.env[data['context']['active_model']].browse(data['context']['active_ids']),
             'values': values,
+            'price_breakdown': price_breakdown,
             'terbilang': self.compute_terbilang_from_objs(
                 self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
             'header_width': str(header_width),
@@ -4096,6 +4394,8 @@ class PrintoutRefund(models.AbstractModel):
         header_width = 90
         base_color = '#FFFFFF'
         ho_obj = False
+        ## TIDAK DI BREAKDOWN ##
+        price_breakdown = {}
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
             ho_obj = data_object.agent_id.ho_id
@@ -4103,6 +4403,7 @@ class PrintoutRefund(models.AbstractModel):
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': data_object,
+            'price_breakdown': price_breakdown,
             'is_ho': data['data'].get('is_ho') and data['data']['is_ho'] or False,
             'is_agent': data['data'].get('is_agent') and data['data']['is_agent'] or False,
             'is_est': data['data'].get('is_est') and data['data']['is_est'] or False,
@@ -4138,12 +4439,15 @@ class PrintoutReschedule(models.AbstractModel):
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
         base_color = '#FFFFFF'
+        ## TIDAK DI BREAKDOWN ##
+        price_breakdown = {}
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'docs': data_object,
+            'price_breakdown': price_breakdown,
             'header_width': str(header_width),
             'base_color': base_color,
             'static_url': static_url,
@@ -4168,6 +4472,8 @@ class PrintoutVoucher(models.AbstractModel):
         header_width = 90
         base_color = '#FFFFFF'
         ho_obj = False
+        ## TIDAK DI BREAKDOWN ##
+        price_breakdown = {}
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
             ho_obj = data_object.agent_id.ho_id
@@ -4176,6 +4482,7 @@ class PrintoutVoucher(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'doc_type': 'voucher',
             'docs': data_object,
+            'price_breakdown': price_breakdown,
             'doc_start_date': data_object.voucher_start_date and data_object.voucher_start_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
             'doc_expire_date': data_object.voucher_expire_date and data_object.voucher_expire_date.astimezone(pytz.timezone('Asia/Jakarta')) or False,
             'header_width': str(header_width),
@@ -4207,6 +4514,8 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
         lg_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee', agent_id)
         base_color = '#FFFFFF'
         ho_obj = False
+        ## TIDAK DI BREAKDOWN ##
+        price_breakdown = {}
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
             ho_obj = data_object.agent_id.ho_id
@@ -4218,6 +4527,7 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
             'doc_model': data['context']['active_model'],
             'doc_type': 'letter_of_guarantee',
             'docs': data_object,
+            'price_breakdown': price_breakdown,
             'lg_po_footer': lg_po_footer and lg_po_footer[0].html or '',
             'lg_footer': lg_footer and lg_footer[0].html or '',
             'header_width': str(header_width),

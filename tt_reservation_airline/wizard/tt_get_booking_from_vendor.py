@@ -10,35 +10,14 @@ from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
-provider_selection = [
-        ('altea', 'Garuda Altea'),
-        ('amadeus', 'Amadeus'),
-        ('airasia', 'Airasia'),
-        ('airasia_web', 'Airasia Web'),
-        ('aerodili', 'Aero Dili'),
-        ('citilink', 'Citilink'),
-        ('jetstar', 'Jetstar'),
-        ('lionair', 'Lion Air'),
-        ('lionairapi', 'Lion Air API'),
-        ('pelita', 'Pelita Air Web'),
-        ('pelita_api', 'Pelita Air API'),
-        ('sriwijaya', 'Sriwijaya'),
-        ('sia', 'Singapore Airline NDC'),
-        ('scoot', 'Scoot'),
-        ('qatar', 'Qatar'),
-        ('transnusa_web', 'Transnusa Web'),
-        ('rodextrip_airline', 'RT Airline'),
-        # ('sabre', 'Sabre'),
-    ]
-
 class TtGetBookingFromVendor(models.TransientModel):
     _name = "tt.get.booking.from.vendor"
     _description = "Get Booking from Vendor"
 
     pnr = fields.Char('PNR', required=True)
-    provider = fields.Selection(provider_selection, string='Provider', required=True)
 
-    parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related ="agent_id.parent_agent_id")
+    provider_ho_data_id = fields.Many2one('tt.provider.ho.data', 'Provider')
+    parent_agent_id = fields.Many2one('tt.agent', 'Parent Agent', readonly=True, related="agent_id.parent_agent_id")
     ho_id = fields.Many2one('tt.agent', 'Head Office', readonly=True, domain=[('is_ho_agent', '=', True)], required=True, compute='_compute_ho_id')
     agent_id = fields.Many2one('tt.agent', 'Agent', required=True)
     customer_parent_id = fields.Many2one('tt.customer.parent', 'Customer Parent', required=True, domain=[('id','=',-1)])
@@ -64,10 +43,24 @@ class TtGetBookingFromVendor(models.TransientModel):
     def _compute_ho_id(self):
         self.ho_id = self.agent_id.ho_id.id
 
+    @api.onchange('agent_id')
+    def _onchange_provider_ho_data_id(self):
+        if self.agent_id:
+            return {'domain': {
+                'provider_ho_data_id': [('ho_id','=', self.agent_id.ho_id.id)]
+            }}
+
     def get_provider_booking_from_vendor_api(self):
         try:
+            res = {}
+            provider_ho_data_objs = self.env['tt.provider.ho.data'].search([])
+            for provider_ho_data_obj in provider_ho_data_objs:
+                if provider_ho_data_obj.ho_id:
+                    if provider_ho_data_obj.ho_id.seq_id not in res:
+                        res[provider_ho_data_obj.ho_id.seq_id] = []
+                    res[provider_ho_data_obj.ho_id.seq_id].append([provider_ho_data_obj.provider_id.code, provider_ho_data_obj.provider_id.name])
             response = {
-                'list_provider': provider_selection
+                'list_provider': res
             }
             res = Response().get_no_error(response)
         except Exception as e:
@@ -133,7 +126,7 @@ class TtGetBookingFromVendor(models.TransientModel):
         req = {
             'user_id': self.user_id.id,
             'pnr': self.pnr,
-            'provider': self.provider
+            'provider': self.provider_ho_data_id.provider_id.code
         }
 
         if self.pricing_date:

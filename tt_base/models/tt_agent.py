@@ -65,6 +65,8 @@ class TtAgent(models.Model):
     website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
+    is_agent_breakdown_price_printout = fields.Boolean('Is Agent Breakdown Price Printout')
+    is_btc_breakdown_price_printout = fields.Boolean('Is BTC Breakdown Price Printout')
     redirect_url_signup = fields.Char('Redirect URL Signup', default='/')
     history_ids = fields.Char(string="History", required=False, )  # tt_history
     user_ids = fields.One2many('res.users', 'agent_id', 'User')
