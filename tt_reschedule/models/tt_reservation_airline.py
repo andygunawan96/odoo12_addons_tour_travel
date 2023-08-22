@@ -68,6 +68,7 @@ class ReservationAirline(models.Model):
                                     'destination_terminal': seg['destination_terminal'],
                                     'departure_date': seg['departure_date'],
                                     'arrival_date': seg['arrival_date'],
+                                    'status': seg.get('status', ''),
                                     'class_of_service': seg.get('class_of_service') or '', #di connector uda kasih di webservice hilang
                                     'cabin_class': '',
                                     'sequence': seg.get('sequence', 0),
@@ -169,6 +170,7 @@ class ReservationAirline(models.Model):
                             'destination_terminal': seg.destination_terminal,
                             'departure_date': seg.departure_date,
                             'arrival_date': seg.arrival_date,
+                            'status': seg.status,
                             'class_of_service': seg.class_of_service,
                             'cabin_class': seg.cabin_class,
                             'sequence': seg.sequence,
@@ -1159,7 +1161,7 @@ class ReservationAirline(models.Model):
                     # print('### HERE : not same fare basis code')
 
                 process_update_segments_info = False
-                if not is_same_journeys or not is_same_departure or not is_same_arrival or not is_same_class_of_service or not is_same_fare_basis_code:
+                if not is_same_journeys or not is_same_departure or not is_same_arrival or not is_same_class_of_service or not is_same_fare_basis_code or not is_same_journey_count:
                     process_update_segments_info = True
                 # END
 
@@ -1494,6 +1496,7 @@ class ReservationAirline(models.Model):
                                 'destination_terminal': seg['destination_terminal'],
                                 'departure_date': seg['departure_date'],
                                 'arrival_date': seg['arrival_date'],
+                                'status': seg.get('status', ''),
                                 'class_of_service': '',
                                 'cabin_class': '',
                                 'sequence': seg.get('sequence', 0),
