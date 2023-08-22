@@ -69,6 +69,10 @@ class TtSegmentAirline(models.Model):
     description_text = fields.Char('Description Text', default='', compute='_compute_description_text', store=True)
     # END
 
+    # August 14, 2023 - SAM
+    status = fields.Char('Status', default='')
+    # END
+
     @api.depends('departure_date', 'origin_id')
     def _compute_departure_date_utc(self):
         for rec in self:
@@ -165,6 +169,7 @@ class TtSegmentAirline(models.Model):
             'operating_airline_code': self.operating_airline_code and self.operating_airline_code or '',
             # END
             'description': [],
+            'status': self.status if self.status else '',
         }
         # September 20, 2022 - SAM
         try:
