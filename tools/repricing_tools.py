@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from math import ceil, floor
 from odoo.http import request
 from .destination_tools import DestinationToolsV2 as DestinationTools
+from decimal import Decimal
+from . import util
 
 
 _logger = logging.getLogger(__name__)
@@ -1134,7 +1136,7 @@ class ProviderPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, agent_id, agent_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
+    def get_pricing_data(self, agent_id, agent_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, currency_code_list, total_amount, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -1644,7 +1646,7 @@ class AgentPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
+    def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, currency_code_list, total_amount, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -2367,7 +2369,7 @@ class CustomerPricing(object):
             payload = {}
         return payload
 
-    def get_pricing_data(self, customer_parent_type_code, customer_parent_id, provider_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
+    def get_pricing_data(self, customer_parent_type_code, customer_parent_id, provider_type_code, provider_code, carrier_code, origin_code, origin_city, origin_country, destination_code, destination_city, destination_country, class_of_service_list, charge_code_list, tour_code_list, pricing_datetime, departure_date_list, currency_code_list, total_amount, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -2823,7 +2825,7 @@ class AgentCommission(object):
 
     def get_pricing_data(self, provider_type_code, agent_id, provider_code, carrier_code, origin_code, origin_city,
                          origin_country, destination_code, destination_city, destination_country, class_of_service_list,
-                         charge_code_list, tour_code_list, pricing_datetime, departure_date_list, **kwargs):
+                         charge_code_list, tour_code_list, pricing_datetime, departure_date_list, currency_code_list, total_amount, **kwargs):
         # if self.is_data_expired():
         #     self.do_config()
         if not self.data:
@@ -3452,6 +3454,7 @@ class RepricingToolsV2(object):
         pax_count_dict = {
             'ADT': 0
         }
+        total_amount = Decimal("0.0")
         for fare in self.ticket_fare_list:
             if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
                 class_of_service_list.append(fare['class_of_service'])
@@ -3476,6 +3479,13 @@ class RepricingToolsV2(object):
                 if pax_type not in pax_count_dict or pax_count_dict[pax_type] < pax_count:
                     pax_count_dict[pax_type] = pax_count
 
+                charge_type = sc.get('charge_type', '')
+                amount = sc.get('amount', 0.0)
+                if pax_count and amount and charge_type not in ['ROC', 'RAC']:
+                    total = Decimal(str(pax_count)) * Decimal(str(amount))
+                    total_amount += total
+        total_amount = float(total_amount)
+
         rule_param = {
             'agent_id': agent_id,
             'agent_type_code': agent_type_code,
@@ -3494,6 +3504,7 @@ class RepricingToolsV2(object):
             'departure_date_list': departure_date_list,
             'currency_code_list': currency_code_list,
             'context': context,
+            'total_amount': total_amount,
         }
         rule_obj = self.provider_pricing.get_pricing_data(**rule_param)
 
