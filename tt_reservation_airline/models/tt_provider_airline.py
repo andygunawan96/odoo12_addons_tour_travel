@@ -740,6 +740,7 @@ class TtProviderAirline(models.Model):
                 'passenger_id': '',
                 'key_1': '',
                 'key_2': '',
+                'title': '',
                 'first_name': '',
                 'last_name': '',
                 'is_sync': False,
@@ -751,6 +752,7 @@ class TtProviderAirline(models.Model):
                 key_1 = '%s%s%s' % (last_name, first_name, title)
                 key_2 = '%s%s%s' % (first_name, first_name, title)
                 vals.update({
+                    'title': rec.title if rec.title else '',
                     'key_1': key_1,
                     'key_2': key_2,
                     'first_name': rec.first_name if rec.first_name else '',
