@@ -32,11 +32,11 @@
         <field name="target">new</field>
     </record>
 
-<!--    <menuitem id="menu_move_agent_ho_wizard"-->
-<!--              parent="tt_base.top_tour_travel_administration"-->
-<!--              groups="base.group_erp_manager"-->
-<!--              name="Move Agent Head Office"-->
-<!--              sequence="8"-->
-<!--              action="move_agent_ho_wizard_action_view"/>-->
+    <menuitem id="menu_move_agent_ho_wizard"
+              parent="tt_base.top_tour_travel_administration"
+              groups="base.group_erp_manager"
+              name="Move Agent Head Office"
+              sequence="8"
+              action="move_agent_ho_wizard_action_view"/>
 
 </odoo>
