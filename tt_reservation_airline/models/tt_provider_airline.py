@@ -1396,7 +1396,7 @@ class TtProviderAirline(models.Model):
 
     def update_void_provider_booking_api(self, data, context):
         response = data['response']
-        provider_objs = self.search([("pnr",'=', data['pnr']), ("pnr2",'=',data['pnr2']), ("reference",'=', data['reference'])])
+        provider_objs = self.search([("pnr",'=', response['pnr']), ("pnr2",'=',response['pnr2']), ("reference",'=', response['reference'])])
         for provider_obj in provider_objs:
             try:
                 if response['status'] in ['VOID', 'REFUND']:
