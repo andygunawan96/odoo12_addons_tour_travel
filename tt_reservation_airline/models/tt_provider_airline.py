@@ -1395,10 +1395,10 @@ class TtProviderAirline(models.Model):
     # END
 
     def update_void_provider_booking_api(self, data, context):
+        response = data['response']
         provider_objs = self.search([("pnr",'=', data['pnr']), ("pnr2",'=',data['pnr2']), ("reference",'=', data['reference'])])
         for provider_obj in provider_objs:
             try:
-                response = data['response']
                 if response['status'] in ['VOID', 'REFUND']:
                     provider_obj.write({
                         'cancel_uid': context['co_uid'],
