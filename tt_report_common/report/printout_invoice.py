@@ -3002,6 +3002,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
 
                     values[rec.id].append({
                         'name': psg.name,
+                        'passenger_id': psg,
                         'pax_type': pax_type,
                         'inc_ssr': inc_ssr_descs, # Inc. SSR
                         'add_ssr': ssr_descs,  # Add SSR
