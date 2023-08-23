@@ -2498,12 +2498,15 @@ class ReservationAirline(models.Model):
         return url
 
     def get_transaction_additional_info(self):
-        text = ''
-        if self.origin_id:
-            text = self.origin_id.code
-            if self.destination_id:
-                if text != '':
-                    text += ' - %s' % self.destination_id.code
+        destination_list = []
+        destination_list.append(self.origin_id.code)
+        for segment_obj in self.segment_ids:
+            if destination_list[-1] != segment_obj.origin_id.code:
+                destination_list.append(segment_obj.origin_id.code)
+            if destination_list[-1] != segment_obj.destination_id.code:
+                destination_list.append(segment_obj.destination_id.code)
+
+        text = "-".join(destination_list)
         if self.departure_date:
             if text != '':
                 text += '<br/>'
