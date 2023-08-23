@@ -8,6 +8,7 @@ import traceback
 import copy
 from dateutil.relativedelta import relativedelta
 from ...tools import util
+from ...tools import util,variables,ERR
 
 
 _logger = logging.getLogger(__name__)
@@ -1317,7 +1318,7 @@ class TtProviderAirline(models.Model):
             "pnr": self.pnr,
             "pnr2": self.pnr2,
             "reference": self.reference,
-            "context": context,
+            "context": context
         }
         res = self.env['tt.airline.api.con'].send_void_booking_vendor(req)
         _logger.info('Action Void Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
@@ -1392,6 +1393,34 @@ class TtProviderAirline(models.Model):
             'tag': 'reload',
         }
     # END
+
+    def update_void_provider_booking_api(self, data, context):
+        provider_objs = self.search([("pnr",'=', data['pnr']), ("pnr2",'=',data['pnr2']), ("reference",'=', data['reference'])])
+        for provider_obj in provider_objs:
+            try:
+                response = data['response']
+                if response['status'] in ['VOID', 'REFUND']:
+                    provider_obj.write({
+                        'cancel_uid': context['co_uid'],
+                        'cancel_date': datetime.now(),
+                        'state': 'void',
+                    })
+
+                    for rec in provider_obj.booking_id.ledger_ids:
+                        if rec.pnr in [self.pnr, str(self.sequence)] and not rec.is_reversed:
+                            rec.reverse_ledger()
+
+                    for rec in provider_obj.cost_service_charge_ids:
+                        rec.is_ledger_created = False
+
+                ctx = {
+                    'co_uid': context['co_uid']
+                }
+                provider_obj.booking_id.check_provider_state(ctx)
+            except Exception as e:
+                _logger.error('Action void provider, error update provider state, %s, %s' % (provider_obj.pnr, traceback.format_exc()))
+                return ERR.get_error(500)
+        return ERR.get_no_error()
 
     # March 08, 2023 - SAM
     def action_check_segment_provider(self):
