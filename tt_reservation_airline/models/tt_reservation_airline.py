@@ -3718,12 +3718,14 @@ class ReservationAirline(models.Model):
                         if tkt_obj.last_name:
                             name_list.append(tkt_obj.last_name)
                         name = ' '.join(name_list)
-                        psg_obj.write({
+                        psg_vals = {
                             'name': name,
-                            'title': tkt_obj.title,
                             'first_name': tkt_obj.first_name,
                             'last_name': tkt_obj.last_name,
-                        })
+                        }
+                        if tkt_obj.title:
+                            psg_vals['title'] = tkt_obj.title
+                        psg_obj.write(psg_vals)
                         if psg_obj.customer_id:
                             psg_obj.customer_id.write({
                                 'first_name': tkt_obj.first_name,
