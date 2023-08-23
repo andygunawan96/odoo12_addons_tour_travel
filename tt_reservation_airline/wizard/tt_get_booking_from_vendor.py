@@ -53,7 +53,7 @@ class TtGetBookingFromVendor(models.TransientModel):
     def get_provider_booking_from_vendor_api(self):
         try:
             res = {}
-            provider_ho_data_objs = self.env['tt.provider.ho.data'].search([])
+            provider_ho_data_objs = self.env['tt.provider.ho.data'].search([('provider_id.provider_type_id.id','=', self.env.ref('tt_reservation_airline.tt_provider_type_airline').id)])
             for provider_ho_data_obj in provider_ho_data_objs:
                 if provider_ho_data_obj.ho_id:
                     if provider_ho_data_obj.ho_id.seq_id not in res:

@@ -360,17 +360,14 @@
                         <div class="col-1" style="text-align: center; font-size:17px;">
                             No.
                         </div>
-                        <div class="col-3" style="text-align: center; font-size:17px;">
+                        <div class="col-6" style="text-align: center; font-size:17px;">
                             Name
                         </div>
-                        <div class="col-1" style="text-align: center; font-size:17px;">
-                            Pax
-                        </div>
-                        <div class="col-4" style="text-align: center; font-size:17px;">
+                        <div class="col-3" style="text-align: center; font-size:17px;">
                             Facility(s)
                         </div>
                         <div class="col-2" style="text-align: center; font-size:17px;">
-                            Pax Price
+                            Price
                         </div>
                     </div>
                     <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
@@ -380,14 +377,24 @@
                             <div class="col-1" style="text-align: center">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                             </div>
-                            <div class="col-3" style="text-align: left;">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
+                            <div class="col-6" style="text-align: center;">
+                                <div class="row">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
+                                    (<label style="font-weight:300; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>)
+                                </div>
+                                <div class="row">
+                                    <t t-if="psg.get('passenger_id')">
+                                        <t t-set="data_pax" t-value="psg['passenger_id']"/>
+                                        <t t-if="data_pax.frequent_flyer_ids">
+                                          <t t-foreach="data_pax.frequent_flyer_ids" t-as="ff_id">
+                                            - <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="ff_id.loyalty_program_id.name"/>: <span t-field="ff_id.ff_number"/></label><br/>
+                                          </t>
+                                        </t>
+                                    </t>
+                                </div>
                             </div>
-                            <div class="col-1" style="text-align: center">
-                                <label style="font-weight:300; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>
-                            </div>
-                            <t t-if="psg['add_ssr'] or psg['inc_ssr']">
-                                <div class="col-4" style="text-align: left; overflow-wrap: break-word;">
+                            <div class="col-3" style="text-align: center; overflow-wrap: break-word;">
+                                <t t-if="psg['add_ssr'] or psg['inc_ssr']">
                                     <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
                                     <t t-foreach="psg['inc_ssr']" t-as="add_ssr">
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
@@ -400,15 +407,11 @@
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
                                             <!--</t>-->
                                     </t>
-                                </div>
-                            </t>
-                            <t t-else="">
-                                <div class="col-4" style="text-align: center; overflow-wrap: break-word;">
-                                    -
-                                </div>
-                            </t>
-                            <div class="col-2" style="text-align: left; overflow-wrap: break-word;">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['price_total']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></label>
+                                </t>
+                                <t t-else="">-</t>
+                            </div>
+                            <div class="col-2" style="text-align: right; overflow-wrap: break-word;">
+                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['price_total']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></label>
                             </div>
                         </div>
                     </t>
