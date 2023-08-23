@@ -720,10 +720,14 @@ class TtProviderAirline(models.Model):
                 title = ''.join(rec.title.split()).lower() if rec.title else ''
                 key_1 = '%s%s%s' % (last_name, first_name, title)
                 key_2 = '%s%s%s' % (first_name, first_name, title)
+                key_3 = '%s%s' % (last_name, first_name)
+                key_4 = '%s%s' % (first_name, first_name)
                 vals = {
                     'passenger_id': rec.id,
                     'key_1': key_1,
                     'key_2': key_2,
+                    'key_3': key_3,
+                    'key_4': key_4,
                     'first_name': rec.first_name if rec.first_name else '',
                     'last_name': rec.last_name if rec.last_name else '',
                     'has_ticket': False,
@@ -740,6 +744,8 @@ class TtProviderAirline(models.Model):
                 'passenger_id': '',
                 'key_1': '',
                 'key_2': '',
+                'key_3': '',
+                'key_4': '',
                 'title': '',
                 'first_name': '',
                 'last_name': '',
@@ -751,10 +757,14 @@ class TtProviderAirline(models.Model):
                 title = ''.join(rec.title.split()).lower() if rec.title else ''
                 key_1 = '%s%s%s' % (last_name, first_name, title)
                 key_2 = '%s%s%s' % (first_name, first_name, title)
+                key_3 = '%s%s' % (last_name, first_name)
+                key_4 = '%s%s' % (first_name, first_name)
                 vals.update({
                     'title': rec.title if rec.title else '',
                     'key_1': key_1,
                     'key_2': key_2,
+                    'key_3': key_3,
+                    'key_4': key_4,
                     'first_name': rec.first_name if rec.first_name else '',
                     'last_name': rec.last_name if rec.last_name else '',
                 })
@@ -776,9 +786,13 @@ class TtProviderAirline(models.Model):
                     title = ''.join(psg_obj.title.split()).lower() if psg_obj.title else ''
                     key_1 = '%s%s%s' % (last_name, first_name, title)
                     key_2 = '%s%s%s' % (first_name, first_name, title)
+                    key_3 = '%s%s' % (last_name, first_name)
+                    key_4 = '%s%s' % (first_name, first_name)
                     vals.update({
                         'key_1': key_1,
                         'key_2': key_2,
+                        'key_3': key_3,
+                        'key_4': key_4,
                         'title': psg_obj.title if psg_obj.title else '',
                         'first_name': psg_obj.first_name if psg_obj.first_name else '',
                         'last_name': psg_obj.last_name if psg_obj.last_name else '',
@@ -828,6 +842,8 @@ class TtProviderAirline(models.Model):
             title = ''.join(rec['title'].split()).lower() if rec.get('title') else ''
             key_1 = '%s%s%s' % (last_name, first_name, title)
             key_2 = '%s%s%s' % (first_name, first_name, title)
+            key_3 = '%s%s' % (last_name, first_name)
+            key_4 = '%s%s' % (first_name, first_name)
             key_type = '1'
             if not first_name or not last_name:
                 key_type = '2'
@@ -840,29 +856,56 @@ class TtProviderAirline(models.Model):
                 if tkt['is_sync']:
                     continue
                 # if key_1 in tkt['key_1'] or key_2 in tkt['key_2']:
-                if (key_type == '1' and key_1 in tkt['key_1']) or (key_type == '2' and key_2 in tkt['key_2']):
-                    is_ticket_found = True
-                    tkt['is_sync'] = True
-                    ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
-                    if tkt['passenger_id']:
-                        for psg in backend_pax_repo:
-                            if psg['passenger_id'] == tkt['passenger_id']:
-                                psg['has_ticket'] = True
-                                break
-                        if str(tkt['passenger_id']) in backend_pax_obj_repo:
-                            backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
-                    else:
-                        for psg in backend_pax_repo:
-                            if key_1 in psg['key_1'] or key_2 in psg['key_2']:
-                                psg['has_ticket'] = True
-                                passenger_id = psg['passenger_id']
-                                if str(passenger_id) in backend_pax_obj_repo:
-                                    backend_pax_obj_repo[str(passenger_id)].is_ticketed = True
-                                ticket_vals.update({
-                                    'passenger_id': passenger_id
-                                })
-                                break
-                    break
+                if rec.get('title'):
+                    if (key_type == '1' and key_1 in tkt['key_1']) or (key_type == '2' and key_2 in tkt['key_2']):
+                        is_ticket_found = True
+                        tkt['is_sync'] = True
+                        ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
+                        if tkt['passenger_id']:
+                            for psg in backend_pax_repo:
+                                if psg['passenger_id'] == tkt['passenger_id']:
+                                    psg['has_ticket'] = True
+                                    break
+                            if str(tkt['passenger_id']) in backend_pax_obj_repo:
+                                backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
+                        else:
+                            for psg in backend_pax_repo:
+                                if key_1 in psg['key_1'] or key_2 in psg['key_2']:
+                                    psg['has_ticket'] = True
+                                    passenger_id = psg['passenger_id']
+                                    if str(passenger_id) in backend_pax_obj_repo:
+                                        backend_pax_obj_repo[str(passenger_id)].is_ticketed = True
+                                    ticket_vals.update({
+                                        'passenger_id': passenger_id
+                                    })
+                                    break
+                        break
+                else:
+                    if (key_type == '1' and key_3 == tkt['key_3']) or (key_type == '2' and key_4 == tkt['key_4']):
+                        is_ticket_found = True
+                        tkt['is_sync'] = True
+                        if 'title' in ticket_vals:
+                            ticket_vals.pop('title')
+                        ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
+                        if tkt['passenger_id']:
+                            for psg in backend_pax_repo:
+                                if psg['passenger_id'] == tkt['passenger_id']:
+                                    psg['has_ticket'] = True
+                                    break
+                            if str(tkt['passenger_id']) in backend_pax_obj_repo:
+                                backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
+                        else:
+                            for psg in backend_pax_repo:
+                                if key_3 == psg['key_3'] or key_4 == psg['key_4']:
+                                    psg['has_ticket'] = True
+                                    passenger_id = psg['passenger_id']
+                                    if str(passenger_id) in backend_pax_obj_repo:
+                                        backend_pax_obj_repo[str(passenger_id)].is_ticketed = True
+                                    ticket_vals.update({
+                                        'passenger_id': passenger_id
+                                    })
+                                    break
+                        break
             # if not exist, tampung dulu
             if not is_ticket_found:
                 new_ticket_list.append(ticket_vals)
@@ -892,12 +935,14 @@ class TtProviderAirline(models.Model):
                     if tkt_vals['last_name']:
                         name_list.append(tkt_vals['last_name'])
                     name = ' '.join(name_list)
-                    backend_pax_obj_repo[str(passenger_id)].write({
+                    write_vals = {
                         'name': name,
-                        'title': tkt_vals['title'],
                         'first_name': tkt_vals['first_name'],
                         'last_name': tkt_vals['last_name'],
-                    })
+                    }
+                    if tkt_vals.get('title'):
+                        write_vals['title'] = tkt_vals['title']
+                    backend_pax_obj_repo[str(passenger_id)].write(write_vals)
                     if backend_pax_obj_repo[str(passenger_id)].customer_id:
                         backend_pax_obj_repo[str(passenger_id)].customer_id.write({
                             'first_name': tkt_vals['first_name'],
