@@ -92,8 +92,8 @@ class PaymentTransaction(models.Model):
 
     def _compute_fee_payment(self):
         for rec in self:
-            if rec.acquirer_id:
-                loss_or_profit,fee,unique = rec.acquirer_id.compute_fee(rec.real_total_amount)
+            if rec.sudo().acquirer_id:
+                loss_or_profit,fee,unique = rec.sudo().acquirer_id.compute_fee(rec.real_total_amount)
                 rec.fee = fee
                 rec.loss_or_profit = loss_or_profit
 
