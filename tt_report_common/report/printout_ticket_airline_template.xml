@@ -133,13 +133,16 @@
             <span style="font-size: 28px; font-weight: 730">Flight Detail(s)</span><br/>
         </div>
 
+        <t t-set="pax_margin" t-value="-30"/>
+
         <!-- Flight Detail (Content) -->
         <t t-set="line_index" t-value="0"/>
+        <t t-set="segment_count" t-value="0"/>
         <t t-foreach="length.journey_ids" t-as="line">
             <div class="box" style="margin-bottom: 20px;">
                 <div class="title" t-att-style="'background-color: '+ base_color+'; border-radius: 20px 20px 0 0; border-color: #CCC; padding-top: 5px; padding-bottom: 5px'">
                     <span style="padding-left: 20px; color: white; font-weight: 600; font-size: 18px">Flight <span t-esc="line_index+1"/>: <span t-field="line.origin_id.city"/></span>
-                    <img t-att-src="'/tt_report_common/static/images/arrow-right-white.png'" style="max-height:20px; max-width:20px; margin-bottom: 4px;" />
+                    <img t-att-src="'/tt_report_common/static/images/arrow-right-white.png'" style="max-height:20px; max-width:20px; margin-bottom: 4px;"/>
                     <span style="color: white; font-weight: 600; font-size: 18px"> <span t-field="line.destination_id.city"/> | </span>
                     <span style="color: white; font-weight: 600; font-size: 18px"><span t-esc="time.strftime('%a, %d %b %Y', time.strptime(line.departure_date[:10],'%Y-%m-%d'))"/></span>
                 </div>
@@ -239,6 +242,8 @@
 
                 <!-- Segment Only -->
                 <t t-foreach="line.segment_ids" t-as="segment_obj">
+                    <t t-set="segment_count" t-value="segment_count+1"/>
+
                     <!-- Prepare Segment Height -->
                     <t t-set="height_origin_code" t-value="(len(segment_obj.origin_id.city) + len(segment_obj.origin_id.code) + 3) / 20"/>
                     <t t-set="height_origin_name" t-value="len(segment_obj.origin_id.name) / 22"/>
@@ -282,7 +287,7 @@
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.departure_date[10:16]"/></span>
                                     </div>
                                     <div class="col-2" style="text-align: center;">
-                                        <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
+                                        <img t-att-src="'/tt_report_common/static/images/airfreight-grey.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
                                         <!--                                                <img src="/tt_report_common/static/images/airfreight-white.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:'+ base_color +';'"/>-->
                                         <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                     </div>
@@ -324,8 +329,8 @@
                                         <span style="font-size: 16px; font-weight:200"><span t-esc="segment_obj.departure_date[10:16]"/></span>
                                     </div>
                                     <div class="col-2" style="text-align: center;">
-                                        <img t-att-src="'/tt_report_common/static/images/airfreight-orange.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
-                                        <!--<img src="/tt_report_common/static/images/airfreight-orange.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:' + backgounrd_color + ';"/>-->
+                                        <img t-att-src="'/tt_report_common/static/images/airfreight-grey.svg'" style="max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg);"/>
+                                        <!--<img src="/tt_report_common/static/images/airfreight-grey.svg" t-att-style="'max-height:65px; max-width:65px; margin-top:25%; transform: rotate(45deg); -webkit-transform: rotate(45deg); background:' + backgounrd_color + ';"/>-->
                                         <span style="font-size: 15px; font-weight: 400;"><span t-field="segment_obj.elapsed_time"/></span>
                                     </div>
                                     <div class="col-5">
@@ -348,13 +353,15 @@
                 </t>
             </div>
             <t t-set="line_index" t-value="line_index+1"/>
-            <t t-if="line_index%4 == 0">
-                <div style="padding-bottom: 70px"/>
+            <t t-if="segment_count%4 == 0">
+                <!--<div style="padding-bottom: 70px"/>-->
+                <t t-set="pax_margin" t-value="10"/>
+                <div style="page-break-after: always;"><br/></div>
             </t>
         </t>
 
         <!-- Passenger Detail (Title) -->
-        <div style="margin-top: -30px; margin-bottom: -10px;">
+        <div t-att-style="'margin-top: ' + str(pax_margin) + 'px; margin-bottom: -10px;'">
             <span style="font-size: 28px; font-weight: 730">Passenger Detail(s)</span><br/>
         </div>
 
@@ -406,8 +413,7 @@
                                 <div class="col-6">
                                     <div class="row">
                                         <div class="col-6" style="text-align: left;">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
-                                            (<label style="font-weight:300; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>)
+                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/> (<span t-esc="psg['pax_type']"/>)</label>
                                         </div>
                                         <div class="col-6" style="text-align: center;">
                                             <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><t t-if="psg.get('ticket_number')"><span t-esc="psg['ticket_number']"/></t><t t-else="">-</t></label>
@@ -424,7 +430,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-3" style="text-align: center;">
+                                <div class="col-3" style="text-align: left;">
                                     <t t-call="tt_report_common.airline_pax_ssr"/>
                                 </div>
                                 <div class="col-2" style="text-align: right;">
@@ -438,25 +444,24 @@
                                 <div class="col-8">
                                     <div class="row">
                                         <div class="col-6" style="text-align: left;">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
-                                            (<label style="font-weight:300; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>)
+                                            <label style="font-weight:450; font-size:17px; overflow-wrap: break-word;"><span t-esc="psg['name']"/> (<span t-esc="psg['pax_type']"/>)</label>
                                         </div>
                                         <div class="col-6" style="text-align: center;">
-                                            <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><t t-if="psg.get('ticket_number')"><span t-esc="psg['ticket_number']"/></t><t t-else="">-</t></label>
+                                            <label style="font-weight:450; font-size:17px; overflow-wrap: break-word;"><t t-if="psg.get('ticket_number')"><span t-esc="psg['ticket_number']"/></t><t t-else="">-</t></label>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col-10" style="text-align: left;">
-                                            <t t-set="data_pax" t-value="psg['passenger_id']"/>
-                                            <t t-if="data_pax.frequent_flyer_ids">
+                                    <t t-set="data_pax" t-value="psg['passenger_id']"/>
+                                    <t t-if="data_pax.frequent_flyer_ids">
+                                        <div class="row">
+                                            <div class="col-10" style="text-align: left;">
                                                 <t t-foreach="data_pax.frequent_flyer_ids" t-as="ff_id">
                                                     - <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="ff_id.loyalty_program_id.name"/>: <span t-field="ff_id.ff_number"/></label><br/>
                                                 </t>
-                                            </t>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </t>
                                 </div>
-                                <div class="col-3" style="text-align: center;">
+                                <div class="col-3" style="text-align: left;">
                                     <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
                                     <t t-call="tt_report_common.airline_pax_ssr"/>
                                 </div>

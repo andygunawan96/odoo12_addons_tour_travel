@@ -533,7 +533,7 @@
             <div class="box-footer" style="padding: 0px; width: 100%; height: 120px; background: rgba(39,62,84,0.82); font-family: 'DejaVu Sans'">  <!--rgba(70,70,70,0.8);-->
                 <t t-if="doc_type in ['itin',]">
                     <div class="row">
-                        <div class="col-5" style="margin-top:10px; margin-left: 15px; margin-right: 15px; padding: 0 30px;">
+                        <div class="col-6" style="margin-top:10px; margin-left: 15px; margin-right: 15px; padding: 0 30px;">
                             <div>
                                 <span style="font-weight: 600; color: white" t-field="doc['agent_id'].name"/>
                             </div>
@@ -593,7 +593,7 @@
                 </t>
                 <t t-elif="doc_type in ['ho_invoice', 'top_up', 'ho_billing']">
                     <div class="row">
-                        <div class="col-5" style="margin-top:10px; padding: 0 30px;">
+                        <div class="col-6" style="margin-top:10px; padding: 0 30px;">
                             <div style="margin-left: 15px; margin-right: 15px;">
                                 <span style="font-weight: 600; color: white" t-field="ho_obj.sudo().name"/>
                             </div>
@@ -656,7 +656,7 @@
                 <t t-elif="doc_model in ['tt.agent.invoice','tt.billing.statement','tt.refund','tt.reschedule','tt.reschedule.periksain','tt.reschedule.phc']">
                     <!-- Hide agent logo cman untuk reservation only, untuk refund reschedule dkk tetep tmpil -->
                     <div class="row">
-                        <div class="col-5" style="margin-top:10px; padding: 0 30px;">
+                        <div class="col-6" style="margin-top:10px; padding: 0 30px;">
                             <div style="margin-left: 15px; margin-right: 15px;">
                                 <span style="font-weight: 600; color: white" t-field="doc.agent_id.name"/>
                             </div>
@@ -719,7 +719,7 @@
                 <t t-else="">
                     <t t-if="not is_hide_agent_logo">
                         <div class="row">
-                            <div class="col-5" style="margin-top:10px; padding: 0 30px;">
+                            <div class="col-6" style="margin-top:10px; padding: 0 30px;">
                                 <div style="margin-left: 15px; margin-right: 15px;">
                                     <span style="font-weight: 600; color: white" t-field="doc.agent_id.name"/>
                                 </div>
@@ -781,7 +781,7 @@
                     </t>
                     <t t-else="">
                         <div class="row">
-                            <div class="col-5" style="margin-top:10px; padding: 0 30px;">
+                            <div class="col-6" style="margin-top:10px; padding: 0 30px;">
 
                             </div>
                             <div class="col-6" style="margin-top:10px;">
