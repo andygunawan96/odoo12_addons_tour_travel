@@ -1112,6 +1112,10 @@ class TtReservation(models.Model):
                 "total": 0,
                 "id": []
             },
+            "YCD": {
+                "total": 0,
+                "id": []
+            }
         }
 
         for idx, rec in enumerate(self.provider_booking_ids):
