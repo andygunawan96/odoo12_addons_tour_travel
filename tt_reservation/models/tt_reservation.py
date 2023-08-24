@@ -972,7 +972,14 @@ class TtReservation(models.Model):
                 book_obj.create_date
             except:
                 return ERR.get_error(1001)
-            if book_obj.agent_id.id == context['co_agent_id']:
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                return ERR.get_error(1008)
+
+            if book_obj.agent_id.id == context['co_agent_id'] or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 for psg in req['passengers']:
                     for psg_obj in book_obj.passenger_ids:
                         if psg['sequence'] == psg_obj.sequence:
@@ -1201,7 +1208,14 @@ class TtReservation(models.Model):
                 book_obj.create_date
             except:
                 return ERR.get_error(1001)
-            if book_obj.agent_id.id == context['co_agent_id']:
+
+            user_obj = self.env['res.users'].browse(context['co_uid'])
+            try:
+                user_obj.create_date
+            except:
+                return ERR.get_error(1008)
+
+            if book_obj.agent_id.id == context['co_agent_id'] or self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids:
                 book_obj.booker_insentif = req['booker']['amount']
             else:
                 return ERR.get_error(1001)
