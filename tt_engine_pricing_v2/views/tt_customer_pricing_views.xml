@@ -185,7 +185,7 @@
 If not set (empty), it will be applied for all currencies.</pre>
                     </div>
                     <notebook>
-                        <page string="Route" name="route">
+                        <page string="Requirements" name="requirements">
                             <notebook>
                                 <page string="Origin" name="origin">
                                     <group string="Origin Route">
@@ -303,42 +303,98 @@ QQ1KTFITVALUEB,QQ3KFVITVALUEA</pre>
                                         </group>
                                     </group>
                                 </page>
+                                <page string="Total Amount" name="total_amount">
+                                    <group string="Total Amount">
+                                        <group>
+                                            <field name="total_access_type" widget="radio"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'less')]}">
+                                            <field name="total_less_amount" string="&lt;" attrs="{'invisible': [('total_is_less_equal', '=', True)]}"/>
+                                            <field name="total_less_amount" string="&lt;=" attrs="{'invisible': [('total_is_less_equal', '=', False)]}"/>
+                                            <field name="total_is_less_equal" widget="boolean_toggle"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'between')]}">
+                                            <field name="total_greater_amount" string="&gt;" attrs="{'invisible': [('total_is_greater_equal', '=', True)]}"/>
+                                            <field name="total_greater_amount" string="&gt;=" attrs="{'invisible': [('total_is_greater_equal', '=', False)]}"/>
+                                            <field name="total_is_greater_equal" widget="boolean_toggle"/>
+                                            <br/>
+                                            <field name="total_less_amount" string="&lt;" attrs="{'invisible': [('total_is_less_equal', '=', True)]}"/>
+                                            <field name="total_less_amount" string="&lt;=" attrs="{'invisible': [('total_is_less_equal', '=', False)]}"/>
+                                            <field name="total_is_less_equal" widget="boolean_toggle"/>
+                                        </group>
+                                        <group attrs="{'invisible': [('total_access_type', '!=', 'greater')]}">
+                                            <field name="total_greater_amount" string="&gt;" attrs="{'invisible': [('total_is_greater_equal', '=', True)]}"/>
+                                            <field name="total_greater_amount" string="&gt;=" attrs="{'invisible': [('total_is_greater_equal', '=', False)]}"/>
+                                            <field name="total_is_greater_equal" widget="boolean_toggle"/>
+                                        </group>
+                                    </group>
+                                </page>
                             </notebook>
                         </page>
                         <page string="Reservation" name="reservation">
-                            <group string="Reservation Upsell">
-                                <group string="By Percentage">
-                                    <field name="rsv_sales_upsell_percentage"/>
-                                    <field name="rsv_sales_upsell_has_minimum"/>
-                                    <field name="rsv_sales_upsell_minimum" attrs="{'invisible': [('rsv_sales_upsell_has_minimum', '=', False)]}"/>
-                                    <field name="rsv_sales_upsell_has_maximum"/>
-                                    <field name="rsv_sales_upsell_maximum" attrs="{'invisible': [('rsv_sales_upsell_has_maximum', '=', False)]}"/>
-                                </group>
-                                <group string="By Amount">
-                                    <field name="rsv_sales_upsell_amount"/>
-                                    <field name="rsv_sales_upsell_route"/>
-                                    <field name="rsv_sales_upsell_segment"/>
-                                </group>
-                            </group>
+                            <notebook>
+                                <page string="Upsell" name="reservation_upsell">
+                                    <group string="Reservation Upsell">
+                                        <group string="By Percentage">
+                                            <field name="rsv_sales_upsell_percentage"/>
+                                            <field name="rsv_sales_upsell_has_minimum"/>
+                                            <field name="rsv_sales_upsell_minimum" attrs="{'invisible': [('rsv_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="rsv_sales_upsell_has_maximum"/>
+                                            <field name="rsv_sales_upsell_maximum" attrs="{'invisible': [('rsv_sales_upsell_has_maximum', '=', False)]}"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="rsv_sales_upsell_amount"/>
+                                            <field name="rsv_sales_upsell_route"/>
+                                            <field name="rsv_sales_upsell_segment"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="Commission Tax" name="reservation_commission">
+                                    <group>
+                                        <group string="Commission Tax">
+                                            <field name="rsv_com_tax_percentage"/>
+                                            <field name="rsv_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="rsv_com_rounding_places"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
                         </page>
                         <page string="Ticketing" name="ticketing">
-                            <group string="Ticketing Advanced Upsell">
-                                <group string="By Percentage">
-                                    <field name="tkt_sales_upsell_percentage"/>
-                                    <field name="tkt_sales_upsell_has_minimum"/>
-                                    <field name="tkt_sales_upsell_minimum" attrs="{'invisible': [('tkt_sales_upsell_has_minimum', '=', False)]}"/>
-                                    <field name="tkt_sales_upsell_has_maximum"/>
-                                    <field name="tkt_sales_upsell_maximum" attrs="{'invisible': [('tkt_sales_upsell_has_maximum', '=', False)]}"/>
-                                    <field name="tkt_sales_upsell_percentage_infant"/>
-                                </group>
-                                <group string="By Amount">
-                                    <field name="tkt_sales_upsell_amount"/>
-                                    <field name="tkt_sales_upsell_route"/>
-                                    <field name="tkt_sales_upsell_segment"/>
-<!--                                    <field name="tkt_sales_upsell_pax"/>-->
-                                    <field name="tkt_sales_upsell_amount_infant"/>
-                                </group>
-                            </group>
+                            <notebook>
+                                <page string="Upsell" name="ticketing_upsell">
+                                    <group string="Ticketing Advanced Upsell">
+                                        <group string="By Percentage">
+                                            <field name="tkt_sales_upsell_percentage"/>
+                                            <field name="tkt_sales_upsell_has_minimum"/>
+                                            <field name="tkt_sales_upsell_minimum" attrs="{'invisible': [('tkt_sales_upsell_has_minimum', '=', False)]}"/>
+                                            <field name="tkt_sales_upsell_has_maximum"/>
+                                            <field name="tkt_sales_upsell_maximum" attrs="{'invisible': [('tkt_sales_upsell_has_maximum', '=', False)]}"/>
+                                            <field name="tkt_sales_upsell_percentage_infant"/>
+                                        </group>
+                                        <group string="By Amount">
+                                            <field name="tkt_sales_upsell_amount"/>
+                                            <field name="tkt_sales_upsell_route"/>
+                                            <field name="tkt_sales_upsell_segment"/>
+        <!--                                    <field name="tkt_sales_upsell_pax"/>-->
+                                            <field name="tkt_sales_upsell_amount_infant"/>
+                                        </group>
+                                    </group>
+                                </page>
+                                <page string="Commission Tax" name="ticketing_commission">
+                                    <group>
+                                        <group string="Commission Tax">
+                                            <field name="tkt_com_tax_percentage"/>
+                                            <field name="tkt_com_tax_amount"/>
+                                        </group>
+                                        <group string="Rounding">
+                                            <field name="tkt_com_rounding_places"/>
+                                        </group>
+                                    </group>
+                                </page>
+                            </notebook>
                         </page>
                         <page string="Ancillary" name="ancillary">
                             <div>

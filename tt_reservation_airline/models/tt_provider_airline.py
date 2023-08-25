@@ -7,6 +7,8 @@ from ...tools.db_connector import GatewayConnector
 import traceback
 import copy
 from dateutil.relativedelta import relativedelta
+from ...tools import util
+from ...tools import util,variables,ERR
 
 
 _logger = logging.getLogger(__name__)
@@ -716,12 +718,17 @@ class TtProviderAirline(models.Model):
             for rec in self.booking_id.passenger_ids:
                 first_name = ''.join(rec.first_name.split()).lower() if rec.first_name else ''
                 last_name = ''.join(rec.last_name.split()).lower() if rec.last_name else ''
-                key_1 = '%s%s' % (last_name, first_name)
-                key_2 = '%s%s' % (first_name, first_name)
+                title = ''.join(rec.title.split()).lower() if rec.title else ''
+                key_1 = '%s%s%s' % (last_name, first_name, title)
+                key_2 = '%s%s%s' % (first_name, first_name, title)
+                key_3 = '%s%s' % (last_name, first_name)
+                key_4 = '%s%s' % (first_name, first_name)
                 vals = {
                     'passenger_id': rec.id,
                     'key_1': key_1,
                     'key_2': key_2,
+                    'key_3': key_3,
+                    'key_4': key_4,
                     'first_name': rec.first_name if rec.first_name else '',
                     'last_name': rec.last_name if rec.last_name else '',
                     'has_ticket': False,
@@ -738,6 +745,9 @@ class TtProviderAirline(models.Model):
                 'passenger_id': '',
                 'key_1': '',
                 'key_2': '',
+                'key_3': '',
+                'key_4': '',
+                'title': '',
                 'first_name': '',
                 'last_name': '',
                 'is_sync': False,
@@ -745,11 +755,17 @@ class TtProviderAirline(models.Model):
             if rec.first_name or rec.last_name:
                 first_name = ''.join(rec.first_name.split()).lower() if rec.first_name else ''
                 last_name = ''.join(rec.last_name.split()).lower() if rec.last_name else ''
-                key_1 = '%s%s' % (last_name, first_name)
-                key_2 = '%s%s' % (first_name, first_name)
+                title = ''.join(rec.title.split()).lower() if rec.title else ''
+                key_1 = '%s%s%s' % (last_name, first_name, title)
+                key_2 = '%s%s%s' % (first_name, first_name, title)
+                key_3 = '%s%s' % (last_name, first_name)
+                key_4 = '%s%s' % (first_name, first_name)
                 vals.update({
+                    'title': rec.title if rec.title else '',
                     'key_1': key_1,
                     'key_2': key_2,
+                    'key_3': key_3,
+                    'key_4': key_4,
                     'first_name': rec.first_name if rec.first_name else '',
                     'last_name': rec.last_name if rec.last_name else '',
                 })
@@ -768,11 +784,17 @@ class TtProviderAirline(models.Model):
                     psg_obj = rec.passenger_id
                     first_name = ''.join(psg_obj.first_name.split()).lower() if psg_obj.first_name else ''
                     last_name = ''.join(psg_obj.last_name.split()).lower() if psg_obj.last_name else ''
-                    key_1 = '%s%s' % (last_name, first_name)
-                    key_2 = '%s%s' % (first_name, first_name)
+                    title = ''.join(psg_obj.title.split()).lower() if psg_obj.title else ''
+                    key_1 = '%s%s%s' % (last_name, first_name, title)
+                    key_2 = '%s%s%s' % (first_name, first_name, title)
+                    key_3 = '%s%s' % (last_name, first_name)
+                    key_4 = '%s%s' % (first_name, first_name)
                     vals.update({
                         'key_1': key_1,
                         'key_2': key_2,
+                        'key_3': key_3,
+                        'key_4': key_4,
+                        'title': psg_obj.title if psg_obj.title else '',
                         'first_name': psg_obj.first_name if psg_obj.first_name else '',
                         'last_name': psg_obj.last_name if psg_obj.last_name else '',
                         'passenger_id': psg_obj.id,
@@ -818,8 +840,11 @@ class TtProviderAirline(models.Model):
             # Setup key
             first_name = ''.join(rec['first_name'].split()).lower() if rec.get('first_name') else ''
             last_name = ''.join(rec['last_name'].split()).lower() if rec.get('last_name') else ''
-            key_1 = '%s%s' % (last_name, first_name)
-            key_2 = '%s%s' % (first_name, first_name)
+            title = ''.join(rec['title'].split()).lower() if rec.get('title') else ''
+            key_1 = '%s%s%s' % (last_name, first_name, title)
+            key_2 = '%s%s%s' % (first_name, first_name, title)
+            key_3 = '%s%s' % (last_name, first_name)
+            key_4 = '%s%s' % (first_name, first_name)
             key_type = '1'
             if not first_name or not last_name:
                 key_type = '2'
@@ -832,29 +857,56 @@ class TtProviderAirline(models.Model):
                 if tkt['is_sync']:
                     continue
                 # if key_1 in tkt['key_1'] or key_2 in tkt['key_2']:
-                if (key_type == '1' and key_1 in tkt['key_1']) or (key_type == '2' and key_2 in tkt['key_2']):
-                    is_ticket_found = True
-                    tkt['is_sync'] = True
-                    ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
-                    if tkt['passenger_id']:
-                        for psg in backend_pax_repo:
-                            if psg['passenger_id'] == tkt['passenger_id']:
-                                psg['has_ticket'] = True
-                                break
-                        if str(tkt['passenger_id']) in backend_pax_obj_repo:
-                            backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
-                    else:
-                        for psg in backend_pax_repo:
-                            if key_1 in psg['key_1'] or key_2 in psg['key_2']:
-                                psg['has_ticket'] = True
-                                passenger_id = psg['passenger_id']
-                                if str(passenger_id) in backend_pax_obj_repo:
-                                    backend_pax_obj_repo[str(passenger_id)].is_ticketed = True
-                                ticket_vals.update({
-                                    'passenger_id': passenger_id
-                                })
-                                break
-                    break
+                if rec.get('title'):
+                    if (key_type == '1' and key_1 == tkt['key_1']) or (key_type == '2' and key_2 == tkt['key_2']):
+                        is_ticket_found = True
+                        tkt['is_sync'] = True
+                        ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
+                        if tkt['passenger_id']:
+                            for psg in backend_pax_repo:
+                                if psg['passenger_id'] == tkt['passenger_id']:
+                                    psg['has_ticket'] = True
+                                    break
+                            if str(tkt['passenger_id']) in backend_pax_obj_repo:
+                                backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
+                        else:
+                            for psg in backend_pax_repo:
+                                if key_1 == psg['key_1'] or key_2 == psg['key_2']:
+                                    psg['has_ticket'] = True
+                                    passenger_id = psg['passenger_id']
+                                    if str(passenger_id) in backend_pax_obj_repo:
+                                        backend_pax_obj_repo[str(passenger_id)].is_ticketed = True
+                                    ticket_vals.update({
+                                        'passenger_id': passenger_id
+                                    })
+                                    break
+                        break
+                else:
+                    if (key_type == '1' and key_3 == tkt['key_3']) or (key_type == '2' and key_4 == tkt['key_4']):
+                        is_ticket_found = True
+                        tkt['is_sync'] = True
+                        if 'title' in ticket_vals:
+                            ticket_vals.pop('title')
+                        ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
+                        if tkt['passenger_id']:
+                            for psg in backend_pax_repo:
+                                if psg['passenger_id'] == tkt['passenger_id']:
+                                    psg['has_ticket'] = True
+                                    break
+                            if str(tkt['passenger_id']) in backend_pax_obj_repo:
+                                backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
+                        else:
+                            for psg in backend_pax_repo:
+                                if key_3 == psg['key_3'] or key_4 == psg['key_4']:
+                                    psg['has_ticket'] = True
+                                    passenger_id = psg['passenger_id']
+                                    if str(passenger_id) in backend_pax_obj_repo:
+                                        backend_pax_obj_repo[str(passenger_id)].is_ticketed = True
+                                    ticket_vals.update({
+                                        'passenger_id': passenger_id
+                                    })
+                                    break
+                        break
             # if not exist, tampung dulu
             if not is_ticket_found:
                 new_ticket_list.append(ticket_vals)
@@ -884,12 +936,14 @@ class TtProviderAirline(models.Model):
                     if tkt_vals['last_name']:
                         name_list.append(tkt_vals['last_name'])
                     name = ' '.join(name_list)
-                    backend_pax_obj_repo[str(passenger_id)].write({
+                    write_vals = {
                         'name': name,
-                        'title': tkt_vals['title'],
                         'first_name': tkt_vals['first_name'],
                         'last_name': tkt_vals['last_name'],
-                    })
+                    }
+                    if tkt_vals.get('title'):
+                        write_vals['title'] = tkt_vals['title']
+                    backend_pax_obj_repo[str(passenger_id)].write(write_vals)
                     if backend_pax_obj_repo[str(passenger_id)].customer_id:
                         backend_pax_obj_repo[str(passenger_id)].customer_id.write({
                             'first_name': tkt_vals['first_name'],
@@ -1309,7 +1363,7 @@ class TtProviderAirline(models.Model):
             "pnr": self.pnr,
             "pnr2": self.pnr2,
             "reference": self.reference,
-            "context": context,
+            "context": context
         }
         res = self.env['tt.airline.api.con'].send_void_booking_vendor(req)
         _logger.info('Action Void Provider, %s-%s, %s' % (self.pnr, self.provider_id.code, json.dumps(res)))
@@ -1384,6 +1438,34 @@ class TtProviderAirline(models.Model):
             'tag': 'reload',
         }
     # END
+
+    def update_void_provider_booking_api(self, data, context):
+        response = data['response']
+        provider_objs = self.search([("pnr",'=', response['pnr']), ("pnr2",'=',response['pnr2']), ("reference",'=', response['reference'])])
+        for provider_obj in provider_objs:
+            try:
+                if response['status'] in ['VOID', 'REFUND']:
+                    provider_obj.write({
+                        'cancel_uid': context['co_uid'],
+                        'cancel_date': datetime.now(),
+                        'state': 'void',
+                    })
+
+                    for rec in provider_obj.booking_id.ledger_ids:
+                        if rec.pnr in [self.pnr, str(self.sequence)] and not rec.is_reversed:
+                            rec.reverse_ledger()
+
+                    for rec in provider_obj.cost_service_charge_ids:
+                        rec.is_ledger_created = False
+
+                ctx = {
+                    'co_uid': context['co_uid']
+                }
+                provider_obj.booking_id.check_provider_state(ctx)
+            except Exception as e:
+                _logger.error('Action void provider, error update provider state, %s, %s' % (provider_obj.pnr, traceback.format_exc()))
+                return ERR.get_error(500)
+        return ERR.get_no_error()
 
     # March 08, 2023 - SAM
     def action_check_segment_provider(self):
@@ -1515,6 +1597,7 @@ class TtProviderAirlinePricing(models.Model):
     rule_pricing_datetime = fields.Datetime('Pricing Datetime', readonly=1)
     rule_departure_date_list = fields.Char('Departure Date List', readonly=1, default='')
     rule_currency_code_list = fields.Char('Currency Code List', readonly=1, default='')
+    rule_total_amount = fields.Char('Total Amount', readonly=1, default='')
 
     provider_pricing_id = fields.Many2one('tt.provider.pricing', 'Pricing ID', readonly=1, ondelete='set null')
     provider_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1553,6 +1636,11 @@ class TtProviderAirlinePricing(models.Model):
     provider_dot_access_type = fields.Char('DOT Access Type', readonly=1)
     provider_dot_start_date = fields.Char('DOT Start Date', readonly=1)
     provider_dot_end_date = fields.Char('DOT End Date', readonly=1)
+    provider_total_type = fields.Char('Total Access Type', readonly=1)
+    provider_total_less_amount = fields.Char('Total Less Amount', readonly=1)
+    provider_total_is_less_equal = fields.Char('Total Is Less Equal', readonly=1)
+    provider_total_greater_amount = fields.Char('Total Greater Amount', readonly=1)
+    provider_total_is_greater_equal = fields.Char('Total Is Greater Equal', readonly=1)
     provider_less_percentage = fields.Char('Vendor Less (%)', readonly=1)
     provider_less_infant = fields.Char('Apply less to Infant', readonly=1)
     provider_less_tour_code = fields.Char('Vendor Tour Code', readonly=1, default='')
@@ -1720,6 +1808,11 @@ class TtProviderAirlinePricing(models.Model):
     agent_dot_access_type = fields.Char('DOT Access Type', readonly=1)
     agent_dot_start_date = fields.Char('DOT Start Date', readonly=1)
     agent_dot_end_date = fields.Char('DOT End Date', readonly=1)
+    agent_total_type = fields.Char('Total Access Type', readonly=1)
+    agent_total_less_amount = fields.Char('Total Less Amount', readonly=1)
+    agent_total_is_less_equal = fields.Char('Total Is Less Equal', readonly=1)
+    agent_total_greater_amount = fields.Char('Total Greater Amount', readonly=1)
+    agent_total_is_greater_equal = fields.Char('Total Is Greater Equal', readonly=1)
     agent_parent_charge_percentage = fields.Char('Parent Charge (%)', readonly=1)
     agent_parent_charge_minimum = fields.Char('Parent Charge Minimum', readonly=1)
     agent_parent_charge_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -1828,6 +1921,15 @@ class TtProviderAirlinePricing(models.Model):
     agent_rsv_nta_agent_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
     agent_rsv_nta_agent_upsell_maximum = fields.Char('Maximum Amount', readonly=1)
     agent_rsv_nta_agent_upsell_has_maximum = fields.Char('Has Maximum', readonly=1)
+    agent_rsv_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    agent_rsv_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    agent_rsv_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    agent_tkt_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    agent_tkt_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    agent_tkt_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    agent_anc_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    agent_anc_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    agent_anc_com_rounding = fields.Char('Commission Rounding', readonly=1)
 
     customer_pricing_id = fields.Many2one('tt.customer.pricing', 'Customer Pricing', readonly=1, ondelete='set null')
     customer_pricing_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1866,6 +1968,11 @@ class TtProviderAirlinePricing(models.Model):
     customer_dot_access_type = fields.Char('DOT Access Type', readonly=1)
     customer_dot_start_date = fields.Char('DOT Start Date', readonly=1)
     customer_dot_end_date = fields.Char('DOT End Date', readonly=1)
+    customer_total_type = fields.Char('Total Access Type', readonly=1)
+    customer_total_less_amount = fields.Char('Total Less Amount', readonly=1)
+    customer_total_is_less_equal = fields.Char('Total Is Less Equal', readonly=1)
+    customer_total_greater_amount = fields.Char('Total Greater Amount', readonly=1)
+    customer_total_is_greater_equal = fields.Char('Total Is Greater Equal', readonly=1)
     customer_tkt_sales_upsell_percentage = fields.Char('Upsell (%)', readonly=1)
     customer_tkt_sales_upsell_minimum = fields.Char('Minimum Amount', readonly=1)
     customer_tkt_sales_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -1890,6 +1997,15 @@ class TtProviderAirlinePricing(models.Model):
     customer_rsv_sales_upsell_has_minimum = fields.Char('Has Minimum', readonly=1)
     customer_rsv_sales_upsell_maximum = fields.Char('Maximum Amount', readonly=1)
     customer_rsv_sales_upsell_has_maximum = fields.Char('Has Maximum', readonly=1)
+    customer_rsv_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    customer_rsv_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    customer_rsv_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    customer_tkt_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    customer_tkt_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    customer_tkt_com_rounding = fields.Char('Commission Rounding', readonly=1)
+    customer_anc_com_tax_amount = fields.Char('Commission Tax Amount', readonly=1)
+    customer_anc_com_tax_percentage = fields.Char('Commission Tax Percentage', readonly=1)
+    customer_anc_com_rounding = fields.Char('Commission Rounding', readonly=1)
 
     agent_commission_id = fields.Many2one('tt.agent.commission', 'Agent Pricing', readonly=1, ondelete='set null')
     agent_commission_sequence = fields.Char('Pricing Sequence', readonly=1)
@@ -1928,6 +2044,11 @@ class TtProviderAirlinePricing(models.Model):
     agent_commission_dot_access_type = fields.Char('DOT Access Type', readonly=1)
     agent_commission_dot_start_date = fields.Char('DOT Start Date', readonly=1)
     agent_commission_dot_end_date = fields.Char('DOT End Date', readonly=1)
+    agent_commission_total_type = fields.Char('Total Access Type', readonly=1)
+    agent_commission_total_less_amount = fields.Char('Total Less Amount', readonly=1)
+    agent_commission_total_is_less_equal = fields.Char('Total Is Less Equal', readonly=1)
+    agent_commission_total_greater_amount = fields.Char('Total Greater Amount', readonly=1)
+    agent_commission_total_is_greater_equal = fields.Char('Total Is Greater Equal', readonly=1)
     agent_commission_parent_charge_percentage = fields.Char('Parent Charge (%)', readonly=1)
     agent_commission_parent_charge_minimum = fields.Char('Parent Charge Minimum', readonly=1)
     agent_commission_parent_charge_has_minimum = fields.Char('Has Minimum', readonly=1)
@@ -2053,6 +2174,7 @@ class TtProviderAirlinePricing(models.Model):
                 'rule_pricing_datetime': rule_data['pricing_datetime'],
                 'rule_departure_date_list': rule_data.get('departure_date_list', ''),
                 'rule_currency_code_list': rule_data.get('currency_code_list', ''),
+                'rule_total_amount': rule_data.get('total_amount', ''),
             })
 
         if provider_data:
@@ -2237,6 +2359,15 @@ class TtProviderAirlinePricing(models.Model):
                         'provider_anc_com_rounding': provider_data['ancillary']['commission'].get('rounding', ''),
                     })
 
+                if provider_data['route'].get('total', {}):
+                    values.update({
+                        'provider_total_type': provider_data['route']['total'].get('access_type', ''),
+                        'provider_total_less_amount': provider_data['route']['total'].get('less_amount', ''),
+                        'provider_total_is_less_equal': provider_data['route']['total'].get('is_less_equal', ''),
+                        'provider_total_greater_amount': provider_data['route']['total'].get('greater_amount', ''),
+                        'provider_total_is_greater_equal': provider_data['route']['total'].get('is_greater_equal', ''),
+                    })
+
         if agent_data:
             agent_pricing_obj = self.env['tt.agent.pricing'].search([('id', '=', agent_data['pricing_id'])], limit=1)
             agent_pricing_line_obj = self.env['tt.agent.pricing.line'].search([('id', '=', agent_data['rule_id'])], limit=1)
@@ -2389,6 +2520,33 @@ class TtProviderAirlinePricing(models.Model):
                     'agent_rsv_nta_agent_upsell_maximum': agent_data['reservation']['nta_agent']['upsell_by_percentage']['maximum'],
                     'agent_rsv_nta_agent_upsell_has_maximum': agent_data['reservation']['nta_agent']['upsell_by_percentage']['has_maximum'],
                 })
+                if agent_data['reservation'].get('commission'):
+                    values.update({
+                        'agent_rsv_com_tax_amount': agent_data['reservation']['commission'].get('tax_amount', ''),
+                        'agent_rsv_com_tax_percentage': agent_data['reservation']['commission'].get('tax_percentage', ''),
+                        'agent_rsv_com_rounding': agent_data['reservation']['commission'].get('rounding', ''),
+                    })
+                if agent_data['ticketing'].get('commission'):
+                    values.update({
+                        'agent_tkt_com_tax_amount': agent_data['ticketing']['commission'].get('tax_amount', ''),
+                        'agent_tkt_com_tax_percentage': agent_data['ticketing']['commission'].get('tax_percentage', ''),
+                        'agent_tkt_com_rounding': agent_data['ticketing']['commission'].get('rounding', ''),
+                    })
+                if agent_data['ancillary'].get('commission'):
+                    values.update({
+                        'agent_anc_com_tax_amount': agent_data['ancillary']['commission'].get('tax_amount', ''),
+                        'agent_anc_com_tax_percentage': agent_data['ancillary']['commission'].get('tax_percentage', ''),
+                        'agent_anc_com_rounding': agent_data['ancillary']['commission'].get('rounding', ''),
+                    })
+
+                if agent_data['route'].get('total', {}):
+                    values.update({
+                        'agent_total_type': agent_data['route']['total'].get('access_type', ''),
+                        'agent_total_less_amount': agent_data['route']['total'].get('less_amount', ''),
+                        'agent_total_is_less_equal': agent_data['route']['total'].get('is_less_equal', ''),
+                        'agent_total_greater_amount': agent_data['route']['total'].get('greater_amount', ''),
+                        'agent_total_is_greater_equal': agent_data['route']['total'].get('is_greater_equal', ''),
+                    })
 
         if customer_data:
             cust_pricing_obj = self.env['tt.customer.pricing'].search([('id', '=', customer_data['pricing_id'])], limit=1)
@@ -2457,6 +2615,33 @@ class TtProviderAirlinePricing(models.Model):
                     'customer_rsv_sales_upsell_maximum': customer_data['reservation']['sales']['upsell_by_percentage']['maximum'],
                     'customer_rsv_sales_upsell_has_maximum': customer_data['reservation']['sales']['upsell_by_percentage']['has_maximum'],
                 })
+                if customer_data['reservation'].get('commission'):
+                    values.update({
+                        'customer_rsv_com_tax_amount': customer_data['reservation']['commission'].get('tax_amount', ''),
+                        'customer_rsv_com_tax_percentage': customer_data['reservation']['commission'].get('tax_percentage', ''),
+                        'customer_rsv_com_rounding': customer_data['reservation']['commission'].get('rounding', ''),
+                    })
+                if customer_data['ticketing'].get('commission'):
+                    values.update({
+                        'customer_tkt_com_tax_amount': customer_data['ticketing']['commission'].get('tax_amount', ''),
+                        'customer_tkt_com_tax_percentage': customer_data['ticketing']['commission'].get('tax_percentage', ''),
+                        'customer_tkt_com_rounding': customer_data['ticketing']['commission'].get('rounding', ''),
+                    })
+                if customer_data['ancillary'].get('commission'):
+                    values.update({
+                        'customer_anc_com_tax_amount': customer_data['ancillary']['commission'].get('tax_amount', ''),
+                        'customer_anc_com_tax_percentage': customer_data['ancillary']['commission'].get('tax_percentage', ''),
+                        'customer_anc_com_rounding': customer_data['ancillary']['commission'].get('rounding', ''),
+                    })
+
+                if customer_data['route'].get('total', {}):
+                    values.update({
+                        'customer_total_type': customer_data['route']['total'].get('access_type', ''),
+                        'customer_total_less_amount': customer_data['route']['total'].get('less_amount', ''),
+                        'customer_total_is_less_equal': customer_data['route']['total'].get('is_less_equal', ''),
+                        'customer_total_greater_amount': customer_data['route']['total'].get('greater_amount', ''),
+                        'customer_total_is_greater_equal': customer_data['route']['total'].get('is_greater_equal', ''),
+                    })
 
         if agent_com_data:
             agentcom_pricing_obj = self.env['tt.agent.commission'].search([('id', '=', agent_com_data['pricing_id'])], limit=1)
@@ -2542,6 +2727,15 @@ class TtProviderAirlinePricing(models.Model):
                     'agent_commission_discount_pax': agent_com_data['commission']['agent']['discount_by_amount']['is_pax'],
                     'agent_commission_discount_infant': agent_com_data['commission']['agent']['discount_by_amount']['is_infant'],
                 })
+                if agent_com_data['route'].get('total', {}):
+                    values.update({
+                        'agent_commission_total_type': agent_com_data['route']['total'].get('access_type', ''),
+                        'agent_commission_total_less_amount': agent_com_data['route']['total'].get('less_amount', ''),
+                        'agent_commission_total_is_less_equal': agent_com_data['route']['total'].get('is_less_equal', ''),
+                        'agent_commission_total_greater_amount': agent_com_data['route']['total'].get('greater_amount', ''),
+                        'agent_commission_total_is_greater_equal': agent_com_data['route']['total'].get('is_greater_equal', ''),
+                    })
+
         self.write(values)
         _logger.info('Compute Raw Data : DONE')
 

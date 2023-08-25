@@ -39,6 +39,7 @@ Key Features
         'data/tt_pricing_agent_airline_data.xml',
         'data/tt_ssr_category_data.xml',
         'data/tt.ssr.list.csv',
+        'data/tt.ssr.list.line.csv',
 
         'security/ir.model.access.csv',
         'security/ir_rule_data.xml',

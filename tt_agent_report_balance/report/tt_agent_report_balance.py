@@ -14,6 +14,8 @@ class AgentReportBalance(models.Model):
     def _select():
         return """
         agent.name as agent_name, agent.balance as agent_balance, agent.active as agent_status,
+        agent.credit_limit as agent_credit_limit, agent.actual_credit_balance as agent_actual_credit_balance, 
+        agent.unprocessed_amount as agent_credit_unprocessed, agent.balance_credit_limit as agent_balance_credit_limit,
         agent_type.name as agent_type_name,
         currency.name as currency_name
         """
@@ -88,6 +90,10 @@ class AgentReportBalance(models.Model):
                 'agent_type_name': i['agent_type_id'][1],
                 'currency_name': i['currency_id'][1],
                 'agent_balance': i['balance'],
+                'agent_credit_limit': i['credit_limit'],
+                'agent_actual_credit_balance': i['actual_credit_balance'],
+                'agent_credit_unprocessed': i['unprocessed_amount'],
+                'agent_balance_credit_limit': i['balance_credit_limit'],
                 'agent_status': i['active']
             }
             line.append(temp_dict)

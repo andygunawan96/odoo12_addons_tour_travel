@@ -42,7 +42,10 @@
                 <header>
                     <button name="action_send_to_vendor" states="new,failed,partial"
                             groups="tt_base.group_after_sales_master_level_4"
-                            string="Send Manually to Vendor" type="object" class="oe_highlight"/>
+                            string="Send to Vendor" type="object" class="oe_highlight"/>
+                    <button name="set_to_manual_create" states="new,failed,partial"
+                            groups="tt_base.group_after_sales_master_level_4"
+                            string="Set to Manually Created on Vendor" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,success"/>
                 </header>
                 <sheet>
@@ -108,6 +111,28 @@
             'form_view_ref': 'tt_accounting_connector.tt_accounting_queue_form_view',
             'tree_view_ref': 'tt_accounting_connector.tt_accounting_queue_tree_view'
             }
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_multi_send_to_vendor_tt_accounting_queue">
+        <field name="name">Mass Send to Vendor</field>
+        <field name="model_id" ref="tt_accounting_connector.model_tt_accounting_queue"/>
+        <field name="binding_model_id" ref="tt_accounting_connector.model_tt_accounting_queue"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_mass_send_to_vendor()
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="action_multi_set_to_manual_create_tt_accounting_queue">
+        <field name="name">Mass Set to Manually Created on Vendor</field>
+        <field name="model_id" ref="tt_accounting_connector.model_tt_accounting_queue"/>
+        <field name="binding_model_id" ref="tt_accounting_connector.model_tt_accounting_queue"/>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+            action = records.multi_mass_set_to_manual_create()
         </field>
     </record>
 

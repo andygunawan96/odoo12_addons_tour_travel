@@ -1100,3 +1100,4 @@ tt_ssr_list_id_1098,Hyderabadi Vegetable Biryani,HBMC,tt_ssr_category_meal,tt_re
 tt_ssr_list_id_1099,Boba Milk Tea,MTFD,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_airasia,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,0,1,1
 tt_ssr_list_id_1100,Hyderabadi biryani,HBCM,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_airasia,tt_reservation_airline.tt_provider_type_airline,1,1,1,0,1,1,1
 tt_ssr_list_id_1101,Lemon Due Honey Lemon (3% Alcohol) [Domestic flights only],LDPQ,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_airasia,tt_reservation_airline.tt_provider_type_airline,1,1,1,0,0,1,1
+tt_ssr_list_id_1102,Baggage XBAG,XBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1

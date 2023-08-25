@@ -9,6 +9,7 @@
                 <field name="all_ho" position="before">
                     <field name="after_sales_type"/>
 <!--                    <field name="state" required="1"/>-->
+                    <field name="currency_id"/>
                 </field>
             </field>
         </record>

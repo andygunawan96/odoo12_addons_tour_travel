@@ -23,7 +23,7 @@ class AgentReportBalanceXls(models.TransientModel):
         # ================= TITLE & SUBTITLE ================
         sheet.merge_range('A1:G2', values['data_form']['agent_name'], style.title)
         sheet.merge_range('A3:G4', values['data_form']['title'], style.title2)
-        sheet.write('G5', 'Printing Date :' + values['data_form']['date_now'].strftime('%Y-%m-%d %H:%M'),
+        sheet.write('I5', 'Printing Date :' + values['data_form']['date_now'].strftime('%Y-%m-%d %H:%M'),
                     style.print_date)
         sheet.write('A5', 'State : ' + values['data_form']['state'], style.table_data)
         sheet.freeze_panes(9, 0)
@@ -35,17 +35,20 @@ class AgentReportBalanceXls(models.TransientModel):
         sheet.set_row(4, row_height)
         sheet.set_row(8, 30)
         sheet.set_column('A:A', 6)
-        sheet.set_column('B:B', 10)
-        sheet.set_column('C:F', 15)
-        sheet.set_column('G:G', 12)
-        sheet.set_column('H:I', 15)
+        sheet.set_column('B:I', 15)
+        sheet.set_column('J:J', 10)
+        sheet.set_column('K:L', 12)
 
         sheet.write('A9', 'No.', style.table_head_center)
         sheet.write('B9', 'Agent Type', style.table_head_center)
         sheet.write('C9', 'Agent Name', style.table_head_center)
         sheet.write('D9', 'Currency', style.table_head_center)
         sheet.write('E9', 'Balance', style.table_head_center)
-        sheet.write('F9', 'Status', style.table_head_center)
+        sheet.write('F9', 'Credit Limit', style.table_head_center)
+        sheet.write('G9', 'Remaining Credit Limit', style.table_head_center)
+        sheet.write('H9', 'Used Credit Limit', style.table_head_center)
+        sheet.write('I9', 'Credit Unprocessed Amount', style.table_head_center)
+        sheet.write('J9', 'Is Active', style.table_head_center)
 
         row_data = 8
         for i in values['lines']:
@@ -67,7 +70,11 @@ class AgentReportBalanceXls(models.TransientModel):
             sheet.write(row_data, 2, i['agent_name'], sty_table_data)
             sheet.write(row_data, 3, i['currency_name'], sty_table_data)
             sheet.write(row_data, 4, i['agent_balance'], sty_amount)
-            sheet.write(row_data, 5, i['agent_status'], sty_table_data)
+            sheet.write(row_data, 5, i['agent_credit_limit'], sty_amount)
+            sheet.write(row_data, 6, i['agent_actual_credit_balance'], sty_amount)
+            sheet.write(row_data, 7, abs(i['agent_balance_credit_limit']), sty_amount)
+            sheet.write(row_data, 8, i['agent_credit_unprocessed'], sty_amount)
+            sheet.write(row_data, 9, i['agent_status'], sty_table_data)
 
         workbook.close()
 
@@ -85,7 +92,3 @@ class AgentReportBalanceXls(models.TransientModel):
                 'type': 'ir.actions.act_window',
                 'target': 'new'
             }
-
-
-
-

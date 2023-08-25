@@ -22,7 +22,7 @@ class TtAccountingQueue(models.Model):
     transport_type = fields.Char('Transport Type', readonly=True)
     res_model = fields.Char('Related Model', readonly=True)
     res_id = fields.Integer('Related ID', index=True, help='Id of the followed resource')
-    state = fields.Selection([('new', 'New'), ('success', 'Success'), ('failed', 'Failed'), ('partial', 'Partial')], 'State', default='new', readonly=True)
+    state = fields.Selection([('new', 'New'), ('success', 'Success'), ('failed', 'Failed'), ('partial', 'Partial'), ('manual_create', 'Manually Created on Vendor')], 'State', default='new', readonly=True)
     send_uid = fields.Many2one('res.users', 'Last Sent By', readonly=True)
     send_date = fields.Datetime('Last Sent Date', readonly=True)
     action = fields.Char('Action', readonly=True)
@@ -57,6 +57,9 @@ class TtAccountingQueue(models.Model):
             'context': {},
             'target': 'current',
         }
+
+    def set_to_manual_create(self):
+        self.state = 'manual_create'
 
     def action_send_to_vendor(self):
         if not self.env.user.has_group('tt_base.group_after_sales_master_level_4'):
@@ -572,3 +575,21 @@ class TtAccountingQueue(models.Model):
             return request
         except Exception as e:
             _logger.error(traceback.format_exc())
+
+    def multi_mass_send_to_vendor(self):
+        _logger.info("Mass Accounting Queue Send To Vendor Starting")
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 463')
+        for rec in self:
+            if rec.state not in ['success', 'manual_create']:
+                _logger.info("%s %s (%s: %s)" % (rec.accounting_provider, rec.action, rec.res_model, str(rec.res_id)))
+                rec.action_send_to_vendor()
+
+    def multi_mass_set_to_manual_create(self):
+        _logger.info("Mass Accounting Queue Set To Manually Created On Vendor Starting")
+        if not self.env.user.has_group('tt_base.group_after_sales_master_level_4'):
+            raise UserError('Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 464')
+        for rec in self:
+            if rec.state not in ['success', 'manual_create']:
+                _logger.info("%s %s (%s: %s)" % (rec.accounting_provider, rec.action, rec.res_model, str(rec.res_id)))
+                rec.set_to_manual_create()

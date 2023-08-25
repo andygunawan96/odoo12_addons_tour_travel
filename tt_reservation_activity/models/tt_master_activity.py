@@ -162,7 +162,7 @@ class MasterActivity(models.Model):
         from_currency = req['from_currency']
         base_amount = req['base_amount']
         to_currency = req.get('to_currency') and req['to_currency'] or 'IDR'
-        from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency)], limit=1)
+        from_currency_id = self.env['res.currency'].sudo().search([('name', '=', from_currency), '|', ('active', '=', False), ('active', '=', True)], limit=1)
         from_currency_id = from_currency_id and from_currency_id[0] or False
         try:
             provider_id = self.env['tt.provider'].sudo().search([('code', '=', provider)], limit=1)
@@ -645,9 +645,9 @@ class MasterActivity(models.Model):
                 types_temp = temp
                 cur_obj = False
                 if rec['product'].get('currency'):
-                    cur_obj = self.env['res.currency'].search([('name', '=', rec['product']['currency'])], limit=1)
+                    cur_obj = self.env['res.currency'].search([('name', '=', rec['product']['currency']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                     if not cur_obj:
-                        cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
+                        cur_obj = self.env['res.currency'].search([('name', '=', 'IDR'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
 
                 vals = {
                     'name': rec['product'].get('title') and rec['product']['title'] or '',
@@ -696,7 +696,7 @@ class MasterActivity(models.Model):
                         'ho_ids': [(6,0,[self.env.user.ho_id.id])]
                     })
                     if not cur_obj:
-                        cur_obj = self.env['res.currency'].search([('name', '=', 'IDR')], limit=1)
+                        cur_obj = self.env['res.currency'].search([('name', '=', 'IDR'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                         vals.update({
                             'currency_id': cur_obj and cur_obj[0].id or False
                         })
@@ -800,7 +800,7 @@ class MasterActivity(models.Model):
                     for temp_opt in option_list['perBooking']:
                         temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
                         temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
-                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt)],limit=1) or False
+                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)],limit=1) or False
                         temp_opt.update({
                             'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
                         })
@@ -808,7 +808,7 @@ class MasterActivity(models.Model):
                         self.env.cr.commit()
                         for temp_item in temp_opt_items:
                             temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
-                            cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code)], limit=1) or False
+                            cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
                             temp_item.update({
                                 'currency_id': cur_obj and cur_obj[0].id or False,
                                 'booking_option_id': opt_obj.id,
@@ -820,7 +820,7 @@ class MasterActivity(models.Model):
                     for temp_opt in option_list['perPax']:
                         temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
                         temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
-                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt)], limit=1) or False
+                        cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
                         temp_opt.update({
                             'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
                         })
@@ -828,7 +828,7 @@ class MasterActivity(models.Model):
                         self.env.cr.commit()
                         for temp_item in temp_opt_items:
                             temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
-                            cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code)], limit=1) or False
+                            cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
                             temp_item.update({
                                 'currency_id': cur_obj and cur_obj[0].id or False,
                                 'booking_option_id': opt_obj.id,
@@ -1374,7 +1374,7 @@ class MasterActivity(models.Model):
 
                 per_book = []
                 per_pax = []
-                from_currency = self.env['res.currency'].search([('name', '=', 'SGD')], limit=1)
+                from_currency = self.env['res.currency'].search([('name', '=', 'SGD'), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 if result_id.option_ids:
                     for opt in result_id.option_ids.ids:
                         activity_opt_obj = self.env['tt.activity.booking.option'].browse(opt)
@@ -1604,7 +1604,7 @@ class MasterActivity(models.Model):
             temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
             temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
             cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search(
-                [('name', '=', temp_cur_code_opt)], limit=1) or False
+                [('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
             temp_opt.update({
                 'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
             })
@@ -1612,7 +1612,7 @@ class MasterActivity(models.Model):
             self.env.cr.commit()
             for temp_item in temp_opt_items:
                 temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
-                cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code)],
+                cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)],
                                                                                    limit=1) or False
                 temp_item.update({
                     'currency_id': cur_obj and cur_obj[0].id or False,
@@ -1626,7 +1626,7 @@ class MasterActivity(models.Model):
             temp_opt_items = temp_opt.get('items') and temp_opt.pop('items') or []
             temp_cur_code_opt = temp_opt.get('currency_code') and temp_opt.pop('currency_code') or False
             cur_obj_opt = temp_cur_code_opt and self.env['res.currency'].sudo().search(
-                [('name', '=', temp_cur_code_opt)], limit=1) or False
+                [('name', '=', temp_cur_code_opt), '|', ('active', '=', False), ('active', '=', True)], limit=1) or False
             temp_opt.update({
                 'currency_id': cur_obj_opt and cur_obj_opt[0].id or False,
             })
@@ -1634,7 +1634,7 @@ class MasterActivity(models.Model):
             self.env.cr.commit()
             for temp_item in temp_opt_items:
                 temp_cur_code = temp_item.get('currency_code') and temp_item.pop('currency_code') or False
-                cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code)],
+                cur_obj = temp_cur_code and self.env['res.currency'].sudo().search([('name', '=', temp_cur_code), '|', ('active', '=', False), ('active', '=', True)],
                                                                                    limit=1) or False
                 temp_item.update({
                     'currency_id': cur_obj and cur_obj[0].id or False,
@@ -1677,7 +1677,7 @@ class MasterActivity(models.Model):
             if not provider_id:
                 raise RequestException(1002)
             for rec in req['data']:
-                currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code'])], limit=1)
+                currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec['currency_code']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                 vals = {
                     'name': rec['name'],
                     'uuid': provider_id[0].alias + '~' + rec['uuid'],
@@ -1855,7 +1855,7 @@ class MasterActivity(models.Model):
 
                     option_list = []
                     for rec3 in rec2['option_ids']:
-                        opt_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code'])], limit=1)
+                        opt_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec3['currency_code']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                         option_vals = {
                             'uuid': rec3['uuid'],
                             'name': rec3['name'],
@@ -1874,7 +1874,7 @@ class MasterActivity(models.Model):
                         option_obj = self.env['tt.activity.booking.option'].sudo().create(option_vals)
                         self.env.cr.commit()
                         for rec4 in rec3['items']:
-                            item_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec4['currency_code'])], limit=1)
+                            item_currency_obj = self.env['res.currency'].sudo().search([('name', '=', rec4['currency_code']), '|', ('active', '=', False), ('active', '=', True)], limit=1)
                             opt_item_vals = {
                                 'booking_option_id': option_obj.id,
                                 'label': rec4['label'],

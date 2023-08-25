@@ -342,3 +342,51 @@ def slugify_str(value, allow_unicode=False):
         value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
     value = re.sub(r'[^\w\s-]', '', value.lower())
     return re.sub(r'[-\s]+', '-', value).strip('-_')
+
+
+def get_data_from_list(records, results):
+    for rec in records:
+        if isinstance(rec, list):
+            get_data_from_list(rec, results)
+        else:
+            results.append(rec)
+
+
+def get_tree_data(tree_data, keys, is_list=False):
+    if not isinstance(keys, list):
+        keys = [keys]
+
+    temp_keys = copy.deepcopy(keys)
+    data = tree_data
+    for key in keys:
+        if isinstance(data, dict):
+            temp_keys.pop(0)
+            if key not in data:
+                data = ''
+                break
+            data = data[key]
+        elif isinstance(data, list):
+            results = []
+            for rec in data:
+                result = get_tree_data(rec, temp_keys, is_list)
+                if not result:
+                    continue
+                if isinstance(result, list):
+                    get_data_from_list(result, results)
+                else:
+                    results.append(result)
+            data = results
+            if len(results) == 1:
+                data = results[0]
+            break
+        else:
+            data = ''
+            break
+
+    data_text = str(data)
+    if is_list:
+        if not data_text:
+            data = []
+        elif not isinstance(data, list):
+            data = [data]
+    return data
