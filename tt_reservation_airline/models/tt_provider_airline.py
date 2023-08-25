@@ -858,7 +858,7 @@ class TtProviderAirline(models.Model):
                     continue
                 # if key_1 in tkt['key_1'] or key_2 in tkt['key_2']:
                 if rec.get('title'):
-                    if (key_type == '1' and key_1 in tkt['key_1']) or (key_type == '2' and key_2 in tkt['key_2']):
+                    if (key_type == '1' and key_1 == tkt['key_1']) or (key_type == '2' and key_2 == tkt['key_2']):
                         is_ticket_found = True
                         tkt['is_sync'] = True
                         ticket_ids.append((1, tkt['ticket_id'], ticket_vals))
@@ -871,7 +871,7 @@ class TtProviderAirline(models.Model):
                                 backend_pax_obj_repo[str(tkt['passenger_id'])].is_ticketed = True
                         else:
                             for psg in backend_pax_repo:
-                                if key_1 in psg['key_1'] or key_2 in psg['key_2']:
+                                if key_1 == psg['key_1'] or key_2 == psg['key_2']:
                                     psg['has_ticket'] = True
                                     passenger_id = psg['passenger_id']
                                     if str(passenger_id) in backend_pax_obj_repo:
