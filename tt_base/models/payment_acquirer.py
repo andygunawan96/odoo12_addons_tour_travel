@@ -49,15 +49,9 @@ class PaymentAcquirer(models.Model):
         return super(PaymentAcquirer, self).create(vals_list)
 
     # FUNGSI
-    def generate_unique_amount_api(self,amount,downsell=False):
-        res = self.env['unique.amount'].create({'amount': amount, 'is_downsell': downsell})
-        return {
-            "is_downsell": res.is_downsell,
-            "amount": res.amount,
-            "unique_number": res.unique_number,
-            "active": res.active
-        }  
-    
+    def generate_unique_amount_api(self, vals, context):
+        return self.env['unique.amount'].create_unique_amount_api(vals, context)
+
     def generate_unique_amount(self,amount,downsell=False):
         # return int(self.env['ir.sequence'].next_by_code('tt.payment.unique.amount'))
         return self.env['unique.amount'].create({'amount':amount,'is_downsell':downsell})
@@ -349,7 +343,7 @@ class PaymentAcquirer(models.Model):
                 if req['transaction_type'] == 'top_up':
                     # Kalau top up Ambil agent_id HO
                     dom.append(('agent_id', '=', context['co_ho_id']))
-                    unique = self.generate_unique_amount(amount).get_unique_amount()
+                    unique = self.generate_unique_amount_api({'amount': amount, 'is_downsell': False}, context).get_unique_amount()
                 elif req['transaction_type'] == 'billing':
                     dom.append(('agent_id', '=', co_agent_id))
 
@@ -681,7 +675,7 @@ class PaymentAcquirerNumber(models.Model):
             amount -= point_amount
 
         if payment_acq_obj.account_number: ## Transfer mutasi
-            unique_obj = self.env['payment.acquirer'].generate_unique_amount(amount, False)
+            unique_obj = self.env['payment.acquirer'].generate_unique_amount_api({'amount': amount, 'is_downsell': False}, context)
                                                                              # booking_obj.agent_id.agent_type_id.id == self.env.ref(
                                                                              #     'tt_base.agent_type_btc').id)
                                                                              ## 7 July Request Kuamala ubah jadi fee bukan subsidy lagi
@@ -810,9 +804,11 @@ class PaymentUniqueAmount(models.Model):
     #         return new_unique
 
     display_name = fields.Char('Display Name', compute="_compute_name",store=True)
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], readonly=True,
+                            default=lambda self: self.env.user.ho_id)
     is_downsell = fields.Boolean('Downsell')
     amount = fields.Float('Amount', required=True)
-    unique_number = fields.Integer('Amount Unique',compute=False)
+    unique_number = fields.Integer('Amount Unique')
     amount_total = fields.Float('Amount Total',compute="_compute_amount_total",store=True)
     active = fields.Boolean('Active', default=True)
 
@@ -833,20 +829,20 @@ class PaymentUniqueAmount(models.Model):
         if not self.env.user.has_group('base.group_erp_manager'):
             raise UserError(
                 'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 397')
-        query = "SELECT unique_number FROM unique_amount WHERE unique_number != 0 and active IS TRUE;"
-        self.env.cr.execute(query)
-        unique_amount_dict_list = self.env.cr.dictfetchall()
-        used_unique_number = []
-        for rec in unique_amount_dict_list:
-            used_unique_number.append(rec['unique_number'])
-        used_unique_number = set(used_unique_number)
-        try:
-            unique_number = 3000 + random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number,1).pop()
-        except:
-            unique_number =  0
-        vals_list['unique_number'] = unique_number
-        new_unique = super(PaymentUniqueAmount, self).create(vals_list)
-        return new_unique
+        if not vals_list.get('unique_number') and self.env.user.ho_id:
+            query = "SELECT unique_number FROM unique_amount WHERE unique_number != 0 and active IS TRUE and ho_id = %s;" % self.env.user.ho_id.id
+            self.env.cr.execute(query)
+            unique_amount_dict_list = self.env.cr.dictfetchall()
+            used_unique_number = []
+            for rec in unique_amount_dict_list:
+                used_unique_number.append(rec['unique_number'])
+            used_unique_number = set(used_unique_number)
+            try:
+                unique_number = 3000 + random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number, 1).pop()
+            except:
+                unique_number = 0
+            vals_list['unique_number'] = unique_number
+        return super(PaymentUniqueAmount, self).create(vals_list)
 
     @api.multi
     def write(self, vals):
@@ -861,6 +857,24 @@ class PaymentUniqueAmount(models.Model):
             raise UserError(
                 'Error: Insufficient permission. Please contact your system administrator if you believe this is a mistake. Code: 399')
         return super(PaymentUniqueAmount, self).unlink()
+
+    def create_unique_amount_api(self, vals, context):
+        query = "SELECT unique_number FROM unique_amount WHERE unique_number != 0 and active IS TRUE and ho_id = %s;" % context['co_ho_id']
+        self.env.cr.execute(query)
+        unique_amount_dict_list = self.env.cr.dictfetchall()
+        used_unique_number = []
+        for rec in unique_amount_dict_list:
+            used_unique_number.append(rec['unique_number'])
+        used_unique_number = set(used_unique_number)
+        try:
+            unique_number = 3000 + random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number, 1).pop()
+        except:
+            unique_number = 0
+        vals.update({
+            'unique_number': unique_number,
+            'ho_id': context['co_ho_id']
+        })
+        return self.create(vals)
 
     @api.depends('amount', 'unique_number')
     @api.multi
