@@ -1586,7 +1586,7 @@ class TtReservation(models.Model):
                         book_obj.payment_method_to_ho = payment_method_to_ho
                         break
                 if balance_res['error_code'] != 0:
-                    if req.get('agent_payment_method', False) in [False, 'credit_limit', None]:
+                    if req.get('agent_payment_method', False) == 'credit_limit':
                         _logger.error('Agent Credit Limit not enough')
                         add_message = "agent credit limit %s" % (book_obj.agent_id.name)
                     else:
