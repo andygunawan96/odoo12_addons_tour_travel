@@ -1576,7 +1576,9 @@ class TtReservation(models.Model):
                 if req.get('agent_payment_method', False) in [False, 'balance', None]: ## kalau dari bca agent payment method None
                     payment_method_to_ho_list.append('balance')
                 payment_method_use_to_ho = ''
-                balance_res = {}
+                balance_res = {
+                    'error_code': 500
+                }
                 for payment_method_to_ho in payment_method_to_ho_list:
                     balance_res = self.env['tt.agent'].check_balance_limit_api(book_obj.agent_id.id,agent_check_amount, payment_method_to_ho)
                     if balance_res['error_code'] == 0:
@@ -1584,8 +1586,13 @@ class TtReservation(models.Model):
                         book_obj.payment_method_to_ho = payment_method_to_ho
                         break
                 if balance_res['error_code'] != 0:
-                    _logger.error('Agent Balance not enough')
-                    raise RequestException(1007,additional_message="agent balance %s" % (book_obj.agent_id.name))
+                    if req.get('agent_payment_method', False) == 'credit_limit':
+                        _logger.error('Agent Credit Limit not enough')
+                        add_message = "agent credit limit %s" % (book_obj.agent_id.name)
+                    else:
+                        _logger.error('Agent Balance not enough')
+                        add_message = "agent balance %s" % (book_obj.agent_id.name)
+                    raise RequestException(1007,additional_message=add_message)
 
                 if req.get("member"):
                     acquirer_seq_id = req.get('acquirer_seq_id')
