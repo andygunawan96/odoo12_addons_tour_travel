@@ -1146,12 +1146,10 @@ class MasterActivity(models.Model):
                             'from_currency': from_currency.name,
                             'base_amount': result['basePrice']
                         }
-                        temp = self.reprice_currency(req, context)
+                        converted_price = self.reprice_currency(req, context)
                     else:
-                        temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
+                        converted_price = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
                                                                  result['basePrice'])
-
-                    converted_price = temp + 10000
 
                     sale_price = 0
                     # pembulatan sale price keatas
