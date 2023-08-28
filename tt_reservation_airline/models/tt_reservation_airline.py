@@ -2457,7 +2457,7 @@ class ReservationAirline(models.Model):
         datas['form'] = res
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
-        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -2532,7 +2532,7 @@ class ReservationAirline(models.Model):
         datas['is_with_price'] = True
         airline_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_airline')
 
-        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -3718,14 +3718,12 @@ class ReservationAirline(models.Model):
                         if tkt_obj.last_name:
                             name_list.append(tkt_obj.last_name)
                         name = ' '.join(name_list)
-                        psg_vals = {
+                        psg_obj.write({
                             'name': name,
+                            'title': tkt_obj.title,
                             'first_name': tkt_obj.first_name,
                             'last_name': tkt_obj.last_name,
-                        }
-                        if tkt_obj.title:
-                            psg_vals['title'] = tkt_obj.title
-                        psg_obj.write(psg_vals)
+                        })
                         if psg_obj.customer_id:
                             psg_obj.customer_id.write({
                                 'first_name': tkt_obj.first_name,

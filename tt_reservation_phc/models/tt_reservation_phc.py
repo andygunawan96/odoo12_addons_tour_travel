@@ -1116,7 +1116,7 @@ class Reservationphc(models.Model):
         datas['form'] = res
         phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_phc') # Vin 2021-06-15 Report sementara sama
 
-        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -1174,7 +1174,7 @@ class Reservationphc(models.Model):
         datas['is_with_price'] = True
         phc_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_phc') # Vin 2021-06-15 Report sementara sama
 
-        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
