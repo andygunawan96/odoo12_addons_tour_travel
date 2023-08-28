@@ -104,6 +104,10 @@ class TtSplitReservationWizard(models.TransientModel):
             passenger_len = len(book_obj.passenger_ids.ids)
             journey_len = 0
 
+            for rec in book_obj.passenger_ids:
+                if not rec.cost_service_charge_ids:
+                    raise UserError('This reservation is no longer synced with vendor, please use "Get Booking from Vendor" instead.')
+
             for rec in self.provider_ids:
                 provider_list.append(rec.id)
             for rec in self.passenger_ids:
