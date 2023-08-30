@@ -23,7 +23,7 @@ class AgentReportRecapTransacion(models.Model):
             rsv.total as grand_total, rsv.total_commission, rsv.total_nta, rsv.provider_name, rsv.create_date,
             provider_type.name as provider_type, agent.name as agent_name, agent.email as agent_email,
             currency.name as currency_name, rsv.carrier_name as carrier_name, customer_parent.name as customer_parent_name, 
-            customer_parent_type.name as customer_parent_type_name,
+            customer_parent_type.name as customer_parent_type_name, provider_booking.pnr as provider_pnr,
             agent_type.name as agent_type_name, ledger.id as ledger_id, ledger.ref as ledger_name,
             ledger.debit, ledger.credit, ledger_agent.name as ledger_agent_name, ledger.pnr as ledger_pnr,
             ledger.transaction_type as ledger_transaction_type, ledger.display_provider_name as ledger_provider,
@@ -88,7 +88,7 @@ class AgentReportRecapTransacion(models.Model):
         LEFT JOIN tt_customer_parent_type customer_parent_type ON customer_parent_type.id = rsv.customer_parent_type_id
         LEFT JOIN tt_agent_type agent_type ON agent_type.id = rsv.agent_type_id
         LEFT JOIN res_currency currency ON currency.id = rsv.currency_id
-        LEFT JOIN tt_ledger ledger ON ledger.res_model = '""" + model_name + """' AND ledger.res_id = rsv.id AND ledger.is_reversed = 'FALSE' 
+        LEFT JOIN tt_ledger ledger ON ledger.res_model = '""" + model_name + """' AND ledger.res_id = rsv.id AND ledger.pnr = provider_booking.pnr AND ledger.is_reversed = 'FALSE' 
         LEFT JOIN tt_agent ledger_agent ON ledger_agent.id = ledger.agent_id
         LEFT JOIN res_users creates ON creates.id = rsv.user_id
         LEFT JOIN res_partner creates_partner ON creates.partner_id = creates_partner.id
