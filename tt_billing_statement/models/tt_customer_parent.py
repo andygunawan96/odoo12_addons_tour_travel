@@ -130,7 +130,8 @@ class TtCustomerParentInh(models.Model):
                     'agent_id': cor.parent_agent_id.id,
                     'customer_parent_id': cor.id,
                     'invoice_ids': invoice_list,
-                    'state': 'confirm'
+                    'state': 'confirm',
+                    'ho_id': ho_id
                 })
 
                 try:
