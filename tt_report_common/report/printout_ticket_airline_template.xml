@@ -80,7 +80,7 @@
             <t t-foreach="line.segment_ids" t-as="segment_obj">
                 <t t-if="data_pax.fee_ids">
                     <t t-foreach="data_pax.fee_ids" t-as="fee_id">
-                        <t t-if="segment_obj.segment_code == fee_id.journey_code">
+                        <t t-if="segment_obj.segment_code != line.journey_code and segment_obj.segment_code == fee_id.journey_code">
                             <t t-set="any_ssr" t-value="1"/>
                             <!--<i style="margin-right:3px;" class="fa fa-suitcase"> <span t-field="fee_id.name"/></i><br/>-->
                             <t t-esc="segment_obj.origin_id.code"/> - <t t-esc="segment_obj.destination_id.code"/> <i style="margin-right:3px;" t-att-class="fee_id.category_icon"> + <span t-field="fee_id.name"/></i><br/>
@@ -122,10 +122,18 @@
     </template>
 
     <template id="printout_ticket_airline_template">
-        <!-- No. Booking -->
-        <div style="margin-bottom: 20px; margin-top: 20px;">
-            <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
-            <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+         <!-- No. Booking -->
+        <div class="row" style="margin-bottom: 20px; margin-top: 20px;">
+            <div class="col-6">
+                <span style="font-size: 18px; font-weight: 730">No. Booking : </span>
+                <span t-field="doc.name" style="font-size: 18px; font-weight: 730"/><br/>
+            </div>
+            <div class="col-6" style="font-size: 18px; font-weight: 730">
+                <span>Issued Date : </span>
+                <span t-esc="doc.issued_date.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M:%S')"/> (<t t-esc="printout_tz"/>)<br/>
+                <span>Print Date  : </span>
+                <span t-esc="date_now.astimezone(printout_tz).strftime('%Y-%m-%d %H:%M:%S')" /> (<t t-esc="printout_tz"/>)<br/>
+            </div>
         </div>
 
         <!-- Flight Detail (Title) -->

@@ -372,19 +372,27 @@
                     </div>
                     <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                     <t t-set="psg_index" t-value="0"/>
+                    <t t-set="psg_line" t-value="0"/>
                     <t t-foreach="price_lines[doc.id]" t-as="psg">
                         <div class="row" style="margin-left: 0px; margin-right: 0px">
                             <div class="col-1" style="text-align: center">
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg_index+1"/>.</label>
                             </div>
+                            <t t-if="psg.get('passenger_id')">
+                                <t t-set="data_pax" t-value="psg['passenger_id']"/>
+                            </t>
                             <div class="col-6" style="text-align: center;">
                                 <div class="row">
-                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['name']"/></label>
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;">
+                                        <t t-if="data_pax">
+                                            <span t-field="data_pax.title"/>
+                                        </t>
+                                        <span t-esc="psg['name']"/>
+                                    </label>
                                     (<label style="font-weight:300; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['pax_type']"/></label>)
                                 </div>
                                 <div class="row">
-                                    <t t-if="psg.get('passenger_id')">
-                                        <t t-set="data_pax" t-value="psg['passenger_id']"/>
+                                    <t t-if="data_pax">
                                         <t t-if="data_pax.frequent_flyer_ids">
                                           <t t-foreach="data_pax.frequent_flyer_ids" t-as="ff_id">
                                             - <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-field="ff_id.loyalty_program_id.name"/>: <span t-field="ff_id.ff_number"/></label><br/>
@@ -397,6 +405,7 @@
                                 <t t-if="psg['add_ssr'] or psg['inc_ssr']">
                                     <!-- Same Logic as printout_ticket_airline_template.xml; Func airline_pax_ssr -->
                                     <t t-foreach="psg['inc_ssr']" t-as="add_ssr">
+                                        <t t-set="psg_line" t-value="psg_line+1"/>
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
                                     </t>
                                     <t t-foreach="psg['add_ssr']" t-as="add_ssr">
@@ -404,6 +413,7 @@
                                                 <!--<i style="margin-right:3px;" t-class="add_ssr['category_icon']"> <span t-esc="add_ssr['name']"/></i><br/>-->
                                             <!--</t>-->
                                             <!--<t t-else="">-->
+                                        <t t-set="psg_line" t-value="psg_line+1"/>
                                         <i style="margin-right:3px;" class="fa fa-suitcase"> <span t-esc="add_ssr['name']"/></i><br/>
                                             <!--</t>-->
                                     </t>
@@ -414,6 +424,10 @@
                                 <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['price_total']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></label>
                             </div>
                         </div>
+                        <t t-if="psg_line%20==0">
+                            <div style="page-break-after: always;"/>
+                            <t t-set="psg_line" t-value="0"/>
+                        </t>
                     </t>
                     <div style="margin-bottom: 5px"/>
                 </div>

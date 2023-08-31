@@ -70,7 +70,8 @@ class HotelFacility(models.Model):
                 })
                 # Todo: Create Provider Code for this facility Here
                 # Add ke new data biar bisa di pantau pindah ke dependency baru
-                self.notify_user(fac_id)
+                # Matikan biar g lemot
+                # self.notify_user(fac_id)
         return fac_id.id
 
 

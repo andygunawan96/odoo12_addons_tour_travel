@@ -1160,8 +1160,8 @@ class TestSearch(models.Model):
 
             resp = city_id.get_city_country_provider_code(city_id.id, vendor.provider_id.provider_code)
             vals = {
-                'provider_id': vendor.provider_id.id,
-                'name': vendor.provider_id.name,
+                # 'provider_id': vendor.provider_id.id,
+                # 'name': vendor.provider_id.name,
                 'provider': vendor.provider_id.code or vendor.provider_id.name.lower(),
                 'provider_city_id': resp['city_id'],
                 'provider_country_id': resp['country_id'],
