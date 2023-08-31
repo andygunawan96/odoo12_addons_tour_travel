@@ -32,15 +32,17 @@ class TtCronLogInhResv(models.Model):
                 # - Pernah berangkat OW & Booking lagi di tanggal OW
                 # - Pernah berangkat RT/MC & Booking lagi waktu belum pulang
 
-                # Notification Dupe Lion:
+                # Notification Dupe Hidden Group Booking:
                 # - Segment sama dalam kondisi Book 9 atau lebih pax
 
-                #### LION 1 SEGMENT TOO MANY PAX ###
-                LION_PAX_RULES = 9
+                #### Hidden Group Booking 1 SEGMENT TOO MANY PAX ###
+                LION_PAX_RULES = 11
                 lion_segment_objs = self.env['tt.segment.airline'].search([('booking_id.state','=','booked'),
                                                                            ('provider_id','in',
                                                                             [self.env.ref('tt_reservation_airline.tt_provider_airline_lionair').id,
-                                                                            self.env.ref('tt_reservation_airline.tt_provider_airline_lionairapi').id]),
+                                                                             self.env.ref('tt_reservation_airline.tt_provider_airline_lionairapi').id,
+                                                                             self.env.ref('tt_reservation_airline.tt_provider_airline_amadeus').id,
+                                                                             self.env.ref('tt_reservation_airline.tt_provider_airline_singaporeairlines').id]),
                                                                            ('booking_id.ho_id','=',ho_obj.id)])
                 segment_dict = {}
                 for segment_obj in lion_segment_objs:
@@ -98,7 +100,7 @@ class TtCronLogInhResv(models.Model):
                     if values['illegal']:
                         ctr += 1
                         temp_lion_msg = '%s. %s PAX\n%s\n' % (ctr,values['pax'], '\n'.join(values['pax_code_list']))#ctr, pax count, pnr code list
-                        self.manage_msg_length(messages_lion_dict,temp_lion_msg,"LION\n")
+                        self.manage_msg_length(messages_lion_dict,temp_lion_msg,"Hidden Group\n")
 
                 messages_gds_dict = {
                     "ctr": 0

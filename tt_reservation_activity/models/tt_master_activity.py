@@ -968,7 +968,7 @@ class MasterActivity(models.Model):
             if query:
                 sql_query += "themes.name ilike '" + str(query) + "' "
             else:
-                sql_query += 'themes.active = True and themes."basePrice" > 0 '
+                sql_query += 'themes.active = True '
 
             sql_query += 'and (act_ho_rel.ho_id IS NULL'
             if context.get('co_ho_id'):
@@ -997,7 +997,7 @@ class MasterActivity(models.Model):
                 sql_query += "and themes.provider_id = " + str(provider_id.id) + " "
 
             if query:
-                sql_query += 'and themes.active = True and themes."basePrice" > 0 '
+                sql_query += 'and themes.active = True '
             sql_query += 'group by themes.id '
 
             self.env.cr.execute(sql_query)
@@ -1146,12 +1146,10 @@ class MasterActivity(models.Model):
                             'from_currency': from_currency.name,
                             'base_amount': result['basePrice']
                         }
-                        temp = self.reprice_currency(req, context)
+                        converted_price = self.reprice_currency(req, context)
                     else:
-                        temp = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
+                        converted_price = self.env['res.currency']._compute(from_currency, self.env.user.company_id.currency_id,
                                                                  result['basePrice'])
-
-                    converted_price = temp + 10000
 
                     sale_price = 0
                     # pembulatan sale price keatas
@@ -1909,7 +1907,7 @@ class ActivitySyncProductsChildren(models.TransientModel):
     def sync_data_to_children(self):
         try:
             activity_data_list = []
-            activity_datas = self.env['tt.master.activity'].sudo().search([('basePrice', '>', 0)])
+            activity_datas = self.env['tt.master.activity'].sudo().search([])
             for rec in activity_datas:
                 ho_obj = self.env.ref('tt_base.rodex_ho')
                 new_currency = ho_obj.currency_id and ho_obj.currency_id.name or 'IDR'
