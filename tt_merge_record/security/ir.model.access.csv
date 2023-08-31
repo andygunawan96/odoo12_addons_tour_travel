@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-tt_temporary_record_travel,tt_temporary_record_travel,model_tt_temporary_record,tt_base.group_tt_tour_travel_operator,1,1,1,1
-tt_temporary_record_line_travel,tt_temporary_record_line_travel,model_tt_record_move_line,tt_base.group_tt_tour_travel_operator,1,1,1,1
+tt_temporary_record_travel,tt_temporary_record_travel,model_tt_temporary_record,base.group_system,1,1,1,1
+tt_temporary_record_line_travel,tt_temporary_record_line_travel,model_tt_record_move_line,base.group_system,1,1,1,1
