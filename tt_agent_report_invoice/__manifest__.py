@@ -19,7 +19,9 @@ Key Features
     'data': [
         'security/ir.model.access.csv',
         'wizard/tt_agent_report_invoice_view.xml',
+        'wizard/tt_ho_report_invoice_view.xml',
         'report/tt_agent_report_invoice_menu.xml',
+        'report/tt_ho_report_invoice_menu.xml',
     ],
     'demo': [],
     'qweb': [],

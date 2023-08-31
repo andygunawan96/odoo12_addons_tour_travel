@@ -261,6 +261,7 @@ class TtCustomer(models.Model):
                     raise RequestException(1024)
             else:
                 util.pop_empty_key(psg)
+                psg['ho_id'] = context['co_ho_id']
                 psg['agent_id'] = context['co_agent_id']
                 psg.update({
                     'customer_parent_ids': [(4, context.get('co_customer_parent_id'))] if context.get('co_customer_parent_id') else False,
