@@ -3,7 +3,7 @@
     <data>
         <record model="ir.ui.view" id="detail_invoice_report_form">
             <field name="name">Detail Invoice Report Form</field>
-            <field name="model">tt.agent.report.invoice.wizard</field>
+            <field name="model">tt.ho.report.invoice.wizard</field>
             <field name="inherit_id" ref="tt_agent_report.agent_common_report_view"/>
             <field name="arch" type="xml">
                 <field name="all_ho" position="before">
@@ -12,10 +12,10 @@
             </field>
         </record>
 
-        <record id="action_agent_report_invoice_wz" model="ir.actions.act_window">
+        <record id="action_ho_report_invoice_wz" model="ir.actions.act_window">
             <field name="name">Report Invoice</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">tt.agent.report.invoice.wizard</field>
+            <field name="res_model">tt.ho.report.invoice.wizard</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="view_id" ref="detail_invoice_report_form"/>
@@ -23,12 +23,12 @@
         </record>
 
         <menuitem
-                id="menu_agent_report_invoice"
-                name="Agent Invoice Report"
+                id="menu_ho_report_invoice"
+                name="HO Invoice Report"
                 parent="tt_agent_sales.menu_agent_invoice"
-                action="action_agent_report_invoice_wz"
-                sequence="3"
-                groups="tt_base.group_tt_agent_user,tt_base.group_tt_tour_travel,base.group_erp_manager"
+                action="action_ho_report_invoice_wz"
+                sequence="13"
+                groups="tt_base.group_tt_tour_travel,base.group_erp_manager"
         />
     </data>
 </odoo>

@@ -121,6 +121,6 @@
           parent="tt_agent_sales.menu_agent_invoice"
           action="tt_agent_sales.tt_ho_invoice_action_line_view"
           name="HO Invoice Line"
-          sequence="22"
+          sequence="12"
           groups="tt_base.group_tt_tour_travel,tt_base.group_tt_agent_user,base.group_erp_manager"/>
 </odoo>

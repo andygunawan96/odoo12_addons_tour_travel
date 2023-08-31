@@ -3,12 +3,12 @@
     <data noupdate="0">
         <!--======== Reports : Payment ==========-->
         <report
-            id="action_agent_report_invoice"
-            model="tt.agent.report.invoice.wizard"
-            string="Agent Invoice Report"
+            id="action_ho_report_invoice"
+            model="tt.ho.report.invoice.wizard"
+            string="HO Invoice Report"
             report_type="qweb-html"
-            name="tt_agent_report_invoice.agent_report_invoice"
-            file="tt_agent_report_invoice.agent_report_invoice"
+            name="tt_agent_report_invoice.ho_report_invoice"
+            file="tt_agent_report_invoice.ho_report_invoice"
             paperformat="tt_report_common.paperformat_A4"
             menu="False"
         />

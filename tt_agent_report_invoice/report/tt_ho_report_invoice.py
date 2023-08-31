@@ -7,8 +7,8 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class AgentReportInvoice(models.Model):
-    _name = 'report.tt_agent_report_invoice.agent_report_invoice'
-    _description = 'Agent Invoice Report'
+    _name = 'report.tt_agent_report_invoice.ho_report_invoice'
+    _description = 'HO Invoice Report'
 
     @staticmethod
     def _select():
@@ -17,7 +17,7 @@ class AgentReportInvoice(models.Model):
         invoice.id as invoice_id,
         invoice.date_invoice, invoice.name as invoice_number, invoice.total as invoice_total,
         invoice.state, invoice.payment_acquirers as payment_acquirers, billing.name as billing_statement,
-        agent.name as agent_name, agent_type.name as agent_type,
+        ho_agent.name as ho_name, agent.name as agent_name, agent_type.name as agent_type,
         customer.name as booker_name,
         customer_parent.name as customer_name,
         customer_type.name as customer_type,
@@ -30,8 +30,9 @@ class AgentReportInvoice(models.Model):
     @staticmethod
     def _from():
         # return """tt_agent_invoice invoice """
-        return """ tt_agent_invoice invoice
-        LEFT JOIN tt_agent_invoice_line invoice_detail ON invoice.id = invoice_detail.invoice_id
+        return """ tt_ho_invoice invoice
+        LEFT JOIN tt_ho_invoice_line invoice_detail ON invoice.id = invoice_detail.invoice_id
+        LEFT JOIN tt_agent ho_agent ON invoice.ho_id = ho_agent.id
         LEFT JOIN tt_agent agent ON invoice.agent_id = agent.id
         LEFT JOIN tt_billing_statement billing ON invoice.billing_statement_id = billing.id
         LEFT JOIN tt_agent_type agent_type ON agent.agent_type_id = agent_type.id
