@@ -63,10 +63,7 @@ class ReservationPpob(models.Model):
     def get_config_api(self, data, context):
         try:
             carrier_list = self.env['tt.transport.carrier'].search([('provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
-            search_params = [('carrier_id.provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)]
-            if context.get('co_ho_id'):
-                search_params.append(('ho_id', '=', int(context['co_ho_id'])))
-            multi_prov_carrier_list = self.env['tt.transport.carrier.search'].search(search_params)
+            multi_prov_carrier_list = self.env['tt.transport.carrier.search'].search([('carrier_id.provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
             product_data = {}
             multi_prov_prod_data = {}
             for rec in multi_prov_carrier_list:
@@ -80,9 +77,11 @@ class ReservationPpob(models.Model):
                         'max_cust_number': carr_obj.child_length_name,
                         'provider_type': carr_obj.provider_type_id.name
                     }
-                    if not multi_prov_prod_data.get(str(carr_obj.icao)):
-                        multi_prov_prod_data[str(carr_obj.icao)] = []
-                    multi_prov_prod_data[str(carr_obj.icao)].append(prod_val)
+                    if not multi_prov_prod_data.get(rec.ho_id.seq_id):
+                        multi_prov_prod_data[rec.ho_id.seq_id] = {}
+                    if not multi_prov_prod_data[rec.ho_id.seq_id].get(str(carr_obj.icao)):
+                        multi_prov_prod_data[rec.ho_id.seq_id][str(carr_obj.icao)] = []
+                    multi_prov_prod_data[rec.ho_id.seq_id][str(carr_obj.icao)].append(prod_val)
             for rec in carrier_list:
                 prod_val = {
                     'name': rec.name,
