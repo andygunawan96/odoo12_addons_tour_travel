@@ -63,7 +63,10 @@ class ReservationPpob(models.Model):
     def get_config_api(self, data, context):
         try:
             carrier_list = self.env['tt.transport.carrier'].search([('provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
-            multi_prov_carrier_list = self.env['tt.transport.carrier.search'].search([('carrier_id.provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)])
+            search_params = [('carrier_id.provider_type_id', '=', self.env.ref('tt_reservation_ppob.tt_provider_type_ppob').id)]
+            if context.get('co_ho_id'):
+                search_params.append(('ho_id', '=', int(context['co_ho_id'])))
+            multi_prov_carrier_list = self.env['tt.transport.carrier.search'].search(search_params)
             product_data = {}
             multi_prov_prod_data = {}
             for rec in multi_prov_carrier_list:
