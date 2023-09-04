@@ -77,9 +77,11 @@ class ReservationPpob(models.Model):
                         'max_cust_number': carr_obj.child_length_name,
                         'provider_type': carr_obj.provider_type_id.name
                     }
-                    if not multi_prov_prod_data.get(str(carr_obj.icao)):
-                        multi_prov_prod_data[str(carr_obj.icao)] = []
-                    multi_prov_prod_data[str(carr_obj.icao)].append(prod_val)
+                    if not multi_prov_prod_data.get(rec.ho_id.seq_id):
+                        multi_prov_prod_data[rec.ho_id.seq_id] = {}
+                    if not multi_prov_prod_data[rec.ho_id.seq_id].get(str(carr_obj.icao)):
+                        multi_prov_prod_data[rec.ho_id.seq_id][str(carr_obj.icao)] = []
+                    multi_prov_prod_data[rec.ho_id.seq_id][str(carr_obj.icao)].append(prod_val)
             for rec in carrier_list:
                 prod_val = {
                     'name': rec.name,
