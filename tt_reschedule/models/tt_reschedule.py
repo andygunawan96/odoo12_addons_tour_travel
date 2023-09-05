@@ -175,7 +175,7 @@ class TtRescheduleLine(models.Model):
         agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
         return {'domain': {
-            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), '&', '|',
+            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), ('ho_id', '=', self.ho_id.id), '&', '|',
                  ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                  ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                  ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
