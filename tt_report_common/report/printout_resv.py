@@ -12,7 +12,7 @@ class PrintoutReservation(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
