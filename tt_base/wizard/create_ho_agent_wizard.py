@@ -86,6 +86,84 @@ class CreateHOAgentWizard(models.TransientModel):
             'parent_agent_id': new_ho_obj.id
         })
 
+        regular_refund_adm = self.env['tt.master.admin.fee'].create({
+            'name': 'Regular Refund',
+            'after_sales_type': 'refund',
+            'refund_type_id': self.env.ref('tt_accounting.refund_type_regular_refund').id,
+            'min_amount_ho': 0,
+            'min_amount_agent': 0,
+            'agent_type_access_type': 'all',
+            'agent_access_type': 'all',
+            'ho_id': new_ho_obj.id,
+            'sequence': 500
+        })
+        self.env['tt.master.admin.fee.line'].create({
+            'type': 'amount',
+            'amount': 50000,
+            'is_per_pnr': True,
+            'is_per_pax': True,
+            'balance_for': 'ho',
+            'master_admin_fee_id': regular_refund_adm.id
+        })
+
+        quick_refund_adm = self.env['tt.master.admin.fee'].create({
+            'name': 'Quick Refund',
+            'after_sales_type': 'refund',
+            'refund_type_id': self.env.ref('tt_accounting.refund_type_quick_refund').id,
+            'min_amount_ho': 0,
+            'min_amount_agent': 0,
+            'agent_type_access_type': 'all',
+            'agent_access_type': 'all',
+            'ho_id': new_ho_obj.id,
+            'sequence': 501
+        })
+        self.env['tt.master.admin.fee.line'].create({
+            'type': 'percentage',
+            'amount': 5,
+            'is_per_pnr': True,
+            'is_per_pax': True,
+            'balance_for': 'ho',
+            'master_admin_fee_id': quick_refund_adm.id
+        })
+
+        reschedule_adm = self.env['tt.master.admin.fee'].create({
+            'name': 'Reschedule',
+            'after_sales_type': 'after_sales',
+            'min_amount_ho': 0,
+            'min_amount_agent': 0,
+            'agent_type_access_type': 'all',
+            'agent_access_type': 'all',
+            'ho_id': new_ho_obj.id,
+            'sequence': 500
+        })
+        self.env['tt.master.admin.fee.line'].create({
+            'type': 'amount',
+            'amount': 50000,
+            'is_per_pnr': True,
+            'is_per_pax': True,
+            'balance_for': 'ho',
+            'master_admin_fee_id': reschedule_adm.id
+        })
+
+        offline_adm = self.env['tt.master.admin.fee'].create({
+            'name': 'Issued Offline',
+            'after_sales_type': 'offline',
+            'min_amount_ho': 0,
+            'min_amount_agent': 0,
+            'agent_type_access_type': 'all',
+            'agent_access_type': 'all',
+            'ho_id': new_ho_obj.id,
+            'sequence': 500
+        })
+        self.env['tt.master.admin.fee.line'].create({
+            'type': 'amount',
+            'amount': 5000,
+            'is_per_pnr': True,
+            'is_per_pax': True,
+            'balance_for': 'ho',
+            'master_admin_fee_id': offline_adm.id
+        })
+
         # agent btc user
         self.env['res.users'].create({
             'name': self.btc_name + ' User',

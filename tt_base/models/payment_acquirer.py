@@ -217,9 +217,11 @@ class PaymentAcquirer(models.Model):
         }
 
     def get_va_number(self, req, context):
+        # get HO min_topup_amount juga disini
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
         values = {
-            'va': []
+            'va': [],
+            'min_topup_amount': agent_obj.ho_id.min_topup_amount
         }
         currency_name = agent_obj.ho_id.currency_id.name
         for acq in agent_obj.payment_acq_ids:
@@ -838,7 +840,11 @@ class PaymentUniqueAmount(models.Model):
                 used_unique_number.append(rec['unique_number'])
             used_unique_number = set(used_unique_number)
             try:
-                unique_number = 3000 + random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number, 1).pop()
+                cut_off_amt = self.env.user.ho_id.unique_amount_pool_limit
+                unique_amt_pool = variables.UNIQUE_AMOUNT_POOL
+                if cut_off_amt < 999:
+                    unique_amt_pool = set(list(unique_amt_pool)[:cut_off_amt])
+                unique_number = self.env.user.ho_id.default_unique_number + random.sample(unique_amt_pool - used_unique_number, 1).pop()
             except:
                 unique_number = 0
             vals_list['unique_number'] = unique_number
@@ -867,7 +873,11 @@ class PaymentUniqueAmount(models.Model):
             used_unique_number.append(rec['unique_number'])
         used_unique_number = set(used_unique_number)
         try:
-            unique_number = 3000 + random.sample(variables.UNIQUE_AMOUNT_POOL - used_unique_number, 1).pop()
+            cut_off_amt = self.env.user.ho_id.unique_amount_pool_limit
+            unique_amt_pool = variables.UNIQUE_AMOUNT_POOL
+            if cut_off_amt < 999:
+                unique_amt_pool = set(list(unique_amt_pool)[:cut_off_amt])
+            unique_number = self.env.user.ho_id.default_unique_number + random.sample(unique_amt_pool - used_unique_number, 1).pop()
         except:
             unique_number = 0
         vals.update({
