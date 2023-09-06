@@ -207,9 +207,9 @@ class ResUsers(models.Model):
                 vals.pop(keys_to_check['ho'])
                 vals.pop(keys_to_check['agent'])
                 vals.pop(keys_to_check['corpor'])
-            elif keys_to_check.get('ho') and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent and not self.has_group('tt_base.tt_base.group_tt_corpor_user') and not is_set_corpor:
+            elif keys_to_check.get('ho') and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent and not self.has_group('tt_base.group_tt_corpor_user') and not is_set_corpor:
                 vals.pop(keys_to_check['ho'])
-            elif keys_to_check.get('agent') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.tt_base.group_tt_corpor_user') and not is_set_corpor:
+            elif keys_to_check.get('agent') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.group_tt_corpor_user') and not is_set_corpor:
                 vals.pop(keys_to_check['agent'])
             elif keys_to_check.get('corpor') and not self.has_group('tt_base.group_tt_tour_travel') and not is_set_ho and not self.has_group('tt_base.group_tt_agent_user') and not is_set_agent:
                 vals.pop(keys_to_check['corpor'])

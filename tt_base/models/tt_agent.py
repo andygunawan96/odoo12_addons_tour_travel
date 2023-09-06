@@ -46,6 +46,9 @@ class TtAgent(models.Model):
     website = fields.Char(string="Website", required=False, )
     email = fields.Char(string="Email", required=False, )
     email_cc = fields.Char(string="Email CC(s) (Split by comma for multiple CCs)", required=False, )
+    min_topup_amount = fields.Monetary('Minimum Top Up Amount', default=50000)
+    default_unique_number = fields.Integer('Default Unique Number', default=3000)
+    unique_amount_pool_limit = fields.Integer('Unique Amount Pool Limit', default=999)
     currency_id = fields.Many2one('res.currency', string='Default Currency', default=lambda self: self.env.user.company_id.currency_id)
     currency_ids = fields.Many2many("res.currency","res_currency_tt_agent_rel","tt_agent_id", "res_currency_id", "Other Currency")
     address_ids = fields.One2many('address.detail', 'agent_id', string='Addresses')
@@ -62,7 +65,7 @@ class TtAgent(models.Model):
     is_ho_agent = fields.Boolean('Is HO Agent')
     is_btc_agent = fields.Boolean('Is BTC Agent')
     btc_agent_type_id = fields.Many2one('tt.agent.type', 'Default BTC Agent Type')
-    website_default_color = fields.Char(string='Website Default Color', default='#FFFFFF', help="HEXA COLOR")
+    website_default_color = fields.Char(string='Website Default Color', default='#CDCDCD', help="HEXA COLOR")
     ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], required=False, default=lambda self: self.env.user.ho_id.id)
     email_server_id = fields.Many2one('ir.mail_server', string="Email Server")
     is_agent_breakdown_price_printout = fields.Boolean('Is Agent Breakdown Price Printout')
@@ -865,7 +868,7 @@ class TtAgent(models.Model):
         return email_cc
 
     def get_printout_agent_color(self):
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         agent_ho_obj = self.ho_id.sudo()
         if agent_ho_obj.website_default_color:
             base_color = agent_ho_obj.website_default_color if agent_ho_obj.website_default_color[0] == '#' else '#%s' % agent_ho_obj.website_default_color

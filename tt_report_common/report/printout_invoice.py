@@ -156,7 +156,7 @@ class PrintoutTicketForm(models.AbstractModel):
 
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -280,7 +280,7 @@ class PrintoutTicketBusForm(models.AbstractModel):
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('bus_ticket', agent_id)
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -366,7 +366,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('train_ticket', agent_id)
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -451,7 +451,7 @@ class PrintoutBoardingPassTrainForm(models.AbstractModel):
         train_ticket_footer = self.env['tt.report.common.setting'].get_footer('train_ticket', agent_id)
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -549,7 +549,7 @@ class PrintoutTicketEventForm(models.AbstractModel):
 
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -677,7 +677,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
         hotel_ticket_footer = self.env['tt.report.common.setting'].get_footer('hotel_ticket',agent_id)
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -991,7 +991,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
         footer_ppob_bpjs = self.env['tt.report.common.setting'].get_footer('ppob_bpjs', agent_id)
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -1109,7 +1109,7 @@ class PrintoutInvoiceVendor(models.AbstractModel):
 
         ## printout
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -1493,7 +1493,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
@@ -1917,7 +1917,7 @@ class PrintoutInvoice(models.AbstractModel):
             terbilang = self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids']))
 
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         val = {
@@ -2332,7 +2332,7 @@ class PrintoutInvoiceHOINV(models.AbstractModel):
             pnr_length = len(rec.pnr) if rec.pnr else len(rec.name)
         invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         val = {
@@ -2724,7 +2724,7 @@ class PrintoutKwintasi(models.AbstractModel):
             agent_id = rec.agent_id
         invoice_footer = self.env['tt.report.common.setting'].get_footer('agent_invoice', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
@@ -2803,7 +2803,7 @@ class PrintoutExpenses(models.AbstractModel):
                     nta_amount += vendor.nta_amount
                     ho_amount += vendor.amount
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         vals = {
@@ -2915,7 +2915,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             agent_id = rec.agent_id
         printout_itinerary_footer = self.env['tt.report.common.setting'].get_footer('printout_itinerary', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3075,7 +3075,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             agent_id = rec.agent_id
         printout_itinerary_footer = self.env['tt.report.common.setting'].get_footer('printout_itinerary', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3181,7 +3181,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3285,7 +3285,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3389,7 +3389,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3493,7 +3493,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3600,7 +3600,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3700,7 +3700,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3802,7 +3802,7 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -3909,7 +3909,7 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -4018,7 +4018,7 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -4129,7 +4129,7 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             values[rec.id] = [a[new_a] for new_a in a]
             pnr_length = len(rec.pnr)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -4239,7 +4239,7 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
 
             values['agent_id'] = self.env['tt.agent'].search([('name', '=ilike', values['agent_name'])], limit=1)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
         return {
@@ -4288,7 +4288,7 @@ class PrintoutBilling(models.AbstractModel):
             cust_parent_id = rec.customer_parent_id
         billing_footer = self.env['tt.report.common.setting'].get_footer('billing_statement', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
@@ -4346,7 +4346,7 @@ class PrintoutTopUp(models.AbstractModel):
         top_up_footer = self.env['tt.report.common.setting'].get_footer('top_up', agent_id)
         header_width = 90
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ho_obj = False
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
@@ -4393,7 +4393,7 @@ class PrintoutRefund(models.AbstractModel):
 
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ho_obj = False
         ## TIDAK DI BREAKDOWN ##
         price_breakdown = {}
@@ -4439,7 +4439,7 @@ class PrintoutReschedule(models.AbstractModel):
 
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ## TIDAK DI BREAKDOWN ##
         price_breakdown = {}
         if hasattr(data_object, 'agent_id'):
@@ -4471,7 +4471,7 @@ class PrintoutVoucher(models.AbstractModel):
 
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         header_width = 90
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ho_obj = False
         ## TIDAK DI BREAKDOWN ##
         price_breakdown = {}
@@ -4513,7 +4513,7 @@ class PrintoutLetterOfGuarantee(models.AbstractModel):
         #     agent_id = rec.agent_id
         lg_po_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee_po', agent_id)
         lg_footer = self.env['tt.report.common.setting'].get_footer('letter_guarantee', agent_id)
-        base_color = '#FFFFFF'
+        base_color = '#CDCDCD'
         ho_obj = False
         ## TIDAK DI BREAKDOWN ##
         price_breakdown = {}

@@ -182,7 +182,7 @@ class TtRefund(models.Model):
     def get_admin_fee_domain(self):
         agent_type_adm_ids = self.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.agent_id.admin_fee_ids.ids
-        return [('after_sales_type', '=', 'refund'), '&', '|',
+        return [('after_sales_type', '=', 'refund'), ('ho_id', '=', self.ho_id.id), '&', '|',
                 ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                 ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                 ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
@@ -301,11 +301,16 @@ class TtRefund(models.Model):
     def get_refund_admin_fee_rule(self, agent_id, refund_type='regular', ho_id=False):
         search_param = [('after_sales_type', '=', 'refund')]
         if refund_type == 'quick':
-            search_param.append(('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_quick_refund').id))
-            default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_quick')
+            default_refund_type_id = self.env.ref('tt_accounting.refund_type_quick_refund').id
+            default_adm_fee_name = 'Quick Refund'
+            default_amt_type = 'percentage'
+            default_amt = 5
         else:
-            search_param.append(('refund_type_id', '=', self.env.ref('tt_accounting.refund_type_regular_refund').id))
-            default_refund_env = self.env.ref('tt_accounting.admin_fee_refund_regular')
+            default_refund_type_id = self.env.ref('tt_accounting.refund_type_regular_refund').id
+            default_adm_fee_name = 'Regular Refund'
+            default_amt_type = 'amount'
+            default_amt = 50000
+        search_param.append(('refund_type_id', '=', default_refund_type_id))
         agent_obj = self.env['tt.agent'].browse(int(agent_id))
         if ho_id:
             ho_obj = self.env['tt.agent'].browse(int(ho_id))
@@ -314,9 +319,7 @@ class TtRefund(models.Model):
         if ho_obj:
             search_param.append(('ho_id', '=', ho_obj.id))
         refund_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
-        if not refund_admin_fee_list:
-            current_refund_env = default_refund_env
-        else:
+        if refund_admin_fee_list:
             qualified_admin_fee = []
             for admin_fee in refund_admin_fee_list:
                 is_agent = False
@@ -327,7 +330,7 @@ class TtRefund(models.Model):
                     is_agent = True
                 elif admin_fee.agent_access_type == 'restrict' and agent_id not in admin_fee.agent_ids.ids:
                     is_agent = True
-                
+
                 if admin_fee.agent_type_access_type == 'all':
                     is_agent_type = True
                 elif admin_fee.agent_type_access_type == 'allow' and agent_obj.agent_type_id.id in admin_fee.agent_type_ids.ids:
@@ -339,7 +342,29 @@ class TtRefund(models.Model):
                     continue
 
                 qualified_admin_fee.append(admin_fee)
-            current_refund_env = qualified_admin_fee and qualified_admin_fee[0] or default_refund_env
+            current_refund_env = qualified_admin_fee and qualified_admin_fee[0] or False
+        else:
+            current_refund_env = False
+        if not current_refund_env:
+            current_refund_env = self.env['tt.master.admin.fee'].create({
+                'name': default_adm_fee_name,
+                'after_sales_type': 'refund',
+                'refund_type_id': default_refund_type_id,
+                'min_amount_ho': 0,
+                'min_amount_agent': 0,
+                'agent_type_access_type': 'all',
+                'agent_access_type': 'all',
+                'ho_id': ho_obj and ho_obj.id or self.env.ref('tt_base.rodex_ho').id,
+                'sequence': 500
+            })
+            self.env['tt.master.admin.fee.line'].create({
+                'type': default_amt_type,
+                'amount': default_amt,
+                'is_per_pnr': True,
+                'is_per_pax': True,
+                'balance_for': 'ho',
+                'master_admin_fee_id': current_refund_env.id
+            })
         return current_refund_env
 
     def get_refund_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0, refund_type='regular'):

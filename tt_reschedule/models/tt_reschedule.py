@@ -175,7 +175,7 @@ class TtRescheduleLine(models.Model):
         agent_type_adm_ids = self.reschedule_id.agent_id.agent_type_id.admin_fee_ids.ids
         agent_adm_ids = self.reschedule_id.agent_id.admin_fee_ids.ids
         return {'domain': {
-            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), '&', '|',
+            'admin_fee_id': [('after_sales_type', '=', 'after_sales'), ('ho_id', '=', self.ho_id.id), '&', '|',
                  ('agent_type_access_type', '=', 'all'), '|', '&', ('agent_type_access_type', '=', 'allow'),
                  ('id', 'in', agent_type_adm_ids), '&', ('agent_type_access_type', '=', 'restrict'),
                  ('id', 'not in', agent_type_adm_ids), '|', ('agent_access_type', '=', 'all'), '|', '&',
@@ -355,9 +355,7 @@ class TtReschedule(models.Model):
         if ho_obj:
             search_param.append(('ho_id', '=', ho_obj.id))
         reschedule_admin_fee_list = self.env['tt.master.admin.fee'].search(search_param, order='sequence, id desc')
-        if not reschedule_admin_fee_list:
-            current_reschedule_env = self.env.ref('tt_accounting.admin_fee_reschedule')
-        else:
+        if reschedule_admin_fee_list:
             qualified_admin_fee = []
             for admin_fee in reschedule_admin_fee_list:
                 is_agent = False
@@ -380,7 +378,28 @@ class TtReschedule(models.Model):
                     continue
 
                 qualified_admin_fee.append(admin_fee)
-            current_reschedule_env = qualified_admin_fee and qualified_admin_fee[0] or self.env.ref('tt_accounting.admin_fee_reschedule')
+            current_reschedule_env = qualified_admin_fee and qualified_admin_fee[0] or False
+        else:
+            current_reschedule_env = False
+        if not current_reschedule_env:
+            current_reschedule_env = self.env['tt.master.admin.fee'].create({
+                'name': 'Reschedule',
+                'after_sales_type': 'after_sales',
+                'min_amount_ho': 0,
+                'min_amount_agent': 0,
+                'agent_type_access_type': 'all',
+                'agent_access_type': 'all',
+                'ho_id': ho_obj and ho_obj.id or self.env.ref('tt_base.rodex_ho').id,
+                'sequence': 500
+            })
+            self.env['tt.master.admin.fee.line'].create({
+                'type': 'amount',
+                'amount': 50000,
+                'is_per_pnr': True,
+                'is_per_pax': True,
+                'balance_for': 'ho',
+                'master_admin_fee_id': current_reschedule_env.id
+            })
         return current_reschedule_env
 
     def get_reschedule_fee_amount(self, agent_id, order_number='', order_type='', refund_amount=0, passenger_count=0):
