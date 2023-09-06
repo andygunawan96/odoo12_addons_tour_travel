@@ -12,11 +12,11 @@ class TtCustomerParentInhAcc(models.Model):
 
     def sync_customer_accounting(self, func_action, vendor_list):
         try:
+            res = []
             if self.ho_id:
                 ho_obj = self.ho_id
             else:
                 ho_obj = self.parent_agent_id.ho_id
-            res = []
             for ven in vendor_list:
                 search_params = [('res_model', '=', self._name), ('res_id', '=', self.id),
                                  ('action', '=', func_action), ('accounting_provider', '=', ven)]
