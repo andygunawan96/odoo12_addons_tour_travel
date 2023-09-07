@@ -56,6 +56,7 @@ class ReservationTour(models.Model):
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
                     'customer_parent_type_id': self.customer_parent_type_id.id,
+                    'currency_id': temp_ho_obj.currency_id.id,
                     'state': 'confirm',
                     'confirmed_uid': data['co_uid'],
                     'confirmed_date': datetime.now()
@@ -88,6 +89,7 @@ class ReservationTour(models.Model):
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
                     'customer_parent_type_id': self.customer_parent_type_id.id,
+                    'currency_id': temp_ho_obj.currency_id.id,
                     'state': state,
                     'confirmed_uid': data['co_uid'],
                     'confirmed_date': datetime.now(),
@@ -234,6 +236,7 @@ class ReservationTour(models.Model):
             payment_vals = {
                 'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'acquirer_id': data['acquirer_id'],
                 'real_total_amount': invoice_id.grand_total,
                 'customer_parent_id': data['customer_parent_id'],
@@ -268,6 +271,7 @@ class ReservationTour(models.Model):
             ho_payment_vals = {
                 'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'acquirer_id': acq_obj,
                 'real_total_amount': ho_invoice_id.grand_total,
                 'confirm_uid': data['co_uid'],
@@ -295,6 +299,7 @@ class ReservationTour(models.Model):
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'state': 'confirm',
                 'confirmed_uid': data['co_uid'],
                 'confirmed_date': datetime.now()
@@ -321,6 +326,7 @@ class ReservationTour(models.Model):
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'state': state,
                 'confirmed_uid': data['co_uid'],
                 'confirmed_date': datetime.now(),
@@ -423,6 +429,7 @@ class ReservationTour(models.Model):
 
             payment_vals = {
                 'agent_id': self.agent_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'acquirer_id': data['acquirer_id'],
                 'real_total_amount': invoice_id.grand_total,
                 'customer_parent_id': data['customer_parent_id'],
@@ -450,6 +457,7 @@ class ReservationTour(models.Model):
             if payment_method_to_ho == 'credit_limit':
                 ho_payment_vals = {
                     'agent_id': self.agent_id.id,
+                    'currency_id': temp_ho_obj.currency_id.id,
                     'acquirer_id': acq_obj,
                     'real_total_amount': ho_invoice_id.grand_total,
                     'confirm_uid': data['co_uid'],
@@ -481,6 +489,7 @@ class ReservationTour(models.Model):
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
                     'customer_parent_type_id': self.customer_parent_type_id.id,
+                    'currency_id': temp_ho_obj.currency_id.id,
                     'state': 'confirm',
                     'confirmed_uid': data['co_uid'],
                     'confirmed_date': datetime.now()
@@ -500,6 +509,7 @@ class ReservationTour(models.Model):
                     'agent_id': self.agent_id.id,
                     'customer_parent_id': self.customer_parent_id.id,
                     'customer_parent_type_id': self.customer_parent_type_id.id,
+                    'currency_id': temp_ho_obj.currency_id.id,
                     'state': 'paid', ## TIDAK TERPAKAI KARENA FUNGSI POTONG SUDAH OTOMATIS DI AGENT INVOICE KALAU UPDATE ROMBAK BANYAK
                     'confirmed_uid': data['co_uid'],
                     'confirmed_date': datetime.now(),
@@ -585,6 +595,7 @@ class ReservationTour(models.Model):
                 ##membuat payment dalam draft
                 payment_obj = self.env['tt.payment'].create({
                     'agent_id': self.agent_id.id,
+                    'currency_id': temp_ho_obj.currency_id.id,
                     'acquirer_id': data['acquirer_id'],
                     'real_total_amount': invoice_id.grand_total,
                     'customer_parent_id': data['customer_parent_id'],
@@ -604,6 +615,7 @@ class ReservationTour(models.Model):
                     acq_obj = self.agent_id.payment_acquirer_ids
                     ho_payment_vals = {
                         'agent_id': self.agent_id.id,
+                        'currency_id': temp_ho_obj.currency_id.id,
                         'acquirer_id': acq_obj,
                         'real_total_amount': ho_invoice_id.grand_total,
                         'confirm_uid': data['co_uid'],

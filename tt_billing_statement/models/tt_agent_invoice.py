@@ -129,6 +129,7 @@ class AgentInvoice(models.Model):
             'due_date': fields.Date.context_today(self),
             'agent_id': self.agent_id.id,
             'customer_parent_id': self.customer_parent_id.id,
+            'currency_id': self.currency_id.id,
             'contact_id': self.booker_id and self.booker_id .id or False,
             'invoice_ids': [(4, 0, self.ids)],
         }
