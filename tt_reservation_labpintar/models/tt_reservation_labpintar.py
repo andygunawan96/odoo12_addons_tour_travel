@@ -831,7 +831,7 @@ class ReservationLabPintar(models.Model):
         datas['form'] = res
         labpintar_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_labpintar')
 
-        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -889,7 +889,7 @@ class ReservationLabPintar(models.Model):
         datas['is_with_price'] = True
         labpintar_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_labpintar')
 
-        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
