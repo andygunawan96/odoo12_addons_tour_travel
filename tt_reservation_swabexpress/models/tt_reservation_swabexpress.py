@@ -820,7 +820,7 @@ class ReservationSwabExpress(models.Model):
         datas['form'] = res
         swabexpress_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_swabexpress')
 
-        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -878,7 +878,7 @@ class ReservationSwabExpress(models.Model):
         datas['is_with_price'] = True
         swabexpress_ticket_id = self.env.ref('tt_report_common.action_report_printout_reservation_swabexpress')
 
-        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -1033,7 +1033,7 @@ class ReservationSwabExpress(models.Model):
         datas['is_with_price'] = True
         swabexpress_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_swabexpress')
 
-        if not book_obj.printout_itinerary_id:
+        if not book_obj.printout_itinerary_id or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:

@@ -935,7 +935,7 @@ class ReservationInsurance(models.Model):
         datas['form'] = res
         insurance_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_insurance')
 
-        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -992,7 +992,7 @@ class ReservationInsurance(models.Model):
         datas['is_with_price'] = True
         insurance_ticket_id = book_obj.env.ref('tt_report_common.action_report_printout_reservation_insurance')
 
-        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False):
+        if not book_obj.printout_ticket_price_id or data.get('is_hide_agent_logo', False) or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -1173,7 +1173,7 @@ class ReservationInsurance(models.Model):
         res = res and res[0] or {}
         datas['form'] = res
         insurance_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_insurance')
-        if not book_obj.printout_itinerary_id:
+        if not book_obj.printout_itinerary_id or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:

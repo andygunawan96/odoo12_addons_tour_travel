@@ -1101,3 +1101,43 @@ tt_ssr_list_id_1099,Boba Milk Tea,MTFD,tt_ssr_category_meal,tt_reservation_airli
 tt_ssr_list_id_1100,Hyderabadi biryani,HBCM,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_airasia,tt_reservation_airline.tt_provider_type_airline,1,1,1,0,1,1,1
 tt_ssr_list_id_1101,Lemon Due Honey Lemon (3% Alcohol) [Domestic flights only],LDPQ,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_airasia,tt_reservation_airline.tt_provider_type_airline,1,1,1,0,0,1,1
 tt_ssr_list_id_1102,Baggage XBAG,XBAG,tt_ssr_category_baggage,tt_reservation_airline.tt_provider_airline_singaporeairlines,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1103,Signature Laksa (MCF1),MCF1,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1104,Carrot Cake (MCF2),MCF2,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1105,Stewed Beef Brisket Hor Fun (MC01),MC01,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1106,Soy Sauce Chicken and Egg with Rice (MC02),MC02,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1107,Nasi Lemak (MC03),MC03,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1108,Japanese Chicken Curry with Rice (MC04),MC04,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1109,Roasted Chicken Thigh in Black Pepper Sauce with Quinoa Pilaf (MC05),MC05,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1110,Pumpkin Farfalle with Tomato Concasse (MCVG),MCVG,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1111,Chicken Gulai with Rice (MH01),MH01,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1112,Oriental Treasure Rice (MH02),MH02,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1113,Black Pepper Beef with Rice (MH03),MH03,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1114,Herbal Chicken with Mixed Brown Rice (MH04),MH04,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1115,Ragout of Chicken & Potato (MH05),MH05,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1116,Ginger Teriyaki Chicken with Rice (MH06),MH06,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1117,Minestrone Soup with Multi Grains (VGML),VGML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1118,Dahl Curry Basmati Rice (VJML),VJML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1119,Turkey Ham & Gruyere Cheese Croissant (MS01),MS01,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1120,Turkey Ham & Egg Wrap (MS02),MS02,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1121,Mushroom Swiss Wrap (MS03),MS03,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1122,Kid's Meal: Mac & Cheese with Chicken Tenders (CHML),CHML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1123,Pandan Chiffon Bundle (MS04),MS04,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1124,Old Chang Kee Curry Puff (MS05),MS05,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1125,Snack Pack (MS90),MS90,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1126,Snack Pack (Last Min) (ML90),ML90,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1127,Corn Baguette with Chicken Fillet (MS10),MS10,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1128,Arabic Pita Wrap with Zucchini Patties and Potato Salad (MS12),MS12,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1129,Sweet Chicken Bread Roll (MS20),MS20,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1130,Pumpkin Seeds & Gouda Cheese with Laugen Bread (MS22),MS22,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1131,Nasi Lemak Chicken Gulai with Rice (MLM1),MLM1,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1132,Yam Rice Oriental Treasure Rice (MLM2),MLM2,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1133,Dahl Curry with Basmati Rice (MLM3),MLM3,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1134,Jeddah Meals (MJED),MJED,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1135,Celebration Cake combo (with non-Alcoholic drinks) (CAK1),CAK1,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1136,Celebration Cake combo (with Alcoholic Drinks) (CAK2),CAK2,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1137,Interline Meal (MH2C),MH2C,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1138,Interline Meal (ML2C),ML2C,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1139,Interline Juice (MH2J),MH2J,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1140,Interline Juice (ML2J),ML2J,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1141,FIM Disruption Handling Meal (MFIM),MFIM,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1
+tt_ssr_list_id_1142,SQ Disruption Handling Meal (LPML),LPML,tt_ssr_category_meal,tt_reservation_airline.tt_provider_airline_scoot,tt_reservation_airline.tt_provider_type_airline,1,1,1,1,1,1,1

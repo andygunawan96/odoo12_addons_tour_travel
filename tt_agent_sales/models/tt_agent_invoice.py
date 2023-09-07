@@ -306,7 +306,7 @@ class AgentInvoice(models.Model):
             datas['form'] = res
             invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
             for invoice in rec['invoice_line_ids']:
-                if not invoice.invoice_id.printout_invoice_id:
+                if not invoice.invoice_id.printout_invoice_id or data.get('is_force_get_new_printout', False):
                     pdf_report = invoice_id.report_action(invoice.invoice_id, data=datas)
                     pdf_report['context'].update({
                         'active_model': invoice.invoice_id._name,
@@ -367,7 +367,7 @@ class AgentInvoice(models.Model):
             datas['form'] = res
             invoice_id = self.env.ref('tt_report_common.action_report_printout_invoice')
             for invoice in rec['invoice_line_ids']:
-                if not invoice.invoice_id.printout_invoice_id or is_dynamic_print:
+                if not invoice.invoice_id.printout_invoice_id or is_dynamic_print or data.get('is_force_get_new_printout', False):
                     datas['included_detail_ids'] = []
                     for inv_det in invoice.invoice_line_detail_ids:
                         if inv_det.desc in included_pax_names:
@@ -446,7 +446,7 @@ class AgentInvoice(models.Model):
             datas['form'] = res
             invoice_id = self.env.ref('tt_report_common.action_report_printout_kwitansi')
             for invoice in rec['invoice_line_ids']:
-                if not invoice.invoice_id.printout_invoice_id:
+                if not invoice.invoice_id.printout_invoice_id or data.get('is_force_get_new_printout', False):
                     pdf_report = invoice_id.report_action(invoice.invoice_id, data=datas)
                     pdf_report['context'].update({
                         'active_model': invoice.invoice_id._name,

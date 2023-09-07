@@ -56,6 +56,7 @@ class ReservationBus(models.Model):
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'state': 'confirm',
                 'confirmed_uid': data['co_uid'],
                 'confirmed_date': datetime.now()
@@ -88,6 +89,7 @@ class ReservationBus(models.Model):
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'state': state,
                 'confirmed_uid': data['co_uid'],
                 'confirmed_date': datetime.now(),
@@ -231,6 +233,7 @@ class ReservationBus(models.Model):
         payment_vals = {
             'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'agent_id': self.agent_id.id,
+            'currency_id': temp_ho_obj.currency_id.id,
             'acquirer_id': data['acquirer_id'],
             'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': data['customer_parent_id'],
@@ -259,6 +262,7 @@ class ReservationBus(models.Model):
             ho_payment_vals = {
                 'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'acquirer_id': acq_obj,
                 'real_total_amount': ho_invoice_id.grand_total,
                 'confirm_uid': data['co_uid'],
