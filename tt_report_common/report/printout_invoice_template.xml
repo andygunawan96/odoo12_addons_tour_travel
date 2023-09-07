@@ -278,15 +278,17 @@
     <template id="external_layout_header">
         <div class="row" style="height:100px; font-family: 'Liberation Sans'">
             <t t-if="doc_type in ['ho_invoice', 'top_up', 'ho_billing']">
-                <t t-if="ho_obj.sudo().logo">
-                    <div class="col-4" style="margin-left: 30px">
-                        <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.sudo().logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
-                    </div>
-                </t>
-                <t t-else="">
-                    <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
-                        <span t-field="ho_obj.sudo().name" style="font-size: 28px;"/>
-                    </div>
+                <t t-if="not is_hide_agent_logo">
+                    <t t-if="ho_obj.sudo().logo">
+                        <div class="col-4" style="margin-left: 30px">
+                            <img t-att-src="'data:image/png;base64,%s' % to_text(ho_obj.sudo().logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
+                            <span t-field="ho_obj.sudo().name" style="font-size: 28px;"/>
+                        </div>
+                    </t>
                 </t>
             </t>
             <t t-elif="doc_model in ['tt.agent.invoice','tt.billing.statement','tt.refund','tt.reschedule','tt.reschedule.periksain','tt.reschedule.phc']">
