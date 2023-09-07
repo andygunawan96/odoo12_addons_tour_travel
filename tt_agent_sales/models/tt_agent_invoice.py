@@ -299,7 +299,7 @@ class AgentInvoice(models.Model):
                     invoice.invoice_id.write(new_data)
                     invoice.invoice_id.printout_invoice_id.unlink()
 
-            datas = {'ids': self.env.context.get('active_ids', [])}
+            datas = {'ids': self.env.context.get('active_ids', []), 'is_hide_agent_logo': data.get('is_hide_agent_logo', False)}
             # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
             res = rec.read()
             res = res and res[0] or {}
@@ -360,7 +360,7 @@ class AgentInvoice(models.Model):
                     if not is_dynamic_print:
                         invoice.invoice_id.printout_invoice_id.unlink()
 
-            datas = {'ids': self.env.context.get('active_ids', []), 'is_dynamic_print': is_dynamic_print}
+            datas = {'ids': self.env.context.get('active_ids', []), 'is_dynamic_print': is_dynamic_print, 'is_hide_agent_logo': data.get('is_hide_agent_logo', False)}
             # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
             res = rec.read()
             res = res and res[0] or {}
@@ -439,7 +439,7 @@ class AgentInvoice(models.Model):
                     invoice.invoice_id.write(new_data)
                     invoice.invoice_id.printout_invoice_id.unlink()
 
-            datas = {'ids': self.env.context.get('active_ids', [])}
+            datas = {'ids': self.env.context.get('active_ids', []), 'is_hide_agent_logo': data.get('is_hide_agent_logo', False)}
             # res = self.read(['price_list', 'qty1', 'qty2', 'qty3', 'qty4', 'qty5'])
             res = rec.read()
             res = res and res[0] or {}
