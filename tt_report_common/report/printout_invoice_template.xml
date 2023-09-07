@@ -291,15 +291,17 @@
             </t>
             <t t-elif="doc_model in ['tt.agent.invoice','tt.billing.statement','tt.refund','tt.reschedule','tt.reschedule.periksain','tt.reschedule.phc']">
                 <!-- Hide agent logo cman untuk reservation only, untuk refund reschedule dkk tetep tmpil -->
-                <t t-if="doc.agent_id.logo">
-                    <div class="col-4" style="margin-left: 30px">
-                        <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
-                    </div>
-                </t>
-                <t t-else="">
-                    <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
-                        <span t-field="doc.agent_id.name" style="font-size: 28px;"/>
-                    </div>
+                <t t-if="not is_hide_agent_logo">
+                    <t t-if="doc.agent_id.logo">
+                        <div class="col-4" style="margin-left: 30px">
+                            <img t-att-src="'data:image/png;base64,%s' % to_text(doc.agent_id.logo)" border="1" style="max-height:100px; max-width:165px; margin-bottom: 20px"/><br/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="col-4" style="margin-left: 30px; text-align: center; display: inline-flex; align-items: center;">
+                            <span t-field="doc.agent_id.name" style="font-size: 28px;"/>
+                        </div>
+                    </t>
                 </t>
             </t>
             <t t-else="">
