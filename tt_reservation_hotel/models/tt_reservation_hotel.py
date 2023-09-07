@@ -292,7 +292,7 @@ class HotelReservation(models.Model):
             co_uid = book_obj.user_id and book_obj.user_id.id or self.env.user.id
 
             book_name = book_obj.name
-            if not book_obj.printout_itinerary_id:
+            if not book_obj.printout_itinerary_id or data.get('is_force_get_new_printout', False):
                 pdf_report = pdf_obj.report_action(book_obj, data=datas)
                 pdf_report['context'].update({
                     'active_model': book_obj._name,

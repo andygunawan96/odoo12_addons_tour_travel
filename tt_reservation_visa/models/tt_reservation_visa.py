@@ -1990,7 +1990,7 @@ class TtVisa(models.Model):
         datas['form'] = res
         visa_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_visa')
 
-        if not book_obj.printout_itinerary_visa:
+        if not book_obj.printout_itinerary_visa or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
