@@ -44,6 +44,7 @@ class ReservationOffline(models.Model):
                 'state': 'confirm',
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'confirmed_date': datetime.now()
             })
             if self.issued_uid.agent_id.id == self.agent_id.id:
@@ -96,6 +97,7 @@ class ReservationOffline(models.Model):
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': self.customer_parent_id.id,
                 'customer_parent_type_id': self.customer_parent_type_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'state': state,
                 'confirmed_date': datetime.now(),
                 'is_use_credit_limit': is_use_credit_limit
@@ -279,6 +281,7 @@ class ReservationOffline(models.Model):
         payment_obj = self.env['tt.payment'].create({
             'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'agent_id': self.agent_id.id,
+            'currency_id': temp_ho_obj.currency_id.id,
             'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': self.customer_parent_id.id,
             'confirm_uid': invoice_id.confirmed_uid.id,
@@ -301,6 +304,7 @@ class ReservationOffline(models.Model):
             ho_payment_vals = {
                 'ho_id': temp_ho_obj and temp_ho_obj.id or False,
                 'agent_id': self.agent_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'acquirer_id': acq_obj,
                 'real_total_amount': ho_invoice_id.grand_total,
                 'confirm_date': datetime.now()

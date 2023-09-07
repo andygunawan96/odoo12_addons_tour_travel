@@ -64,6 +64,7 @@ class ReservationPassport(models.Model):
                 'agent_id': self.agent_id.id,
                 'customer_parent_id': book_obj.customer_parent_id.id,
                 'customer_parent_type_id': book_obj.customer_parent_type_id.id,
+                'currency_id': temp_ho_obj.currency_id.id,
                 'state': 'confirm',
                 'confirmed_uid': book_obj.confirmed_uid.id,
                 'confirmed_date': datetime.now()
@@ -127,6 +128,7 @@ class ReservationPassport(models.Model):
         payment_vals = {
             'ho_id': temp_ho_obj and temp_ho_obj.id or False,
             'agent_id': self.agent_id.id,
+            'currency_id': temp_ho_obj.currency_id.id,
             'acquirer_id': data['acquirer_id'],
             'real_total_amount': invoice_id.grand_total,
             'customer_parent_id': book_obj.customer_parent_id.id,
