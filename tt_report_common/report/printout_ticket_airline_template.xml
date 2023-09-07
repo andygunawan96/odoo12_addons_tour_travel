@@ -256,10 +256,17 @@
                     <t t-set="height_origin_code" t-value="(len(segment_obj.origin_id.city) + len(segment_obj.origin_id.code) + 3) / 20"/>
                     <t t-set="height_origin_name" t-value="len(segment_obj.origin_id.name) / 22"/>
                     <t t-set="height_origin" t-value="int(height_origin_code + height_origin_name) * 38"/>
+                    <t t-if="segment_obj.origin_terminal">
+                        <t t-set="height_origin" t-value="height_origin+16"/>
+                    </t>
+
 
                     <t t-set="height_destination_code" t-value="(len(segment_obj.destination_id.city) + len(segment_obj.destination_id.code) + 3) / 20"/>
                     <t t-set="height_destination_name" t-value="len(segment_obj.destination_id.name) / 22"/>
                     <t t-set="height_destination" t-value="int(height_destination_code + height_destination_name) * 38"/>
+                    <t t-if="segment_obj.destination_terminal">
+                        <t t-set="height_destination" t-value="height_destination+16"/>
+                    </t>
 
                     <t t-set="segment_height" t-value="str(max(height_origin,height_destination,75))"/>
 
