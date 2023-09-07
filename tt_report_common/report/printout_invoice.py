@@ -171,7 +171,7 @@ class PrintoutTicketForm(models.AbstractModel):
             'reschedule_fee': reschedule_fee,
             'ssr_list': ssr_list,
             'airline_ticket_footer': airline_ticket_footer and airline_ticket_footer[0].html or '',
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -290,7 +290,7 @@ class PrintoutTicketBusForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url
         }
@@ -376,7 +376,7 @@ class PrintoutTicketTrainForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url
         }
@@ -461,7 +461,7 @@ class PrintoutBoardingPassTrainForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'train_ticket_footer': train_ticket_footer and train_ticket_footer[0].html or '',
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url
         }
@@ -560,7 +560,7 @@ class PrintoutTicketEventForm(models.AbstractModel):
             'price_breakdown': price_breakdown,
             'pnr_length': pnr_length,
             'header_width': str(header_width),
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -688,7 +688,7 @@ class PrintoutVoucherHotelForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'header_width': str(header_width),
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'refund_fee': self.get_refund_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
             'reschedule_fee': self.get_reschedule_fee_amount(self.env[data['context']['active_model']].browse(data['context']['active_ids']).agent_id),
             'hotel_ticket_footer': hotel_ticket_footer and hotel_ticket_footer[0].html or '',
@@ -1003,7 +1003,7 @@ class PrintoutPPOBBillsForm(models.AbstractModel):
             'pnr_length': va_length,
             'header_width': str(header_width),
             'footer_ppob_bpjs': footer_ppob_bpjs and footer_ppob_bpjs[0].html or '',
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -1507,7 +1507,7 @@ class PrintoutInvoiceHO(models.AbstractModel):
             'inv_lines': values,
             'pnr_length': pnr_length,
             'terbilang': self.compute_terbilang_from_objs(self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'ho_obj': ho_obj,
             'header_width': str(header_width),
             'base_color': base_color,
@@ -2818,7 +2818,7 @@ class PrintoutExpenses(models.AbstractModel):
             'header_width': str(header_width),
             # 'terbilang': self.compute_terbilang_from_objs(
             #     self.env[data['context']['active_model']].browse(data['context']['active_ids'])),
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -2929,7 +2929,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -2992,7 +2992,8 @@ class PrintoutIteneraryForm(models.AbstractModel):
                     ssr_descs = []
                     if hasattr(psg, 'fee_ids'):
                         for ssr_sc in psg.fee_ids:
-                            ssr_seg_applied = ';' + ssr_sc.journey_code.split(',')[2] + '-' + ssr_sc.journey_code.split(',')[4] if ssr_sc.journey_code else ""
+                            ssr_journey_code = ssr_sc.journey_code.split(';')
+                            ssr_seg_applied = ';' + ssr_journey_code[0].split(',')[2] + '-' + ssr_journey_code[-1].split(',')[4] if ssr_journey_code else ""
                             ssr_descs.append({'name': ssr_sc.name + ssr_seg_applied, 'value': ssr_sc.value, 'category_icon': ssr_sc.category_icon})
                             if is_break_down_price:
                                 if ssr_sc.category not in price_breakdown:
@@ -3090,7 +3091,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'customer_grand_total': customer_grand_total + discount_value, #Disc value (-1)
             'price_breakdown': price_breakdown,
             'printout_itinerary_footer': printout_itinerary_footer and printout_itinerary_footer[0].html or '',
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -3194,7 +3195,7 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -3298,7 +3299,7 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -3402,7 +3403,7 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -3506,7 +3507,7 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -3613,7 +3614,7 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -3713,7 +3714,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
@@ -3815,7 +3816,7 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -3922,7 +3923,7 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -4031,7 +4032,7 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -4142,7 +4143,7 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             'price_lines': values,
             'price_breakdown': price_breakdown,
             'customer_grand_total': customer_grand_total,
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'base_color': base_color,
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
@@ -4249,7 +4250,7 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             'docs': [values,],
             'price_breakdown': price_breakdown,
             'header_width': str(header_width),
-            'date_now': fields.Date.today().strftime('%d %b %Y'),
+            'date_now': fields.Date.today(),
             'currency_id': self.env.user.company_id.currency_id,
             'base_color': base_color,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
