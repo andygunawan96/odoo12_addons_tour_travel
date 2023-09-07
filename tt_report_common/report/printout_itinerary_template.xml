@@ -1791,7 +1791,7 @@
             <tr>
                 <td width="70%"/>
                 <td width="25%" style="text-align:center">
-                    <t t-esc="date_now"/><br/>
+                    <t t-esc="date_now.strftime('%d %b %Y')"/><br/>
                     <p>Buyer</p>
                     <p style="color: white;">.</p>
                     <p style="color: white;">.</p>
