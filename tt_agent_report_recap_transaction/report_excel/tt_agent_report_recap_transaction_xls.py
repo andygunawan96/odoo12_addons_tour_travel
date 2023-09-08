@@ -175,6 +175,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         hotel_recaps = []
         offline_recaps = []
 
+        total_all_agent_nta = 0
+        total_all_agent_commission = 0
+        total_all_ho_nta = 0
+        total_all_total_commission = 0
+        total_all_grand_total = 0
+
         # let's iterate the data YEY!
         for idx, i in enumerate(datas):
             if not values['data_form']['is_ho']:
@@ -428,6 +434,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                                 this_resv_agent_nta_total += k['booking_charge_total']
                         elif k['booking_charge_type'] != 'DISC' and k['booking_charge_total']:
                             this_resv_agent_nta_total += k['booking_charge_total']
+
+                    total_all_agent_nta += this_resv_agent_nta_total
+                    total_all_agent_commission += this_resv_agent_commission
+                    total_all_ho_nta += i['total_nta']
+                    total_all_total_commission += i['total_commission']
+                    total_all_grand_total += i['grand_total']
 
                     incr.reset()
                     # print the whole data of reservation
@@ -875,6 +887,12 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                         elif k['booking_charge_type'] != 'DISC' and k['booking_charge_total']:
                             this_resv_agent_nta_total += k['booking_charge_total']
 
+                    total_all_agent_nta += this_resv_agent_nta_total
+                    total_all_agent_commission += this_resv_agent_commission
+                    total_all_ho_nta += i['total_nta']
+                    total_all_total_commission += i['total_commission']
+                    total_all_grand_total += i['grand_total']
+
                     incr.reset()
                     # print the whole data of reservation
                     sheet.write(row_data, incr.get_number(), counter, sty_table_data_center)
@@ -1118,6 +1136,50 @@ class AgentReportRecapTransactionXls(models.TransientModel):
                     airline_recaps[data_index]['pax_non_GDS'] += datas[sing_pnr]['infant']
 
         row_data += 1
+        sty_table_data_center = style.table_data_center_total_footer
+        sty_table_data = style.table_data_total_footer
+        sty_datetime = style.table_data_datetime_total_footer
+        sty_date = style.table_data_date_total_footer
+        sty_amount = style.table_data_amount_total_footer
+        incr.reset()
+        # print the whole data of reservation
+        sheet.write(row_data, incr.get_number(), '', sty_table_data_center)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_date)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), 'Total', sty_table_data_center)
+        sheet.write(row_data, incr.generate_number(), total_all_agent_nta, sty_amount)
+        sheet.write(row_data, incr.generate_number(), total_all_agent_commission, sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        if values['data_form']['is_ho']:
+            sheet.write(row_data, incr.generate_number(), total_all_ho_nta, sty_amount)
+            sheet.write(row_data, incr.generate_number(), total_all_total_commission, sty_amount)
+        sheet.write(row_data, incr.generate_number(), total_all_grand_total, sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+
+        row_data += 1
         # this is writing empty string, to print the bottom border
         sty_table_data_center = style.table_data_center_border
         sty_table_data = style.table_data_border
@@ -1145,18 +1207,19 @@ class AgentReportRecapTransactionXls(models.TransientModel):
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
+        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data_center)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
-        sheet.write(row_data, incr.generate_number(), '', sty_amount)
-        sheet.write(row_data, incr.generate_number(), '', sty_amount)
+        if values['data_form']['is_ho']:
+            sheet.write(row_data, incr.generate_number(), '', sty_amount)
+            sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_amount)
-        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
-        sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
         sheet.write(row_data, incr.generate_number(), '', sty_table_data)
 
