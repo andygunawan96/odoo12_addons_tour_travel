@@ -79,6 +79,7 @@ class TtReservationCustomer(models.Model):
                 'pnr': pnr,
                 'provider_id': provider_id,
                 'journey_code': ssr['journey_code'],
+                'ticket_number': ssr.get('ticket_number', ''),
             }
             if currency_id:
                 ssr_values['currency_id'] = currency_id

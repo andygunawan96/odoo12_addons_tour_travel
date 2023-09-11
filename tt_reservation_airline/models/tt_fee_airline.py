@@ -26,6 +26,7 @@ class TtSsrAirline(models.Model):
     journey_code = fields.Char('Journey Code', default='')
     departure_date_utc = fields.Datetime('Departure Date (UTC)', compute='_compute_departure_date_utc', store=True, readonly=1)
     # END
+    ticket_number = fields.Char("Ticket Number", default='')
 
     @api.depends('category')
     def _compute_category_icon(self):
@@ -54,6 +55,7 @@ class TtSsrAirline(models.Model):
             'fee_type': self.type,
             'fee_code': self.code,
             'fee_value': self.value,
+            'ticket_number': self.ticket_number and self.ticket_number or '',
             'fee_category': self.category,
             'description': json.loads(self.description),
             'description_text': self.convert_json_to_str(self.description),
