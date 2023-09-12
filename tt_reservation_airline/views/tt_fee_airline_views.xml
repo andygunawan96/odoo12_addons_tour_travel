@@ -23,6 +23,7 @@
                 <field name="value"/>
                 <field name="category"/>
                 <field name="amount"/>
+                <field name="ticket_number"/>
                 <field name="provider_id"/>
                 <field name="journey_code"/>
             </tree>

@@ -95,6 +95,20 @@
                 (4, ref('tt_reservation_airline.tt_loyalty_program_themarcopoloclub')),
             ]"/>
         </record>
+
+        <record id="tt_frequent_flyer_airline_qatar" model="tt.frequent.flyer.airline">
+            <field name="name">Qatar Flyer</field>
+            <field name="sequence">50</field>
+            <field name="provider_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_provider_airline_qatar')),
+            ]"/>
+            <field name="carrier_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_transport_carrier_airline_qr')),
+            ]"/>
+            <field name="loyalty_program_ids" eval="[
+                (4, ref('tt_reservation_airline.tt_loyalty_program_privilege')),
+            ]"/>
+        </record>
     </data>
 </odoo>
     
