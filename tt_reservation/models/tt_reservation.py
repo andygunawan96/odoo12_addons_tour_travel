@@ -1637,21 +1637,23 @@ class TtReservation(models.Model):
                                 if carrier_str != '' and carrier != '':
                                     carrier += ', '
                                 carrier_str += carrier
-                            agent_obj.use_pnr_quota({
-                                'res_model_resv': book_obj._name,
-                                'res_id_resv': book_obj.id,
-                                'res_model_prov': provider._name,
-                                'res_id_prov': provider.id,
-                                'ref_pnrs': provider.pnr,
-                                'ref_carriers': carrier_str,
-                                'ref_provider': provider.provider_id.code,
-                                'ref_name': book_obj.name,
-                                'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
-                                'ref_pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,  # total pax
-                                'ref_r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
-                                'inventory': 'internal',
-                                'amount': amount
-                            })
+                            quota_usage_obj = self.env['tt.pnr.quota.usage'].search([('ref_name', '=', "%s" % book_obj.name), ('ref_pnrs', '=', provider.pnr)])
+                            if not quota_usage_obj:
+                                agent_obj.use_pnr_quota({
+                                    'res_model_resv': book_obj._name,
+                                    'res_id_resv': book_obj.id,
+                                    'res_model_prov': provider._name,
+                                    'res_id_prov': provider.id,
+                                    'ref_pnrs': provider.pnr,
+                                    'ref_carriers': carrier_str,
+                                    'ref_provider': provider.provider_id.code,
+                                    'ref_name': book_obj.name,
+                                    'ref_provider_type': PROVIDER_TYPE_SELECTION[book_obj.name.split('.')[0]], #parser code al to provider type
+                                    'ref_pax': hasattr(book_obj, 'passenger_ids') and len(book_obj.passenger_ids) or 0,  # total pax
+                                    'ref_r_n': hasattr(book_obj, 'nights') and book_obj.nights or 0,  # room/night
+                                    'inventory': 'internal',
+                                    'amount': amount
+                                })
                             # if not quota_used:
                             #     print("5k woi")
 

@@ -394,7 +394,7 @@ class PrintoutPnrQuotaUsage(models.AbstractModel):
     @staticmethod
     def _select():
         return """
-        ref_name, ref_carriers, ref_pnrs, ref_pax, ref_r_n, inventory, amount,create_date
+        ref_name, ref_carriers, ref_pnrs, ref_pax, usage_quota, ref_r_n, inventory, amount,create_date
         """
 
     @staticmethod
@@ -466,9 +466,10 @@ class PrintoutPnrQuotaUsage(models.AbstractModel):
         sheet.write('C9', 'PNR', style.table_head_center)
         sheet.write('D9', 'Carriers', style.table_head_center)
         sheet.write('E9', 'Total Passengers', style.table_head_center)
-        sheet.write('F9', 'Room/Night', style.table_head_center)
-        sheet.write('G9', 'Amount', style.table_head_center)
-        sheet.write('H9', 'Type', style.table_head_center)
+        sheet.write('F9', 'Quota Usage', style.table_head_center)
+        sheet.write('G9', 'Room/Night', style.table_head_center)
+        sheet.write('H9', 'Amount', style.table_head_center)
+        sheet.write('I9', 'Type', style.table_head_center)
 
         # ====== SET WIDTH AND HEIGHT ==========
         sheet.set_row(0, row_height)  # set_row(row, height) -> row 0-4 (1-5)
@@ -485,6 +486,7 @@ class PrintoutPnrQuotaUsage(models.AbstractModel):
         sheet.set_column('F:F', 5)
         sheet.set_column('G:G', 17)
         sheet.set_column('H:H', 17)
+        sheet.set_column('I:I', 17)
 
 
         row_data = 8
@@ -533,6 +535,7 @@ class PrintoutPnrQuotaUsage(models.AbstractModel):
             sheet.write(row_data, 2, rec['ref_pnrs'], sty_table_data)
             sheet.write(row_data, 3, rec['ref_carriers'], sty_table_data)
             sheet.write(row_data, 4, rec['ref_pax'], sty_amount)
+            sheet.write(row_data, 4, rec['usage_quota'], sty_amount)
             sheet.write(row_data, 5, rec['ref_r_n'], sty_amount)
             sheet.write(row_data, 6, rec['amount'], sty_amount)
             sheet.write(row_data, 7, rec['inventory'], sty_table_data)
