@@ -1181,6 +1181,12 @@ class TtProviderAirline(models.Model):
             pass
         # END
 
+        # September 12, 2023 - SAM
+        pricing_data = {}
+        if self.pricing_ids:
+            pricing_data = self.pricing_ids[0].to_dict()
+        # END
+
         res = {
             'pnr': self.pnr and self.pnr or '',
             'pnr2': self.pnr2 and self.pnr2 or '',
@@ -1219,6 +1225,9 @@ class TtProviderAirline(models.Model):
             # July 12, 2023 - SAM
             'pnr_references': pnr_references,
             'duplicates': duplicates,
+            # END
+            # September 12, 2023 - SAM
+            'pricing_data': pricing_data,
             # END
         }
         return res
@@ -2738,6 +2747,49 @@ class TtProviderAirlinePricing(models.Model):
 
         self.write(values)
         _logger.info('Compute Raw Data : DONE')
+
+    def to_dict(self):
+        provider_pricing_data = {}
+        if self.provider_pricing_line_id:
+            pricing_id = self.provider_pricing_id.id if self.provider_pricing_id else ''
+            provider_pricing_data = {
+                "less": {
+                    'percentage': float(self.provider_less_percentage) if self.provider_less_percentage else 0.0,
+                    'is_infant': True if self.provider_less_infant == 'True' else False,
+                    'tour_code': self.provider_less_tour_code if self.provider_less_tour_code else '',
+                },
+                "pricing_id": pricing_id,
+                "rule_id": self.provider_pricing_line_id.id,
+            }
+
+        agent_pricing_data = {}
+        if self.agent_pricing_line_id:
+            agent_pricing_data = {
+                "pricing_id": self.agent_pricing_id.id if self.agent_pricing_id else '',
+                "rule_id": self.agent_pricing_line_id.id,
+            }
+
+        customer_pricing_data = {}
+        if self.customer_pricing_line_id:
+            customer_pricing_data = {
+                "pricing_id": self.customer_pricing_id.id if self.customer_pricing_id else '',
+                "rule_id": self.customer_pricing_line_id.id,
+            }
+
+        agent_commission_data = {}
+        if self.agent_commission_line_id:
+            agent_commission_data = {
+                "pricing_id": self.agent_commission_id.id if self.agent_commission_id else '',
+                "rule_id": self.agent_commission_line_id.id,
+            }
+
+        result = {
+            "provider_pricing_data": provider_pricing_data,
+            "agent_pricing_data": agent_pricing_data,
+            "customer_pricing_data": customer_pricing_data,
+            "agent_commission_data": agent_commission_data
+        }
+        return result
 
 
 class TtProviderAirlinePricingUpline(models.Model):
