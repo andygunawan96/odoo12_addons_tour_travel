@@ -1548,6 +1548,8 @@ class ReservationAirline(models.Model):
                 except:
                     raise RequestException(1002)
 
+                force_update_service_charge = provider.get('force_update_service_charge', False)
+                pricing_data_different = provider.get('pricing_data_different', False)
                 # May 12, 2020 - SAM
                 if not provider.get('force_update_service_charge') and (not provider.get('total_price') or provider_obj.total_price == provider['total_price']):
                     continue
@@ -1655,7 +1657,7 @@ class ReservationAirline(models.Model):
                 # January 12, 2022 - SAM
                 # Menambahkan mekanisme untuk update pricing data
                 try:
-                    if pricing_data and not is_same_service_charge_data:
+                    if pricing_data and (pricing_data_different or not is_same_service_charge_data):
                         pricing_obj = self.env['tt.provider.airline.pricing'].create({
                             'provider_id': provider_obj.id,
                             'raw_data': json.dumps(pricing_data)
