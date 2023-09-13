@@ -54,7 +54,7 @@
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Only Airline transactions can be sent.</p>
                         <group>
                             <group>
-                                <field name="is_create_customer"/>
+                                <field name="is_create_customer" attrs="{'invisible': [('accounting_provider', 'not in', ['itm', 'jurnalid'])]}"/>
                                 <field name="is_send_reverse_transaction"/>
                                 <field name="is_send_update_transaction"/>
                             </group>
@@ -69,6 +69,7 @@
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'accurate')]}">Accurate: Provide 'url', 'client_id', 'client_secret', 'url_redirect_web', 'username', 'password', 'database_id'.</p>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}">ITM: Provide 'url', 'live_id', 'trans_id', 'customer_code', 'item_key', '{provider_type_code}_vat_var', '{provider_type_code}_vat_percentage'.</p>
                         <p attrs="{'invisible': [('accounting_provider', '!=', 'jurnalid')]}">Jurnal ID: Provide 'url_api', 'url_web', 'client_id', 'client_secret', 'access_token', 'api_key'.</p>
+                        <p attrs="{'invisible': [('accounting_provider', '!=', 'travelite')]}">Travelite / TOP: Provide 'url', 'credit_limit_url', 'username', 'password', 'sourcetypeid'.</p>
                         <field name="variable_ids"/>
                         <separator string="Provider Suppliers" attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}"/>
                         <field name="provider_supplier_ids" attrs="{'invisible': [('accounting_provider', '!=', 'itm')]}"/>

@@ -3,6 +3,7 @@ from . import tt_accounting_connector_jasaweb
 from . import tt_accounting_connector_accurate
 from . import tt_accounting_connector_itm
 from . import tt_accounting_connector_jurnalid
+from . import tt_accounting_connector_travelite
 from . import tt_accounting_queue
 from . import tt_agent
 from . import tt_customer_parent
