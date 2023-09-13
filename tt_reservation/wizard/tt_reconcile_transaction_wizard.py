@@ -1,17 +1,20 @@
 from odoo import api,models,fields
 from datetime import datetime
 from odoo.exceptions import UserError
+import base64
 
 
 class TtReconcileTransactionWizard(models.TransientModel):
     _name = "tt.reconcile.transaction.wizard"
     _description = 'Orbis Wizard Reconcile Transaction Wizard'
 
-    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type')
-    provider_id = fields.Many2one('tt.provider', 'Provider', domain="[('provider_type_id', '=', provider_type_id),('is_reconcile','=',True)]")
+    provider_type_id = fields.Many2one('tt.provider.type', 'Provider Type', required=True)
+    provider_id = fields.Many2one('tt.provider', 'Provider', required=True, domain="[('provider_type_id', '=', provider_type_id),('is_reconcile','=',True)]")
     ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
+    is_manual_file = fields.Boolean('Use Self Uploaded File')
     date_from = fields.Date('Start Date')
     date_to = fields.Date('End Date')
+    manual_recon_file = fields.Binary('Manual Reconcile File')
 
     @api.onchange('provider_type_id')
     def _onchange_domain_agent_id(self):
@@ -22,14 +25,25 @@ class TtReconcileTransactionWizard(models.TransientModel):
         self.date_to = self.date_from
 
     def send_recon_request_data(self):
-        request = {
-            'provider_type': self.provider_type_id.code,
-            'data': {
-                'provider': self.provider_id.code,
-                'date_from': self.date_from and datetime.strftime(self.date_from,'%Y-%m-%d') or '',
-                'date_to': self.date_to and datetime.strftime(self.date_to,'%Y-%m-%d') or ''
+        if not self.is_manual_file:
+            request = {
+                'provider_type': self.provider_type_id.code,
+                'data': {
+                    'provider': self.provider_id.code,
+                    'date_from': self.date_from and datetime.strftime(self.date_from,'%Y-%m-%d') or '',
+                    'date_to': self.date_to and datetime.strftime(self.date_to,'%Y-%m-%d') or ''
+                }
             }
-        }
+        else:
+            request = {
+                'provider_type': self.provider_type_id.code,
+                'data': {
+                    'provider': self.provider_id.code,
+                    'date': self.date_from and datetime.strftime(self.date_from, '%Y-%m-%d') or '',
+                    'recon_file': self.manual_recon_file and base64.b64encode(self.manual_recon_file).decode('utf-8') or '',
+                    'is_skip_retrieve_file': True
+                }
+            }
         response = self.env['tt.api.con'].send_reconcile_request(request, self.ho_id.id)
         if response['error_code'] != 0:
             raise UserError(response['error_msg'])
