@@ -535,10 +535,10 @@ class PrintoutPnrQuotaUsage(models.AbstractModel):
             sheet.write(row_data, 2, rec['ref_pnrs'], sty_table_data)
             sheet.write(row_data, 3, rec['ref_carriers'], sty_table_data)
             sheet.write(row_data, 4, rec['ref_pax'], sty_amount)
-            sheet.write(row_data, 4, rec['usage_quota'], sty_amount)
-            sheet.write(row_data, 5, rec['ref_r_n'], sty_amount)
-            sheet.write(row_data, 6, rec['amount'], sty_amount)
-            sheet.write(row_data, 7, rec['inventory'], sty_table_data)
+            sheet.write(row_data, 5, rec['usage_quota'], sty_amount)
+            sheet.write(row_data, 6, rec['ref_r_n'], sty_amount)
+            sheet.write(row_data, 7, rec['amount'], sty_amount)
+            sheet.write(row_data, 8, rec['inventory'], sty_table_data)
 
         sty_table_data = style.table_data
         sty_amount = style.table_data_amount
