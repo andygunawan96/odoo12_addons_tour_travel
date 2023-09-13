@@ -37,7 +37,7 @@
     <!--Outgoing Mail Server-->
     <menuitem id="menu_email_outgoing"
               parent="tt_base.top_tour_travel_administration"
-              groups="base.group_erp_manager"
+              groups="base.group_erp_manager,tt_base.group_user_data_level_5"
               name="Outgoing Mail Server"
               sequence="6"
               action="base.action_ir_mail_server_list"/>
