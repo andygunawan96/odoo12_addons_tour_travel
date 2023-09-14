@@ -117,8 +117,8 @@ class AccountingConnectorTravelite(models.Model):
                             ticket_itin_idx += 1
                     for pax_idx, pax in enumerate(prov['tickets']):
                         if pax.get('ticket_number'):
-                            pax_tick = pax['ticket_number']
-                            airline_id = len(pax['ticket_number']) > 3 and pax['ticket_number'][:3] or ''
+                            pax_tick = len(pax['ticket_number']) > 3 and pax['ticket_number'][3:] or pax['ticket_number']
+                            airline_id = len(pax['ticket_number']) > 3 and pax['ticket_number'][:3] or pax['ticket_number']
                         else:
                             pax_tick = '%s_%s' % (prov['pnr'], str(pax_idx))
                             airline_id = ''
