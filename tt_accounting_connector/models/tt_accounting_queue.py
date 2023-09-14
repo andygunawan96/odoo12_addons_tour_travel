@@ -113,7 +113,11 @@ class TtAccountingQueue(models.Model):
                         'agent_commission': 0,
                         'ho_commission': 0,
                         'total_commission': 0,
+                        'total_fare': 0,
+                        'total_tax': 0,
+                        'total_upsell': 0,
                         'total_channel_upsell': 0,
+                        'total_discount': 0,
                         'tax_service_charges': []
                     }
                     prov_sale_id_list = []
@@ -130,8 +134,16 @@ class TtAccountingQueue(models.Model):
                                 temp_prov_price_dict['ho_commission'] -= sale.total
                             if sale.charge_code == 'csc':
                                 temp_prov_price_dict['total_channel_upsell'] -= sale.total
+                        if sale.charge_type == 'FARE':
+                            temp_prov_price_dict['total_fare'] += sale.total
+                        if sale.charge_type == 'TAX':
+                            temp_prov_price_dict['total_tax'] += sale.total
+                        if sale.charge_type == 'ROC' and sale.charge_code != 'csc':
+                            temp_prov_price_dict['total_upsell'] += sale.total
                         if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
                             temp_prov_price_dict['agent_nta'] += sale.total
+                        if sale.charge_type == 'DISC':
+                            temp_prov_price_dict['total_discount'] += sale.total
                         prov_sale_id_list.append(sale.id)
                     temp_prov_price_dict['parent_agent_commission'] = temp_prov_price_dict['total_commission'] - temp_prov_price_dict['agent_commission'] - temp_prov_price_dict['ho_commission'] - temp_prov_price_dict['total_channel_upsell']
                     temp_prov_price_dict['tax_service_charges'].append({
@@ -153,7 +165,11 @@ class TtAccountingQueue(models.Model):
                                 'agent_commission': 0,
                                 'ho_commission': 0,
                                 'total_commission': 0,
+                                'total_fare': 0,
+                                'total_tax': 0,
+                                'total_upsell': 0,
                                 'total_channel_upsell': 0,
+                                'total_discount': 0,
                                 'tax_service_charges': []
                             }
                             for sale in tick.passenger_id.cost_service_charge_ids.filtered(lambda x: x.id in prov_sale_id_list):
@@ -167,8 +183,16 @@ class TtAccountingQueue(models.Model):
                                         temp_tick_price_dict['total_commission'] -= sale.amount
                                     if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
+                                if sale.charge_type == 'FARE':
+                                    temp_tick_price_dict['total_fare'] += sale.amount
+                                if sale.charge_type == 'TAX':
+                                    temp_tick_price_dict['total_tax'] += sale.amount
+                                if sale.charge_type == 'ROC' and sale.charge_code != 'csc':
+                                    temp_tick_price_dict['total_upsell'] += sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
                                     temp_tick_price_dict['agent_nta'] += sale.amount
+                                if sale.charge_type == 'DISC':
+                                    temp_tick_price_dict['total_discount'] += sale.amount
                             temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
                             temp_tick_price_dict['tax_service_charges'].append({
                                 'charge_code': 'tax',
@@ -196,7 +220,11 @@ class TtAccountingQueue(models.Model):
                                 'agent_commission': 0,
                                 'ho_commission': 0,
                                 'total_commission': 0,
+                                'total_fare': 0,
+                                'total_tax': 0,
+                                'total_upsell': 0,
                                 'total_channel_upsell': 0,
+                                'total_discount': 0,
                                 'tax_service_charges': []
                             }
                             for sale in tick.cost_service_charge_ids.filtered(lambda x: x.id in prov_sale_id_list):
@@ -210,8 +238,16 @@ class TtAccountingQueue(models.Model):
                                         temp_tick_price_dict['total_commission'] -= sale.amount
                                     if sale.commission_agent_id.is_ho_agent:
                                         temp_tick_price_dict['ho_commission'] -= sale.amount
+                                if sale.charge_type == 'FARE':
+                                    temp_tick_price_dict['total_fare'] += sale.amount
+                                if sale.charge_type == 'TAX':
+                                    temp_tick_price_dict['total_tax'] += sale.amount
+                                if sale.charge_type == 'ROC' and sale.charge_code != 'csc':
+                                    temp_tick_price_dict['total_upsell'] += sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
                                     temp_tick_price_dict['agent_nta'] += sale.amount
+                                if sale.charge_type == 'DISC':
+                                    temp_tick_price_dict['total_discount'] += sale.amount
                             temp_tick_price_dict['parent_agent_commission'] = temp_tick_price_dict['total_commission'] - temp_tick_price_dict['agent_commission'] - temp_tick_price_dict['ho_commission']
                             temp_tick_price_dict['tax_service_charges'].append({
                                 'charge_code': 'tax',
@@ -255,6 +291,10 @@ class TtAccountingQueue(models.Model):
                     'is_send_commission': is_send_commission,
                     'billing_due_date': billing_due_date
                 })
+                if self.res_model == 'tt.reservation.airline':
+                    request.update({
+                        'sector_type': trans_obj.sector_type
+                    })
                 if self.action in ['reverse', 'split_reservation']:
                     if request.get('order_number'):
                         request.update({

@@ -12,8 +12,8 @@
                     <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="date_from" required="1"/>
                     <field name="date_to" attrs="{'invisible': [('is_manual_file','=',True)], 'required': [('is_manual_file','!=',True)]}"/>
-                    <field name="manual_recon_file" attrs="{'invisible': [('is_manual_file','!=',True)], 'required': [('is_manual_file','=',True)]}"/>
                     <field name="is_manual_file"/>
+                    <field name="manual_recon_file" attrs="{'invisible': [('is_manual_file','!=',True)], 'required': [('is_manual_file','=',True)]}"/>
                 </group>
                 <footer>
                     <button name="send_recon_request_data" string="Submit" type="object" default_focus="1" class="oe_highlight"/>
