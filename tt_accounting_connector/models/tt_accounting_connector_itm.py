@@ -256,7 +256,7 @@ class AccountingConnectorITM(models.Model):
 
                     for pax_idx, pax in enumerate(prov['tickets']):
                         if pax.get('ticket_number'):
-                            if len(pax['ticket_number']) > 3:
+                            if len(pax['ticket_number']) >= 13:
                                 pax_tick = '%s-%s' % (pax['ticket_number'][:3], pax['ticket_number'][3:])
                             else:
                                 pax_tick = pax['ticket_number']

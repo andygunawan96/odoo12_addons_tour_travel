@@ -118,7 +118,8 @@ class TtAccountingQueue(models.Model):
                         'total_upsell': 0,
                         'total_channel_upsell': 0,
                         'total_discount': 0,
-                        'tax_service_charges': []
+                        'tax_service_charges': [],
+                        'tax_details': []
                     }
                     prov_sale_id_list = []
                     for sale in prov.cost_service_charge_ids:
@@ -138,6 +139,10 @@ class TtAccountingQueue(models.Model):
                             temp_prov_price_dict['total_fare'] += sale.total
                         if sale.charge_type == 'TAX':
                             temp_prov_price_dict['total_tax'] += sale.total
+                            temp_prov_price_dict['tax_details'].append({
+                                'charge_code': sale.charge_code,
+                                'amount': sale.total
+                            })
                         if sale.charge_type == 'ROC' and sale.charge_code != 'csc':
                             temp_prov_price_dict['total_upsell'] += sale.total
                         if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
@@ -170,7 +175,8 @@ class TtAccountingQueue(models.Model):
                                 'total_upsell': 0,
                                 'total_channel_upsell': 0,
                                 'total_discount': 0,
-                                'tax_service_charges': []
+                                'tax_service_charges': [],
+                                'tax_details': []
                             }
                             for sale in tick.passenger_id.cost_service_charge_ids.filtered(lambda x: x.id in prov_sale_id_list):
                                 if sale.charge_code != 'csc' and sale.charge_type != 'DISC':
@@ -187,6 +193,10 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['total_fare'] += sale.amount
                                 if sale.charge_type == 'TAX':
                                     temp_tick_price_dict['total_tax'] += sale.amount
+                                    temp_tick_price_dict['tax_details'].append({
+                                        'charge_code': sale.charge_code,
+                                        'amount': sale.amount
+                                    })
                                 if sale.charge_type == 'ROC' and sale.charge_code != 'csc':
                                     temp_tick_price_dict['total_upsell'] += sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':
@@ -225,7 +235,8 @@ class TtAccountingQueue(models.Model):
                                 'total_upsell': 0,
                                 'total_channel_upsell': 0,
                                 'total_discount': 0,
-                                'tax_service_charges': []
+                                'tax_service_charges': [],
+                                'tax_details': []
                             }
                             for sale in tick.cost_service_charge_ids.filtered(lambda x: x.id in prov_sale_id_list):
                                 if sale.charge_code != 'csc' and sale.charge_type != 'DISC':
@@ -242,6 +253,10 @@ class TtAccountingQueue(models.Model):
                                     temp_tick_price_dict['total_fare'] += sale.amount
                                 if sale.charge_type == 'TAX':
                                     temp_tick_price_dict['total_tax'] += sale.amount
+                                    temp_tick_price_dict['tax_details'].append({
+                                        'charge_code': sale.charge_code,
+                                        'amount': sale.amount
+                                    })
                                 if sale.charge_type == 'ROC' and sale.charge_code != 'csc':
                                     temp_tick_price_dict['total_upsell'] += sale.amount
                                 if sale.charge_type != 'RAC' and sale.charge_code != 'csc':

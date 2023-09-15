@@ -117,8 +117,12 @@ class AccountingConnectorTravelite(models.Model):
                             ticket_itin_idx += 1
                     for pax_idx, pax in enumerate(prov['tickets']):
                         if pax.get('ticket_number'):
-                            pax_tick = len(pax['ticket_number']) > 3 and pax['ticket_number'][3:] or pax['ticket_number']
-                            airline_id = len(pax['ticket_number']) > 3 and pax['ticket_number'][:3] or pax['ticket_number']
+                            if len(pax['ticket_number']) >= 13:
+                                pax_tick = pax['ticket_number'][3:]
+                                airline_id = pax['ticket_number'][:3]
+                            else:
+                                pax_tick = pax['ticket_number']
+                                airline_id = ''
                         else:
                             pax_tick = '%s_%s' % (prov['pnr'], str(pax_idx))
                             airline_id = ''
@@ -152,6 +156,21 @@ class AccountingConnectorTravelite(models.Model):
                             temp_sales += ho_prof
                             temp_upsell += pax_setup['agent_profit']
 
+                        tax_details = {}
+                        tax_details_len = 0
+                        for temp_tax in pax['tax_details']:
+                            tax_details.update({
+                                "tax%s" % str(tax_details_len + 1): temp_tax['charge_code'],
+                                "taxamt%s" % str(tax_details_len + 1): temp_tax['amount']
+                            })
+                            tax_details_len += 1
+                        while tax_details_len < 10:
+                            tax_details.update({
+                                "tax%s" % str(tax_details_len + 1): None,
+                                "taxamt%s" % str(tax_details_len + 1): 0.0
+                            })
+                            tax_details_len += 1
+
                         ticket_list.append({
                             "segment": pax_segment_list,
                             "proddtlcode": request['sector_type'] == 'Domestic' and 'TKTD' or 'TKTI',
@@ -182,7 +201,8 @@ class AccountingConnectorTravelite(models.Model):
                             "currid": prov['currency'],
                             "pubfareccy": prov['currency'],
                             "nettcurrid": prov['currency'],
-                            "commpercent": 0.0
+                            "commpercent": 0.0,
+                            "taxdetail": tax_details
                         })
             req = {
                 "booking": {
