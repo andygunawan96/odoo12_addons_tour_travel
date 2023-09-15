@@ -24,6 +24,11 @@ class TtReconcileTransactionWizard(models.TransientModel):
     def _onchange_date_from(self):
         self.date_to = self.date_from
 
+    @api.onchange('is_manual_file')
+    def _onchange_is_manual_file(self):
+        if self.is_manual_file:
+            self.date_to = False
+
     def send_recon_request_data(self):
         if not self.is_manual_file:
             request = {

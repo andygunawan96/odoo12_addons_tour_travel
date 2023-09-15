@@ -103,7 +103,7 @@ class AccountingConnectorTravelite(models.Model):
                                 "airlinecode": segm['carrier_code'],
                                 "flightclass": segm['cabin_class'],
                                 "flightno": segm['carrier_number'],
-                                "proddtlcode": request['sector_type'] == 'Domestic' and 'TKTD' or 'TKTI',
+                                "proddtlcode": request.get('sector_type') == 'Domestic' and 'TKTD' or 'TKTI',
                                 "stopover": 0,
                                 "status": segm['status']
                             })
@@ -117,8 +117,8 @@ class AccountingConnectorTravelite(models.Model):
                             ticket_itin_idx += 1
                     for pax_idx, pax in enumerate(prov['tickets']):
                         if pax.get('ticket_number'):
-                            pax_tick = pax['ticket_number']
-                            airline_id = len(pax['ticket_number']) > 3 and pax['ticket_number'][:3] or ''
+                            pax_tick = len(pax['ticket_number']) > 3 and pax['ticket_number'][3:] or pax['ticket_number']
+                            airline_id = len(pax['ticket_number']) > 3 and pax['ticket_number'][:3] or pax['ticket_number']
                         else:
                             pax_tick = '%s_%s' % (prov['pnr'], str(pax_idx))
                             airline_id = ''
@@ -131,51 +131,58 @@ class AccountingConnectorTravelite(models.Model):
                             ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
+                            if pax.get('parent_agent_commission'):
+                                ho_prof += pax['parent_agent_commission']
 
                         pax_setup = {
-                            'ho_profit': pax.get('parent_agent_commission') and ho_prof + pax['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
+                            'ho_profit': ho_prof,
                             'agent_profit': pax.get('agent_commission') and pax['agent_commission'] or 0,
                             'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
-                            'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0
+                            'agent_nta': pax.get('agent_nta') and pax['agent_nta'] or 0,
+                            'total_fare': pax.get('total_fare') and pax['total_fare'] or 0,
+                            'total_tax': pax.get('total_tax') and pax['total_tax'] or 0,
+                            'total_upsell': pax.get('total_upsell') and pax['total_upsell'] or 0,
+                            'total_discount': pax.get('total_discount') and pax['total_discount'] or 0
                         }
 
                         temp_sales = pax_setup['agent_nta']
+                        temp_upsell = pax_setup['total_upsell'] - pax_setup['agent_profit']
                         if is_ho_transaction:
-                            temp_sales += pax_setup['total_comm']
+                            temp_sales += ho_prof
+                            temp_upsell += pax_setup['agent_profit']
 
                         ticket_list.append({
-                            {
-                                "segment": pax_segment_list,
-                                "proddtlcode": request['sector_type'] == 'Domestic' and 'TKTD' or 'TKTI',
-                                "pnrcode": prov['pnr'],
-                                "originalpnr": prov['pnr'],
-                                "issuedate": request['issued_date'].split(' ')[0],
-                                "airlineid": airline_id,
-                                "suppid": 0,
-                                "suppname": "",
-                                "ticketno": pax_tick,
-                                "passtitle": pax['title'],
-                                "passengername": "%s %s" % (pax['first_name'], pax['last_name']),
-                                "passtype": pax_type_conv.get(pax['pax_type']) and pax_type_conv[pax['pax_type']] or 'AD',
-                                "classtype": ",".join(pax_segment_classes),
-                                "sourcetypeid": source_type_id,
-                                "airlinecode": first_carrier_code,
-                                "pubfare": 2513000.0000,
-                                "airporttax": 822840.0000,
-                                "commission": 75500.0000,
-                                "servicefee": 65207.0,
-                                "surcharge": 0.0000,
-                                "markupamt": 0,
-                                "sellpricenotax": 2437500.0000,
-                                "nettfare": 2437500.0000,
-                                "nettprice": 3260340.0000,
-                                "sellprice": 3325547.0,
-                                "currid": prov['currency'],
-                                "pubfareccy": prov['currency'],
-                                "nettcurrid": prov['currency'],
-                                "commpercent": 0.0
-                            }
+                            "segment": pax_segment_list,
+                            "proddtlcode": request['sector_type'] == 'Domestic' and 'TKTD' or 'TKTI',
+                            "pnrcode": prov['pnr'],
+                            "originalpnr": prov['pnr'],
+                            "issuedate": request['issued_date'].split(' ')[0],
+                            "airlineid": airline_id,
+                            "suppid": 0,
+                            "suppname": "",
+                            "ticketno": pax_tick,
+                            "passtitle": pax['title'],
+                            "passengername": "%s %s" % (pax['first_name'], pax['last_name']),
+                            "passtype": pax_type_conv.get(pax['pax_type']) and pax_type_conv[pax['pax_type']] or 'AD',
+                            "classtype": ",".join(pax_segment_classes),
+                            "sourcetypeid": source_type_id,
+                            "airlinecode": first_carrier_code,
+                            "pubfare": pax_setup['total_fare'] + ho_prof,
+                            "airporttax": pax_setup['total_tax'],
+                            "commission": ho_prof,
+                            "servicefee": 0.0,
+                            "surcharge": 0.0000,
+                            'discamt': pax_setup['total_discount'],
+                            "markupamt": temp_upsell,
+                            "sellpricenotax": pax_setup['total_fare'] + temp_upsell,
+                            "nettfare": pax_setup['total_fare'],
+                            "nettprice": pax_setup['total_fare'] + pax_setup['total_tax'],
+                            "sellprice": temp_sales,
+                            "currid": prov['currency'],
+                            "pubfareccy": prov['currency'],
+                            "nettcurrid": prov['currency'],
+                            "commpercent": 0.0
                         })
             req = {
                 "booking": {
