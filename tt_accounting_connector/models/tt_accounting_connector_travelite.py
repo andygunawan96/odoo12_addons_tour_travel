@@ -124,7 +124,7 @@ class AccountingConnectorTravelite(models.Model):
                                 pax_tick = pax['ticket_number']
                                 airline_id = ''
                         else:
-                            pax_tick = '%s_%s' % (prov['pnr'], str(pax_idx))
+                            pax_tick = '%s_%s' % (prov['pnr'], str(pax_idx+1))
                             airline_id = ''
                         pax_type_conv = {
                             'ADT': 'AD',
