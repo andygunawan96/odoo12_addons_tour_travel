@@ -450,10 +450,24 @@ class TtCustomerParent(models.Model):
                 "marital_status": "married" if data['pic_title'] else "single"
             })
 
-            notes += 'Want to have account in System: %s' % ('Yes' if data['account_web'] else 'No')
-
             if data.get('airline'):
                 notes += 'Airline Corporate\n-%s' % ("\n- ".join(data['airline']))
+
+            notes += 'Proposed Limit: %s\n' % data['proposed_limit']
+
+            if data.get('pay_day'):
+                notes += 'Pay Day\n-%s' % ("\n- ".join(data['pay_day']))
+
+            if data.get('pay_time_top'):
+                notes += 'Pay Time Top\n-%s' % ("\n- ".join(data['pay_time_top']))
+
+            notes += 'Want to have account in System: %s' % ('Yes' if data['account_web'] else 'No')
+
+            billing_cycle_ids = []
+            for day in data['pay_day']:
+                billing_cycle_obj = self.env['tt.billing.cycle'].search([('name','ilike', day)], limit=1)
+                if billing_cycle_obj:
+                    billing_cycle_ids.append(billing_cycle_obj.id)
 
             customer_parent_obj = self.create({
                 "name": data['company_name'],
@@ -466,7 +480,10 @@ class TtCustomerParent(models.Model):
                 "customer_parent_type_id": customer_parent_type_obj.id,
                 'ho_id': context['ho_id'],
                 "parent_agent_id": context['co_agent_id'],
-                "customer_ids": [(6, 0, [customer_obj.id])]
+                "customer_ids": [(6, 0, [customer_obj.id])],
+                "billing_due_date": 5 if '5' in data['pay_time_top'] else 7,
+                "billing_due_date_ids": [(6,0, billing_cycle_ids)],
+                "credit_limit": int(data['proposed_limit'])
             })
             self.env['tt.customer.parent.booker.rel'].create({
                 "customer_parent_id": customer_parent_obj.id,
