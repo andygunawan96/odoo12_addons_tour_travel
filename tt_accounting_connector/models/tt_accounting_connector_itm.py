@@ -256,7 +256,7 @@ class AccountingConnectorITM(models.Model):
 
                     for pax_idx, pax in enumerate(prov['tickets']):
                         if pax.get('ticket_number'):
-                            if len(pax['ticket_number']) > 3:
+                            if len(pax['ticket_number']) >= 13:
                                 pax_tick = '%s-%s' % (pax['ticket_number'][:3], pax['ticket_number'][3:])
                             else:
                                 pax_tick = pax['ticket_number']
@@ -276,9 +276,11 @@ class AccountingConnectorITM(models.Model):
                             ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
+                            if pax.get('parent_agent_commission'):
+                                ho_prof += pax['parent_agent_commission']  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
 
                         pax_setup = {
-                            'ho_profit': pax.get('parent_agent_commission') and ho_prof + pax['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
+                            'ho_profit': ho_prof,
                             'agent_profit': pax.get('agent_commission') and pax['agent_commission'] or 0,
                             'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
@@ -296,7 +298,7 @@ class AccountingConnectorITM(models.Model):
 
                         temp_sales = pax_setup['agent_nta']
                         if is_ho_transaction:
-                            temp_sales += pax_setup['total_comm']
+                            temp_sales += ho_prof
                         # total cost = Total NTA
                         # total sales = Agent NTA (kalo HO + total commission)
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
@@ -360,9 +362,11 @@ class AccountingConnectorITM(models.Model):
                             ho_prof = pax.get('total_commission') and pax['total_commission'] or 0
                         else:
                             ho_prof = pax.get('ho_commission') and pax['ho_commission'] or 0
+                            if pax.get('parent_agent_commission'):
+                                ho_prof += pax['parent_agent_commission']  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
 
                         pax_setup = {
-                            'ho_profit': pax.get('parent_agent_commission') and ho_prof + pax['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
+                            'ho_profit': ho_prof,
                             'agent_profit': pax.get('agent_commission') and pax['agent_commission'] or 0,
                             'total_comm': pax.get('total_commission') and pax['total_commission'] or 0,
                             'total_nta': pax.get('total_nta') and pax['total_nta'] or 0,
@@ -380,7 +384,7 @@ class AccountingConnectorITM(models.Model):
 
                         temp_sales = pax_setup['agent_nta']
                         if is_ho_transaction:
-                            temp_sales += pax_setup['total_comm']
+                            temp_sales += ho_prof
                         # total cost = Total NTA
                         # total sales = Agent NTA
                         # rumus lama: "Sales": pax.get('agent_nta') and (pax['agent_nta'] - (ho_prof * 9.9099 / 100)) or 0
@@ -418,9 +422,11 @@ class AccountingConnectorITM(models.Model):
                         ho_prof = prov.get('total_commission') and prov['total_commission'] or 0
                     else:
                         ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
+                        if prov.get('parent_agent_commission'):
+                            ho_prof += prov['parent_agent_commission']  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
 
                     prov_setup = {
-                        'ho_profit': prov.get('parent_agent_commission') and ho_prof + prov['parent_agent_commission'] or ho_prof,  # update 12 Juni 2023, karena KCBJ minta profit yang dikirim ke ITM ditambah profit rodex (parent agent)
+                        'ho_profit': ho_prof,
                         'agent_profit': prov.get('agent_commission') and prov['agent_commission'] or 0,
                         'total_comm': prov.get('total_commission') and prov['total_commission'] or 0,
                         'total_nta': prov.get('total_nta') and prov['total_nta'] or 0,
@@ -458,7 +464,7 @@ class AccountingConnectorITM(models.Model):
                     for room_idx, room in enumerate(prov['rooms']):
                         temp_sales = prov_setup['agent_nta'] / len(prov['rooms'])
                         if is_ho_transaction:
-                            temp_sales += prov_setup['total_comm'] / len(prov['rooms'])
+                            temp_sales += ho_prof / len(prov['rooms'])
                         provider_dict = {
                             "ItemNo": idx + 1,
                             "ProductCode": supplier_obj.product_code or '',
