@@ -4,7 +4,7 @@
         <record model="ir.cron" id="cron_auto_top_up_validator">
             <field name="name">Auto-top-up validator</field>
             <field name="user_id" ref="base.user_root"/>
-            <field name="interval_number">4</field>
+            <field name="interval_number">6</field>
             <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field name="nextcall" eval="(datetime.now() + timedelta(minutes = 2,seconds=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
