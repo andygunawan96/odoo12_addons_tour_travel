@@ -311,41 +311,62 @@ class ttCronTopUpValidator(models.Model):
                 self.create_cron_log_folder()
                 self.write_cron_log('auto top-up validator by system (payment waiting)', ho_id=payment_acq_obj.ho_id.id)
 
-    def cron_auto_get_bank_transaction(self,start_time="03:00",end_time="22:00"):
+    def cron_auto_get_bank_transaction(self,start_time="08:00",end_time="22:00"):
         start_time_obj = datetime.strptime(start_time,"%H:%M")
         end_time_obj = datetime.strptime(end_time,"%H:%M")
         if start_time_obj.time() <= datetime.now(pytz.timezone('Asia/Jakarta')).time() < end_time_obj.time():
-            account_objs = self.env['tt.bank.accounts'].search([('is_get_transaction','=',True)])
-            for rec in account_objs:
-                if rec.ho_id:
-                    try:
-                        # get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
-                        #can be modified to respected account
-                        data = {
-                            'account_id': rec.id,
-                            'account_number': rec.bank_account_number_without_dot,
-                            'provider': rec.bank_id.code,
-                            'startdate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
-                            'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
-                        }
-                        #called function to proceed data and input in bank transaction
-                        self.env['tt.bank.transaction'].get_data(data, rec.ho_id.id)
-                        self.cron_auto_top_up_validator()
-                    except Exception as e:
-                        self.create_cron_log_folder()
-                        self.write_cron_log('auto get bank transaction',rec.bank_account_number, ho_id=rec.ho_id.id)
-                else:
-                    error_log = ''
-                    if rec.bank_id:
-                        error_log += rec.bank_id.name
-                    elif rec.bank_account_owner:
-                        error_log += rec.bank_account_owner
-                    if rec.bank_account_number:
-                        error_log += ' ' + rec.bank_account_number
-                    _logger.error("Please set HO ID for %s" % error_log)
+            _logger.error("Cron, Do get transaction")
+            self.get_bank_transaction(True)
         else:
             # _logger.error("Cron only works between 0300 AM to 2100 PM UTC+7")
             _logger.error("Outside of Cron work time")
+
+    def cron_auto_get_bank_transaction_night(self,start_time="22:00",end_time="08:00", check_topup_time="04:00"):
+        today = datetime.now(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')
+        start_datetime = datetime.strftime(datetime.strptime("%s %s:00" % (today, start_time),"%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
+        end_datetime = datetime.strftime(datetime.strptime("%s %s:00" % (today, end_time),"%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
+        now = datetime.now(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M:%S')
+        if start_datetime <= now < end_datetime:
+            _logger.error("Cron, Do get transaction")
+            is_check_topup_validator = False
+            validator_time = datetime.strftime(datetime.strptime("%s %s:00" % (today, check_topup_time),"%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
+            if now >= validator_time:
+                is_check_topup_validator = True
+            self.get_bank_transaction(is_check_topup_validator)
+        else:
+            # _logger.error("Cron only works between 0300 AM to 2100 PM UTC+7")
+            _logger.error("Outside of Cron work time")
+
+    def get_bank_transaction(self, is_check_topup_validator=False):
+        account_objs = self.env['tt.bank.accounts'].search([('is_get_transaction', '=', True)])
+        for rec in account_objs:
+            if rec.ho_id:
+                try:
+                    # get_bank_account = self.env.ref('tt_bank_transaction.bank_account_bca_1')
+                    # can be modified to respected account
+                    data = {
+                        'account_id': rec.id,
+                        'account_number': rec.bank_account_number_without_dot,
+                        'provider': rec.bank_id.code,
+                        'startdate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+                        'enddate': datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%Y-%m-%d"),
+                    }
+                    # called function to proceed data and input in bank transaction
+                    self.env['tt.bank.transaction'].get_data(data, rec.ho_id.id)
+                    if is_check_topup_validator:
+                        self.cron_auto_top_up_validator()
+                except Exception as e:
+                    self.create_cron_log_folder()
+                    self.write_cron_log('auto get bank transaction', rec.bank_account_number, ho_id=rec.ho_id.id)
+            else:
+                error_log = ''
+                if rec.bank_id:
+                    error_log += rec.bank_id.name
+                elif rec.bank_account_owner:
+                    error_log += rec.bank_account_owner
+                if rec.bank_account_number:
+                    error_log += ' ' + rec.bank_account_number
+                _logger.error("Please set HO ID for %s" % error_log)
 
     def cron_auto_proceed_bank_transaction(self):
         ho_objs = self.env['tt.agent'].search([('is_ho_agent', '=', True)])
