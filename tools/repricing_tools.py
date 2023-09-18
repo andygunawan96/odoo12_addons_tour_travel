@@ -3659,6 +3659,10 @@ class RepricingToolsV2(object):
         sc_temp = None
         pax_type_list = []
 
+        # September 15, 2023 - SAM
+        sc_temp_repo = {}
+        # END
+
         has_roc_rac = False
         for fare in self.ticket_fare_list:
             # if fare.get('class_of_service') and fare['class_of_service'] not in class_of_service_list:
@@ -3679,6 +3683,9 @@ class RepricingToolsV2(object):
                 #     charge_code_list.append(charge_code)
 
                 pax_type = sc['pax_type']
+
+                if pax_type not in sc_temp_repo:
+                    sc_temp_repo[pax_type] = copy.deepcopy(sc)
 
                 if pax_type not in sc_summary_dict:
                     sc_summary_dict[pax_type] = self._default_sc_summary_values()
@@ -3819,7 +3826,10 @@ class RepricingToolsV2(object):
                         tkt_res = self.provider_pricing.get_ticketing_calculation(rule_obj=rule_obj, tax_amount=tax_amount, **calc_param)
 
                         if tkt_res['upsell_amount']:
-                            sc_values = copy.deepcopy(sc_temp)
+                            if pax_type in sc_temp_repo:
+                                sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                            else:
+                                sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'ROC',
                                 'charge_code': 'roc',
@@ -3836,7 +3846,10 @@ class RepricingToolsV2(object):
                         if tkt_res['ho_commission_amount']:
                             if tkt_res['ho_commission_amount'] > 0:
                                 if show_commission and show_upline_commission and self.ho_agent_id:
-                                    sc_values = copy.deepcopy(sc_temp)
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
                                     sc_values.update({
                                         'charge_type': 'RAC',
                                         'charge_code': 'racho',
@@ -3867,7 +3880,10 @@ class RepricingToolsV2(object):
                     diff_total = round_total - sub_total
                     if diff_total:
                         sc_total = diff_total * pax_count
-                        sc_values = copy.deepcopy(sc_temp)
+                        if pax_type in sc_temp_repo:
+                            sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                        else:
+                            sc_values = copy.deepcopy(sc_temp)
                         sc_values.update({
                             'charge_type': 'ROC',
                             'charge_code': 'rocround',
@@ -3883,7 +3899,10 @@ class RepricingToolsV2(object):
                         # Sementara pembulatan masuk ke komisi ho agar tidak bingung saat penghitungan komisi agent
                         # total_commission_amount += sc_total
                         if self.ho_agent_id and diff_total > 0:
-                            sc_values = copy.deepcopy(sc_temp)
+                            if pax_type in sc_temp_repo:
+                                sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                            else:
+                                sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'RAC',
                                 'charge_code': 'racroundho',
@@ -3903,7 +3922,10 @@ class RepricingToolsV2(object):
                         agent_tkt = self.agent_pricing.get_ticketing_calculation(rule_obj=agent_obj, tax_amount=tax_amount, **calc_param)
 
                         if agent_tkt['upsell_amount']:
-                            sc_values = copy.deepcopy(sc_temp)
+                            if pax_type in sc_temp_repo:
+                                sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                            else:
+                                sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'ROC',
                                 'charge_code': 'rocagt',
@@ -3920,7 +3942,10 @@ class RepricingToolsV2(object):
                         if agent_tkt['commission_amount']:
                             if agent_tkt['commission_amount'] > 0:
                                 if show_commission:
-                                    sc_values = copy.deepcopy(sc_temp)
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
                                     sc_values.update({
                                         'charge_type': 'RAC',
                                         'charge_code': 'rac',
@@ -3941,7 +3966,10 @@ class RepricingToolsV2(object):
                         if agent_tkt['ho_commission_amount']:
                             if agent_tkt['ho_commission_amount'] > 0:
                                 if show_commission and show_upline_commission and self.ho_agent_id:
-                                    sc_values = copy.deepcopy(sc_temp)
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
                                     sc_values.update({
                                         'charge_type': 'RAC',
                                         'charge_code': 'racagtho',
@@ -3968,7 +3996,10 @@ class RepricingToolsV2(object):
                         cust_tkt = self.customer_pricing.get_ticketing_calculation(cust_obj, tax_amount=tax_amount, **calc_param)
 
                         if cust_tkt['upsell_amount']:
-                            sc_values = copy.deepcopy(sc_temp)
+                            if pax_type in sc_temp_repo:
+                                sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                            else:
+                                sc_values = copy.deepcopy(sc_temp)
                             sc_values.update({
                                 'charge_type': 'ROC',
                                 'charge_code': 'roccust',
@@ -3985,7 +4016,10 @@ class RepricingToolsV2(object):
                         if cust_tkt['commission_amount']:
                             if cust_tkt['commission_amount'] > 0:
                                 if show_commission:
-                                    sc_values = copy.deepcopy(sc_temp)
+                                    if pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
                                     sc_values.update({
                                         'charge_type': 'RAC',
                                         'charge_code': 'rac',
@@ -4089,7 +4123,10 @@ class RepricingToolsV2(object):
                         if agent_anc_tkt['commission_amount']:
                             if agent_anc_tkt['commission_amount'] > 0:
                                 if show_commission:
-                                    sc_values = copy.deepcopy(sc_temp)
+                                    if sc_anc_temp['pax_type'] in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[sc_anc_temp['pax_type']])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
                                     sc_values.update({
                                         'charge_type': 'RAC',
                                         'charge_code': 'rac',
@@ -4148,7 +4185,10 @@ class RepricingToolsV2(object):
                         if cust_anc_tkt['commission_amount']:
                             if cust_anc_tkt['commission_amount'] > 0:
                                 if show_commission:
-                                    sc_values = copy.deepcopy(sc_temp)
+                                    if sc_anc_temp['pax_type'] in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[sc_anc_temp['pax_type']])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
                                     sc_values.update({
                                         'charge_type': 'RAC',
                                         'charge_code': 'rac',
@@ -4191,7 +4231,10 @@ class RepricingToolsV2(object):
                             if pcd_pax_count > 0:
                                 total_calc_amount = calc_amount * pcd_pax_count
                                 total_reservation_amount += total_calc_amount
-                                sc_values = copy.deepcopy(sc_temp)
+                                if pcd_pax_type in sc_temp_repo:
+                                    sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                else:
+                                    sc_values = copy.deepcopy(sc_temp)
                                 sc_values.update({
                                     'charge_type': 'ROC',
                                     'charge_code': 'rocrsv',
@@ -4225,7 +4268,10 @@ class RepricingToolsV2(object):
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
                                     if pcd_pax_count > 0:
                                         total_calc_amount = calc_amount * pcd_pax_count
-                                        sc_values = copy.deepcopy(sc_temp)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
                                             'charge_type': 'RAC',
                                             'charge_code': 'rachorsv',
@@ -4270,7 +4316,10 @@ class RepricingToolsV2(object):
                             if pcd_pax_count > 0:
                                 total_calc_amount = calc_amount * pcd_pax_count
                                 total_reservation_amount += total_calc_amount
-                                sc_values = copy.deepcopy(sc_temp)
+                                if pcd_pax_type in sc_temp_repo:
+                                    sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                else:
+                                    sc_values = copy.deepcopy(sc_temp)
                                 sc_values.update({
                                     'charge_type': 'ROC',
                                     'charge_code': 'rocrsvagt',
@@ -4298,7 +4347,10 @@ class RepricingToolsV2(object):
                                 # })
                                 # fare_data['service_charges'].append(sc_values)
 
-                                sc_values = copy.deepcopy(sc_temp)
+                                if default_pax_type in sc_temp_repo:
+                                    sc_values = copy.deepcopy(sc_temp_repo[default_pax_type])
+                                else:
+                                    sc_values = copy.deepcopy(sc_temp)
                                 sc_values.update({
                                     'charge_type': 'RAC',
                                     'charge_code': 'rac',
@@ -4339,7 +4391,10 @@ class RepricingToolsV2(object):
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
                                     if pcd_pax_count > 0:
                                         total_calc_amount = calc_amount * pcd_pax_count
-                                        sc_values = copy.deepcopy(sc_temp)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
                                             'charge_type': 'RAC',
                                             'charge_code': 'racagthorsv',
@@ -4405,7 +4460,10 @@ class RepricingToolsV2(object):
                                 if pcd_pax_count > 0:
                                     total_calc_amount = calc_amount * pcd_pax_count
                                     real_discount_amount += total_calc_amount
-                                    sc_values = copy.deepcopy(sc_temp)
+                                    if pcd_pax_type in sc_temp_repo:
+                                        sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                    else:
+                                        sc_values = copy.deepcopy(sc_temp)
                                     sc_values.update({
                                         'charge_type': 'DISC',
                                         'charge_code': 'disc',
@@ -4449,7 +4507,10 @@ class RepricingToolsV2(object):
                                     total_calc_amount = calc_amount * pcd_pax_count
                                     real_commission_amount += total_calc_amount
                                     if show_commission:
-                                        sc_values = copy.deepcopy(sc_temp)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
                                             'charge_type': 'RAC',
                                             'charge_code': 'rac',
@@ -4494,7 +4555,10 @@ class RepricingToolsV2(object):
                                     total_calc_amount = calc_amount * pcd_pax_count
                                     real_commission_amount += total_calc_amount
                                     if show_commission and show_upline_commission:
-                                        sc_values = copy.deepcopy(sc_temp)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
                                             'charge_type': 'RAC',
                                             'charge_code': 'rac0',
@@ -4540,7 +4604,10 @@ class RepricingToolsV2(object):
                                     total_calc_amount = calc_amount * pcd_pax_count
                                     real_commission_amount += total_calc_amount
                                     if show_commission and show_upline_commission:
-                                        sc_values = copy.deepcopy(sc_temp)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
                                             'charge_type': 'RAC',
                                             'charge_code': 'rac0',
@@ -4588,7 +4655,10 @@ class RepricingToolsV2(object):
                                         total_calc_amount = calc_amount * pcd_pax_count
                                         real_commission_amount += total_calc_amount
                                         if show_commission and show_upline_commission:
-                                            sc_values = copy.deepcopy(sc_temp)
+                                            if pcd_pax_type in sc_temp_repo:
+                                                sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                            else:
+                                                sc_values = copy.deepcopy(sc_temp)
                                             sc_values.update({
                                                 'charge_type': 'RAC',
                                                 'charge_code': 'rac%s' % idx,
@@ -4635,7 +4705,10 @@ class RepricingToolsV2(object):
                                     total_calc_amount = calc_amount * pcd_pax_count
                                     real_commission_amount += total_calc_amount
                                     if show_commission and show_upline_commission:
-                                        sc_values = copy.deepcopy(sc_temp)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
                                             'charge_type': 'RAC',
                                             'charge_code': 'racsd',
@@ -4705,7 +4778,10 @@ class RepricingToolsV2(object):
                             if pcd_pax_count > 0:
                                 total_calc_amount = calc_amount * pcd_pax_count
                                 total_reservation_amount += total_calc_amount
-                                sc_values = copy.deepcopy(sc_temp)
+                                if pcd_pax_type in sc_temp_repo:
+                                    sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                else:
+                                    sc_values = copy.deepcopy(sc_temp)
                                 sc_values.update({
                                     'charge_type': 'ROC',
                                     'charge_code': 'rocrsvcust',
@@ -4738,7 +4814,10 @@ class RepricingToolsV2(object):
                                 for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
                                     if pcd_pax_count > 0:
                                         total_calc_amount = calc_amount * pcd_pax_count
-                                        sc_values = copy.deepcopy(sc_temp)
+                                        if pcd_pax_type in sc_temp_repo:
+                                            sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                                        else:
+                                            sc_values = copy.deepcopy(sc_temp)
                                         sc_values.update({
                                             'charge_type': 'RAC',
                                             'charge_code': 'rac',
@@ -4783,7 +4862,10 @@ class RepricingToolsV2(object):
             for pcd_pax_type, pcd_pax_count in pax_count_dict.items():
                 if pcd_pax_count > 0:
                     total_calc_amount = calc_amount * pcd_pax_count
-                    sc_values = copy.deepcopy(sc_temp)
+                    if pcd_pax_type in sc_temp_repo:
+                        sc_values = copy.deepcopy(sc_temp_repo[pcd_pax_type])
+                    else:
+                        sc_values = copy.deepcopy(sc_temp)
                     sc_values.update({
                         'charge_type': 'RAC',
                         'charge_code': 'racsdo',
