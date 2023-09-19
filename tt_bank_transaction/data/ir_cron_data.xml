@@ -27,19 +27,6 @@
             <field name="code">model.cron_auto_get_bank_transaction()</field>
         </record>
 
-        <record model="ir.cron" id="cron_auto_get_bank_transaction_night">
-            <field name="name">Auto-get bank transaction night</field>
-            <field name="user_id" ref="base.user_root"/>
-            <field name="interval_number">20</field>
-            <field name="interval_type">minutes</field>
-            <field name="numbercall">-1</field>
-            <field name="nextcall" eval="(datetime.now() + timedelta(minutes = 0,seconds=0)).strftime('%Y-%m-%d %H:%M:%S')"/>
-            <field name="active">False</field>
-            <field name="state">code</field>
-            <field name="model_id" ref="tt_base.model_tt_cron_log"/>
-            <field name="code">model.cron_auto_get_bank_transaction_night()</field>
-        </record>
-
         <record model="ir.cron" id="cron_auto_proceed_yesterday_bank_transaction">
             <field name="name">Auto-proceed bank transaction</field>
             <field name="user_id" ref="base.user_root"/>
