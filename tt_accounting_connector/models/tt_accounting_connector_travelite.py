@@ -14,6 +14,51 @@ class AccountingConnectorTravelite(models.Model):
     _name = 'tt.accounting.connector.travelite'
     _description = 'Accounting Connector Travelite'
 
+    def check_credit_limit(self, vals):
+        if not vals.get('customer_id'):
+            raise Exception('Request cannot be sent because some field requirements are not met. Missing: "customer_id"')
+        if not vals.get('ho_id'):
+            raise Exception('Request cannot be sent because some field requirements are not met. Missing: "ho_id"')
+        url_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'credit_limit_url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in Travelite / TOP Accounting Setup!')
+        username_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'username')], limit=1)
+        if not username_obj:
+            raise Exception('Please provide a variable with the name "username" in Travelite / TOP Accounting Setup!')
+        password_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'password')], limit=1)
+        if not password_obj:
+            raise Exception('Please provide a variable with the name "password" in Travelite / TOP Accounting Setup!')
+        include_book_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'credit_limit_include_booking')], limit=1)
+        include_dp_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'credit_limit_include_dp')], limit=1)
+
+        is_include_book = include_book_obj and include_book_obj.variable_value or "1"
+        is_include_dp = include_dp_obj and include_dp_obj.variable_value or "0"
+        url = '%s?&custid=%s&includeBooking=%s&includeDP=%s' % (url_obj.variable_value, vals['customer_id'], is_include_book, is_include_dp)
+        username = username_obj.variable_value
+        password = password_obj.variable_value
+        headers = {
+            'username': username,
+            'password': password
+        }
+        _logger.info('Travelite / TOP Request Check Credit Limit: %s', str(vals['customer_id']))
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            raise Exception('Error %s' % str(response.status_code))
+        temp_res = response.content and response.content.decode("UTF-8") or ''
+        temp_split = temp_res.split(';')
+        res = len(temp_split) > 1 and temp_split[1] or temp_split[0]
+        return float(res)
+
     def add_sales_order(self, vals):
         url_obj = self.env['tt.accounting.setup.variables'].search(
             [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
@@ -73,11 +118,14 @@ class AccountingConnectorTravelite(models.Model):
                 raise Exception('Please provide a variable with the name "sourcetypeid" in ITM Accounting Setup!')
             source_type_id = source_type_id_obj.variable_value
             customer_id = 0
+            customer_seq_id = ''
             customer_name = ''
             if request.get('customer_parent_id'):
                 customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
                 if customer_obj.accounting_uid:
                     customer_id = int(customer_obj.accounting_uid)
+                if customer_obj.seq_id:
+                    customer_seq_id = customer_obj.seq_id
                 if customer_obj.name:
                     customer_name = customer_obj.name
             ticket_itin_list = []
@@ -207,7 +255,7 @@ class AccountingConnectorTravelite(models.Model):
             req = {
                 "booking": {
                     "custid": customer_id,
-                    "custcode": "",
+                    "custcode": customer_seq_id,
                     "custname": customer_name,
                     "cctcname": "%s %s" % (request['contact']['title'], request['contact']['name']),
                     "cctcphone": request['contact']['phone'],

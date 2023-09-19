@@ -174,7 +174,11 @@ class TtCustomerParent(models.Model):
     def check_balance_limit(self, amount):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        return self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
+        if self.check_use_ext_credit_limit():
+            enough_bal = self.get_external_credit_limit() >= (amount + (amount * self.tax_percentage / 100))
+        else:
+            enough_bal = self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
+        return enough_bal
 
     def check_send_email_cc(self):
         email_cc = False
@@ -190,6 +194,12 @@ class TtCustomerParent(models.Model):
             email_cc_list = list(set(email_cc_list)) ## remove duplicate
             email_cc = ",".join(email_cc_list)
         return email_cc
+
+    def check_use_ext_credit_limit(self):
+        return False
+
+    def get_external_credit_limit(self):
+        return 0
 
     def set_all_cor_por_email_cc(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('base.user_admin').id}.intersection(set(self.env.user.groups_id.ids))):
