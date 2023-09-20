@@ -312,11 +312,12 @@ class ttCronTopUpValidator(models.Model):
                 self.write_cron_log('auto top-up validator by system (payment waiting)', ho_id=payment_acq_obj.ho_id.id)
 
     def cron_auto_get_bank_transaction(self,start_time="03:00",end_time="22:00"):
-        today = datetime.now(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d')
-        start_time = datetime.strftime(datetime.strptime("%s %s:00" % (today, start_time), "%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
-        end_time = datetime.strftime(datetime.strptime("%s %s:00" % (today, end_time), "%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
-        now = datetime.now(pytz.timezone('Asia/Jakarta')).strftime('%Y-%m-%d %H:%M:%S')
-        if start_time <= now < end_time:
+        start_time_obj = datetime.strptime(start_time,"%H:%M")
+        end_time_obj = datetime.strptime(end_time,"%H:%M")
+        now_time_obj = datetime.strptime(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%H:%M"), "%H:%M")
+        if start_time > end_time:
+            end_time_obj += timedelta(days=1)
+        if start_time_obj <= now_time_obj < end_time_obj:
             account_objs = self.env['tt.bank.accounts'].search([('is_get_transaction','=',True)])
             for rec in account_objs:
                 if rec.ho_id:
