@@ -314,7 +314,10 @@ class ttCronTopUpValidator(models.Model):
     def cron_auto_get_bank_transaction(self,start_time="03:00",end_time="22:00"):
         start_time_obj = datetime.strptime(start_time,"%H:%M")
         end_time_obj = datetime.strptime(end_time,"%H:%M")
-        if start_time_obj.time() <= datetime.now(pytz.timezone('Asia/Jakarta')).time() < end_time_obj.time():
+        now_time_obj = datetime.strptime(datetime.now(pytz.timezone('Asia/Jakarta')).strftime("%H:%M"), "%H:%M")
+        if start_time > end_time:
+            end_time_obj += timedelta(days=1)
+        if start_time_obj <= now_time_obj < end_time_obj:
             account_objs = self.env['tt.bank.accounts'].search([('is_get_transaction','=',True)])
             for rec in account_objs:
                 if rec.ho_id:

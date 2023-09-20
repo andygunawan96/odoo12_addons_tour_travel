@@ -810,7 +810,7 @@ class TtReservation(models.Model):
             if self.payment_acquirer_number_id.state in ['close', 'process', 'waiting']: ## agar process & waiting tetap muncul di frontend
                 if self.payment_acquirer_number_id.time_limit:
                     different_time = self.payment_acquirer_number_id.time_limit - datetime.now()
-                    if different_time > timedelta(seconds=0):  ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
+                    if different_time > timedelta(seconds=0) and self.payment_acquirer_number_id.state in ['close']:  ## LEBIH DARI 1 JAM TIMELIMIT 55 MENIT
                         payment_acquirer_number = {
                             'create_date': self.payment_acquirer_number_id.create_date.strftime("%Y-%m-%d %H:%M:%S"),
                             'time_limit': self.payment_acquirer_number_id.time_limit and self.payment_acquirer_number_id.time_limit.strftime("%Y-%m-%d %H:%M:%S") or (self.payment_acquirer_number_id.create_date + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S"),
