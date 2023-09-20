@@ -550,20 +550,36 @@ class PaymentAcquirer(models.Model):
                 parent_obj_list.append(par.customer_parent_id)
         values = []
         for rec in parent_obj_list:
-            if rec.credit_limit != 0 and rec.state == 'done':
-                values.append({
-                    'name': rec.name,
-                    'actual_balance': rec.actual_balance,
-                    'credit_limit': rec.credit_limit,
-                    'currency': rec.currency_id.name,
-                    'acquirer_seq_id': rec.seq_id,
-                    'price_component': {
-                        'amount': amount,
-                        'fee': 0,
-                        'unique_amount': 0
-                    },
-                    'total_amount': amount
-                })
+            if rec.state == 'done':
+                if rec.check_use_ext_credit_limit():
+                    ext_credit = rec.get_external_credit_limit()
+                    values.append({
+                        'name': rec.name,
+                        'actual_balance': ext_credit,
+                        'credit_limit': ext_credit,
+                        'currency': rec.currency_id.name,
+                        'acquirer_seq_id': rec.seq_id,
+                        'price_component': {
+                            'amount': amount,
+                            'fee': 0,
+                            'unique_amount': 0
+                        },
+                        'total_amount': amount
+                    })
+                elif rec.credit_limit != 0:
+                    values.append({
+                        'name': rec.name,
+                        'actual_balance': rec.actual_balance,
+                        'credit_limit': rec.credit_limit,
+                        'currency': rec.currency_id.name,
+                        'acquirer_seq_id': rec.seq_id,
+                        'price_component': {
+                            'amount': amount,
+                            'fee': 0,
+                            'unique_amount': 0
+                        },
+                        'total_amount': amount
+                    })
         return values
 
 
