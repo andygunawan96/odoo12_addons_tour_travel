@@ -65,19 +65,22 @@ class TtCustomerParent(models.Model):
 
     def _compute_unprocessed_amount(self):
         for rec in self:
-            total_amt = 0
-            invoice_objs = self.env['tt.agent.invoice'].sudo().search([('customer_parent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
-            for rec2 in invoice_objs:
-                for rec3 in rec2.invoice_line_ids:
-                    total_amt += rec3.total_after_tax
+            if not rec.check_use_ext_credit_limit():
+                total_amt = 0
+                invoice_objs = self.env['tt.agent.invoice'].sudo().search([('customer_parent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
+                for rec2 in invoice_objs:
+                    for rec3 in rec2.invoice_line_ids:
+                        total_amt += rec3.total_after_tax
 
-            ## check invoice billed tetapi sudah di bayar
-            invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
-                [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
-            paid_amount = 0
-            for billed_invoice in invoice_bill_objs:
-                paid_amount += billed_invoice.paid_amount
-            rec.unprocessed_amount = total_amt-paid_amount
+                ## check invoice billed tetapi sudah di bayar
+                invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
+                    [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
+                paid_amount = 0
+                for billed_invoice in invoice_bill_objs:
+                    paid_amount += billed_invoice.paid_amount
+                rec.unprocessed_amount = total_amt-paid_amount
+            else:
+                rec.unprocessed_amount = 0
 
     def _compute_actual_balance(self):
         for rec in self:

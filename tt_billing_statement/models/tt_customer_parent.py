@@ -103,51 +103,52 @@ class TtCustomerParentInh(models.Model):
                                    ])
 
         for cor in cor_list_obj:
-            pr = cor.name
-            _logger.info(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
+            if not cor.check_use_ext_credit_limit():
+                pr = cor.name
+                _logger.info(pr+ ' : '+','.join([str(rec.name) for rec in cor.billing_cycle_ids]))
 
-            ##search invoice cor tersebut
-            invoice_list_obj = self.env['tt.agent.invoice'].search([('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])])
-            invoice_list = []
-            for inv in invoice_list_obj:
-                _logger.info(inv.name)
-                if inv.state == 'draft':
-                    inv.action_confirm()
-                if inv.state == 'confirm': ## error billing billed inv. this happen during splitted invoice
-                    inv.action_bill2()
-                invoice_list.append([4,inv.id])
-                ##inv.bill
+                ##search invoice cor tersebut
+                invoice_list_obj = self.env['tt.agent.invoice'].search([('customer_parent_id','=',cor.id),('state','in',['draft','confirm'])])
+                invoice_list = []
+                for inv in invoice_list_obj:
+                    _logger.info(inv.name)
+                    if inv.state == 'draft':
+                        inv.action_confirm()
+                    if inv.state == 'confirm': ## error billing billed inv. this happen during splitted invoice
+                        inv.action_bill2()
+                    invoice_list.append([4,inv.id])
+                    ##inv.bill
 
-            bill_day_list = []
-            for rec in cor.billing_due_date_ids:
-                bill_day_list.append(str(rec.name))
+                bill_day_list = []
+                for rec in cor.billing_due_date_ids:
+                    bill_day_list.append(str(rec.name))
 
-            # create BS
-            if invoice_list:
-                new_bs_obj = self.env['tt.billing.statement'].create({
-                    'date': datetime.now(),
-                    'due_date': self.get_billing_due_date(today_date,cor.billing_due_date, bill_day_list),
-                    'agent_id': cor.parent_agent_id.id,
-                    'customer_parent_id': cor.id,
-                    'invoice_ids': invoice_list,
-                    'state': 'confirm',
-                    'ho_id': ho_id
-                })
+                # create BS
+                if invoice_list:
+                    new_bs_obj = self.env['tt.billing.statement'].create({
+                        'date': datetime.now(),
+                        'due_date': self.get_billing_due_date(today_date,cor.billing_due_date, bill_day_list),
+                        'agent_id': cor.parent_agent_id.id,
+                        'customer_parent_id': cor.id,
+                        'invoice_ids': invoice_list,
+                        'state': 'confirm',
+                        'ho_id': ho_id
+                    })
 
-                try:
-                    if cor.email and cor.parent_agent_id.is_send_email_cust:
-                        mail_created = self.env['tt.email.queue'].sudo().search([('res_id', '=', new_bs_obj.id), ('res_model', '=', new_bs_obj._name), ('type', '=', 'billing_statement')], limit=1)
-                        if not mail_created:
-                            temp_data = {
-                                'provider_type': 'billing_statement',
-                                'order_number': new_bs_obj.name,
-                            }
-                            temp_context = {
-                                'co_agent_id': new_bs_obj.agent_id.id
-                            }
-                            self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
-                        else:
-                            _logger.info('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
-                            raise Exception('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
-                except Exception as e:
-                    _logger.info('Error Create Email Queue from %s to %s' % (cor.parent_agent_id.name, cor.name))
+                    try:
+                        if cor.email and cor.parent_agent_id.is_send_email_cust:
+                            mail_created = self.env['tt.email.queue'].sudo().search([('res_id', '=', new_bs_obj.id), ('res_model', '=', new_bs_obj._name), ('type', '=', 'billing_statement')], limit=1)
+                            if not mail_created:
+                                temp_data = {
+                                    'provider_type': 'billing_statement',
+                                    'order_number': new_bs_obj.name,
+                                }
+                                temp_context = {
+                                    'co_agent_id': new_bs_obj.agent_id.id
+                                }
+                                self.env['tt.email.queue'].create_email_queue(temp_data, temp_context)
+                            else:
+                                _logger.info('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
+                                raise Exception('Billing Statement email for {} is already created!'.format(new_bs_obj.name))
+                    except Exception as e:
+                        _logger.info('Error Create Email Queue from %s to %s' % (cor.parent_agent_id.name, cor.name))
