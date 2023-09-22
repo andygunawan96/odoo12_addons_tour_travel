@@ -118,7 +118,9 @@
                             <field name="npwp" readonly="1"/>
                             <separator/>
                             <field name="min_topup_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+                            <field name="topup_increment_amount" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                             <field name="default_unique_number" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+                            <field name="unique_amount_pool_min" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                             <field name="unique_amount_pool_limit" readonly="1" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
                         </group>
                     </group>
@@ -196,8 +198,14 @@
             <field name="min_topup_amount" position="replace">
                 <field name="min_topup_amount" readonly="0" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
             </field>
+            <field name="topup_increment_amount" position="replace">
+                <field name="topup_increment_amount" readonly="0" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+            </field>
             <field name="default_unique_number" position="replace">
                 <field name="default_unique_number" readonly="0" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
+            </field>
+            <field name="unique_amount_pool_min" position="replace">
+                <field name="unique_amount_pool_min" readonly="0" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
             </field>
             <field name="unique_amount_pool_limit" position="replace">
                 <field name="unique_amount_pool_limit" readonly="0" attrs="{'invisible': [('is_ho_agent','=',False)]}"/>
