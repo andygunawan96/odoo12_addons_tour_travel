@@ -79,7 +79,7 @@ class PaymentAcquirer(models.Model):
             else:
                 return 0, self.minimum_amount, uniq
         elif self.va_fee or self.fee_percentage:
-            total_fee = math.ceil(self.fee_percentage * (amount + self.va_fee) / 100 + self.va_fee )
+            total_fee = math.ceil(self.fee_percentage * (amount + self.va_fee) / 100 + self.va_fee)
             if total_fee > self.minimum_amount:
                 return 0, total_fee, uniq
             else:
@@ -221,7 +221,8 @@ class PaymentAcquirer(models.Model):
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
         values = {
             'va': [],
-            'min_topup_amount': agent_obj.ho_id.min_topup_amount
+            'min_topup_amount': agent_obj.ho_id.min_topup_amount,
+            'topup_increment_amount': agent_obj.ho_id.topup_increment_amount
         }
         currency_name = agent_obj.ho_id.currency_id.name
         for acq in agent_obj.payment_acq_ids:
@@ -856,9 +857,14 @@ class PaymentUniqueAmount(models.Model):
                 used_unique_number.append(rec['unique_number'])
             used_unique_number = set(used_unique_number)
             try:
+                cut_off_min = self.env.user.ho_id.unique_amount_pool_min
                 cut_off_amt = self.env.user.ho_id.unique_amount_pool_limit
                 unique_amt_pool = variables.UNIQUE_AMOUNT_POOL
-                if cut_off_amt < 999:
+                if 0 < cut_off_min < cut_off_amt < 999:
+                    unique_amt_pool = set(list(unique_amt_pool)[cut_off_min:cut_off_amt])
+                elif cut_off_min > 0:
+                    unique_amt_pool = set(list(unique_amt_pool)[cut_off_min:])
+                elif cut_off_amt < 999:
                     unique_amt_pool = set(list(unique_amt_pool)[:cut_off_amt])
                 unique_number = self.env.user.ho_id.default_unique_number + random.sample(unique_amt_pool - used_unique_number, 1).pop()
             except:
@@ -889,9 +895,14 @@ class PaymentUniqueAmount(models.Model):
             used_unique_number.append(rec['unique_number'])
         used_unique_number = set(used_unique_number)
         try:
+            cut_off_min = self.env.user.ho_id.unique_amount_pool_min
             cut_off_amt = self.env.user.ho_id.unique_amount_pool_limit
             unique_amt_pool = variables.UNIQUE_AMOUNT_POOL
-            if cut_off_amt < 999:
+            if 0 < cut_off_min < cut_off_amt < 999:
+                unique_amt_pool = set(list(unique_amt_pool)[cut_off_min:cut_off_amt])
+            elif cut_off_min > 0:
+                unique_amt_pool = set(list(unique_amt_pool)[cut_off_min:])
+            elif cut_off_amt < 999:
                 unique_amt_pool = set(list(unique_amt_pool)[:cut_off_amt])
             unique_number = self.env.user.ho_id.default_unique_number + random.sample(unique_amt_pool - used_unique_number, 1).pop()
         except:
