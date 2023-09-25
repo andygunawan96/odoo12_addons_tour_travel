@@ -65,19 +65,22 @@ class TtCustomerParent(models.Model):
 
     def _compute_unprocessed_amount(self):
         for rec in self:
-            total_amt = 0
-            invoice_objs = self.env['tt.agent.invoice'].sudo().search([('customer_parent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
-            for rec2 in invoice_objs:
-                for rec3 in rec2.invoice_line_ids:
-                    total_amt += rec3.total_after_tax
+            if not rec.check_use_ext_credit_limit():
+                total_amt = 0
+                invoice_objs = self.env['tt.agent.invoice'].sudo().search([('customer_parent_id', '=', rec.id), ('state', 'in', ['draft', 'confirm'])])
+                for rec2 in invoice_objs:
+                    for rec3 in rec2.invoice_line_ids:
+                        total_amt += rec3.total_after_tax
 
-            ## check invoice billed tetapi sudah di bayar
-            invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
-                [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
-            paid_amount = 0
-            for billed_invoice in invoice_bill_objs:
-                paid_amount += billed_invoice.paid_amount
-            rec.unprocessed_amount = total_amt-paid_amount
+                ## check invoice billed tetapi sudah di bayar
+                invoice_bill_objs = self.env['tt.agent.invoice'].sudo().search(
+                    [('customer_parent_id', '=', rec.id), ('state', 'in', ['bill','bill2']), ('paid_amount','>',0)])
+                paid_amount = 0
+                for billed_invoice in invoice_bill_objs:
+                    paid_amount += billed_invoice.paid_amount
+                rec.unprocessed_amount = total_amt-paid_amount
+            else:
+                rec.unprocessed_amount = 0
 
     def _compute_actual_balance(self):
         for rec in self:
@@ -174,7 +177,11 @@ class TtCustomerParent(models.Model):
     def check_balance_limit(self, amount):
         if not self.ensure_one():
             raise UserError('Can only check 1 agent each time got ' + str(len(self._ids)) + ' Records instead')
-        return self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
+        if self.check_use_ext_credit_limit():
+            enough_bal = self.get_external_credit_limit() >= (amount + (amount * self.tax_percentage / 100))
+        else:
+            enough_bal = self.actual_balance >= (amount + (amount * self.tax_percentage / 100))
+        return enough_bal
 
     def check_send_email_cc(self):
         email_cc = False
@@ -190,6 +197,12 @@ class TtCustomerParent(models.Model):
             email_cc_list = list(set(email_cc_list)) ## remove duplicate
             email_cc = ",".join(email_cc_list)
         return email_cc
+
+    def check_use_ext_credit_limit(self):
+        return False
+
+    def get_external_credit_limit(self):
+        return 0
 
     def set_all_cor_por_email_cc(self):
         if not ({self.env.ref('base.group_system').id, self.env.ref('base.user_admin').id}.intersection(set(self.env.user.groups_id.ids))):

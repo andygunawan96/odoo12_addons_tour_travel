@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="tt_base.tt_agent_form_view"/>
         <field name="arch" type="xml">
             <field name="est_date" position="after">
-                <field name="is_sync_to_acc" groups="base.group_system"/>
+                <field name="is_sync_to_acc" groups="base.group_erp_manager"/>
+                <field name="is_use_ext_credit_cor" groups="base.group_erp_manager"/>
             </field>
         </field>
     </record>

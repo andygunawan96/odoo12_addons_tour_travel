@@ -198,7 +198,7 @@ class AgentInvoice(models.Model):
         if self.state != 'paid' and (paid_amount >= self.grand_total and self.grand_total != 0):
             if self.state not in ['bill', 'bill2']: ## BELUM BILL LANGSUNG PAYMENT
                 ## CREATE LEDGER BILL
-                if self.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id]:
+                if self.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and not self.customer_parent_id.check_use_ext_credit_limit():
                     self.create_ledger_invoice(debit=False)
             self.state = 'paid'
         elif self.state not in ['confirm','bill','bill2'] and (paid_amount < self.grand_total and self.grand_total != 0):

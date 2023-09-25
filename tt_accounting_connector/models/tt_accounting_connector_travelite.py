@@ -14,6 +14,51 @@ class AccountingConnectorTravelite(models.Model):
     _name = 'tt.accounting.connector.travelite'
     _description = 'Accounting Connector Travelite'
 
+    def check_credit_limit(self, vals):
+        if not vals.get('customer_id'):
+            raise Exception('Request cannot be sent because some field requirements are not met. Missing: "customer_id"')
+        if not vals.get('ho_id'):
+            raise Exception('Request cannot be sent because some field requirements are not met. Missing: "ho_id"')
+        url_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'credit_limit_url')], limit=1)
+        if not url_obj:
+            raise Exception('Please provide a variable with the name "url" in Travelite / TOP Accounting Setup!')
+        username_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'username')], limit=1)
+        if not username_obj:
+            raise Exception('Please provide a variable with the name "username" in Travelite / TOP Accounting Setup!')
+        password_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'password')], limit=1)
+        if not password_obj:
+            raise Exception('Please provide a variable with the name "password" in Travelite / TOP Accounting Setup!')
+        include_book_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'credit_limit_include_booking')], limit=1)
+        include_dp_obj = self.env['tt.accounting.setup.variables'].search(
+            [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+             ('accounting_setup_id.ho_id', '=', int(vals['ho_id'])), ('variable_name', '=', 'credit_limit_include_dp')], limit=1)
+
+        is_include_book = include_book_obj and include_book_obj.variable_value or "1"
+        is_include_dp = include_dp_obj and include_dp_obj.variable_value or "0"
+        url = '%s?&custid=%s&includeBooking=%s&includeDP=%s' % (url_obj.variable_value, vals['customer_id'], is_include_book, is_include_dp)
+        username = username_obj.variable_value
+        password = password_obj.variable_value
+        headers = {
+            'username': username,
+            'password': password
+        }
+        _logger.info('Travelite / TOP Request Check Credit Limit: %s', str(vals['customer_id']))
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            raise Exception('Error %s' % str(response.status_code))
+        temp_res = response.content and response.content.decode("UTF-8") or ''
+        temp_split = temp_res.split(';')
+        res = len(temp_split) > 1 and temp_split[1] or temp_split[0]
+        return float(res)
+
     def add_sales_order(self, vals):
         url_obj = self.env['tt.accounting.setup.variables'].search(
             [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
@@ -70,19 +115,45 @@ class AccountingConnectorTravelite(models.Model):
                 [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
                  ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'sourcetypeid')], limit=1)
             if not source_type_id_obj:
-                raise Exception('Please provide a variable with the name "sourcetypeid" in ITM Accounting Setup!')
+                raise Exception('Please provide a variable with the name "sourcetypeid" in Travelite / TOP Accounting Setup!')
+            is_create_inv_obj = self.env['tt.accounting.setup.variables'].search(
+                [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
+                 ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'is_create_invoice')], limit=1)
+
             source_type_id = source_type_id_obj.variable_value
+            is_create_inv = is_create_inv_obj and is_create_inv_obj.variable_value or False
             customer_id = 0
+            customer_seq_id = ''
             customer_name = ''
             if request.get('customer_parent_id'):
                 customer_obj = self.env['tt.customer.parent'].browse(int(request['customer_parent_id']))
                 if customer_obj.accounting_uid:
                     customer_id = int(customer_obj.accounting_uid)
+                if customer_obj.seq_id:
+                    customer_seq_id = customer_obj.seq_id
                 if customer_obj.name:
                     customer_name = customer_obj.name
             ticket_itin_list = []
             ticket_itin_idx = 0
             ticket_list = []
+            req = {
+                "booking": {
+                    "custid": customer_id,
+                    "custcode": customer_seq_id,
+                    "custname": customer_name,
+                    "cctcname": "%s %s" % (request['contact']['title'], request['contact']['name']),
+                    "cctcphone": request['contact']['phone'],
+                    "cctcaddress": "-",
+                    "email": request['contact']['email'],
+                    "ref_invoice": "",
+                    "ref_bookcode": request['order_number'],
+                    "bookingext": request['order_number'],
+                    "invoiceflag": is_create_inv,
+                    "sourcetypeid": source_type_id,
+                    "printflag": False,
+                    "autopaidbydp": False
+                }
+            }
             for prov in request['provider_bookings']:
                 if request['provider_type'] == 'airline':
                     pax_segment_list = []
@@ -171,6 +242,23 @@ class AccountingConnectorTravelite(models.Model):
                             })
                             tax_details_len += 1
 
+                        vat_var_obj = self.env['tt.accounting.setup.variables'].search(
+                            [('accounting_setup_id.accounting_provider', '=', 'travelite'),
+                             ('accounting_setup_id.active', '=', True),
+                             ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                             ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search(
+                            [('accounting_setup_id.accounting_provider', '=', 'travelite'),
+                             ('accounting_setup_id.active', '=', True),
+                             ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                             ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
+                        if not vat_var_obj or not vat_perc_obj:
+                            _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
+                            vat = 0
+                        else:
+                            temp_vat_var = pax_setup.get(vat_var_obj.variable_value) and pax_setup[vat_var_obj.variable_value] or 0
+                            vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+
                         ticket_list.append({
                             "segment": pax_segment_list,
                             "proddtlcode": request['sector_type'] == 'Domestic' and 'TKTD' or 'TKTI',
@@ -190,7 +278,7 @@ class AccountingConnectorTravelite(models.Model):
                             "pubfare": pax_setup['total_fare'] + ho_prof,
                             "airporttax": pax_setup['total_tax'],
                             "commission": ho_prof,
-                            "servicefee": 0.0,
+                            "servicefee": vat,
                             "surcharge": 0.0000,
                             'discamt': pax_setup['total_discount'],
                             "markupamt": temp_upsell,
@@ -204,26 +292,19 @@ class AccountingConnectorTravelite(models.Model):
                             "commpercent": 0.0,
                             "taxdetail": tax_details
                         })
-            req = {
-                "booking": {
-                    "custid": customer_id,
-                    "custcode": "",
-                    "custname": customer_name,
-                    "cctcname": "%s %s" % (request['contact']['title'], request['contact']['name']),
-                    "cctcphone": request['contact']['phone'],
-                    "cctcaddress": "testing ",
-                    "email": request['contact']['email'],
-                    "ref_invoice": "",
-                    "ref_bookcode": request['order_number'],
-                    "bookingext": request['order_number'],
-                    "invoiceflag": False,
-                    "sourcetypeid": source_type_id,
-                    "printflag": False,
-                    "autopaidbydp": False
-                },
-                "ticket_itin": ticket_itin_list,
-                "ticket": ticket_list
-            }
+                elif request['provider_type'] == 'train':
+                    pass
+                elif request['provider_type'] == 'hotel':
+                    pass
+            if request['provider_type'] in ['airline', 'train']:
+                req.update({
+                    "ticket_itin": ticket_itin_list,
+                    "ticket": ticket_list
+                })
+            elif request['provider_type'] == 'hotel':
+                req.update({
+                    "hotel": ticket_list
+                })
         else:
             req = {}
         return json.dumps(req)

@@ -113,6 +113,7 @@
                 <tree>
                     <field name="name"/>
                     <field name="code"/>
+                    <field name="ho_id" groups="base.group_erp_manager"/>
                     <field name="rounding_amount_type"/>
                     <field name="rounding_places"/>
                     <field name="description"/>
