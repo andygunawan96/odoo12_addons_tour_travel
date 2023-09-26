@@ -8,11 +8,17 @@
             <form string="Move Agent Head Office Wizard">
                 <group>
                     <group>
-                        <field name="agent_id"/>
+                        <field name="agent_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="agent_type_id"/>
+                                <field name="ho_id"/>
+                            </tree>
+                        </field>
                     </group>
                     <group>
-                        <field name="old_ho_id"/>
                         <field name="new_ho_id"/>
+                        <field name="new_agent_type_id"/>
                     </group>
                 </group>
                 <footer>
