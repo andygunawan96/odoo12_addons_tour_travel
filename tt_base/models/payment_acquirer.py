@@ -219,16 +219,10 @@ class PaymentAcquirer(models.Model):
     def get_va_number(self, req, context):
         # get HO min_topup_amount juga disini
         agent_obj = self.env['tt.agent'].sudo().browse(context['co_agent_id'])
-        payment_acq_open_ho = self.env['payment.acquirer'].search([('type','=','va'), ('ho_id','=', context['co_ho_id'])])
-        if payment_acq_open_ho:
-            is_ho_have_open_top_up = True
-        else:
-            is_ho_have_open_top_up = False
         values = {
             'va': [],
             'min_topup_amount': agent_obj.ho_id.min_topup_amount,
-            'topup_increment_amount': agent_obj.ho_id.topup_increment_amount,
-            'is_ho_have_open_top_up': is_ho_have_open_top_up
+            'topup_increment_amount': agent_obj.ho_id.topup_increment_amount
         }
         currency_name = agent_obj.ho_id.currency_id.name
         for acq in agent_obj.payment_acq_ids:

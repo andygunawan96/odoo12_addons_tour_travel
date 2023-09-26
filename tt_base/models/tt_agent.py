@@ -134,24 +134,6 @@ class TtAgent(models.Model):
             if vals_list.get('is_btc_agent'):
                 vals_list.pop('is_btc_agent')
             is_ho = True
-
-        is_credit_limit = False
-        is_billing_cycle = False
-        if vals_list.get('credit_limit'):
-            is_credit_limit = True
-        elif self.credit_limit and 'credit_limit' not in vals_list:
-            is_credit_limit = True
-
-        if vals_list.get('billing_cycle_ids') and len(vals_list['billing_cycle_ids'][0][2]) == 0:
-            is_billing_cycle = False
-        elif vals_list.get('billing_cycle_ids') and len(vals_list['billing_cycle_ids'][0][2]) > 0:
-            is_billing_cycle = True
-        elif self.billing_cycle_ids and 'billing_cycle_ids' not in vals_list:
-            is_billing_cycle = True
-
-        if not is_billing_cycle and is_credit_limit:
-            raise UserError('Please set billing cycle')
-
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
         if is_ho:
@@ -181,22 +163,11 @@ class TtAgent(models.Model):
         return new_agent
 
     def write(self, vals):
-        is_credit_limit = False
-        is_billing_cycle = False
-        if vals.get('credit_limit'):
-            is_credit_limit = True
-        elif self.credit_limit and 'credit_limit' not in vals:
-            is_credit_limit = True
-
-        if vals.get('billing_cycle_ids') and len(vals['billing_cycle_ids'][0][2]) == 0:
-            is_billing_cycle = False
-        elif vals.get('billing_cycle_ids') and len(vals['billing_cycle_ids'][0][2]) > 0:
-            is_billing_cycle = True
-        elif self.billing_cycle_ids and 'billing_cycle_ids' not in vals:
-            is_billing_cycle = True
-
-        if not is_billing_cycle and is_credit_limit:
-            raise UserError('Please set billing cycle')
+        if vals.get('parent_agent_id'):
+            if vals['parent_agent_id'] == self.id:
+                raise UserError('Parent agent cannot be itself.')
+            if self.is_ho_agent or vals.get('is_ho_agent'):
+                raise UserError('Cannot set HO parent agent.')
         if vals.get('is_ho_agent') and vals.get('is_btc_agent'):
             vals.pop('is_btc_agent')
         if vals.get('is_ho_agent'):
