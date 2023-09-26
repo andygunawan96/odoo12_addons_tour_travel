@@ -354,7 +354,13 @@ class TtTopUp(models.Model):
             next_cron = False
             try:
                 next_cron = False
-                if 3 <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < 21:
+                is_get_bank_transaction = False
+                if top_up_obj.acquirer_id.is_specific_time:
+                    if top_up_obj.acquirer_id.start_time <= datetime.now(pytz.timezone('Asia/Jakarta')).hour < top_up_obj.acquirer_id.end_time:
+                        is_get_bank_transaction = True
+                else:
+                    is_get_bank_transaction = True
+                if is_get_bank_transaction:
                     cron_bank_transaction_obj = self.env.ref("tt_bank_transaction.cron_auto_get_bank_transaction")
                     if cron_bank_transaction_obj.active:
                         d_time = cron_bank_transaction_obj.nextcall - datetime.now()
@@ -362,7 +368,7 @@ class TtTopUp(models.Model):
                             d_time = timedelta()
                         list_d_time = str(d_time).split(':')
                         next_cron = "{} minutes {} seconds".format(int(list_d_time[1]),int(list_d_time[2][:2]))
-            except Exception as e :
+            except Exception as e:
                 _logger.error("{}\n{}".format("Top Up Request Next Cron Call Error",traceback.format_exc()))
 
             return ERR.get_no_error({

@@ -2,7 +2,10 @@ import time
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-import logging
+from ...tools.ERR import RequestException
+from ...tools import ERR
+import logging,traceback
+
 
 TYPE = [
     ('work', 'Work'),
@@ -50,6 +53,32 @@ class PhoneDetail(models.Model):
     def _compute_phone_number(self):
         for rec in self:
             rec.phone_number = (rec.calling_code and rec.calling_code or '') + (rec.calling_number and rec.calling_number or '')
+
+    def create_va_number_api(self, data, context):
+        agent_obj = self.env['tt.agent'].browse(context['co_agent_id'])
+        try:
+            agent_obj.create_date
+        except:
+            raise RequestException(1008)
+
+        payment_acq_number_obj = agent_obj.payment_acq_number.filtered(lambda x: x.state == 'open')
+        if payment_acq_number_obj:
+            return ERR.get_error(500, "Please delete your old VA!")
+
+        phone_obj = agent_obj.phone_ids.filtered(lambda x: x.calling_number == data['phone_number'])
+        if not phone_obj:
+            phone_obj = [self.create({
+                "type": 'work',
+                "calling_code": data['calling_code'],
+                "calling_number": data['calling_number'],
+                "ho_id": context['co_ho_id']
+            })]
+        try:
+            phone_obj[0].generate_va_number()
+        except Exception as e:
+            _logger.error("%s, %s" % (str(e), traceback.format_exc()))
+            return ERR.get_error(500, "Phone number has been use, please change phone number")
+        return ERR.get_no_error()
 
     def generate_va_number(self):
         agent_open_payment_acqurier = self.env['payment.acquirer.number'].search([
