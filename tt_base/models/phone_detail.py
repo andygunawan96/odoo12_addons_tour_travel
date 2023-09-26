@@ -154,7 +154,7 @@ class PhoneDetail(models.Model):
         agent_obj = self.env['tt.agent'].search([('id', '=', self.agent_id.id)])
         ho_obj = agent_obj.ho_id
         bank_code_list = []
-        existing_payment_acquirer_open = self.env['payment.acquirer'].search([('ho_id','=', ho_obj.id)('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
+        existing_payment_acquirer_open = self.env['payment.acquirer'].search([('ho_id','=', ho_obj.id),('agent_id', '=', ho_obj.id), ('type', '=', 'va')])
         for rec in existing_payment_acquirer_open:
             bank_code_list.append(rec.bank_id.code)
         currency_name = self.agent_id.ho_id.currency_id.name
