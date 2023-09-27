@@ -13,6 +13,7 @@ class TtTicketTrain(models.Model):
 
     def to_dict(self):
         res = {
+            'title': self.passenger_id.title,
             'passenger': self.passenger_id.name,
             'pax_type': self.pax_type,
             'ticket_number': self.ticket_number,
