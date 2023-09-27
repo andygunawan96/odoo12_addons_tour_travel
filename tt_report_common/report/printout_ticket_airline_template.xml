@@ -495,63 +495,77 @@
     </template>
 
     <template id="printout_ticket">
+    <!--<template id="printout_ticket_all">-->
         <t t-set="data_report_header_spacing" t-value="20"/>
         <t t-set="data_report_margin_top" t-value="10"/>
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <div class="page">
-                    <t t-if="doc_model == 'tt.reservation.airline'">
+                <t t-if="doc_model == 'tt.reservation.airline'">
+                    <div name="base_printout_airline" class="page">
                         <t t-set="pnr_index" t-value="0"/>
                         <t t-foreach="doc.provider_booking_ids" t-as="length">
+                            <!-- Type #1: Default Rodex etc -->
                             <t t-call="tt_report_common.external_layout">
-                                <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
+                                <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans';">
                                     <t t-call="tt_report_common.printout_ticket_airline_template"/>
                                 </div>
                             </t>
                         </t>
-                    </t>
-                    <t t-elif="doc_model == 'tt.reservation.train'">
+                    </div>
+                </t>
+                <t t-elif="doc_model == 'tt.reservation.train'">
+                    <div name="base_printout_train" class="page">
                         <t t-set="data_report_margin_top" t-value="10"/>
                         <t t-set="data_report_margin_bottom" t-value="0"/>
                         <t t-call="tt_report_common.printout_ticket_train_template"/>
-                    </t>
-                    <t t-elif="doc_model in ['tt.reservation.medical','tt.reservation.mitrakeluarga']">
+                    </div>
+                </t>
+                <t t-elif="doc_model in ['tt.reservation.medical','tt.reservation.mitrakeluarga']">
+                    <div name="base_printout_medical" class="page">
                         <t t-call="tt_report_common.external_layout">
                             <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.printout_ticket_medical_template"/>
                             </div>
                         </t>
-                    </t>
-                    <t t-elif="doc_model in ['tt.reservation.periksain','tt.reservation.phc']">
+                    </div>
+                </t>
+                <t t-elif="doc_model in ['tt.reservation.periksain','tt.reservation.phc']">
+                    <div name="base_printout_phc" class="page">
                         <t t-call="tt_report_common.external_layout">
                             <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.printout_ticket_periksain_template"/>
                             </div>
                         </t>
-                    </t>
-                    <t t-elif="doc_model == 'tt.reservation.bus'">
+                    </div>
+                </t>
+                <t t-elif="doc_model == 'tt.reservation.bus'">
+                    <div name="base_printout_bus" class="page">
                         <t t-call="tt_report_common.external_layout">
                             <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.printout_ticket_bus_template"/>
                             </div>
                         </t>
-                    </t>
-                    <t t-elif="doc_model == 'tt.reservation.insurance'">
+                    </div>
+                </t>
+                <t t-elif="doc_model == 'tt.reservation.insurance'">
+                    <div name="base_printout_insurance" class="page">
                         <t t-call="tt_report_common.external_layout">
                             <div class="box" style="margin: 0px 20px; font-family: 'Liberation Sans'">
                                 <t t-call="tt_report_common.printout_ticket_insurance_template"/>
                             </div>
                         </t>
-                    </t>
-                    <t t-else="">
+                    </div>
+                </t>
+                <t t-else="">
+                    <div name="base_printout_other" class="page">
                         <t t-call="tt_report_common.external_layout">
                             <br/>
                             <!--                            <t t-if="doc_model == 'tt.reservation.train'">-->
                             <!--                                <t t-call="tt_report_common.printout_ticket_train_template"/>-->
                             <!--                            </t>-->
                         </t>
-                    </t>
-                </div>
+                    </div>
+                </t>
             </t>
         </t>
     </template>
