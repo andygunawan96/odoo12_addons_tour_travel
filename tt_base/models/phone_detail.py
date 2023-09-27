@@ -2,10 +2,7 @@ import time
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-from ...tools.ERR import RequestException
-from ...tools import ERR
-import logging,traceback
-
+import logging
 
 TYPE = [
     ('work', 'Work'),
