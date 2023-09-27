@@ -92,7 +92,11 @@ class PrintoutTicketForm(models.AbstractModel):
                         'name': '%s %s' % (pax.passenger_id.title, pax.passenger_id.name),
                         'pax_type': pax.pax_type,
                         'ticket_number': pax.ticket_number,
-                        'total_price': 0
+                        'total_price': 0,
+                        'ff_obj': {
+                            'name': pax.loyalty_program_id.name,
+                            'ff_number': pax.ff_number,
+                        },
                     }
                     for rec2 in pax.passenger_id.cost_service_charge_ids:
                         # if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc', 'ssr', 'seat']:
@@ -4239,10 +4243,11 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             # }]
 
             values['agent_id'] = self.env['tt.agent'].search([('name', '=ilike', values['agent_name'])], limit=1)
-        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        # data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#CDCDCD'
-        if hasattr(data_object, 'agent_id'):
-            base_color = data_object.agent_id.get_printout_agent_color()
+        # if hasattr(data_object, 'agent_id'):
+        if values.get('agent_id'):
+            base_color = values['agent_id'].get_printout_agent_color()
         return {
             'doc_ids': False,
             'doc_model': 'tt.reservation.hotel',  # Can be set to as any model
