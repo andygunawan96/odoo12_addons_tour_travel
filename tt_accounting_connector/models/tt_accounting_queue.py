@@ -310,6 +310,10 @@ class TtAccountingQueue(models.Model):
                     request.update({
                         'sector_type': trans_obj.sector_type
                     })
+                if self.res_model == 'tt.reservation.hotel':
+                    request.update({
+                        'nights': trans_obj.nights
+                    })
                 if self.action in ['reverse', 'split_reservation']:
                     if request.get('order_number'):
                         request.update({
