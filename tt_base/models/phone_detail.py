@@ -74,12 +74,13 @@ class PhoneDetail(models.Model):
                 "type": 'work',
                 "calling_code": data['calling_code'],
                 "calling_number": data['calling_number'],
-                "ho_id": context['co_ho_id']
+                "ho_id": context['co_ho_id'],
+                "agent_id": agent_obj.id
             })]
         try:
             phone_obj[0].generate_va_number()
         except Exception as e:
-            return ERR.get_error(500, e.name)
+            return ERR.get_error(500, additional_message=str(e.name))
         return ERR.get_no_error()
 
     def generate_va_number(self):
