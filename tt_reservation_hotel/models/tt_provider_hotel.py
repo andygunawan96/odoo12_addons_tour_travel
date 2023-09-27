@@ -300,6 +300,8 @@ class TransportBookingProvider(models.Model):
             "passengers": passengers,
             "hotel_name": self.booking_id.hotel_name,
             "hotel_city": self.hotel_city,
+            "hotel_address": self.hotel_address,
+            "hotel_phone": self.hotel_phone,
             "checkin_date": str(self.checkin_date)[:10],
             "checkout_date": str(self.checkout_date)[:10],
             "pnr": self.pnr,

@@ -119,6 +119,16 @@ class AccountingConnectorTravelite(models.Model):
             is_create_inv_obj = self.env['tt.accounting.setup.variables'].search(
                 [('accounting_setup_id.accounting_provider', '=', 'travelite'), ('accounting_setup_id.active', '=', True),
                  ('accounting_setup_id.ho_id', '=', int(request['ho_id'])), ('variable_name', '=', 'is_create_invoice')], limit=1)
+            vat_var_obj = self.env['tt.accounting.setup.variables'].search(
+                [('accounting_setup_id.accounting_provider', '=', 'travelite'),
+                 ('accounting_setup_id.active', '=', True),
+                 ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                 ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
+            vat_perc_obj = self.env['tt.accounting.setup.variables'].search(
+                [('accounting_setup_id.accounting_provider', '=', 'travelite'),
+                 ('accounting_setup_id.active', '=', True),
+                 ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
+                 ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
 
             source_type_id = source_type_id_obj.variable_value
             is_create_inv = is_create_inv_obj and is_create_inv_obj.variable_value or False
@@ -242,16 +252,6 @@ class AccountingConnectorTravelite(models.Model):
                             })
                             tax_details_len += 1
 
-                        vat_var_obj = self.env['tt.accounting.setup.variables'].search(
-                            [('accounting_setup_id.accounting_provider', '=', 'travelite'),
-                             ('accounting_setup_id.active', '=', True),
-                             ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
-                             ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
-                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search(
-                            [('accounting_setup_id.accounting_provider', '=', 'travelite'),
-                             ('accounting_setup_id.active', '=', True),
-                             ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
-                             ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
                             _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
                             vat = 0
@@ -279,13 +279,14 @@ class AccountingConnectorTravelite(models.Model):
                             "airporttax": pax_setup['total_tax'],
                             "commission": ho_prof,
                             "servicefee": vat,
+                            "sellgst": 0,
                             "surcharge": 0.0000,
                             'discamt': pax_setup['total_discount'],
                             "markupamt": temp_upsell,
                             "sellpricenotax": pax_setup['total_fare'] + temp_upsell,
                             "nettfare": pax_setup['total_fare'],
                             "nettprice": pax_setup['total_fare'] + pax_setup['total_tax'],
-                            "sellprice": temp_sales,
+                            "sellprice": temp_sales - vat,
                             "currid": prov['currency'],
                             "pubfareccy": prov['currency'],
                             "nettcurrid": prov['currency'],
@@ -355,16 +356,6 @@ class AccountingConnectorTravelite(models.Model):
                             temp_sales += ho_prof
                             temp_upsell += pax_setup['agent_profit']
 
-                        vat_var_obj = self.env['tt.accounting.setup.variables'].search(
-                            [('accounting_setup_id.accounting_provider', '=', 'travelite'),
-                             ('accounting_setup_id.active', '=', True),
-                             ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
-                             ('variable_name', '=', '%s_vat_var' % request['provider_type'])], limit=1)
-                        vat_perc_obj = self.env['tt.accounting.setup.variables'].search(
-                            [('accounting_setup_id.accounting_provider', '=', 'travelite'),
-                             ('accounting_setup_id.active', '=', True),
-                             ('accounting_setup_id.ho_id', '=', int(request['ho_id'])),
-                             ('variable_name', '=', '%s_vat_percentage' % request['provider_type'])], limit=1)
                         if not vat_var_obj or not vat_perc_obj:
                             _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
                             vat = 0
@@ -397,14 +388,112 @@ class AccountingConnectorTravelite(models.Model):
                             "sellpricenotax": pax_setup['total_fare'] + temp_upsell,
                             "nettfare": pax_setup['total_fare'],
                             "nettprice": pax_setup['total_fare'],
-                            "sellprice": temp_sales,
+                            "sellprice": temp_sales - vat,
                             "currid": prov['currency'],
                             "pubfareccy": prov['currency'],
                             "nettcurrid": prov['currency'],
                             "convertrate": 1
                         })
                 elif request['provider_type'] == 'hotel':
-                    pass
+                    if is_ho_transaction:
+                        ho_prof = prov.get('total_commission') and prov['total_commission'] or 0
+                    else:
+                        ho_prof = prov.get('ho_commission') and prov['ho_commission'] or 0
+                        if prov.get('parent_agent_commission'):
+                            ho_prof += prov['parent_agent_commission']
+
+                    prov_setup = {
+                        'ho_profit': ho_prof,
+                        'agent_profit': prov.get('agent_commission') and prov['agent_commission'] or 0,
+                        'total_comm': prov.get('total_commission') and prov['total_commission'] or 0,
+                        'total_nta': prov.get('total_nta') and prov['total_nta'] or 0,
+                        'agent_nta': prov.get('agent_nta') and prov['agent_nta'] or 0,
+                        'total_fare': prov.get('total_fare') and prov['total_fare'] or 0,
+                        'total_upsell': prov.get('total_upsell') and prov['total_upsell'] or 0,
+                        'total_discount': prov.get('total_discount') and prov['total_discount'] or 0
+                    }
+
+                    temp_sales = prov_setup['agent_nta']
+                    if is_ho_transaction:
+                        temp_sales += ho_prof
+
+                    if not vat_var_obj or not vat_perc_obj:
+                        _logger.info('Please set both {provider_type_code}_vat_var and {provider_type_code}_vat_percentage variables.')
+                        vat = 0
+                    else:
+                        temp_vat_var = prov_setup.get(vat_var_obj.variable_value) and prov_setup[vat_var_obj.variable_value] or 0
+                        vat = round(temp_vat_var * float(vat_perc_obj.variable_value) / 100)
+
+                    pax_list = []
+                    for pax in prov['passengers']:
+                        pax_list.append({
+                            "passtitle": pax['title'],
+                            "passname": pax['name'],
+                            "passtype": "AD"
+                        })
+
+                    room_list = []
+                    room_type_list = []
+                    for room in prov['rooms']:
+                        room_type = room.get('room_type') and room['room_type'] or room['room_name']
+                        if room_type not in room_type_list:
+                            room_type_list.append(room_type)
+                        room_list.append({
+                            "checkin": "%sT00:00:00" % prov['checkin_date'],
+                            "checkout": "%sT00:00:00" % prov['checkout_date'],
+                            "nites": int(request['nights']),
+                            "nettcurrid": prov['currency'],
+                            "nettprice": prov_setup['total_fare'] / len(prov['rooms']) / int(request['nights']),
+                            "currid": prov['currency'],
+                            "sellprice": (temp_sales - vat) / len(prov['rooms']) / int(request['nights']),
+                            "servicefee": vat / len(prov['rooms']) / int(request['nights']),
+                            "totalsell": temp_sales / len(prov['rooms']),
+                            "totalnett": prov_setup['total_fare'] / len(prov['rooms'])
+                        })
+                    hotel_country = '-'
+                    hotel_city_obj = self.env['res.city'].search([('name', 'ilike', prov['hotel_city'])], limit=1)
+                    if hotel_city_obj:
+                        hotel_country = hotel_city_obj.country_id and hotel_city_obj.country_id.name or '-'
+
+                    ticket_list.append({
+                        "prodcode": "HT",
+                        "proddtlcode": "HTHD",
+                        "pnrcode": prov['pnr'],
+                        "suppid": 0,
+                        "hotelcityid": 0,
+                        "hotelid": 0,
+                        "hotelname": prov['hotel_name'],
+                        "htcountrydesc": hotel_country,
+                        "hotelcitydesc": prov['hotel_city'],
+                        "htphoneno": prov['hotel_phone'],
+                        "roomtypedesc": room_type_list and room_type_list[0] or "-",
+                        "classtypedesc": room_type_list and room_type_list[0] or "-",
+                        "checkin": prov['checkin_date'],
+                        "checkout": prov['checkout_date'],
+                        "totnites": int(request['nights']),
+                        "totroom": len(prov['rooms']),
+                        "totperson": len(prov['passengers']),
+                        "bfastflag": True,
+                        "nettcurrid": prov['currency'],
+                        "currid": prov['currency'],
+                        "totnettprice": prov_setup['total_fare'],
+                        "totservicefee": vat,
+                        "totsellprice": temp_sales - vat,
+                        "canceldateline": "",
+                        "confirmationno": prov['pnr'],
+                        "bookdesc": "",
+                        "source": "N",
+                        "totsellgst": 0,
+                        "status": "CONFIRMED",
+                        "dealer": request['contact']['name'],
+                        "bookdate": request.get('issued_date') and request['issued_date'][:10] or '',
+                        "suppcode": "",
+                        "suppname": "",
+                        "sourcetypeid": source_type_id,
+                        "autoflag": True,
+                        "hotel_detail": room_list,
+                        "hotel_passenger": pax_list
+                    })
             if request['provider_type'] in ['airline', 'train']:
                 req.update({
                     "ticket_itin": ticket_itin_list,
