@@ -373,7 +373,7 @@ class AccountingConnectorTravelite(models.Model):
                             "suppname": "",
                             "ticketno": pax_tick,
                             "passtitle": pax['title'],
-                            "passengername": "%s %s" % (pax['first_name'], pax['last_name']),
+                            "passengername": pax['passenger'],
                             "passtype": pax_type_conv.get(pax['pax_type']) and pax_type_conv[pax['pax_type']] or 'AD',
                             "classtype": ",".join(pax_segment_classes),
                             "sourcetypeid": source_type_id,
