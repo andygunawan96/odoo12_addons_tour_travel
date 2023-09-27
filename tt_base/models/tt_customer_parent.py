@@ -88,43 +88,10 @@ class TtCustomerParent(models.Model):
 
     @api.model
     def create(self,vals_list):
-        is_credit_limit = False
-        is_billing_cycle = False
-        if vals_list.get('credit_limit'):
-            is_credit_limit = True
-        elif self.credit_limit and 'credit_limit' not in vals_list:
-            is_credit_limit = True
-
-        if vals_list.get('billing_cycle_ids') and len(vals_list['billing_cycle_ids'][0][2]) == 0:
-            is_billing_cycle = False
-        elif vals_list.get('billing_cycle_ids') and len(vals_list['billing_cycle_ids'][0][2]) > 0:
-            is_billing_cycle = True
-        elif self.billing_cycle_ids and 'billing_cycle_ids' not in vals_list:
-            is_billing_cycle = True
-
-        if not is_billing_cycle and is_credit_limit:
-            raise UserError('Please set billing cycle')
         vals_list['seq_id'] = self.env['ir.sequence'].next_by_code('cust.par')
         return super(TtCustomerParent, self).create(vals_list)
 
     def write(self, vals):
-        is_credit_limit = False
-        is_billing_cycle = False
-        if vals.get('credit_limit'):
-            is_credit_limit = True
-        elif self.credit_limit and 'credit_limit' not in vals:
-            is_credit_limit = True
-
-        if vals.get('billing_cycle_ids') and len(vals['billing_cycle_ids'][0][2]) == 0:
-            is_billing_cycle = False
-        elif vals.get('billing_cycle_ids') and len(vals['billing_cycle_ids'][0][2]) > 0:
-            is_billing_cycle = True
-        elif self.billing_cycle_ids and 'billing_cycle_ids' not in vals:
-            is_billing_cycle = True
-
-        if not is_billing_cycle and is_credit_limit:
-            raise UserError('Please set billing cycle')
-
         super(TtCustomerParent, self).write(vals)
 
     @api.multi

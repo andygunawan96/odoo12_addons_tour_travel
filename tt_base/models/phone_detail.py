@@ -65,6 +65,9 @@ class PhoneDetail(models.Model):
         if payment_acq_number_obj:
             return ERR.get_error(500, "Please delete your old VA!")
 
+        if data.get('email'):
+            agent_obj.email = data['email']
+
         phone_obj = agent_obj.phone_ids.filtered(lambda x: x.calling_number == data['phone_number'])
         if not phone_obj:
             phone_obj = [self.create({
@@ -76,8 +79,7 @@ class PhoneDetail(models.Model):
         try:
             phone_obj[0].generate_va_number()
         except Exception as e:
-            _logger.error("%s, %s" % (str(e), traceback.format_exc()))
-            return ERR.get_error(500, "Phone number has been use, please change phone number")
+            return ERR.get_error(500, e.name)
         return ERR.get_no_error()
 
     def generate_va_number(self):
