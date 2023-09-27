@@ -61,7 +61,7 @@ class PhoneDetail(models.Model):
         except:
             raise RequestException(1008)
 
-        payment_acq_number_obj = agent_obj.payment_acquirer_ids.filtered(lambda x: x.state == 'open')
+        payment_acq_number_obj = agent_obj.payment_acq_ids.filtered(lambda x: x.state == 'open')
         if payment_acq_number_obj:
             return ERR.get_error(500, "Please delete your old VA!")
 
