@@ -144,6 +144,9 @@
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
+                        <page string="Attachment">
+                            <field name="document_ids"/>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
