@@ -146,7 +146,7 @@ class ReservationAirline(models.Model):
         for rec in self:
             rec.state = 'issued'
 
-    def action_booked_api_airline(self,context,pnr_list=[],hold_date=False):
+    def action_booked_api_airline(self,context,pnr_list=[],hold_date=False,is_split=False):
         if type(hold_date) != datetime:
             hold_date = False
 
@@ -164,6 +164,9 @@ class ReservationAirline(models.Model):
         if pnr_list:
             write_values['pnr'] = ', '.join(pnr_list)
         # END
+        if self.booked_date and is_split:
+            write_values.pop('booked_date')
+            write_values.pop('booked_uid')
 
         # if write_values['pnr'] == '':
         #     write_values.pop('pnr')
@@ -196,6 +199,7 @@ class ReservationAirline(models.Model):
             'acquirer_id': req['acquirer_id'],
             'payment_reference': req.get('payment_reference', ''),
             'payment_ref_attachment': req.get('payment_ref_attachment', []),
+            'is_split': req.get('is_split')
         }
         self.action_issued_airline(data)
 
@@ -223,6 +227,9 @@ class ReservationAirline(models.Model):
                 'booked_date': values['issued_date'],
                 'booked_uid': values['issued_uid'],
             })
+        if self.issued_date and data.get('is_split'):
+            values.pop('issued_date')
+            values.pop('issued_uid')
         self.write(values)
 
         try:
@@ -244,7 +251,7 @@ class ReservationAirline(models.Model):
         except Exception as e:
             _logger.info('Error Create Email Queue')
 
-    def action_partial_booked_api_airline(self,context,pnr_list=[],hold_date=False):
+    def action_partial_booked_api_airline(self,context,pnr_list=[],hold_date=False,is_split=False):
         if type(hold_date) != datetime:
             hold_date = False
 
@@ -263,16 +270,23 @@ class ReservationAirline(models.Model):
         if hold_date:
             values['hold_date'] = hold_date
         # END
+        if self.booked_date and is_split:
+            values.pop('booked_date')
+            values.pop('booked_uid')
 
         self.write(values)
 
-    def action_partial_issued_api_airline(self,co_uid,customer_parent_id):
-        self.write({
+    def action_partial_issued_api_airline(self,co_uid,customer_parent_id,is_split=False):
+        values = {
             'state': 'partial_issued',
             'issued_date': datetime.now(),
             'issued_uid': co_uid,
             'customer_parent_id': customer_parent_id
-        })
+        }
+        if self.issued_date and is_split:
+            values.pop('issued_date')
+            values.pop('issued_uid')
+        self.write(values)
 
     @api.multi
     def action_set_as_cancel(self):
@@ -1741,22 +1755,26 @@ class ReservationAirline(models.Model):
                 'payment_reference': req.get('payment_reference', ''),
                 'payment_ref_attachment': req.get('payment_ref_attachment', []),
             }
+            if req.get('is_split'):
+                issued_req.update({
+                    'is_split': True
+                })
             self.action_issued_api_airline(issued_req, context)
         elif any(rec.state == 'issued' for rec in self.provider_booking_ids):
             # partial issued
             acquirer_id,customer_parent_id = self.get_acquirer_n_c_parent_id(req)
             # self.calculate_service_charge()
-            self.action_partial_issued_api_airline(context['co_uid'],customer_parent_id)
+            self.action_partial_issued_api_airline(context['co_uid'],customer_parent_id,is_split=req.get('is_split'))
         elif all(rec.state == 'booked' for rec in self.provider_booking_ids):
             # booked
             # self.calculate_service_charge()
             # self.action_booked_api_airline(context, pnr_list, hold_date)
-            self.action_booked_api_airline(context)
+            self.action_booked_api_airline(context,is_split=req.get('is_split'))
         elif any(rec.state == 'booked' for rec in self.provider_booking_ids):
             # partial booked
             # self.calculate_service_charge()
             # self.action_partial_booked_api_airline(context, pnr_list, hold_date)
-            self.action_partial_booked_api_airline(context)
+            self.action_partial_booked_api_airline(context,is_split=req.get('is_split'))
         elif all(rec.state == 'rescheduled' for rec in self.provider_booking_ids):
             self.write({
                 'state': 'rescheduled',
@@ -3293,8 +3311,8 @@ class ReservationAirline(models.Model):
             new_booking_obj.calculate_pnr_provider_carrier()
             book_obj.calculate_service_charge()
             new_booking_obj.calculate_service_charge()
-            book_obj.check_provider_state(context=context)
-            new_booking_obj.check_provider_state(context=context)
+            book_obj.check_provider_state(context=context, req={'is_split': True})
+            new_booking_obj.check_provider_state(context=context, req={'is_split': True})
 
             response = new_booking_obj.to_dict()
 
