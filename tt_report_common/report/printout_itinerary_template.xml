@@ -74,40 +74,41 @@
 <!--                </t>-->
 <!--            </t>-->
 <!--        </table>-->
-
-        <span style="font-size: 28px; font-weight: 730">Grand Total</span><br/>
-        <table width="100%">
-            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
-                <td style="text-align:left;"><b>Name</b></td>
-                <td style="text-align:right;"><b>Price</b></td>
-            </thead>
-            <t t-if="price_breakdown">
-                <t t-foreach="price_breakdown" t-as="svc">
+        <t t-if="with_price">
+            <span style="font-size: 28px; font-weight: 730">Grand Total</span><br/>
+            <table width="100%">
+                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                    <td style="text-align:left;"><b>Name</b></td>
+                    <td style="text-align:right;"><b>Price</b></td>
+                </thead>
+                <t t-if="price_breakdown">
+                    <t t-foreach="price_breakdown" t-as="svc">
+                        <tr>
+                            <td style="text-align:left;">
+                                <t t-esc="svc"/>
+                            </td>
+                            <td style="text-align:right;">
+                                <t t-esc="float(price_breakdown[svc])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                        </tr>
+                    </t>
+                </t>
+                <t t-if="discount_value">
                     <tr>
-                        <td style="text-align:left;">
-                            <t t-esc="svc"/>
-                        </td>
+                        <td style="text-align:left;">Discount</td>
                         <td style="text-align:right;">
-                            <t t-esc="float(price_breakdown[svc])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            <t t-esc="float(discount_value)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                         </td>
                     </tr>
                 </t>
-            </t>
-            <t t-if="discount_value">
                 <tr>
-                    <td style="text-align:left;">Discount</td>
+                    <td style="text-align:left;">Grand Total</td>
                     <td style="text-align:right;">
-                        <t t-esc="float(discount_value)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        <t t-esc="float(customer_grand_total)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                     </td>
                 </tr>
-            </t>
-            <tr>
-                <td style="text-align:left;">Grand Total</td>
-                <td style="text-align:right;">
-                    <t t-esc="float(customer_grand_total)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
-                </td>
-            </tr>
-        </table>
+            </table>
+        </t>
         <br/>
     </template>
 
@@ -366,9 +367,11 @@
                         <div class="col-3" style="text-align: center; font-size:17px;">
                             Facility(s)
                         </div>
-                        <div class="col-2" style="text-align: center; font-size:17px;">
-                            Price
-                        </div>
+                        <t t-if="with_price">
+                            <div class="col-2" style="text-align: center; font-size:17px;">
+                                Price
+                            </div>
+                        </t>
                     </div>
                     <div style="border: 1px solid #BBB; margin-bottom: 5px; margin-left: 15px; margin-right: 15px"/>
                     <t t-set="psg_index" t-value="0"/>
@@ -420,9 +423,11 @@
                                 </t>
                                 <t t-else="">-</t>
                             </div>
-                            <div class="col-2" style="text-align: right; overflow-wrap: break-word;">
-                                <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['price_total']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></label>
-                            </div>
+                            <t t-if="with_price">
+                                <div class="col-2" style="text-align: right; overflow-wrap: break-word;">
+                                    <label style="font-weight:450; font-size:17px; margin-bottom: 0px; overflow-wrap: break-word;"><span t-esc="psg['price_total']" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: doc.currency_id}"/></label>
+                                </div>
+                            </t>
                         </div>
                         <t t-if="psg_line%20==0">
                             <div style="page-break-after: always;"/>
