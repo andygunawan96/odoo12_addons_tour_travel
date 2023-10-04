@@ -1000,6 +1000,18 @@ class MasterActivity(models.Model):
                 sql_query += 'and themes.active = True '
             sql_query += 'group by themes.id '
 
+            if req.get('limit'):
+                per_page_limit = int(req['limit'])
+            else:
+                per_page_limit= 100
+
+            if req.get('page'):
+                offset = (int(req['page']) - 1) * per_page_limit
+            else:
+                offset = 0
+
+            sql_query += 'offset ' + str(offset) + ' limit ' + str(per_page_limit) + ';'
+
             self.env.cr.execute(sql_query)
             result_id_list = self.env.cr.dictfetchall()
             result_list = []
