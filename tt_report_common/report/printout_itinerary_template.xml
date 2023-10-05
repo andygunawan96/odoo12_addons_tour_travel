@@ -1977,6 +1977,7 @@
                             <t t-call="tt_report_common.visa_itinerary_view"/>
                             <t t-call="tt_report_common.itinerary_price_detail"/>
                             <br/>
+                            <t t-call="tt_report_common.itinerary_price_detail_per_pax"/>
                             <t t-call="tt_report_common.itinerary_signature"/>
                         </div>
                     </t>
