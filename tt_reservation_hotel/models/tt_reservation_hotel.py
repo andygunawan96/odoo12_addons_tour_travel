@@ -276,12 +276,12 @@ class HotelReservation(models.Model):
 
     def print_itinerary(self, data, ctx=None):
         book_obj = False
-        # jika panggil dari backend
         if 'order_number' not in data:
             data['order_number'] = self.name
-            if 'provider_type' not in data:
-                data['provider_type'] = self.provider_type_id.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
 
+        if data.get('order_number'):
             book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
             datas = {'ids': book_obj.env.context.get('active_ids', [])}
             res = book_obj.read()
@@ -313,6 +313,43 @@ class HotelReservation(models.Model):
             # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
             # self.make_response(pdf, headers=pdfhttpheaders)
 
+        # # jika panggil dari backend
+        # if 'order_number' not in data:
+        #     data['order_number'] = self.name
+        #     if 'provider_type' not in data:
+        #         data['provider_type'] = self.provider_type_id.name
+        #
+        #     book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
+        #     datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        #     res = book_obj.read()
+        #     res = res and res[0] or {}
+        #     datas['form'] = res
+        #     pdf_obj = book_obj.env.ref('tt_report_common.action_printout_itinerary_hotel')
+        #     co_agent_id = book_obj.agent_id and book_obj.agent_id.id or self.env.user.agent_id.id
+        #     co_uid = book_obj.user_id and book_obj.user_id.id or self.env.user.id
+        #
+        #     book_name = book_obj.name
+        #     if not book_obj.printout_itinerary_id or data.get('is_force_get_new_printout', False):
+        #         pdf_report = pdf_obj.report_action(book_obj, data=datas)
+        #         pdf_report['context'].update({
+        #             'active_model': book_obj._name,
+        #             'active_id': book_obj.id
+        #         })
+        #         pdf_report_bytes, _ = pdf_obj.render_qweb_pdf(data=pdf_report)
+        #     else:
+        #         pdf_report_bytes = False
+        # else:
+        #     # Part ini untuk print ittin resv yg blum terbut di backend (tidk da model dkk) jadi data full dari json frontend
+        #     pdf_obj = self.env.ref('tt_report_common.action_printout_itinerary_from_json')
+        #     data = {'context': {'json_content': data['json_printout']}}
+        #     pdf_report_bytes, _ = pdf_obj.sudo().render_qweb_pdf(False, data=data)
+        #     book_name = 'Printout'
+        #     co_agent_id = ctx['co_agent_id']
+        #     co_uid = ctx['co_uid']
+        #     # pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
+        #     # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
+        #     # self.make_response(pdf, headers=pdfhttpheaders)
+
         if pdf_report_bytes: #Value waktu ada render report baru
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
@@ -342,12 +379,13 @@ class HotelReservation(models.Model):
 
     def print_itinerary_price(self, data, ctx=None):
         book_obj = False
-        # jika panggil dari backend
+
         if 'order_number' not in data:
             data['order_number'] = self.name
-            if 'provider_type' not in data:
-                data['provider_type'] = self.provider_type_id.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
 
+        if data.get('order_number'):
             book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
             datas = {'ids': book_obj.env.context.get('active_ids', [])}
             res = book_obj.read()
@@ -379,6 +417,44 @@ class HotelReservation(models.Model):
             # pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
             # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
             # self.make_response(pdf, headers=pdfhttpheaders)
+
+        # # jika panggil dari backend
+        # if 'order_number' not in data:
+        #     data['order_number'] = self.name
+        #     if 'provider_type' not in data:
+        #         data['provider_type'] = self.provider_type_id.name
+        #
+        #     book_obj = self.env['tt.reservation.hotel'].search([('name', '=', data['order_number'])], limit=1)
+        #     datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        #     res = book_obj.read()
+        #     res = res and res[0] or {}
+        #     datas['form'] = res
+        #     datas['is_with_price'] = True
+        #     pdf_obj = book_obj.env.ref('tt_report_common.action_printout_itinerary_hotel')
+        #     co_agent_id = book_obj.agent_id and book_obj.agent_id.id or self.env.user.agent_id.id
+        #     co_uid = book_obj.user_id and book_obj.user_id.id or self.env.user.id
+        #
+        #     book_name = book_obj.name
+        #     if not book_obj.printout_itinerary_price_id or data.get('is_force_get_new_printout', False):
+        #         pdf_report = pdf_obj.report_action(book_obj, data=datas)
+        #         pdf_report['context'].update({
+        #             'active_model': book_obj._name,
+        #             'active_id': book_obj.id
+        #         })
+        #         pdf_report_bytes, _ = pdf_obj.render_qweb_pdf(data=pdf_report)
+        #     else:
+        #         pdf_report_bytes = False
+        # else:
+        #     # Part ini untuk print ittin resv yg blum terbut di backend (tidk da model dkk) jadi data full dari json frontend
+        #     pdf_obj = self.env.ref('tt_report_common.action_printout_itinerary_from_json')
+        #     data = {'context': {'json_content': data['json_printout']}}
+        #     pdf_report_bytes, _ = pdf_obj.sudo().render_qweb_pdf(False, data=data)
+        #     book_name = 'Printout'
+        #     co_agent_id = ctx['co_agent_id']
+        #     co_uid = ctx['co_uid']
+        #     # pdfhttpheaders = [('Content-Type', 'application/pdf'), ('Content-Length', len(pdf))]
+        #     # pdfhttpheaders.append(('Content-Disposition', 'attachment; filename="Itinerary.pdf"'))
+        #     # self.make_response(pdf, headers=pdfhttpheaders)
 
         if pdf_report_bytes: #Value waktu ada render report baru
             res = self.env['tt.upload.center.wizard'].upload_file_api(
