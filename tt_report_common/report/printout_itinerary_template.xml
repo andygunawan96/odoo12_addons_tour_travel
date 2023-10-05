@@ -2,40 +2,42 @@
 <odoo>
     <template id="itinerary_price_detail">
         <br/>
-        <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
-        <table width="100%">
-            <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
-                <td><b>Pax</b></td>
-                <td><b>Qty</b></td>
-                <td><b>Total per Pax</b></td>
-                <td><b>Total</b></td>
-            </thead>
-            <t t-if="price_lines">
-                <!-- Itinerary yg dari Record Backend (Airline, train) -->
-                <t t-foreach="price_lines[doc.id]" t-as="price">
-                    <t t-if="price">
+        <t t-if="with_price">
+            <span style="font-size: 28px; font-weight: 730">Price Detail(s)</span><br/>
+            <table width="100%">
+                <thead style="border-bottom: 1px solid black; font-size:18px; text-align:center;">
+                    <td><b>Pax</b></td>
+                    <td><b>Qty</b></td>
+                    <td><b>Total per Pax</b></td>
+                    <td><b>Total</b></td>
+                </thead>
+                <t t-if="price_lines">
+                    <!-- Itinerary yg dari Record Backend (Airline, train) -->
+                    <t t-foreach="price_lines[doc.id]" t-as="price">
+                        <t t-if="price">
+                            <tr style="border-bottom: 1px solid lightgray">
+                                <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="float(price['price_per_pax'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="float(price['price_total'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            </tr>
+                        </t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <!-- Itinerary yg dari JSON (Hotel, Activity) -->
+                    <t t-foreach="doc['price_detail']" t-as="price">
                         <tr style="border-bottom: 1px solid lightgray">
-                            <td style="text-align:center; border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
+                            <td style="border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
                             <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
-                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="float(price['price_per_pax'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="float(price['price_total'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                            <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
+                            <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
                         </tr>
                     </t>
                 </t>
-            </t>
-            <t t-else="">
-                <!-- Itinerary yg dari JSON (Hotel, Activity) -->
-                <t t-foreach="doc['price_detail']" t-as="price">
-                    <tr style="border-bottom: 1px solid lightgray">
-                        <td style="border-right: 1px solid lightgray"><t t-esc="price['pax_type']"/></td>
-                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['qty']"/></td>
-                        <td style="text-align:right; border-right: 1px solid lightgray">@<t t-esc="price['fare']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
-                        <td style="text-align:right; border-right: 1px solid lightgray"><t t-esc="price['tax']" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
-                        <td style="text-align:right;"><t t-esc="(float(price['fare']) + float(price['tax']))" t-options='{"widget": "monetary", "display_currency": currency_id}'/></td>
-                    </tr>
-                </t>
-            </t>
-        </table>
+            </table>
+        </t>
     </template>
 
     <template id="itinerary_price_detail_per_pax">
