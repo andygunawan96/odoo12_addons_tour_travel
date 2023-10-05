@@ -973,7 +973,7 @@ class ReservationTour(models.Model):
             pdf_report_bytes = tour_itinerary_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Tour Itinerary %s.pdf' % book_obj.name,
+                    'filename': 'Tour Itinerary %s (Price).pdf' % book_obj.name,
                     'file_reference': 'Tour Itinerary',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)

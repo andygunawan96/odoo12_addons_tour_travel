@@ -1300,7 +1300,7 @@ class ReservationPpob(models.Model):
             pdf_report_bytes = ppob_itinerary_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': '%s Itinerary %s.pdf' % (filename, book_obj.name),
+                    'filename': '%s Itinerary %s (Price).pdf' % (filename, book_obj.name),
                     'file_reference': '%s Itinerary' % filename,
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)

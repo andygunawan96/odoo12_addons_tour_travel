@@ -1119,7 +1119,7 @@ class ReservationLabPintar(models.Model):
             pdf_report_bytes = labpintar_itinerary_id.render_qweb_pdf(data=pdf_report)
             res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Itinerary %s.pdf' % book_obj.name,
+                    'filename': 'LabPintar Itinerary %s (Price).pdf' % book_obj.name,
                     'file_reference': 'Itinerary',
                     'file': base64.b64encode(pdf_report_bytes[0]),
                     'delete_date': datetime.today() + timedelta(minutes=10)

@@ -459,7 +459,7 @@ class HotelReservation(models.Model):
         if pdf_report_bytes: #Value waktu ada render report baru
             res = self.env['tt.upload.center.wizard'].upload_file_api(
                 {
-                    'filename': 'Hotel Itinerary %s.pdf' % book_name,
+                    'filename': 'Hotel Itinerary %s (Price).pdf' % book_name,
                     'file_reference': 'Hotel Itinerary',
                     'file': base64.b64encode(pdf_report_bytes),
                     'delete_date': datetime.today() + timedelta(minutes=10)
