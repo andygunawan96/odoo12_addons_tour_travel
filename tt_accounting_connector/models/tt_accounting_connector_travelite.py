@@ -149,7 +149,7 @@ class AccountingConnectorTravelite(models.Model):
             req = {
                 "booking": {
                     "custid": customer_id,
-                    "custcode": customer_seq_id,
+                    "custcode": "",
                     "custname": customer_name,
                     "cctcname": "%s %s" % (request['contact']['title'], request['contact']['name']),
                     "cctcphone": request['contact']['phone'],
