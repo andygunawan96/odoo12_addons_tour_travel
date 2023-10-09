@@ -954,7 +954,9 @@ class TtRefund(models.Model):
         if not self.is_vendor_received:
             raise UserError("Please wait until you received the refund payment from vendor!")
 
-        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)])
+        resv_obj = self.env[self.res_model].search([('name', '=', self.referenced_document)], limit=1)
+        if not resv_obj.check_approve_refund_eligibility():
+            raise UserError("Refund for this reservation can only be approved after all related invoices have been paid.")
         if resv_obj.agent_type_id == self.env.ref('tt_base.agent_type_btbo2'):
             _logger.info('btbo2 send refund api')
             for credential in resv_obj.user_id.credential_ids.webhook_rel_ids:

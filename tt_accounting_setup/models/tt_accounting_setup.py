@@ -28,7 +28,7 @@ class TtAccountingSetup(models.Model):
     variable_ids = fields.One2many('tt.accounting.setup.variables', 'accounting_setup_id', 'Variables')
     provider_supplier_ids = fields.One2many('tt.accounting.setup.suppliers', 'accounting_setup_id', 'Provider Suppliers')
     notes = fields.Char('Notes')
-    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', 'Head Office', domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
 
     @api.depends('accounting_provider')
     @api.onchange('accounting_provider')

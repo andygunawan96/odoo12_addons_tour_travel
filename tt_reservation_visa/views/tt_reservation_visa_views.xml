@@ -114,6 +114,9 @@
                     <button name="print_itinerary"
                             class="oe_stat_button" states="booked,issued,done,refund,rescheduled,reissue"
                             string="Print Itinerary" type="object" icon="fa-print"/>
+                    <button name="print_itinerary_price"
+                            class="oe_stat_button" states="booked,issued,done,refund,rescheduled,reissue"
+                            string="Print Itinerary (Price)" type="object" icon="fa-print"/>
                 </div>
             </xpath>
             <field name="carrier_name" position="replace">

@@ -838,7 +838,7 @@ class TtReschedule(models.Model):
         ho_invoice_line_id = ho_inv_line_obj.id
 
         for idx, rec in enumerate(self.reschedule_line_ids):
-            tot_amt = rec.total_amount
+            tot_amt = ho_tot_amt = rec.total_amount
             # csc RS per pax hanya ditambah ke line pertama (asumsi untuk addons / reschedule dari front end hanya ada 1 RS line)
             if idx == 0 and additional_price:
                 tot_amt += additional_price
@@ -854,7 +854,7 @@ class TtReschedule(models.Model):
             ho_inv_line_obj.write({
                 'invoice_line_detail_ids': [(0, 0, {
                     'desc': str(dict(rec._fields['reschedule_type'].selection).get(rec.reschedule_type)),
-                    'price_unit': tot_amt,
+                    'price_unit': ho_tot_amt,
                     'quantity': 1,
                     'invoice_line_id': ho_invoice_line_id,
                 })]

@@ -134,6 +134,7 @@ class TtAgent(models.Model):
             if vals_list.get('is_btc_agent'):
                 vals_list.pop('is_btc_agent')
             is_ho = True
+
         new_agent = super(TtAgent, self).create(vals_list)
         agent_name = str(new_agent.name)
         if is_ho:
@@ -163,11 +164,6 @@ class TtAgent(models.Model):
         return new_agent
 
     def write(self, vals):
-        if vals.get('parent_agent_id'):
-            if vals['parent_agent_id'] == self.id:
-                raise UserError('Parent agent cannot be itself.')
-            if self.is_ho_agent or vals.get('is_ho_agent'):
-                raise UserError('Cannot set HO parent agent.')
         if vals.get('is_ho_agent') and vals.get('is_btc_agent'):
             vals.pop('is_btc_agent')
         if vals.get('is_ho_agent'):

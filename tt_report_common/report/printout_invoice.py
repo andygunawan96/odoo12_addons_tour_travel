@@ -92,7 +92,11 @@ class PrintoutTicketForm(models.AbstractModel):
                         'name': '%s %s' % (pax.passenger_id.title, pax.passenger_id.name),
                         'pax_type': pax.pax_type,
                         'ticket_number': pax.ticket_number,
-                        'total_price': 0
+                        'total_price': 0,
+                        'ff_obj': {
+                            'name': pax.loyalty_program_id.name,
+                            'ff_number': pax.ff_number,
+                        },
                     }
                     for rec2 in pax.passenger_id.cost_service_charge_ids:
                         # if rec2.id in provider.cost_service_charge_ids.ids and rec2.charge_type.lower() in ['fare', 'roc', 'tax', 'disc', 'ssr', 'seat']:
@@ -2913,12 +2917,13 @@ class PrintoutIteneraryForm(models.AbstractModel):
                 if header_width > 105:
                     header_width = 105
             agent_id = rec.agent_id
+
         printout_itinerary_footer = self.env['tt.report.common.setting'].get_footer('printout_itinerary', agent_id)
         data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -2934,6 +2939,11 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        return vals
 
     @api.model
     def _get_report_values(self, docids, data=None):
@@ -3079,7 +3089,7 @@ class PrintoutIteneraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3096,6 +3106,11 @@ class PrintoutIteneraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        return vals
 
 
 class PrintoutActivityIteneraryForm(models.AbstractModel):
@@ -3185,7 +3200,8 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3200,6 +3216,12 @@ class PrintoutActivityIteneraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        return vals
 
 
 class PrintoutEventIteneraryForm(models.AbstractModel):
@@ -3289,7 +3311,8 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3304,6 +3327,13 @@ class PrintoutEventIteneraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutTourIteneraryForm(models.AbstractModel):
@@ -3393,7 +3423,8 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3408,6 +3439,13 @@ class PrintoutTourIteneraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutPassportItineraryForm(models.AbstractModel):
@@ -3497,7 +3535,8 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3512,6 +3551,13 @@ class PrintoutPassportItineraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutPPOBItineraryForm(models.AbstractModel):
@@ -3604,7 +3650,8 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3619,6 +3666,13 @@ class PrintoutPPOBItineraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutVisaItineraryForm(models.AbstractModel):
@@ -3704,7 +3758,7 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+        vals =  {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3719,6 +3773,12 @@ class PrintoutVisaItineraryForm(models.AbstractModel):
             'static_url': static_url,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        return vals
 
 
 class PrintoutPeriksainItineraryForm(models.AbstractModel):
@@ -3806,7 +3866,8 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3822,6 +3883,12 @@ class PrintoutPeriksainItineraryForm(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        return vals
 
 
 class PrintoutMedicalItineraryForm(models.AbstractModel):
@@ -3913,7 +3980,8 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -3929,6 +3997,12 @@ class PrintoutMedicalItineraryForm(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+        return vals
 
 
 class PrintoutBusItineraryForm(models.AbstractModel):
@@ -4022,7 +4096,7 @@ class PrintoutBusItineraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -4038,6 +4112,13 @@ class PrintoutBusItineraryForm(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutInsuranceItineraryForm(models.AbstractModel):
@@ -4133,7 +4214,7 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
         base_color = '#CDCDCD'
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'itin',
@@ -4149,6 +4230,13 @@ class PrintoutInsuranceItineraryForm(models.AbstractModel):
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');",
             'printout_tz': pytz.timezone('Asia/Jakarta')
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutJSONIteneraryForm(models.AbstractModel):
@@ -4239,11 +4327,12 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             # }]
 
             values['agent_id'] = self.env['tt.agent'].search([('name', '=ilike', values['agent_name'])], limit=1)
-        data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
+        # data_object = self.env[data['context']['active_model']].browse(data['context']['active_ids'])
         base_color = '#CDCDCD'
-        if hasattr(data_object, 'agent_id'):
-            base_color = data_object.agent_id.get_printout_agent_color()
-        return {
+        # if hasattr(data_object, 'agent_id'):
+        if values.get('agent_id'):
+            base_color = values['agent_id'].get_printout_agent_color()
+        vals = {
             'doc_ids': False,
             'doc_model': 'tt.reservation.hotel',  # Can be set to as any model
             'doc_type': 'itin', #untuk judul report
@@ -4255,6 +4344,13 @@ class PrintoutJSONIteneraryForm(models.AbstractModel):
             'base_color': base_color,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutBilling(models.AbstractModel):
@@ -4294,7 +4390,7 @@ class PrintoutBilling(models.AbstractModel):
         if hasattr(data_object, 'agent_id'):
             base_color = data_object.agent_id.get_printout_agent_color()
             ho_obj = data_object.agent_id.ho_id
-        return {
+        vals = {
             'doc_ids': data['context']['active_ids'],
             'doc_model': data['context']['active_model'],
             'doc_type': 'ho_billing' if not cust_parent_id else '',
@@ -4311,6 +4407,13 @@ class PrintoutBilling(models.AbstractModel):
             'ho_obj': ho_obj,
             'img_url': "url('/tt_report_common/static/images/background footer airline.jpg');"
         }
+
+        if data.get('data') and 'is_with_price' in data['data']:
+            vals.update({
+                'with_price': data['data'].get('is_with_price') or False,
+            })
+
+        return vals
 
 
 class PrintoutTopUp(models.AbstractModel):

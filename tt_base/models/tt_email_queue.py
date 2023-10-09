@@ -23,7 +23,7 @@ class TtEmailQueue(models.Model):
     last_sent_attempt_date = fields.Datetime('Last Sent Attempt Date', readonly=True)
     attempt_count = fields.Integer('Attempt Count', default=0, readonly=True)
     failure_reason = fields.Text('Failure Reason', readonly=True)
-    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)])
+    ho_id = fields.Many2one('tt.agent', string="Head Office", domain=[('is_ho_agent', '=', True)], default=lambda self: self.env.user.ho_id)
     active = fields.Boolean('Active', default=True)
 
     def create_email_queue(self, data, context=None):

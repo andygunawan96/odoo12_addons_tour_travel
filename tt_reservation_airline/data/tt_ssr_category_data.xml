@@ -7,14 +7,12 @@
             <field name="key">baggage</field>
             <field name="icon">fa fa-suitcase</field>
         </record>
-
         <record id="tt_ssr_category_meal" model="tt.ssr.category">
             <field name="name">Meal</field>
             <field name="code">ML</field>
             <field name="key">meal</field>
             <field name="icon">fa fa-cutlery</field>
         </record>
-
         <record id="tt_ssr_category_seat" model="tt.ssr.category">
             <field name="name">Seat</field>
             <field name="code">ST</field>
@@ -27,11 +25,16 @@
             <field name="key">for_free</field>
             <field name="icon">fa fa-desktop</field>
         </record>
-
         <record id="tt_ssr_category_equipment" model="tt.ssr.category">
             <field name="name">Equipment</field>
             <field name="code">EQ</field>
             <field name="key">equipment</field>
+            <field name="icon">fa fa-desktop</field>
+        </record>
+        <record id="tt_ssr_category_wheelchair" model="tt.ssr.category">
+            <field name="name">Wheelchair</field>
+            <field name="code">WHCR</field>
+            <field name="key">wheelchair</field>
             <field name="icon">fa fa-desktop</field>
         </record>
     </data>

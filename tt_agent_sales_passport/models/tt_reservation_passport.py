@@ -160,3 +160,12 @@ class ReservationPassport(models.Model):
         res = super(ReservationPassport, self).action_issued_passport_api(data, context)  # , context
         self.action_create_invoice(data, context)  # , context
         return res
+
+    def check_approve_refund_eligibility(self):
+        if self.customer_parent_id.customer_parent_type_id.id in [self.env.ref('tt_base.customer_type_cor').id, self.env.ref('tt_base.customer_type_por').id] and self.payment_method == self.customer_parent_id.seq_id:
+            if all(rec.invoice_id.state == 'paid' for rec in self.invoice_line_ids):
+                return True
+            else:
+                return False
+        else:
+            return True
