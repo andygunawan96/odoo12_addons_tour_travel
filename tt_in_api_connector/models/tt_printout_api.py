@@ -42,13 +42,17 @@ class TtPrintoutApiCon(models.Model):
                 if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids) or (self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids):
                     if data['mode'] == 'ticket':
                         res = self.env['tt.reservation.%s' % data['provider_type']].do_print_voucher(data, context)
-                    # elif data['mode'] == 'itinerary':
-                    #     res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
+                    elif data['mode'] == 'itinerary':
+                        res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
+                    elif data['mode'] == 'itinerary_price':
+                        res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary_price(data, context)
                 else:
                     # if data['mode'] == 'ticket':
                     #     raise RequestException(1001)
                     if data['mode'] == 'itinerary':
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
+                    elif data['mode'] == 'itinerary_price':
+                        res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary_price(data)
             elif data['provider_type'] == 'event':
                 if data['mode'] == 'ticket':
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket(data, context)
@@ -56,6 +60,8 @@ class TtPrintoutApiCon(models.Model):
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket_with_price(data, context)
                 elif data['mode'] == 'itinerary':
                     res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data)
+                elif data['mode'] == 'itinerary_price':
+                    res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary_price(data)
             else:
                 book_obj = self.env['tt.reservation.%s' % data['provider_type']].search([('name', '=', data['order_number'])])
                 if book_obj and book_obj.agent_id.id == context.get('co_agent_id', -1) or (self.env.ref('tt_base.group_tt_process_channel_bookings_medical_only').id in user_obj.groups_id.ids) or (self.env.ref('tt_base.group_tt_process_channel_bookings').id in user_obj.groups_id.ids):
@@ -67,6 +73,8 @@ class TtPrintoutApiCon(models.Model):
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_eticket_original(data, context)
                     elif data['mode'] == 'itinerary':
                         res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary(data, context)
+                    elif data['mode'] == 'itinerary_price':
+                        res = self.env['tt.reservation.%s' % data['provider_type']].print_itinerary_price(data, context)
                     elif data['mode'] == 'visa_cust':
                         res = self.env['tt.reservation.%s' % data['provider_type']].do_print_out_visa_cust(data, context)
                     elif data['mode'] == 'passport_cust':

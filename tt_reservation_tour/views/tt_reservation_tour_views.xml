@@ -77,6 +77,10 @@
                             class="oe_stat_button" states="booked,issued,done,refund,rescheduled,reissue"
                             string="Print Itinerary" type="object" icon="fa-print"
                             groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
+                    <button name="print_itinerary_price"
+                            class="oe_stat_button" states="booked,issued,done,refund,rescheduled,reissue"
+                            string="Print Itinerary (Price)" type="object" icon="fa-print"
+                            groups="tt_base.group_tt_tour_travel,base.group_erp_manager"/>
                 </div>
             </xpath>
             <field name="pnr" position="after">

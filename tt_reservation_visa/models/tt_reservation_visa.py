@@ -1990,7 +1990,7 @@ class TtVisa(models.Model):
         datas['form'] = res
         visa_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_visa')
 
-        if not book_obj.printout_itinerary_visa or data.get('is_force_get_new_printout', False):
+        if not book_obj.printout_itinerary_id or data.get('is_force_get_new_printout', False):
             if book_obj.agent_id:
                 co_agent_id = book_obj.agent_id.id
             else:
@@ -2024,12 +2024,70 @@ class TtVisa(models.Model):
                 }
             )
             upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
-            book_obj.printout_itinerary_visa = upc_id.id
+            book_obj.printout_itinerary_id = upc_id.id
         url = {
             'type': 'ir.actions.act_url',
             'name': "Printout",
             'target': 'new',
-            'url': book_obj.printout_itinerary_visa.url,
+            'url': book_obj.printout_itinerary_id.url,
+        }
+        return url
+
+    def print_itinerary_price(self, data, ctx=None):
+        # jika panggil dari backend
+        if 'order_number' not in data:
+            data['order_number'] = self.name
+        if 'provider_type' not in data:
+            data['provider_type'] = self.provider_type_id.name
+
+        book_obj = self.env['tt.reservation.visa'].search([('name', '=', data['order_number'])], limit=1)
+        datas = {'ids': book_obj.env.context.get('active_ids', [])}
+        res = book_obj.read()
+        res = res and res[0] or {}
+        datas['form'] = res
+        datas['is_with_price'] = True
+        visa_itinerary_id = book_obj.env.ref('tt_report_common.action_printout_itinerary_visa')
+
+        if not book_obj.printout_itinerary_price_id or data.get('is_force_get_new_printout', False):
+            if book_obj.agent_id:
+                co_agent_id = book_obj.agent_id.id
+            else:
+                co_agent_id = self.env.user.agent_id.id
+
+            if book_obj.user_id:
+                co_uid = book_obj.user_id.id
+            else:
+                co_uid = self.env.user.id
+
+            pdf_report = visa_itinerary_id.report_action(book_obj, data=data)
+            pdf_report['context'].update({
+                'active_model': book_obj._name,
+                'active_id': book_obj.id
+            })
+            pdf_report.update({
+                'ids': book_obj.ids,
+                'model': book_obj._name,
+            })
+            pdf_report_bytes = visa_itinerary_id.render_qweb_pdf(data=pdf_report)
+            res = book_obj.env['tt.upload.center.wizard'].upload_file_api(
+                {
+                    'filename': 'Itinerary Visa %s (Price).pdf' % book_obj.name,
+                    'file_reference': 'Itinerary Visa',
+                    'file': base64.b64encode(pdf_report_bytes[0]),
+                    'delete_date': datetime.today() + timedelta(minutes=10)
+                },
+                {
+                    'co_agent_id': co_agent_id,
+                    'co_uid': co_uid
+                }
+            )
+            upc_id = book_obj.env['tt.upload.center'].search([('seq_id', '=', res['response']['seq_id'])], limit=1)
+            book_obj.printout_itinerary_price_id = upc_id.id
+        url = {
+            'type': 'ir.actions.act_url',
+            'name': "Printout",
+            'target': 'new',
+            'url': book_obj.printout_itinerary_price_id.url,
         }
         return url
 
